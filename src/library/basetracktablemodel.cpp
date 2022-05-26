@@ -553,6 +553,9 @@ QVariant BaseTrackTableModel::roleValue(
             return composeCoverArtToolTipHtml(index);
         case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
             return QVariant();
+        case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
+            return std::move(rawValue);
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -645,20 +648,6 @@ QVariant BaseTrackTableModel::roleValue(
             } else {
                 return QChar('-');
             }
-        }
-        case ColumnCache::COLUMN_LIBRARYTABLE_YEAR: {
-            if (rawValue.isNull()) {
-                return QVariant();
-            }
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QString>()) {
-                return QVariant();
-            }
-            bool ok;
-            const auto year = mixxx::TrackMetadata::formatCalendarYear(rawValue.toString(), &ok);
-            if (!ok) {
-                return QVariant();
-            }
-            return year;
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
             if (rawValue.isNull()) {
