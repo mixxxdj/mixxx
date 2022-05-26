@@ -71,6 +71,9 @@ inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
 }
 
 void appendCueHint(HintVector* pHintList, const mixxx::audio::FramePos& frame, Hint::Type type) {
+    VERIFY_OR_DEBUG_ASSERT(pHintList) {
+        return;
+    }
     Hint cueHint;
     if (frame.isValid()) {
         cueHint.frame = static_cast<SINT>(frame.toLowerFrameBoundary().value());
