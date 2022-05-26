@@ -70,6 +70,21 @@ inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
     }
 }
 
+void appendCueHint(HintVector* pHintList, const mixxx::audio::FramePos& frame, Hint::Type type) {
+    Hint cueHint;
+    if (frame.isValid()) {
+        cueHint.frame = static_cast<SINT>(frame.toLowerFrameBoundary().value());
+        cueHint.frameCount = Hint::kFrameCountForward;
+        cueHint.type = type;
+        pHintList->append(cueHint);
+    }
+}
+
+void appendCueHint(HintVector* pHintList, const double playPos, Hint::Type type) {
+    const auto frame = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(playPos);
+    appendCueHint(pHintList, frame, type);
+}
+
 } // namespace
 
 CueControl::CueControl(const QString& group,
@@ -1160,28 +1175,13 @@ void CueControl::hotcueEndPositionChanged(
 }
 
 void CueControl::hintReader(HintVector* pHintList) {
-    Hint cueHint;
-    const auto mainCuePosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pCuePoint->get());
-    if (mainCuePosition.isValid()) {
-        cueHint.frame = static_cast<SINT>(mainCuePosition.toLowerFrameBoundary().value());
-        cueHint.frameCount = Hint::kFrameCountForward;
-        cueHint.type = Hint::Type::MainCue;
-        pHintList->append(cueHint);
-    }
+    appendCueHint(pHintList, m_pCuePoint->get(), Hint::Type::MainCue);
 
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
     for (const auto& pControl : qAsConst(m_hotcueControls)) {
-        const mixxx::audio::FramePos position = pControl->getPosition();
-        if (position.isValid()) {
-            cueHint.frame = static_cast<SINT>(position.toLowerFrameBoundary().value());
-            cueHint.frameCount = Hint::kFrameCountForward;
-            cueHint.type = Hint::Type::HotCue;
-            pHintList->append(cueHint);
-        }
+        appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
     }
 }
 
