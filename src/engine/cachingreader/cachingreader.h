@@ -25,7 +25,11 @@ typedef struct Hint {
         MainCue,          // prio 10
         HotCue,           // prio 10
         LoopEndEnabled,   // prio 10
-        LoopStart         // prio 10
+        LoopStart,        // prio 10
+        FirstSound,
+        IntroStart,
+        IntroEnd,
+        OutroStart
     };
 
     // The frame to ensure is present in memory.

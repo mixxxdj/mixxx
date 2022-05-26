@@ -1183,6 +1183,17 @@ void CueControl::hintReader(HintVector* pHintList) {
     for (const auto& pControl : qAsConst(m_hotcueControls)) {
         appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
     }
+
+    CuePointer pAudibleSound =
+            m_pLoadedTrack->findCueByType(mixxx::CueType::AudibleSound);
+    if (pAudibleSound) {
+        const mixxx::audio::FramePos frame = pAudibleSound->getPosition();
+        appendCueHint(pHintList, frame, Hint::Type::FirstSound);
+    }
+
+    appendCueHint(pHintList, m_pIntroStartPosition->get(), Hint::Type::IntroStart);
+    appendCueHint(pHintList, m_pIntroEndPosition->get(), Hint::Type::IntroEnd);
+    appendCueHint(pHintList, m_pOutroStartPosition->get(), Hint::Type::OutroStart);
 }
 
 // Moves the cue point to current position or to closest beat in case
