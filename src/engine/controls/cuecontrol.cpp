@@ -1167,7 +1167,7 @@ void CueControl::hintReader(HintVector* pHintList) {
     if (mainCuePosition.isValid()) {
         cueHint.frame = static_cast<SINT>(mainCuePosition.toLowerFrameBoundary().value());
         cueHint.frameCount = Hint::kFrameCountForward;
-        cueHint.priority = 10;
+        cueHint.type = Hint::Type::MainCue;
         pHintList->append(cueHint);
     }
 
@@ -1179,7 +1179,7 @@ void CueControl::hintReader(HintVector* pHintList) {
         if (position.isValid()) {
             cueHint.frame = static_cast<SINT>(position.toLowerFrameBoundary().value());
             cueHint.frameCount = Hint::kFrameCountForward;
-            cueHint.priority = 10;
+            cueHint.type = Hint::Type::HotCue;
             pHintList->append(cueHint);
         }
     }
