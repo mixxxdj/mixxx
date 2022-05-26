@@ -2037,7 +2037,9 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 if(GNU_GCC OR LLVM_CLANG)
-  target_compile_options(FpClassify PRIVATE -fno-fast-math)
+  # The option `-ffp-contract=on` must precede `-fno-fast-math`
+  # to silence a warning on Clang 14
+  target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math)
 endif()
 target_link_libraries(mixxx-lib PRIVATE FpClassify)
 
