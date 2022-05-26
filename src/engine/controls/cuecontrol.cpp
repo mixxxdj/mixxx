@@ -74,11 +74,12 @@ void appendCueHint(HintVector* pHintList, const mixxx::audio::FramePos& frame, H
     VERIFY_OR_DEBUG_ASSERT(pHintList) {
         return;
     }
-    Hint cueHint;
+
     if (frame.isValid()) {
-        cueHint.frame = static_cast<SINT>(frame.toLowerFrameBoundary().value());
-        cueHint.frameCount = Hint::kFrameCountForward;
-        cueHint.type = type;
+        const Hint cueHint = {
+                /*.frame =*/static_cast<SINT>(frame.toLowerFrameBoundary().value()),
+                /*.frameCount =*/Hint::kFrameCountForward,
+                /*.type =*/type};
         pHintList->append(cueHint);
     }
 }
