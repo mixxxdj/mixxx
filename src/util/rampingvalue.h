@@ -3,16 +3,20 @@
 template <typename T>
 class RampingValue {
   public:
-    RampingValue(const T& initial, const T& final, int steps) {
-        m_value = initial;
-        m_increment = (final - initial) / steps;
+    constexpr RampingValue(const T& initial, const T& final, int steps)
+            : m_start(initial),
+              m_increment((final - initial) / steps) {
     }
-
-    T getNext() {
-        return m_value += m_increment;
+    /// this method is supposed to be used in hot audio-processing loops
+    /// which benefit greatly from vectorization. For this to work, loop-
+    /// iterations can't have any data-dependencies on each other. If `getNth`
+    /// were to modify its instance in between iterations, a data-dependency
+    /// would be introduced, and vectorization made impossible!
+    [[nodiscard]] constexpr T getNth(int step) const {
+        return m_start + m_increment * step;
     }
 
   private:
-    T m_value;
+    T m_start;
     T m_increment;
 };
