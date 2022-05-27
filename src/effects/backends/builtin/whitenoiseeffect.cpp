@@ -58,7 +58,7 @@ void WhiteNoiseEffect::processChannel(
 
     WhiteNoiseGroupState& gs = *pState;
 
-    const CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());
+    const CSAMPLE_GAIN drywet = static_cast<CSAMPLE_GAIN>(m_pDryWetParameter->value());
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
             drywet, gs.previous_drywet, engineParameters.framesPerBuffer());
     auto fade_in_out_ramping = RampingValue<CSAMPLE_GAIN>(
@@ -71,22 +71,22 @@ void WhiteNoiseEffect::processChannel(
             engineParameters.framesPerBuffer() *
                     engineParameters.channelCount());
 
-    for (unsigned int frameIndex = 0;
+    for (SINT frameIndex = 0;
             frameIndex < engineParameters.framesPerBuffer();
             frameIndex++) {
         const CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
         const CSAMPLE_GAIN fade_in_out_gain = fade_in_out_ramping.getNext();
 
-        for (unsigned int sampleInFrameIndex = 0;
+        for (SINT sampleInFrameIndex = 0;
                 sampleInFrameIndex < engineParameters.channelCount();
                 sampleInFrameIndex++) {
             constexpr float normalization_divisor =
                     static_cast<float>(std::numeric_limits<int32_t>::max());
             gs.random_state = nextState(gs.random_state);
             const auto bipolar_random = static_cast<int32_t>(gs.random_state);
-            const float noise = static_cast<float>(bipolar_random) / normalization_divisor;
+            const CSAMPLE noise = static_cast<float>(bipolar_random) / normalization_divisor;
 
-            const int sampleIndex =
+            const SINT sampleIndex =
                     frameIndex * engineParameters.channelCount() +
                     sampleInFrameIndex;
             pOutput[sampleIndex] = pInput[sampleIndex] * (1 - drywet_ramped) +
