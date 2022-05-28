@@ -68,6 +68,32 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         }
     }
 
+    if (m_firstSoundFrameToVerify.isValid()) {
+        SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
+        const int firstSoundIndex =
+                CachingReaderChunk::indexForFrame(static_cast<SINT>(
+                        m_firstSoundFrameToVerify.toLowerFrameBoundary()
+                                .value()));
+        if (pChunk->getIndex() == firstSoundIndex) {
+            CSAMPLE sampleBuffer[4];
+            pChunk->readBufferedSampleFrames(sampleBuffer, mixxx::IndexRange::forward(end - 1, 2));
+            constexpr CSAMPLE kSilenceThreshold = 0.001f;
+            if ((fabs(sampleBuffer[0]) < fabs(kSilenceThreshold) &&
+                        fabs(sampleBuffer[1]) < kSilenceThreshold) &&
+                    !(fabs(sampleBuffer[2]) < kSilenceThreshold &&
+                            fabs(sampleBuffer[3]) < kSilenceThreshold)) {
+                qDebug() << "First sound found at the previously stored position";
+            } else {
+                // This can happen in case of track edits or replacements, changed encoders or encoding issues.
+                qWarning() << "First sound has been moved! The beatgrid and "
+                              "other annotations are no longer valid"
+                           << sampleBuffer[0] << sampleBuffer[1]
+                           << sampleBuffer[2] << sampleBuffer[3];
+            }
+            m_firstSoundFrameToVerify = mixxx::audio::FramePos();
+        }
+    }
+
     ReaderStatusUpdate result;
     result.init(status, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
     return result;
@@ -111,7 +137,7 @@ void CachingReaderWorker::run() {
             }
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
             // Read the requested chunk and send the result
-            const ReaderStatusUpdate update(processReadRequest(request));
+            const ReaderStatusUpdate update = processReadRequest(request);
             m_pReaderStatusFIFO->writeBlocking(&update, 1);
         } else {
             Event::end(m_tag);
@@ -220,6 +246,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     const SINT sampleCount =
             CachingReaderChunk::frames2samples(
                     m_pAudioSource->frameLength());
+
+    CuePointer pAudibleSound =
+            pTrack->findCueByType(mixxx::CueType::AudibleSound);
+    if (pAudibleSound) {
+        m_firstSoundFrameToVerify = pAudibleSound->getPosition();
+    }
 
     // The engine must not request any chunks before receiving the
     // trackLoaded() signal
