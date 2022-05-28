@@ -1,10 +1,12 @@
 #include "widget/wtrackmenu.h"
 
 #include <QCheckBox>
+#include <QDesktopServices>
 #include <QDialogButtonBox>
 #include <QInputDialog>
 #include <QListWidget>
 #include <QModelIndex>
+#include <QUrl>
 #include <QVBoxLayout>
 
 #include "control/controlobject.h"
@@ -266,6 +268,14 @@ void WTrackMenu::createActions() {
     if (featureIsEnabled(Feature::SelectInLibrary)) {
         m_pSelectInLibraryAct = new QAction(tr("Select in Library"), this);
         connect(m_pSelectInLibraryAct, &QAction::triggered, this, &WTrackMenu::slotSelectInLibrary);
+    }
+
+    if (featureIsEnabled(Feature::FindOn)) {
+        m_pFindOnSoundcloudAct = new QAction(tr("Find the Artist on SoundCloud"), this);
+        connect(m_pFindOnSoundcloudAct,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotFindOnSoundcloud);
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
@@ -574,6 +584,10 @@ void WTrackMenu::setupActions() {
         addAction(m_pFileBrowserAct);
     }
 
+    if (featureIsEnabled(Feature::FindOn)) {
+        addAction(m_pFindOnSoundcloudAct);
+    }
+
     if (featureIsEnabled(Feature::Properties)) {
         addSeparator();
         addAction(m_pPropertiesAct);
@@ -792,6 +806,10 @@ void WTrackMenu::updateMenus() {
         m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
     }
 
+    if (featureIsEnabled(Feature::FindOn)) {
+        m_pFindOnSoundcloudAct->setEnabled(singleTrackSelected);
+    }
+
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
@@ -994,6 +1012,12 @@ void WTrackMenu::slotSelectInLibrary() {
     if (m_pTrack) {
         emit m_pLibrary->selectTrack(m_pTrack->getId());
     }
+}
+
+void WTrackMenu::slotFindOnSoundcloud() {
+    const TrackPointer pTrack = getFirstTrackPointer();
+    QString artistName = pTrack->getArtist();
+    QDesktopServices::openUrl(QUrl("https://soundcloud.com/search/people?q=" + artistName));
 }
 
 namespace {
@@ -2155,6 +2179,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::RemoveFromDisk:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk);
     case Feature::FileBrowser:
+        return true;
+    case Feature::FindOn:
         return true;
     case Feature::Properties:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);

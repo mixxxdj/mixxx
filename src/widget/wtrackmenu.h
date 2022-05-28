@@ -51,10 +51,12 @@ class WTrackMenu : public QMenu {
         SearchRelated = 1 << 13,
         UpdateReplayGainFromPregain = 1 << 14,
         SelectInLibrary = 1 << 15,
+        FindOn = 1 << 16,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
-                Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary
+                Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
+                FindOn
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -90,6 +92,9 @@ class WTrackMenu : public QMenu {
     // File
     void slotOpenInFileBrowser();
     void slotSelectInLibrary();
+
+    // Web Browser
+    void slotFindOnSoundcloud();
 
     // Row color
     void slotColorPicked(const mixxx::RgbColor::optional_t& color);
@@ -218,6 +223,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pClearMetadataMenu{};
     QMenu* m_pBPMMenu{};
     QMenu* m_pColorMenu{};
+    QMenu* m_pFindOnMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     QMenu* m_pRemoveFromDiskMenu{};
@@ -257,6 +263,9 @@ class WTrackMenu : public QMenu {
 
     // Select track in library
     QAction* m_pSelectInLibraryAct{};
+
+    // Open default browser
+    QAction* m_pFindOnSoundcloudAct{};
 
     // BPM feature
     QAction* m_pBpmLockAction{};
