@@ -26,7 +26,6 @@ bool shouldAnalyze(TrackPointer pTrack) {
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_iFramesProcessed(0),
-          m_bPrevSilence(true),
           m_iSignalStart(-1),
           m_iSignalEnd(-1) {
 }
@@ -42,34 +41,49 @@ bool AnalyzerSilence::initialize(TrackPointer pTrack,
     }
 
     m_iFramesProcessed = 0;
-    m_bPrevSilence = true;
     m_iSignalStart = -1;
     m_iSignalEnd = -1;
 
     return true;
 }
 
-bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
-    for (SINT i = 0; i < iLen; i += mixxx::kAnalysisChannels) {
-        // Compute max of channels in this sample frame
-        CSAMPLE fMax = CSAMPLE_ZERO;
-        for (SINT ch = 0; ch < mixxx::kAnalysisChannels; ++ch) {
-            CSAMPLE fAbs = fabs(pIn[i + ch]);
-            fMax = math_max(fMax, fAbs);
+// static
+SINT AnalyzerSilence::findFirstSound(const CSAMPLE* pIn, SINT iLen) {
+    for (SINT i = 0; i < iLen; ++i) {
+        if (fabs(pIn[i]) >= kSilenceThreshold) {
+            return i;
         }
-
-        bool bSilence = fMax < kSilenceThreshold;
-
-        if (m_bPrevSilence && !bSilence) {
-            if (m_iSignalStart < 0) {
-                m_iSignalStart = m_iFramesProcessed + i / mixxx::kAnalysisChannels;
-            }
-        } else if (!m_bPrevSilence && bSilence) {
-            m_iSignalEnd = m_iFramesProcessed + i / mixxx::kAnalysisChannels;
-        }
-
-        m_bPrevSilence = bSilence;
     }
+    return -1;
+}
+
+// static
+SINT AnalyzerSilence::findLastSound(const CSAMPLE* pIn, SINT iLen, SINT firstSound) {
+    DEBUG_ASSERT(firstSound >= -1);
+    SINT lastSound = firstSound;
+    for (SINT i = firstSound + 1; i < iLen; ++i) {
+        if (fabs(pIn[i]) >= kSilenceThreshold) {
+            lastSound = i;
+        }
+    }
+    return lastSound;
+}
+
+bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
+    SINT firstSoundSample = -1;
+    if (m_iSignalStart < 0) {
+        firstSoundSample = findFirstSound(pIn, iLen);
+        if (firstSoundSample >= 0) {
+            m_iSignalStart = m_iFramesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
+        }
+    }
+    if (m_iSignalStart >= 0) {
+        SINT lastSoundSample = findLastSound(pIn, iLen, firstSoundSample);
+        if (lastSoundSample >= 0) {
+            m_iSignalEnd = m_iFramesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
+        }
+    }
+
     m_iFramesProcessed += iLen / mixxx::kAnalysisChannels;
     return true;
 }
@@ -82,12 +96,6 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         m_iSignalStart = 0;
     }
     if (m_iSignalEnd < 0) {
-        m_iSignalEnd = m_iFramesProcessed;
-    }
-
-    // If track didn't end with silence, place signal end marker
-    // on the end of the track.
-    if (!m_bPrevSilence) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
