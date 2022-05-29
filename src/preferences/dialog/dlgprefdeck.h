@@ -27,6 +27,7 @@ namespace TrackTime {
         ELAPSED,
         REMAINING,
         ELAPSED_AND_REMAINING,
+        BEATS_UNTIL_NEXT_CUE_AND_REMAINING,
     };
 
     enum class DisplayFormat {
