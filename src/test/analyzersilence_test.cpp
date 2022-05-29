@@ -46,12 +46,12 @@ class AnalyzerSilenceTest : public MixxxTest {
     AnalyzerSilence analyzerSilence;
     TrackPointer pTrack;
     std::vector<CSAMPLE> pTrackSampleData;
-    int nTrackSampleDataLength; // in samples
+    SINT nTrackSampleDataLength; // in samples
 };
 
 TEST_F(AnalyzerSilenceTest, SilenceTrack) {
     // Fill the entire buffer with silence
-    for (int i = 0; i < nTrackSampleDataLength; i++) {
+    for (SINT i = 0; i < nTrackSampleDataLength; i++) {
         pTrackSampleData[i] = 0.0;
     }
 

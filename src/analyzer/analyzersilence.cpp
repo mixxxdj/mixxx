@@ -49,8 +49,8 @@ bool AnalyzerSilence::initialize(TrackPointer pTrack,
     return true;
 }
 
-bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, const int iLen) {
-    for (int i = 0; i < iLen; i += mixxx::kAnalysisChannels) {
+bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
+    for (SINT i = 0; i < iLen; i += mixxx::kAnalysisChannels) {
         // Compute max of channels in this sample frame
         CSAMPLE fMax = CSAMPLE_ZERO;
         for (SINT ch = 0; ch < mixxx::kAnalysisChannels; ++ch) {

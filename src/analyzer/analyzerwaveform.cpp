@@ -168,7 +168,7 @@ void AnalyzerWaveform::destroyFilters() {
     }
 }
 
-bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, const int bufferLength) {
+bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, SINT bufferLength) {
     VERIFY_OR_DEBUG_ASSERT(m_waveform) {
         return false;
     }
@@ -176,8 +176,8 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, const int bufferLen
         return false;
     }
 
-    //this should only append once if bufferLength is constant
-    if (bufferLength > (int)m_buffers[0].size()) {
+    // this should only append once if bufferLength is constant
+    if (bufferLength > static_cast<SINT>(m_buffers[0].size())) {
         m_buffers[Low].resize(bufferLength);
         m_buffers[Mid].resize(bufferLength);
         m_buffers[High].resize(bufferLength);
@@ -190,7 +190,7 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, const int bufferLen
     m_waveform->setSaveState(Waveform::SaveState::NotSaved);
     m_waveformSummary->setSaveState(Waveform::SaveState::NotSaved);
 
-    for (int i = 0; i < bufferLength; i += 2) {
+    for (SINT i = 0; i < bufferLength; i += 2) {
         // Take max value, not average of data
         CSAMPLE cover[2] = {fabs(buffer[i]), fabs(buffer[i + 1])};
         CSAMPLE clow[2] = {fabs(m_buffers[Low][i]), fabs(m_buffers[Low][i + 1])};

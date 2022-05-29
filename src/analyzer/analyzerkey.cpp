@@ -150,7 +150,7 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-bool AnalyzerKey::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT iLen) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }

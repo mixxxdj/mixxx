@@ -14,6 +14,6 @@ constexpr SINT kAnalysisSamplesPerChunk =
         kAnalysisFramesPerChunk * kAnalysisChannels;
 
 // Only analyze the first minute in fast-analysis mode.
-constexpr int kFastAnalysisSecondsToAnalyze = 60;
+constexpr SINT kFastAnalysisSecondsToAnalyze = 60;
 
 }  // namespace mixxx

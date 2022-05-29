@@ -31,7 +31,7 @@ bool AnalyzerGain::initialize(TrackPointer tio,
 void AnalyzerGain::cleanup() {
 }
 
-bool AnalyzerGain::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT iLen) {
     ScopedTimer t("AnalyzerGain::process()");
 
     int halfLength = static_cast<int>(iLen / 2);
