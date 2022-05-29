@@ -254,7 +254,7 @@ WSearchLineEdit,
     max-height: 2px;
   }
   #SkinSettingsSeparator {
-    margin: 3px 4px 7px 4px;
+    margin: 1px 4px 3px 4px;
   }
 
 WBeatSpinBox,
