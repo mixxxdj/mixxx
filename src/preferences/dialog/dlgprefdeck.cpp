@@ -100,6 +100,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
             static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
+    } else if (positionDisplayType ==
+            static_cast<double>(TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING)) {
+        radioButtonBeatsUntilNextCueAndRemaining->setChecked(true);
+        m_pControlTrackTimeDisplay->set(
+                static_cast<double>(TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING));
     } else {
         radioButtonElapsed->setChecked(true);
         m_pControlTrackTimeDisplay->set(
