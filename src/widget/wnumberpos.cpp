@@ -115,12 +115,14 @@ void WNumberPos::slotSetDisplayMode(double remain) {
         m_displayMode = TrackTime::DisplayMode::REMAINING;
     } else if (remain == 2.0) {
         m_displayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
+    } else if (remain == 3.0) {
+        m_displayMode = TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING;
     } else {
         m_displayMode = TrackTime::DisplayMode::ELAPSED;
     }
-
     slotSetTimeElapsed(m_dOldTimeElapsed);
 }
+
 void WNumberPos::slotSetTimeFormat(double v) {
     m_displayFormat = static_cast<TrackTime::DisplayFormat>(static_cast<int>(v));
 
