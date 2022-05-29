@@ -40,6 +40,8 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
         } else if (m_displayMode == TrackTime::DisplayMode::REMAINING) {
             m_displayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
         } else if (m_displayMode == TrackTime::DisplayMode::ELAPSED_AND_REMAINING) {
+            m_displayMode = TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING;
+        } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
             m_displayMode = TrackTime::DisplayMode::ELAPSED;
         }
 
