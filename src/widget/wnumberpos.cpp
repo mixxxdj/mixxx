@@ -5,11 +5,16 @@
 #include "moc_wnumberpos.cpp"
 #include "util/duration.h"
 #include "util/math.h"
+#include "mixer/basetrackplayer.h"
+#include "track/track.h"
 
-WNumberPos::WNumberPos(const QString& group, QWidget* parent)
+WNumberPos::WNumberPos(const QString& group, QWidget* parent, BaseTrackPlayer* player)
         : WNumber(parent),
           m_displayFormat(TrackTime::DisplayFormat::TRADITIONAL),
           m_dOldTimeElapsed(0.0) {
+
+    m_pPlayer = player;
+
     m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this, ControlFlag::NoAssertIfMissing);
     m_pTimeElapsed->connectValueChanged(this, &WNumberPos::slotSetTimeElapsed);
     m_pTimeRemaining = new ControlProxy(
@@ -94,6 +99,19 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
         } else {
             setText(QLatin1String("-") % timeFormat(-dTimeElapsed, precision)
                     % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
+        }
+    } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
+        //ToDo [Maldini] - Implement the beat counter until next cue
+        //setText(QLatin1String("NOT YET IMPLEMENTED"));
+        if (m_pPlayer) {
+            TrackPointer m_pTrack = m_pPlayer->getLoadedTrack();
+            if (m_pTrack) {
+                setText(m_pTrack->getFileInfo().baseName());
+            } else {
+                setText(QLatin1String("no Track"));
+            }
+        } else {
+            setText(QLatin1String("no Player"));
         }
     }
     m_dOldTimeElapsed = dTimeElapsed;
