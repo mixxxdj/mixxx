@@ -1219,7 +1219,7 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseNumberPos(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    WNumberPos* p = new WNumberPos(group, m_pParent);
+    WNumberPos* p = new WNumberPos(group, m_pParent, m_pPlayerManager->getPlayer(group));
     setupLabelWidget(node, p);
     return p;
 }
