@@ -168,7 +168,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
                     mixxx::widgethelper::getScreen(*pMsgBox);
             if (!pScreen) {
                 // Fallback to obtain the primary screen when mixxx::widgethelper::getScreen can't
-                // determine the screen This happens always with Qt5.12
+                // determine the screen. This happens always with Qt <5.14
                 pScreen = qGuiApp->primaryScreen();
             }
             DEBUG_ASSERT(pScreen);
