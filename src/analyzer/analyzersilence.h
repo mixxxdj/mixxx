@@ -19,7 +19,6 @@ class AnalyzerSilence : public Analyzer {
 
   private:
     UserSettingsPointer m_pConfig;
-    CSAMPLE m_fThreshold;
     int m_iFramesProcessed;
     bool m_bPrevSilence;
     int m_iSignalStart;

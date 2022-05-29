@@ -6,9 +6,9 @@
 
 namespace {
 
-constexpr CSAMPLE kSilenceThreshold = 0.001f;
-// TODO: Change the above line to:
-//constexpr CSAMPLE kSilenceThreshold = db2ratio(-60.0f);
+// This threshold must not be changed, because this value is also used to
+// verify that the track samples have not changed since the last analysis
+constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
@@ -25,7 +25,6 @@ bool shouldAnalyze(TrackPointer pTrack) {
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_fThreshold(kSilenceThreshold),
           m_iFramesProcessed(0),
           m_bPrevSilence(true),
           m_iSignalStart(-1),
@@ -59,7 +58,7 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, const int iLen) {
             fMax = math_max(fMax, fAbs);
         }
 
-        bool bSilence = fMax < m_fThreshold;
+        bool bSilence = fMax < kSilenceThreshold;
 
         if (m_bPrevSilence && !bSilence) {
             if (m_iSignalStart < 0) {
