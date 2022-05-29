@@ -616,6 +616,8 @@ void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
         m_timeDisplayMode = TrackTime::DisplayMode::REMAINING;
     } else if (b == radioButtonElapsedAndRemaining) {
         m_timeDisplayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
+    } else if (b == radioButtonBeatsUntilNextCueAndRemaining) {
+        m_timeDisplayMode = TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING;
     } else {
         m_timeDisplayMode = TrackTime::DisplayMode::ELAPSED;
     }
