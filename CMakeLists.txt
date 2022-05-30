@@ -1881,6 +1881,18 @@ if(GNU_GCC OR LLVM_CLANG)
 endif()
 target_link_libraries(mixxx-lib PRIVATE FpClassify)
 
+# Cpp Core Guideline Support Library (GSL)
+include(FetchContent)
+
+FetchContent_Declare(GSL
+  GIT_REPOSITORY "https://github.com/microsoft/GSL"
+  GIT_TAG "v4.0.0"
+)
+
+FetchContent_MakeAvailable(GSL)
+
+target_link_libraries(mixxx-lib PRIVATE GSL)
+
 # googletest
 # Required to use the macro FRIEND_TEST from <gtest/gtest_prod.h>
 # in production code
