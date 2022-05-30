@@ -40,11 +40,24 @@ lib/googletest/googletest/test
 
 # Exclude unneeded files from the bundled hidapi library in the lib/
 # directory for future updates
-lib/hidapi/android
-lib/hidapi/dist
-lib/hidapi/doxygen
-lib/hidapi/hidtest
-lib/hidapi/testgui
+lib/hidapi/android/
+lib/hidapi/dist/
+lib/hidapi/documentation/
+lib/hidapi/doxygen/
+lib/hidapi/hidtest/
+lib/hidapi/m4/
+lib/hidapi/pc/
+lib/hidapi/src/
+lib/hidapi/testgui/
+lib/hidapi/bootstrap
+lib/hidapi/configure.ac
+lib/hidapi/BUILD.*
+lib/hidapi/windows/*
+!lib/hidapi/windows/*.c
+!lib/hidapi/windows/*.h
+lib/hidapi/**/.gitignore
+lib/hidapi/**/CMakeLists.txt
+lib/hidapi/**/Makefile*
 
 # Legacy compilation artifacts that are obsolete starting with 2.3
 # TODO: Delete after 2.2 with SCons has been abandoned. Developers
