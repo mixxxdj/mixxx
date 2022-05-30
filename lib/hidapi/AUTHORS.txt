@@ -14,5 +14,5 @@ libusb/hidapi Team:
 	Development/maintainance since June 4th 2019
 
 For a comprehensive list of contributions, see the commit list at github:
-	https://github.com/libusb/hidapi/commits/master
+	https://github.com/libusb/hidapi/graphs/contributors
 

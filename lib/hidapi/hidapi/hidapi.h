@@ -5,9 +5,9 @@
  Alan Ott
  Signal 11 Software
 
- 8/22/2009
+ libusb/hidapi Team
 
- Copyright 2009, All Rights Reserved.
+ Copyright 2022, All Rights Reserved.
 
  At the discretion of the user of this library,
  this software may be licensed under the terms of the
@@ -48,17 +48,39 @@
 
 	@ingroup API
 */
-#define HID_API_VERSION_MINOR 10
+#define HID_API_VERSION_MINOR 12
 /** @brief Static/compile-time patch version of the library.
 
 	@ingroup API
 */
-#define HID_API_VERSION_PATCH 1
+#define HID_API_VERSION_PATCH 0
 
 /* Helper macros */
 #define HID_API_AS_STR_IMPL(x) #x
 #define HID_API_AS_STR(x) HID_API_AS_STR_IMPL(x)
 #define HID_API_TO_VERSION_STR(v1, v2, v3) HID_API_AS_STR(v1.v2.v3)
+
+/** @brief Coverts a version as Major/Minor/Patch into a number:
+	<8 bit major><16 bit minor><8 bit patch>.
+
+	This macro was added in version 0.12.0.
+
+	Convenient function to be used for compile-time checks, like:
+	#if HID_API_VERSION >= HID_API_MAKE_VERSION(0, 12, 0)
+
+	@ingroup API
+*/
+#define HID_API_MAKE_VERSION(mj, mn, p) (((mj) << 24) | ((mn) << 8) | (p))
+
+/** @brief Static/compile-time version of the library.
+
+	This macro was added in version 0.12.0.
+
+	@see @ref HID_API_MAKE_VERSION.
+
+	@ingroup API
+*/
+#define HID_API_VERSION HID_API_MAKE_VERSION(HID_API_VERSION_MAJOR, HID_API_VERSION_MINOR, HID_API_VERSION_PATCH)
 
 /** @brief Static/compile-time string version of the library.
 
@@ -368,6 +390,8 @@ extern "C" {
 		int HID_API_EXPORT HID_API_CALL hid_get_feature_report(hid_device *dev, unsigned char *data, size_t length);
 
 		/** @brief Get a input report from a HID device.
+
+			Since version 0.10.0, @ref HID_API_VERSION >= HID_API_MAKE_VERSION(0, 10, 0)
 
 			Set the first byte of @p data[] to the Report ID of the
 			report to be read. Make sure to allow space for this
