@@ -114,20 +114,26 @@ class WaveformMark {
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
 inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer& rhs) {
-    double leftPosition = lhs->getSamplePosition();
-    int leftHotcue = lhs->getHotCue();
-    double rightPosition = rhs->getSamplePosition();
-    int rightHotcue = rhs->getHotCue();
-    if (leftPosition == rightPosition) {
+    //A segfault in here crashes the whole program for me every few hours. Let's make sure we aren't comparing null pointers.
+    if(lhs&&rhs) {
+      double leftPosition = lhs->getSamplePosition();
+      int leftHotcue = lhs->getHotCue();
+      double rightPosition = rhs->getSamplePosition();
+      int rightHotcue = rhs->getHotCue();
+      if (leftPosition == rightPosition) {
         // Sort WaveformMarks without hotcues before those with hotcues;
         // if both have hotcues, sort numerically by hotcue number.
         if (leftHotcue == Cue::kNoHotCue && rightHotcue != Cue::kNoHotCue) {
-            return true;
+          return true;
         } else if (leftHotcue != Cue::kNoHotCue && rightHotcue == Cue::kNoHotCue) {
-            return false;
+          return false;
         } else {
-            return leftHotcue < rightHotcue;
+          return leftHotcue < rightHotcue;
         }
-    }
-    return leftPosition < rightPosition;
+      }
+          
+          return leftPosition < rightPosition;
+    } else {
+      return leftPosition < rightPosition;
+    }  
 }
