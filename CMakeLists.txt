@@ -565,6 +565,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
   src/effects/backends/builtin/phasereffect.cpp
+  src/effects/backends/builtin/pitchshifteffect.cpp
   src/effects/backends/builtin/reverbeffect.cpp
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
