@@ -414,10 +414,10 @@ void DlgPreferences::onShow() {
     int offsetY = geometry().top() - frameGeometry().top();
     newX += offsetX;
     newY += offsetY;
-    setGeometry(newX,  // x position
-                newY,  // y position
-                newWidth,  // width
-                newHeight); // height
+    setGeometry(newX,   // x position
+            newY,       // y position
+            newWidth,   // width
+            newHeight); // height
 #endif // __LINUX__ / __MACOS__
     // Move is also needed on linux.
     move(newX, newY);
