@@ -69,6 +69,21 @@ SINT AnalyzerSilence::findLastSound(const CSAMPLE* pIn, SINT iLen, SINT firstSou
     return lastSound;
 }
 
+// static
+bool AnalyzerSilence::verifyFirstSound(
+        const CSAMPLE* pIn, SINT iLen, mixxx::audio::FramePos firstSoundFrame) {
+    if (mixxx::audio::FramePos(findFirstSound(pIn, iLen) /
+                mixxx::kAnalysisChannels) == firstSoundFrame) {
+        qDebug() << "First sound found at the previously stored position";
+        return true;
+    }
+
+    // This can happen in case of track edits or replacements, changed encoders or encoding issues.
+    qWarning() << "First sound has been moved! The beatgrid and "
+                  "other annotations are no longer valid";
+    return false;
+}
+
 bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
     SINT firstSoundSample = -1;
     if (m_iSignalStart < 0) {

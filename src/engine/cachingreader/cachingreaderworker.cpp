@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QtDebug>
 
+#include "analyzer/analyzersilence.h"
 #include "control/controlobject.h"
 #include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
@@ -68,31 +69,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         }
     }
 
-    if (m_firstSoundFrameToVerify.isValid()) {
-        SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
-        const int firstSoundIndex =
-                CachingReaderChunk::indexForFrame(static_cast<SINT>(
-                        m_firstSoundFrameToVerify.toLowerFrameBoundary()
-                                .value()));
-        if (pChunk->getIndex() == firstSoundIndex) {
-            CSAMPLE sampleBuffer[4];
-            pChunk->readBufferedSampleFrames(sampleBuffer, mixxx::IndexRange::forward(end - 1, 2));
-            constexpr CSAMPLE kSilenceThreshold = 0.001f;
-            if ((fabs(sampleBuffer[0]) < fabs(kSilenceThreshold) &&
-                        fabs(sampleBuffer[1]) < kSilenceThreshold) &&
-                    !(fabs(sampleBuffer[2]) < kSilenceThreshold &&
-                            fabs(sampleBuffer[3]) < kSilenceThreshold)) {
-                qDebug() << "First sound found at the previously stored position";
-            } else {
-                // This can happen in case of track edits or replacements, changed encoders or encoding issues.
-                qWarning() << "First sound has been moved! The beatgrid and "
-                              "other annotations are no longer valid"
-                           << sampleBuffer[0] << sampleBuffer[1]
-                           << sampleBuffer[2] << sampleBuffer[3];
-            }
-            m_firstSoundFrameToVerify = mixxx::audio::FramePos();
-        }
-    }
+    verifyFirstSound(pChunk);
 
     ReaderStatusUpdate result;
     result.init(status, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
@@ -267,4 +244,20 @@ void CachingReaderWorker::quitWait() {
     m_stop = 1;
     m_semaRun.release();
     wait();
+}
+
+void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
+    if (m_firstSoundFrameToVerify.isValid()) {
+        SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
+        const int firstSoundIndex =
+                CachingReaderChunk::indexForFrame(static_cast<SINT>(
+                        m_firstSoundFrameToVerify.toLowerFrameBoundary()
+                                .value()));
+        if (pChunk->getIndex() == firstSoundIndex) {
+            CSAMPLE sampleBuffer[4];
+            pChunk->readBufferedSampleFrames(sampleBuffer, mixxx::IndexRange::forward(end - 1, 2));
+            AnalyzerSilence::verifyFirstSound(sampleBuffer, 4, mixxx::audio::FramePos(1));
+            m_firstSoundFrameToVerify = mixxx::audio::FramePos();
+        }
+    }
 }

@@ -148,6 +148,8 @@ class CachingReaderWorker : public EngineWorker {
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);
 
+    void verifyFirstSound(const CachingReaderChunk* pChunk);
+
     // The current audio source of the track loaded
     mixxx::AudioSourcePointer m_pAudioSource;
 
