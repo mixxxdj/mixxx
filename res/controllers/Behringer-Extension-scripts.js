@@ -55,14 +55,18 @@
      * @private
      */
     var stringifyComponent = function(component) {
-        if (component === undefined) {
+        if (!component) {
             return;
         }
-        var id = findComponentId(component.midi);
-        if (id !== undefined) {
-            var key = component.inKey || component.outKey;
-            return "(" + id + ": " + component.group + "," + key + ")";
+        var key = component.inKey || component.outKey;
+        var value = component.group + "," + key;
+        if (component.midi) {
+            var id = findComponentId(component.midi);
+            if (id !== undefined) {
+                value = id + ": " + value;
+            }
         }
+        return "(" + value + ")";
     };
 
     /**
@@ -94,6 +98,43 @@
     var deriveFrom = function(parent, members) {
         return _.merge(Object.create(parent.prototype), members || {});
     };
+
+    /**
+     * Perform an action, throttled if the owner supports throttling.
+     *
+     * @param {function} action The action to perform
+     * @param {object} owner Object used as `this` for the action
+     * @private
+     * @see `Throttler`
+     */
+    var throttle = function(action, owner) {
+        if (owner.throttler) {
+            owner.throttler.schedule(action, owner);
+        } else {
+            action.call(owner);
+        }
+    };
+
+    /**
+     * A component that uses the parameter instead of the value as output.
+     *
+     * @constructor
+     * @extends {components.Component}
+     * @param {object} options Options object
+     * @public
+     */
+    var ParameterComponent = function(options) {
+        components.Component.call(this, options);
+    };
+    ParameterComponent.prototype = deriveFrom(components.Component, {
+        outValueScale: function(_value) {
+            /*
+             * We ignore the argument and use the parameter (0..1) instead because value scale is
+             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
+             */
+            return convertToMidiValue.call(this, this.outGetParameter());
+        },
+    });
 
     /**
      * A button to toggle un-/shift on a target component.
@@ -181,7 +222,7 @@
      * Use `start(action)` to start and `reset()` to reset.
      *
      * @constructor
-     * @param {number} options.timeout Duration between start and action
+     * @param {number} options.timeout Duration between start and action (in ms)
      * @param {boolean} options.oneShot If `true`, the action is run once;
      *                          otherwise, it is run periodically until the timer is reset.
      * @param {function} options.action Function that is executed whenever the timer expires
@@ -218,6 +259,53 @@
             } else {
                 this.reset();
             }
+        }
+    };
+
+    /**
+     * An object that enforces a constant delay between the execution of consecutive actions.
+     *
+     * Use `schedule(action, owner)` to perform an action on the owner as soon as the delay has
+     * elapsed after the preceding action has finished.
+     *
+     * @constructor
+     * @param {number} options.delay Minimal delay between two consecutive actions (in ms)
+     * @public
+     */
+    var Throttler = function(options) {
+        options = options || {};
+        options.delay = options.delay || 0;
+        _.assign(this, options);
+        this.locked = false;
+        this.jobs = [];
+        this.unlockTimer = new Timer(
+            {timeout: this.delay, oneShot: true, action: this.unlock, owner: this});
+    };
+    Throttler.prototype = {
+        schedule: function(action, owner) {
+            this.jobs.push({action: action, owner: owner});
+            this.notify();
+        },
+
+        notify: function() {
+            if (this.jobs.length > 0 && this.acquireLock()) {
+                var job = this.jobs.shift();
+                job.action.call(job.owner);
+                this.unlockTimer.start();
+            }
+        },
+
+        acquireLock: function() {
+            var unlocked = !this.locked;
+            if (unlocked) {
+                this.locked = true;
+            }
+            return unlocked;
+        },
+
+        unlock: function() {
+            this.locked = false;
+            this.notify();
         }
     };
 
@@ -415,7 +503,9 @@
      * @extends {components.Encoder}
      * @param {object} options Options object
      * @param {Array} options.values An array containing the enumeration values
+     * @param {boolean} options.softTakeover (optional) Enable soft-takeover; default: `true`
      * @public
+     * @see https://github.com/mixxxdj/mixxx/wiki/Midi-Scripting#soft-takeover
      */
     var EnumEncoder = function(options) {
         options = options || {};
@@ -423,10 +513,22 @@
             log.error("EnumEncoder constructor was called without specifying enum values.");
             options.values = [];
         }
+        if (options.softTakeover === undefined) { // do not use '||' to allow false
+            options.softTakeover = true;
+        }
         options.maxIndex = options.values.length - 1;
         components.Encoder.call(this, options);
     };
     EnumEncoder.prototype = deriveFrom(components.Encoder, {
+        input: function(_channel, _control, value, _status, _group) {
+            var scaledValue = this.inValueScale(value);
+            if (!this.softTakeover
+                || this.previousValue === undefined
+                || this.previousValue === this.inGetValue()) {
+                this.inSetParameter(scaledValue);
+            }
+            this.previousValue = scaledValue;
+        },
         inValueScale: function(value) {
             var normalizedValue = value / this.max;
             var index = Math.round(normalizedValue * this.maxIndex);
@@ -470,7 +572,7 @@
      * `sizeControl` being preferred.
      *
      * @constructor
-     * @extends {components.Encoder}
+     * @extends {DirectionEncoder}
      * @param {object} options Options object
      * @param {number} options.size (optional) Size given in number of beats; default: 0.5
      * @param {string} options.sizeControl (optional) Name of a control that contains `size`
@@ -580,16 +682,9 @@
         }
         this.source = options.source;
         this.sync();
-        components.Component.call(this, options);
+        ParameterComponent.call(this, options);
     };
-    Publisher.prototype = deriveFrom(components.Component, {
-        outValueScale: function(_value) {
-            /*
-             * We ignore the argument and use the parameter (0..1) instead because value scale is
-             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
-             */
-            return convertToMidiValue.call(this, this.outGetParameter());
-        },
+    Publisher.prototype = deriveFrom(ParameterComponent, {
         sync: function() {
             this.midi = this.source.midi;
             this.group = this.source.group;
@@ -757,6 +852,11 @@
         register: function(component, containerName) {
             if (component === undefined) {
                 log.error("Missing component");
+                return;
+            }
+            if (!component.midi) {
+                log.debug(containerName + ": ignore "
+                    + stringifyComponent(component) + " without MIDI address");
                 return;
             }
             var id = findComponentId(component.midi);
@@ -1020,6 +1120,11 @@
      *     +- init: (optional) A function that is called when Mixxx is started
      *     +- shutdown: (optional) A function that is called when Mixxx is shutting down
      *     |
+     *     +- throttleDelay (optional): A positive number (in ms) that is used to slow down the
+     *     |                            initialization of the controller; this option is useful if
+     *     |                            the hardware is limited to process a certain number of MIDI
+     *     |                            messages per time.
+     *     |
      *     +- decks: An array of deck definitions (may be empty or omitted)
      *     |  +- deck:
      *     |     +- deckNumbers: As defined by {components.Deck}
@@ -1045,7 +1150,7 @@
      *     |        |            component.
      *     |        +- output: Additional output definitions (optional).
      *     |                   The structure of this object is the same as the structure of
-     *     |                   `components`. Every value change of a component contained in `output`
+     *     |                   `midi`. Every value change of a component contained in `output`
      *     |                   causes a MIDI message to be sent to the hardware controller, using
      *     |                   the configured address instead of the component's `midi` property.
      *     |                   This option is independent of the `feedback` option.
@@ -1104,14 +1209,20 @@
             this.controllerId = controllerId;
             this.debug = debug;
 
+            var delay = this.config.throttleDelay;
+            if (delay > 0) {
+                log.debug("Component registration is throttled using a delay of " + delay + "ms");
+                this.throttler = new Throttler({delay: delay});
+            }
+
             if (typeof this.config.init === "function") {
                 this.config.init(controllerId, debug);
             }
 
             /*
-            * Contains all decks and effect units so that a (un)shift operation
-            * is delegated to the decks, effect units and their children.
-            */
+             * Contains all decks and effect units so that a (un)shift operation
+             * is delegated to the decks, effect units and their children.
+             */
             this.componentContainers = [];
 
             this.layerManager = this.createLayerManager(
@@ -1201,9 +1312,11 @@
             }].forEach(function(context) {
                 if (Array.isArray(context.definitions)) {
                     context.definitions.forEach(function(definition) {
-                        var implementation = context.factory.call(this, definition, target);
-                        target.push(implementation);
-                        context.register(definition, implementation);
+                        throttle(function() {
+                            var implementation = context.factory.call(this, definition, target);
+                            target.push(implementation);
+                            context.register(definition, implementation);
+                        }, this);
                     }, this);
                 } else {
                     log.error(this.controllerId + ": Skipping a part of the configuration because "
@@ -1226,14 +1339,9 @@
         createDeck: function(deckDefinition, componentStorage) {
             var deck = new components.Deck(deckDefinition.deckNumbers);
             deckDefinition.components.forEach(function(componentDefinition, index) {
-                if (componentDefinition && componentDefinition.type) {
-                    var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
-                    deck[index] = new componentDefinition.type(options);
-                } else {
-                    log.error("Skipping component without type on Deck of " + deck.currentDeck
-                        + ": " + stringifyObject(componentDefinition));
-                    deck[index] = null;
-                }
+                var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
+                var definition = _.merge(componentDefinition, {options: options});
+                deck[index] = this.createComponent(definition);
             }, this);
             if (deckDefinition.equalizerUnit) {
                 deck.equalizerUnit = this.setupMidi(
@@ -1254,7 +1362,7 @@
          * @private
          */
         processMidiAddresses: function(definition, implementation, action) {
-            if (Array.isArray(definition)) {
+            if (Array.isArray(definition) || !definition) {
                 action.call(this, definition, implementation);
             } else if (typeof definition === "object") {
                 Object.keys(definition).forEach(function(name) {
@@ -1432,6 +1540,7 @@
 
     var exports = {};
     exports.deriveFrom = deriveFrom;
+    exports.ParameterComponent = ParameterComponent;
     exports.ShiftButton = ShiftButton;
     exports.Trigger = Trigger;
     exports.CustomButton = CustomButton;
