@@ -10,6 +10,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
 
         var DEFAULT_LONGPRESS_DURATION = 500;
         var DEFAULT_BLINK_DURATION = 425;
+        var THROTTLE_DELAY = 40;
 
         /* Shortcut variables */
         var c    = components;
@@ -201,6 +202,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
             var ModeButton = function(options) {
                 options = options || {};
                 options.key = options.key || "mode";
+                options.longPressTimeout = options.longPressTimeout || DEFAULT_LONGPRESS_DURATION;
                 e.LongPressButton.call(this, options);
             };
             ModeButton.prototype = e.deriveFrom(e.LongPressButton, {
@@ -219,12 +221,12 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                     midi.sendShortMsg(cc, this.midi[1] + 1, this.outValueScale(value));
                 },
             });
-            this.modeButton = new ModeButton(
-                {midi: bankOptions.mode, group: bankOptions.group, longPressTimeout: DEFAULT_LONGPRESS_DURATION});
+            this.modeButton = new ModeButton({midi: bankOptions.mode, group: bankOptions.group});
         };
         SamplerBank.prototype = e.deriveFrom(c.ComponentContainer);
 
         return {
+            throttleDelay: THROTTLE_DELAY,
             init: function() {
 
                 /*
@@ -251,14 +253,16 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                                 midi: [note, 0x3F], key: "pfl", type: toggle, sendShifted: true
                             }
                         },
-                        {type: c.Button, options: {midi: [note, 0x03],  inKey: ""}}, // Mode
-                        {type: c.Button, options: {midi: [cc,   0x38], outKey: ""}}, // Mode: Multi
-                        {type: c.Button, options: {midi: [cc,   0x37], outKey: ""}}, // Mode: Single
+                        {type: c.Button, options: {midi: [note, 0x03],  inKey: null}}, // Mode
+                        {type: c.Button, options: {midi: [cc,   0x38], outKey: null}}, // Mode: Multi
+                        {type: c.Button, options: {midi: [cc,   0x37], outKey: null}}, // Mode: Single
                     ],
                     equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
                         midi: { // eslint-disable-next-line key-spacing
                             parameterKnobs:   {1: [cc,   0x06], 2: [cc,   0x05], 3: [cc,   0x04]},
                             parameterButtons: {1: [note, 0x02], 2: [note, 0x01], 3: [note, 0x00]},
+                            enabled: null,
+                            super1: null,
                         },
                         output: {
                             parameterButtons: {1: [cc,   0x3D], 2: [cc,   0x3B], 3: [cc,   0x39]}, // Amber
@@ -281,14 +285,16 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                                 midi: [note, 0x49], key: "pfl", type: toggle, sendShifted: true
                             }
                         },
-                        {type: c.Button, options: {midi: [note, 0x07],  inKey: ""}}, // Mode
-                        {type: c.Button, options: {midi: [cc,   0x42], outKey: ""}}, // Mode: Multi
-                        {type: c.Button, options: {midi: [cc,   0x41], outKey: ""}}, // Mode: Single
+                        {type: c.Button, options: {midi: [note, 0x07],  inKey: null}}, // Mode
+                        {type: c.Button, options: {midi: [cc,   0x42], outKey: null}}, // Mode: Multi
+                        {type: c.Button, options: {midi: [cc,   0x41], outKey: null}}, // Mode: Single
                     ],
                     equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
                         midi: { // eslint-disable-next-line key-spacing
                             parameterKnobs:   {1: [cc,   0x0A], 2: [cc,   0x09], 3: [cc,   0x08]},
                             parameterButtons: {1: [note, 0x06], 2: [note, 0x05], 3: [note, 0x04]},
+                            enabled: null,
+                            super1: null,
                         },
                         output: {
                             parameterButtons: {1: [cc,   0x47], 2: [cc,   0x45], 3: [cc,   0x43]}, // Amber
@@ -311,14 +317,16 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                                 midi: [note, 0x53], key: "pfl", type: toggle, sendShifted: true
                             }
                         },
-                        {type: c.Button, options: {midi: [note, 0x0B],  inKey: ""}}, // Mode
-                        {type: c.Button, options: {midi: [cc,   0x4C], outKey: ""}}, // Mode: Multi
-                        {type: c.Button, options: {midi: [cc,   0x4B], outKey: ""}}, // Mode: Single
+                        {type: c.Button, options: {midi: [note, 0x0B],  inKey: null}}, // Mode
+                        {type: c.Button, options: {midi: [cc,   0x4C], outKey: null}}, // Mode: Multi
+                        {type: c.Button, options: {midi: [cc,   0x4B], outKey: null}}, // Mode: Single
                     ],
                     equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
                         midi: { // eslint-disable-next-line key-spacing
                             parameterKnobs:   {1: [cc,   0x0E], 2: [cc,   0x0D], 3: [cc,   0x0C]},
                             parameterButtons: {1: [note, 0x0A], 2: [note, 0x09], 3: [note, 0x08]},
+                            enabled: null,
+                            super1: null,
                         },
                         output: {
                             parameterButtons: {1: [cc,   0x51], 2: [cc,   0x4F], 3: [cc,   0x4D]}, // Amber
@@ -341,14 +349,16 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                                 midi: [note, 0x5D], key: "pfl", type: toggle, sendShifted: true
                             }
                         },
-                        {type: c.Button, options: {midi: [note, 0x0F],  inKey: ""}}, // Mode
-                        {type: c.Button, options: {midi: [cc,   0x56], outKey: ""}}, // Mode: Multi
-                        {type: c.Button, options: {midi: [cc,   0x55], outKey: ""}}, // Mode: Single
+                        {type: c.Button, options: {midi: [note, 0x0F],  inKey: null}}, // Mode
+                        {type: c.Button, options: {midi: [cc,   0x56], outKey: null}}, // Mode: Multi
+                        {type: c.Button, options: {midi: [cc,   0x55], outKey: null}}, // Mode: Single
                     ],
                     equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
                         midi: { // eslint-disable-next-line key-spacing
                             parameterKnobs:   {1: [cc,   0x12], 2: [cc,   0x11], 3: [cc,   0x10]},
                             parameterButtons: {1: [note, 0x0E], 2: [note, 0x0D], 3: [note, 0x0C]},
+                            enabled: null,
+                            super1: null,
                         },
                         output: {
                             parameterButtons: {1: [cc,   0x5B], 2: [cc,   0x59], 3: [cc,   0x57]}, // Amber
@@ -361,14 +371,14 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 { // Microphone
                     defaultDefinition: {type: c.Button, options: {group: "[Microphone]"}},
                     components: [
-                        {options: {midi: [cc,   0x02], inKey: ""}, type: c.Pot}, // Mic: EQ Low
-                        {options: {midi: [cc,   0x01], inKey: ""}, type: c.Pot}, // Mic: EQ Mid
-                        {options: {midi: [cc,   0x00], inKey: ""}, type: c.Pot}, // Mic: EQ High
-                        {options: {midi: [note, 0x31], key: "", sendShifted: true}}, // Mic: Setup
-                        {options: {midi: [note, 0x32], key: "", sendShifted: true}}, // Mic: XMC On
-                        {options: {midi: [note, 0x33], key: "", sendShifted: true}}, // Mic: FX On
+                        {options: {midi: [cc,   0x02], inKey: null}, type: c.Pot}, // Mic: EQ Low
+                        {options: {midi: [cc,   0x01], inKey: null}, type: c.Pot}, // Mic: EQ Mid
+                        {options: {midi: [cc,   0x00], inKey: null}, type: c.Pot}, // Mic: EQ High
+                        {options: {midi: [note, 0x31], key: null, sendShifted: true}}, // Mic: Setup
+                        {options: {midi: [note, 0x32], key: null, sendShifted: true}}, // Mic: XMC On
+                        {options: {midi: [note, 0x33], key: null, sendShifted: true}}, // Mic: FX On
                         {options: {midi: [note, 0x34], key: "talkover", sendShifted: true}}, // Mic: Talk On
-                        {options: {midi: [note, 0x35], key: "", sendShifted: true}}, // Mic: On/Off
+                        {options: {midi: [note, 0x35], key: null, sendShifted: true}}, // Mic: On/Off
                     ]
                 },
                 { // Crossfader
@@ -382,44 +392,43 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 { // Crossfader
                     defaultDefinition: {type: c.Button, options: {group: "[Master]"}},
                     components: [
-                        {options: {midi: [note, 0x17],    key: "", sendShifted: true}}, // Crossfader: A Full Freq
-                        {options: {midi: [note, 0x18],    key: "", sendShifted: true}}, // Crossfader: A High
-                        {options: {midi: [note, 0x19],    key: "", sendShifted: true}}, // Crossfader: A Mid
-                        {options: {midi: [note, 0x1A],    key: "", sendShifted: true}}, // Crossfader: A Low
-                        {options: {midi: [note, 0x1B],    key: "", sendShifted: true}}, // Crossfader: B Full Freq
-                        {options: {midi: [note, 0x1C],    key: "", sendShifted: true}}, // Crossfader: B High
-                        {options: {midi: [note, 0x1D],    key: "", sendShifted: true}}, // Crossfader: B Mid
-                        {options: {midi: [note, 0x1E],    key: "", sendShifted: true}}, // Crossfader: B Low
                         { // Crossfader: On
-                            type: CrossfaderUnit,
-                            options: {
+                            type: CrossfaderUnit, options: {
+                                crossfader: {midi: [cc, 0x15]},
                                 button: {group: "[Skin]", midi: [note, 0x1F], sendShifted: true},
-                                crossfader: {midi: [cc, 0x15]}
                             },
                         },
-                        {options: {midi: [note, 0x2A],    key: "", sendShifted: true}}, // Crossfader: Bounce to MIDI Clock
-                        {options: {midi: [note, 0x2B],  inKey: ""}}, // Crossfader: Beat (Left)
-                        {options: {midi: [note, 0x2C],  inKey: ""}}, // Crossfader: Beat (Right)
-                        {options: {midi: [cc,   0x2B], outKey: ""}}, // Crossfader: Beat 1
-                        {options: {midi: [cc,   0x2C], outKey: ""}}, // Crossfader: Beat 2
-                        {options: {midi: [cc,   0x2D], outKey: ""}}, // Crossfader: Beat 4
-                        {options: {midi: [cc,   0x2E], outKey: ""}}, // Crossfader: Beat 8
-                        {options: {midi: [cc,   0x2F], outKey: ""}}, // Crossfader: Beat 16
+                        {options: {midi: [note, 0x17],    key: null, sendShifted: true}}, // Crossfader: A Full Freq
+                        {options: {midi: [note, 0x18],    key: null, sendShifted: true}}, // Crossfader: A High
+                        {options: {midi: [note, 0x19],    key: null, sendShifted: true}}, // Crossfader: A Mid
+                        {options: {midi: [note, 0x1A],    key: null, sendShifted: true}}, // Crossfader: A Low
+                        {options: {midi: [note, 0x1B],    key: null, sendShifted: true}}, // Crossfader: B Full Freq
+                        {options: {midi: [note, 0x1C],    key: null, sendShifted: true}}, // Crossfader: B High
+                        {options: {midi: [note, 0x1D],    key: null, sendShifted: true}}, // Crossfader: B Mid
+                        {options: {midi: [note, 0x1E],    key: null, sendShifted: true}}, // Crossfader: B Low
+                        {options: {midi: [note, 0x2A],    key: null, sendShifted: true}}, // Crossfader: Bounce to MIDI Clock
+                        {options: {midi: [note, 0x2B],  inKey: null}}, // Crossfader: Beat (Left)
+                        {options: {midi: [note, 0x2C],  inKey: null}}, // Crossfader: Beat (Right)
+                        {options: {midi: [cc,   0x2B], outKey: null}}, // Crossfader: Beat 1
+                        {options: {midi: [cc,   0x2C], outKey: null}}, // Crossfader: Beat 2
+                        {options: {midi: [cc,   0x2D], outKey: null}}, // Crossfader: Beat 4
+                        {options: {midi: [cc,   0x2E], outKey: null}}, // Crossfader: Beat 8
+                        {options: {midi: [cc,   0x2F], outKey: null}}, // Crossfader: Beat 16
                     ]
                 },
                 { // Sampler
                     defaultDefinition: {type: c.Button, options: {group: "[Sampler1]"}},
                     components: [
                         {options: {midi: [cc,   0x03],  inKey: "volume"}, type: c.Pot}, // Sampler: Volume/Mix
-                        {options: {midi: [note, 0x5F],    key: "", sendShifted: true}}, // Sampler: Insert
-                        {options: {midi: [note, 0x60],  inKey: ""}}, // Sampler: REC Source (Right)
-                        {options: {midi: [note, 0x61],  inKey: ""}}, // Sampler: REC Source (Left)
-                        {options: {midi: [cc,   0x60], outKey: ""}}, // Sampler: REC Source 1
-                        {options: {midi: [cc,   0x61], outKey: ""}}, // Sampler: REC Source 2
-                        {options: {midi: [cc,   0x62], outKey: ""}}, // Sampler: REC Source 3
-                        {options: {midi: [cc,   0x63], outKey: ""}}, // Sampler: REC Source 4
-                        {options: {midi: [cc,   0x64], outKey: ""}}, // Sampler: REC Source Microphone
-                        {options: {midi: [cc,   0x65], outKey: ""}}, // Sampler: REC Source Master
+                        {options: {midi: [note, 0x5F],    key: null, sendShifted: true}}, // Sampler: Insert
+                        {options: {midi: [note, 0x60],  inKey: null}}, // Sampler: REC Source (Right)
+                        {options: {midi: [note, 0x61],  inKey: null}}, // Sampler: REC Source (Left)
+                        {options: {midi: [cc,   0x60], outKey: null}}, // Sampler: REC Source 1
+                        {options: {midi: [cc,   0x61], outKey: null}}, // Sampler: REC Source 2
+                        {options: {midi: [cc,   0x62], outKey: null}}, // Sampler: REC Source 3
+                        {options: {midi: [cc,   0x63], outKey: null}}, // Sampler: REC Source 4
+                        {options: {midi: [cc,   0x64], outKey: null}}, // Sampler: REC Source Microphone
+                        {options: {midi: [cc,   0x65], outKey: null}}, // Sampler: REC Source Master
                         {options: {midi: [note, 0x66],    key: "pfl", sendShifted: true}}, // Sampler: PFL
                         {options: {midi: [note, 0x67],  inKey: "beatloop_size", values: [1, 2, 4, 8, 16, 256]}, type: e.EnumToggleButton}, // Sampler: Sample Length (Right)
                         {options: {midi: [note, 0x68],  inKey: "beatloop_size", values: [256, 16, 8, 4, 2, 1]}, type: e.EnumToggleButton}, // Sampler: Sample Length (Left)
@@ -429,8 +438,8 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         {options: {midi: [cc,   0x6A], outKey: "beatloop_size", onValue: 8},   type: e.CustomButton}, // Sampler: Sample Length 8
                         {options: {midi: [cc,   0x6B], outKey: "beatloop_size", onValue: 16},  type: e.CustomButton}, // Sampler: Sample Length 16
                         {options: {midi: [cc,   0x6C], outKey: "beatloop_size", onValue: 256}, type: e.CustomButton}, // Sampler: Sample Length ∞
-                        {options: {midi: [note, 0x6D],    key: "", sendShifted: true}}, // Sampler: Record / In
-                        {options: {midi: [note, 0x6C],  inKey: ""}}, // Sampler: Bank Assign
+                        {options: {midi: [note, 0x6D],    key: null, sendShifted: true}}, // Sampler: Record / In
+                        {options: {midi: [note, 0x6C],  inKey: null}}, // Sampler: Bank Assign
                         { // Sampler Bank 1
                             type: SamplerBank,
                             options: {
@@ -465,14 +474,14 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                                 blinkDuration: DEFAULT_BLINK_DURATION,
                             }
                         },
-                        {options: {midi: [note, 0x79],    key: "", sendShifted: true}}, // Sampler: Select
+                        {options: {midi: [note, 0x79], key: null, sendShifted: true}}, // Sampler: Select
                         { // Sampler: CF Assign
                             type: e.EnumToggleButton,
-                            options: {midi: [note, 0x7A],  inKey: "orientation", values: [center, left, right]},
+                            options: {midi: [note, 0x7A], inKey: "orientation", values: [center, left, right]},
                         },
                         {type: CrossfaderAssignLED, options: {midi: [cc, 0x7A], onValue: left}}, // Sampler: CF Assign A
                         {type: CrossfaderAssignLED, options: {midi: [cc, 0x7B], onValue: right}}, // Sampler: CF Assign B
-                        {options: {midi: [note, 0x7C],    key: "", sendShifted: true}}, // Sampler: CF Start
+                        {options: {midi: [note, 0x7C], key: null, sendShifted: true}}, // Sampler: CF Start
                     ]
                 }
             ],
