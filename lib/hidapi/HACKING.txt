@@ -8,3 +8,4 @@ Firing a new release:
 1. Update the Version (if not yet updated).
 2. Build hidapi.dll/.lib for x86/x64.
 3. Upload Windows binaries to Github release page.
+4. Make sure to tag the release as: `hidapi-<VERSION>`, where <VERSION> as in VERSION file.
