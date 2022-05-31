@@ -134,6 +134,6 @@ inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer&
           
           return leftPosition < rightPosition;
     } else {
-      return leftPosition < rightPosition;
+      return false;
     }  
 }
