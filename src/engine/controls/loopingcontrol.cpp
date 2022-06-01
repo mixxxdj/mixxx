@@ -474,7 +474,7 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
     return mixxx::audio::kInvalidFramePos;
 }
 
-void LoopingControl::hintReader(HintVector* pHintList) {
+void LoopingControl::hintReader(gsl::not_null<HintVector*> pHintList) {
     LoopInfo loopInfo = m_loopInfo.getValue();
     Hint loop_hint;
     // If the loop is enabled, then this is high priority because we will loop
