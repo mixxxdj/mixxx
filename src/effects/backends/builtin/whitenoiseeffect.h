@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #include <random>
 
 #include "effects/backends/effectprocessor.h"
@@ -17,14 +19,13 @@ class WhiteNoiseGroupState final : public EffectState {
     WhiteNoiseGroupState(const mixxx::EngineParameters& engineParameters)
             : EffectState(engineParameters),
               previous_drywet(0.0),
-              gen(rs()) {
+              random_state(1) {
     }
     ~WhiteNoiseGroupState() {
     }
 
     CSAMPLE_GAIN previous_drywet;
-    std::random_device rs;
-    std::mt19937 gen;
+    uint32_t random_state;
 };
 
 class WhiteNoiseEffect : public EffectProcessorImpl<WhiteNoiseGroupState> {

@@ -4,6 +4,14 @@
 
 namespace {
 const QString dryWetParameterId = QStringLiteral("dry_wet");
+std::uint32_t nextState(std::uint32_t previous_state) {
+    // taken from https://en.wikipedia.org/wiki/Xorshift#Example_implementation
+    // inspired by https://youtu.be/Tof5pRedskI?t=2735
+    previous_state ^= previous_state << 13;
+    previous_state ^= previous_state >> 17;
+    previous_state ^= previous_state << 5;
+    return previous_state;
+}
 } // anonymous namespace
 
 // static
@@ -50,24 +58,41 @@ void WhiteNoiseEffect::processChannel(
 
     WhiteNoiseGroupState& gs = *pState;
 
-    CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());
+    const CSAMPLE_GAIN drywet = static_cast<CSAMPLE_GAIN>(m_pDryWetParameter->value());
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
             drywet, gs.previous_drywet, engineParameters.framesPerBuffer());
+    auto fade_in_out_ramping = RampingValue<CSAMPLE_GAIN>(
+            enableState == EffectEnableState::Enabling ? 0 : 1,
+            enableState == EffectEnableState::Disabling ? 0 : 1,
+            engineParameters.framesPerBuffer());
 
-    std::uniform_real_distribution<> r_distributor(0.0, 1.0);
+    // Is this relying on implementation details?
+    DEBUG_ASSERT(engineParameters.samplesPerBuffer() ==
+            engineParameters.framesPerBuffer() *
+                    engineParameters.channelCount());
 
-    for (unsigned int i = 0; i < engineParameters.samplesPerBuffer(); i++) {
-        CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
+    for (SINT frameIndex = 0;
+            frameIndex < engineParameters.framesPerBuffer();
+            frameIndex++) {
+        const CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
+        const CSAMPLE_GAIN fade_in_out_gain = fade_in_out_ramping.getNext();
 
-        float noise = static_cast<float>(
-                r_distributor(gs.gen));
+        for (SINT sampleInFrameIndex = 0;
+                sampleInFrameIndex < engineParameters.channelCount();
+                sampleInFrameIndex++) {
+            constexpr float normalization_divisor =
+                    static_cast<float>(std::numeric_limits<int32_t>::max());
+            gs.random_state = nextState(gs.random_state);
+            const auto bipolar_random = static_cast<int32_t>(gs.random_state);
+            const CSAMPLE noise = static_cast<float>(bipolar_random) / normalization_divisor;
 
-        pOutput[i] = pInput[i] * (1 - drywet_ramped) + noise * drywet_ramped;
+            const SINT sampleIndex =
+                    frameIndex * engineParameters.channelCount() +
+                    sampleInFrameIndex;
+            pOutput[sampleIndex] = pInput[sampleIndex] * (1 - drywet_ramped) +
+                    noise * drywet_ramped * fade_in_out_gain;
+        }
     }
 
-    if (enableState == EffectEnableState::Disabling) {
-        gs.previous_drywet = 0;
-    } else {
-        gs.previous_drywet = drywet;
-    }
+    gs.previous_drywet = (enableState == EffectEnableState::Disabling) ? 0 : drywet;
 }
