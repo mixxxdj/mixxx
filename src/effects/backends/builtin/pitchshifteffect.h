@@ -17,37 +17,17 @@ class RubberBandStretcher;
 
 class PitchShiftGroupState : public EffectState {
   public:
-    // This is the default increment from RubberBand 1.8.1.
-    static constexpr size_t kRubberBandBlockSize = 256;
+    PitchShiftGroupState(const mixxx::EngineParameters& engineParameters);
 
-    PitchShiftGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters) {
-        initializeBuffer();
-        audioParametersChanged(engineParameters);
-    }
-
-    virtual ~PitchShiftGroupState();
-
-    void initializeBuffer() {
-        m_retrieveBuffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
-        m_retrieveBuffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
-    }
-
-    void audioParametersChanged(const mixxx::EngineParameters& engineParameters) {
-        m_pRubberBand = std::make_unique<RubberBand::RubberBandStretcher>(
-                engineParameters.sampleRate(),
-                engineParameters.channelCount(),
-                RubberBand::RubberBandStretcher::OptionProcessRealTime);
-
-        m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
-        m_pRubberBand->setTimeRatio(1.0);
-    };
+    ~PitchShiftGroupState() override;
+    void initializeBuffer();
+    void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
 
     std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;
     CSAMPLE* m_retrieveBuffer[2];
 };
 
-class PitchShiftEffect : public EffectProcessorImpl<PitchShiftGroupState> {
+class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> {
   public:
     PitchShiftEffect() = default;
 

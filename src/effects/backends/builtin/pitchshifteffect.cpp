@@ -2,7 +2,14 @@
 
 #include "util/sample.h"
 
-PitchShiftGroupState::~PitchShiftGroupState() noexcept {
+PitchShiftGroupState::PitchShiftGroupState(
+        const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters) {
+    initializeBuffer();
+    audioParametersChanged(engineParameters);
+}
+
+PitchShiftGroupState::~PitchShiftGroupState() {
     SampleUtil::free(m_retrieveBuffer[0]);
     SampleUtil::free(m_retrieveBuffer[1]);
 
@@ -13,9 +20,25 @@ PitchShiftGroupState::~PitchShiftGroupState() noexcept {
     m_pRubberBand->reset();
 }
 
+void PitchShiftGroupState::initializeBuffer() {
+    m_retrieveBuffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_retrieveBuffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
+}
+
+void PitchShiftGroupState::audioParametersChanged(
+        const mixxx::EngineParameters& engineParameters) {
+    m_pRubberBand = std::make_unique<RubberBand::RubberBandStretcher>(
+            engineParameters.sampleRate(),
+            engineParameters.channelCount(),
+            RubberBand::RubberBandStretcher::OptionProcessRealTime);
+
+    m_pRubberBand->setMaxProcessSize(engineParameters.framesPerBuffer());
+    m_pRubberBand->setTimeRatio(1.0);
+};
+
 // static
 QString PitchShiftEffect::getId() {
-    return "org.mixxx.effects.pitchshift";
+    return QStringLiteral("org.mixxx.effects.pitchshift");
 }
 
 //static
@@ -35,11 +58,9 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pitch->setName(QObject::tr("Pitch"));
     pitch->setShortName(QObject::tr("Pitch"));
     pitch->setDescription(QObject::tr(
-            "The new pitch of a sound."));
+            "The pitch shift applied to the sound."));
     pitch->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    pitch->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pitch->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
-    pitch->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::Inverted);
     pitch->setNeutralPointOnScale(0.0);
     pitch->setRange(-1.0, 0.0, 1.0);
 
@@ -63,13 +84,13 @@ void PitchShiftEffect::processChannel(
 
     const double pitchParameter = m_pPitchParameter->value();
 
-    double pitch = 1.0;
-
-    if (pitchParameter < 0.0) {
-        pitch += pitchParameter / 2.0;
-    } else {
-        pitch += pitchParameter;
-    }
+    const double pitch = 1.0 + [=] {
+        if (pitchParameter < 0.0) {
+            return pitchParameter / 2.0;
+        } else {
+            return pitchParameter;
+        }
+    }();
 
     pState->m_pRubberBand->setPitchScale(pitch);
 
@@ -79,7 +100,8 @@ void PitchShiftEffect::processChannel(
             pInput,
             engineParameters.framesPerBuffer());
     pState->m_pRubberBand->process(
-            (const float* const*)pState->m_retrieveBuffer,
+            //static_cast<const float* const*>(pState->m_retrieveBuffer),
+            pState->m_retrieveBuffer,
             engineParameters.framesPerBuffer(),
             false);
 
@@ -88,7 +110,8 @@ void PitchShiftEffect::processChannel(
             framesAvailable,
             engineParameters.framesPerBuffer());
     SINT receivedFrames = pState->m_pRubberBand->retrieve(
-            (float* const*)pState->m_retrieveBuffer,
+            //static_cast<float* const*>(pState->m_retrieveBuffer),
+            pState->m_retrieveBuffer,
             framesToRead);
 
     SampleUtil::interleaveBuffer(pOutput,
