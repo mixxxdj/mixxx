@@ -20,7 +20,7 @@ class PitchShiftGroupState : public EffectState {
     PitchShiftGroupState(const mixxx::EngineParameters& engineParameters);
 
     ~PitchShiftGroupState() override;
-    void initializeBuffer();
+    void initializeBuffer(const mixxx::EngineParameters& engineParameters);
     void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
 
     std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;

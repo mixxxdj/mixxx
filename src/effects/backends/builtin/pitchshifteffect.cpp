@@ -5,7 +5,7 @@
 PitchShiftGroupState::PitchShiftGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters) {
-    initializeBuffer();
+    initializeBuffer(engineParameters);
     audioParametersChanged(engineParameters);
 }
 
@@ -20,9 +20,12 @@ PitchShiftGroupState::~PitchShiftGroupState() {
     m_pRubberBand->reset();
 }
 
-void PitchShiftGroupState::initializeBuffer() {
-    m_retrieveBuffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_retrieveBuffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
+void PitchShiftGroupState::initializeBuffer(
+        const mixxx::EngineParameters& engineParameters) {
+    m_retrieveBuffer[0] = SampleUtil::alloc(
+            engineParameters.framesPerBuffer());
+    m_retrieveBuffer[1] = SampleUtil::alloc(
+            engineParameters.framesPerBuffer());
 }
 
 void PitchShiftGroupState::audioParametersChanged(
