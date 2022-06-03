@@ -45,25 +45,25 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="26"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="110"/>
         <source>Banshee</source>
-        <translation type="unfinished"/>
+        <translation>밴시</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>Error loading Banshee database</source>
-        <translation type="unfinished"/>
+        <translation>밴시 데이터베이스 로드중 오류 발생</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="77"/>
         <source>Banshee database file not found at
 </source>
-        <translation type="unfinished"/>
+        <translation>밴시 데이터베이스 파일을 찾을 수 없음</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="86"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation type="unfinished"/>
+        <translation>사용자의 밴시 데이터베이스 로드중 오류 발생</translation>
     </message>
 </context>
 <context>
@@ -81,7 +81,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>자동 디제잉 대기열에 넣기 (교체)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="42"/>
@@ -151,17 +151,17 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="111"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>트랙 파일 익스포트</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="90"/>
         <source>Analyze entire Playlist</source>
-        <translation type="unfinished"/>
+        <translation>전체 재생 목록 분석</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="206"/>
         <source>Enter new name for playlist:</source>
-        <translation type="unfinished"/>
+        <translation>새로운 재생 목록의 이름 입력 : </translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="247"/>
@@ -183,7 +183,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="84"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>자동 디제잉 대기열에 넣기 (교체)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="205"/>
@@ -300,7 +300,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="153"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>색상</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="157"/>
@@ -365,12 +365,12 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="205"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>리플레이 게인</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="209"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>샘플레이트</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="213"/>
@@ -398,12 +398,12 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="111"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>작업 실패</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="112"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation type="unfinished"/>
+        <translation>라이브 방송을 사용하려면 하나 이상의 연결을 활성화하십시오.</translation>
     </message>
 </context>
 <context>
@@ -411,22 +411,22 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="469"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>보안 암호 저장소를 사용할 수 없음 : 키체인 액세스에 실패했습니다.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="499"/>
         <source>Secure password retrieval unsuccessful: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>보안 암호 검색 실패 : 키체인 액세스에 실패했습니다.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="511"/>
         <source>Settings error</source>
-        <translation type="unfinished"/>
+        <translation>설정 에러</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="512"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;&apos;%1&apos; 에 대한 설정 오류 : &lt;/b&gt;&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -444,32 +444,32 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="147"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>상태</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="197"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>연결 끊김</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="199"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>연결중...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="201"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>연결됨</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="203"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>실패</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="206"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>알수없음</translation>
     </message>
 </context>
 <context>
@@ -509,27 +509,27 @@
         <location filename="../../src/library/browse/browsefeature.cpp" line="141"/>
         <location filename="../../src/library/browse/browsefeature.cpp" line="436"/>
         <source>Computer</source>
-        <translation type="unfinished"/>
+        <translation>컴퓨터</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="174"/>
         <source>Music Directory Added</source>
-        <translation type="unfinished"/>
+        <translation>음악 디렉토리에 추가됨</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="175"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation type="unfinished"/>
+        <translation>하나 이상의 음악 디렉토리를 추가했습니다. 이 디렉토리의 트랙은 라이브러리를 다시 스캔할 때까지 사용할 수 없습니다. 지금 다시 스캔하시겠습니까?</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="179"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>스캔</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="437"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
-        <translation type="unfinished"/>
+        <translation>&quot;컴퓨터&quot;를 사용하면 하드 디스크 및 외부 장치의 폴더에서 트랙을 탐색, 확인 및 로드할 수 있습니다.</translation>
     </message>
 </context>
 <context>
@@ -612,7 +612,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="55"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>리플레이 게인</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="50"/>
@@ -661,19 +661,19 @@
 <context>
     <name>CachingReaderWorker</name>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="162"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="166"/>
         <source>The file &apos;%1&apos; could not be found.</source>
-        <translation type="unfinished"/>
+        <translation>파일 &apos;%1&apos; 을(를) 찾을 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="178"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="182"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>파일 &apos;%1&apos; 을(를) 로드할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="195"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="199"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>파일 &apos;%1&apos; 이(가) 비어 있어 로드할 수 없습니다.</translation>
     </message>
 </context>
 <context>
@@ -681,12 +681,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="40"/>
         <source>Remove Color</source>
-        <translation type="unfinished"/>
+        <translation>색상 제거</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="53"/>
         <source>Add Color</source>
-        <translation type="unfinished"/>
+        <translation>색상 추가</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="61"/>
@@ -697,27 +697,27 @@
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="67"/>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
         <source>Remove Palette</source>
-        <translation type="unfinished"/>
+        <translation>팔레트 제거</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>색상</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="84"/>
         <source>Assign to Hotcue Number</source>
-        <translation type="unfinished"/>
+        <translation>핫큐 넘버 지정</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
         <source>Edited</source>
-        <translation type="unfinished"/>
+        <translation>수정됨</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
         <source>Do you really want to remove the palette permanently?</source>
-        <translation type="unfinished"/>
+        <translation>팔레트를 영구적으로 제거하시겠습니까?</translation>
     </message>
 </context>
 <context>
@@ -738,22 +738,22 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="8"/>
         <source>Group</source>
-        <translation type="unfinished"/>
+        <translation>그룹</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="9"/>
         <source>Item</source>
-        <translation type="unfinished"/>
+        <translation>아이템</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="10"/>
         <source>Value</source>
-        <translation type="unfinished"/>
+        <translation>값</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="11"/>
         <source>Parameter</source>
-        <translation type="unfinished"/>
+        <translation>매개변수</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="12"/>
@@ -813,12 +813,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="24"/>
         <source>Effect Rack %1</source>
-        <translation type="unfinished"/>
+        <translation>이팩트 랙 %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="27"/>
         <source>Parameter %1</source>
-        <translation type="unfinished"/>
+        <translation>파라메터 %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="31"/>
@@ -838,7 +838,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="93"/>
         <source>Toggle headphone split cueing</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰 분할 큐 전환</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="98"/>
@@ -890,7 +890,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="175"/>
         <source>Reverse roll (Censor) button</source>
-        <translation type="unfinished"/>
+        <translation>리버스 롤(Censor) 버튼</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1027"/>
@@ -923,19 +923,19 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="46"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1038"/>
         <source>Set mix orientation to left</source>
-        <translation type="unfinished"/>
+        <translation>믹스 방향을 왼쪽으로 설정</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="50"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1043"/>
         <source>Set mix orientation to center</source>
-        <translation type="unfinished"/>
+        <translation>믹스 방향을 가운데로 설정</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="54"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1047"/>
         <source>Set mix orientation to right</source>
-        <translation type="unfinished"/>
+        <translation>믹스 방향을 오른쪽으로 설정</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="186"/>
@@ -1010,12 +1010,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
         <source>One-time beat sync (tempo only)</source>
-        <translation type="unfinished"/>
+        <translation>1회 비트 싱크 (템포 전용)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="224"/>
         <source>One-time beat sync (phase only)</source>
-        <translation type="unfinished"/>
+        <translation>1회 비트 싱크 (위상 전용)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="300"/>
@@ -1045,7 +1045,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="311"/>
         <source>Pass through external audio into the internal mixer</source>
-        <translation type="unfinished"/>
+        <translation>외부 오디오를 통해 내부 믹서로 전달</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="316"/>
@@ -1065,12 +1065,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="319"/>
         <source>Go to cue point</source>
-        <translation type="unfinished"/>
+        <translation>큐 포인트로 이동</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="321"/>
         <source>Go to cue point and play</source>
-        <translation type="unfinished"/>
+        <translation>큐 포인트로 이동하여 재생</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="323"/>
@@ -1080,17 +1080,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="325"/>
         <source>Preview from cue point</source>
-        <translation type="unfinished"/>
+        <translation>큐 포인트에서 미리보기</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="327"/>
         <source>Cue button (CDJ mode)</source>
-        <translation type="unfinished"/>
+        <translation>큐 버튼 (CDJ 모드)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="329"/>
         <source>Stutter cue</source>
-        <translation type="unfinished"/>
+        <translation>스터터 큐</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="334"/>
@@ -1100,7 +1100,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="342"/>
         <source>Set, preview from or jump to hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>핫큐 %1 에서 미리보기 또는 이동 설정</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="343"/>
@@ -1201,12 +1201,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="559"/>
         <source>Move loop forward by %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>루프를 %1 비트 앞으로 이동</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="560"/>
         <source>Move loop backward by %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>루프를 %1 비트 뒤로 이동</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="465"/>
@@ -1227,7 +1227,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="26"/>
         <source>Slot %1</source>
-        <translation type="unfinished"/>
+        <translation>슬롯 %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="37"/>
@@ -1237,17 +1237,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="86"/>
         <source>Headphone Mix</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰 믹스</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="92"/>
         <source>Headphone Split Cue</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰 분할 큐</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="97"/>
         <source>Headphone Delay</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰 딜레이</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="168"/>
@@ -1257,12 +1257,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="169"/>
         <source>Fast Rewind</source>
-        <translation type="unfinished"/>
+        <translation>빠른 되감기</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="169"/>
         <source>Fast Rewind button</source>
-        <translation type="unfinished"/>
+        <translation>빠른 되감기 버튼</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="170"/>
@@ -1277,7 +1277,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="171"/>
         <source>Strip Search</source>
-        <translation type="unfinished"/>
+        <translation>스트립 검색</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="173"/>
@@ -1292,22 +1292,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="174"/>
         <source>Reverse Roll (Censor)</source>
-        <translation type="unfinished"/>
+        <translation>리버스 롤 (Censor)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="176"/>
         <source>Jump To Start</source>
-        <translation type="unfinished"/>
+        <translation>시작으로 이동</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="176"/>
         <source>Jumps to start of track</source>
-        <translation type="unfinished"/>
+        <translation>트랙의 시작 부분으로 점프</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="177"/>
         <source>Play From Start</source>
-        <translation type="unfinished"/>
+        <translation>시작에서 재생</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="179"/>
@@ -1317,17 +1317,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="180"/>
         <source>Stop And Jump To Start</source>
-        <translation type="unfinished"/>
+        <translation>정지 및 시작으로 건너뛰기</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="181"/>
         <source>Stop playback and jump to start of track</source>
-        <translation type="unfinished"/>
+        <translation>재생을 정지하고 트랙의 시작 부분으로 건너뛰기</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="182"/>
         <source>Jump To End</source>
-        <translation type="unfinished"/>
+        <translation>끝으로 건너뛰기</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="143"/>
@@ -1339,7 +1339,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1010"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1011"/>
         <source>Volume Fader</source>
-        <translation type="unfinished"/>
+        <translation>음량 페이더</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="145"/>
@@ -1356,12 +1356,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="153"/>
         <source>Track Gain</source>
-        <translation type="unfinished"/>
+        <translation>트랙 게인</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="154"/>
         <source>Track Gain knob</source>
-        <translation type="unfinished"/>
+        <translation>트랙 게인 노브</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="157"/>
@@ -1372,18 +1372,18 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="184"/>
         <source>Eject</source>
-        <translation type="unfinished"/>
+        <translation>꺼내다</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="160"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1026"/>
         <source>Headphone Listen</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰으로 듣기</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="161"/>
         <source>Headphone listen (pfl) button</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰으로 듣기 (pfl) 버튼</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="185"/>
@@ -1393,7 +1393,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="186"/>
         <source>Slip Mode</source>
-        <translation type="unfinished"/>
+        <translation>슬립 모드</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="41"/>
@@ -2721,7 +2721,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="699"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>자동 디제잉 대기열에 넣기 (교체)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="700"/>
@@ -3040,53 +3040,53 @@
 <context>
     <name>ControllerEngine</name>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="580"/>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1077"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="588"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1085"/>
         <source>The functionality provided by this controller mapping will be disabled until the issue has been resolved.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="584"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="592"/>
         <source>You can ignore this error for this session but you may experience erratic behavior.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="591"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="599"/>
         <source>Controller Mapping Error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="592"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="600"/>
         <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="596"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="604"/>
         <source>The script code needs to be fixed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1075"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1083"/>
         <source>Controller Mapping File Problem</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1076"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1084"/>
         <source>The mapping for controller &quot;%1&quot; cannot be opened.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1083"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1091"/>
         <source>File:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1084"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1092"/>
         <source>Error:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="587"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="595"/>
         <source>Try to recover by resetting your controller.</source>
         <translation type="unfinished"/>
     </message>
@@ -3199,7 +3199,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="119"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>트랙 파일 익스포트</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="75"/>
@@ -3413,7 +3413,7 @@
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="127"/>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="137"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>알수없음</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="94"/>
@@ -4154,62 +4154,62 @@ You tried to learn: %1,%2</source>
         <translation>스테레오</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="230"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="293"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="569"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="604"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="233"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="297"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="573"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="608"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>작업 실패</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="231"/>
-        <source>'%1' has the same Icecast mountpoint as '%2'.
-Two source connections to the same server can&apos;t have the same mountpoint.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="294"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="298"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="307"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="311"/>
         <source>Source connection %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="570"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="574"/>
         <source>At least one source connection is required.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="615"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="619"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="576"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="614"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="580"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="618"/>
         <source>Confirmation required</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="577"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="234"/>
+        <source>'%1' has the same Icecast mountpoint as '%2'.
+Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="581"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="592"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="596"/>
         <source>Renaming &apos;%1&apos;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="593"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="597"/>
         <source>New name for &apos;%1&apos;:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="605"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="609"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
         <translation type="unfinished"/>
     </message>
@@ -4489,7 +4489,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="275"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>색상</translation>
     </message>
 </context>
 <context>
@@ -4576,47 +4576,47 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="562"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="567"/>
         <source>Mapping has been edited</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="608"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="613"/>
         <source>Always overwrite during this session</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="620"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="625"/>
         <source>Save As</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="622"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="627"/>
         <source>Overwrite</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="662"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="667"/>
         <source>Save user mapping</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="663"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="668"/>
         <source>Enter the name for saving the mapping to the user folder.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="664"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="669"/>
         <source>Saving mapping failed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="666"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="671"/>
         <source>A mapping cannot have a blank name and may not contain special characters.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="668"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="673"/>
         <source>A mapping file with that name already exists.</source>
         <translation type="unfinished"/>
     </message>
@@ -4631,17 +4631,17 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="563"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="568"/>
         <source>Do you want to save the changes?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="604"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="609"/>
         <source>Mapping already exists.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="605"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="610"/>
         <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
         <translation type="unfinished"/>
     </message>
@@ -4651,22 +4651,22 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="815"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="820"/>
         <source>Clear Input Mappings</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="816"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="821"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="853"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="858"/>
         <source>Clear Output Mappings</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="854"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="859"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation type="unfinished"/>
     </message>
@@ -5784,17 +5784,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="131"/>
         <source>Music Directory Added</source>
-        <translation type="unfinished"/>
+        <translation>음악 디렉토리에 추가됨</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="132"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation type="unfinished"/>
+        <translation>하나 이상의 음악 디렉토리를 추가했습니다. 이 디렉토리의 트랙은 라이브러리를 다시 스캔할 때까지 사용할 수 없습니다. 지금 다시 스캔하시겠습니까?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="136"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>스캔</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
@@ -6629,7 +6629,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="174"/>
         <source>Headphone Delay</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰 딜레이</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="135"/>
@@ -7997,57 +7997,57 @@ support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2212"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2208"/>
         <source>activate</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2217"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2213"/>
         <source>toggle</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2227"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2223"/>
         <source>right</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2232"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2228"/>
         <source>left</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2237"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2233"/>
         <source>right small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2242"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2238"/>
         <source>left small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2247"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2243"/>
         <source>up</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2252"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2248"/>
         <source>down</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2257"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2253"/>
         <source>up small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2262"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2258"/>
         <source>down small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2290"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2286"/>
         <source>Shortcut</source>
         <translation>단축키</translation>
     </message>
@@ -8230,47 +8230,47 @@ Do you really want to overwrite it?</source>
         <translation>음악 라이브러리 디렉토리를 선택하세요</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1056"/>
+        <location filename="../../src/mixxx.cpp" line="1055"/>
         <source>Sound Device Busy</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1065"/>
+        <location filename="../../src/mixxx.cpp" line="1064"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1069"/>
-        <location filename="../../src/mixxx.cpp" line="1096"/>
-        <location filename="../../src/mixxx.cpp" line="1121"/>
+        <location filename="../../src/mixxx.cpp" line="1068"/>
+        <location filename="../../src/mixxx.cpp" line="1095"/>
+        <location filename="../../src/mixxx.cpp" line="1120"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1072"/>
-        <location filename="../../src/mixxx.cpp" line="1099"/>
+        <location filename="../../src/mixxx.cpp" line="1071"/>
+        <location filename="../../src/mixxx.cpp" line="1098"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1075"/>
-        <location filename="../../src/mixxx.cpp" line="1102"/>
-        <location filename="../../src/mixxx.cpp" line="1124"/>
+        <location filename="../../src/mixxx.cpp" line="1074"/>
+        <location filename="../../src/mixxx.cpp" line="1101"/>
+        <location filename="../../src/mixxx.cpp" line="1123"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1016"/>
+        <location filename="../../src/mixxx.cpp" line="1015"/>
         <source>Retry</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="922"/>
+        <location filename="../../src/mixxx.cpp" line="921"/>
         <source>Cannot open database</source>
         <translation>자료모음을 열 수 없음</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="923"/>
+        <location filename="../../src/mixxx.cpp" line="922"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -8278,141 +8278,141 @@ Click OK to exit.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1018"/>
-        <location filename="../../src/mixxx.cpp" line="1132"/>
+        <location filename="../../src/mixxx.cpp" line="1017"/>
+        <location filename="../../src/mixxx.cpp" line="1131"/>
         <source>Reconfigure</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1020"/>
+        <location filename="../../src/mixxx.cpp" line="1019"/>
         <source>Help</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1022"/>
-        <location filename="../../src/mixxx.cpp" line="1134"/>
+        <location filename="../../src/mixxx.cpp" line="1021"/>
+        <location filename="../../src/mixxx.cpp" line="1133"/>
         <source>Exit</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1059"/>
-        <location filename="../../src/mixxx.cpp" line="1088"/>
+        <location filename="../../src/mixxx.cpp" line="1058"/>
+        <location filename="../../src/mixxx.cpp" line="1087"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1085"/>
+        <location filename="../../src/mixxx.cpp" line="1084"/>
         <source>Sound Device Error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1093"/>
+        <location filename="../../src/mixxx.cpp" line="1092"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1112"/>
+        <location filename="../../src/mixxx.cpp" line="1111"/>
         <source>No Output Devices</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1114"/>
+        <location filename="../../src/mixxx.cpp" line="1113"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1118"/>
+        <location filename="../../src/mixxx.cpp" line="1117"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1130"/>
+        <location filename="../../src/mixxx.cpp" line="1129"/>
         <source>Continue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1342"/>
+        <location filename="../../src/mixxx.cpp" line="1341"/>
         <source>Load track to Deck %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1343"/>
+        <location filename="../../src/mixxx.cpp" line="1342"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1345"/>
+        <location filename="../../src/mixxx.cpp" line="1344"/>
         <source>Are you sure you want to load a new track?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1463"/>
+        <location filename="../../src/mixxx.cpp" line="1462"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1477"/>
+        <location filename="../../src/mixxx.cpp" line="1476"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1491"/>
+        <location filename="../../src/mixxx.cpp" line="1490"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1505"/>
+        <location filename="../../src/mixxx.cpp" line="1504"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1577"/>
+        <location filename="../../src/mixxx.cpp" line="1576"/>
         <source>Error in skin file</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1578"/>
+        <location filename="../../src/mixxx.cpp" line="1577"/>
         <source>The selected skin cannot be loaded.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1671"/>
+        <location filename="../../src/mixxx.cpp" line="1670"/>
         <source>OpenGL Direct Rendering</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1672"/>
+        <location filename="../../src/mixxx.cpp" line="1671"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1706"/>
-        <location filename="../../src/mixxx.cpp" line="1714"/>
-        <location filename="../../src/mixxx.cpp" line="1723"/>
+        <location filename="../../src/mixxx.cpp" line="1705"/>
+        <location filename="../../src/mixxx.cpp" line="1713"/>
+        <location filename="../../src/mixxx.cpp" line="1722"/>
         <source>Confirm Exit</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1707"/>
+        <location filename="../../src/mixxx.cpp" line="1706"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1715"/>
+        <location filename="../../src/mixxx.cpp" line="1714"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1724"/>
+        <location filename="../../src/mixxx.cpp" line="1723"/>
         <source>The preferences window is still open.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1725"/>
+        <location filename="../../src/mixxx.cpp" line="1724"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation type="unfinished"/>
     </message>
@@ -8420,23 +8420,23 @@ Do you want to select an input device?</source>
 <context>
     <name>ParserCsv</name>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="45"/>
+        <location filename="../../src/library/parsercsv.cpp" line="43"/>
         <source>Location</source>
         <translation>위치</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="133"/>
+        <location filename="../../src/library/parsercsv.cpp" line="131"/>
         <source>Playlist Export Failed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="134"/>
-        <location filename="../../src/library/parsercsv.cpp" line="220"/>
+        <location filename="../../src/library/parsercsv.cpp" line="132"/>
+        <location filename="../../src/library/parsercsv.cpp" line="216"/>
         <source>Could not create file</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="219"/>
+        <location filename="../../src/library/parsercsv.cpp" line="215"/>
         <source>Readable text Export Failed</source>
         <translation type="unfinished"/>
     </message>
@@ -8540,7 +8540,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="459"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>스캔</translation>
     </message>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="460"/>
@@ -10775,12 +10775,12 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="219"/>
         <source>Headphone Mix</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰 믹스</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="224"/>
         <source>Headphone Split Cue</source>
-        <translation type="unfinished"/>
+        <translation>헤드폰 분할 큐</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="225"/>
@@ -12474,7 +12474,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="756"/>
         <source>Slip Mode</source>
-        <translation type="unfinished"/>
+        <translation>슬립 모드</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="757"/>
@@ -12590,7 +12590,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="529"/>
         <source>Fast Rewind</source>
-        <translation type="unfinished"/>
+        <translation>빠른 되감기</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="530"/>
@@ -12647,7 +12647,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="610"/>
         <source>Eject</source>
-        <translation type="unfinished"/>
+        <translation>꺼내다</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="611"/>
@@ -13717,7 +13717,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="153"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>자동 디제잉 대기열에 넣기 (교체)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="158"/>
@@ -13827,7 +13827,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="260"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>리플레이 게인</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="263"/>
@@ -14094,7 +14094,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>mixxx::TaskMonitor</name>
     <message>
-        <location filename="../../src/util/taskmonitor.cpp" line="161"/>
+        <location filename="../../src/util/taskmonitor.cpp" line="174"/>
         <source>Abort</source>
         <translation type="unfinished"/>
     </message>

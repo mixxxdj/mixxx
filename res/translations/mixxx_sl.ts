@@ -663,17 +663,17 @@
 <context>
     <name>CachingReaderWorker</name>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="162"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="166"/>
         <source>The file &apos;%1&apos; could not be found.</source>
         <translation>Datoteke &apos;%1&apos; ni bilo mogoče najti.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="178"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="182"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
         <translation>Datoteke &apos;%1&apos; ni bilo mogoče naložiti.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="195"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="199"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
         <translation>Datoteka &apos;%1&apos; je prazna in je ni bilo mogoče naložiti.</translation>
     </message>
@@ -3042,53 +3042,53 @@
 <context>
     <name>ControllerEngine</name>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="580"/>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1077"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="588"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1085"/>
         <source>The functionality provided by this controller mapping will be disabled until the issue has been resolved.</source>
         <translation>Funkcionalnost, ki jo ponuja to mapiranje kontrolerja, bo onemogočena, dokler težava ne bo razrešena.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="584"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="592"/>
         <source>You can ignore this error for this session but you may experience erratic behavior.</source>
         <translation>To napako lahko ignorirate za čas te seanse, vendar lahko to povzroči nepričakovano obnašanje programa.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="591"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="599"/>
         <source>Controller Mapping Error</source>
         <translation>Napaka v mapiranju kontrolerja</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="592"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="600"/>
         <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
         <translation>Mapiranje za kontroler &quot;%1&quot; ne deluje pravilno.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="596"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="604"/>
         <source>The script code needs to be fixed.</source>
         <translation>Kodo skripte je potrebno popraviti.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1075"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1083"/>
         <source>Controller Mapping File Problem</source>
         <translation>Težava z datoteko mapiranja kontrolerja</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1076"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1084"/>
         <source>The mapping for controller &quot;%1&quot; cannot be opened.</source>
         <translation>Mapiranja za kontroler &quot;%1&quot; ni mogoče odpreti.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1083"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1091"/>
         <source>File:</source>
         <translation>Datoteka:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1084"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1092"/>
         <source>Error:</source>
         <translation>Napaka:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="587"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="595"/>
         <source>Try to recover by resetting your controller.</source>
         <translation>Poskusite odpraviti napako z restiranjem kontrolerja.</translation>
     </message>
@@ -4195,63 +4195,62 @@ Skušali ste učiti: %1, %2</translation>
         <translation>Stereo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="230"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="293"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="569"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="604"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="233"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="297"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="573"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="608"/>
         <source>Action failed</source>
         <translation>Spodletelo dejanje</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="231"/>
-        <source>'%1' has the same Icecast mountpoint as '%2'.
-Two source connections to the same server can&apos;t have the same mountpoint.</source>
-        <translation>&apos;%1&apos; ima enako Icecast vstopno točko, kot &apos;%2&apos;.
-Dva vira, ki se povezujeta na isti strežnik, ne moreta imeri iste vstopne točke.</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="294"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="298"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation>Ne morete ustvariti več kot %1 povezav z virom.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="307"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="311"/>
         <source>Source connection %1</source>
         <translation>Povezava z virom %1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="570"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="574"/>
         <source>At least one source connection is required.</source>
         <translation>Potrebna je vsaj ena povezava z virom</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="615"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="619"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation>Ste prepričani, da želite prekiniti vse aktivne povezave z viri?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="576"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="614"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="580"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="618"/>
         <source>Confirmation required</source>
         <translation>Potrebna je potrditev</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="577"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="234"/>
+        <source>'%1' has the same Icecast mountpoint as '%2'.
+Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="581"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation>Ste prepričani, da želite izbrisati &apos;%1&apos;?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="592"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="596"/>
         <source>Renaming &apos;%1&apos;</source>
         <translation>Preimenovanje &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="593"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="597"/>
         <source>New name for &apos;%1&apos;:</source>
         <translation>Novo ime za &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="605"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="609"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
         <translation>Ne morem preimenovati &apos;%1&apos; v &apos;%2&apos;: ime je že uporabljeno</translation>
     </message>
@@ -4618,47 +4617,47 @@ Potrdim nastavitve in nadaljujem?</translation>
         <translation>Ni predloge</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="562"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="567"/>
         <source>Mapping has been edited</source>
         <translation>Mapiranje je bilo spremenjeno</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="608"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="613"/>
         <source>Always overwrite during this session</source>
         <translation>Vedno prepiši medsejo</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="620"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="625"/>
         <source>Save As</source>
         <translation>Shrani kot</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="622"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="627"/>
         <source>Overwrite</source>
         <translation>Prepiši</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="662"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="667"/>
         <source>Save user mapping</source>
         <translation>Shrani mapiranje uporabnika</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="663"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="668"/>
         <source>Enter the name for saving the mapping to the user folder.</source>
         <translation>Vnesite ime za shranjevanje mapiranja v uporabnikovo mapo.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="664"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="669"/>
         <source>Saving mapping failed</source>
         <translation>Shranjevanje mapiranja ni uspelo</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="666"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="671"/>
         <source>A mapping cannot have a blank name and may not contain special characters.</source>
         <translation>Mapiranje ne more biti brez imena, ime pa ne sme vsebovati posebnih znakov.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="668"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="673"/>
         <source>A mapping file with that name already exists.</source>
         <translation>Mapiranje s tem imenom že obstaja.</translation>
     </message>
@@ -4673,17 +4672,17 @@ Potrdim nastavitve in nadaljujem?</translation>
         <translation>vgrajeno</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="563"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="568"/>
         <source>Do you want to save the changes?</source>
         <translation>Ali bi radi shranili spremembe?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="604"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="609"/>
         <source>Mapping already exists.</source>
         <translation>Mapiranje že obstaja.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="605"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="610"/>
         <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
         <translation>&lt;b&gt;%1&lt;/b&gt; že obstaja v uporabnnikovi mapi z mapiranji. &lt;br&gt;Prepišem ali shranim pod novim imenom?</translation>
     </message>
@@ -4693,22 +4692,22 @@ Potrdim nastavitve in nadaljujem?</translation>
         <translation>Odpravlajnje težav</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="815"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="820"/>
         <source>Clear Input Mappings</source>
         <translation>Počisti vhodno mapiranje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="816"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="821"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>Ste prepričani,d a želite počisititi vsa vhodna mapiranja?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="853"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="858"/>
         <source>Clear Output Mappings</source>
         <translation>Počisti izhodna mapiranja</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="854"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="859"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>Ste prepričani, da želite počisititi vsa izhodna mapiranja?</translation>
     </message>
@@ -8070,57 +8069,57 @@ support.</source>
 OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2212"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2208"/>
         <source>activate</source>
         <translation>aktiviraj</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2217"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2213"/>
         <source>toggle</source>
         <translation>preklopi</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2227"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2223"/>
         <source>right</source>
         <translation>desno</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2232"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2228"/>
         <source>left</source>
         <translation>levo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2237"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2233"/>
         <source>right small</source>
         <translation>desno malo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2242"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2238"/>
         <source>left small</source>
         <translation>levo malo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2247"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2243"/>
         <source>up</source>
         <translation>gor</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2252"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2248"/>
         <source>down</source>
         <translation>dol</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2257"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2253"/>
         <source>up small</source>
         <translation>gor malo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2262"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2258"/>
         <source>down small</source>
         <translation>dol malo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2290"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2286"/>
         <source>Shortcut</source>
         <translation>Bližnjica</translation>
     </message>
@@ -8307,47 +8306,47 @@ Ali bi jo res radi prepisali?</translation>
         <translation>Izberi mapo glasbene knjižnice</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1056"/>
+        <location filename="../../src/mixxx.cpp" line="1055"/>
         <source>Sound Device Busy</source>
         <translation>Zvočna naprava je v rabi</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1065"/>
+        <location filename="../../src/mixxx.cpp" line="1064"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Ponovni poskus&lt;/b&gt; po zaprtju drugih programov ali ponovne priključitve zvočne naprave</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1069"/>
-        <location filename="../../src/mixxx.cpp" line="1096"/>
-        <location filename="../../src/mixxx.cpp" line="1121"/>
+        <location filename="../../src/mixxx.cpp" line="1068"/>
+        <location filename="../../src/mixxx.cpp" line="1095"/>
+        <location filename="../../src/mixxx.cpp" line="1120"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Rekonfiguriraj&lt;/b&gt; nastavitve zvočne naprave v Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1072"/>
-        <location filename="../../src/mixxx.cpp" line="1099"/>
+        <location filename="../../src/mixxx.cpp" line="1071"/>
+        <location filename="../../src/mixxx.cpp" line="1098"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Poišči &lt;b&gt;pomoč&lt;/b&gt; z Mixxx Wiki</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1075"/>
-        <location filename="../../src/mixxx.cpp" line="1102"/>
-        <location filename="../../src/mixxx.cpp" line="1124"/>
+        <location filename="../../src/mixxx.cpp" line="1074"/>
+        <location filename="../../src/mixxx.cpp" line="1101"/>
+        <location filename="../../src/mixxx.cpp" line="1123"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Zapri&lt;/b&gt; Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1016"/>
+        <location filename="../../src/mixxx.cpp" line="1015"/>
         <source>Retry</source>
         <translation>Poskusi znova</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="922"/>
+        <location filename="../../src/mixxx.cpp" line="921"/>
         <source>Cannot open database</source>
         <translation>Ni možno odpreti baze podatkov.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="923"/>
+        <location filename="../../src/mixxx.cpp" line="922"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -8357,145 +8356,145 @@ Mixxx potrebuje QT z SQLite podporo. Preberite dokumentacijo za Qt SQL gonilnik 
 Pritisnite OK za izhod.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1018"/>
-        <location filename="../../src/mixxx.cpp" line="1132"/>
+        <location filename="../../src/mixxx.cpp" line="1017"/>
+        <location filename="../../src/mixxx.cpp" line="1131"/>
         <source>Reconfigure</source>
         <translation>Ponastavi</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1020"/>
+        <location filename="../../src/mixxx.cpp" line="1019"/>
         <source>Help</source>
         <translation>Pomoč</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1022"/>
-        <location filename="../../src/mixxx.cpp" line="1134"/>
+        <location filename="../../src/mixxx.cpp" line="1021"/>
+        <location filename="../../src/mixxx.cpp" line="1133"/>
         <source>Exit</source>
         <translation>Izhod</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1059"/>
-        <location filename="../../src/mixxx.cpp" line="1088"/>
+        <location filename="../../src/mixxx.cpp" line="1058"/>
+        <location filename="../../src/mixxx.cpp" line="1087"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx ni mogel odpreti vseh zvočnih naprav</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1085"/>
+        <location filename="../../src/mixxx.cpp" line="1084"/>
         <source>Sound Device Error</source>
         <translation>Napaka zvočne naprave</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1093"/>
+        <location filename="../../src/mixxx.cpp" line="1092"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>&lt;b&gt;Ponoven poskus&lt;/b&gt; po odpravi težave</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1112"/>
+        <location filename="../../src/mixxx.cpp" line="1111"/>
         <source>No Output Devices</source>
         <translation>Ni izhodnih naprav</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1114"/>
+        <location filename="../../src/mixxx.cpp" line="1113"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx je bil konfiguriran brez zvočne naprave. Procesiranje zvoka bo onemogočeno, če ni konfigurirane izhodne naprave.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1118"/>
+        <location filename="../../src/mixxx.cpp" line="1117"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Nadaljuj&lt;/b&gt; brez izhodnih naprav.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1130"/>
+        <location filename="../../src/mixxx.cpp" line="1129"/>
         <source>Continue</source>
         <translation>Nadaljuj</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1342"/>
+        <location filename="../../src/mixxx.cpp" line="1341"/>
         <source>Load track to Deck %1</source>
         <translation>Naloži skladbo v predvajalnik %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1343"/>
+        <location filename="../../src/mixxx.cpp" line="1342"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Predvajalnik %1 trenutno predvaja skladbo</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1345"/>
+        <location filename="../../src/mixxx.cpp" line="1344"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Ali ste prepričani, da želite naložiti novo skladbo?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1463"/>
+        <location filename="../../src/mixxx.cpp" line="1462"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Za izbrano gramofonsko upravljanje ni izbrane vhodne naprave.
 Izberite najprej vhodno napravo v nastavitvah strojne opreme za zvok.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1477"/>
+        <location filename="../../src/mixxx.cpp" line="1476"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Za ta prehod ni izbrana nobena vhodna naprava.
 Najprej izberite vhodno napravo v nastavitvah strojne opreme za zvok.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1491"/>
+        <location filename="../../src/mixxx.cpp" line="1490"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation>Za ta mikrofon ni izbrane vhodne naprave.
 Ali bi radi izbrali vhodno napravo?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1505"/>
+        <location filename="../../src/mixxx.cpp" line="1504"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation>Za to aux vodilo ni izbrane vhodne naprave.
 Ali bi radi izbrali vhodno napravo?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1577"/>
+        <location filename="../../src/mixxx.cpp" line="1576"/>
         <source>Error in skin file</source>
         <translation>Napaka v probleki</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1578"/>
+        <location filename="../../src/mixxx.cpp" line="1577"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Izbrane preobleke ni mogoče naložiti.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1671"/>
+        <location filename="../../src/mixxx.cpp" line="1670"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL neposredno renderiranje</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1672"/>
+        <location filename="../../src/mixxx.cpp" line="1671"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation>Na vašem računalniku ni vklopljeno strojno pospešeno neposredno upodabljanje oz. direct rendering&lt;br&gt;&lt;br&gt;To pomeni, da bo prikazovanje valovnih oblik počasno&lt;br&gt;&lt;b&gt;in da lahko močno obremenjuje procesor&lt;/b&gt;. Posodobite konfiguracijo i&lt;br&gt;n vklopite neposredno upodabljanje ali pa izklopite &lt;br&gt;prikaz valovnih oblik v nastavitvah Mixxx-a, tako da izberete &lt;br&gt;Prazno kot valovno obliko v razdelku Vmesnik.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1706"/>
-        <location filename="../../src/mixxx.cpp" line="1714"/>
-        <location filename="../../src/mixxx.cpp" line="1723"/>
+        <location filename="../../src/mixxx.cpp" line="1705"/>
+        <location filename="../../src/mixxx.cpp" line="1713"/>
+        <location filename="../../src/mixxx.cpp" line="1722"/>
         <source>Confirm Exit</source>
         <translation>Potrdi izhod</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1707"/>
+        <location filename="../../src/mixxx.cpp" line="1706"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Eden od predvajalnikov trenutno predvaja. Zaprem Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1715"/>
+        <location filename="../../src/mixxx.cpp" line="1714"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Eden od vzorčevalnikov trenutno predvaja. Zaprem Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1724"/>
+        <location filename="../../src/mixxx.cpp" line="1723"/>
         <source>The preferences window is still open.</source>
         <translation>Okno z nastavitvami je še vedno odprto.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1725"/>
+        <location filename="../../src/mixxx.cpp" line="1724"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Zavržem vse spremembe in zaprem Mixxx?</translation>
     </message>
@@ -8503,23 +8502,23 @@ Ali bi radi izbrali vhodno napravo?</translation>
 <context>
     <name>ParserCsv</name>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="45"/>
+        <location filename="../../src/library/parsercsv.cpp" line="43"/>
         <source>Location</source>
         <translation>Lokacija</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="133"/>
+        <location filename="../../src/library/parsercsv.cpp" line="131"/>
         <source>Playlist Export Failed</source>
         <translation>Izvoz seznama predvajanja spodletel.</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="134"/>
-        <location filename="../../src/library/parsercsv.cpp" line="220"/>
+        <location filename="../../src/library/parsercsv.cpp" line="132"/>
+        <location filename="../../src/library/parsercsv.cpp" line="216"/>
         <source>Could not create file</source>
         <translation>Ni bilo mogoče ustvariti datoteke.</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="219"/>
+        <location filename="../../src/library/parsercsv.cpp" line="215"/>
         <source>Readable text Export Failed</source>
         <translation>Izvoz berljivega teksta ni uspel.</translation>
     </message>
@@ -14217,7 +14216,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
 <context>
     <name>mixxx::TaskMonitor</name>
     <message>
-        <location filename="../../src/util/taskmonitor.cpp" line="161"/>
+        <location filename="../../src/util/taskmonitor.cpp" line="174"/>
         <source>Abort</source>
         <translation>Prekini</translation>
     </message>

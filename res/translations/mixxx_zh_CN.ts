@@ -661,17 +661,17 @@
 <context>
     <name>CachingReaderWorker</name>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="162"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="166"/>
         <source>The file &apos;%1&apos; could not be found.</source>
         <translation>找不到文件 &apos;%1&apos;。</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="178"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="182"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
         <translation>无法加载文件 &apos;%1&apos;。</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="195"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="199"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
         <translation>无法加载空文件 &apos;%1&apos;。</translation>
     </message>
@@ -707,7 +707,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="84"/>
         <source>Assign to Hotcue Number</source>
-        <translation type="unfinished"/>
+        <translation>分配给Hotcue Number</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
@@ -717,7 +717,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
         <source>Do you really want to remove the palette permanently?</source>
-        <translation type="unfinished"/>
+        <translation>您真的想永久删除调色板吗?</translation>
     </message>
 </context>
 <context>
@@ -2027,27 +2027,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1074"/>
         <source>Microphone &amp; Auxiliary Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>麦克风和辅助显示/隐藏</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1075"/>
         <source>Show/hide the microphone &amp; auxiliary section</source>
-        <translation type="unfinished"/>
+        <translation>显示/隐藏麦克风和辅助部分</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1089"/>
         <source>4 Effect Units Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>显示/隐藏效果器</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1090"/>
         <source>Switches between showing 2 and 4 effect units</source>
-        <translation type="unfinished"/>
+        <translation>在显示2和4个效果单位之间切换</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1094"/>
         <source>Mixer Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>混音器显示/隐藏</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1095"/>
@@ -2057,12 +2057,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1099"/>
         <source>Cover Art Show/Hide (Library)</source>
-        <translation type="unfinished"/>
+        <translation>封面艺术展览/隐藏(音乐库)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1100"/>
         <source>Show/hide cover art in the library</source>
-        <translation type="unfinished"/>
+        <translation>在音乐库展示/隐藏封面艺术</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1104"/>
@@ -2214,7 +2214,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="33"/>
         <source>Crossfader / Orientation</source>
-        <translation type="unfinished"/>
+        <translation>唱片平滑转换器/方向</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="57"/>
@@ -2265,12 +2265,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="189"/>
         <source>BPM / Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>BPM / 网格</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="210"/>
         <source>Sync / Sync Lock</source>
-        <translation type="unfinished"/>
+        <translation>同步/同步锁定</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="247"/>
@@ -2290,17 +2290,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="278"/>
         <source>Increases the pitch by one semitone</source>
-        <translation type="unfinished"/>
+        <translation>将音高增加一个半音</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="281"/>
         <source>Increase Pitch (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>增加间距(细)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="282"/>
         <source>Increases the pitch by 10 cents</source>
-        <translation type="unfinished"/>
+        <translation>增加10间距</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="285"/>
@@ -2310,17 +2310,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="286"/>
         <source>Decreases the pitch by one semitone</source>
-        <translation type="unfinished"/>
+        <translation>将音高降低一个半音</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="289"/>
         <source>Decrease Pitch (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>减少间距(细)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="290"/>
         <source>Decreases the pitch by 10 cents</source>
-        <translation type="unfinished"/>
+        <translation>将音高降低10间距</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="300"/>
@@ -2335,42 +2335,42 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
         <source>Shift cue points earlier</source>
-        <translation type="unfinished"/>
+        <translation>移动提示点</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Shift cue points 10 milliseconds earlier</source>
-        <translation type="unfinished"/>
+        <translation>将提示点移动10毫秒</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="354"/>
         <source>Shift cue points earlier (fine)</source>
-        <translation type="unfinished"/>
+        <translation>移动提示点(可选)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="355"/>
         <source>Shift cue points 1 millisecond earlier</source>
-        <translation type="unfinished"/>
+        <translation>将提示点移动1毫秒</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="358"/>
         <source>Shift cue points later</source>
-        <translation type="unfinished"/>
+        <translation>稍后移动提示点</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="359"/>
         <source>Shift cue points 10 milliseconds later</source>
-        <translation type="unfinished"/>
+        <translation>10毫秒后移动提示点</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="362"/>
         <source>Shift cue points later (fine)</source>
-        <translation type="unfinished"/>
+        <translation>稍后移动(好)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="363"/>
         <source>Shift cue points 1 millisecond later</source>
-        <translation type="unfinished"/>
+        <translation>1毫秒后移动提示点</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="376"/>
@@ -2380,59 +2380,59 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
         <source>Intro / Outro Markers</source>
-        <translation type="unfinished"/>
+        <translation>介绍/超出标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="421"/>
         <source>Intro Start Marker</source>
-        <translation type="unfinished"/>
+        <translation>介绍开始标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="422"/>
         <source>Intro End Marker</source>
-        <translation type="unfinished"/>
+        <translation>介绍结束标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
         <source>Outro Start Marker</source>
-        <translation type="unfinished"/>
+        <translation>结尾部分开始标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
         <source>Outro End Marker</source>
-        <translation type="unfinished"/>
+        <translation>结尾部分结束标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="426"/>
         <source>intro start marker</source>
-        <translation type="unfinished"/>
+        <translation>介绍开始标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
         <source>intro end marker</source>
-        <translation type="unfinished"/>
+        <translation>介绍结束标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
         <source>outro start marker</source>
-        <translation type="unfinished"/>
+        <translation>介绍开始标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="429"/>
         <source>outro end marker</source>
-        <translation type="unfinished"/>
+        <translation>介绍结束标记</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
         <source>Activate %1</source>
         <comment>[intro/outro marker</comment>
-        <translation type="unfinished"/>
+        <translation>激活Cue</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="441"/>
         <source>Jump to or set the %1</source>
         <comment>[intro/outro marker</comment>
-        <translation type="unfinished"/>
+        <translation>跳转到热切点 %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="445"/>
@@ -2561,12 +2561,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="538"/>
         <source>Beat Jump / Loop Move Forward</source>
-        <translation type="unfinished"/>
+        <translation>节拍跳跃/循环移动</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="547"/>
         <source>Beat Jump / Loop Move Backward</source>
-        <translation type="unfinished"/>
+        <translation>节拍跳跃/循环移动</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="562"/>
@@ -3040,53 +3040,53 @@
 <context>
     <name>ControllerEngine</name>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="580"/>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1077"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="588"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1085"/>
         <source>The functionality provided by this controller mapping will be disabled until the issue has been resolved.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="584"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="592"/>
         <source>You can ignore this error for this session but you may experience erratic behavior.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="591"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="599"/>
         <source>Controller Mapping Error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="592"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="600"/>
         <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="596"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="604"/>
         <source>The script code needs to be fixed.</source>
         <translation>脚本代码需要被修复。</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1075"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1083"/>
         <source>Controller Mapping File Problem</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1076"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1084"/>
         <source>The mapping for controller &quot;%1&quot; cannot be opened.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1083"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1091"/>
         <source>File:</source>
         <translation>文件:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="1084"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="1092"/>
         <source>Error:</source>
         <translation>错误：</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="587"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="595"/>
         <source>Try to recover by resetting your controller.</source>
         <translation>请尝试重置控制器来恢复原先的状态。</translation>
     </message>
@@ -4160,63 +4160,62 @@ You tried to learn: %1,%2</source>
         <translation>立体声</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="230"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="293"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="569"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="604"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="233"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="297"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="573"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="608"/>
         <source>Action failed</source>
         <translation>操作失败</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="231"/>
-        <source>'%1' has the same Icecast mountpoint as '%2'.
-Two source connections to the same server can&apos;t have the same mountpoint.</source>
-        <translation>&apos;%1&apos; has the same Icecast mountpoint as &apos;%2&apos;.
-Two source connections to the same server can&apos;t have the same mountpoint.</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="294"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="298"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation>You can&apos;t create more than %1 source connections.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="307"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="311"/>
         <source>Source connection %1</source>
         <translation>Source connection %1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="570"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="574"/>
         <source>At least one source connection is required.</source>
         <translation>At least one source connection is required.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="615"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="619"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation>Are you sure you want to disconnect every active source connection?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="576"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="614"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="580"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="618"/>
         <source>Confirmation required</source>
         <translation>Confirmation required</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="577"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="234"/>
+        <source>'%1' has the same Icecast mountpoint as '%2'.
+Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="581"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation>Are you sure you want to delete &apos;%1&apos;?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="592"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="596"/>
         <source>Renaming &apos;%1&apos;</source>
         <translation>重命名 &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="593"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="597"/>
         <source>New name for &apos;%1&apos;:</source>
         <translation>&apos;%1&apos; 的新名称：</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="605"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="609"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
         <translation>无法将 &apos;%1&apos; 重命名为 &apos;%2&apos;：名称已被使用</translation>
     </message>
@@ -4583,47 +4582,47 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="562"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="567"/>
         <source>Mapping has been edited</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="608"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="613"/>
         <source>Always overwrite during this session</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="620"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="625"/>
         <source>Save As</source>
         <translation>另存为</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="622"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="627"/>
         <source>Overwrite</source>
         <translation>覆盖</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="662"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="667"/>
         <source>Save user mapping</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="663"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="668"/>
         <source>Enter the name for saving the mapping to the user folder.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="664"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="669"/>
         <source>Saving mapping failed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="666"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="671"/>
         <source>A mapping cannot have a blank name and may not contain special characters.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="668"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="673"/>
         <source>A mapping file with that name already exists.</source>
         <translation type="unfinished"/>
     </message>
@@ -4638,17 +4637,17 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="563"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="568"/>
         <source>Do you want to save the changes?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="604"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="609"/>
         <source>Mapping already exists.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="605"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="610"/>
         <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
         <translation type="unfinished"/>
     </message>
@@ -4658,22 +4657,22 @@ Apply settings and continue?</source>
         <translation>故障排除</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="815"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="820"/>
         <source>Clear Input Mappings</source>
         <translation>清除输入映射</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="816"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="821"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>您确定要清除所有的输入映射吗？</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="853"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="858"/>
         <source>Clear Output Mappings</source>
         <translation>清除输出映射</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="854"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="859"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>您确定要清除所有的输出映射吗？</translation>
     </message>
@@ -8033,57 +8032,57 @@ support.</source>
 支持。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2212"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2208"/>
         <source>activate</source>
         <translation>启用</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2217"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2213"/>
         <source>toggle</source>
         <translation>切换</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2227"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2223"/>
         <source>right</source>
         <translation>右</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2232"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2228"/>
         <source>left</source>
         <translation>左</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2237"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2233"/>
         <source>right small</source>
         <translation>右小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2242"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2238"/>
         <source>left small</source>
         <translation>左小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2247"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2243"/>
         <source>up</source>
         <translation>上</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2252"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2248"/>
         <source>down</source>
         <translation>下</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2257"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2253"/>
         <source>up small</source>
         <translation>上小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2262"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2258"/>
         <source>down small</source>
         <translation>下小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2290"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2286"/>
         <source>Shortcut</source>
         <translation>快捷键</translation>
     </message>
@@ -8270,47 +8269,47 @@ Do you really want to overwrite it?</translation>
         <translation>选择音乐库目录</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1056"/>
+        <location filename="../../src/mixxx.cpp" line="1055"/>
         <source>Sound Device Busy</source>
         <translation>声音设备正忙</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1065"/>
+        <location filename="../../src/mixxx.cpp" line="1064"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>请关闭其他应用程序，或重新连接设备后&lt;b&gt;重试&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1069"/>
-        <location filename="../../src/mixxx.cpp" line="1096"/>
-        <location filename="../../src/mixxx.cpp" line="1121"/>
+        <location filename="../../src/mixxx.cpp" line="1068"/>
+        <location filename="../../src/mixxx.cpp" line="1095"/>
+        <location filename="../../src/mixxx.cpp" line="1120"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;重新配置&lt;/b&gt; Mixxx 声音设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1072"/>
-        <location filename="../../src/mixxx.cpp" line="1099"/>
+        <location filename="../../src/mixxx.cpp" line="1071"/>
+        <location filename="../../src/mixxx.cpp" line="1098"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>从 Mixxx Wiki 中获取&lt;b&gt;帮助&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1075"/>
-        <location filename="../../src/mixxx.cpp" line="1102"/>
-        <location filename="../../src/mixxx.cpp" line="1124"/>
+        <location filename="../../src/mixxx.cpp" line="1074"/>
+        <location filename="../../src/mixxx.cpp" line="1101"/>
+        <location filename="../../src/mixxx.cpp" line="1123"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;退出&lt;/b&gt; Mixxx。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1016"/>
+        <location filename="../../src/mixxx.cpp" line="1015"/>
         <source>Retry</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="922"/>
+        <location filename="../../src/mixxx.cpp" line="921"/>
         <source>Cannot open database</source>
         <translation>无法打开数据库</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="923"/>
+        <location filename="../../src/mixxx.cpp" line="922"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -8321,143 +8320,143 @@ Mixxx 需要 QT 支持 SQLite。请阅读 Qt SQL 驱动文档以了解相关构�
 点击 OK 退出。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1018"/>
-        <location filename="../../src/mixxx.cpp" line="1132"/>
+        <location filename="../../src/mixxx.cpp" line="1017"/>
+        <location filename="../../src/mixxx.cpp" line="1131"/>
         <source>Reconfigure</source>
         <translation>重新配置</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1020"/>
+        <location filename="../../src/mixxx.cpp" line="1019"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1022"/>
-        <location filename="../../src/mixxx.cpp" line="1134"/>
+        <location filename="../../src/mixxx.cpp" line="1021"/>
+        <location filename="../../src/mixxx.cpp" line="1133"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1059"/>
-        <location filename="../../src/mixxx.cpp" line="1088"/>
+        <location filename="../../src/mixxx.cpp" line="1058"/>
+        <location filename="../../src/mixxx.cpp" line="1087"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx 无法打开所有要打开的音频设备</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1085"/>
+        <location filename="../../src/mixxx.cpp" line="1084"/>
         <source>Sound Device Error</source>
         <translation>音频设备错误</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1093"/>
+        <location filename="../../src/mixxx.cpp" line="1092"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>修正错误后 &lt;b&gt; 重试 &lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1112"/>
+        <location filename="../../src/mixxx.cpp" line="1111"/>
         <source>No Output Devices</source>
         <translation>没有输出设备</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1114"/>
+        <location filename="../../src/mixxx.cpp" line="1113"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx 的配置中没有任何输出设备，将会禁用音频处理操作。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1118"/>
+        <location filename="../../src/mixxx.cpp" line="1117"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>确定在没有任何输出的情况下&lt;b&gt;继续&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1130"/>
+        <location filename="../../src/mixxx.cpp" line="1129"/>
         <source>Continue</source>
         <translation>继续</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1342"/>
+        <location filename="../../src/mixxx.cpp" line="1341"/>
         <source>Load track to Deck %1</source>
         <translation>加载音轨到碟机 %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1343"/>
+        <location filename="../../src/mixxx.cpp" line="1342"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>碟机 %1 当前正在播放。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1345"/>
+        <location filename="../../src/mixxx.cpp" line="1344"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>您确定要加载新音轨吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1463"/>
+        <location filename="../../src/mixxx.cpp" line="1462"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>尚未选择用于唱盘控制的输入设备。
 请在声音硬件的首选项中选择一个输入设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1477"/>
+        <location filename="../../src/mixxx.cpp" line="1476"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>尚未选择用于唱盘控制的输入设备。
 请在声音硬件的首选项中选择一个输入设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1491"/>
+        <location filename="../../src/mixxx.cpp" line="1490"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1505"/>
+        <location filename="../../src/mixxx.cpp" line="1504"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1577"/>
+        <location filename="../../src/mixxx.cpp" line="1576"/>
         <source>Error in skin file</source>
         <translation>皮肤文件错误</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1578"/>
+        <location filename="../../src/mixxx.cpp" line="1577"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>无法加载所选皮肤。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1671"/>
+        <location filename="../../src/mixxx.cpp" line="1670"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL 直接渲染</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1672"/>
+        <location filename="../../src/mixxx.cpp" line="1671"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1706"/>
-        <location filename="../../src/mixxx.cpp" line="1714"/>
-        <location filename="../../src/mixxx.cpp" line="1723"/>
+        <location filename="../../src/mixxx.cpp" line="1705"/>
+        <location filename="../../src/mixxx.cpp" line="1713"/>
+        <location filename="../../src/mixxx.cpp" line="1722"/>
         <source>Confirm Exit</source>
         <translation>确认退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1707"/>
+        <location filename="../../src/mixxx.cpp" line="1706"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>有唱机正在播放。确定退出 Mixxx 吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1715"/>
+        <location filename="../../src/mixxx.cpp" line="1714"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>有采样器正在播放。确定退出 Mixxx 吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1724"/>
+        <location filename="../../src/mixxx.cpp" line="1723"/>
         <source>The preferences window is still open.</source>
         <translation>首选项窗口尚未关闭。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1725"/>
+        <location filename="../../src/mixxx.cpp" line="1724"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>取消所作更改并退出 Mixxx 吗？</translation>
     </message>
@@ -8465,23 +8464,23 @@ Do you want to select an input device?</source>
 <context>
     <name>ParserCsv</name>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="45"/>
+        <location filename="../../src/library/parsercsv.cpp" line="43"/>
         <source>Location</source>
         <translation>位置</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="133"/>
+        <location filename="../../src/library/parsercsv.cpp" line="131"/>
         <source>Playlist Export Failed</source>
         <translation>播放列表导出失败</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="134"/>
-        <location filename="../../src/library/parsercsv.cpp" line="220"/>
+        <location filename="../../src/library/parsercsv.cpp" line="132"/>
+        <location filename="../../src/library/parsercsv.cpp" line="216"/>
         <source>Could not create file</source>
         <translation>无法创建文件</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="219"/>
+        <location filename="../../src/library/parsercsv.cpp" line="215"/>
         <source>Readable text Export Failed</source>
         <translation>导出可读文本失败</translation>
     </message>
@@ -11611,7 +11610,7 @@ Fully right: end of the effect period</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="846"/>
         <source>Intro Start Marker</source>
-        <translation type="unfinished"/>
+        <translation>介绍开始标记</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="847"/>
@@ -11640,17 +11639,17 @@ Fully right: end of the effect period</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="853"/>
         <source>Intro End Marker</source>
-        <translation type="unfinished"/>
+        <translation>介绍结束标记</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="860"/>
         <source>Outro Start Marker</source>
-        <translation type="unfinished"/>
+        <translation>结尾部分开始标记</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="867"/>
         <source>Outro End Marker</source>
-        <translation type="unfinished"/>
+        <translation>结尾部分结束标记</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="886"/>
@@ -14176,7 +14175,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
 <context>
     <name>mixxx::TaskMonitor</name>
     <message>
-        <location filename="../../src/util/taskmonitor.cpp" line="161"/>
+        <location filename="../../src/util/taskmonitor.cpp" line="174"/>
         <source>Abort</source>
         <translation>中止</translation>
     </message>
