@@ -136,13 +136,13 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
                 if (!cuesFromCurrentPosition.isEmpty()) {
                     mixxx::audio::FramePos closestCueFramePos = cuesFromCurrentPosition.first();
                     m_pTrack->getBeats()->numBeatsInRange(currentFramePos, closestCueFramePos);
-                    cuesText = std::to_string(m_pTrack->getBeats()->numBeatsInRange(currentFramePos, closestCueFramePos)) + " beats";
+                    cuesText = std::to_string(m_pTrack->getBeats()->numBeatsInRange(currentFramePos, closestCueFramePos));
                 
                 } else {
                     cuesText = "No cue points left";
                 }
 
-                setText(QString::fromStdString(cuesText));
+                setText(QString::fromStdString(cuesText + " beats | " + "-") + timeFormat(dTimeRemaining, precision));
  
             } else {
                 setText(QLatin1String("no Track"));
