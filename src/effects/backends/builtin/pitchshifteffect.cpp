@@ -12,12 +12,6 @@ PitchShiftGroupState::PitchShiftGroupState(
 PitchShiftGroupState::~PitchShiftGroupState() {
     SampleUtil::free(m_retrieveBuffer[0]);
     SampleUtil::free(m_retrieveBuffer[1]);
-
-    VERIFY_OR_DEBUG_ASSERT(m_pRubberBand) {
-        return;
-    }
-
-    m_pRubberBand->reset();
 }
 
 void PitchShiftGroupState::initializeBuffer(
