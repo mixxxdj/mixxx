@@ -7,13 +7,15 @@
 #include "util/math.h"
 #include "mixer/basetrackplayer.h"
 #include "track/track.h"
+#include "mixer/deck.h"
+#include "engine/enginebuffer.h"
 
-WNumberPos::WNumberPos(const QString& group, QWidget* parent, BaseTrackPlayer* player)
+WNumberPos::WNumberPos(const QString& group, QWidget* parent, Deck* deck)
         : WNumber(parent),
           m_displayFormat(TrackTime::DisplayFormat::TRADITIONAL),
           m_dOldTimeElapsed(0.0) {
 
-    m_pPlayer = player;
+    m_pDeck = deck;
 
     m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this, ControlFlag::NoAssertIfMissing);
     m_pTimeElapsed->connectValueChanged(this, &WNumberPos::slotSetTimeElapsed);
@@ -101,17 +103,52 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
                     % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
         }
     } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
-        //ToDo [Maldini] - Implement the beat counter until next cue
-        //setText(QLatin1String("NOT YET IMPLEMENTED"));
-        if (m_pPlayer) {
-            TrackPointer m_pTrack = m_pPlayer->getLoadedTrack();
+
+        if (m_pDeck) {
+            TrackPointer m_pTrack = m_pDeck->getLoadedTrack();
             if (m_pTrack) {
-                setText(m_pTrack->getFileInfo().baseName());
+
+                mixxx::audio::FramePos currentFramePos = m_pDeck->getEngineDeck()->getEngineBuffer()->getExactPlayPos();
+                QList<CuePointer> trackCues = m_pTrack->getCuePoints();
+                QList<mixxx::audio::FramePos> cuesFromCurrentPosition =  QList<mixxx::audio::FramePos>();
+
+                //Iterate through current Track cues and create a list with the ones that are after the current play position
+                //We add the cueFramePositions in an ordered fashion in the new list
+                for (int i = 0; i < trackCues.count(); ++i) {
+                    CuePointer cue = trackCues[i];
+                    mixxx::audio::FramePos cueFramePos = cue->getPosition();
+                    if (cueFramePos.isValid() && cueFramePos >= currentFramePos) {
+                        if (cuesFromCurrentPosition.isEmpty()) {
+                            cuesFromCurrentPosition.append(cueFramePos);
+                        }
+                        else if (cuesFromCurrentPosition.first() < cueFramePos) {
+                            cuesFromCurrentPosition.append(cueFramePos);
+                        } else {
+                            cuesFromCurrentPosition.insert(0, cueFramePos);
+                        }
+                    }
+                }
+
+                //Since the cuesFromCurrentPosition is ordered, we only need to calculate the difference from the current position
+                //with the first element of the list, which would be the closest CUE point to the current play position
+                //ToDo (Maldini) - Get beat counters for every cue point to help with multi drop mixes
+                std::string cuesText = "";
+                if (!cuesFromCurrentPosition.isEmpty()) {
+                    mixxx::audio::FramePos closestCueFramePos = cuesFromCurrentPosition.first();
+                    m_pTrack->getBeats()->numBeatsInRange(currentFramePos, closestCueFramePos);
+                    cuesText = std::to_string(m_pTrack->getBeats()->numBeatsInRange(currentFramePos, closestCueFramePos)) + " beats";
+                
+                } else {
+                    cuesText = "No cue points left";
+                }
+
+                setText(QString::fromStdString(cuesText));
+ 
             } else {
                 setText(QLatin1String("no Track"));
             }
         } else {
-            setText(QLatin1String("no Player"));
+            setText(QLatin1String("no Deck"));
         }
     }
     m_dOldTimeElapsed = dTimeElapsed;

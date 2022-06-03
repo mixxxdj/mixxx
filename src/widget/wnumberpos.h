@@ -13,7 +13,7 @@ class WNumberPos : public WNumber {
     Q_OBJECT
 
   public:
-    explicit WNumberPos(const QString& group, QWidget* parent = nullptr, BaseTrackPlayer* player = nullptr);
+    explicit WNumberPos(const QString& group, QWidget* parent = nullptr, Deck* deck = nullptr);
 
   protected:
     void mousePressEvent(QMouseEvent* pEvent) override;
@@ -38,5 +38,5 @@ class WNumberPos : public WNumber {
 
     //We will use this to look for the track cues and update the
     //BeatsUntilNextCueAndRemaining display mode
-    BaseTrackPlayer* m_pPlayer;
+    Deck* m_pDeck;
 };
