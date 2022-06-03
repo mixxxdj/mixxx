@@ -1,11 +1,11 @@
 #pragma once
 
-
 #include <map>
 #include <unordered_map>
 
 #include "track/track_decl.h"
 #include "track/trackref.h"
+#include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/sandbox.h"
 
@@ -276,11 +276,7 @@ class GlobalTrackCache : public QObject {
     void saveEvictedTrack(Track* pEvictedTrack) const;
 
     // Managed by GlobalTrackCacheLocker
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    mutable QRecursiveMutex m_mutex;
-#else
-    mutable QMutex m_mutex;
-#endif
+    mutable QT_RECURSIVE_MUTEX m_mutex;
 
     GlobalTrackCacheSaver* m_pSaver;
 

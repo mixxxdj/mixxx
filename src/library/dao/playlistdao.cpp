@@ -10,7 +10,6 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/math.h"
 
@@ -228,7 +227,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
-int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
+int PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
         PlaylistDAO::HiddenType type, int minNumberOfTracks) {
     VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
         return 0; // nothing to do, probably unintended invocation
@@ -239,7 +238,7 @@ int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
             "SELECT id FROM Playlists  "
             "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
             "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
-            "Playlists.hidden = :hidden"));
+            "Playlists.hidden = :hidden AND Playlists.locked = 0"));
     query.bindValue(":hidden", static_cast<int>(type));
     query.bindValue(":length", minNumberOfTracks);
     if (!query.exec()) {
@@ -844,6 +843,10 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
                 ++it) {
             if (it.key() == trackId) {
                 const auto playlistId = it.value();
+                // keep tracks in history playlists
+                if (getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+                    continue;
+                }
                 removeTracksFromPlaylistByIdInner(playlistId, trackId);
                 playlistIds.insert(playlistId);
             }
@@ -967,7 +970,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
 
     QHash<int, TrackId> trackPositionIds = allIds;
     QList<int> newPositions = positions;
-    const int searchDistance = math_max(trackPositionIds.count() / 4, 1);
+    const int searchDistance = math_max(static_cast<int>(trackPositionIds.count()) / 4, 1);
 
     qDebug() << "Shuffling Tracks";
     qDebug() << "*** Search Distance: " << searchDistance;

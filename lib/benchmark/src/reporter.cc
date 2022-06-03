@@ -18,6 +18,8 @@
 #include <cstdlib>
 
 #include <iostream>
+#include <map>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -25,6 +27,9 @@
 #include "string_util.h"
 
 namespace benchmark {
+namespace internal {
+extern std::map<std::string, std::string>* global_context;
+}
 
 BenchmarkReporter::BenchmarkReporter()
     : output_stream_(&std::cout), error_stream_(&std::cerr) {}
@@ -33,7 +38,7 @@ BenchmarkReporter::~BenchmarkReporter() {}
 
 void BenchmarkReporter::PrintBasicContext(std::ostream *out,
                                           Context const &context) {
-  CHECK(out) << "cannot be null";
+  BM_CHECK(out) << "cannot be null";
   auto &Out = *out;
 
   Out << LocalDateTimeString() << "\n";
@@ -64,7 +69,13 @@ void BenchmarkReporter::PrintBasicContext(std::ostream *out,
     Out << "\n";
   }
 
-  if (info.scaling_enabled) {
+  if (internal::global_context != nullptr) {
+    for (const auto& kv: *internal::global_context) {
+      Out << kv.first << ": " << kv.second << "\n";
+    }
+  }
+
+  if (CPUInfo::Scaling::ENABLED == info.scaling) {
     Out << "***WARNING*** CPU scaling is enabled, the benchmark "
            "real time measurements may be noisy and will incur extra "
            "overhead.\n";

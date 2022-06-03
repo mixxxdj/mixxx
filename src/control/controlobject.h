@@ -2,7 +2,6 @@
 
 #include <QObject>
 #include <QEvent>
-#include <QMutex>
 
 #include "preferences/usersettings.h"
 #include "controllers/midi/midimessage.h"

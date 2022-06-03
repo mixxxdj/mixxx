@@ -11,7 +11,6 @@
 #include "library/trackcollection.h"
 #include "moc_dlgprefcolors.cpp"
 #include "util/color/predefinedcolorpalettes.h"
-#include "util/compatibility.h"
 #include "util/math.h"
 #include "util/memory.h"
 

@@ -5,6 +5,7 @@
 
 #include "audio/frame.h"
 #include "audio/streaminfo.h"
+#include "track/beats.h"
 
 namespace mixxx {
 
@@ -16,9 +17,8 @@ class BeatsImporter {
 
     virtual bool isEmpty() const = 0;
 
-    /// Determines the timing offset and returns a Vector of frame positions
-    /// to use as input for the BeatMap constructor
-    virtual QVector<mixxx::audio::FramePos> importBeatsAndApplyTimingOffset(
+    /// Determines the timing offset and returns a Beats object.
+    virtual BeatsPointer importBeatsAndApplyTimingOffset(
             const QString& filePath, const audio::StreamInfo& streamInfo) = 0;
 };
 

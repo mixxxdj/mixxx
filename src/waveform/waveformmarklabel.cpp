@@ -16,7 +16,7 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft,
 
     m_text = text;
     QFontMetrics fontMetrics(font);
-    const int padding = 2;
+    constexpr int padding = 2;
 
     QRectF pixmapRect;
     pixmapRect = fontMetrics.boundingRect(text);

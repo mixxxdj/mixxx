@@ -13,6 +13,7 @@
 #include "library/treeitemmodel.h"
 
 class TraktorTrackModel : public BaseExternalTrackModel {
+    Q_OBJECT
   public:
     TraktorTrackModel(QObject* parent,
                       TrackCollectionManager* pTrackCollectionManager,
@@ -21,6 +22,7 @@ class TraktorTrackModel : public BaseExternalTrackModel {
 };
 
 class TraktorPlaylistModel : public BaseExternalPlaylistModel {
+    Q_OBJECT
   public:
     TraktorPlaylistModel(QObject* parent,
                          TrackCollectionManager* pTrackCollectionManager,

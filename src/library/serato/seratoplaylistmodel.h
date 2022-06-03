@@ -7,6 +7,7 @@ class TrackCollectionManager;
 class BaseExternalPlaylistModel;
 
 class SeratoPlaylistModel : public BaseExternalPlaylistModel {
+    Q_OBJECT
   public:
     SeratoPlaylistModel(QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,

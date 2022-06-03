@@ -106,7 +106,7 @@
                     <TooltipId>track_duration</TooltipId>
                     <Size>0min,25f</Size>
                     <Alignment>right</Alignment>
-                    <Property>durationFormatted</Property>
+                    <Property>durationTextSeconds</Property>
                     <Channel>
                       <Variable name="ChanNum"/>
                     </Channel>

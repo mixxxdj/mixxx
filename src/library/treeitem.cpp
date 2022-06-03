@@ -74,7 +74,7 @@ void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
     if (m_pFeature == pFeature) {
         return;
     }
-    DEBUG_ASSERT(!m_pFeature)
+    DEBUG_ASSERT(!m_pFeature);
     m_pFeature = pFeature;
     for (auto* pChild : qAsConst(m_children)) {
         pChild->initFeatureRecursively(pFeature);

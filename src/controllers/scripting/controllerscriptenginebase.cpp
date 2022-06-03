@@ -2,16 +2,17 @@
 
 #include "control/controlobject.h"
 #include "controllers/controller.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/scripting/colormapperjsproxy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptenginebase.cpp"
 
-ControllerScriptEngineBase::ControllerScriptEngineBase(Controller* controller)
+ControllerScriptEngineBase::ControllerScriptEngineBase(
+        Controller* controller, const RuntimeLoggingCategory& logger)
         : m_bDisplayingExceptionDialog(false),
           m_pJSEngine(nullptr),
           m_pController(controller),
+          m_logger(logger),
           m_bTesting(false) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
@@ -117,7 +118,7 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
 
     // Add backtrace to the error details
     errorText += QStringLiteral("\nBacktrace: ") + backtrace;
-    qWarning() << "ControllerScriptHandlerBase:" << errorText;
+    qCWarning(m_logger) << "ControllerScriptHandlerBase:" << errorText;
 
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, key, bFatalError);

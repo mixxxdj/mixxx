@@ -1,5 +1,6 @@
 #include "track/trackrecord.h"
 
+#include "sources/metadatasource.h"
 #include "track/keyfactory.h"
 #include "util/logger.h"
 
@@ -129,25 +130,59 @@ bool TrackRecord::updateSourceSynchronizedAt(
     }
     setSourceSynchronizedAt(sourceSynchronizedAt);
     m_headerParsed = sourceSynchronizedAt.isValid();
-    DEBUG_ASSERT(isSourceSynchronized());
     return true;
 }
 
-bool TrackRecord::isSourceSynchronized() const {
-    // This method cannot be used to update m_headerParsed
-    // after modifying m_sourceSynchronizedAt during a short
-    // moment of inconsistency. Otherwise the debug assertion
-    // triggers!
+TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
+        const FileInfo& fileInfo) const {
+    // This method cannot be used to update m_headerParsed after modifying
+    // m_sourceSynchronizedAt during a short moment of inconsistency.
+    // Otherwise the debug assertion triggers!
     DEBUG_ASSERT(m_headerParsed ||
             !getSourceSynchronizedAt().isValid());
-    if (getSourceSynchronizedAt().isValid()) {
-        return true;
+    // Legacy fallback: The property sourceSynchronizedAt has been added later.
+    // Files that have been added before that time and that have never been
+    // re-imported will only have that legacy flag set while sourceSynchronizedAt
+    // is still invalid.
+    if (!m_headerParsed) {
+        // Enforce initial import of metadata if it hasn't succeeded
+        // at least once yet.
+        return SourceSyncStatus::Void;
     }
-    // Legacy fallback: The property sourceSynchronizedAt has been
-    // added later. Files that have been added before that time
-    // and that have never been re-imported will only have that
-    // legacy flag set while sourceSynchronizedAt is still invalid.
-    return m_headerParsed;
+    if (!getSourceSynchronizedAt().isValid()) {
+        // Existing tracks that have been imported before database version
+        // 37 don't have a synchronization time stamp.
+        return SourceSyncStatus::Unknown;
+    }
+    const QDateTime fileSourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(fileInfo.toQFile());
+    if (!fileSourceSynchronizedAt.isValid()) {
+        kLogger.warning()
+                << "Failed to obtain synchronization time stamp for file"
+                << mixxx::FileInfo(fileInfo)
+                << ": Is this file missing or inaccessible?";
+        return SourceSyncStatus::Undefined;
+    }
+    if (getSourceSynchronizedAt() < fileSourceSynchronizedAt) {
+        return SourceSyncStatus::Outdated;
+    }
+    // This could actually happen when users replace files with
+    // an older version on the file system. But it should never
+    // happen under normal operation. Otherwise it might indicate
+    // a serious programming error and we should detect it early
+    // before the release. Debug assertions are only enabled in
+    // development and testing versions.
+    VERIFY_OR_DEBUG_ASSERT(getSourceSynchronizedAt() <= fileSourceSynchronizedAt) {
+        kLogger.warning()
+                << "Internal source synchronization time stamp"
+                << getSourceSynchronizedAt()
+                << "is ahead of"
+                << fileSourceSynchronizedAt
+                << "for file"
+                << mixxx::FileInfo(fileInfo)
+                << ": Has this file been replaced with an older version?";
+    }
+    return SourceSyncStatus::Synchronized;
 }
 
 bool TrackRecord::replaceMetadataFromSource(

@@ -71,13 +71,13 @@ class OggOpusFileOwner {
 const QString SoundSourceProviderOpus::kDisplayName = QStringLiteral("Xiph.org libopusfile");
 
 //static
-const QStringList SoundSourceProviderOpus::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderOpus::kSupportedFileTypes = {
         QStringLiteral("opus"),
 };
 
 SoundSourceProviderPriority SoundSourceProviderOpus::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;

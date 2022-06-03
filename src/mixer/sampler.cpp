@@ -3,7 +3,7 @@
 #include "control/controlobject.h"
 #include "moc_sampler.cpp"
 
-Sampler::Sampler(QObject* pParent,
+Sampler::Sampler(PlayerManager* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,

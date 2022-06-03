@@ -221,19 +221,19 @@ void importTrackMetadataFromTag(
 
     QString trackArtistId;
     if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Artist Id", &trackArtistId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(trackArtistId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QString trackRecordingId;
     if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Track Id", &trackRecordingId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(trackRecordingId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
     QString trackReleaseId;
     if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Release Track Id", &trackReleaseId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(trackReleaseId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
     QString trackWorkId;
     if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Work Id", &trackWorkId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(trackWorkId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(QUuid(trackWorkId));
     }
     QString albumArtistId;
     if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Album Artist Id", &albumArtistId)) {

@@ -20,6 +20,7 @@ QString makeTestConfigFile(const QString& path) {
 
 // Static initialization
 QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
+QDir MixxxTest::s_TestDir;
 
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     CmdlineArgs args;
@@ -77,72 +78,13 @@ void MixxxTest::saveAndReloadConfig() {
 
 namespace mixxxtest {
 
-FileRemover::~FileRemover() {
-    VERIFY_OR_DEBUG_ASSERT(
-            m_fileName.isEmpty() ||
-            QFile::remove(m_fileName) ||
-            !QFile::exists(m_fileName)) {
-        // unexpected
-    }
-}
-
-QString generateTemporaryFileName(const QString& fileNameTemplate) {
-    auto tmpFile = QTemporaryFile(fileNameTemplate);
-    // The file must be opened to create it and to obtain
-    // its file name!
-    VERIFY_OR_DEBUG_ASSERT(tmpFile.open()) {
-        return QString();
-    }
-    const auto tmpFileName = tmpFile.fileName();
-    DEBUG_ASSERT(!tmpFileName.isEmpty());
-    // The empty temporary file will be removed upon returning
-    // from this function
-    return tmpFileName;
-}
-
-QString createEmptyTemporaryFile(const QString& fileNameTemplate) {
-    auto emptyFile = QTemporaryFile(fileNameTemplate);
-    VERIFY_OR_DEBUG_ASSERT(emptyFile.open()) {
-        return QString();
-    }
-
-    // Retrieving the file's name after opening it is required to actually
-    // create a named file on Linux.
-    const auto fileName = emptyFile.fileName();
-    DEBUG_ASSERT(!fileName.isEmpty());
-    VERIFY_OR_DEBUG_ASSERT(emptyFile.exists()) {
-        return QString();
-    }
-    VERIFY_OR_DEBUG_ASSERT(emptyFile.size() == 0) {
-        return QString();
-    }
-
-    emptyFile.setAutoRemove(false);
-    return fileName;
-}
-
-bool copyFile(const QString& srcFileName, const QString& dstFileName) {
+void copyFile(const QString& srcFileName, const QString& dstFileName) {
     auto srcFile = QFile(srcFileName);
-    DEBUG_ASSERT(srcFile.exists());
-    VERIFY_OR_DEBUG_ASSERT(srcFile.copy(dstFileName)) {
-        qWarning()
-                << srcFile.errorString()
-                << "- Failed to copy file"
-                << srcFile.fileName()
-                << "->"
-                << dstFileName;
-        return false;
-    }
-    auto dstFileRemover = FileRemover(dstFileName);
+    ASSERT_TRUE(srcFile.exists());
+    ASSERT_TRUE(srcFile.copy(dstFileName));
     auto dstFile = QFile(dstFileName);
-    VERIFY_OR_DEBUG_ASSERT(dstFile.exists()) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(srcFile.size() == dstFile.size()) {
-        return false;
-    }
-    dstFileRemover.keepFile();
-    return true;
+    ASSERT_TRUE(dstFile.exists());
+    ASSERT_EQ(dstFile.size(), srcFile.size());
 }
 
 } // namespace mixxxtest

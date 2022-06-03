@@ -215,6 +215,10 @@ void WKnobComposed::mousePressEvent(QMouseEvent* e) {
     m_handler.mousePressEvent(this, e);
 }
 
+void WKnobComposed::mouseDoubleClickEvent(QMouseEvent* e) {
+    m_handler.mouseDoubleClickEvent(this, e);
+}
+
 void WKnobComposed::mouseReleaseEvent(QMouseEvent* e) {
     m_handler.mouseReleaseEvent(this, e);
 }

@@ -131,7 +131,7 @@ void VSyncThread::vsyncSlotFinished() {
     m_semaVsyncSlot.release();
 }
 
-void VSyncThread::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
+void VSyncThread::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {
     for (int i = (int)VSyncThread::ST_TIMER; i < (int)VSyncThread::ST_COUNT; i++) {
         //if (isAvailable(type))  // TODO
         {

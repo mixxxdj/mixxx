@@ -78,12 +78,12 @@ EngineMaster::EngineMaster(
     m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
 
     // Master sync controller
-    m_pMasterSync = new EngineSync(pConfig);
+    m_pEngineSync = new EngineSync(pConfig);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
     double default_bpm = pConfig->getValue(
             ConfigKey("[InternalClock]", "bpm"), 124.0);
-    ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
+    ControlObject::set(ConfigKey("[InternalClock]", "bpm"), default_bpm);
 
     // Crossfader
     m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
@@ -217,7 +217,7 @@ EngineMaster::~EngineMaster() {
     delete m_pXFaderCurve;
     delete m_pXFaderMode;
 
-    delete m_pMasterSync;
+    delete m_pEngineSync;
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterAudioBufferSize;
@@ -271,7 +271,7 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 
 void EngineMaster::processChannels(int iBufferSize) {
     // Update internal sync lock rate.
-    m_pMasterSync->onCallbackStart(m_sampleRate, m_iBufferSize);
+    m_pEngineSync->onCallbackStart(m_sampleRate, m_iBufferSize);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
@@ -281,7 +281,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     m_activeChannels.clear();
 
     //ScopedTimer timer("EngineMaster::processChannels");
-    EngineChannel* pMasterChannel = m_pMasterSync->getLeader();
+    EngineChannel* pLeaderChannel = m_pEngineSync->getLeaderChannel();
     // Reserve the first place for the master channel which
     // should be processed first
     m_activeChannels.append(NULL);
@@ -343,7 +343,7 @@ void EngineMaster::processChannels(int iBufferSize) {
         }
 
         // If necessary, add the channel to the list of buffers to process.
-        if (pChannel == pMasterChannel) {
+        if (pChannel == pLeaderChannel) {
             // If this is the sync master, it should be processed first.
             m_activeChannels.replace(0, pChannelInfo);
             activeChannelsStartIndex = 0;
@@ -372,7 +372,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     // Note, because we call this on the internal clock first,
     // it will have an up-to-date beatDistance, whereas the other
     // Syncables will not.
-    m_pMasterSync->onCallbackEnd(m_sampleRate, m_iBufferSize);
+    m_pEngineSync->onCallbackEnd(m_sampleRate, m_iBufferSize);
 
     // After all the engines have been processed, trigger post-processing
     // which ensures that all channels are updating certain values at the
@@ -399,7 +399,7 @@ void EngineMaster::process(const int iBufferSize) {
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pMasterSampleRate->get());
     m_iBufferSize = iBufferSize;
     // TODO: remove assumption of stereo buffer
-    const unsigned int kChannels = 2;
+    constexpr unsigned int kChannels = 2;
     const unsigned int iFrames = iBufferSize / kChannels;
 
     if (m_pEngineEffectsManager) {
@@ -428,8 +428,9 @@ void EngineMaster::process(const int iBufferSize) {
         // Process effects and mix PFL channels together for the headphones.
         // Effects will be reprocessed post-fader for the crossfader buses
         // and master mix, so the channel input buffers cannot be modified here.
-        ChannelMixer::applyEffectsAndMixChannels(m_headphoneGain,
-                &m_activeHeadphoneChannels,
+        ChannelMixer::applyEffectsAndMixChannels(
+                m_headphoneGain,
+                m_activeHeadphoneChannels,
                 &m_channelHeadphoneGainCache,
                 m_pHead,
                 m_headphoneHandle.handle(),
@@ -461,8 +462,9 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Mix all the talkover enabled channels together.
     // Effects processing is done in place to avoid unnecessary buffer copying.
-    ChannelMixer::applyEffectsInPlaceAndMixChannels(m_talkoverGain,
-            &m_activeTalkoverChannels,
+    ChannelMixer::applyEffectsInPlaceAndMixChannels(
+            m_talkoverGain,
+            m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
             m_pTalkover,
             m_masterHandle.handle(),
@@ -518,7 +520,7 @@ void EngineMaster::process(const int iBufferSize) {
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(m_masterGain,
-                &m_activeBusChannels[o],
+                m_activeBusChannels[o],
                 &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
                 m_pOutputBusBuffers[o],
                 m_masterHandle.handle(),
@@ -825,7 +827,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
     m_channels.append(pChannelInfo);
-    const GainCache gainCacheDefault = {0, false};
+    constexpr GainCache gainCacheDefault = {0, false};
     m_channelHeadphoneGainCache.append(gainCacheDefault);
     m_channelTalkoverGainCache.append(gainCacheDefault);
     m_channelMasterGainCache.append(gainCacheDefault);

@@ -110,22 +110,7 @@ Variables:
         <SizePolicy>f,min</SizePolicy>
         <Children>
           <Template src="skin:../Tango/mixer/mixer_channel_left.xml"/>
-
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <SizePolicy>me,i</SizePolicy>
-            <Children>
-              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,i</SizePolicy>
-                <Children>
-                  <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1me</Size></WidgetGroup>
-                  <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
-                </Children>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0min,0me</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>

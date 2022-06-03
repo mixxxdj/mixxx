@@ -10,6 +10,7 @@ class WorkerThread;
 /// as a worker thread. The maximum number of worker threads is
 /// limited.
 class WorkerThreadScheduler : public WorkerThread {
+    Q_OBJECT
   public:
     explicit WorkerThreadScheduler(
             int maxWorkers,

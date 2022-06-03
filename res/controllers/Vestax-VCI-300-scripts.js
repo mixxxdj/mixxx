@@ -165,7 +165,7 @@
  *              is now only triggered in combination with Shift, while
  *              pressing the button without the Shift key toggles
  *              quantize on/off. Before it was just to easy to
- *              accidentilly trigger Sync by hitting the wrong button!
+ *              accidentally trigger Sync by hitting the wrong button!
  *            - Disable the beat active indicator LED, because it has
  *              not proven to be helpful.
  *            - Reduce jog tempo sensitivity considerably

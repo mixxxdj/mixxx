@@ -114,12 +114,12 @@ MixtrackPlatinum.init = function(id, debug) {
     engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinum.timeElapsedCallback);
 
     // setup vumeter tracking
-    engine.makeConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
 };
 
 MixtrackPlatinum.shutdown = function() {
@@ -1020,7 +1020,7 @@ MixtrackPlatinum.HeadGain.prototype = new components.Pot({
         // control only if the control was moved when focus was switched. This
         // is to avoid a phantom triggering of soft takeover that can happen if
         // ignoreNextValue() is called un-conditionally when the control target
-        // is changed (like in shfit()/unshift()).
+        // is changed (like in shift()/unshift()).
         if (this.ignore_next == "sampler" && !this.shifted) {
             this.sampler.forEachComponent(function(component) {
                 engine.softTakeoverIgnoreNextValue(component.group, 'volume');

@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QScopedPointer>
 #include <gtest/gtest_prod.h>
 
+#include <QScopedPointer>
+
 #include "engine/controls/enginecontrol.h"
-#include "engine/sync/syncable.h"
+#include "engine/sync/enginesync.h"
 
 class EngineChannel;
 class BpmControl;
@@ -20,12 +21,18 @@ class SyncControl : public EngineControl, public Syncable {
     static const double kBpmUnity;
     static const double kBpmHalve;
     static const double kBpmDouble;
-    SyncControl(const QString& group, UserSettingsPointer pConfig,
-                EngineChannel* pChannel, SyncableListener* pEngineSync);
+    SyncControl(const QString& group,
+            UserSettingsPointer pConfig,
+            EngineChannel* pChannel,
+            EngineSync* pEngineSync);
     ~SyncControl() override;
 
-    const QString& getGroup() const override { return m_sGroup; }
-    EngineChannel* getChannel() const override { return m_pChannel; }
+    const QString& getGroup() const override {
+        return m_sGroup;
+    }
+    EngineChannel* getChannel() const override {
+        return m_pChannel;
+    }
     mixxx::Bpm getBpm() const override;
 
     SyncMode getSyncMode() const override;
@@ -34,10 +41,17 @@ class SyncControl : public EngineControl, public Syncable {
     void requestSync() override;
     bool isPlaying() const override;
     bool isAudible() const override;
+    bool isQuantized() const override;
 
     double adjustSyncBeatDistance(double beatDistance) const;
     double getBeatDistance() const override;
+    /// updateTargetBeatDistance calculates the correct beat distance that
+    /// we should sync against.  This may be different from the leader's
+    /// distance due to half/double calculation.  This override is called once
+    /// per callback and uses the current playposition as a reference point.
     void updateTargetBeatDistance();
+    /// This override uses the provided position, and is used after seeks.
+    void updateTargetBeatDistance(mixxx::audio::FramePos position);
     mixxx::Bpm getBaseBpm() const override;
 
     // The local bpm is the base bpm of the track around the current position.
@@ -65,8 +79,13 @@ class SyncControl : public EngineControl, public Syncable {
     void reportPlayerSpeed(double speed, bool scratching);
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
 
   private slots:
+    void slotControlBeatSync(double);
+    void slotControlBeatSyncPhase(double);
+    void slotControlBeatSyncTempo(double);
+
     // Fired by changes in play.
     void slotControlPlay(double v);
 
@@ -99,7 +118,7 @@ class SyncControl : public EngineControl, public Syncable {
     // EngineSync can ask us what our EngineChannel is. EngineMaster in turn
     // asks EngineSync what EngineChannel is the "leader" channel.
     EngineChannel* m_pChannel;
-    SyncableListener* m_pEngineSync;
+    EngineSync* m_pEngineSync;
     BpmControl* m_pBpmControl;
     RateControl* m_pRateControl;
     bool m_bOldScratching;
@@ -121,6 +140,11 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlPushButton> m_pSyncLeaderEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
     QScopedPointer<ControlObject> m_pBeatDistance;
+
+    // Button for sync'ing with the other EngineBuffer
+    ControlPushButton* m_pButtonSync;
+    ControlPushButton* m_pButtonSyncPhase;
+    ControlPushButton* m_pButtonSyncTempo;
 
     // These ControlProxys are created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating

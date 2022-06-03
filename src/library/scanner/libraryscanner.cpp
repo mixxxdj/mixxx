@@ -20,7 +20,7 @@
 namespace {
 
 // TODO(rryan) make configurable
-const int kScannerThreadPoolSize = 1;
+constexpr int kScannerThreadPoolSize = 1;
 
 mixxx::Logger kLogger("LibraryScanner");
 
@@ -44,6 +44,11 @@ void cleanUpDatabase(const QSqlDatabase& database) {
             << "Cleaning up database...";
     PerformanceTimer timer;
     timer.start();
+    // FIXME: The DELETE statement deletes more directory entries than necessary.
+    // The subselect only covers directories that contain track files. Hashes
+    // of parent directories that do not contain any track files will be deleted
+    // and then re-created during the next rescan. This should not really matter
+    // since the re-calculation of the hash is always required.
     const auto sqlStmt = QStringLiteral(
             "DELETE FROM LibraryHashes WHERE hash<>:unequalHash "
             "AND directory_path NOT IN "
@@ -195,10 +200,10 @@ void LibraryScanner::slotStartScan() {
 
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
     QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
-    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
-    QRegExp coverExtensionFilter =
-            QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
-                    Qt::CaseInsensitive);
+    QRegularExpression extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
+    QRegularExpression coverExtensionFilter =
+            QRegularExpression(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                    QRegularExpression::CaseInsensitiveOption);
     QStringList directoryBlacklist = ScannerUtil::getDirectoryBlacklist();
 
     m_scannerGlobal = ScannerGlobalPointer(
@@ -423,11 +428,11 @@ void LibraryScanner::slotFinishUnhashedScan() {
            "%d changed/added directories. "
            "%d tracks verified from changed/added directories. "
            "%d new tracks.",
-           m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
-           m_scannerGlobal->verifiedDirectories().size(),
-           m_scannerGlobal->numScannedDirectories(),
-           m_scannerGlobal->verifiedTracks().size(),
-           m_scannerGlobal->addedTracks().size());
+            m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
+            static_cast<int>(m_scannerGlobal->verifiedDirectories().size()),
+            m_scannerGlobal->numScannedDirectories(),
+            static_cast<int>(m_scannerGlobal->verifiedTracks().size()),
+            static_cast<int>(m_scannerGlobal->addedTracks().size()));
 
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);

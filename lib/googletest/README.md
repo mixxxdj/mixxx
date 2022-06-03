@@ -6,7 +6,8 @@
 
 GoogleTest now follows the
 [Abseil Live at Head philosophy](https://abseil.io/about/philosophy#upgrade-support).
-We recommend using the latest commit in the `master` branch in your projects.
+We recommend
+[updating to the latest commit in the `main` branch as often as possible](https://github.com/abseil/abseil-cpp/blob/master/FAQ.md#what-is-live-at-head-and-how-do-i-do-it).
 
 #### Documentation Updates
 
@@ -14,9 +15,9 @@ Our documentation is now live on GitHub Pages at
 https://google.github.io/googletest/. We recommend browsing the documentation on
 GitHub Pages rather than directly in the repository.
 
-#### Release 1.10.x
+#### Release 1.11.0
 
-[Release 1.10.x](https://github.com/google/googletest/releases/tag/release-1.10.0)
+[Release 1.11.0](https://github.com/google/googletest/releases/tag/release-1.11.0)
 is now available.
 
 #### Coming Soon
@@ -109,8 +110,8 @@ Windows and Linux platforms.
 
 [GoogleTest UI](https://github.com/ospector/gtest-gbar) is a test runner that
 runs your test binary, allows you to track its progress via a progress bar, and
-displays a list of test failures. Clicking on one shows failure text. Google
-Test UI is written in C#.
+displays a list of test failures. Clicking on one shows failure text. GoogleTest
+UI is written in C#.
 
 [GTest TAP Listener](https://github.com/kinow/gtest-tap-listener) is an event
 listener for GoogleTest that implements the
@@ -121,11 +122,11 @@ result output. If your test runner understands TAP, you may find it useful.
 runs tests from your binary in parallel to provide significant speed-up.
 
 [GoogleTest Adapter](https://marketplace.visualstudio.com/items?itemName=DavidSchuldenfrei.gtest-adapter)
-is a VS Code extension allowing to view GoogleTest in a tree view, and run/debug
+is a VS Code extension allowing to view GoogleTest in a tree view and run/debug
 your tests.
 
 [C++ TestMate](https://github.com/matepek/vscode-catch2-test-adapter) is a VS
-Code extension allowing to view GoogleTest in a tree view, and run/debug your
+Code extension allowing to view GoogleTest in a tree view and run/debug your
 tests.
 
 [Cornichon](https://pypi.org/project/cornichon/) is a small Gherkin DSL parser

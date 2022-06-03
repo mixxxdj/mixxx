@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "analyzer/analyzer.h"
 #include "preferences/replaygainsettings.h"
 
@@ -30,8 +32,8 @@ class AnalyzerGain : public Analyzer {
 
   private:
     ReplayGainSettings m_rgSettings;
-    CSAMPLE* m_pLeftTempBuffer;
-    CSAMPLE* m_pRightTempBuffer;
+    std::vector<CSAMPLE> m_pLeftTempBuffer;
+    std::vector<CSAMPLE> m_pRightTempBuffer;
     ReplayGain* m_pReplayGain;
     int m_iBufferSize;
 };

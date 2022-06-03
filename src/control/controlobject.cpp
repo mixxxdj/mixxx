@@ -1,7 +1,6 @@
 #include "control/controlobject.h"
 
 #include <QHash>
-#include <QMutexLocker>
 #include <QSet>
 #include <QtDebug>
 

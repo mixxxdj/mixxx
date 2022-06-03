@@ -175,7 +175,7 @@ class LegacyControllerMapping {
     virtual bool isMappable() const = 0;
 
     // Optional list of controller device match details
-    QList<QHash<QString, QString> > m_productMatches;
+    QList<QHash<QString, QString>> m_productMatches;
 
   private:
     bool m_bDirty;

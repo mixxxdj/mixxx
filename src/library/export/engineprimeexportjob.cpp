@@ -26,11 +26,20 @@ namespace {
 
 const std::string kMixxxRootCrateName = "Mixxx";
 
-const int kMaxHotCues = 8;
+constexpr int kMaxHotCues = 8;
 
-const uint8_t kDefaultWaveformOpacity = 127;
+constexpr uint8_t kDefaultWaveformOpacity = 127;
 
-const QStringList kSupportedFileTypes = {"mp3", "flac", "ogg"};
+const QStringList kSupportedFileTypes = {
+        "aac",
+        "m4a",
+        "aiff",
+        "alac",
+        "flac",
+        "mp3",
+        "mp4",
+        "ogg",
+        "wav"};
 
 std::optional<djinterop::musical_key> toDjinteropKey(
         track::io::key::ChromaticKey key) {

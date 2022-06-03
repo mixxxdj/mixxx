@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "track/beatgrid.h"
+#include "track/beats.h"
 #include "track/track.h"
 #include "util/memory.h"
 
@@ -29,28 +29,43 @@ TEST(BeatGridTest, Scale) {
     constexpr mixxx::Bpm bpm(60.0);
     pTrack->trySetBpm(bpm.value());
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
-            mixxx::Bpm(bpm),
-            mixxx::audio::kStartFramePos);
+    auto pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
+    const auto trackEndPosition = audio::FramePos{pTrack->getDuration() * pGrid->getSampleRate()};
 
-    EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
-    pGrid = pGrid->scale(Beats::BpmScale::Double);
-    EXPECT_DOUBLE_EQ(2 * bpm.value(), pGrid->getBpm().value());
+    EXPECT_DOUBLE_EQ(bpm.value(),
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+    pGrid = *pGrid->tryScale(Beats::BpmScale::Double);
+    EXPECT_DOUBLE_EQ(2 * bpm.value(),
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::Halve);
-    EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
+    pGrid = *pGrid->tryScale(Beats::BpmScale::Halve);
+    EXPECT_DOUBLE_EQ(bpm.value(),
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::TwoThirds);
-    EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3, pGrid->getBpm().value());
+    pGrid = *pGrid->tryScale(Beats::BpmScale::TwoThirds);
+    EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::ThreeHalves);
-    EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
+    pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeHalves);
+    EXPECT_DOUBLE_EQ(bpm.value(),
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::ThreeFourths);
-    EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4, pGrid->getBpm().value());
+    pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeFourths);
+    EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::FourThirds);
-    EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
+    pGrid = *pGrid->tryScale(Beats::BpmScale::FourThirds);
+    EXPECT_DOUBLE_EQ(bpm.value(),
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
@@ -61,9 +76,9 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     pTrack->trySetBpm(bpm);
     constexpr mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
-            mixxx::Bpm(bpm),
-            mixxx::audio::kStartFramePos);
+    auto pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
     // Pretend we're on the 20th beat;
     constexpr mixxx::audio::FramePos position(beatLengthFrames * 20);
 
@@ -105,9 +120,9 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     pTrack->trySetBpm(bpm.value());
     const mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm.value();
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
-            bpm,
-            mixxx::audio::kStartFramePos);
+    auto pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            bpm);
 
     // Pretend we're half way between the 20th and 21st beat
     const mixxx::audio::FramePos previousBeat(beatLengthFrames * 20.0);
@@ -149,7 +164,11 @@ TEST(BeatGridTest, FromMetadata) {
     EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm.value());
 
     auto pBeats = pTrack->getBeats();
-    EXPECT_DOUBLE_EQ(pBeats->getBpm().value(), bpm.value());
+    const auto trackEndPosition = audio::FramePos{pTrack->getDuration() * pBeats->getSampleRate()};
+    EXPECT_DOUBLE_EQ(
+            pBeats->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value(),
+            bpm.value());
 
     // Invalid bpm resets the bpm
     ASSERT_TRUE(pTrack->trySetBpm(-60.1));

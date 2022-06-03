@@ -1,7 +1,3 @@
-if(POLICY CMP0069)
-  cmake_policy(SET CMP0069 NEW)
-endif()
-
 # Allow the source files to find headers in src/
 include(GNUInstallDirs)
 include_directories(${PROJECT_SOURCE_DIR}/src)
@@ -31,6 +27,12 @@ set_target_properties(benchmark PROPERTIES
 target_include_directories(benchmark PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     )
+
+# libpfm, if available
+if (HAVE_LIBPFM)
+  target_link_libraries(benchmark libpfm.a)
+  add_definitions(-DHAVE_LIBPFM)
+endif()
 
 # Link threads.
 target_link_libraries(benchmark  ${BENCHMARK_CXX_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
@@ -115,4 +117,8 @@ if (BENCHMARK_ENABLE_INSTALL)
       EXPORT "${targets_export_name}"
       NAMESPACE "${namespace}"
       DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+
+  install(
+    DIRECTORY "${PROJECT_SOURCE_DIR}/docs/"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}")
 endif()

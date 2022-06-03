@@ -55,8 +55,8 @@ class SoundDeviceNetwork : public SoundDevice {
     void workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker, int frames);
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
-    std::unique_ptr<FIFO<CSAMPLE> > m_outputFifo;
-    std::unique_ptr<FIFO<CSAMPLE> > m_inputFifo;
+    std::unique_ptr<FIFO<CSAMPLE>> m_outputFifo;
+    std::unique_ptr<FIFO<CSAMPLE>> m_inputFifo;
     bool m_inputDrift;
 
     std::unique_ptr<ControlProxy> m_pMasterAudioLatencyUsage;

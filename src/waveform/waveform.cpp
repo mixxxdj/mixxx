@@ -5,7 +5,7 @@
 
 using namespace mixxx::track;
 
-const int kNumChannels = 2;
+constexpr int kNumChannels = 2;
 
 // Return the smallest power of 2 which is greater than the desired size when
 // squared.

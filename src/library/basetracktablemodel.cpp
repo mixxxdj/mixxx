@@ -1,5 +1,11 @@
 #include "library/basetracktablemodel.h"
 
+#include <QScreen>
+// for hack to get primary screen instead of view widget's screen
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#include <QGuiApplication>
+#endif
+
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
 #include "library/coverartcache.h"
@@ -16,7 +22,6 @@
 #include "moc_basetracktablemodel.cpp"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
@@ -64,7 +69,7 @@ const QStringList kDefaultTableColumns = {
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
     const auto connectionName =
-            uuidToStringWithoutBraces(QUuid::createUuid());
+            QUuid::createUuid().toString(QUuid::WithoutBraces);
     auto cloned = QSqlDatabase::cloneDatabase(
             prototype,
             connectionName);
@@ -415,7 +420,7 @@ QVariant BaseTrackTableModel::data(
         DEBUG_ASSERT(bgColor.isValid());
         DEBUG_ASSERT(m_backgroundColorOpacity >= 0.0);
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
-        bgColor.setAlphaF(m_backgroundColorOpacity);
+        bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
         return QBrush(bgColor);
     }
 
@@ -510,13 +515,24 @@ bool BaseTrackTableModel::setData(
 QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         const QModelIndex& index) const {
     // Determine height of the cover art image depending on the screen size
-    const QScreen* primaryScreen = getPrimaryScreen();
-    if (!primaryScreen) {
-        DEBUG_ASSERT_UNREACHABLE(!"Primary screen not found!");
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    auto* pTableView = qobject_cast<WTrackTableView*>(parent());
+    VERIFY_OR_DEBUG_ASSERT(pTableView) {
         return QVariant();
     }
+    QScreen* pViewScreen = pTableView->screen();
+#else
+    // Ugly hack assuming that the view is on whatever Qt considers the primary screen.
+    QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
+    VERIFY_OR_DEBUG_ASSERT(app) {
+        qWarning() << "Unable to get application's QGuiApplication instance, "
+                      "cannot determine primary screen";
+        return QVariant();
+    }
+    QScreen* pViewScreen = app->primaryScreen();
+#endif
     unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
-            primaryScreen->availableGeometry().height() *
+            pViewScreen->availableGeometry().height() *
             kRelativeHeightOfCoverartToolTip);
     // Get image from cover art cache
     CoverArtCache* pCache = CoverArtCache::instance();
@@ -557,6 +573,9 @@ QVariant BaseTrackTableModel::roleValue(
             return composeCoverArtToolTipHtml(index);
         case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
             return QVariant();
+        case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
+            return std::move(rawValue);
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -639,7 +658,11 @@ QVariant BaseTrackTableModel::roleValue(
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            if (rawValue.metaType().id() == QMetaType::QString) {
+#else
             if (rawValue.type() == QVariant::String) {
+#endif
                 // column value
                 lastPlayedAt = mixxx::sqlite::readGeneratedTimestamp(rawValue);
             } else {
@@ -682,20 +705,6 @@ QVariant BaseTrackTableModel::roleValue(
             } else {
                 return QChar('-');
             }
-        }
-        case ColumnCache::COLUMN_LIBRARYTABLE_YEAR: {
-            if (rawValue.isNull()) {
-                return QVariant();
-            }
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QString>()) {
-                return QVariant();
-            }
-            bool ok;
-            const auto year = mixxx::TrackMetadata::formatCalendarYear(rawValue.toString(), &ok);
-            if (!ok) {
-                return QVariant();
-            }
-            return year;
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
             if (rawValue.isNull()) {
@@ -933,7 +942,7 @@ QList<QUrl> BaseTrackTableModel::collectUrls(
             continue;
         }
         visitedRows.insert(index.row());
-        QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
+        QUrl url = getTrackUrl(index);
         if (url.isValid()) {
             urls.append(url);
         }
@@ -981,7 +990,8 @@ void BaseTrackTableModel::slotRefreshCoverRows(
         return;
     }
     const int column = fieldIndex(LIBRARYTABLE_COVERART);
-    X_VERIFY_OR_DEBUG_ASSERT(column >= 0) {
+    if (column < 0) {
+        DEBUG_ASSERT_UNREACHABLE(false);
         return;
     }
     emitDataChangedForMultipleRowsInColumn(rows, column);

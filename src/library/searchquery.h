@@ -2,7 +2,6 @@
 #define SEARCHQUERY_H
 
 #include <QList>
-#include <QRegExp>
 #include <QSqlDatabase>
 #include <QString>
 #include <QStringList>

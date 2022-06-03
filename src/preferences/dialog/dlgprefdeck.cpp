@@ -18,7 +18,6 @@
 #include "mixxxmainwindow.h"
 #include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
-#include "util/compatibility.h"
 #include "util/duration.h"
 #include "widget/wnumberpos.h"
 

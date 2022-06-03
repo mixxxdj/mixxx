@@ -3,6 +3,7 @@
 #include "widget/woverview.h"
 
 class WOverviewLMH : public WOverview {
+    Q_OBJECT
   public:
     WOverviewLMH(
             const QString& group,

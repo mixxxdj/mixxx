@@ -5,6 +5,12 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_hiddentablemodel.cpp"
 
+namespace {
+
+const QString kModelName = "hidden:";
+
+} // anonymous namespace
+
 HiddenTableModel::HiddenTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager)
         : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.missing") {
@@ -89,5 +95,16 @@ Qt::ItemFlags HiddenTableModel::flags(const QModelIndex& index) const {
 }
 
 TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
-    return Capability::Purge | Capability::Unhide;
+    return Capability::Purge |
+            Capability::Unhide |
+            Capability::RemoveFromDisk;
+}
+
+QString HiddenTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName + m_tableName;
+    }
+    return kModelName + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
 }

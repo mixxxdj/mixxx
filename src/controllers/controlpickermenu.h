@@ -28,7 +28,7 @@ class ControlPickerMenu : public QMenu {
     void controlChosen(int controlIndex);
 
   private:
-    QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
+    QMenu* addSubmenu(QString title, QMenu* pParent = NULL);
     void addSingleControl(const QString& group,
             const QString& control,
             const QString& title,
@@ -103,6 +103,7 @@ class ControlPickerMenu : public QMenu {
     QString m_effectUnitStr;
     QString m_effectStr;
     QString m_parameterStr;
+    QString m_buttonParameterStr;
     QString m_libraryStr;
 
     QList<ConfigKey> m_controlsAvailable;

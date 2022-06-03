@@ -22,7 +22,7 @@ namespace {
 // 0.918 (upscaling 44.1 kHz to 48 kHz) will produce an additional offset of 3 Frames
 // 0.459 (upscaling 44.1 kHz to 96 kHz) will produce an additional offset of 18 Frames
 // (Rubberband does not suffer this issue)
-const SINT kSeekOffsetFrames = 519;
+constexpr SINT kSeekOffsetFrames = 519;
 
 }  // namespace
 
@@ -128,7 +128,6 @@ double EngineBufferScaleST::scaleBuffer(
     }
 
     SINT total_received_frames = 0;
-    SINT total_read_frames = 0;
 
     SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
@@ -152,7 +151,6 @@ double EngineBufferScaleST::scaleBuffer(
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
-                total_read_frames += iAvailFrames;
                 m_pSoundTouch->putSamples(buffer_back.data(), iAvailFrames);
             } else {
                 if (last_read_failed) {

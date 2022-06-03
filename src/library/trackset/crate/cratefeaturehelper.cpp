@@ -22,7 +22,7 @@ QString CrateFeatureHelper::proposeNameForNewCrate(
         if (suffixCounter++ > 0) {
             // Append suffix " 2", " 3", ...
             proposedName = QStringLiteral("%1 %2")
-                                   .arg(initialName, suffixCounter);
+                                   .arg(initialName, QString::number(suffixCounter));
         } else {
             proposedName = initialName;
         }

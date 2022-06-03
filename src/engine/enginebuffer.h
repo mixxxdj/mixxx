@@ -122,6 +122,7 @@ class EngineBuffer : public EngineObject {
 
     bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
+    void ejectTrack();
 
     mixxx::audio::FramePos getExactPlayPos() const;
     double getVisualPlayPos() const;
@@ -174,8 +175,6 @@ class EngineBuffer : public EngineObject {
     void slotControlSeek(double);
     void slotKeylockEngineChanged(double);
 
-    void slotEjectTrack(double);
-
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
@@ -206,8 +205,6 @@ class EngineBuffer : public EngineObject {
     void updateIndicators(double rate, int iBufferSize);
 
     void hintReader(const double rate);
-
-    void ejectTrack();
 
     double fractionalPlayposFromAbsolute(mixxx::audio::FramePos position);
 
@@ -249,7 +246,7 @@ class EngineBuffer : public EngineObject {
     friend class HotcueControlTest;
     friend class LoopingControlTest;
 
-    LoopingControl* m_pLoopingControl; // used for testes
+    LoopingControl* m_pLoopingControl; // used for tests
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
@@ -266,6 +263,8 @@ class EngineBuffer : public EngineObject {
     BpmControl* m_pBpmControl;
     KeyControl* m_pKeyControl;
     ClockControl* m_pClockControl;
+    FRIEND_TEST(CueControlTest, SeekOnSetCueCDJ);
+    FRIEND_TEST(CueControlTest, SeekOnSetCuePlay);
     CueControl* m_pCueControl;
 
     QList<EngineControl*> m_engineControls;
@@ -349,7 +348,6 @@ class EngineBuffer : public EngineObject {
     // thread, which is required to avoid segfaults.
     ControlProxy* m_pPassthroughEnabled;
 
-    ControlPushButton* m_pEject;
     ControlObject* m_pTrackLoaded;
 
     // Whether or not to repeat the track when at the end

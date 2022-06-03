@@ -3,11 +3,11 @@
 #include <QButtonGroup>
 #include <QItemSelection>
 
-#include "preferences/usersettings.h"
+#include "analyzer/analyzerprogress.h"
 #include "library/analysislibrarytablemodel.h"
 #include "library/libraryview.h"
 #include "library/ui_dlganalysis.h"
-#include "analyzer/analyzerprogress.h"
+#include "preferences/usersettings.h"
 
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
@@ -25,7 +25,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void onSearch(const QString& text) override;
     void onShow() override;
     bool hasFocus() const override;
-    void loadSelectedTrack() override;
+    void setFocus() override;
+    void activateSelectedTrack() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
@@ -34,6 +35,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
     }
+    void saveCurrentViewState() override;
+    bool restoreCurrentViewState() override;
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,

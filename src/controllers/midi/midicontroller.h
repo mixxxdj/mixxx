@@ -18,7 +18,7 @@ class DlgControllerLearning;
 class MidiController : public Controller {
     Q_OBJECT
   public:
-    explicit MidiController();
+    explicit MidiController(const QString& deviceName);
     ~MidiController() override;
 
     ControllerJSProxy* jsProxy() override;
@@ -91,7 +91,7 @@ class MidiController : public Controller {
     QList<MidiOutputHandler*> m_outputs;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
-    QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
+    QList<QPair<MidiInputMapping, unsigned char>> m_fourteen_bit_queued_mappings;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;

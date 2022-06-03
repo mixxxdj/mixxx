@@ -31,7 +31,11 @@ class BeatDetectionSettings {
     DEFINE_PREFERENCE_HELPERS(ReanalyzeWhenSettingsChange, bool,
                               BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE, false);
 
-    DEFINE_PREFERENCE_HELPERS(ReanalyzeImported, bool, BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE, false);
+    DEFINE_PREFERENCE_HELPERS(ReanalyzeImported,
+            bool,
+            BPM_CONFIG_KEY,
+            BPM_REANALYZE_IMPORTED,
+            false);
 
     DEFINE_PREFERENCE_HELPERS(FastAnalysis, bool,
                               BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED, false);

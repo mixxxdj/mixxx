@@ -9,7 +9,7 @@ extern "C" {
 
 // TODO(xxx) this is the result from a calculation inside PortAudio
 // We should query the value from PA or do the same calculations
-const rlim_t PA_RTPRIO = 82; // PA sets RtPrio = 82
+constexpr rlim_t PA_RTPRIO = 82; // PA sets RtPrio = 82
 
 // static
 unsigned int RLimit::getCurRtPrio() {

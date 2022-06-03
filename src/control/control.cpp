@@ -109,14 +109,14 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
     MMutexLocker locker(&s_qCOHashMutex);
 
     auto it = s_qCOHash.constFind(key);
-    if (it == s_qCOHash.constEnd()) {
-        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for null control" << key;
+    VERIFY_OR_DEBUG_ASSERT(it != s_qCOHash.constEnd()) {
+        qWarning() << "cannot create alias for null control" << key;
         return;
     }
 
     QSharedPointer<ControlDoublePrivate> pControl = it.value();
-    if (pControl.isNull()) {
-        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for expired control" << key;
+    VERIFY_OR_DEBUG_ASSERT(!pControl.isNull()) {
+        qWarning() << "cannot create alias for expired control" << key;
         return;
     }
 

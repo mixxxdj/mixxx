@@ -1,7 +1,7 @@
 namespace EffectXml {
 // Version history:
 // 0 (Mixxx 2.1.0): initial support for saving state of effects
-const int kXmlSchemaVersion = 0;
+constexpr int kXmlSchemaVersion = 0;
 
 const QString Root("MixxxEffects");
 const QString SchemaVersion("SchemaVersion");

@@ -30,6 +30,8 @@ class PlaylistTableModel final : public TrackSetTableModel {
 
     Capabilities getCapabilities() const final;
 
+    QString modelKey(bool noSearch) const override;
+
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);
 

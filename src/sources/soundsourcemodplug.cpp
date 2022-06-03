@@ -16,11 +16,10 @@ namespace {
 
 const Logger kLogger("SoundSourceModPlug");
 
-const QStringList kSupportedFileExtensions = {
+const QStringList kSupportedFileTypes = {
         // ModPlug supports more formats but file name
         // extensions are not always present with modules.
         QStringLiteral("mod"),
-        QStringLiteral("med"),
         QStringLiteral("okt"),
         QStringLiteral("s3m"),
         QStringLiteral("stm"),
@@ -32,20 +31,20 @@ const QStringList kSupportedFileExtensions = {
 constexpr SINT kChunkSizeInBytes = SINT(1) << 19;
 
 QString getModPlugTypeFromUrl(const QUrl& url) {
-    const QString fileExtension(SoundSource::getFileExtensionFromUrl(url));
-    if (fileExtension == "mod") {
+    const QString fileType = SoundSource::getTypeFromUrl(url);
+    if (fileType == "mod") {
         return "Protracker";
-    } else if (fileExtension == "med") {
-        return "OctaMed";
-    } else if (fileExtension == "okt") {
+    } else if (fileType == "med") {
+        return "OctaMed"; // audio/x-mod
+    } else if (fileType == "okt") {
         return "Oktalyzer";
-    } else if (fileExtension == "s3m") {
+    } else if (fileType == "s3m") {
         return "Scream Tracker 3";
-    } else if (fileExtension == "stm") {
+    } else if (fileType == "stm") {
         return "Scream Tracker";
-    } else if (fileExtension == "xm") {
+    } else if (fileType == "xm") {
         return "FastTracker2";
-    } else if (fileExtension == "it") {
+    } else if (fileType == "it") {
         return "Impulse Tracker";
     } else {
         return "Module";
@@ -67,8 +66,8 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 //static
 const QString SoundSourceProviderModPlug::kDisplayName = QStringLiteral("MODPlug");
 
-QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
+QStringList SoundSourceProviderModPlug::getSupportedFileTypes() const {
+    return kSupportedFileTypes;
 }
 
 SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)

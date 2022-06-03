@@ -4,7 +4,6 @@
 #include <QWheelEvent>
 #include <QColor>
 #include <QCursor>
-#include <QApplication>
 #include <QPoint>
 #include <QPixmap>
 
@@ -21,8 +20,13 @@ class KnobEventHandler {
     }
 
     double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
-        QPoint cur(e->globalPos());
-        QPoint diff(cur - m_prevPos);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QPoint cur = e->globalPosition().toPoint();
+#else
+        QPoint cur = e->globalPos();
+#endif
+        QPoint diff = cur - m_prevPos;
+        m_prevPos = cur;
         double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() * diff.y()));
         bool y_dominant = abs(diff.y()) > abs(diff.x());
 
@@ -47,7 +51,6 @@ class KnobEventHandler {
             double value = valueFromMouseEvent(pWidget, e);
             pWidget->setControlParameterDown(value);
             pWidget->inputActivity();
-            m_prevPos = e->globalPos();
         }
     }
 
@@ -59,14 +62,24 @@ class KnobEventHandler {
                 break;
             case Qt::LeftButton:
             case Qt::MiddleButton:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                m_startPos = e->globalPosition().toPoint();
+#else
                 m_startPos = e->globalPos();
+#endif
                 m_prevPos = m_startPos;
                 // Somehow using Qt::BlankCursor does not work on Windows
                 // https://mixxx.org/forums/viewtopic.php?p=40298#p40298
-                QApplication::setOverrideCursor(m_blankCursor);
+                pWidget->setCursor(m_blankCursor);
                 break;
             default:
                 break;
+        }
+    }
+
+    void mouseDoubleClickEvent(T* pWidget, QMouseEvent* e) {
+        if (e->button() == Qt::LeftButton) {
+            pWidget->resetControlParameter();
         }
     }
 
@@ -76,7 +89,7 @@ class KnobEventHandler {
             case Qt::LeftButton:
             case Qt::MiddleButton:
                 QCursor::setPos(m_startPos);
-                QApplication::restoreOverrideCursor();
+                pWidget->unsetCursor();
                 value = valueFromMouseEvent(pWidget, e);
                 pWidget->setControlParameterUp(value);
                 pWidget->inputActivity();

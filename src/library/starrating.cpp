@@ -6,7 +6,7 @@
 #include "util/math.h"
 
 // Magic number? Explain what this factor affects and how
-const int PaintingScaleFactor = 15;
+constexpr int PaintingScaleFactor = 15;
 
 StarRating::StarRating(
         int starCount,

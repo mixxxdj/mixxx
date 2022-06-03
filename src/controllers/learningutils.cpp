@@ -49,7 +49,7 @@ struct MessageStats {
 // static
 MidiInputMappings LearningUtils::guessMidiInputMappings(
         const ConfigKey& control,
-        const QList<QPair<MidiKey, unsigned char> >& messages) {
+        const QList<QPair<MidiKey, unsigned char>>& messages) {
     QMap<unsigned char, MessageStats> stats_by_control;
     MessageStats stats;
 
@@ -124,14 +124,14 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.
     bool only_7bit_values = !stats.value_histogram.isEmpty() &&
-            (stats.value_histogram.end() - 1).key() <= 0x7F;
+            stats.value_histogram.lastKey() <= 0x7F;
 
     // A 7-bit two's complement ticker swinging from +1 to -1 can generate
     // unsigned differences of up to 126 (0x7E). If we see differences in
     // individual messages above 96 (0x60) that's a good hint that we're looking
     // at a two's complement ticker.
     bool abs_differences_above_60 = !stats.abs_diff_histogram.isEmpty() &&
-            (stats.abs_diff_histogram.end() - 1).key() >= 0x60;
+            stats.abs_diff_histogram.lastKey() >= 0x60;
 
     if (one_control && one_channel &&
         two_values_7bit_max_and_min &&
@@ -268,9 +268,9 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         int control2 = *(++stats.controls.begin());
 
         int control1_max_abs_diff =
-                (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
+                stats_by_control[control1].abs_diff_histogram.lastKey();
         int control2_max_abs_diff =
-                (stats_by_control[control2].abs_diff_histogram.end() - 1).key();
+                stats_by_control[control2].abs_diff_histogram.lastKey();
 
         // The control with the larger abs difference in messages is the LSB. If
         // they are equal we choose one arbitrarily (depends on QSet iteration

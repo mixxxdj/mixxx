@@ -1,7 +1,5 @@
 #include "util/dnd.h"
 
-#include <QRegExp>
-
 #include "control/controlobject.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
@@ -117,16 +115,9 @@ QList<mixxx::FileInfo> DragAndDropHelper::supportedTracksFromUrls(
             continue;
         }
 
-        if (acceptPlaylists && (file.endsWith(".m3u") || file.endsWith(".m3u8"))) {
-            QScopedPointer<ParserM3u> playlist_parser(new ParserM3u());
-            QList<QString> track_list = playlist_parser->parse(file);
-            foreach (const QString& playlistFile, track_list) {
-                addFileToList(mixxx::FileInfo(playlistFile), &fileInfos);
-            }
-        } else if (acceptPlaylists && url.toString().endsWith(".pls")) {
-            QScopedPointer<ParserPls> playlist_parser(new ParserPls());
-            QList<QString> track_list = playlist_parser->parse(file);
-            foreach (const QString& playlistFile, track_list) {
+        if (acceptPlaylists && Parser::isPlaylistFilenameSupported(file)) {
+            const QList<QString> track_list = Parser::parse(file);
+            for (auto& playlistFile : track_list) {
                 addFileToList(mixxx::FileInfo(playlistFile), &fileInfos);
             }
         } else {
@@ -151,7 +142,12 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
     }
 
     // forbid clone if shift is pressed
-    if (event.keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const auto modifiers = event.modifiers();
+#else
+    const auto modifiers = event.keyboardModifiers();
+#endif
+    if (modifiers.testFlag(Qt::ShiftModifier)) {
         return false;
     }
 

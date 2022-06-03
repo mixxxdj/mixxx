@@ -1,6 +1,6 @@
 <!--
 Description:
-  Optons for the minimal deck
+  Options for the minimal deck
 -->
 <Template>
   <WidgetGroup>
@@ -9,7 +9,7 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup><Size>0me,120f</Size></WidgetGroup>
+      <WidgetGroup><Size>0me,154f</Size></WidgetGroup>
 
       <!-- Spinny -->
       <Template src="skin:/helpers/skin_settings_button_2state.xml">

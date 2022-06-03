@@ -43,11 +43,11 @@ void RecursiveScanDirectoryTask::run() {
 
     QCryptographicHash hasher(QCryptographicHash::Sha256);
 
-    // TODO(rryan) benchmark QRegExp copy versus QMutex/QRegExp in ScannerGlobal
+    // TODO(rryan) benchmark QRegularExpression copy versus QMutex/QRegularExpression in ScannerGlobal
     // versus slicing the extension off and checking for set/list containment.
-    QRegExp supportedExtensionsRegex =
+    QRegularExpression supportedExtensionsRegex =
             m_scannerGlobal->supportedExtensionsRegex();
-    QRegExp supportedCoverExtensionsRegex =
+    QRegularExpression supportedCoverExtensionsRegex =
             m_scannerGlobal->supportedCoverExtensionsRegex();
 
     while (it.hasNext()) {
@@ -56,11 +56,17 @@ void RecursiveScanDirectoryTask::run() {
 
         if (currentFileInfo.isFile()) {
             const QString& fileName = currentFileInfo.fileName();
-            if (supportedExtensionsRegex.indexIn(fileName) != -1) {
+            const QRegularExpressionMatch supportedExtensionsMatch =
+                    supportedExtensionsRegex.match(fileName);
+            if (supportedExtensionsMatch.hasMatch()) {
                 hasher.addData(currentFile.toUtf8());
                 filesToImport.push_back(currentFileInfo);
-            } else if (supportedCoverExtensionsRegex.indexIn(fileName) != -1) {
-                possibleCovers.push_back(currentFileInfo);
+            } else {
+                const QRegularExpressionMatch supportedCoverExtensionsMatch =
+                        supportedCoverExtensionsRegex.match(fileName);
+                if (supportedCoverExtensionsMatch.hasMatch()) {
+                    possibleCovers.push_back(currentFileInfo);
+                }
             }
         } else {
             // File is a directory

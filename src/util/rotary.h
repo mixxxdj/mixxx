@@ -1,9 +1,10 @@
 #pragma once
 
+#include <vector>
+
 class Rotary {
   public:
     Rotary();
-    ~Rotary();
 
     // Start calibration measurement
     void calibrateStart();
@@ -30,7 +31,7 @@ class Rotary {
     // Update position in filter
     int m_iFilterPos;
     // Pointer to rotary filter buffer
-    double *m_pFilter;
+    std::vector<double> m_pFilter;
     // Calibration value
     double m_dCalibration;
     // Last value

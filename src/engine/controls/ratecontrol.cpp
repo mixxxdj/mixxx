@@ -364,7 +364,7 @@ double RateControl::getWheelFactor() const {
 
 double RateControl::getJogFactor() const {
     // FIXME: Sensitivity should be configurable separately?
-    const double jogSensitivity = 0.1;  // Nudges during playback
+    constexpr double jogSensitivity = 0.1; // Nudges during playback
     double jogValue = m_pJog->get();
 
     // Since m_pJog is an accumulator, reset it since we've used its value.

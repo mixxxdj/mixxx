@@ -18,6 +18,7 @@ class ScriptConnection {
     QJSValue callback;
     ControllerScriptInterfaceLegacy* engineJSProxy;
     ControllerScriptEngineLegacy* controllerEngine;
+    bool skipSuperseded;
 
     void executeCallback(double value) const;
 

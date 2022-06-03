@@ -73,7 +73,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     // cutoff  in Hz
     // resonance  range 0 ... 4 (4 = self resonance)
     void setParameter(int sampleRate, float cutoff, float resonance) {
-        const float v2 = 2 + kVt;   // twice the 'thermal voltage of a transistor'
+        constexpr float v2 = 2 + kVt; // twice the 'thermal voltage of a transistor'
 
         float kfc = cutoff / sampleRate;
         float kf = kfc;
@@ -182,8 +182,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     }
 
     inline CSAMPLE processSample(float input, struct Buffer* pB) {
-
-        const float v2 = 2 + kVt;   // twice the 'thermal voltage of a transistor'
+        constexpr float v2 = 2 + kVt; // twice the 'thermal voltage of a transistor'
 
         // cascade of 4 1st-order sections
         float x1 = input - pB->m_amf * m_kacr;

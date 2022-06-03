@@ -137,10 +137,8 @@ void AnalysisFeature::analyzeTracks(const QList<TrackId>& trackIds) {
                 << "Starting analysis using"
                 << numAnalyzerThreads
                 << "analyzer threads";
-        m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
-                m_pLibrary,
+        m_pTrackAnalysisScheduler = m_pLibrary->createTrackAnalysisScheduler(
                 numAnalyzerThreads,
-                m_pConfig,
                 getAnalyzerModeFlags(m_pConfig));
 
         connect(m_pTrackAnalysisScheduler.get(),

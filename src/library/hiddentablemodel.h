@@ -15,4 +15,6 @@ class HiddenTableModel final : public BaseSqlTableModel {
     void unhideTracks(const QModelIndexList& indices) final;
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     Capabilities getCapabilities() const final;
+
+    QString modelKey(bool noSearch) const override;
 };

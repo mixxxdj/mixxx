@@ -1,15 +1,15 @@
 #pragma once
 
-#include "library/export/trackexportworker.h"
-
-#include <future>
-
 #include <gtest/gtest.h>
 
 #include <QDateTime>
 #include <QDebug>
 #include <QPair>
 #include <QTemporaryDir>
+#include <future>
+
+#include "library/export/trackexportworker.h"
+#include "test/mixxxtest.h"
 
 class FakeOverwriteAnswerer : public QObject {
     Q_OBJECT
@@ -64,9 +64,10 @@ class FakeOverwriteAnswerer : public QObject {
 
 class TrackExporterTest : public testing::Test {
   public:
-    TrackExporterTest() :
-        m_testDataDir(QDir::current().absoluteFilePath(
-                "src/test/id3-test-data")) { }
+    TrackExporterTest()
+            : m_testDataDir(MixxxTest::getOrInitTestDir().filePath(
+                      QStringLiteral("id3-test-data"))) {
+    }
 
     void SetUp() override {
         ASSERT_TRUE(m_exportTempDir.isValid());

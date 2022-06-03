@@ -1,14 +1,14 @@
 #include "engine/cachingreader/cachingreaderworker.h"
 
+#include <QAtomicInt>
 #include <QFileInfo>
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "control/controlobject.h"
 #include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qmutex.h"
 #include "util/event.h"
 #include "util/logger.h"
 
@@ -25,9 +25,7 @@ CachingReaderWorker::CachingReaderWorker(
         : m_group(group),
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
-          m_pReaderStatusFIFO(pReaderStatusFIFO),
-          m_newTrackAvailable(false),
-          m_stop(0) {
+          m_pReaderStatusFIFO(pReaderStatusFIFO) {
 }
 
 ReaderStatusUpdate CachingReaderWorker::processReadRequest(
@@ -78,30 +76,39 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 // WARNING: Always called from a different thread (GUI)
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
     {
-        QMutexLocker locker(&m_newTrackMutex);
+        const auto locker = lockMutex(&m_newTrackMutex);
         m_pNewTrack = pTrack;
-        m_newTrackAvailable = true;
+        m_newTrackAvailable.storeRelease(1);
     }
     workReady();
 }
 
 void CachingReaderWorker::run() {
-    unsigned static id = 0; //the id of this thread, for debugging purposes
-    QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
+    // the id of this thread, for debugging purposes
+    static auto lastId = QAtomicInt(0);
+    const auto id = lastId.fetchAndAddRelaxed(1) + 1;
+    QThread::currentThread()->setObjectName(
+            QStringLiteral("CachingReaderWorker ") + QString::number(id));
 
     Event::start(m_tag);
-    while (!atomicLoadAcquire(m_stop)) {
+    while (!m_stop.loadAcquire()) {
         // Request is initialized by reading from FIFO
         CachingReaderChunkReadRequest request;
-        if (m_newTrackAvailable) {
+        if (m_newTrackAvailable.loadAcquire()) {
             TrackPointer pLoadTrack;
             { // locking scope
-                QMutexLocker locker(&m_newTrackMutex);
+                const auto locker = lockMutex(&m_newTrackMutex);
                 pLoadTrack = m_pNewTrack;
                 m_pNewTrack.reset();
-                m_newTrackAvailable = false;
+                m_newTrackAvailable.storeRelease(0);
             } // implicitly unlocks the mutex
-            loadTrack(pLoadTrack);
+            if (pLoadTrack) {
+                // in this case the engine is still running with the old track
+                loadTrack(pLoadTrack);
+            } else {
+                // here, the engine is already stopped
+                unloadTrack();
+            }
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
             // Read the requested chunk and send the result
             const ReaderStatusUpdate update(processReadRequest(request));
@@ -114,26 +121,41 @@ void CachingReaderWorker::run() {
     }
 }
 
-void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
-    // Discard all pending read requests
+void CachingReaderWorker::discardAllPendingRequests() {
     CachingReaderChunkReadRequest request;
     while (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
         const auto update = ReaderStatusUpdate::readDiscarded(request.chunk);
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
     }
+}
 
-    // Unload the track
-    m_pAudioSource.reset(); // Close open file handles
+void CachingReaderWorker::closeAudioSource() {
+    discardAllPendingRequests();
 
-    if (!pTrack) {
-        // If no new track is available then we are done
-        const auto update = ReaderStatusUpdate::trackUnloaded();
-        m_pReaderStatusFIFO->writeBlocking(&update, 1);
-        return;
+    if (m_pAudioSource) {
+        // Closes open file handles of the old track.
+        m_pAudioSource->close();
+        m_pAudioSource.reset();
     }
 
-    // Emit that a new track is loading, stops the current track
+    // This function has to be called with the engine stopped only
+    // to avoid collecting new requests for the old track
+    DEBUG_ASSERT(!m_pChunkReadRequestFIFO->readAvailable());
+}
+
+void CachingReaderWorker::unloadTrack() {
+    closeAudioSource();
+
+    const auto update = ReaderStatusUpdate::trackUnloaded();
+    m_pReaderStatusFIFO->writeBlocking(&update, 1);
+}
+
+void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
+    // This emit is directly connected and returns synchronized
+    // after the engine has been stopped.
     emit trackLoading();
+
+    closeAudioSource();
 
     if (!pTrack->getFileInfo().checkFileExists()) {
         kLogger.warning()
@@ -198,6 +220,11 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     const SINT sampleCount =
             CachingReaderChunk::frames2samples(
                     m_pAudioSource->frameLength());
+
+    // The engine must not request any chunks before receiving the
+    // trackLoaded() signal
+    DEBUG_ASSERT(!m_pChunkReadRequestFIFO->readAvailable());
+
     emit trackLoaded(
             pTrack,
             m_pAudioSource->getSignalInfo().getSampleRate(),

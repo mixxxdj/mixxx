@@ -185,18 +185,6 @@ manpage.1: manpage.sgml
       </varlistentry>
       <varlistentry>
         <term>
-          <option>--pluginPath</option>
-          <replaceable class="parameter">&lt;PATH&gt;</replaceable>
-        </term>
-        <listitem>
-          <para>
-            Top-level directory where Mixxx should look for sound source
-            plugins in addition to default locations.
-          </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
           <option>--settingsPath</option>
           <replaceable class="parameter">&lt;PATH&gt;</replaceable>
         </term>
@@ -208,7 +196,7 @@ manpage.1: manpage.sgml
       </varlistentry>
       <varlistentry>
         <term>
-          <option>--controllerDebug/--midiDebug</option>
+          <option>--controllerDebug</option>
         </term>
         <listitem>
           <para>

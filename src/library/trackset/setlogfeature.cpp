@@ -6,6 +6,7 @@
 
 #include "control/controlobject.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
@@ -15,7 +16,6 @@
 #include "mixer/playermanager.h"
 #include "moc_setlogfeature.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
@@ -23,6 +23,8 @@
 namespace {
 constexpr int kNumToplevelHistoryEntries = 5;
 }
+
+using namespace mixxx::library::prefs;
 
 SetlogFeature::SetlogFeature(
         Library* pLibrary,
@@ -37,13 +39,11 @@ SetlogFeature::SetlogFeature(
                           /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME"),
                   QStringLiteral("history")),
-          m_playlistId(kInvalidPlaylistId) {
-    // clear old empty entries
-    ScopedTransaction transaction(pLibrary->trackCollectionManager()
-                                          ->internalCollection()
-                                          ->database());
-    m_playlistDao.deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG, 1);
-    transaction.commit();
+          m_playlistId(kInvalidPlaylistId),
+          m_pLibrary(pLibrary),
+          m_pConfig(pConfig) {
+    // remove unneeded entries
+    deleteAllUnlockedPlaylistsWithFewerTracks();
 
     //construct child model
     m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
@@ -73,6 +73,8 @@ SetlogFeature::~SetlogFeature() {
             m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
         m_playlistDao.deletePlaylist(m_playlistId);
     }
+    // Also clean history up when shutting down in case the track threshold changed
+    deleteAllUnlockedPlaylistsWithFewerTracks();
 }
 
 QVariant SetlogFeature::title() {
@@ -87,6 +89,18 @@ void SetlogFeature::bindLibraryWidget(
             this,
             &SetlogFeature::slotPlayingTrackChanged);
     m_libraryWidget = QPointer(libraryWidget);
+}
+
+void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
+    ScopedTransaction transaction(m_pLibrary->trackCollectionManager()
+                                          ->internalCollection()
+                                          ->database());
+    int minTrackCount = m_pConfig->getValue(
+            kHistoryMinTracksToKeepConfigKey,
+            kHistoryMinTracksToKeepDefault);
+    m_playlistDao.deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG,
+            minTrackCount);
+    transaction.commit();
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -104,7 +118,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
-    int playlistId = index.data(TreeItemModel::kDataRole).toInt();
+    int playlistId = playlistIdFromIndex(index);
     // not a real entry
     if (playlistId == kInvalidPlaylistId) {
         return;
@@ -280,6 +294,8 @@ void SetlogFeature::slotGetNewPlaylist() {
         qDebug() << "Setlog playlist Creation Failed";
         qDebug() << "An unknown error occurred while creating playlist: "
                  << set_log_name;
+    } else {
+        m_recentTracks.clear();
     }
 
     reloadChildModel(m_playlistId); // For moving selection
@@ -367,8 +383,10 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         m_recentTracks.push_front(currentPlayingTrackId);
 
         // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
-        const int kRecentTrackWindow = 6;
-        while (m_recentTracks.size() > kRecentTrackWindow) {
+        const unsigned int recentTrackWindow = m_pConfig->getValue(
+                kHistoryTrackDuplicateDistanceConfigKey,
+                kHistoryTrackDuplicateDistanceDefault);
+        while (m_recentTracks.size() > recentTrackWindow) {
             m_recentTracks.pop_back();
         }
     }

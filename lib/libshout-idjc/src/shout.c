@@ -437,7 +437,7 @@ int shout_set_metadata(shout_t *self, shout_metadata_t *metadata)
                         goto error_socket;
                     if (upgrade[0] == 0)
                         break;
-                    if (!strncasecmp(upgrade, "Content-Length: ", 16) == 0)
+                    if (strncasecmp(upgrade, "Content-Length: ", 16) == 0)
                         len = atoi(upgrade + 16);
                 } while (1);
 

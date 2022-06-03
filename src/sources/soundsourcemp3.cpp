@@ -147,8 +147,11 @@ bool decodeFrameHeader(
                     return false;
                 }
             }
-            kLogger.warning() << "Recoverable MP3 header decoding error:"
-                              << mad_stream_errorstr(pMadStream);
+            // These recoverable errors occur for many MP3 files and might
+            // worry users when logged as a warning. The issue will become
+            // obsolete once we switched to FFmpeg for MP3 decoding.
+            kLogger.info() << "Recoverable MP3 header decoding error:"
+                           << mad_stream_errorstr(pMadStream);
             logFrameHeader(kLogger.warning(), *pMadHeader);
             return false;
         }
@@ -163,7 +166,7 @@ bool decodeFrameHeader(
 const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
 
 //static
-const QStringList SoundSourceProviderMp3::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderMp3::kSupportedFileTypes = {
         QStringLiteral("mp3"),
 };
 

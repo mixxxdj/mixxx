@@ -150,7 +150,7 @@ DM2.filter = function (channel, control, value, status) {
 	else if( f < 0.0 )
 		f = 0.0;
 
-// 	print( "settiing [Channel" + deck + "] " + DM2.cc2mixxx[control] + " to " + f );
+// 	print( "setting [Channel" + deck + "] " + DM2.cc2mixxx[control] + " to " + f );
 	engine.setValue( "[Channel" + deck + "]", DM2.cc2mixxx[control], f );
 	DM2.filter_active = 1;
 }

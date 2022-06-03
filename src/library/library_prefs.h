@@ -12,17 +12,33 @@ extern const ConfigKey kLegacyDirectoryConfigKey;
 
 extern const QString kConfigGroup;
 
+extern const ConfigKey kRescanOnStartupConfigKey;
+
 extern const ConfigKey kKeyNotationConfigKey;
+
+extern const ConfigKey kTrackDoubleClickActionConfigKey;
 
 extern const ConfigKey kSearchDebouncingTimeoutMillisConfigKey;
 
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
+extern const ConfigKey kHistoryMinTracksToKeepConfigKey;
+
+const int kHistoryMinTracksToKeepDefault = 1;
+
+extern const ConfigKey kHistoryTrackDuplicateDistanceConfigKey;
+
+const int kHistoryTrackDuplicateDistanceDefault = 6;
+
 const bool kEditMetadataSelectedClickDefault = false;
 
-extern const ConfigKey kSyncTrackMetadataExportConfigKey;
+extern const ConfigKey kSyncTrackMetadataConfigKey;
 
-extern const ConfigKey kSeratoMetadataExportConfigKey;
+extern const ConfigKey kSyncSeratoMetadataConfigKey;
+
+extern const ConfigKey kSyncSeratoMetadataConfigKey;
+
+extern const ConfigKey kUseRelativePathOnExportConfigKey;
 
 } // namespace prefs
 

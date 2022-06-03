@@ -76,7 +76,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
+        m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
         m_pEngineMaster = new TestEngineMaster(m_pConfig,
                 m_sMasterGroup,
                 m_pEffectsManager,
@@ -155,14 +155,21 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     }
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
+        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+        if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+            pEngineDeck->getEngineBuffer()->ejectTrack();
+        }
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-        while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
-            QTest::qSleep(1); // millis
+        for (int i = 0; i < 2000; ++i) {
+            if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+                break;
+            }
+            QTest::qSleep(1); // sleep 1 ms for waiting 2 s at max
         }
+        DEBUG_ASSERT(pEngineDeck->getEngineBuffer()->isTrackLoaded());
     }
 
     // Asserts that the contents of the output buffer matches a reference
@@ -178,7 +185,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
             const int iBufferSize,
             const QString& reference_title,
             const double delta = .0001) {
-        QFile f(QDir::currentPath() + "/src/test/reference_buffers/" + reference_title);
+        QFile f(getTestDir().filePath(QStringLiteral("reference_buffers/") + reference_title));
         bool pass = true;
         int i = 0;
         // If the file is not there, we will fail and write out the .actual
@@ -216,7 +223,8 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
             qWarning() << "Buffer does not match" << reference_title
                        << ", actual buffer written to "
                        << "reference_buffers/" + fname_actual;
-            QFile actual(QDir::currentPath() + "/src/test/reference_buffers/" + fname_actual);
+            QFile actual(getTestDir().filePath(
+                    QStringLiteral("reference_buffers/") + fname_actual));
             ASSERT_TRUE(actual.open(QFile::WriteOnly | QFile::Text));
             QTextStream out(&actual);
             for (int i = 0; i < iBufferSize; i += 2) {
@@ -263,7 +271,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 class SignalPathTest : public BaseSignalPathTest {
   protected:
     SignalPathTest() {
-        const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+        const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
         TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
         loadTrack(m_pMixerDeck1, pTrack);

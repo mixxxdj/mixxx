@@ -5,7 +5,6 @@
 #include <QWidget>
 #include <memory>
 
-#include "defs_urls.h"
 #include "library/library_decl.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
@@ -53,7 +52,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   private slots:
     void slotRowHeightValueChanged(int);
     void slotSelectFont();
-    void slotSyncTrackMetadataExportToggled();
+    void slotSyncTrackMetadataToggled();
     void slotSearchDebouncingTimeoutMillisChanged(int);
     void slotSeratoMetadataExportClicked(bool);
 

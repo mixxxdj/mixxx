@@ -6,6 +6,7 @@ struct libusb_context;
 
 /// Locate supported USB bulk controllers
 class BulkEnumerator : public ControllerEnumerator {
+    Q_OBJECT
   public:
     explicit BulkEnumerator(UserSettingsPointer pConfig);
     virtual ~BulkEnumerator();

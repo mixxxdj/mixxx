@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QMutex>
 #include <QTime>
 #include <QMap>
 #include <QAtomicPointer>
@@ -9,7 +8,11 @@
 #include "control/controlvalue.h"
 
 class ControlProxy;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+typedef void VSyncThread;
+#else
 class VSyncThread;
+#endif
 
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
 // graphic device, using the CPU time
@@ -74,7 +77,7 @@ class VisualPlayPosition : public QObject {
     bool m_valid;
     QString m_key;
 
-    static QMap<QString, QWeakPointer<VisualPlayPosition> > m_listVisualPlayPosition;
+    static QMap<QString, QWeakPointer<VisualPlayPosition>> m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called
     static double m_dCallbackEntryToDacSecs;
     // Time stamp for m_timeInfo in main CPU time

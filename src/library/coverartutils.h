@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFuture>
 #include <QImage>
 #include <QList>
 #include <QSize>
@@ -93,7 +94,7 @@ class CoverInfoGuesser {
 // Guesses the cover art for the provided tracks by searching the tracks'
 // metadata and folders for image files. All I/O is done in a separate
 // thread.
-void guessTrackCoverInfoConcurrently(TrackPointer pTrack);
+[[nodiscard]] QFuture<void> guessTrackCoverInfoConcurrently(TrackPointer pTrack);
 
 // Concurrent guessing of track covers during short running
 // tests may cause spurious test failures due to timing issues.

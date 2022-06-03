@@ -40,29 +40,29 @@ namespace taglib {
 FileType getFileTypeFromFileName(
         const QString& fileName) {
     DEBUG_ASSERT(!fileName.isEmpty());
-    const QString fileExt(fileName.section(QChar('.'), -1).toLower().trimmed());
-    if (QStringLiteral("mp3") == fileExt) {
+    const QString fileSuffix(fileName.section(QChar('.'), -1).toLower().trimmed());
+    if (QStringLiteral("mp3") == fileSuffix) {
         return FileType::MP3;
     }
-    if ((QStringLiteral("m4a") == fileExt) || (QStringLiteral("m4v") == fileExt)) {
+    if ((QStringLiteral("m4a") == fileSuffix) || (QStringLiteral("m4v") == fileSuffix)) {
         return FileType::MP4;
     }
-    if (QStringLiteral("flac") == fileExt) {
+    if (QStringLiteral("flac") == fileSuffix) {
         return FileType::FLAC;
     }
-    if (QStringLiteral("ogg") == fileExt) {
+    if (QStringLiteral("ogg") == fileSuffix) {
         return FileType::OGG;
     }
-    if (QStringLiteral("opus") == fileExt) {
+    if (QStringLiteral("opus") == fileSuffix) {
         return FileType::OPUS;
     }
-    if (QStringLiteral("wav") == fileExt) {
+    if (QStringLiteral("wav") == fileSuffix) {
         return FileType::WAV;
     }
-    if (QStringLiteral("wv") == fileExt) {
+    if (QStringLiteral("wv") == fileSuffix) {
         return FileType::WV;
     }
-    if (fileExt.startsWith(QStringLiteral("aif"))) {
+    if (fileSuffix.startsWith(QStringLiteral("aif"))) {
         return FileType::AIFF;
     }
     return FileType::Unknown;

@@ -9,10 +9,8 @@
 
 namespace {
 
-const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
-
-const mixxx::FileInfo kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
-const mixxx::FileInfo kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
+const QString kTestFile = QStringLiteral("id3-test-data/cover-test.flac");
+const QString kTestFile2 = QStringLiteral("id3-test-data/cover-test.ogg");
 
 class TrackTitleThread: public QThread {
   public:
@@ -97,7 +95,7 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
 
     TrackPointer track;
     {
-        auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(kTestFile));
+        auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile)));
         GlobalTrackCacheResolver resolver(testFileAccess);
         track = resolver.getTrack();
         EXPECT_TRUE(static_cast<bool>(track));
@@ -147,6 +145,8 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     TrackTitleThread workerThread;
     workerThread.start();
 
+    const auto testFile = mixxx::FileInfo(getTestDir().filePath(kTestFile));
+
     // lp1744550: A decent number of iterations is needed to reliably
     // reveal potential race conditions while evicting tracks from
     // the cache!
@@ -160,7 +160,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 
         TrackPointer track;
         {
-            auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(kTestFile));
+            auto testFileAccess = mixxx::FileAccess(testFile);
             GlobalTrackCacheResolver resolver(testFileAccess);
             track = resolver.getTrack();
             EXPECT_TRUE(static_cast<bool>(track));
@@ -203,12 +203,12 @@ TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
     ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
     TrackPointer track1 = GlobalTrackCacheResolver(
-            mixxx::FileAccess(mixxx::FileInfo(kTestFile)))
+            mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile))))
                                   .getTrack();
     EXPECT_TRUE(static_cast<bool>(track1));
 
     TrackPointer track2 = GlobalTrackCacheResolver(
-            mixxx::FileAccess(mixxx::FileInfo(kTestFile2)))
+            mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile2))))
                                   .getTrack();
     EXPECT_TRUE(static_cast<bool>(track2));
 

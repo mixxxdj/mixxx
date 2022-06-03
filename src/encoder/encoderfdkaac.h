@@ -3,6 +3,7 @@
 #include <QLibrary>
 #include <QString>
 #include <memory>
+#include <vector>
 
 #include "encoder/encoder.h"
 #include "util/fifo.h"
@@ -22,9 +23,9 @@ class EncoderFdkAac : public Encoder {
     QString buttWindowsFdkAac();
 
     // libfdk-aac common AOTs
-    static const int AOT_AAC_LC = 2; // AAC-LC: Low Complexity (iTunes)
-    static const int AOT_SBR = 5;    // HE-AAC: with Spectral Band Replication
-    static const int AOT_PS = 29;    // HE-AACv2: Parametric Stereo (includes SBR)
+    static constexpr int AOT_AAC_LC = 2; // AAC-LC: Low Complexity (iTunes)
+    static constexpr int AOT_SBR = 5;    // HE-AAC: with Spectral Band Replication
+    static constexpr int AOT_PS = 29;    // HE-AACv2: Parametric Stereo (includes SBR)
 
     // libfdk-aac types and structs
     typedef signed int INT;
@@ -205,10 +206,10 @@ class EncoderFdkAac : public Encoder {
     EncoderCallback* m_pCallback;
     std::unique_ptr<QLibrary> m_pLibrary;
     FIFO<SAMPLE>* m_pInputFifo;
-    SAMPLE* m_pFifoChunkBuffer;
+    std::vector<SAMPLE> m_pFifoChunkBuffer;
     int m_readRequired;
     HANDLE_AACENCODER m_aacEnc;
-    unsigned char* m_pAacDataBuffer;
+    std::vector<unsigned char> m_pAacDataBuffer;
     AACENC_InfoStruct m_aacInfo;
     bool m_hasSbr;
 };

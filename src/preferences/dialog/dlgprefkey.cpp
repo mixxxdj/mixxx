@@ -7,7 +7,6 @@
 #include "control/controlproxy.h"
 #include "library/library_prefs.h"
 #include "moc_dlgprefkey.cpp"
-#include "util/compatibility.h"
 #include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QDateTime>
+#include <QFile>
 #include <QImage>
-
 #include <utility>
 
 #include "track/trackmetadata.h"
@@ -19,6 +19,11 @@ namespace mixxx {
 class MetadataSource {
   public:
     virtual ~MetadataSource() = default;
+
+    /// Get the synchronization time of the given file.
+    ///
+    /// Includes special case handling to detect bogus time stamps.
+    static QDateTime getFileSynchronizedAt(const QFile& file);
 
     enum class ImportResult {
         Succeeded,

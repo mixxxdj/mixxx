@@ -13,7 +13,8 @@
 class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     Q_OBJECT
   public:
-    explicit ControllerScriptEngineLegacy(Controller* controller);
+    explicit ControllerScriptEngineLegacy(
+            Controller* controller, const RuntimeLoggingCategory& logger);
     ~ControllerScriptEngineLegacy() override;
 
     bool initialize() override;
@@ -26,10 +27,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
   public slots:
-    void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts) {
-        m_fileWatcher.removePaths(m_fileWatcher.files());
-        m_scriptFiles = scripts;
-    }
+    void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts);
 
   private:
     bool evaluateScriptFile(const QFileInfo& scriptFile);
@@ -38,7 +36,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QJSValue wrapArrayBufferCallback(const QJSValue& callback);
     bool callFunctionOnObjects(const QList<QString>& scriptFunctionPrefixes,
             const QString&,
-            const QJSValueList& args = QJSValueList(),
+            const QJSValueList& args = {},
             bool bFatalError = false);
 
     QJSValue m_makeArrayBufferWrapperFunction;

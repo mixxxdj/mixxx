@@ -54,7 +54,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     // References:
     // https://bugs.launchpad.net/ubuntu/+bug/1263233
     // https://bitbucket.org/breakfastquay/rubberband/issue/4/sigfpe-zero-division-with-high-time-ratios
-    const double kMinSeekSpeed = 1.0 / 128.0;
+    constexpr double kMinSeekSpeed = 1.0 / 128.0;
     double speed_abs = fabs(*pTempoRatio);
     if (speed_abs < kMinSeekSpeed) {
         // Let the caller know we ignored their speed.
@@ -164,7 +164,6 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     }
 
     SINT total_received_frames = 0;
-    SINT total_read_frames = 0;
 
     SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
@@ -214,7 +213,6 @@ double EngineBufferScaleRubberBand::scaleBuffer(
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
-                total_read_frames += iAvailFrames;
                 deinterleaveAndProcess(m_buffer_back, iAvailFrames, false);
             } else {
                 if (last_read_failed) {

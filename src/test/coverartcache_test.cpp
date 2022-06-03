@@ -54,12 +54,9 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
     }
 };
 
-const QString kCoverFileTest("cover_test.jpg");
-const QString kCoverLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/" % kCoverFileTest);
-const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test-png.mp3");
-
+const QString kCoverFileTest = QStringLiteral("cover_test.jpg");
+const QString kCoverLocationTest = QStringLiteral("id3-test-data/") + kCoverFileTest;
+const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.mp3");
 
 // We need 3 separate test cases:
 // 1) loadCoverFromMetadata()
@@ -76,13 +73,19 @@ const QString kTrackLocationTest(QDir::currentPath() %
 // - absolute coverLocation
 
 TEST_F(CoverArtCacheTest, loadCoverFromMetadata) {
-    loadCoverFromMetadata(kTrackLocationTest);
+    loadCoverFromMetadata(getTestDir().filePath(kTrackLocationTest));
 }
 
 TEST_F(CoverArtCacheTest, loadCoverFromFileRelative) {
-    loadCoverFromFile(kTrackLocationTest, kCoverFileTest, kCoverLocationTest);
+    loadCoverFromFile(
+            getTestDir().filePath(kTrackLocationTest),
+            kCoverFileTest,
+            getTestDir().filePath(kCoverLocationTest));
 }
 
 TEST_F(CoverArtCacheTest, loadCoverFromFileAbsolute) {
-    loadCoverFromFile(QString(), kCoverLocationTest, kCoverLocationTest);
+    loadCoverFromFile(
+            QString(),
+            getTestDir().filePath(kCoverLocationTest),
+            getTestDir().filePath(kCoverLocationTest));
 }

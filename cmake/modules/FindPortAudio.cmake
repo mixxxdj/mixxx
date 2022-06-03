@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2021 Mixxx Development Team
+# Copyright (C) 2001-2022 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -84,6 +84,15 @@ if(PortAudio_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_PortAudio_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${PortAudio_INCLUDE_DIR}"
     )
+    is_static_library(PortAudio_IS_STATIC PortAudio::PortAudio)
+    if(PortAudio_IS_STATIC)
+      find_package(JACK)
+      if(JACK_FOUND)
+        set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          JACK::jack
+        )
+      endif()
+    endif()
     if(PortAudio_ALSA_H)
       target_compile_definitions(PortAudio::PortAudio INTERFACE PA_USE_ALSA)
     endif()

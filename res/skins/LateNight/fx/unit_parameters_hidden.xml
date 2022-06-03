@@ -129,6 +129,10 @@
           </SingletonContainer>
 
           <SingletonContainer>
+            <ObjectName>FxUnit<Variable name="FxUnit"/>_PresetButton</ObjectName>
+          </SingletonContainer>
+
+          <SingletonContainer>
             <ObjectName>FxUnit<Variable name="FxUnit"/>_MixmodePfl</ObjectName>
           </SingletonContainer>
         </Children>

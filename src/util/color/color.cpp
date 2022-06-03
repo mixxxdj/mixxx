@@ -19,9 +19,9 @@ int brightness(int red, int green, int blue) {
 // returns a lighter color, otherwise returns a darker color.
 QColor chooseContrastColor(QColor baseColor, int dimBrightThreshold) {
     // Will produce a color that is 60% brighter.
-    static const int iLighterFactor = 160;
+    static constexpr int iLighterFactor = 160;
     // We consider a hsv color dark if its value is <= 20% of max value
-    static const int iMinimumValue = 20 * 255 / 100;
+    static constexpr int iMinimumValue = 20 * 255 / 100;
 
     // Convert to Hsv to make sure the conversion only happens once.
     // QColor::darker() and QColor::lighter() internally convert from and to Hsv if the color is not already in Hsv.

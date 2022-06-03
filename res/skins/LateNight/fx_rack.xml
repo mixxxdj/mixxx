@@ -3,7 +3,7 @@
   <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
   <SetVariable name="ArcUnipolar">true</SetVariable>
 
-  <!-- Let's reate Singletons for widgtes we use multiple times
+  <!-- Let's create Singletons for widgets we use multiple times
       at different places in each effect unit:
       * Meta knob
       * Effect selector

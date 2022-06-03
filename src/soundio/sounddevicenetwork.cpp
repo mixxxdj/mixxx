@@ -18,7 +18,7 @@
 #include "waveform/visualplayposition.h"
 
 namespace {
-const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
+constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:
 // Mp3 frames = 1152 samples
 // Ogg frames = 64 to 8192 samples.
@@ -74,11 +74,11 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
     // clock reference device callback
     // This is what should work best.
     if (m_iNumOutputChannels) {
-        m_outputFifo = std::make_unique<FIFO<CSAMPLE> >(
+        m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
                 m_iNumOutputChannels * m_framesPerBuffer * 2);
     }
     if (m_iNumInputChannels) {
-        m_inputFifo = std::make_unique<FIFO<CSAMPLE> >(
+        m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(
                 m_iNumInputChannels * m_framesPerBuffer * 2);
     }
 

@@ -1,14 +1,27 @@
 #include "errordialoghandler.h"
 
 #include <QCoreApplication>
-#include <QMutexLocker>
+#include <QGuiApplication>
 #include <QScopedPointer>
+#include <QScreen>
 #include <QThread>
 #include <QtDebug>
 
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
+#include "util/compatibility/qmutex.h"
 #include "util/versionstore.h"
+#include "util/widgethelper.h"
+
+namespace {
+// Gross estimated dimensions for the size of the error dialog,
+// with Show Details expanded.
+constexpr int kEstimatedShowDetailedDialogWidth = 1000; // px
+constexpr int kEstimatedShowDetailedDialogHeight = 500; // px
+constexpr int kEstimatedDialogPadding = 50;             // px
+// used to push the dialog away from screen borders to not cover taskbars
+constexpr int kMinimumDialogMargin = 40; // px
+} // namespace
 
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title(VersionStore::applicationName()),
@@ -115,7 +128,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
     }
 
     // Skip if a dialog with the same key is already displayed
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     bool keyExists = m_dialogKeys.contains(props->getKey());
     locker.unlock();
     if (keyExists) {
@@ -149,7 +162,36 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     if (!props->m_details.isEmpty()) {
         pMsgBox->setDetailedText(props->m_details);
         if (props->m_detailsUseMonospaceFont) {
-            pMsgBox->setStyleSheet("QTextEdit { font-family: monospace; }");
+            // There is no event to respond on the Show Details button of QMessagBox.
+            // Therefore we must consider the expanded size for positioning the dialog initially.
+            auto* pScreen =
+                    mixxx::widgethelper::getScreen(*pMsgBox);
+            if (!pScreen) {
+                // Fallback to obtain the primary screen when mixxx::widgethelper::getScreen can't
+                // determine the screen. This happens always with Qt <5.14
+                pScreen = qGuiApp->primaryScreen();
+            }
+            DEBUG_ASSERT(pScreen);
+            int dialogWidth = kEstimatedShowDetailedDialogWidth;
+            int dialogHeight = kEstimatedShowDetailedDialogHeight;
+
+            // Limit dialog size to screen size, for the case of devices with very small display - like Raspberry Pi.
+            if (dialogWidth > pScreen->geometry().width() - 2 * kMinimumDialogMargin) {
+                dialogWidth = pScreen->geometry().width() - 2 * kMinimumDialogMargin;
+            }
+            if (dialogHeight > pScreen->geometry().height() - 2 * kMinimumDialogMargin) {
+                dialogHeight = pScreen->geometry().height() - 2 * kMinimumDialogMargin;
+            }
+            pMsgBox->setGeometry(QStyle::alignedRect(
+                    Qt::LeftToRight,
+                    Qt::AlignCenter,
+                    QSize(dialogWidth, dialogHeight),
+                    pScreen->geometry()));
+            pMsgBox->setStyleSheet(
+                    QString("QTextEdit { min-width: %1px ; max-height: %2px; "
+                            "font-family: monospace;}")
+                            .arg(dialogWidth - kEstimatedDialogPadding)
+                            .arg(dialogHeight));
         }
     }
 
@@ -162,8 +204,12 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // This deletes the msgBox automatically, avoiding a memory leak
     pMsgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+    // Without this, QApplication would close Mixxx when closing this
+    // dialog and using the QML GUI because QApplication only takes
+    // into account QWidget windows.
+    pMsgBox->setAttribute(Qt::WA_QuitOnClose, false);
 
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     // To avoid duplicate dialogs on the same error
     m_dialogKeys.append(props->m_key);
 
@@ -201,7 +247,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 }
 
 void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
@@ -215,7 +261,7 @@ void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
         return;
     }
 
-    QMutexLocker locker2(&m_mutex);
+    const auto locker2 = lockMutex(&m_mutex);
     if (m_dialogKeys.contains(key)) {
         if (!m_dialogKeys.removeOne(key)) {
             qWarning() << "Error dialog key removal from list failed!";

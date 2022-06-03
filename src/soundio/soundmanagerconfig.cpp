@@ -54,11 +54,6 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
-SoundManagerConfig::~SoundManagerConfig() {
-    // don't write to disk here, it's SoundManager's responsibility
-    // to save its own configuration -- bkgood
-}
-
 /**
  * Read the SoundManagerConfig xml serialization at the predetermined
  * path
@@ -85,7 +80,8 @@ bool SoundManagerConfig::readFromDisk() {
     setForceNetworkClock(rootElement.attribute(xmlAttributeForceNetworkClock,
             "0").toUInt() != 0);
     setDeckCount(rootElement.attribute(xmlAttributeDeckCount,
-            QString(kDefaultDeckCount)).toUInt());
+                                    QString::number(kDefaultDeckCount))
+                         .toUInt());
     clearOutputs();
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));

@@ -96,7 +96,7 @@ class DlgPrefController : public DlgPreferencePage {
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.
-    bool isDirty() {
+    bool isDirty() const {
         return m_bDirty;
     }
 
@@ -121,5 +121,6 @@ class DlgPrefController : public DlgPreferencePage {
     QSortFilterProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
+    bool m_GuiInitialized;
     bool m_bDirty;
 };

@@ -40,6 +40,7 @@ class EngineSync : public SyncableListener {
     /// Notify the engine that a syncable has started or stopped playing
     void notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) override;
     void notifyScratching(Syncable* pSyncable, bool scratching) override;
+    void notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position) override;
 
     /// Used to pick a sync target for cases where Leader sync mode is not sufficient.
     /// Guaranteed to pick a Syncable that is a real deck and has an EngineBuffer,
@@ -57,7 +58,7 @@ class EngineSync : public SyncableListener {
     bool otherSyncedPlaying(const QString& group);
 
     void addSyncableDeck(Syncable* pSyncable);
-    EngineChannel* getLeader() const;
+    EngineChannel* getLeaderChannel() const;
     void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
     void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
 

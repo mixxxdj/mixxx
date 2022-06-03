@@ -7,7 +7,7 @@
 class Deck : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
-    Deck(QObject* pParent,
+    Deck(PlayerManager* pParent,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,

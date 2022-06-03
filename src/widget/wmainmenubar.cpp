@@ -1,6 +1,5 @@
 #include "widget/wmainmenubar.h"
 
-#include <QDesktopServices>
 #include <QUrl>
 
 #include "config.h"
@@ -14,7 +13,7 @@
 
 namespace {
 
-const int kMaxLoadToDeckActions = 4;
+constexpr int kMaxLoadToDeckActions = 4;
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
@@ -517,7 +516,7 @@ void WMainMenuBar::initialize() {
                 &WMainMenuBar::slotDeveloperStatsBase);
         pDeveloperMenu->addAction(pDeveloperStatsBase);
 
-        // "D" cannont be used with Alt here as it is already by the Developer menu
+        // "D" cannot be used with Alt here as it is already by the Developer menu
         QString scriptDebuggerTitle = tr("Deb&ugger Enabled");
         QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
         bool scriptDebuggerEnabled = m_pConfig->getValueString(

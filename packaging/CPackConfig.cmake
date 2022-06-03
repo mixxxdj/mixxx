@@ -19,7 +19,7 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
 # dpkg --compare-versions 2.3~alpha~1234~g8163 lt 2.3~beta~1234~g8163 && echo true
 # dpkg --compare-versions 2.3~beta~1234~g8163 lt 2.3.0 && echo true
 # dpkg --compare-versions 2.3.0 lt 2.3.0+2345+g163  && echo true
-if (PACKAGE_VERSION MATCHES "^[0-9][A-Za-z0-9.+~-]*$")
+if (PACKAGE_VERSION MATCHES "^[0-9]+\\.[0-9]+[A-Za-z0-9.+~-]*$")
   if (PACKAGE_VERSION MATCHES "(alpha|beta)")
     string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
   else()

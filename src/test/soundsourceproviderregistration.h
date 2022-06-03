@@ -6,9 +6,13 @@
 class SoundSourceProviderRegistration {
   protected:
     SoundSourceProviderRegistration() {
-        const bool providersRegistered =
-                SoundSourceProxy::registerProviders();
-        Q_UNUSED(providersRegistered);
-        DEBUG_ASSERT(providersRegistered);
+        // SoundSourceProxy does not support tear-down, so we have to test to see if it's already
+        // been run once.
+        if (!SoundSourceProxy::isFileSuffixSupported("wav")) {
+            const bool providersRegistered =
+                    SoundSourceProxy::registerProviders();
+            Q_UNUSED(providersRegistered);
+            DEBUG_ASSERT(providersRegistered);
+        }
     }
 };

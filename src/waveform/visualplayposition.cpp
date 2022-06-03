@@ -6,11 +6,13 @@
 #include "control/controlproxy.h"
 #include "moc_visualplayposition.cpp"
 #include "util/math.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/vsyncthread.h"
+#endif
 
 namespace {
 // The offset is limited to two callback intervals.
-// This should be sufficiant to compensate jitter,
+// This should be sufficient to compensate jitter,
 // but does not continue in case of underflows.
 constexpr int kMaxOffsetBufferCnt = 2;
 constexpr int kMicrosPerMillis = 1000; // 1 ms contains 1000 µs
@@ -18,7 +20,7 @@ constexpr int kMicrosPerMillis = 1000; // 1 ms contains 1000 µs
 
 
 //static
-QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
+QMap<QString, QWeakPointer<VisualPlayPosition>> VisualPlayPosition::m_listVisualPlayPosition;
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 
@@ -58,7 +60,12 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vSyncThread) {
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        Q_UNUSED(vSyncThread);
+        int refToVSync = 0;
+#else
         int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+#endif
         int offset = refToVSync - data.m_callbackEntrytoDac;
         offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
@@ -78,7 +85,12 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        Q_UNUSED(vSyncThread);
+        int refToVSync = 0;
+#else
         int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+#endif
         int offset = refToVSync - data.m_callbackEntrytoDac;
         offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer

@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QStandardPaths>
 
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
@@ -11,14 +12,11 @@
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
-#include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
-#ifdef __LILV__
-#include "effects/lv2/lv2backend.h"
-#endif
 #include "engine/enginemaster.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -42,7 +40,7 @@
 #include "util/sandbox.h"
 #endif
 
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
 
@@ -66,18 +64,18 @@ template<typename T>
 void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
     std::weak_ptr<T> weak(ref_ptr);
     ref_ptr.reset();
-    auto shared = weak.lock();
-    VERIFY_OR_DEBUG_ASSERT(!shared) {
+    if (auto shared = weak.lock()) {
         qWarning() << name << "was leaked! Use count:" << shared.use_count();
+        DEBUG_ASSERT_UNREACHABLE(false);
     }
 }
 
 // hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
 // https://bugs.launchpad.net/mixxx/+bug/1805559
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
-const int NUM_HANDLERS = 256;
+constexpr int NUM_HANDLERS = 256;
 WireToErrorType __oldHandlers[NUM_HANDLERS] = {nullptr};
 
 Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
@@ -218,7 +216,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     VersionStore::logBuildDetails();
 
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // XESetWireToError will segfault if running as a Wayland client
     if (pApp->platformName() == QLatin1String("xcb")) {
         for (auto i = 0; i < NUM_HANDLERS; ++i) {
@@ -255,7 +253,7 @@ void CoreServices::initialize(QApplication* pApp) {
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
 
     emit initializationProgressUpdate(20, tr("effects"));
-    m_pEffectsManager = std::make_shared<EffectsManager>(this, pConfig, pChannelHandleFactory);
+    m_pEffectsManager = std::make_shared<EffectsManager>(pConfig, pChannelHandleFactory);
 
     m_pEngine = std::make_shared<EngineMaster>(
             pConfig,
@@ -263,20 +261,6 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pEffectsManager.get(),
             pChannelHandleFactory,
             true);
-
-    // Create effect backends. We do this after creating EngineMaster to allow
-    // effect backends to refer to controls that are produced by the engine.
-    BuiltInBackend* pBuiltInBackend = new BuiltInBackend(m_pEffectsManager.get());
-    m_pEffectsManager->addEffectsBackend(pBuiltInBackend);
-#ifdef __LILV__
-    m_pLV2Backend = new LV2Backend(m_pEffectsManager.get());
-    // EffectsManager takes ownership
-    m_pEffectsManager->addEffectsBackend(m_pLV2Backend);
-#else
-    m_pLV2Backend = nullptr;
-#endif
-
-    m_pEffectsManager->setup();
 
     emit initializationProgressUpdate(30, tr("audio interface"));
     // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
@@ -323,7 +307,7 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
 
-    m_pEffectsManager->loadEffectChains();
+    m_pEffectsManager->setup();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
@@ -392,7 +376,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // Scan the library for new files and directories
     bool rescan = pConfig->getValue<bool>(
-            ConfigKey("[Library]", "RescanOnStartup"));
+            library::prefs::kRescanOnStartupConfigKey);
     // rescan the library if we get a new plugin
     QList<QString> prev_plugins_list =
             pConfig->getValueString(
@@ -416,16 +400,17 @@ void CoreServices::initialize(QApplication* pApp) {
             QSet<QString>::fromList(prev_plugins_list);
 #endif
 
-    const QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
-    QSet<QString> curr_plugins =
+    const QList<QString> supportedFileSuffixes = SoundSourceProxy::getSupportedFileSuffixes();
+    auto curr_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-            QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
+            QSet<QString>(supportedFileSuffixes.begin(), supportedFileSuffixes.end());
 #else
-            QSet<QString>::fromList(curr_plugins_list);
+            QSet<QString>::fromList(supportedFileSuffixes);
 #endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
-    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"), curr_plugins_list.join(","));
+    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
+            supportedFileSuffixes.join(","));
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
@@ -438,6 +423,34 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager->loadSamplers();
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
+
+    // The following UI controls must be created here so that controllers can bind to them
+    // on startup.
+    m_uiControls.clear();
+
+    struct UIControlConfig {
+        ConfigKey key;
+        bool persist;
+        bool defaultValue;
+    };
+    const std::vector<UIControlConfig> uiControls = {
+            {ConfigKey("[Master]", "skin_settings"), false, false},
+            {ConfigKey("[Microphone]", "show_microphone"), true, true},
+            {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
+            {ConfigKey("[PreviewDeck]", "show_previewdeck"), true, true},
+            {ConfigKey("[Library]", "show_coverart"), true, true},
+            {ConfigKey("[Master]", "maximize_library"), true, false},
+            {ConfigKey("[Samplers]", "show_samplers"), true, true},
+            {ConfigKey("[EffectRack1]", "show"), true, true},
+            {ConfigKey("[Skin]", "show_4effectunits"), true, false},
+            {ConfigKey("[Master]", "show_mixer"), true, true},
+    };
+    m_uiControls.reserve(uiControls.size());
+    for (const auto& row : uiControls) {
+        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
+                row.key, row.persist, row.defaultValue));
+        m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
+    }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -612,6 +625,8 @@ void CoreServices::finalize() {
     m_pDbConnectionPool.reset(); // should drop the last reference
 
     m_pTouchShift.reset();
+
+    m_uiControls.clear();
 
     m_pControlIndicatorTimer.reset();
 

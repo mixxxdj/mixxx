@@ -569,7 +569,7 @@ QByteArray SeratoMarkers::dumpID3() const {
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream << kVersion << m_entries.size();
+    stream << kVersion << static_cast<quint32>(m_entries.size());
     for (int i = 0; i < m_entries.size(); i++) {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->dumpID3(), kEntrySizeID3);
@@ -593,7 +593,7 @@ QByteArray SeratoMarkers::dumpMP4() const {
     stream.setByteOrder(QDataStream::BigEndian);
     stream.writeRawData(kSeratoMarkersBase64EncodedPrefix.constData(),
             kSeratoMarkersBase64EncodedPrefix.length());
-    stream << kVersion << m_entries.size();
+    stream << kVersion << static_cast<quint32>(m_entries.size());
     for (int i = 0; i < m_entries.size(); i++) {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->dumpMP4(), kEntrySizeMP4);

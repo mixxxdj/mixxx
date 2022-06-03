@@ -9,8 +9,7 @@
 #include <QString>
 
 #if defined(__EXTRA_METADATA__)
-// UUID -> QString
-#include "util/compatibility.h"
+#include "util/quuid.h"
 #endif // __EXTRA_METADATA__
 
 #include "track/trackmetadata.h"

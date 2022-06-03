@@ -17,12 +17,12 @@ samplerates=(22050 32000 44100 48000 96000)
 
 if [ "$1" == "clean" ]
 then
-    for format in ${formats[*]}
+    for format in "${formats[@]}"
     do
-        for rate in ${samplerates[*]}
+        for rate in "${samplerates[@]}"
         do
             friendlyrate=$(( "$rate" / 1000 ))
-            for channel in ${channels[*]}
+            for channel in "${channels[@]}"
             do
                 if [ "$channel" -eq 1 ]
                 then
@@ -44,7 +44,7 @@ then
                     fi
                 fi
 
-                for ssize in ${samplesizes[*]}
+                for ssize in "${samplesizes[@]}"
                 do
                     if [ -e "test${ssize}bit${friendlyrate}k${friendlychannel}.${format}" ]
                     then
@@ -80,7 +80,7 @@ then
 fi
 
 # Do the conversions/generate the table
-for format in ${formats[*]}
+for format in "${formats[@]}"
 do
     if [ "$1" == "table" ]
     then
@@ -104,7 +104,7 @@ do
         echo "==== $friendlyformat ===="
         echo "^ Channels ^ Bit depth ^ Sample Rate ^ Does it work? ^"
     fi
-    for channel in ${channels[*]}
+    for channel in "${channels[@]}"
     do
         if [ "$channel" -eq 1 ]
         then
@@ -116,7 +116,7 @@ do
             friendlychannel="Stereo"
             lameopt=()
         fi
-        for ssize in ${samplesizes[*]}
+        for ssize in "${samplesizes[@]}"
         do
             # Hack because sox doesn't abort if the parameters are out of spec
             if [ "$ssize" -gt 24 ] && [ "$format" == "flac" ]
@@ -133,7 +133,7 @@ do
             then
                 break
             fi
-            for rate in ${samplerates[*]}
+            for rate in "${samplerates[@]}"
             do
                 friendlyrate=$(( "$rate" / 1000 ))
                 problem="false"

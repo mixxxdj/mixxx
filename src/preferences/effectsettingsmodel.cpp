@@ -3,10 +3,10 @@
 #include "moc_effectsettingsmodel.cpp"
 
 namespace {
-const int kColumnEnabled = 0;
-const int kColumnName = 1;
-const int kColumnType = 2;
-const int kNumberOfColumns = 3;
+constexpr int kColumnEnabled = 0;
+constexpr int kColumnName = 1;
+constexpr int kColumnType = 2;
+constexpr int kNumberOfColumns = 3;
 } // namespace
 
 EffectSettingsModel::EffectSettingsModel() {

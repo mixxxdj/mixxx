@@ -961,7 +961,7 @@ Jogger.prototype.onWheelMove = function(value, Do_iCut) {
 // The jogwheel has 4 RGB leds , so there is 4 slots for each show.
 // let's that we have toggle an Effect of the effect rack (show 1), the jog wheel
 // will illuminate magenta, yellow, cyan or green depending of the effect.
-// If above that we turn the lp/hp filter button to the right (High passs),
+// If above that we turn the lp/hp filter button to the right (High pass),
 // the right part will illuminate white (show 2), leaving the left part with the color of the effect.
 // The left part of (slots 1 and 2), set to "null", will be considered as being transparent for the layer show n°2,
 // leaving the corresponding slots below (show1) in order to be displayed.

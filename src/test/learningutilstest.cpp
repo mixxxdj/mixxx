@@ -36,7 +36,7 @@ class LearningUtilsTest : public MixxxTest {
         return false;
     }
 
-    QList<QPair<MidiKey, unsigned char> > m_messages;
+    QList<QPair<MidiKey, unsigned char>> m_messages;
 };
 
 TEST_F(LearningUtilsTest, NoteOnButton) {

@@ -66,7 +66,7 @@ void ClockControl::updateIndicators(const double dRate,
     }
 
     // Position change more significiantly, but rate is zero. Occurs when pressing a cue point
-    // The m_internalState needs to be taken into account here to prevent uneccessary events (state 0 -> state 0)
+    // The m_internalState needs to be taken into account here to prevent unnecessary events (state 0 -> state 0)
     if ((dRate == 0.0) && (m_internalState != StateMachine::outsideIndicationArea)) {
         m_internalState = StateMachine::outsideIndicationArea;
         m_pCOBeatActive->forceSet(0.0);

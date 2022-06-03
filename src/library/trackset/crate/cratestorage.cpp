@@ -52,12 +52,11 @@ const QString kCrateSummaryViewQuery =
                         CRATE_TABLE,
                         CRATETABLE_ID);
 
-class CrateQueryBinder {
+class CrateQueryBinder final {
   public:
     explicit CrateQueryBinder(FwdSqlQuery& query)
             : m_query(query) {
     }
-    virtual ~CrateQueryBinder() = default;
 
     void bindId(const QString& placeholder, const Crate& crate) const {
         m_query.bindValue(placeholder, crate.getId());

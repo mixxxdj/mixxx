@@ -3,15 +3,20 @@
 #include <QObject>
 #include <QString>
 
+#include "mixer/playermanager.h"
+
 class BasePlayer : public QObject {
     Q_OBJECT
   public:
-    BasePlayer(QObject* pParent, const QString& group);
+    BasePlayer(PlayerManager* pParent, const QString& group);
     ~BasePlayer() override = default;
 
-    inline const QString& getGroup() {
+    inline const QString& getGroup() const {
         return m_group;
     }
+
+  protected:
+    PlayerManager* m_pPlayerManager;
 
   private:
     const QString m_group;

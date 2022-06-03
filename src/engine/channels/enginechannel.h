@@ -30,7 +30,7 @@ class EngineChannel : public EngineObject {
 
     virtual ChannelOrientation getOrientation() const;
 
-    inline const ChannelHandle& getHandle() const {
+    inline ChannelHandle getHandle() const {
         return m_group.handle();
     }
 

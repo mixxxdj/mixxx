@@ -29,8 +29,8 @@
         </State>
         <State>
           <Number>2</Number>
-          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_set.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_set.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_active.svg</Pressed>
         </State>
       </HotcueButton>
     </Children>

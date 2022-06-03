@@ -41,6 +41,9 @@ Variables:
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>1.500</KnobCenterYOffset>
+                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                <Effect><Variable name="FxNum"/></Effect>
+                <EffectParameter><Variable name="FxParameter"/></EffectParameter>
                 <Connection>
                   <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>

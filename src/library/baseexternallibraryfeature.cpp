@@ -157,7 +157,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         if (!trackId.isValid()) {
             kLogger.warning()
                     << "Failed to add track"
-                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << pPlaylistModelToAdd->getTrackUrl(index)
                     << "to playlist"
                     << *pPlaylist;
             continue;
@@ -165,7 +165,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Adding track"
-                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << pPlaylistModelToAdd->getTrackUrl(index)
                     << "to playlist"
                     << *pPlaylist;
         }

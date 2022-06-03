@@ -149,7 +149,7 @@ void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds,
             for (int i = 0; i < rows; ++i) {
                 QModelIndex index = pPlaylistModelToAdd->index(i,0);
                 if (index.isValid()) {
-                    //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
+                    //qDebug() << pPlaylistModelToAdd->getTrackUrl(index);
                     TrackPointer track = pPlaylistModelToAdd->getTrack(index);
                     trackIds->append(track->getId());
                 }

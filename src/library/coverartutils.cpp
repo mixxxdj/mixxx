@@ -2,11 +2,11 @@
 
 #include <QDir>
 #include <QDirIterator>
+#include <QRegularExpression>
 #include <QtConcurrentRun>
 
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/logger.h"
 #include "util/regex.h"
 
@@ -56,8 +56,8 @@ QImage CoverArtUtils::extractEmbeddedCover(
 //static
 QList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& folder) {
     // Search for image files in the track directory.
-    QRegExp coverArtFilenames(supportedCoverArtExtensionsRegex(),
-            Qt::CaseInsensitive);
+    QRegularExpression coverArtFilenames(supportedCoverArtExtensionsRegex(),
+            QRegularExpression::CaseInsensitiveOption);
     QDirIterator it(folder,
             QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     QFile currentFile;
@@ -66,8 +66,8 @@ QList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& folder
     while (it.hasNext()) {
         it.next();
         currentFileInfo = it.fileInfo();
-        if (currentFileInfo.isFile() &&
-                coverArtFilenames.indexIn(currentFileInfo.fileName()) != -1) {
+        const QRegularExpressionMatch match = coverArtFilenames.match(currentFileInfo.fileName());
+        if (currentFileInfo.isFile() && match.hasMatch()) {
             possibleCovers.append(currentFileInfo);
         }
     }
@@ -216,18 +216,19 @@ void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
     }
 }
 
-void guessTrackCoverInfoConcurrently(
+QFuture<void> guessTrackCoverInfoConcurrently(
         TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return;
+        return {};
     }
     if (s_enableConcurrentGuessingOfTrackCoverInfo) {
-        QtConcurrent::run([pTrack] {
+        return QtConcurrent::run([pTrack] {
             CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
         });
     } else {
         // Disabled only during tests
         CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+        return {};
     }
 }
 

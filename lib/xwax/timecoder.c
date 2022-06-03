@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2013 Mark Hills <mark@xwax.org>
+ * Copyright (C) 2021 Mark Hills <mark@xwax.org>
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2, as published by the Free Software Foundation.
+ * This file is part of "xwax".
  *
- * This program is distributed in the hope that it will be useful, but
+ * "xwax" is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License, version 3 as
+ * published by the Free Software Foundation.
+ *
+ * "xwax" is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License version 2 for more details.
+ * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * version 2 along with this program; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * along with this program; if not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -22,7 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 #include "debug.h"
 #include "timecoder.h"
@@ -55,37 +57,31 @@ static struct timecode_def timecodes[] = {
         .name = "serato_2a",
         .desc = "Serato 2nd Ed., side A",
         .resolution = 1000,
-        .flags = 0,
         .bits = 20,
         .seed = 0x59017,
         .taps = 0x361e4,
         .length = 712000,
         .safe = 625000,
-        .lookup = false
     },
     {
         .name = "serato_2b",
         .desc = "Serato 2nd Ed., side B",
         .resolution = 1000,
-        .flags = 0,
         .bits = 20,
         .seed = 0x8f3c6,
         .taps = 0x4f0d8, /* reverse of side A */
         .length = 922000,
         .safe = 908000,
-        .lookup = false
     },
     {
         .name = "serato_cd",
         .desc = "Serato CD",
         .resolution = 1000,
-        .flags = 0,
         .bits = 20,
         .seed = 0xd8b40,
         .taps = 0x34d54,
         .length = 950000,
         .safe = 890000,
-        .lookup = false
     },
     {
         .name = "traktor_a",
@@ -97,7 +93,6 @@ static struct timecode_def timecodes[] = {
         .taps = 0x041040,
         .length = 1500000,
         .safe = 605000,
-        .lookup = false
     },
     {
         .name = "traktor_b",
@@ -109,7 +104,6 @@ static struct timecode_def timecodes[] = {
         .taps = 0x041040, /* same as side A */
         .length = 2110000,
         .safe = 907000,
-        .lookup = false
     },
     {
         .name = "mixvibes_v2",
@@ -121,7 +115,6 @@ static struct timecode_def timecodes[] = {
         .taps = 0x00008,
         .length = 950000,
         .safe = 655000,
-        .lookup = false
     },
     {
         .name = "mixvibes_7inch",
@@ -133,7 +126,28 @@ static struct timecode_def timecodes[] = {
         .taps = 0x00008,
         .length = 312000,
         .safe = 238000,
-        .lookup = false
+    },
+    {
+        .name = "pioneer_a",
+        .desc = "Pioneer RekordBox DVS Control Vinyl, side A",
+        .resolution = 1000,
+        .flags = SWITCH_POLARITY,
+        .bits = 20,
+        .seed = 0x78370,
+        .taps = 0x7933a,
+        .length = 635000,
+        .safe = 614000,
+    },
+    {
+        .name = "pioneer_b",
+        .desc = "Pioneer RekordBox DVS Control Vinyl, side B",
+        .resolution = 1000,
+        .flags = SWITCH_POLARITY,
+        .bits = 20,
+        .seed = 0xf7012,
+        .taps = 0x2ef1c,
+        .length = 918500,
+        .safe = 913000,
     },
 };
 
@@ -212,12 +226,12 @@ static int build_lookup(struct timecode_def *def)
         bits_t next;
 
         /* timecode must not wrap */
-        dassert(lut_lookup(&def->lut, current) == (unsigned)-1);
+        assert(lut_lookup(&def->lut, current) == (unsigned)-1);
         lut_push(&def->lut, current);
 
         /* check symmetry of the lfsr functions */
         next = fwd(current, def);
-        dassert(rev(next, def) == current);
+        assert(rev(next, def) == current);
 
         current = next;
     }
@@ -230,30 +244,26 @@ static int build_lookup(struct timecode_def *def)
 /*
  * Find a timecode definition by name
  *
- * Return: pointer to timecode definition, or NULL if not found
+ * Return: pointer to timecode definition, or NULL if not available
  */
 
 struct timecode_def* timecoder_find_definition(const char *name)
 {
-    struct timecode_def *def, *end;
+    unsigned int n;
 
-    def = &timecodes[0];
-    end = def + ARRAY_SIZE(timecodes);
+    for (n = 0; n < ARRAY_SIZE(timecodes); n++) {
+        struct timecode_def *def = &timecodes[n];
 
-    for (;;) {
-        if (!strcmp(def->name, name))
-            break;
+        if (strcmp(def->name, name) != 0)
+            continue;
 
-        def++;
+        if (build_lookup(def) == -1)
+            return NULL;  /* error */
 
-        if (def == end)
-            return NULL;
+        return def;
     }
 
-    if (build_lookup(def) == -1)
-        return NULL;
-
-    return def;
+    return NULL;  /* not found */
 }
 
 /*
@@ -261,15 +271,13 @@ struct timecode_def* timecoder_find_definition(const char *name)
  */
 
 void timecoder_free_lookup(void) {
-    struct timecode_def *def, *end;
+    unsigned int n;
 
-    def = &timecodes[0];
-    end = def + ARRAY_SIZE(timecodes);
+    for (n = 0; n < ARRAY_SIZE(timecodes); n++) {
+        struct timecode_def *def = &timecodes[n];
 
-    while (def < end) {
         if (def->lookup)
             lut_clear(&def->lut);
-        def++;
     }
 }
 
@@ -343,7 +351,7 @@ int timecoder_monitor_init(struct timecoder *tc, int size)
 {
     assert(tc->mon == NULL);
     tc->mon_size = size;
-    tc->mon = malloc(SQ(tc->mon_size));
+    tc->mon = (unsigned char*)(malloc(SQ(tc->mon_size)));
     if (tc->mon == NULL) {
         perror("malloc");
         return -1;
@@ -392,7 +400,7 @@ static void detect_zero_crossing(struct timecoder_channel *ch,
  * Plot the given sample value in the x-y monitor
  */
 
-inline static void update_monitor(struct timecoder *tc, signed int x, signed int y)
+static inline void update_monitor(struct timecoder *tc, signed int x, signed int y)
 {
     int px, py, size, ref;
 
@@ -415,7 +423,7 @@ inline static void update_monitor(struct timecoder *tc, signed int x, signed int
 
     assert(ref > 0);
 
-    /* ref_level is half the prevision of signal level */
+    /* ref_level is half the precision of signal level */
     px = size / 2 + (long long)x * size / ref / 8;
     py = size / 2 + (long long)y * size / ref / 8;
 
@@ -554,7 +562,7 @@ static struct timecode_def* next_definition(struct timecode_def *def)
     do {
         def++;
 
-        if (def > timecodes + ARRAY_SIZE(timecodes))
+        if (def >= timecodes + ARRAY_SIZE(timecodes))
             def = timecodes;
 
     } while (!def->lookup);
