@@ -160,8 +160,12 @@ extern void link_assert_failed(void);
 /// rather than DEBUG_ASSERT. Only use DEBUG_ASSERT if there is no appropriate
 /// fallback.
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-#define DEBUG_ASSERT_UNREACHABLE(cond) \
-    mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION)
+#define DEBUG_ASSERT_UNREACHABLE(cond)                                  \
+    do {                                                                \
+        mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
+    } while (0)
 #else
-#define DEBUG_ASSERT_UNREACHABLE(cond)
+#define DEBUG_ASSERT_UNREACHABLE(cond) \
+    do {                               \
+    } while (0)
 #endif
