@@ -112,8 +112,8 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
                 QList<CuePointer> trackCues = m_pTrack->getCuePoints();
                 QList<mixxx::audio::FramePos> cuesFromCurrentPosition =  QList<mixxx::audio::FramePos>();
 
-                //Iterate through current Track cues and create a list with the ones that are after the current play position
-                //We add the cueFramePositions in an ordered fashion in the new list
+                //Iterate through current Track cues and create a list with the FramePos of the ones 
+                // that are after the current play position. We add them ordered in the new list
                 for (int i = 0; i < trackCues.count(); ++i) {
                     CuePointer cue = trackCues[i];
                     mixxx::audio::FramePos cueFramePos = cue->getPosition();
