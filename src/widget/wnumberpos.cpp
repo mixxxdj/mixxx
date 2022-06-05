@@ -5,7 +5,6 @@
 #include "moc_wnumberpos.cpp"
 #include "util/duration.h"
 #include "util/math.h"
-#include "mixer/basetrackplayer.h"
 #include "track/track.h"
 #include "mixer/deck.h"
 #include "engine/enginebuffer.h"
