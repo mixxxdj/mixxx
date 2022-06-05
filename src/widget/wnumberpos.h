@@ -2,10 +2,9 @@
 
 #include <QMouseEvent>
 
-#include "wnumber.h"
-#include "preferences/dialog/dlgprefdeck.h"
 #include "mixer/basetrackplayer.h"
-
+#include "preferences/dialog/dlgprefdeck.h"
+#include "wnumber.h"
 
 class ControlProxy;
 
