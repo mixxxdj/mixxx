@@ -2037,7 +2037,9 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 if(GNU_GCC OR LLVM_CLANG)
-  target_compile_options(FpClassify PRIVATE -fno-fast-math)
+  # The option `-ffp-contract=on` must precede `-fno-fast-math`
+  # to silence a warning on Clang 14
+  target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math)
 endif()
 target_link_libraries(mixxx-lib PRIVATE FpClassify)
 
@@ -2952,7 +2954,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal impish jammy)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal impish jammy kinetic)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")

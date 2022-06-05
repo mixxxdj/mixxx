@@ -7,6 +7,24 @@
 
 #include "library/parser.h"
 
+namespace {
+
+bool isColumnExported(BaseSqlTableModel* pPlaylistTableModel, int column) {
+    if (pPlaylistTableModel->isColumnInternal(column)) {
+        return false;
+    }
+    if (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) == column) {
+        return false;
+    }
+    if (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+        // This is the bas64 encoded image which may hit the maximum line length of spreadsheet applications
+        return false;
+    }
+    return true;
+}
+
+} // namespace
+
 // static
 bool ParserCsv::isPlaylistFilenameSupported(const QString& playlistFile) {
     return playlistFile.endsWith(".csv", Qt::CaseInsensitive);
@@ -139,8 +157,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     bool first = true;
     int columns = pPlaylistTableModel->columnCount();
     for (int i = 0; i < columns; ++i) {
-        if (pPlaylistTableModel->isColumnInternal(i) ||
-                (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) == i)) {
+        if (!isColumnExported(pPlaylistTableModel, i)) {
             continue;
         }
         if (!first) {
@@ -161,8 +178,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
         // writing fields section
         first = true;
         for (int i = 0; i < columns; ++i) {
-            if (pPlaylistTableModel->isColumnInternal(i) ||
-                    (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) == i)) {
+            if (!isColumnExported(pPlaylistTableModel, i)) {
                 continue;
             }
             if (!first) {

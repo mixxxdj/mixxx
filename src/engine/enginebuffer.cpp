@@ -1395,7 +1395,7 @@ void EngineBuffer::hintReader(const double dRate) {
     if (m_bSlipEnabledProcessing) {
         Hint hint;
         hint.frame = static_cast<SINT>(m_slipPosition.toLowerFrameBoundary().value());
-        hint.priority = 1;
+        hint.type = Hint::Type::SlipPosition;
         if (m_dSlipRate >= 0) {
             hint.frameCount = Hint::kFrameCountForward;
         } else {

@@ -79,6 +79,8 @@ class Library: public QObject {
     /// Needed for exposing models to QML
     LibraryTableModel* trackTableModel() const;
 
+    bool isTrackIdInCurrentLibraryView(const TrackId& trackId);
+
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
     }
@@ -127,6 +129,7 @@ class Library: public QObject {
     void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
+    void selectTrack(const TrackId&);
     void trackSelected(TrackPointer pTrack);
 #ifdef __ENGINEPRIME__
     void exportLibrary();
@@ -157,6 +160,7 @@ class Library: public QObject {
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
+    WLibrary* m_pLibraryWidget;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;

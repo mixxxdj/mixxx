@@ -216,7 +216,7 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     }
 
     // top priority, we need to read this data immediately
-    current_position.priority = 1;
+    current_position.type = Hint::Type::CurrentPosition;
     pHintList->append(current_position);
 }
 
