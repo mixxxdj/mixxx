@@ -148,8 +148,6 @@ QByteArray HidIoThread::getInputReport(quint8 reportID) {
     auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
-    // FIXME: implement upstream for hidraw backend on Linux
-    // https://github.com/libusb/hidapi/issues/259
     int bytesRead = hid_get_input_report(
             m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
     if (bytesRead <= kReportIdSize) {

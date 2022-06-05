@@ -2792,7 +2792,9 @@ find_package(LibUSB)
 # USB HID controller support
 option(HID "USB HID controller support" ON)
 if(HID)
-  find_package(hidapi 0.10.1)
+  # hidapi 0.11.2 is the first release, that implements hid_get_input_report
+  # for the Linux hidraw backend.
+  find_package(hidapi 0.11.2)
   if(NOT hidapi_FOUND)
     message(STATUS "Linking internal libhidapi statically")
     add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)

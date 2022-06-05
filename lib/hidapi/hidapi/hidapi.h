@@ -48,12 +48,12 @@
 
 	@ingroup API
 */
-#define HID_API_VERSION_MINOR 10
+#define HID_API_VERSION_MINOR 11
 /** @brief Static/compile-time patch version of the library.
 
 	@ingroup API
 */
-#define HID_API_VERSION_PATCH 1
+#define HID_API_VERSION_PATCH 2
 
 /* Helper macros */
 #define HID_API_AS_STR_IMPL(x) #x
