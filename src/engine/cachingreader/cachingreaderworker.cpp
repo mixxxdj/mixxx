@@ -256,7 +256,13 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
         if (pChunk->getIndex() == firstSoundIndex) {
             CSAMPLE sampleBuffer[4];
             pChunk->readBufferedSampleFrames(sampleBuffer, mixxx::IndexRange::forward(end - 1, 2));
-            AnalyzerSilence::verifyFirstSound(sampleBuffer, 4, mixxx::audio::FramePos(1));
+            if (AnalyzerSilence::verifyFirstSound(sampleBuffer, 4, mixxx::audio::FramePos(1))) {
+                qDebug() << "First sound found at the previously stored position";
+            } else {
+                // This can happen in case of track edits or replacements, changed encoders or encoding issues.
+                qWarning() << "First sound has been moved! The beatgrid and "
+                              "other annotations are no longer valid";
+            }
             m_firstSoundFrameToVerify = mixxx::audio::FramePos();
         }
     }
