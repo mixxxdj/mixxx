@@ -49,24 +49,24 @@ bool AnalyzerSilence::initialize(TrackPointer pTrack,
 
 // static
 SINT AnalyzerSilence::findFirstSoundInChunk(const CSAMPLE* pIn, SINT iLen) {
-    for (SINT i = 0; i < iLen; ++i) {
+    SINT i = 0;
+    for (; i < iLen; ++i) {
         if (fabs(pIn[i]) >= kSilenceThreshold) {
-            return i;
+            break;
         }
     }
-    return -1;
+    return i;
 }
 
 // static
-SINT AnalyzerSilence::findLastSoundInChunk(const CSAMPLE* pIn, SINT iLen, SINT firstSound) {
-    DEBUG_ASSERT(firstSound >= -1);
-    SINT lastSound = firstSound;
-    for (SINT i = firstSound + 1; i < iLen; ++i) {
+SINT AnalyzerSilence::findLastSoundInChunk(const CSAMPLE* pIn, SINT iLen) {
+    SINT i = iLen - 1;
+    for (; i >= 0; --i) {
         if (fabs(pIn[i]) >= kSilenceThreshold) {
-            lastSound = i;
+            break;
         }
     }
-    return lastSound;
+    return i;
 }
 
 // static
@@ -80,13 +80,14 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
     SINT firstSoundSample = -1;
     if (m_iSignalStart < 0) {
         firstSoundSample = findFirstSoundInChunk(pIn, iLen);
-        if (firstSoundSample >= 0) {
+        if (firstSoundSample < iLen) {
             m_iSignalStart = m_iFramesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
         }
     }
     if (m_iSignalStart >= 0) {
-        SINT lastSoundSample = findLastSoundInChunk(pIn, iLen, firstSoundSample);
-        if (lastSoundSample >= 0) {
+        SINT lastSoundSample = findLastSoundInChunk(pIn, iLen);
+        if (lastSoundSample > -1 &&           // only silence
+                lastSoundSample < iLen - 1) { // only sound
             m_iSignalEnd = m_iFramesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
         }
     }
