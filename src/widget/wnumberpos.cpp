@@ -139,7 +139,7 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
                     cuesText = std::to_string(m_pTrack->getBeats()->numBeatsInRange(currentFramePos, closestCueFramePos));
                 
                 } else {
-                    setText(QString::fromStdString("No cues left | " + "-") + timeFormat(dTimeRemaining, precision));
+                    setText(QString::fromStdString("No cues left | -") + timeFormat(dTimeRemaining, precision));
                 }
 
                 setText(QString::fromStdString(cuesText + " beats | " + "-") + timeFormat(dTimeRemaining, precision));
