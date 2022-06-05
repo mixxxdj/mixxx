@@ -145,10 +145,12 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
                 setText(QString::fromStdString(cuesText + " beats | " + "-") + timeFormat(dTimeRemaining, precision));
  
             } else {
-                setText(QLatin1String("no Track"));
+                //Fallback to remaining time display
+                setText(QLatin1String("-") % timeFormat(dTimeRemaining, precision));
             }
         } else {
-            setText(QLatin1String("no Deck"));
+            //Fallback to remaining time display
+            setText(QLatin1String("-") % timeFormat(dTimeRemaining, precision));
         }
     }
     m_dOldTimeElapsed = dTimeElapsed;
