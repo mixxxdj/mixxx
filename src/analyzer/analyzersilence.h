@@ -23,8 +23,7 @@ class AnalyzerSilence : public Analyzer {
     static SINT findFirstSoundInChunk(const CSAMPLE* pIn, SINT iLen);
 
     /// returns the index of the last sample in the buffer that is above -60 dB
-    /// or -1 if no sample is found. signalStart can be set to a known sample above
-    /// -60 dB or -1 to start with the following index.
+    /// or -1 if no sample is found.
     static SINT findLastSoundInChunk(const CSAMPLE* pIn, SINT iLen);
 
     /// Returns true if the first sound if found at the given frame and logs a warning message if not.
