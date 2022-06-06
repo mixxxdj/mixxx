@@ -227,8 +227,7 @@ void MixxxMainWindow::initialize() {
     QFile file(":/skins/default.qss");
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray fileBytes = file.readAll();
-        QString style = QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length());
+        QString style = QString::fromLocal8Bit(fileBytes);
         setStyleSheet(style);
     } else {
         qWarning() << "Failed to load default skin styles!";
@@ -379,7 +378,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
     DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
     // We need to reset the parented pointer here that it does not become a
-    // dangling pinter after the object has been deleted.
+    // dangling pointer after the object has been deleted.
     m_pMenuBar = nullptr;
     setMenuBar(nullptr);
     if (!pMenuBar.isNull()) {

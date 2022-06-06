@@ -24,7 +24,8 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties |
-        WTrackMenu::Feature::UpdateReplayGain;
+        WTrackMenu::Feature::UpdateReplayGainFromPregain |
+        WTrackMenu::Feature::SelectInLibrary;
 
 } // anonymous namespace
 

@@ -40,9 +40,10 @@ class WTrackTableView : public WLibraryTableView {
     void assignPreviousTrackColor() override;
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
+    bool isTrackInCurrentView(const TrackId& trackId);
     void setSelectedTracks(const QList<TrackId>& tracks);
     TrackId getCurrentTrackId() const;
-    bool setCurrentTrackId(const TrackId& trackId, int column = 0);
+    bool setCurrentTrackId(const TrackId& trackId, int column = 0, bool scrollToTrack = false);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -73,6 +74,7 @@ class WTrackTableView : public WLibraryTableView {
     bool slotRestoreCurrentViewState() {
         return restoreCurrentViewState();
     };
+    void slotSelectTrack(const TrackId&);
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);

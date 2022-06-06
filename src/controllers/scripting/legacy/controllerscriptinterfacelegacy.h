@@ -58,9 +58,15 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(const QString& group, const QString& name, bool set);
     Q_INVOKABLE void softTakeoverIgnoreNextValue(const QString& group, const QString& name);
-    Q_INVOKABLE void brake(int deck, bool activate, double factor = 1.0, double rate = 1.0);
-    Q_INVOKABLE void spinback(int deck, bool activate, double factor = 1.8, double rate = -10.0);
-    Q_INVOKABLE void softStart(int deck, bool activate, double factor = 1.0);
+    Q_INVOKABLE void brake(const int deck,
+            bool activate,
+            double factor = 1.0,
+            const double rate = 1.0);
+    Q_INVOKABLE void spinback(const int deck,
+            bool activate,
+            double factor = 1.8,
+            const double rate = -10.0);
+    Q_INVOKABLE void softStart(const int deck, bool activate, double factor = 1.0);
 
     bool removeScriptConnection(const ScriptConnection& conn);
     /// Execute a ScriptConnection's JS callback
@@ -88,12 +94,15 @@ class ControllerScriptInterfaceLegacy : public QObject {
     QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<mixxx::Duration> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
-    QVarLengthArray<bool> m_ramp, m_brakeActive, m_softStartActive;
+    QVarLengthArray<bool> m_ramp, m_brakeActive, m_spinbackActive, m_softStartActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
     /// Applies the accumulated movement to the track speed
     void scratchProcess(int timerId);
+    void stopScratchTimer(int timerId);
     bool isDeckPlaying(const QString& group);
+    void stopDeck(const QString& group);
+    bool isTrackLoaded(const QString& group);
     double getDeckRate(const QString& group);
 
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;

@@ -263,6 +263,11 @@ void WTrackMenu::createActions() {
         connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
     }
 
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        m_pSelectInLibraryAct = new QAction(tr("Select in Library"), this);
+        connect(m_pSelectInLibraryAct, &QAction::triggered, this, &WTrackMenu::slotSelectInLibrary);
+    }
+
     if (featureIsEnabled(Feature::Metadata)) {
         m_pImportMetadataFromFileAct =
                 new QAction(tr("Import From File Tags"), m_pMetadataMenu);
@@ -340,6 +345,9 @@ void WTrackMenu::createActions() {
         m_pClearWaveformAction = new QAction(tr("Waveform"), m_pClearMetadataMenu);
         connect(m_pClearWaveformAction, &QAction::triggered, this, &WTrackMenu::slotClearWaveform);
 
+        m_pClearCommentAction = new QAction(tr("Comment"), m_pClearMetadataMenu);
+        connect(m_pClearCommentAction, &QAction::triggered, this, &WTrackMenu::slotClearComment);
+
         m_pClearAllMetadataAction = new QAction(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
     }
@@ -384,10 +392,13 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotClearBeats);
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
-        m_pUpdateReplayGain =
+    // This action is only usable when m_deckGroup is set. That is true only
+    // for WTrackmenu instantiated by WTrackProperty and other deck widgets, thus
+    // don't create it if a track model is set.
+    if (!m_pTrackModel && featureIsEnabled(Feature::UpdateReplayGainFromPregain)) {
+        m_pUpdateReplayGainAct =
                 new QAction(tr("Update ReplayGain from Deck Gain"), m_pClearMetadataMenu);
-        connect(m_pUpdateReplayGain,
+        connect(m_pUpdateReplayGainAct,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotUpdateReplayGainFromPregain);
@@ -409,6 +420,14 @@ void WTrackMenu::createActions() {
 void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::SearchRelated)) {
         addMenu(m_pSearchRelatedMenu);
+    }
+
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        addAction(m_pSelectInLibraryAct);
+    }
+
+    if (featureIsEnabled(Feature::SearchRelated) ||
+            featureIsEnabled(Feature::SelectInLibrary)) {
         addSeparator();
     }
 
@@ -512,11 +531,12 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
         m_pClearMetadataMenu->addAction(m_pClearRatingAction);
-        // FIXME: Why is clearing the loop not working?
+        m_pClearMetadataMenu->addAction(m_pClearCommentAction);
         m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
         m_pClearMetadataMenu->addAction(m_pClearIntroCueAction);
         m_pClearMetadataMenu->addAction(m_pClearOutroCueAction);
+        // FIXME: Why is clearing the loop not working?
         //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
@@ -526,11 +546,14 @@ void WTrackMenu::setupActions() {
         addMenu(m_pClearMetadataMenu);
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
-        addAction(m_pUpdateReplayGain);
+    // This action is created only for menus instantiated by deck widgets (e.g.
+    // WTrackProperty) and if UpdateReplayGainFromPregain is supported.
+    if (m_pUpdateReplayGainAct) {
+        addAction(m_pUpdateReplayGainAct);
     }
 
     addSeparator();
+
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             addAction(m_pHideAct);
@@ -763,8 +786,11 @@ void WTrackMenu::updateMenus() {
         }
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
-        m_pUpdateReplayGain->setEnabled(!m_deckGroup.isEmpty());
+    // This action is created only for menus instantiated by deck widgets (e.g.
+    // WTrackProperty) and if UpdateReplayGainFromPregain is supported.
+    // Disable it if no deck group was set.
+    if (m_pUpdateReplayGainAct) {
+        m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -803,6 +829,14 @@ void WTrackMenu::updateMenus() {
                 m_pRemoveFromDiskAct->setEnabled(!locked);
             }
         }
+    }
+
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        bool enabled = false;
+        if (m_pTrack) {
+            enabled = m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId());
+        }
+        m_pSelectInLibraryAct->setEnabled(enabled);
     }
 
     if (featureIsEnabled(Feature::Properties)) {
@@ -955,6 +989,12 @@ void WTrackMenu::slotOpenInFileBrowser() {
         locations << trackRef.getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
+}
+
+void WTrackMenu::slotSelectInLibrary() {
+    if (m_pTrack) {
+        emit m_pLibrary->selectTrack(m_pTrack->getId());
+    }
 }
 
 namespace {
@@ -1459,6 +1499,29 @@ void WTrackMenu::slotClearRating() {
             tr("Clearing rating of %n track(s)", "", getTrackCount());
     const auto trackOperator =
             ResetRatingTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
+class ClearCommentTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->clearComment();
+    }
+};
+
+} // anonymous namespace
+
+//slot for clearing the comment field of one or more tracks
+void WTrackMenu::slotClearComment() {
+    const auto progressLabelText =
+            tr("Clearing comment of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ClearCommentTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
@@ -2098,8 +2161,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
-    case Feature::UpdateReplayGain:
-        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+    case Feature::SelectInLibrary:
+        return m_pTrack != nullptr;
     default:
         DEBUG_ASSERT(!"unreachable");
         return false;

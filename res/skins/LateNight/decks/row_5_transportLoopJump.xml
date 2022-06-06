@@ -293,6 +293,10 @@
                 </Children>
               </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_loop_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-80px wide -->
@@ -351,6 +355,10 @@
                 </Children>
               </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_beatjump_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup>

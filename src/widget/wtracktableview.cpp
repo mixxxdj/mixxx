@@ -352,9 +352,9 @@ void WTrackTableView::initTrackMenu() {
 
 // slot
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
-    // Read the current TrackLoadAction settings
+    // Read the current TrackDoubleClickAction setting
     int doubleClickActionConfigValue =
-            m_pConfig->getValue(ConfigKey("[Library]", "TrackLoadAction"),
+            m_pConfig->getValue(mixxx::library::prefs::kTrackDoubleClickActionConfigKey,
                     static_cast<int>(DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck));
     DlgPrefLibrary::TrackDoubleClickAction doubleClickAction =
             static_cast<DlgPrefLibrary::TrackDoubleClickAction>(
@@ -950,16 +950,28 @@ TrackId WTrackTableView::getCurrentTrackId() const {
     return {};
 }
 
+bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
+    //qDebug() << "WTrackTableView::isTrackInCurrentView" << trackId;
+    TrackModel* pTrackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        qWarning() << "No track model";
+        return false;
+    }
+    const QVector<int> trackRows = pTrackModel->getTrackRows(trackId);
+    //qDebug() << "   track found?" << !trackRows.empty();
+    return !trackRows.empty();
+}
+
 void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
-        qWarning() << "No selected tracks available";
+        qWarning() << "No selection model";
         return;
     }
 
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-        qWarning() << "No selected tracks available";
+        qWarning() << "No track model";
         return;
     }
 
@@ -973,20 +985,21 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     }
 }
 
-bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column) {
+bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column, bool scrollToTrack) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
-        qWarning() << "No selected tracks available";
+        qWarning() << "No selection model";
         return false;
     }
 
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-        qWarning() << "No selected tracks available";
+        qWarning() << "No track model";
         return false;
     }
     const QVector<int> trackRows = pTrackModel->getTrackRows(trackId);
     if (trackRows.empty()) {
+        qDebug() << "WTrackTableView: track" << trackId << "is not in current view";
         return false;
     }
 
@@ -998,6 +1011,11 @@ bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column) {
     selectRow(idx.row());
     pSelectionModel->setCurrentIndex(idx,
             QItemSelectionModel::SelectCurrent | QItemSelectionModel::Select);
+
+    if (scrollToTrack) {
+        scrollTo(idx);
+    }
+
     return true;
 }
 
@@ -1032,6 +1050,12 @@ void WTrackTableView::slotAddToAutoDJTop() {
 
 void WTrackTableView::slotAddToAutoDJReplace() {
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
+void WTrackTableView::slotSelectTrack(const TrackId& trackId) {
+    if (setCurrentTrackId(trackId, 0, true)) {
+        setSelectedTracks({trackId});
+    }
 }
 
 void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {

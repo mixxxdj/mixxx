@@ -9,6 +9,7 @@
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
 #include "library/parserm3u.h"
@@ -41,6 +42,8 @@ const ConfigKey kConfigKeyLastImportExportCrateDirectoryKey(
         "[Library]", "LastImportExportCrateDirectory");
 
 } // anonymous namespace
+
+using namespace mixxx::library::prefs;
 
 CrateFeature::CrateFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
@@ -603,7 +606,7 @@ void CrateFeature::slotImportPlaylist() {
 
     // Update the import/export crate directory
     QString fileDirectory(playlistFile);
-    fileDirectory.truncate(playlistFile.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(playlistFile.lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
@@ -634,7 +637,7 @@ void CrateFeature::slotCreateImportCrate() {
 
     // Set last import directory
     QString fileDirectory(playlistFiles.first());
-    fileDirectory.truncate(playlistFiles.first().lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(playlistFiles.first().lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
@@ -727,7 +730,7 @@ void CrateFeature::slotExportPlaylist() {
     }
     // Update the import/export crate directory
     QString fileDirectory(fileLocation);
-    fileDirectory.truncate(fileLocation.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(fileLocation.lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
@@ -739,7 +742,7 @@ void CrateFeature::slotExportPlaylist() {
     // check config if relative paths are desired
     bool useRelativePath =
             m_pConfig->getValue<bool>(
-                    ConfigKey("[Library]", "UseRelativePathOnExport"));
+                    kUseRelativePathOnExportConfigKey);
 
     // Create list of files of the crate
     // Create a new table model since the main one might have an active search.

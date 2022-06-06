@@ -37,31 +37,44 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 /// very hard before using this -- this should only be for the most dire of
 /// situations where we know Mixxx cannot take any action without potentially
 /// corrupting user data. Handle errors gracefully whenever possible.
-#define RELEASE_ASSERT(cond)                                              \
-    if (Q_UNLIKELY(!static_cast<bool>(cond))) {                           \
-        mixxx_release_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
-    }
+#define RELEASE_ASSERT(cond)                                                  \
+    do                                                                        \
+        if (Q_UNLIKELY(!static_cast<bool>(cond))) {                           \
+            mixxx_release_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
+        }                                                                     \
+    while (0)
 
-// Checks that cond is true in debug builds. If cond is false then prints a
-// warning message to the console. If Mixxx is built with
-// MIXXX_DEBUG_ASSERTIONS_FATAL then the warning message is fatal. Compiles
-// to nothing in release builds.
-//
-// Be careful of the common mistake with assertions:
-//   DEBUG_ASSERT(doSomething());
-//
-// In release builds, doSomething() is never called!
+/// Checks that cond is true in debug builds. If cond is false then prints a
+/// warning message to the console. If Mixxx is built with
+/// MIXXX_DEBUG_ASSERTIONS_FATAL then the warning message is fatal. Compiles
+/// to nothing in release builds.
+///
+/// Be careful of the common mistake with assertions:
+///   DEBUG_ASSERT(doSomething());
+///
+/// In release builds, doSomething() is never called!
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-#define DEBUG_ASSERT(cond)                                              \
-    if (Q_UNLIKELY(!static_cast<bool>(cond))) {                         \
-        mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
-    }
+#define DEBUG_ASSERT(cond)                                                  \
+    do                                                                      \
+        if (Q_UNLIKELY(!static_cast<bool>(cond))) {                         \
+            mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
+        }                                                                   \
+    while (0)
 #else
-#define DEBUG_ASSERT(cond)
+#define DEBUG_ASSERT(cond) \
+    do {                   \
+    } while (0)
 #endif
 
-/// Same as DEBUG_ASSERT, but if MIXXX_DEBUG_ASSERTIONS_FATAL is disabled run the specified fallback function.
-/// In most cases you should probably use this rather than DEBUG_ASSERT. Only use DEBUG_ASSERT if there is no appropriate fallback.
+/// Same as DEBUG_ASSERT, but if MIXXX_DEBUG_ASSERTIONS_FATAL is disabled run
+/// the specified fallback function. In most cases you should probably use
+/// this rather than DEBUG_ASSERT. Only use DEBUG_ASSERT if there is no
+/// appropriate fallback.
+///
+/// Use it like:
+///   VERIFY_OR_DEBUG_ASSERT(value.is_valid()) { value = some_default; }
+///
+/// Note that the check and fallback will be included in release builds.
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define VERIFY_OR_DEBUG_ASSERT(cond)            \
     if (Q_UNLIKELY(!static_cast<bool>(cond)) && \

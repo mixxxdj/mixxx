@@ -8,7 +8,6 @@
 #include <QStandardPaths>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <QtDebug>
 
 #include "controllers/controller.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -46,6 +45,7 @@ DlgPrefController::DlgPrefController(
           m_pInputProxyModel(nullptr),
           m_pOutputTableModel(nullptr),
           m_pOutputProxyModel(nullptr),
+          m_GuiInitialized(false),
           m_bDirty(false) {
     m_ui.setupUi(this);
     // Create text color for the file and wiki links
@@ -464,8 +464,8 @@ void DlgPrefController::slotUpdate() {
     enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
             m_pController->getName()));
 
-    // enumeratePresets will check the m_ui.chkEnabledDevice checkbox if
-    // there is a valid mapping saved in the mixxx.cfg file. However, the
+    // enumeratePresets calls slotPresetSelected which will check the m_ui.chkEnabledDevice
+    // checkbox if there is a valid mapping saved in the mixxx.cfg file. However, the
     // checkbox should only be checked if the device is currently enabled.
     m_ui.chkEnabledDevice->setChecked(m_pController->isOpen());
 
@@ -475,6 +475,9 @@ void DlgPrefController::slotUpdate() {
     m_ui.btnLearningWizard->setEnabled(isMappable);
     m_ui.inputMappingsTab->setEnabled(isMappable);
     m_ui.outputMappingsTab->setEnabled(isMappable);
+    // When slotUpdate() is run for the first time, this bool keeps slotPresetSelected()
+    // from setting a false-postive 'dirty' flag when updating the fresh GUI.
+    m_GuiInitialized = true;
 }
 
 void DlgPrefController::slotResetToDefaults() {
@@ -545,21 +548,23 @@ QString DlgPrefController::mappingPathFromIndex(int index) const {
 
 void DlgPrefController::slotMappingSelected(int chosenIndex) {
     QString mappingPath = mappingPathFromIndex(chosenIndex);
-    if (mappingPath.isEmpty()) {
-        // User picked "No Mapping" item
+    if (mappingPath.isEmpty()) { // User picked "No Mapping" item
         m_ui.chkEnabledDevice->setEnabled(false);
 
         if (m_ui.chkEnabledDevice->isChecked()) {
             m_ui.chkEnabledDevice->setChecked(false);
-            setDirty(true);
+            if (m_GuiInitialized) {
+                setDirty(true);
+            }
         }
-    } else {
-        // User picked a mapping
+    } else { // User picked a mapping
         m_ui.chkEnabledDevice->setEnabled(true);
 
         if (!m_ui.chkEnabledDevice->isChecked()) {
             m_ui.chkEnabledDevice->setChecked(true);
-            setDirty(true);
+            if (m_GuiInitialized) {
+                setDirty(true);
+            }
         }
     }
 
