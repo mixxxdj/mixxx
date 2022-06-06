@@ -1,5 +1,4 @@
 
-declare var print = function(message : string) {};
 
 declare class ControllerScriptInterfaceLegacy {
         public getValue(group : string, name : string) : number;
