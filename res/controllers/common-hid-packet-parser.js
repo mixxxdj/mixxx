@@ -41,6 +41,7 @@ var HIDDebug = function(message) {
  * @property {string} name
  * @property {string} mapped_group
  * @property {string} mapped_name
+ * @property {controlCallback} mapped_callback
  * @property {object} pack Control packing format for unpack(), one of b/B, h/H, i/I
  * @property {number} offset
  * @property {number} end_offset
@@ -818,7 +819,7 @@ class HIDPacket {
      * field object values are packed to the HID packet according to the
      * field type.
      *
-     * @param {boolean} debug Enables debug output to console
+     * @param {boolean} [debug=false] Enables debug output to console
      */
     send(debug) {
         const data = [];
@@ -888,6 +889,7 @@ this.HIDPacket = HIDPacket;
  * @property {boolean} rampedScratchEnable
  * @property {boolean} rampedScratchDisable
  * @property {any} enableScratchCallback
+ * @property {number} auto_repeat_interval     Auto repeat interval default for fields, where not specified individual
  */
 class HIDController {
     constructor() {
@@ -1022,7 +1024,7 @@ class HIDController {
      *
      * @param {string} m_group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
      * @param {string} m_name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
-     * @returns {HIDBitVector|any} Bitvector or bytewise field - Returns undefined if output field can't be found.
+     * @returns {packetField|any} Bitvector or bytewise field - Returns undefined if output field can't be found.
      */
     getOutputField(m_group, m_name) {
         for (const packet_name in this.OutputPackets) {
