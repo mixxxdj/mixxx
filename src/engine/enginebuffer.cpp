@@ -617,6 +617,18 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     }
 #endif
 
+    // As long as passthrough is active the buffer is not processed, thus processSeek()
+    // is not called and the playposition remains at kInitalSamplePosition (-1.79..e+308).
+    // This would cause e.g. a crash in WaveformRenderBeat::draw (GUI freeze in main
+    // respectively, see https://bugs.launchpad.net/mixxx/+bug/1977662
+    // Avoid this by seeking to the first sample. When passthrough is disabled we'll
+    // seek to the queued position.
+    // TODO(ronso0) Find a better way to deal with this, for example prohibit loading
+    // tracks with passthrough enabled?
+    if (m_pPassthroughEnabled->toBool()) {
+        setNewPlaypos(kPassthroughTrackLoadSamplePosition);
+    }
+
     queueNewPlaypos(new_playpos, seekType);
 }
 

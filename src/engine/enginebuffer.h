@@ -86,6 +86,11 @@ class EngineBuffer : public EngineObject {
     // not omitted. Therefore this value must be different for 0.0 or any likely
     // value for the main cue
     static constexpr double kInitalSamplePosition = -DBL_MAX;
+    // This is used to do a temporary seek aftertrack load while passthrough is
+    // enabled, before the actual queued position will be applied.
+    // Avoids a crash in WaveformRenderBeat::draw (GUI freeze in main
+    // respectively), see https://bugs.launchpad.net/mixxx/+bug/1977662
+    static constexpr double kPassthroughTrackLoadSamplePosition = 0.0;
 
     EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
