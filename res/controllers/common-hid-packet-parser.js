@@ -54,11 +54,35 @@ var HIDDebug = function(message) {
  * @property {number} auto_repeat_interval
  * @property {number} min
  * @property {number} max
- * @property {string} type
+ * @property {('bitvector'|'button'|'control'|'output')} type Must be either:
+ *              - 'bitvector'       If value is of type HIDBitVector
+ *              - 'button'          If value is a boolean
+ *              - 'control'         If value is a number
+ *              - 'output'
  * @property {HIDBitVector|boolean|number} value
  * @property {number} delta
  * @property {number} mindelta
  * @property {number} toggle
+ */
+
+/**
+ * @typedef bitObject
+ * @type {object}
+ * @property {HIDPacket} packet
+ * @property {string} id Group and control name separated by a dot
+ * @property {string} group
+ * @property {string} name
+ * @property {string} mapped_group
+ * @property {string} mapped_name
+ * @property {number} bitmask
+ * @property {number} bit_offset
+ * @property {controlCallback} callback
+ * @property {controlCallback} auto_repeat
+ * @property {number} auto_repeat_interval
+ * @property {('button'|'output')} type Must be either:
+ *              - 'button'
+ *              - 'output'
+ * @property {boolean} value
  */
 
 /**
@@ -67,6 +91,9 @@ var HIDDebug = function(message) {
  * Collection of bits in one parsed packet field. These objects are
  * created by HIDPacket addControl and addOutput and should not be
  * created manually.
+ *
+ * @property {number} size
+ * @property {bitObject{}} bits
  */
 class HIDBitVector {
     constructor() {
@@ -93,6 +120,7 @@ class HIDBitVector {
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are considered.
      */
     addBitMask(group, name, bitmask) {
+        /** @type {bitObject} */
         const bit = {};
         bit.type = "button";
         bit.packet = undefined;
@@ -101,7 +129,6 @@ class HIDBitVector {
         bit.name = name;
         bit.mapped_group = undefined;
         bit.mapped_name = undefined;
-        bit.bitmask = bitmask;
         bit.bitmask = bitmask;
         bit.bit_offset = this.getOffset(bitmask);
         bit.callback = undefined;
@@ -118,6 +145,7 @@ class HIDBitVector {
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are considered.
      */
     addOutputMask(group, name, bitmask) {
+        /** @type {bitObject} */
         const bit = {};
         bit.type = "output";
         bit.packet = undefined;
@@ -1024,7 +1052,7 @@ class HIDController {
      *
      * @param {string} m_group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
      * @param {string} m_name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
-     * @returns {packetField|any} Bitvector or bytewise field - Returns undefined if output field can't be found.
+     * @returns {bitObject|packetField} Bit or bytewise field - Returns undefined if output field can't be found.
      */
     getOutputField(m_group, m_name) {
         for (const packet_name in this.OutputPackets) {
