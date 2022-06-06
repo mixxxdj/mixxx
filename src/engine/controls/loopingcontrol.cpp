@@ -486,14 +486,14 @@ void LoopingControl::hintReader(HintVector* pHintList) {
         // direction we're going in, but that this is much simpler, and hints
         // aren't that bad to make anyway.
         if (loopInfo.startPosition.isValid()) {
-            loop_hint.priority = 2;
+            loop_hint.type = Hint::Type::LoopStartEnabled;
             loop_hint.frame = static_cast<SINT>(
                     loopInfo.startPosition.toLowerFrameBoundary().value());
             loop_hint.frameCount = Hint::kFrameCountForward;
             pHintList->append(loop_hint);
         }
         if (loopInfo.endPosition.isValid()) {
-            loop_hint.priority = 10;
+            loop_hint.type = Hint::Type::LoopEndEnabled;
             loop_hint.frame = static_cast<SINT>(
                     loopInfo.endPosition.toUpperFrameBoundary().value());
             loop_hint.frameCount = Hint::kFrameCountBackward;
@@ -501,7 +501,7 @@ void LoopingControl::hintReader(HintVector* pHintList) {
         }
     } else {
         if (loopInfo.startPosition.isValid()) {
-            loop_hint.priority = 10;
+            loop_hint.type = Hint::Type::LoopStart;
             loop_hint.frame = static_cast<SINT>(
                     loopInfo.startPosition.toLowerFrameBoundary().value());
             loop_hint.frameCount = Hint::kFrameCountForward;

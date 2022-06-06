@@ -1,12 +1,15 @@
 #include "controllers/scripting/legacy/scriptconnection.h"
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
+#include "util/trace.h"
 
 void ScriptConnection::executeCallback(double value) const {
-    QJSValueList args;
-    args << QJSValue(value);
-    args << QJSValue(key.group);
-    args << QJSValue(key.item);
+    Trace executeCallbackTrace("JS %1 callback", key.item);
+    const auto args = QJSValueList{
+            value,
+            key.group,
+            key.item,
+    };
     QJSValue func = callback; // copy function because QJSValue::call is not const
     QJSValue result = func.call(args);
     if (result.isError()) {

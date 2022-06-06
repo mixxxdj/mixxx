@@ -681,8 +681,7 @@ void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
 }
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
-    if (deck < 0 || deck >= m_vinylControlEnabledActions.size()) {
-        DEBUG_ASSERT(false);
+    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_vinylControlEnabledActions.size()) {
         return;
     }
     m_vinylControlEnabledActions.at(deck)->setChecked(enabled);
