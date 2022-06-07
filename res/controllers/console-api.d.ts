@@ -5,19 +5,36 @@
 
 declare class QJSEngineConsoleExtension {
     /**
-     * Prints debugging information to the console.
+     * Prints debugging information to the console. (same as console.debug)
     */
     public log(message? : any, ...args : any[]) : void;
+
+    /**
+     * Prints debugging information to the console. (same as console.log)
+    */
     public debug(message? : any, ...args : any[]) : void;
+
+    /**
+     * Prints information to the console.
+    */
     public info(message? : any, ...args : any[]) : void;
+
+    /**
+     * Prints a warning message to the console.
+    */
     public warn(message? : any, ...args : any[]) : void;
+
+    /**
+     * Prints an error message to the console.
+    */
     public error(message? : any, ...args : any[]) : void;
 
     /**
      * Tests that an expression is true.
-     * If not, it writes an optional message to the console and prints the stack trace.
+     * 
+     * @param {boolean} [expression] If not true, it writes an optional message to the console and prints the stack trace.
     */
-    public assert(value: any, message? : string, ...args: any[]) : void;
+    public assert(expression : boolean, message? : string, ...args: any[]) : void;
 
     /**
      * Starts the time measurement, which will be printed by timeEnd
@@ -51,14 +68,14 @@ declare class QJSEngineConsoleExtension {
 
     /**
      *  Turns on the JavaScript profiler.
-     *  @deprecated Not usable for mappings, because JavaScript profile does only workin GUI thread: https://bugreports.qt.io/browse/QTBUG-65419
+     *  @deprecated Not usable for controller mappings, because JavaScript profile does only workin GUI thread: https://bugreports.qt.io/browse/QTBUG-65419
      *
      */
      public profile(label? : string) : void;
 
     /**
      *  Turns off the JavaScript profiler.
-     *  @deprecated Not usable for mappings, because JavaScript profile does only workin GUI thread: https://bugreports.qt.io/browse/QTBUG-65419
+     *  @deprecated Not usable for controller mappings, because JavaScript profile does only workin GUI thread: https://bugreports.qt.io/browse/QTBUG-65419
      *
      */
     public profileEnd(label? : string) : void;
