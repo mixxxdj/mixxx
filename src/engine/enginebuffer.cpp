@@ -1251,6 +1251,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         // called yet.
         return;
     }
+    DEBUG_ASSERT(m_tempo_ratio_old != 0);
 
     // Increase samplesCalculated by the buffer size
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
