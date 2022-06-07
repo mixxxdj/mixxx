@@ -12,7 +12,7 @@ EngineControl::EngineControl(const QString& group,
           m_pConfig(pConfig),
           m_pEngineMaster(nullptr),
           m_pEngineBuffer(nullptr) {
-    setCurrentSample(EngineBuffer::kInitalSamplePosition, 0.0, 0.0);
+    setCurrentSample(EngineBuffer::kInitialSamplePosition, 0.0, 0.0);
 }
 
 EngineControl::~EngineControl() {
