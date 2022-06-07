@@ -31,7 +31,7 @@ declare class QJSEngineConsoleExtension {
 
     /**
      * Tests that an expression is true.
-     * 
+     *
      * @param {boolean} [expression] If not true, it writes an optional message to the console and prints the stack trace.
     */
     public assert(expression : boolean, message? : string, ...args: any[]) : void;

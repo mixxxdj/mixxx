@@ -40,6 +40,8 @@ declare class ControllerScriptInterfaceLegacy {
 
         /** Called indirectly by the objects returned by connectControl */
         public trigger(group : string, name : string) : void;
+
+        /** @deprecated Use console.log instead */
         public log(message : string) : void;
         /**
          * Callback function called from the engine, when the the interval of a timer is reached
