@@ -1242,9 +1242,13 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (m_trackSampleRateOld == 0) {
-        // This happens if Deck Passthrough is active but no track is loaded.
-        // We skip indicator updates.
+    if (m_filepos_play == kInitialSamplePosition || m_trackSampleRateOld == 0) {
+        // Skip indicator updates with invalid values to prevent undefined behavior,
+        // e.g. in WaveformRenderBeat::draw().
+        //
+        // This is known to happen if Deck Passthrough is active, when either no
+        // track is loaded or a track was loaded but processSeek() has not been
+        // called yet.
         return;
     }
 
