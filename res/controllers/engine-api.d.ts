@@ -14,15 +14,16 @@ declare class ControllerScriptInterfaceLegacy {
         /**
          * Callback function called from the engine, when the value of a specified control changes
          * @callback controlCallback
-         * @param {number} value
-         * @param {string} group
-         * @param {string} name
+         * @param {number} value New value of the connected control
+         * @param {string} group Group of the control e.g. "[Channel1]"
+         * @param {string} name Name of the control e.g. "play_indicator"
          */
 
         /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
          * @details This connection has a FIFO buffer - all value change events are processed in serial order.
          * @param {string} group Group of the control e.g. "[Channel1]"
          * @param {string} name Name of the control e.g. "play_indicator"
+         * @param {controlCallback} callback JS function, which will be called everytime, the value of the connected control changes.
          */
         public  makeConnection(group : string, name : string, callback : controlCallback);
 
@@ -31,6 +32,7 @@ declare class ControllerScriptInterfaceLegacy {
          *          only the last value set for the control is processed.
          * @param {string} group Group of the control e.g. "[Channel1]"
          * @param {string} name Name of the control e.g. "VuMeter"
+         * @param {controlCallback} callback JS function, which will be called everytime, the value of the connected control changes.
          */
         public  makeUnbufferedConnection(group : string, name : string, callback : controlCallback);
         /** @deprecated Use makeConnection instead */
