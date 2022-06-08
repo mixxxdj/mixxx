@@ -9,7 +9,7 @@ declare class ControllerScriptInterfaceLegacy {
     public getValue(group:string, name:string):number;
 
     /**
-     * Sets a control value 
+     * Sets a control value
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set (within it's range according Mixxx Controls manual page)
@@ -103,7 +103,7 @@ declare class ControllerScriptInterfaceLegacy {
      *                   you can also use closures as:
      *                   function() { print("Executed Timer") }
      * @param oneShot If true the function is only once,
-     *                if false the function is executed repeatedly  
+     *                if false the function is executed repeatedly
      * @returns timerId which is needed to stop a timer.
      *          In case of an error, 0 is returned.
      */
@@ -203,7 +203,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param deck The deck number to use, e.g: 1
      * @param activate Set true to activate, or false to disable
      * @param factor Defines how quickly the deck should come to normal playback rate.
-     *               Start with a value of 1 and increase to increase the acceleration. 
+     *               Start with a value of 1 and increase to increase the acceleration.
      *               SoftStart with low factors would take a while until sound is audible.
      */
     public softStart(deck:number, activate:boolean, factor:number = 1.0):void;
