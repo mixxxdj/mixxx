@@ -1242,7 +1242,9 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (m_filepos_play == kInitialSamplePosition || m_trackSampleRateOld == 0) {
+    if (m_filepos_play == kInitialSamplePosition ||
+            m_trackSampleRateOld == 0 ||
+            m_tempo_ratio_old == 0) {
         // Skip indicator updates with invalid values to prevent undefined behavior,
         // e.g. in WaveformRenderBeat::draw().
         //
@@ -1251,7 +1253,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         // called yet.
         return;
     }
-    DEBUG_ASSERT(m_tempo_ratio_old != 0);
 
     // Increase samplesCalculated by the buffer size
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
