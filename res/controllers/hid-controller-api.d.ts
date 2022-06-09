@@ -3,7 +3,7 @@ declare class HidControllerJSProxy {
     /** Sends HID OutputReport with hard coded ReportID 0 to HID device
      *        This function only works with HID devices, which don't use ReportIDs
      * @param dataList Data to send as list of bytes
-     * @param length Unused optional argument
+     * @param length This optional argument is no longer evaluated, and only here for backwards compatibility
     */
     public send(dataList:number[], length:number=0):void;
 
