@@ -40,7 +40,7 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
 endif()
 
 if(DEFINED VCPKG_ROOT)
-  set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
+  set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
 
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
     set(VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/ports")
