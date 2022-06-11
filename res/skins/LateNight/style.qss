@@ -14,7 +14,6 @@ WTrackProperty,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
-WOverview #PassthroughLabel,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -54,14 +53,12 @@ WPushButton#BroadcastButton,
 WPushButton#SkinSettingsToggle,
 #LibraryFeatureControls QPushButton,
 /* Passthrough label on overview waveform */
-WOverview #PassthroughLabel,
 WPushButton#EQKillButton,
 WLabel#LatencyLabel,
 WLabel#SamplerTitleMini,
 /* SKin settings & Library */
 WPushButton#SkinSettingsNumToggle[value="1"],
-QLabel#labelRecFilename,
-WOverview #PassthroughLabel {
+QLabel#labelRecFilename {
   font-family: "Open Sans";
   font-weight: bold;
 }

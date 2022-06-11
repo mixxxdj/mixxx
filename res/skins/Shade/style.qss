@@ -29,7 +29,6 @@ WTrackProperty,
 QSpinBox,
 WBeatSpinBox,
 QToolTip,
-WOverview #PassthroughLabel,
 WTrackTableViewHeader,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader::section,
@@ -56,13 +55,6 @@ WSearchLineEdit QAbstractScrollArea,
   font-family: "Open Sans";
   font-weight: normal;
   font-style: normal;
-}
-
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  font-size: 12px;
-  font-weight: bold;
-  color: #55F764;
 }
 
 WBeatSpinBox,
