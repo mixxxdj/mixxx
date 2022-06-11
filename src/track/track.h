@@ -468,6 +468,8 @@ class Track : public QObject {
     void cuesUpdated();
     void analyzed();
 
+    void cuesUpdatedWithCueList(QList<CuePointer> cuePointerList);
+
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
     void clean(TrackId trackId);

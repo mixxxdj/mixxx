@@ -323,7 +323,7 @@ class EngineBuffer : public EngineObject {
     double m_dSlipRate;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
-
+    
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 

@@ -917,6 +917,7 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
 
     markDirtyAndUnlock(&locked);
     emit cuesUpdated();
+    emit cuesUpdatedWithCueList(m_cuePoints);
 }
 
 void Track::shiftCuePositionsMillis(double milliseconds) {
@@ -976,6 +977,7 @@ CuePointer Track::createAndAddCue(
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&locked);
     emit cuesUpdated();
+    emit cuesUpdatedWithCueList(m_cuePoints);
     return pCue;
 }
 
@@ -1017,6 +1019,7 @@ void Track::removeCue(const CuePointer& pCue) {
     }
     markDirtyAndUnlock(&locked);
     emit cuesUpdated();
+    emit cuesUpdatedWithCueList(m_cuePoints);
 }
 
 void Track::removeCuesOfType(mixxx::CueType type) {

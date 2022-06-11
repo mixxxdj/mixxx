@@ -1,0 +1,141 @@
+diff --git a/src/preferences/dialog/dlgprefdeck.h b/src/preferences/dialog/dlgprefdeck.h
+index 38b7d61..e27f897 100644
+--- a/src/preferences/dialog/dlgprefdeck.h
++++ b/src/preferences/dialog/dlgprefdeck.h
+@@ -23,21 +23,21 @@ constexpr bool kDefaultCloneDeckOnLoad = true;
+ }
+ 
+ namespace TrackTime {
+-    enum class DisplayMode {
+-        ELAPSED,
+-        REMAINING,
+-        ELAPSED_AND_REMAINING,
+-        BEATS_UNTIL_NEXT_CUE_AND_REMAINING,
+-    };
+-
+-    enum class DisplayFormat {
+-        TRADITIONAL,
+-        TRADITIONAL_COARSE,
+-        SECONDS,
+-        SECONDS_LONG,
+-        KILO_SECONDS,
+-        HECTO_SECONDS,
+-    };
++enum class DisplayMode {
++    ELAPSED,
++    REMAINING,
++    ELAPSED_AND_REMAINING,
++    BEATS_UNTIL_NEXT_CUE_AND_REMAINING,
++};
++
++enum class DisplayFormat {
++    TRADITIONAL,
++    TRADITIONAL_COARSE,
++    SECONDS,
++    SECONDS_LONG,
++    KILO_SECONDS,
++    HECTO_SECONDS,
++};
+ }
+ 
+ enum class KeylockMode {
+diff --git a/src/widget/wnumberpos.cpp b/src/widget/wnumberpos.cpp
+index 43b6722..d6d6f28 100644
+--- a/src/widget/wnumberpos.cpp
++++ b/src/widget/wnumberpos.cpp
+@@ -2,18 +2,17 @@
+ 
+ #include "control/controlobject.h"
+ #include "control/controlproxy.h"
++#include "engine/enginebuffer.h"
++#include "mixer/deck.h"
+ #include "moc_wnumberpos.cpp"
++#include "track/track.h"
+ #include "util/duration.h"
+ #include "util/math.h"
+-#include "track/track.h"
+-#include "mixer/deck.h"
+-#include "engine/enginebuffer.h"
+ 
+ WNumberPos::WNumberPos(const QString& group, QWidget* parent, Deck* deck)
+         : WNumber(parent),
+           m_displayFormat(TrackTime::DisplayFormat::TRADITIONAL),
+           m_dOldTimeElapsed(0.0) {
+-
+     m_pDeck = deck;
+ 
+     m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this, ControlFlag::NoAssertIfMissing);
+@@ -102,16 +101,14 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
+                     % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
+         }
+     } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
+-
+         if (m_pDeck) {
+             TrackPointer m_pTrack = m_pDeck->getLoadedTrack();
+             if (m_pTrack) {
+-
+                 mixxx::audio::FramePos currentFramePos = m_pDeck->getEngineDeck()->getEngineBuffer()->getExactPlayPos();
+                 QList<CuePointer> trackCues = m_pTrack->getCuePoints();
+-                QList<mixxx::audio::FramePos> cuesFromCurrentPosition =  QList<mixxx::audio::FramePos>();
++                QList<mixxx::audio::FramePos> cuesFromCurrentPosition = QList<mixxx::audio::FramePos>();
+ 
+-                //Iterate through current Track cues and create a list with the FramePos of the ones 
++                //Iterate through current Track cues and create a list with the FramePos of the ones
+                 // that are after the current play position. We add them ordered in the new list
+                 for (int i = 0; i < trackCues.count(); ++i) {
+                     CuePointer cue = trackCues[i];
+@@ -119,8 +116,7 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
+                     if (cueFramePos.isValid() && cueFramePos >= currentFramePos) {
+                         if (cuesFromCurrentPosition.isEmpty()) {
+                             cuesFromCurrentPosition.append(cueFramePos);
+-                        }
+-                        else if (cuesFromCurrentPosition.first() < cueFramePos) {
++                        } else if (cuesFromCurrentPosition.first() < cueFramePos) {
+                             cuesFromCurrentPosition.append(cueFramePos);
+                         } else {
+                             cuesFromCurrentPosition.insert(0, cueFramePos);
+@@ -133,19 +129,22 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
+                 //ToDo (Maldini) - Get beat counters for every cue point to help with multi drop mixes
+                 std::string cuesText = "";
+                 if (!cuesFromCurrentPosition.isEmpty()) {
+-                    mixxx::audio::FramePos closestCueFramePos = cuesFromCurrentPosition.first();
+-                    m_pTrack->getBeats()->numBeatsInRange(currentFramePos, closestCueFramePos);
++                    mixxx::audio::FramePos closestCueFramePos =
++                            cuesFromCurrentPosition.first();
++                    m_pTrack->getBeats()->numBeatsInRange(
++                            currentFramePos, closestCueFramePos);
+                     cuesText = std::to_string(m_pTrack->getBeats()->numBeatsInRange(currentFramePos, closestCueFramePos));
+-                
++
+                 } else {
+                     setText(QString::fromStdString("No cues left | -") + timeFormat(dTimeRemaining, precision));
+                 }
+ 
+                 setText(QString::fromStdString(cuesText + " beats | " + "-") + timeFormat(dTimeRemaining, precision));
+- 
++
+             } else {
+                 //Fallback to remaining time display
+-                setText(QLatin1String("-") % timeFormat(dTimeRemaining, precision));
++                setText(QLatin1String("-") %
++                        timeFormat(dTimeRemaining, precision));
+             }
+         } else {
+             //Fallback to remaining time display
+diff --git a/src/widget/wnumberpos.h b/src/widget/wnumberpos.h
+index 999dc24..44f0274 100644
+--- a/src/widget/wnumberpos.h
++++ b/src/widget/wnumberpos.h
+@@ -2,10 +2,9 @@
+ 
+ #include <QMouseEvent>
+ 
+-#include "wnumber.h"
+-#include "preferences/dialog/dlgprefdeck.h"
+ #include "mixer/basetrackplayer.h"
+-
++#include "preferences/dialog/dlgprefdeck.h"
++#include "wnumber.h"
+ 
+ class ControlProxy;
+ 

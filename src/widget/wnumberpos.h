@@ -12,7 +12,7 @@ class WNumberPos : public WNumber {
     Q_OBJECT
 
   public:
-    explicit WNumberPos(const QString& group, QWidget* parent = nullptr, Deck* deck = nullptr);
+    explicit WNumberPos(const QString& group, QWidget* parent = nullptr);
 
   protected:
     void mousePressEvent(QMouseEvent* pEvent) override;
@@ -23,6 +23,7 @@ class WNumberPos : public WNumber {
     void slotTimeRemainingUpdated(double);
     void slotSetDisplayMode(double);
     void slotSetTimeFormat(double);
+    void slotSetBeatCounter(double);
 
   private:
 
@@ -35,7 +36,6 @@ class WNumberPos : public WNumber {
     ControlProxy* m_pShowTrackTimeRemaining;
     ControlProxy* m_pTimeFormat;
 
-    //We will use this to look for the track cues and update the
-    //BeatsUntilNextCueAndRemaining display mode
-    Deck* m_pDeck;
+    ControlProxy* m_pBeatCountNextCue;
+    double pBeatsToNextCue;
 };
