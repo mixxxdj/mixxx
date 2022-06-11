@@ -153,6 +153,8 @@ class WaveformWidgetRenderer {
         m_playMarkerPosition = newPos;
     }
 
+    void setPassThroughEnabled(bool enabled);
+
   protected:
     const QString m_group;
     TrackPointer m_pTrack;
@@ -163,6 +165,7 @@ class WaveformWidgetRenderer {
     int m_width;
     float m_devicePixelRatio;
     WaveformSignalColors m_colors;
+    QColor m_passthroughLabelColor;
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
@@ -210,4 +213,6 @@ private:
             QPointF p1,
             QPointF p2,
             QPointF p3);
+    void drawPassthroughLabel(QPainter* painter);
+    bool m_passthroughEnabled;
 };
