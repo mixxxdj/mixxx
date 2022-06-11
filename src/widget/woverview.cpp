@@ -494,6 +494,10 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
+    if (m_bPassthroughEnabled) {
+        m_bLeftClickDragging = false;
+        return;
+    }
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
@@ -514,6 +518,10 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 void WOverview::mousePressEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
+    if (m_bPassthroughEnabled) {
+        m_bLeftClickDragging = false;
+        return;
+    }
     if (m_pCurrentTrack == nullptr) {
         return;
     }
