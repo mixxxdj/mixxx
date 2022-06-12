@@ -219,13 +219,11 @@ void ClockControl::updateIndicators(const double dRate,
 void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats, 
     mixxx::audio::FramePos currentFramePos) {
 
-    QList<mixxx::audio::FramePos> cuesFromCurrentPosition =
-            QList<mixxx::audio::FramePos>();
+    QList<mixxx::audio::FramePos> cuesFromCurrentPosition;
 
     //Iterate through current Track cues and create a list with the FramePos of the ones
     // that are after the current play position. We add them ordered in the new list
-    for (int i = 0; i < m_pTrackCues.count(); ++i) {
-        CuePointer cue = m_pTrackCues[i];
+    for (const auto& cue : m_pTrackCues) {
         mixxx::audio::FramePos cueFramePos = cue->getPosition();
         if (cueFramePos.isValid()) {
             if (cueFramePos >= currentFramePos) {
