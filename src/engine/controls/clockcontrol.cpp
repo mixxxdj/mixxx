@@ -17,11 +17,16 @@ constexpr double kSignificiantRateThreshold =
 
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_pCOBeatActive(std::make_unique<ControlObject>(ConfigKey(group, "beat_active"))),
-          m_pBeatCountNextCue(std::make_unique<ControlObject>(ConfigKey(group, "beat_count_next_cue"))),
-          m_pLoopEnabled(std::make_unique<ControlProxy>(group, "loop_enabled", this)),
-          m_pLoopStartPosition(std::make_unique<ControlProxy>(group, "loop_start_position", this)),
-          m_pLoopEndPosition(std::make_unique<ControlProxy>(group, "loop_end_position", this)),
+          m_pCOBeatActive(std::make_unique<ControlObject>(
+              ConfigKey(group, "beat_active"))),
+          m_pBeatCountNextCue(std::make_unique<ControlObject>(
+              ConfigKey(group, "beat_count_next_cue"))),
+          m_pLoopEnabled(
+              std::make_unique<ControlProxy>(group, "loop_enabled", this)),
+          m_pLoopStartPosition(std::make_unique<ControlProxy>(
+              group, "loop_start_position", this)),
+          m_pLoopEndPosition(std::make_unique<ControlProxy>(
+              group, "loop_end_position", this)),
           m_lastPlayDirectionWasForwards(true),
           m_lastEvaluatedPosition(mixxx::audio::kStartFramePos),
           m_prevBeatPosition(mixxx::audio::kStartFramePos),
