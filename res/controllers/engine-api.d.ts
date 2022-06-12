@@ -152,7 +152,7 @@ declare class ControllerScriptInterfaceLegacy {
     /**
      * If enabled, soft-takeover prevents sudden wide parameter changes,
      * when on-screen control and hardware control divert.
-     * With soft-takeover you need to turn a hardware knob, until it reachs
+     * With soft-takeover you need to turn a hardware knob, until it reaches
      * the position of the on-screen knob - than it takes over control.
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "pregain"
