@@ -30,6 +30,7 @@ ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
           m_internalState(StateMachine::outsideIndicationArea) {
     m_pCOBeatActive->setReadOnly();
     m_pCOBeatActive->forceSet(0.0);
+    m_pBeatCountNextCue->setReadOnly();
     m_pBeatCountNextCue->forceSet(0.0);
 
 }
