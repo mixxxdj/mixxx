@@ -7,7 +7,7 @@ declare class QJSEngineConsoleExtension {
     /**
      * Prints debugging information to the console, when
      * QT_LOGGING_RULES="js.debug=true;" or
-     * Mixxx is started with --controllerDebug
+     * Mixxx is started with --controller-debug
      * This fuction is identical to console.debug
     */
     public log(message?:any, ...args:any[]):void;
@@ -15,7 +15,7 @@ declare class QJSEngineConsoleExtension {
     /**
      * Prints debugging information to the console, when
      * QT_LOGGING_RULES="js.debug=true;" or
-     * Mixxx is started with --controllerDebug
+     * Mixxx is started with --controller-debug
      * This function is identical to console.log
     */
     public debug(message?:any, ...args:any[]):void;
@@ -23,21 +23,21 @@ declare class QJSEngineConsoleExtension {
     /**
      * Prints information to the console, when
      * QT_LOGGING_RULES="js.info=true;" or
-     * Mixxx is started with --controllerDebug
+     * Mixxx is started with --controller-debug
     */
     public info(message?:any, ...args:any[]):void;
 
     /**
      * Prints a warning message to the console, when
      * QT_LOGGING_RULES="js.warning=true;" or
-     * Mixxx is started with --controllerDebug
+     * Mixxx is started with --controller-debug
     */
     public warn(message?:any, ...args:any[]):void;
 
     /**
      * Prints an error message to the console, when
      * QT_LOGGING_RULES="js.critical=true;" or
-     * Mixxx is started with --controllerDebug
+     * Mixxx is started with --controller-debug
     */
     public error(message?:any, ...args:any[]):void;
 
