@@ -37,7 +37,7 @@ jobs:
             os: ubuntu-20.04
             # The Dockerfile for this container can be found at:
             # https://github.com/Holzhaus/mixxx-ci-docker
-            container: holzhaus/mixxx-ci:20220611-qt6
+            container: holzhaus/mixxx-ci:20220612-qt6
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DQT6=ON
