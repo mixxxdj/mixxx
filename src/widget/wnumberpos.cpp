@@ -105,17 +105,16 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
                     % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
         }
     } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
-
-        //ToDo (Maldini) - Count until outro after the last cue point
-        setText(QString::fromStdString(
-            std::to_string((int)m_beatsToNextCue) + " beats | " + "-") + 
-            timeFormat(dTimeRemaining, precision));
-
-            /*
-                //Fallback to remaining time display
-                setText(QLatin1String("-") %
-                        timeFormat(dTimeRemaining, precision));
-            */
+        if (m_beatsToNextCue >= 0) {
+            //ToDo (Maldini) - Count until outro after the last cue point
+            setText(QString::fromStdString(
+                            std::to_string((int)m_beatsToNextCue) + " beats | " + "-") +
+                    timeFormat(dTimeRemaining, precision));
+        } else {
+            //Fallback to remaining time display
+            setText(QLatin1String("-") %
+                    timeFormat(dTimeRemaining, precision));
+        }
     } 
     m_dOldTimeElapsed = dTimeElapsed;
 }
