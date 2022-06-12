@@ -82,14 +82,14 @@ declare class QJSEngineConsoleExtension {
 
     /**
      *  Turns on the JavaScript profiler.
-     *  @deprecated Not usable for controller mappings, because JavaScript profile does only workin GUI thread: https://bugreports.qt.io/browse/QTBUG-65419
+     *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      *
      */
      public profile(label?:string):void;
 
     /**
      *  Turns off the JavaScript profiler.
-     *  @deprecated Not usable for controller mappings, because JavaScript profile does only workin GUI thread: https://bugreports.qt.io/browse/QTBUG-65419
+     *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      *
      */
     public profileEnd(label?:string):void;
