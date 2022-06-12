@@ -218,39 +218,31 @@ void ClockControl::updateIndicators(const double dRate,
 
 void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats, 
     mixxx::audio::FramePos currentFramePos) {
+    //Initialize FramePos to hold an invalid position unless overriden
+    mixxx::audio::FramePos nextCueFramePos =
+        mixxx::audio::FramePos();
 
-    QList<mixxx::audio::FramePos> cuesFromCurrentPosition;
-
-    //Iterate through current Track cues and create a list with the FramePos of the ones
-    // that are after the current play position. We add them ordered in the new list
+    //Iterate through current Track cues and get the closest to the current play position
     for (const auto& cue : m_pTrackCues) {
         mixxx::audio::FramePos cueFramePos = cue->getPosition();
         if (cueFramePos.isValid()) {
             if (cueFramePos >= currentFramePos) {
-                if (cuesFromCurrentPosition.isEmpty()) {
-                    cuesFromCurrentPosition.append(cueFramePos);
-                } else if (cuesFromCurrentPosition.first() < cueFramePos) {
-                    cuesFromCurrentPosition.append(cueFramePos);
-                } else {
-                    cuesFromCurrentPosition.insert(0, cueFramePos);
-                }
+                if (!nextCueFramePos.isValid()) {
+                    nextCueFramePos = cueFramePos;
+                } else if (nextCueFramePos >= cueFramePos) {
+                    nextCueFramePos = cueFramePos;
+                } 
             }
         }
     }
 
-    //Since the cuesFromCurrentPosition is ordered, we only need to calculate the difference from the current position
-    //with the first element of the list, which would be the closest CUE point to the current play position
     //ToDo (Maldini) - Get beat counters for every cue point to help with multi drop mixes
-    std::double_t beatsToNextCue = 0.0;
-    if (!cuesFromCurrentPosition.isEmpty()) {
-        mixxx::audio::FramePos closestCueFramePos =
-                cuesFromCurrentPosition.first();
-        pBeats->numBeatsInRange(
-                currentFramePos, closestCueFramePos);
-        beatsToNextCue = pBeats->numBeatsInRange(
-                        currentFramePos, closestCueFramePos);
-    } 
-
-    //ToDo (Maldini) - Count until outro after the last cue point
-    m_pBeatCountNextCue->forceSet(beatsToNextCue);
+    if (nextCueFramePos.isValid()) {
+        m_pBeatCountNextCue->forceSet(
+            pBeats->numBeatsInRange(
+                currentFramePos, nextCueFramePos));
+    } else {
+        //ToDo (Maldini) - Count until outro after the last cue point
+        m_pBeatCountNextCue->forceSet(-1.0);
+    }
 }
