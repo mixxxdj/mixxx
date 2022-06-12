@@ -41,7 +41,7 @@ class LoopingControl : public EngineControl {
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
-    void hintReader(HintVector* pHintList) override;
+    void hintReader(gsl::not_null<HintVector*> pHintList) override;
     mixxx::audio::FramePos getSyncPositionInsideLoop(
             mixxx::audio::FramePos requestedPlayPosition,
             mixxx::audio::FramePos syncedPlayPosition);

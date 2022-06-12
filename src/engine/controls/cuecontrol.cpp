@@ -70,11 +70,9 @@ inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
     }
 }
 
-void appendCueHint(HintVector* pHintList, const mixxx::audio::FramePos& frame, Hint::Type type) {
-    VERIFY_OR_DEBUG_ASSERT(pHintList) {
-        return;
-    }
-
+void appendCueHint(gsl::not_null<HintVector*> pHintList,
+        const mixxx::audio::FramePos& frame,
+        Hint::Type type) {
     if (frame.isValid()) {
         const Hint cueHint = {
                 /*.frame =*/static_cast<SINT>(frame.toLowerFrameBoundary().value()),
@@ -1178,7 +1176,7 @@ void CueControl::hotcueEndPositionChanged(
     }
 }
 
-void CueControl::hintReader(HintVector* pHintList) {
+void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
     appendCueHint(pHintList, m_pCuePoint->get(), Hint::Type::MainCue);
 
     // this is called from the engine thread

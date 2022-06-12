@@ -194,7 +194,7 @@ class CueControl : public EngineControl {
             UserSettingsPointer pConfig);
     ~CueControl() override;
 
-    void hintReader(HintVector* pHintList) override;
+    void hintReader(gsl::not_null<HintVector*> pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtIntroCue();
