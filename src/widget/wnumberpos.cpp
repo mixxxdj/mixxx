@@ -107,7 +107,8 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
     } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
 
         //ToDo (Maldini) - Count until outro after the last cue point
-        setText(QString::fromStdString(std::to_string((int) pBeatsToNextCue) + " beats | " + "-") + 
+        setText(QString::fromStdString(
+            std::to_string((int)m_beatsToNextCue) + " beats | " + "-") + 
             timeFormat(dTimeRemaining, precision));
 
             /*
@@ -150,9 +151,5 @@ void WNumberPos::slotSetTimeFormat(double v) {
 }
 
 void WNumberPos::slotSetBeatCounter(double beatsToNextCue) {
-    /* if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
-        //ToDo (Maldini) - Count until outro after the last cue point
-        setText(QString::fromStdString(std::to_string(beatsToNextCue) + " beats"));
-    }*/
-    pBeatsToNextCue = beatsToNextCue;
+    m_beatsToNextCue = beatsToNextCue;
 }

@@ -37,5 +37,5 @@ class WNumberPos : public WNumber {
     ControlProxy* m_pTimeFormat;
 
     ControlProxy* m_pBeatCountNextCue;
-    double pBeatsToNextCue;
+    double m_beatsToNextCue;
 };
