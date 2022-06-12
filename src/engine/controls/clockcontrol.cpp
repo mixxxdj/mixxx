@@ -32,7 +32,6 @@ ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
     m_pCOBeatActive->forceSet(0.0);
     m_pBeatCountNextCue->setReadOnly();
     m_pBeatCountNextCue->forceSet(0.0);
-
 }
 
 ClockControl::~ClockControl() = default;
@@ -45,7 +44,9 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
         m_pTrackCues = pNewTrack->getCuePoints();
     }
     trackBeatsUpdated(pBeats);
-    QObject::connect(pNewTrack.get(), &Track::cuesUpdatedWithCueList, this, &ClockControl::trackCuesUpdated);
+    QObject::connect(
+        pNewTrack.get(), &Track::cuesUpdatedWithCueList, 
+        this, &ClockControl::trackCuesUpdated);
 }
 
 void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
