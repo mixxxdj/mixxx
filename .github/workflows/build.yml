@@ -33,11 +33,11 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-focal
             qt_qpa_platform: offscreen
-          - name: Arch Linux (Qt6, gcc)
+          - name: Arch Linux (Qt 6.3, gcc)
             os: ubuntu-20.04
             # The Dockerfile for this container can be found at:
             # https://github.com/Holzhaus/mixxx-ci-docker
-            container: holzhaus/mixxx-ci:20220128-qt6
+            container: holzhaus/mixxx-ci:20220611-qt6
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DQT6=ON
@@ -138,6 +138,11 @@ jobs:
       with:
         # This is necessary for making `git describe` work.
         fetch-depth: 0
+
+    - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
+      if: matrix.container != null
+      # See https://github.com/actions/checkout/issues/760 for details
+      run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: "Ensure that all tags are fetched"
       # Works around an issue where not the latest tag is not fetched when the
