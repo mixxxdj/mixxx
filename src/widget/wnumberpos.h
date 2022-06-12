@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QMouseEvent>
-
-#include "mixer/basetrackplayer.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "wnumber.h"
 
