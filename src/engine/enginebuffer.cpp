@@ -581,6 +581,12 @@ void EngineBuffer::slotPassthroughChanged(double enabled) {
     if (enabled != 0) {
         // If passthrough was enabled, stop playing the current track.
         slotControlStop(1.0);
+        // Disable CUE and Play indicators
+        m_pCueControl->resetIndicators();
+    } else {
+        // Update CUE and Play indicators. Note: m_pCueControl->updateIndicators()
+        // is not sufficient.
+        updateIndicatorsAndModifyPlay(false, false);
     }
 }
 
