@@ -28,11 +28,8 @@ WNumberPos::WNumberPos(const QString& group, QWidget* parent)
             this, &WNumberPos::slotSetTimeFormat);
     slotSetTimeFormat(m_pTimeFormat->get());
 
-    m_pBeatCountNextCue = new ControlProxy(
+    m_pBeatCountNextCue = make_parented<ControlProxy>(
             group, "beat_count_next_cue", this);
-    m_pBeatCountNextCue->connectValueChanged(
-            this, &WNumberPos::slotSetBeatCounter);
-    slotSetBeatCounter(m_pBeatCountNextCue->get());
 }
 
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
@@ -101,10 +98,10 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
                     % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
         }
     } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
-        if (m_beatsToNextCue >= 0) {
+        if (m_pBeatCountNextCue && m_pBeatCountNextCue->get() >= 0) {
             //ToDo (Maldini) - Count until outro after the last cue point
             setText(QString::fromStdString(
-                std::to_string((int)m_beatsToNextCue) + " beats | " + "-") +
+                std::to_string((int)m_pBeatCountNextCue->get()) + " beats | " + "-") +
                 timeFormat(dTimeRemaining, precision));
         } else {
             //Fallback to remaining time display
@@ -142,8 +139,4 @@ void WNumberPos::slotSetTimeFormat(double v) {
     m_displayFormat = static_cast<TrackTime::DisplayFormat>(static_cast<int>(v));
 
     slotSetTimeElapsed(m_dOldTimeElapsed);
-}
-
-void WNumberPos::slotSetBeatCounter(double beatsToNextCue) {
-    m_beatsToNextCue = beatsToNextCue;
 }

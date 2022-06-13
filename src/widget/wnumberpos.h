@@ -21,7 +21,6 @@ class WNumberPos : public WNumber {
     void slotTimeRemainingUpdated(double);
     void slotSetDisplayMode(double);
     void slotSetTimeFormat(double);
-    void slotSetBeatCounter(double);
 
   private:
 
@@ -34,6 +33,5 @@ class WNumberPos : public WNumber {
     ControlProxy* m_pShowTrackTimeRemaining;
     ControlProxy* m_pTimeFormat;
 
-    ControlProxy* m_pBeatCountNextCue;
-    double m_beatsToNextCue;
+    parented_ptr<ControlProxy> m_pBeatCountNextCue;
 };
