@@ -128,8 +128,12 @@ LoopingControl::LoopingControl(const QString& group,
     // DEPRECATED: Use beatloop_size and beatloop_set instead.
     // Activates a beatloop of a specified number of beats.
     m_pCOBeatLoop = new ControlObject(ConfigKey(group, "beatloop"), false);
-    connect(m_pCOBeatLoop, &ControlObject::valueChanged, this,
-            [=](double value){slotBeatLoop(value);}, Qt::DirectConnection);
+    connect(
+            m_pCOBeatLoop,
+            &ControlObject::valueChanged,
+            this,
+            [=, this](double value) { slotBeatLoop(value); },
+            Qt::DirectConnection);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);

@@ -123,7 +123,7 @@ EffectSlot::EffectSlot(const QString& group,
     connect(m_pControlMetaParameter.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotEffectMetaParameter(value); });
+            [=, this](double value) { slotEffectMetaParameter(value); });
     m_pControlMetaParameter->set(0.0);
     m_pControlMetaParameter->setDefaultValue(0.0);
 

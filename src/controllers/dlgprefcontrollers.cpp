@@ -23,7 +23,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     createLinkColor();
     setupControllerWidgets();
 
-    connect(btnOpenUserMappings, &QPushButton::clicked, [=]() {
+    connect(btnOpenUserMappings, &QPushButton::clicked, [=, this]() {
         QString mappingsPath = userMappingsPath(m_pConfig);
         openLocalFile(mappingsPath);
     });
