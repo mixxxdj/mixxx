@@ -132,7 +132,7 @@ void DlgPrefControllers::destroyControllerWidgets() {
     // to keep this dialog and the controllermanager consistent.
     QList<Controller*> controllerList =
             m_pControllerManager->getControllerList(false, true);
-    for (auto controller : controllerList) {
+    for (auto* controller : controllerList) {
         controller->disconnect(this);
     }
     while (!m_controllerPages.isEmpty()) {
