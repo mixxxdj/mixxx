@@ -1,12 +1,10 @@
 #include "widget/wtrackmenu.h"
 
 #include <QCheckBox>
-#include <QDesktopServices>
 #include <QDialogButtonBox>
 #include <QInputDialog>
 #include <QListWidget>
 #include <QModelIndex>
-#include <QUrl>
 #include <QVBoxLayout>
 
 #include "control/controlobject.h"
@@ -39,6 +37,7 @@
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
+#include "widget/wfindonmenu.h"
 #include "widget/wsearchrelatedtracksmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wstarrating.h"
@@ -182,6 +181,33 @@ void WTrackMenu::createMenus() {
                 });
     }
 
+    if (featureIsEnabled(Feature::FindOn)) {
+        DEBUG_ASSERT(!m_pFindOnMenu);
+        m_pFindOnMenu =
+                make_parented<WFindOnMenu>(this);
+
+        connect(m_pFindOnMenu,
+                &QMenu::aboutToShow,
+                this,
+                [this] {
+                    m_pFindOnMenu->clear();
+                    const auto pTrack = getFirstTrackPointer();
+                    if (pTrack) {
+                        m_pFindOnMenu->createAllServices(*pTrack);
+                    }
+                    m_pFindOnMenu->setEnabled(
+                            !m_pFindOnMenu->isEmpty());
+                });
+
+        connect(m_pFindOnMenu,
+                &WFindOnMenu::triggerBrowser,
+                this,
+                [this](const QString& serviceUrl, const QString& query) {
+                    m_pFindOnMenu->openTheBrowser(serviceUrl,
+                            query);
+                });
+    }
+
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
         m_pRemoveFromDiskMenu = new QMenu(this);
         m_pRemoveFromDiskMenu->setTitle(tr("Delete Track Files"));
@@ -268,14 +294,6 @@ void WTrackMenu::createActions() {
     if (featureIsEnabled(Feature::SelectInLibrary)) {
         m_pSelectInLibraryAct = new QAction(tr("Select in Library"), this);
         connect(m_pSelectInLibraryAct, &QAction::triggered, this, &WTrackMenu::slotSelectInLibrary);
-    }
-
-    if (featureIsEnabled(Feature::FindOn)) {
-        m_pFindOnSoundcloudAct = new QAction(tr("Find the Artist on SoundCloud"), this);
-        connect(m_pFindOnSoundcloudAct,
-                &QAction::triggered,
-                this,
-                &WTrackMenu::slotFindOnSoundcloud);
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
@@ -585,7 +603,8 @@ void WTrackMenu::setupActions() {
     }
 
     if (featureIsEnabled(Feature::FindOn)) {
-        addAction(m_pFindOnSoundcloudAct);
+        addSeparator();
+        addMenu(m_pFindOnMenu);
     }
 
     if (featureIsEnabled(Feature::Properties)) {
@@ -806,9 +825,6 @@ void WTrackMenu::updateMenus() {
         m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
     }
 
-    if (featureIsEnabled(Feature::FindOn)) {
-        m_pFindOnSoundcloudAct->setEnabled(singleTrackSelected);
-    }
 
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
@@ -1012,12 +1028,6 @@ void WTrackMenu::slotSelectInLibrary() {
     if (m_pTrack) {
         emit m_pLibrary->selectTrack(m_pTrack->getId());
     }
-}
-
-void WTrackMenu::slotFindOnSoundcloud() {
-    const TrackPointer pTrack = getFirstTrackPointer();
-    QString artistName = pTrack->getArtist();
-    QDesktopServices::openUrl(QUrl("https://soundcloud.com/search/people?q=" + artistName));
 }
 
 namespace {

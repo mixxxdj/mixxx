@@ -24,6 +24,7 @@ class TrackModel;
 class WColorPickerAction;
 class WCoverArtMenu;
 class WSearchRelatedTracksMenu;
+class WFindOnMenu;
 
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
@@ -92,9 +93,6 @@ class WTrackMenu : public QMenu {
     // File
     void slotOpenInFileBrowser();
     void slotSelectInLibrary();
-
-    // Web Browser
-    void slotFindOnSoundcloud();
 
     // Row color
     void slotColorPicked(const mixxx::RgbColor::optional_t& color);
@@ -223,9 +221,9 @@ class WTrackMenu : public QMenu {
     QMenu* m_pClearMetadataMenu{};
     QMenu* m_pBPMMenu{};
     QMenu* m_pColorMenu{};
-    QMenu* m_pFindOnMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
+    parented_ptr<WFindOnMenu> m_pFindOnMenu;
     QMenu* m_pRemoveFromDiskMenu{};
 
     // Update ReplayGain from Track
@@ -264,8 +262,6 @@ class WTrackMenu : public QMenu {
     // Select track in library
     QAction* m_pSelectInLibraryAct{};
 
-    // Open default browser
-    QAction* m_pFindOnSoundcloudAct{};
 
     // BPM feature
     QAction* m_pBpmLockAction{};
