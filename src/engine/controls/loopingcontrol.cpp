@@ -219,6 +219,13 @@ LoopingControl::LoopingControl(const QString& group,
     connect(m_pLoopDoubleButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopDouble);
 
+    m_pLoopRemoveButton = new ControlPushButton(ConfigKey(group, "loop_remove"));
+    m_pLoopRemoveButton->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pLoopRemoveButton,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotLoopRemove);
+
     m_pPlayButton = ControlObject::getControl(ConfigKey(group, "play"));
 }
 
@@ -237,6 +244,7 @@ LoopingControl::~LoopingControl() {
     delete m_pCOLoopScale;
     delete m_pLoopHalveButton;
     delete m_pLoopDoubleButton;
+    delete m_pLoopRemoveButton;
 
     delete m_pCOBeatLoop;
     while (!m_beatLoops.isEmpty()) {
@@ -693,6 +701,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     //qDebug() << "set loop_in to " << loopInfo.startPosition;
 }
 
+// Clear the last active loop while saved loop (cue + info) remains untouched
 void LoopingControl::slotLoopRemove() {
     setLoopingEnabled(false);
     LoopInfo loopInfo = m_loopInfo.getValue();
