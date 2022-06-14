@@ -25,11 +25,11 @@ class DeckAttributes : public QObject {
     virtual ~DeckAttributes();
 
     bool isLeft() const {
-        return m_orientation.get() == EngineChannel::LEFT;
+        return m_orientation.get() == static_cast<double>(EngineChannel::LEFT);
     }
 
     bool isRight() const {
-        return m_orientation.get() == EngineChannel::RIGHT;
+        return m_orientation.get() == static_cast<double>(EngineChannel::RIGHT);
     }
 
     bool isPlaying() const {
