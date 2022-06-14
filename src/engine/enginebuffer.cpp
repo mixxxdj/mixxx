@@ -254,6 +254,11 @@ EngineBuffer::EngineBuffer(const QString& group,
             m_pCueControl,
             &CueControl::slotLoopEnabledChanged,
             Qt::DirectConnection);
+    connect(m_pCueControl,
+            &CueControl::loopRemove,
+            m_pLoopingControl,
+            &LoopingControl::slotLoopRemove,
+            Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
                                                m_pLoopingControl);

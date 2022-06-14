@@ -1032,6 +1032,10 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
+    // If loop cues are removed, also clear the last active loop
+    if (type == mixxx::CueType::Loop) {
+        emit loopRemove();
+    }
     if (compareAndSet(m_record.ptrMainCuePosition(), mixxx::audio::kStartFramePos)) {
         dirty = true;
     }

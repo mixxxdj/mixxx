@@ -98,6 +98,7 @@ class LoopingControl : public EngineControl {
     void slotLoopScale(double scaleFactor);
     void slotLoopDouble(double pressed);
     void slotLoopHalve(double pressed);
+    void slotLoopRemove();
 
   private slots:
     void slotLoopEnabledValueChangeRequest(double enabled);

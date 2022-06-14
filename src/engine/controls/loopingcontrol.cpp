@@ -693,6 +693,17 @@ void LoopingControl::setLoopInToCurrentPosition() {
     //qDebug() << "set loop_in to " << loopInfo.startPosition;
 }
 
+void LoopingControl::slotLoopRemove() {
+    setLoopingEnabled(false);
+    LoopInfo loopInfo = m_loopInfo.getValue();
+    loopInfo.startPosition = mixxx::audio::kInvalidFramePos;
+    loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
+    loopInfo.seekMode = LoopSeekMode::None;
+    m_loopInfo.setValue(loopInfo);
+    m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
+    m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+}
+
 void LoopingControl::slotLoopIn(double pressed) {
     if (!m_pTrack) {
         return;

@@ -103,7 +103,7 @@ class WTrackMenu : public QMenu {
     void slotClearHotCues();
     void slotClearIntroCue();
     void slotClearOutroCue();
-    void slotClearLoop();
+    void slotClearLoops();
     void slotClearKey();
     void slotClearReplayGain();
     void slotClearWaveform();
@@ -280,7 +280,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pClearHotCuesAction{};
     QAction* m_pClearIntroCueAction{};
     QAction* m_pClearOutroCueAction{};
-    QAction* m_pClearLoopAction{};
+    QAction* m_pClearLoopsAction{};
     QAction* m_pClearWaveformAction{};
     QAction* m_pClearCommentAction{};
     QAction* m_pClearKeyAction{};
