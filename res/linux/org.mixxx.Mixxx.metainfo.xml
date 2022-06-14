@@ -102,7 +102,7 @@
       <description>
  <ul>
   <li>
-   Pioneer-DDJ-SB3: Fix controller breaking when releasing the shift button
+   Pioneer DDJ-SB3: Fix controller breaking when releasing the shift button
    #4659
   </li>
   <li>
@@ -117,7 +117,7 @@
    #4799
   </li>
   <li>
-   MC7000: Fix 'inverted shift' bug in the controller mapping
+   Denon MC7000: Fix 'inverted shift' bug in the controller mapping
    #4755
   </li>
   <li>
