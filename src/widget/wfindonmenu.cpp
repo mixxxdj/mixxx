@@ -13,8 +13,8 @@
 
 namespace {
 
-QString actionPrefixSuffixSeparator(const QString& propertyType, const QString& text) {
-    return propertyType + QStringLiteral(" | ") + text;
+QString composeActionText(const QString& prefix, const QString& trackProperty) {
+    return prefix + QStringLiteral(" | ") + trackProperty;
 }
 
 QString searchUrlSoundCloudArtist = QStringLiteral("https://soundcloud.com/search/people?");
@@ -52,7 +52,7 @@ void WFindOnMenu::addActionsArtist(
     case Service::SoundCloud: {
         const auto soundCloudUrl = searchUrlSoundCloudArtist;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(artist, prefixActionArtist),
+                composeActionText(prefixActionArtist, artist),
                 this,
                 [this, soundCloudUrl, artist]() {
                     emit triggerBrowser(soundCloudUrl, artist);
@@ -63,7 +63,7 @@ void WFindOnMenu::addActionsArtist(
     case Service::LastFm: {
         const auto lastFmUrl = searchUrlLastFmArtist;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(artist, prefixActionArtist),
+                composeActionText(prefixActionArtist, artist),
                 this,
                 [this, lastFmUrl, artist]() {
                     emit triggerBrowser(lastFmUrl, artist);
@@ -74,7 +74,7 @@ void WFindOnMenu::addActionsArtist(
     case Service::Discogs: {
         const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(artist, prefixActionArtist),
+                composeActionText(prefixActionArtist, artist),
                 this,
                 [this, discogsUrl, artist]() {
                     emit triggerBrowser(discogsUrl, artist);
@@ -93,7 +93,7 @@ void WFindOnMenu::addActionsAlbum(
     case Service::SoundCloud: {
         const auto soundCloudUrl = searchUrlSoundCloudAlbum;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
+                composeActionText(prefixActionAlbum, albumName),
                 this,
                 [this, soundCloudUrl, albumName]() {
                     emit triggerBrowser(soundCloudUrl, albumName);
@@ -104,7 +104,7 @@ void WFindOnMenu::addActionsAlbum(
     case Service::LastFm: {
         const auto lastFmUrl = searchUrlLastFmAlbum;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
+                composeActionText(prefixActionAlbum, albumName),
                 this,
                 [this, lastFmUrl, albumName]() {
                     emit triggerBrowser(lastFmUrl, albumName);
@@ -115,7 +115,7 @@ void WFindOnMenu::addActionsAlbum(
     case Service::Discogs: {
         const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
+                composeActionText(prefixActionAlbum, albumName),
                 this,
                 [this, discogsUrl, albumName]() {
                     emit triggerBrowser(discogsUrl, albumName);
@@ -134,7 +134,7 @@ void WFindOnMenu::addActionsTrackTitle(
     case Service::SoundCloud: {
         const auto soundCloudUrl = searchUrlSoundCloudTitle;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
+                composeActionText(prefixActionTrackTitle, trackTitle),
                 this,
                 [this, soundCloudUrl, trackTitle]() {
                     emit triggerBrowser(soundCloudUrl, trackTitle);
@@ -145,7 +145,7 @@ void WFindOnMenu::addActionsTrackTitle(
     case Service::LastFm: {
         const auto lastFmUrl = searchUrlLastFmTitle;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
+                composeActionText(prefixActionTrackTitle, trackTitle),
                 this,
                 [this, lastFmUrl, trackTitle]() {
                     emit triggerBrowser(lastFmUrl, trackTitle);
@@ -156,7 +156,7 @@ void WFindOnMenu::addActionsTrackTitle(
     case Service::Discogs: {
         const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
-                actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
+                composeActionText(prefixActionTrackTitle, trackTitle),
                 this,
                 [this, discogsUrl, trackTitle]() {
                     emit triggerBrowser(discogsUrl, trackTitle);
