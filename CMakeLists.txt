@@ -90,9 +90,11 @@ if(APPLE)
   if(QT6)
     # Minimum macOS version supported by Qt 6
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+    set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
   else()
     # Minimum macOS version supported by Qt 5.12
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+    set(VCPKG_TARGET_TRIPLET "x64-osx-min10.12")
     # Needed for deployment target < 10.14
     add_compile_options(-fno-aligned-allocation)
   endif()
