@@ -118,7 +118,8 @@ DlgAbout::DlgAbout()
             << "Fredrik Wieczerkowski"
             << "Viktor Gal"
             << "Maty&aacute;&scaron; Bobek"
-            << "Mr. Rincewind";
+            << "Mr. Rincewind"
+            << "Stefan N&uuml;rnberger";
 
     QStringList specialThanks;
     specialThanks
@@ -313,7 +314,6 @@ DlgAbout::DlgAbout()
             << "Andreas M&uuml;ller"
             << "Sam Cross"
             << "Joey Pabalinas"
-            << "Stefan N&uuml;rnberger"
             << "Markus Kl&ouml;sges"
             << "Pavel Potocek"
             << "Timothy Rae"
