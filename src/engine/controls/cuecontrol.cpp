@@ -470,6 +470,12 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             this,
             &CueControl::trackCuesUpdated,
             Qt::DirectConnection);
+
+    connect(m_pLoadedTrack.get(),
+            &Track::loopRemove,
+            this,
+            &CueControl::loopRemove);
+
     lock.unlock();
 
     // Use pNewTrack from now, because m_pLoadedTrack might have been reset
