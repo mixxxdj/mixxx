@@ -13,12 +13,6 @@ class WFindOnMenu : public QMenu {
             QWidget* parent = nullptr);
     ~WFindOnMenu() override = default;
 
-    enum class Services {
-        SoundCloud,
-        LastFm,
-        Discogs
-    };
-
     void openTheBrowser(const QString& serviceUrl,
             const QString& query);
 
@@ -30,14 +24,20 @@ class WFindOnMenu : public QMenu {
             const QString& query);
 
   private:
+    enum class Service {
+        SoundCloud,
+        LastFm,
+        Discogs
+    };
+
     void createService(QMenu* serviceMenu,
             const Track& track,
-            const QString& serviceTitleDisplay,
-            Services serviceTitle);
+            const QString& serviceTitle,
+            Service service);
 
-    void addActionsArtist(Services serviceTitle, const QString& artist, QMenu* m_pService);
-    void addActionsTrackTitle(Services serviceTitle, const QString& trackTitle, QMenu* m_pService);
-    void addActionsAlbum(Services serviceTitle, const QString& album, QMenu* m_pService);
+    void addActionsArtist(Service service, const QString& artist, QMenu* m_pService);
+    void addActionsTrackTitle(Service service, const QString& trackTitle, QMenu* m_pService);
+    void addActionsAlbum(Service service, const QString& album, QMenu* m_pService);
 
     QMenu* m_pFindOnSoundCloud;
     QMenu* m_pFindOnLastFm;

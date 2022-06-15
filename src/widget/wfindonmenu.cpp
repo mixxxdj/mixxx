@@ -40,16 +40,16 @@ void WFindOnMenu::createAllServices(const Track& track) {
     WFindOnMenu::createService(m_pFindOnSoundCloud,
             track,
             QString(tr("SoundCloud")),
-            Services::SoundCloud);
-    WFindOnMenu::createService(m_pFindOnLastFm, track, QString(tr("LastFm")), Services::LastFm);
-    WFindOnMenu::createService(m_pFindOnDiscogs, track, QString(tr("Discogs")), Services::Discogs);
+            Service::SoundCloud);
+    WFindOnMenu::createService(m_pFindOnLastFm, track, QString(tr("LastFm")), Service::LastFm);
+    WFindOnMenu::createService(m_pFindOnDiscogs, track, QString(tr("Discogs")), Service::Discogs);
 }
 
 void WFindOnMenu::addActionsArtist(
-        Services serviceTitle, const QString& artist, QMenu* m_pService) {
+        Service service, const QString& artist, QMenu* m_pService) {
     const QString prefixActionArtist = tr("Artist");
-    switch (serviceTitle) {
-    case Services::SoundCloud: {
+    switch (service) {
+    case Service::SoundCloud: {
         const auto soundCloudUrl = searchUrlSoundCloudArtist;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(artist, prefixActionArtist),
@@ -60,7 +60,7 @@ void WFindOnMenu::addActionsArtist(
         break;
     }
 
-    case Services::LastFm: {
+    case Service::LastFm: {
         const auto lastFmUrl = searchUrlLastFmArtist;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(artist, prefixActionArtist),
@@ -71,7 +71,7 @@ void WFindOnMenu::addActionsArtist(
         break;
     }
 
-    case Services::Discogs: {
+    case Service::Discogs: {
         const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(artist, prefixActionArtist),
@@ -87,10 +87,10 @@ void WFindOnMenu::addActionsArtist(
 }
 
 void WFindOnMenu::addActionsAlbum(
-        Services serviceTitle, const QString& albumName, QMenu* m_pService) {
+        Service service, const QString& albumName, QMenu* m_pService) {
     const QString prefixActionAlbum = tr("Album");
-    switch (serviceTitle) {
-    case Services::SoundCloud: {
+    switch (service) {
+    case Service::SoundCloud: {
         const auto soundCloudUrl = searchUrlSoundCloudAlbum;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
@@ -101,7 +101,7 @@ void WFindOnMenu::addActionsAlbum(
         break;
     }
 
-    case Services::LastFm: {
+    case Service::LastFm: {
         const auto lastFmUrl = searchUrlLastFmAlbum;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
@@ -112,7 +112,7 @@ void WFindOnMenu::addActionsAlbum(
         break;
     }
 
-    case Services::Discogs: {
+    case Service::Discogs: {
         const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
@@ -128,10 +128,10 @@ void WFindOnMenu::addActionsAlbum(
 }
 
 void WFindOnMenu::addActionsTrackTitle(
-        Services serviceTitle, const QString& trackTitle, QMenu* m_pService) {
+        Service service, const QString& trackTitle, QMenu* m_pService) {
     const QString prefixActionTrackTitle = tr("Title");
-    switch (serviceTitle) {
-    case Services::SoundCloud: {
+    switch (service) {
+    case Service::SoundCloud: {
         const auto soundCloudUrl = searchUrlSoundCloudTitle;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
@@ -142,7 +142,7 @@ void WFindOnMenu::addActionsTrackTitle(
         break;
     }
 
-    case Services::LastFm: {
+    case Service::LastFm: {
         const auto lastFmUrl = searchUrlLastFmTitle;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
@@ -153,7 +153,7 @@ void WFindOnMenu::addActionsTrackTitle(
         break;
     }
 
-    case Services::Discogs: {
+    case Service::Discogs: {
         const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
@@ -179,28 +179,28 @@ void WFindOnMenu::openTheBrowser(const QString& serviceUrl,
 
 void WFindOnMenu::createService(QMenu* serviceMenu,
         const Track& track,
-        const QString& serviceTitleDisplay,
-        Services serviceTitle) {
+        const QString& serviceTitle,
+        Service service) {
     serviceMenu = new QMenu(this);
-    serviceMenu->setTitle(serviceTitleDisplay);
+    serviceMenu->setTitle(serviceTitle);
     addMenu(serviceMenu);
     addSeparator();
     {
         const auto trackTitle = track.getTitle();
         if (!trackTitle.isEmpty()) {
-            addActionsTrackTitle(serviceTitle, trackTitle, serviceMenu);
+            addActionsTrackTitle(service, trackTitle, serviceMenu);
         }
     }
     {
         const auto albumTitle = track.getAlbum();
         if (!albumTitle.isEmpty()) {
-            addActionsAlbum(serviceTitle, albumTitle, serviceMenu);
+            addActionsAlbum(service, albumTitle, serviceMenu);
         }
     }
     {
         const auto artistTitle = track.getArtist();
         if (!artistTitle.isEmpty()) {
-            addActionsArtist(serviceTitle, artistTitle, serviceMenu);
+            addActionsArtist(service, artistTitle, serviceMenu);
         }
     }
 }
