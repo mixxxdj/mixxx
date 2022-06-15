@@ -825,7 +825,6 @@ void WTrackMenu::updateMenus() {
         m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
     }
 
-
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());

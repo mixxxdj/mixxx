@@ -13,7 +13,7 @@
 
 namespace {
 
-inline QString actionPrefixSuffixSeparator(const QString propertyType, const QString& text) {
+inline QString actionPrefixSuffixSeparator(const QString& propertyType, const QString& text) {
     return propertyType + QStringLiteral(" | ") + text;
 }
 
@@ -59,7 +59,8 @@ void WFindOnMenu::createAllServices(const Track& track) {
     WFindOnMenu::createService(m_pFindOnDiscogs, track, QString(tr("Discogs")), Services::Discogs);
 }
 
-void WFindOnMenu::addActionsArtist(Services serviceTitle, QString artist, QMenu* m_pService) {
+void WFindOnMenu::addActionsArtist(
+        Services serviceTitle, const QString& artist, QMenu* m_pService) {
     const QString prefixActionArtist = tr("Artist");
     switch (serviceTitle) {
     case Services::SoundCloud: {
@@ -99,7 +100,8 @@ void WFindOnMenu::addActionsArtist(Services serviceTitle, QString artist, QMenu*
     }
 }
 
-void WFindOnMenu::addActionsAlbum(Services serviceTitle, QString albumName, QMenu* m_pService) {
+void WFindOnMenu::addActionsAlbum(
+        Services serviceTitle, const QString& albumName, QMenu* m_pService) {
     const QString prefixActionAlbum = tr("Album");
     switch (serviceTitle) {
     case Services::SoundCloud: {
@@ -140,7 +142,7 @@ void WFindOnMenu::addActionsAlbum(Services serviceTitle, QString albumName, QMen
 }
 
 void WFindOnMenu::addActionsTrackTitle(
-        Services serviceTitle, QString trackTitle, QMenu* m_pService) {
+        Services serviceTitle, const QString& trackTitle, QMenu* m_pService) {
     const QString prefixActionTrackTitle = tr("Title");
     switch (serviceTitle) {
     case Services::SoundCloud: {
@@ -191,7 +193,7 @@ void WFindOnMenu::openTheBrowser(const QString& serviceUrl,
 
 void WFindOnMenu::createService(QMenu* serviceMenu,
         const Track& track,
-        QString serviceTitleDisplay,
+        const QString& serviceTitleDisplay,
         Services serviceTitle) {
     serviceMenu = new QMenu(this);
     serviceMenu->setTitle(serviceTitleDisplay);

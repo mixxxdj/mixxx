@@ -262,7 +262,6 @@ class WTrackMenu : public QMenu {
     // Select track in library
     QAction* m_pSelectInLibraryAct{};
 
-
     // BPM feature
     QAction* m_pBpmLockAction{};
     QAction* m_pBpmUnlockAction{};

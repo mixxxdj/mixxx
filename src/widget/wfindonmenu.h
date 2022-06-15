@@ -32,12 +32,12 @@ class WFindOnMenu : public QMenu {
   private:
     void createService(QMenu* serviceMenu,
             const Track& track,
-            QString serviceTitleDisplay,
+            const QString& serviceTitleDisplay,
             Services serviceTitle);
 
-    void addActionsArtist(Services serviceTitle, QString artist, QMenu* m_pService);
-    void addActionsTrackTitle(Services serviceTitle, QString trackTitle, QMenu* m_pService);
-    void addActionsAlbum(Services serviceTitle, QString album, QMenu* m_pService);
+    void addActionsArtist(Services serviceTitle, const QString& artist, QMenu* m_pService);
+    void addActionsTrackTitle(Services serviceTitle, const QString& trackTitle, QMenu* m_pService);
+    void addActionsAlbum(Services serviceTitle, const QString& album, QMenu* m_pService);
 
     QMenu* m_pFindOnSoundCloud;
     QMenu* m_pFindOnLastFm;
