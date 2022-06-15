@@ -189,7 +189,7 @@ void WTrackMenu::createMenus() {
 void WTrackMenu::createActions() {
     const auto hideRemoveKeySequence =
             // TODO(XXX): Qt6 replace enum | with QKeyCombination
-            QKeySequence(static_cast<Qt::Key>(kPropertiesShortcutModifier) |
+            QKeySequence(static_cast<int>(kPropertiesShortcutModifier) |
                     kPropertiesShortcutKey);
 
     if (featureIsEnabled(Feature::AutoDJ)) {
@@ -257,7 +257,7 @@ void WTrackMenu::createActions() {
             m_pPropertiesAct->setShortcut(
                     // TODO(XXX): Qt6 replace enum | with QKeyCombination
                     QKeySequence(
-                            static_cast<Qt::Key>(kPropertiesShortcutModifier) |
+                            static_cast<int>(kPropertiesShortcutModifier) |
                             kPropertiesShortcutKey));
         }
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
