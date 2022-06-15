@@ -13,37 +13,23 @@
 
 namespace {
 
-inline QString actionPrefixSuffixSeparator(const QString& propertyType, const QString& text) {
+QString actionPrefixSuffixSeparator(const QString& propertyType, const QString& text) {
     return propertyType + QStringLiteral(" | ") + text;
 }
 
-inline QString searchUrlSoundCloudArtist() {
-    return QString("https://soundcloud.com/search/people?");
-}
+QString searchUrlSoundCloudArtist = QStringLiteral("https://soundcloud.com/search/people?");
 
-inline QString searchUrlSoundCloudTitle() {
-    return QString("https://soundcloud.com/search/sounds?");
-}
+QString searchUrlSoundCloudTitle = QStringLiteral("https://soundcloud.com/search/sounds?");
 
-inline QString searchUrlSoundCloudAlbum() {
-    return QString("https://soundcloud.com/search/albums?");
-}
+QString searchUrlSoundCloudAlbum = QStringLiteral("https://soundcloud.com/search/albums?");
 
-inline QString searchUrlDiscogsGen() {
-    return QString("https://www.discogs.com/search/?");
-}
+QString searchUrlDiscogsGen = QStringLiteral("https://www.discogs.com/search/?");
 
-inline QString searchUrlLastFmArtist() {
-    return QString("https://www.last.fm/search/artists?");
-}
+QString searchUrlLastFmArtist = QStringLiteral("https://www.last.fm/search/artists?");
 
-inline QString searchUrlLastFmTitle() {
-    return QString("https://www.last.fm/search/tracks?");
-}
+QString searchUrlLastFmTitle = QStringLiteral("https://www.last.fm/search/tracks?");
 
-inline QString searchUrlLastFmAlbum() {
-    return QString("https://www.last.fm/search/albums?");
-}
+QString searchUrlLastFmAlbum = QStringLiteral("https://www.last.fm/search/albums?");
 } // namespace
 
 WFindOnMenu::WFindOnMenu(QWidget* parent)
@@ -64,7 +50,7 @@ void WFindOnMenu::addActionsArtist(
     const QString prefixActionArtist = tr("Artist");
     switch (serviceTitle) {
     case Services::SoundCloud: {
-        const auto soundCloudUrl = searchUrlSoundCloudArtist();
+        const auto soundCloudUrl = searchUrlSoundCloudArtist;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(artist, prefixActionArtist),
                 this,
@@ -75,7 +61,7 @@ void WFindOnMenu::addActionsArtist(
     }
 
     case Services::LastFm: {
-        const auto lastFmUrl = searchUrlLastFmArtist();
+        const auto lastFmUrl = searchUrlLastFmArtist;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(artist, prefixActionArtist),
                 this,
@@ -86,7 +72,7 @@ void WFindOnMenu::addActionsArtist(
     }
 
     case Services::Discogs: {
-        const auto discogsUrl = searchUrlDiscogsGen();
+        const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(artist, prefixActionArtist),
                 this,
@@ -105,7 +91,7 @@ void WFindOnMenu::addActionsAlbum(
     const QString prefixActionAlbum = tr("Album");
     switch (serviceTitle) {
     case Services::SoundCloud: {
-        const auto soundCloudUrl = searchUrlSoundCloudAlbum();
+        const auto soundCloudUrl = searchUrlSoundCloudAlbum;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
                 this,
@@ -116,7 +102,7 @@ void WFindOnMenu::addActionsAlbum(
     }
 
     case Services::LastFm: {
-        const auto lastFmUrl = searchUrlLastFmAlbum();
+        const auto lastFmUrl = searchUrlLastFmAlbum;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
                 this,
@@ -127,7 +113,7 @@ void WFindOnMenu::addActionsAlbum(
     }
 
     case Services::Discogs: {
-        const auto discogsUrl = searchUrlDiscogsGen();
+        const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(albumName, prefixActionAlbum),
                 this,
@@ -146,7 +132,7 @@ void WFindOnMenu::addActionsTrackTitle(
     const QString prefixActionTrackTitle = tr("Title");
     switch (serviceTitle) {
     case Services::SoundCloud: {
-        const auto soundCloudUrl = searchUrlSoundCloudTitle();
+        const auto soundCloudUrl = searchUrlSoundCloudTitle;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
                 this,
@@ -157,7 +143,7 @@ void WFindOnMenu::addActionsTrackTitle(
     }
 
     case Services::LastFm: {
-        const auto lastFmUrl = searchUrlLastFmTitle();
+        const auto lastFmUrl = searchUrlLastFmTitle;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
                 this,
@@ -168,7 +154,7 @@ void WFindOnMenu::addActionsTrackTitle(
     }
 
     case Services::Discogs: {
-        const auto discogsUrl = searchUrlDiscogsGen();
+        const auto discogsUrl = searchUrlDiscogsGen;
         m_pService->addAction(
                 actionPrefixSuffixSeparator(trackTitle, prefixActionTrackTitle),
                 this,
