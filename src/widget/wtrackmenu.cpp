@@ -193,7 +193,7 @@ void WTrackMenu::createMenus() {
                     m_pFindOnMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
-                        m_pFindOnMenu->createAllServices(*pTrack);
+                        m_pFindOnMenu->createAllSubmenusForWebLookups(*pTrack);
                     }
                     m_pFindOnMenu->setEnabled(
                             !m_pFindOnMenu->isEmpty());
@@ -203,7 +203,7 @@ void WTrackMenu::createMenus() {
                 &WFindOnMenu::triggerBrowser,
                 this,
                 [this](const QString& serviceUrl, const QString& query) {
-                    m_pFindOnMenu->openTheBrowser(serviceUrl,
+                    m_pFindOnMenu->openInBrowser(serviceUrl,
                             query);
                 });
     }
