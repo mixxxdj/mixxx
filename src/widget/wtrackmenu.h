@@ -51,8 +51,9 @@ class WTrackMenu : public QMenu {
         SearchRelated = 1 << 13,
         UpdateReplayGainFromPregain = 1 << 14,
         SelectInLibrary = 1 << 15,
+        Reanalyze = 1 << 16,
         TrackModelFeatures = Remove | HideUnhidePurge,
-        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
+        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Reanalyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary
     };
@@ -108,6 +109,9 @@ class WTrackMenu : public QMenu {
     void slotClearReplayGain();
     void slotClearWaveform();
     void slotClearAllMetadata();
+
+    // Analyze
+    void slotReanalyze();
 
     // BPM
     void slotLockBpm();
@@ -180,7 +184,9 @@ class WTrackMenu : public QMenu {
     void updateSelectionCrates(QWidget* pWidget);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+    void addToAnalysis();
 
+    void clearBeats();
     void lockBpm(bool lock);
 
     void loadSelectionToGroup(const QString& group, bool play = false);
@@ -271,6 +277,9 @@ class WTrackMenu : public QMenu {
 
     // Track color
     WColorPickerAction* m_pColorPickerAction{};
+
+    // Reset beats and analyze track action
+    QAction* m_pReanalyzeAction{};
 
     // Clear track metadata actions
     QAction* m_pClearBeatsAction{};
