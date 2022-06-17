@@ -17,6 +17,24 @@ QString composeActionText(const QString& prefix, const QString& trackProperty) {
     return prefix + QStringLiteral(" | ") + trackProperty;
 }
 
+QString composeSearchQuery(const QString& trackAlbumOrTitle, const QString& artistTitle) {
+    return trackAlbumOrTitle + QStringLiteral(" ") + artistTitle;
+}
+
+QString composePrefixAction(WFindOnMenu::TrackProperty trackProperty) {
+    if (trackProperty == WFindOnMenu::TrackProperty::Title) {
+        return QStringLiteral("Title");
+    } else if (trackProperty == WFindOnMenu::TrackProperty::Artist) {
+        return QStringLiteral("Artist");
+    } else if (trackProperty == WFindOnMenu::TrackProperty::ArtistTitle) {
+        return QStringLiteral("Title && Artist");
+    } else if (trackProperty == WFindOnMenu::TrackProperty::ArtistAlbum) {
+        return QStringLiteral("Album && Artist");
+    } else {
+        return QStringLiteral("Album");
+    }
+}
+
 QString searchUrlSoundCloudArtist = QStringLiteral("https://soundcloud.com/search/people?");
 
 QString searchUrlSoundCloudTitle = QStringLiteral("https://soundcloud.com/search/sounds?");
@@ -30,6 +48,47 @@ QString searchUrlLastFmArtist = QStringLiteral("https://www.last.fm/search/artis
 QString searchUrlLastFmTitle = QStringLiteral("https://www.last.fm/search/tracks?");
 
 QString searchUrlLastFmAlbum = QStringLiteral("https://www.last.fm/search/albums?");
+
+QString defaultUrl = QStringLiteral("https://soundcloud.com/search?");
+
+QString getServiceUrl(WFindOnMenu::Service service, WFindOnMenu::TrackProperty trackProperty) {
+    switch (service) {
+        {
+        case WFindOnMenu::Service::Discogs:
+            return searchUrlDiscogsGen;
+            break;
+        }
+        {
+        case WFindOnMenu::Service::LastFm:
+            if (trackProperty == WFindOnMenu::TrackProperty::Title ||
+                    trackProperty == WFindOnMenu::TrackProperty::ArtistTitle) {
+                return searchUrlLastFmTitle;
+            } else if (trackProperty == WFindOnMenu::TrackProperty::Artist) {
+                return searchUrlLastFmArtist;
+            } else {
+                return searchUrlLastFmAlbum;
+            }
+            break;
+        }
+        {
+        case WFindOnMenu::Service::SoundCloud:
+            if (trackProperty == WFindOnMenu::TrackProperty::Title ||
+                    trackProperty == WFindOnMenu::TrackProperty::ArtistTitle) {
+                return searchUrlSoundCloudTitle;
+            } else if (trackProperty == WFindOnMenu::TrackProperty::Artist) {
+                return searchUrlSoundCloudArtist;
+            } else {
+                return searchUrlSoundCloudAlbum;
+            }
+            break;
+        }
+        {
+        default:
+            return defaultUrl;
+            break;
+        }
+    }
+}
 } // namespace
 
 WFindOnMenu::WFindOnMenu(QWidget* parent)
@@ -48,38 +107,35 @@ void WFindOnMenu::createAllSubmenusForWebLookups(const Track& track) {
 }
 
 void WFindOnMenu::addActionsArtist(
-        Service service, const QString& artist, QMenu* pServiceMenu) {
-    const QString prefixActionArtist = tr("Artist");
+        Service service, const QString& artist, QMenu* pServiceMenu, TrackProperty trackProperty) {
+    const QString prefixAction = composePrefixAction(trackProperty);
     switch (service) {
     case Service::SoundCloud: {
-        const auto soundCloudUrl = searchUrlSoundCloudArtist;
         pServiceMenu->addAction(
-                composeActionText(prefixActionArtist, artist),
+                composeActionText(prefixAction, artist),
                 this,
-                [this, soundCloudUrl, artist]() {
-                    emit triggerBrowser(soundCloudUrl, artist);
+                [this, service, trackProperty, artist]() {
+                    emit triggerBrowser(service, trackProperty, artist);
                 });
         break;
     }
 
     case Service::LastFm: {
-        const auto lastFmUrl = searchUrlLastFmArtist;
         pServiceMenu->addAction(
-                composeActionText(prefixActionArtist, artist),
+                composeActionText(prefixAction, artist),
                 this,
-                [this, lastFmUrl, artist]() {
-                    emit triggerBrowser(lastFmUrl, artist);
+                [this, service, trackProperty, artist]() {
+                    emit triggerBrowser(service, trackProperty, artist);
                 });
         break;
     }
 
     case Service::Discogs: {
-        const auto discogsUrl = searchUrlDiscogsGen;
         pServiceMenu->addAction(
-                composeActionText(prefixActionArtist, artist),
+                composeActionText(prefixAction, artist),
                 this,
-                [this, discogsUrl, artist]() {
-                    emit triggerBrowser(discogsUrl, artist);
+                [this, service, trackProperty, artist]() {
+                    emit triggerBrowser(service, trackProperty, artist);
                 });
         break;
     }
@@ -88,39 +144,38 @@ void WFindOnMenu::addActionsArtist(
     }
 }
 
-void WFindOnMenu::addActionsAlbum(
-        Service service, const QString& albumName, QMenu* pServiceMenu) {
-    const QString prefixActionAlbum = tr("Album");
+void WFindOnMenu::addActionsAlbum(Service service,
+        const QString& albumName,
+        QMenu* pServiceMenu,
+        TrackProperty trackProperty) {
+    const QString prefixAction = composePrefixAction(trackProperty);
     switch (service) {
     case Service::SoundCloud: {
-        const auto soundCloudUrl = searchUrlSoundCloudAlbum;
         pServiceMenu->addAction(
-                composeActionText(prefixActionAlbum, albumName),
+                composeActionText(prefixAction, albumName),
                 this,
-                [this, soundCloudUrl, albumName]() {
-                    emit triggerBrowser(soundCloudUrl, albumName);
+                [this, service, trackProperty, albumName]() {
+                    emit triggerBrowser(service, trackProperty, albumName);
                 });
         break;
     }
 
     case Service::LastFm: {
-        const auto lastFmUrl = searchUrlLastFmAlbum;
         pServiceMenu->addAction(
-                composeActionText(prefixActionAlbum, albumName),
+                composeActionText(prefixAction, albumName),
                 this,
-                [this, lastFmUrl, albumName]() {
-                    emit triggerBrowser(lastFmUrl, albumName);
+                [this, service, trackProperty, albumName]() {
+                    emit triggerBrowser(service, trackProperty, albumName);
                 });
         break;
     }
 
     case Service::Discogs: {
-        const auto discogsUrl = searchUrlDiscogsGen;
         pServiceMenu->addAction(
-                composeActionText(prefixActionAlbum, albumName),
+                composeActionText(prefixAction, albumName),
                 this,
-                [this, discogsUrl, albumName]() {
-                    emit triggerBrowser(discogsUrl, albumName);
+                [this, service, trackProperty, albumName]() {
+                    emit triggerBrowser(service, trackProperty, albumName);
                 });
         break;
     }
@@ -129,39 +184,38 @@ void WFindOnMenu::addActionsAlbum(
     }
 }
 
-void WFindOnMenu::addActionsTrackTitle(
-        Service service, const QString& trackTitle, QMenu* pServiceMenu) {
-    const QString prefixActionTrackTitle = tr("Title");
+void WFindOnMenu::addActionsTrackTitle(Service service,
+        const QString& trackTitle,
+        QMenu* pServiceMenu,
+        TrackProperty trackProperty) {
+    const QString prefixAction = composePrefixAction(trackProperty);
     switch (service) {
     case Service::SoundCloud: {
-        const auto soundCloudUrl = searchUrlSoundCloudTitle;
         pServiceMenu->addAction(
-                composeActionText(prefixActionTrackTitle, trackTitle),
+                composeActionText(prefixAction, trackTitle),
                 this,
-                [this, soundCloudUrl, trackTitle]() {
-                    emit triggerBrowser(soundCloudUrl, trackTitle);
+                [this, service, trackProperty, trackTitle]() {
+                    emit triggerBrowser(service, trackProperty, trackTitle);
                 });
         break;
     }
 
     case Service::LastFm: {
-        const auto lastFmUrl = searchUrlLastFmTitle;
         pServiceMenu->addAction(
-                composeActionText(prefixActionTrackTitle, trackTitle),
+                composeActionText(prefixAction, trackTitle),
                 this,
-                [this, lastFmUrl, trackTitle]() {
-                    emit triggerBrowser(lastFmUrl, trackTitle);
+                [this, service, trackProperty, trackTitle]() {
+                    emit triggerBrowser(service, trackProperty, trackTitle);
                 });
         break;
     }
 
     case Service::Discogs: {
-        const auto discogsUrl = searchUrlDiscogsGen;
         pServiceMenu->addAction(
-                composeActionText(prefixActionTrackTitle, trackTitle),
+                composeActionText(prefixAction, trackTitle),
                 this,
-                [this, discogsUrl, trackTitle]() {
-                    emit triggerBrowser(discogsUrl, trackTitle);
+                [this, service, trackProperty, trackTitle]() {
+                    emit triggerBrowser(service, trackProperty, trackTitle);
                 });
         break;
     }
@@ -170,8 +224,10 @@ void WFindOnMenu::addActionsTrackTitle(
     }
 }
 
-void WFindOnMenu::openInBrowser(const QString& serviceUrl,
+void WFindOnMenu::openInBrowser(Service service,
+        TrackProperty trackProperty,
         const QString& query) {
+    const QString serviceUrl = getServiceUrl(service, trackProperty);
     QUrlQuery qurlquery;
     qurlquery.addQueryItem("q", query);
     QUrl url(serviceUrl);
@@ -183,26 +239,41 @@ void WFindOnMenu::populateWebLookUpQueries(QMenu* pServiceMenu,
         const Track& track,
         const QString& serviceTitle,
         Service service) {
+    const auto artistTitle = track.getArtist();
     pServiceMenu = new QMenu(this);
     pServiceMenu->setTitle(serviceTitle);
     addMenu(pServiceMenu);
     addSeparator();
     {
         const auto trackTitle = track.getTitle();
+        const auto artistTitleWithTitle = composeSearchQuery(trackTitle, artistTitle);
         if (!trackTitle.isEmpty()) {
-            addActionsTrackTitle(service, trackTitle, pServiceMenu);
+            addActionsTrackTitle(service,
+                    trackTitle,
+                    pServiceMenu,
+                    WFindOnMenu::TrackProperty::Title);
+            addActionsTrackTitle(service,
+                    artistTitleWithTitle,
+                    pServiceMenu,
+                    WFindOnMenu::TrackProperty::ArtistTitle);
         }
     }
     {
         const auto albumTitle = track.getAlbum();
+        const auto artistTitleWithAlbum = composeSearchQuery(albumTitle, artistTitle);
         if (!albumTitle.isEmpty()) {
-            addActionsAlbum(service, albumTitle, pServiceMenu);
+            addActionsAlbum(service,
+                    artistTitleWithAlbum,
+                    pServiceMenu,
+                    WFindOnMenu::TrackProperty::ArtistAlbum);
         }
     }
     {
-        const auto artistTitle = track.getArtist();
         if (!artistTitle.isEmpty()) {
-            addActionsArtist(service, artistTitle, pServiceMenu);
+            addActionsArtist(service,
+                    artistTitle,
+                    pServiceMenu,
+                    WFindOnMenu::TrackProperty::Artist);
         }
     }
 }

@@ -202,9 +202,10 @@ void WTrackMenu::createMenus() {
         connect(m_pFindOnMenu,
                 &WFindOnMenu::triggerBrowser,
                 this,
-                [this](const QString& serviceUrl, const QString& query) {
-                    m_pFindOnMenu->openInBrowser(serviceUrl,
-                            query);
+                [this](WFindOnMenu::Service service,
+                        WFindOnMenu::TrackProperty trackProperty,
+                        const QString& query) {
+                    m_pFindOnMenu->openInBrowser(service, trackProperty, query);
                 });
     }
 
