@@ -392,7 +392,7 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotClearBeats);
     }
 
-    if (featureIsEnabled(Feature::Reanalyze)) {
+    if (featureIsEnabled(Feature::Analyze)) {
         m_pReanalyzeAction = new QAction(tr("Reanalyze"), this);
         connect(m_pReanalyzeAction, &QAction::triggered, this, &WTrackMenu::slotReanalyze);
     }
@@ -2168,7 +2168,7 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
                         TrackModel::Capability::RemoveCrate);
     case Feature::Metadata:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
-    case Feature::Reanalyze:
+    case Feature::Analyze:
         // TODO: Do we actually need the EditMetadata capability here?
         //       (We do reset the beatgrid before reanalyzing)
         return m_pTrackModel->hasCapabilities(

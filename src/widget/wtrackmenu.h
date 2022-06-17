@@ -51,9 +51,9 @@ class WTrackMenu : public QMenu {
         SearchRelated = 1 << 13,
         UpdateReplayGainFromPregain = 1 << 14,
         SelectInLibrary = 1 << 15,
-        Reanalyze = 1 << 16,
+        Analyze = 1 << 16,
         TrackModelFeatures = Remove | HideUnhidePurge,
-        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Reanalyze |
+        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary
     };

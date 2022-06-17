@@ -20,7 +20,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
         WTrackMenu::Feature::Reset |
-        WTrackMenu::Feature::Reanalyze |
+        WTrackMenu::Feature::Analyze |
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
