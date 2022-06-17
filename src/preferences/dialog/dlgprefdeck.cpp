@@ -630,6 +630,8 @@ void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
         radioButtonRemaining->setChecked(true);
     } else if (m_timeDisplayMode == TrackTime::DisplayMode::ELAPSED_AND_REMAINING) {
         radioButtonElapsedAndRemaining->setChecked(true);
+    } else if (m_timeDisplayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
+        radioButtonBeatsUntilNextCueAndRemaining->setChecked(true);
     } else { // Elapsed
         radioButtonElapsed->setChecked(true);
     }
