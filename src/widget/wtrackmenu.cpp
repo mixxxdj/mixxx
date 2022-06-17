@@ -2183,8 +2183,6 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::Metadata:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Analyze:
-        // TODO: Do we actually need the EditMetadata capability here?
-        //       (We do reset the beatgrid before reanalyzing)
         return m_pTrackModel->hasCapabilities(
                 TrackModel::Capability::EditMetadata |
                 TrackModel::Capability::Analyze);

@@ -374,8 +374,7 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
             Capability::LoadToSampler |
-            Capability::RemoveFromDisk |
-            Capability::Analyze;
+            Capability::RemoveFromDisk;
 }
 
 QString BrowseTableModel::modelKey(bool noSearch) const {
