@@ -28,15 +28,15 @@ class WFindOnMenu : public QMenu {
     };
 
   public slots:
-    void openInBrowser(Service service,
-            TrackProperty trackProperty,
+    void openInBrowser(WFindOnMenu::Service service,
+            WFindOnMenu::TrackProperty trackProperty,
             const QString& query);
 
     void createAllSubmenusForWebLookups(const Track& track);
 
   signals:
-    void triggerBrowser(Service service,
-            TrackProperty trackProperty,
+    void triggerBrowser(WFindOnMenu::Service service,
+            WFindOnMenu::TrackProperty trackProperty,
             const QString& query);
 
   private:
