@@ -110,7 +110,8 @@ class WTrackMenu : public QMenu {
     void slotClearWaveform();
     void slotClearAllMetadata();
 
-    // Analyze
+    // Analysis
+    void slotAnalyze();
     void slotReanalyze();
 
     // BPM
@@ -222,6 +223,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pMetadataMenu{};
     QMenu* m_pMetadataUpdateExternalCollectionsMenu{};
     QMenu* m_pClearMetadataMenu{};
+    QMenu* m_pAnalyzeMenu{};
     QMenu* m_pBPMMenu{};
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
@@ -278,7 +280,8 @@ class WTrackMenu : public QMenu {
     // Track color
     WColorPickerAction* m_pColorPickerAction{};
 
-    // Reset beats and analyze track action
+    // Analysis actions
+    QAction* m_pAnalyzeAction{};
     QAction* m_pReanalyzeAction{};
 
     // Clear track metadata actions

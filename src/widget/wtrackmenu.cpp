@@ -156,6 +156,11 @@ void WTrackMenu::createMenus() {
         m_pClearMetadataMenu->setTitle(tr("Reset"));
     }
 
+    if (featureIsEnabled(Feature::Analyze)) {
+        m_pAnalyzeMenu = new QMenu(this);
+        m_pAnalyzeMenu->setTitle(tr("Analyze"));
+    }
+
     if (featureIsEnabled(Feature::SearchRelated)) {
         DEBUG_ASSERT(!m_pSearchRelatedMenu);
         m_pSearchRelatedMenu =
@@ -393,7 +398,10 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
-        m_pReanalyzeAction = new QAction(tr("Reanalyze"), this);
+        m_pAnalyzeAction = new QAction(tr("Add to Queue"), this);
+        connect(m_pAnalyzeAction, &QAction::triggered, this, &WTrackMenu::slotAnalyze);
+
+        m_pReanalyzeAction = new QAction(tr("Reset BPM + Add to Queue"), this);
         connect(m_pReanalyzeAction, &QAction::triggered, this, &WTrackMenu::slotReanalyze);
     }
 
@@ -550,8 +558,10 @@ void WTrackMenu::setupActions() {
         addMenu(m_pClearMetadataMenu);
     }
 
-    if (m_pReanalyzeAction) {
-        addAction(m_pReanalyzeAction);
+    if (featureIsEnabled(Feature::Analyze)) {
+        m_pAnalyzeMenu->addAction(m_pAnalyzeAction);
+        m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
+        addMenu(m_pAnalyzeMenu);
     }
 
     // This action is created only for menus instantiated by deck widgets (e.g.
@@ -1320,6 +1330,10 @@ void WTrackMenu::addToAnalysis() {
     }
 
     emit m_pLibrary->analyzeTracks(trackIds);
+}
+
+void WTrackMenu::slotAnalyze() {
+    addToAnalysis();
 }
 
 void WTrackMenu::slotReanalyze() {
