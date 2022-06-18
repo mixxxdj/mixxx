@@ -6,12 +6,12 @@
 
 class Track;
 
-class WFindOnMenu : public QMenu {
+class WFindOnWebMenu : public QMenu {
     Q_OBJECT
   public:
-    explicit WFindOnMenu(
+    explicit WFindOnWebMenu(
             QWidget* parent = nullptr);
-    ~WFindOnMenu() override = default;
+    ~WFindOnWebMenu() override = default;
 
     enum class Service {
         SoundCloud,
@@ -19,28 +19,27 @@ class WFindOnMenu : public QMenu {
         Discogs
     };
 
-    enum class TrackProperty {
+    enum class TrackSearchProperties {
         Artist,
-        ArtistTitle,
-        ArtistAlbum,
+        ArtistAndTitle,
+        ArtistAndAlbum,
         Album,
         Title
     };
 
-  public slots:
-    void openInBrowser(WFindOnMenu::Service service,
-            WFindOnMenu::TrackProperty trackProperty,
+    void openInBrowser(WFindOnWebMenu::Service service,
+            WFindOnWebMenu::TrackSearchProperties trackSearchProperty,
             const QString& query);
 
-    void createAllSubmenusForWebLookups(const Track& track);
+    void addSubmenusForServices(const Track& track);
 
   signals:
-    void triggerBrowser(WFindOnMenu::Service service,
-            WFindOnMenu::TrackProperty trackProperty,
+    void triggerBrowser(WFindOnWebMenu::Service service,
+            WFindOnWebMenu::TrackSearchProperties trackSearchProperty,
             const QString& query);
 
   private:
-    void populateWebLookUpQueries(QMenu* pServiceMenu,
+    void populateFromTrackProperties(QMenu* pServiceMenu,
             const Track& track,
             const QString& serviceTitle,
             Service service);
@@ -48,15 +47,15 @@ class WFindOnMenu : public QMenu {
     void addActionsArtist(Service service,
             const QString& artist,
             QMenu* pServiceMenu,
-            TrackProperty trackProperty);
+            TrackSearchProperties trackSearchProperty);
     void addActionsTrackTitle(Service service,
             const QString& trackTitle,
             QMenu* pServiceMenu,
-            TrackProperty trackProperty);
+            TrackSearchProperties trackSearchProperty);
     void addActionsAlbum(Service service,
             const QString& album,
             QMenu* pServiceMenu,
-            TrackProperty trackProperty);
+            TrackSearchProperties trackSearchProperty);
 
     QMenu* m_pFindOnSoundCloud;
     QMenu* m_pFindOnLastFm;

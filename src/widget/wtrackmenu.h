@@ -24,7 +24,7 @@ class TrackModel;
 class WColorPickerAction;
 class WCoverArtMenu;
 class WSearchRelatedTracksMenu;
-class WFindOnMenu;
+class WFindOnWebMenu;
 
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
@@ -52,12 +52,12 @@ class WTrackMenu : public QMenu {
         SearchRelated = 1 << 13,
         UpdateReplayGainFromPregain = 1 << 14,
         SelectInLibrary = 1 << 15,
-        FindOn = 1 << 16,
+        FindOnWeb = 1 << 16,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
-                FindOn
+                FindOnWeb
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -223,7 +223,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
-    parented_ptr<WFindOnMenu> m_pFindOnMenu;
+    parented_ptr<WFindOnWebMenu> m_pFindOnMenu;
     QMenu* m_pRemoveFromDiskMenu{};
 
     // Update ReplayGain from Track
