@@ -263,10 +263,10 @@ void WFindOnWebMenu::populateFromTrackProperties(QMenu* pServiceMenu,
     }
     {
         const auto album = track.getAlbum();
-        const auto artistTitleWithAlbum = composeSearchQuery(album, artist);
+        const auto artistWithAlbum = composeSearchQuery(album, artist);
         if (!album.isEmpty()) {
             addActionsAlbum(service,
-                    artistTitleWithAlbum,
+                    artistWithAlbum,
                     pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum);
         }
