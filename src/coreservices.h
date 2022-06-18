@@ -16,6 +16,9 @@ class RecordingManager;
 #ifdef __BROADCAST__
 class BroadcastManager;
 #endif
+#ifdef __MACOS_MEDIAPLAYER__
+class MacOSMediaPlayerService;
+#endif
 class ControllerManager;
 class VinylControlManager;
 class TrackCollectionManager;
@@ -131,6 +134,9 @@ class CoreServices : public QObject {
     std::shared_ptr<RecordingManager> m_pRecordingManager;
 #ifdef __BROADCAST__
     std::shared_ptr<BroadcastManager> m_pBroadcastManager;
+#endif
+#ifdef __MACOS_MEDIAPLAYER__
+    std::shared_ptr<MacOSMediaPlayerService> m_pMacOSMediaPlayerService;
 #endif
     std::shared_ptr<ControllerManager> m_pControllerManager;
 
