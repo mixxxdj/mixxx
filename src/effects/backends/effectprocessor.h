@@ -98,6 +98,9 @@ class EffectProcessor {
             const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) = 0;
+
+    /// This method returns the number of samples for the current effect delay.
+    virtual unsigned int getGroupDelay() = 0;
 };
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of
@@ -148,6 +151,12 @@ class EffectProcessorImpl : public EffectProcessor {
             const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) = 0;
+
+    /// By default, the group delay for every effect is zero. The effect implementation
+    /// can override this method and set actual number of samples for the effect delay.
+    virtual unsigned int getGroupDelay() override {
+        return 0;
+    }
 
     void process(const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,

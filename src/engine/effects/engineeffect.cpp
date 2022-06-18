@@ -223,3 +223,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
 
     return processingOccured;
 }
+
+unsigned int EngineEffect::getGroupDelay() {
+    return m_pProcessor->getGroupDelay();
+}

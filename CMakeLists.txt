@@ -615,6 +615,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/controls/ratecontrol.cpp
   src/engine/effects/engineeffect.cpp
   src/engine/effects/engineeffectchain.cpp
+  src/engine/effects/engineeffectsdelay.cpp
   src/engine/effects/engineeffectsmanager.cpp
   src/engine/enginebuffer.cpp
   src/engine/enginedelay.cpp

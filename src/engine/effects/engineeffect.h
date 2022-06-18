@@ -63,6 +63,8 @@ class EngineEffect final : public EffectsRequestHandler {
         return m_pManifest->name();
     }
 
+    unsigned int getGroupDelay();
+
   private:
     QString debugString() const {
         return QString("EngineEffect(%1)").arg(m_pManifest->name());

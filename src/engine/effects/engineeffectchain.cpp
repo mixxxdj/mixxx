@@ -23,6 +23,8 @@ EngineEffectChain::EngineEffectChain(const QString& group,
         }
         m_chainStatusForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
+
+    m_effectsDelay = new EngineEffectsDelay();
 }
 
 EngineEffectChain::~EngineEffectChain() {
@@ -265,6 +267,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         // requires that the input buffer does not get modified.
         CSAMPLE* pIntermediateInput = pIn;
         CSAMPLE* pIntermediateOutput;
+        unsigned int effectChainGroupDelay = 0;
         bool firstAddDryToWetEffectProcessed = false;
 
         for (EngineEffect* pEffect : qAsConst(m_effects)) {
@@ -308,11 +311,16 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                     }
 
                     processingOccured = true;
+                    effectChainGroupDelay += pEffect->getGroupDelay();
+
                     // Output of this effect becomes the input of the next effect
                     pIntermediateInput = pIntermediateOutput;
                 }
             }
         }
+
+        m_effectsDelay->setDelay(effectChainGroupDelay);
+        m_effectsDelay->process(pIn, pIn, numSamples);
 
         if (processingOccured) {
             // pIntermediateInput is the output of the last processed effect. It would be the

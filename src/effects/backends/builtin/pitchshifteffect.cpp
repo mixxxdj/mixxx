@@ -69,6 +69,15 @@ void PitchShiftEffect::loadEngineEffectParameters(
     m_pPitchParameter = parameters.value("pitch");
 }
 
+// Returns RubberBand process latency.
+unsigned int PitchShiftEffect::getGroupDelay() {
+    return m_groupDelay;
+}
+
+void PitchShiftEffect::setGroupDelay(unsigned int groupDelay) {
+    m_groupDelay = groupDelay;
+}
+
 void PitchShiftEffect::processChannel(
         PitchShiftGroupState* pState,
         const CSAMPLE* pInput,
@@ -97,17 +106,18 @@ void PitchShiftEffect::processChannel(
             pInput,
             engineParameters.framesPerBuffer());
     pState->m_pRubberBand->process(
-            //static_cast<const float* const*>(pState->m_retrieveBuffer),
             pState->m_retrieveBuffer,
             engineParameters.framesPerBuffer(),
             false);
+
+    // Sets number of samples for current RubberBand process latency.
+    setGroupDelay(pState->m_pRubberBand->getLatency() * engineParameters.channelCount());
 
     SINT framesAvailable = pState->m_pRubberBand->available();
     SINT framesToRead = math_min(
             framesAvailable,
             engineParameters.framesPerBuffer());
     SINT receivedFrames = pState->m_pRubberBand->retrieve(
-            //static_cast<float* const*>(pState->m_retrieveBuffer),
             pState->m_retrieveBuffer,
             framesToRead);
 

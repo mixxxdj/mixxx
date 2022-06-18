@@ -45,11 +45,16 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
+    unsigned int getGroupDelay() override;
+
   private:
     QString debugString() const {
         return getId();
     }
 
+    void setGroupDelay(unsigned int groupDelay);
+
+    unsigned int m_groupDelay;
     EngineEffectParameterPointer m_pPitchParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PitchShiftEffect);
