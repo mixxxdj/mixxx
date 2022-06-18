@@ -191,7 +191,7 @@ CUP mode:
 		  <attribute name="buttonGroup">
 		   <string notr="true">buttonGroupTrackTime</string>
 		  </attribute>
-		</widget>
+		 </widget>
 		</item>
        </layout>
       </item>
@@ -669,6 +669,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>radioButtonElapsed</tabstop>
   <tabstop>radioButtonRemaining</tabstop>
   <tabstop>radioButtonElapsedAndRemaining</tabstop>
+  <tabstop>radioButtonBeatsUntilNextCueAndRemaining</tabstop>
   <tabstop>comboBoxTimeFormat</tabstop>
   <tabstop>comboBoxLoadPoint</tabstop>
   <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
