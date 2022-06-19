@@ -54,29 +54,29 @@ const QString searchUrlDefault = QStringLiteral("https://soundcloud.com/search?"
 QString getServiceUrl(WFindOnWebMenu::Service service,
         WFindOnWebMenu::TrackSearchProperties trackSearchProperty) {
     switch (service) {
-        case WFindOnWebMenu::Service::Discogs:
-            return searchUrlDiscogsGen;
-            break;
-        case WFindOnWebMenu::Service::LastFm:
-            if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
-                    trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
-                return searchUrlLastFmTitle;
-            } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
-                return searchUrlLastFmArtist;
-            } else {
-                return searchUrlLastFmAlbum;
-            }
-        case WFindOnWebMenu::Service::SoundCloud:
-            if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
-                    trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
-                return searchUrlSoundCloudTitle;
-            } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
-                return searchUrlSoundCloudArtist;
-            } else {
-                return searchUrlSoundCloudAlbum;
-            }
-        default:
-            return searchUrlDefault;
+    case WFindOnWebMenu::Service::Discogs:
+        return searchUrlDiscogsGen;
+        break;
+    case WFindOnWebMenu::Service::LastFm:
+        if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
+                trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
+            return searchUrlLastFmTitle;
+        } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
+            return searchUrlLastFmArtist;
+        } else {
+            return searchUrlLastFmAlbum;
+        }
+    case WFindOnWebMenu::Service::SoundCloud:
+        if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
+                trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
+            return searchUrlSoundCloudTitle;
+        } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
+            return searchUrlSoundCloudArtist;
+        } else {
+            return searchUrlSoundCloudAlbum;
+        }
+    default:
+        return searchUrlDefault;
     }
 }
 } // namespace
@@ -236,18 +236,24 @@ void WFindOnWebMenu::populateFromTrackProperties(
     m_pServiceMenu->setTitle(serviceTitle);
     addMenu(m_pServiceMenu);
     addSeparator();
+    if (!artist.isEmpty()) {
+        addActionsArtist(service,
+                artist,
+                m_pServiceMenu,
+                WFindOnWebMenu::TrackSearchProperties::Artist);
+    }
     {
         const auto trackTitle = track.getTitle();
         const auto artistWithTrackTitle = composeSearchQuery(trackTitle, artist);
         if (!trackTitle.isEmpty()) {
             addActionsTrackTitle(service,
-                    trackTitle,
-                    m_pServiceMenu,
-                    WFindOnWebMenu::TrackSearchProperties::Title);
-            addActionsTrackTitle(service,
                     artistWithTrackTitle,
                     m_pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle);
+            addActionsTrackTitle(service,
+                    trackTitle,
+                    m_pServiceMenu,
+                    WFindOnWebMenu::TrackSearchProperties::Title);
         }
     }
     {
@@ -258,14 +264,6 @@ void WFindOnWebMenu::populateFromTrackProperties(
                     artistWithAlbum,
                     m_pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum);
-        }
-    }
-    {
-        if (!artist.isEmpty()) {
-            addActionsArtist(service,
-                    artist,
-                    m_pServiceMenu,
-                    WFindOnWebMenu::TrackSearchProperties::Artist);
         }
     }
 }
