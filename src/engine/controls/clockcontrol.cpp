@@ -59,7 +59,7 @@ void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
 }
 
-void ClockControl::trackCuesUpdated(QList<CuePointer> cuePointerList) {
+void ClockControl::trackCuesUpdated(const QList<CuePointer> cuePointerList) {
     m_pTrackCues = cuePointerList;
 }
 
@@ -228,7 +228,7 @@ void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats,
             mixxx::audio::FramePos();
 
     //Iterate through current Track cues and get the closest to the current play position
-    for (const auto& cue : m_pTrackCues) {
+    for (const auto& cue : qAsConst(m_pTrackCues)) {
         mixxx::audio::FramePos cueFramePos = cue->getPosition();
         if (cueFramePos.isValid()) {
             if (cueFramePos >= currentFramePos) {
