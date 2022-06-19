@@ -118,6 +118,7 @@
   [#4477](https://github.com/mixxxdj/mixxx/pull/4477)
   [#4475](https://github.com/mixxxdj/mixxx/pull/4475)
   [#4480](https://github.com/mixxxdj/mixxx/pull/4480)
+  [#4811](https://github.com/mixxxdj/mixxx/pull/4811) ID3v2: Write grouping field into GRP1 instead of TIT1 frame
 
 ### Sync
 

@@ -1134,42 +1134,31 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             "TCOM",
             trackMetadata.getTrackInfo().getComposer());
 
-    // We can use the TIT1 frame only once, either for storing the Work
-    // like Apple decided to do or traditionally for the Content Group.
-    // Rationale: If the the file already has one or more GRP1 frames
-    // or if the track has a Work field then store the Grouping in a
-    // GRP1 frame instead of using TIT1.
-    // See also: importTrackMetadataFromTag()
-    if (
+    // Write Grouping (aka Content Group) data into the GRP1 frame as decided
+    // and promoted by Apple instead of the traditional/legacy TIT1 frame.
+    // This strategy will reduce the chance for inconsistencies and lead
+    // to eventual consistency. It is also more predictable than applying
+    // a content-sensitive strategy which depends on the existence of the
+    // GRP1/TIT1 frames.
+    writeTextIdentificationFrame(
+            pTag,
+            "GRP1",
+            trackMetadata.getTrackInfo().getGrouping());
 #if defined(__EXTRA_METADATA__)
-            !trackMetadata.getTrackInfo().getWork().isNull() ||
-            !trackMetadata.getTrackInfo().getMovement().isNull() ||
+    writeTextIdentificationFrame(
+            pTag,
+            "TIT1",
+            trackMetadata.getTrackInfo().getWork());
+    writeTextIdentificationFrame(
+            pTag,
+            "MVNM",
+            trackMetadata.getTrackInfo().getMovement());
+#else
+    // Don't touch the content of TIT1 if extra metadata is disabled to
+    // avoid deleting valid work information that is already present in
+    // the file! Even if it might contain outdated grouping information
+    // that is overridden by the new contents in GRP1 now.
 #endif // __EXTRA_METADATA__
-            pTag->frameListMap().contains("GRP1")) {
-        // New grouping/work/movement mapping if properties for classical
-        // music are available or if the GRP1 frame is already present in
-        // the file.
-        writeTextIdentificationFrame(
-                pTag,
-                "GRP1",
-                trackMetadata.getTrackInfo().getGrouping());
-#if defined(__EXTRA_METADATA__)
-        writeTextIdentificationFrame(
-                pTag,
-                "TIT1",
-                trackMetadata.getTrackInfo().getWork());
-        writeTextIdentificationFrame(
-                pTag,
-                "MVNM",
-                trackMetadata.getTrackInfo().getMovement());
-#endif // __EXTRA_METADATA__
-    } else {
-        // Stick to the traditional CONTENTGROUP mapping.
-        writeTextIdentificationFrame(
-                pTag,
-                "TIT1",
-                trackMetadata.getTrackInfo().getGrouping());
-    }
 
     // According to the specification "The 'TBPM' frame contains the number
     // of beats per minute in the mainpart of the audio. The BPM is an
