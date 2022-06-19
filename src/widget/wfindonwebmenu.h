@@ -39,7 +39,7 @@ class WFindOnWebMenu : public QMenu {
             const QString& query);
 
   private:
-    void populateFromTrackProperties(QMenu* pServiceMenu,
+    void populateFromTrackProperties(
             const Track& track,
             const QString& serviceTitle,
             Service service);
@@ -57,7 +57,5 @@ class WFindOnWebMenu : public QMenu {
             QMenu* pServiceMenu,
             TrackSearchProperties trackSearchProperty);
 
-    QMenu* m_pFindOnSoundCloud;
-    QMenu* m_pFindOnLastFm;
-    QMenu* m_pFindOnDiscogs;
+    QMenu* m_pServiceMenu;
 };

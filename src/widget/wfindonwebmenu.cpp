@@ -27,39 +27,36 @@ QString composePrefixAction(WFindOnWebMenu::TrackSearchProperties trackSearchPro
     } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
         return QObject::tr("Artist");
     } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
-        return QObject::tr("Title && Artist");
+        return QObject::tr("Title + Artist");
     } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum) {
-        return QObject::tr("Album && Artist");
+        return QObject::tr("Album + Artist");
     } else {
         return QObject::tr("Album");
     }
 }
 
-QString searchUrlSoundCloudArtist = QStringLiteral("https://soundcloud.com/search/people?");
+const QString searchUrlSoundCloudArtist = QStringLiteral("https://soundcloud.com/search/people?");
 
-QString searchUrlSoundCloudTitle = QStringLiteral("https://soundcloud.com/search/sounds?");
+const QString searchUrlSoundCloudTitle = QStringLiteral("https://soundcloud.com/search/sounds?");
 
-QString searchUrlSoundCloudAlbum = QStringLiteral("https://soundcloud.com/search/albums?");
+const QString searchUrlSoundCloudAlbum = QStringLiteral("https://soundcloud.com/search/albums?");
 
-QString searchUrlDiscogsGen = QStringLiteral("https://www.discogs.com/search/?");
+const QString searchUrlDiscogsGen = QStringLiteral("https://www.discogs.com/search/?");
 
-QString searchUrlLastFmArtist = QStringLiteral("https://www.last.fm/search/artists?");
+const QString searchUrlLastFmArtist = QStringLiteral("https://www.last.fm/search/artists?");
 
-QString searchUrlLastFmTitle = QStringLiteral("https://www.last.fm/search/tracks?");
+const QString searchUrlLastFmTitle = QStringLiteral("https://www.last.fm/search/tracks?");
 
-QString searchUrlLastFmAlbum = QStringLiteral("https://www.last.fm/search/albums?");
+const QString searchUrlLastFmAlbum = QStringLiteral("https://www.last.fm/search/albums?");
 
-QString defaultUrl = QStringLiteral("https://soundcloud.com/search?");
+const QString searchUrlDefault = QStringLiteral("https://soundcloud.com/search?");
 
 QString getServiceUrl(WFindOnWebMenu::Service service,
         WFindOnWebMenu::TrackSearchProperties trackSearchProperty) {
     switch (service) {
-        {
         case WFindOnWebMenu::Service::Discogs:
             return searchUrlDiscogsGen;
             break;
-        }
-        {
         case WFindOnWebMenu::Service::LastFm:
             if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
                     trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
@@ -69,9 +66,6 @@ QString getServiceUrl(WFindOnWebMenu::Service service,
             } else {
                 return searchUrlLastFmAlbum;
             }
-            break;
-        }
-        {
         case WFindOnWebMenu::Service::SoundCloud:
             if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
                     trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
@@ -81,13 +75,8 @@ QString getServiceUrl(WFindOnWebMenu::Service service,
             } else {
                 return searchUrlSoundCloudAlbum;
             }
-            break;
-        }
-        {
         default:
-            return defaultUrl;
-            break;
-        }
+            return searchUrlDefault;
     }
 }
 } // namespace
@@ -97,14 +86,14 @@ WFindOnWebMenu::WFindOnWebMenu(QWidget* parent)
 }
 
 void WFindOnWebMenu::addSubmenusForServices(const Track& track) {
-    WFindOnWebMenu::populateFromTrackProperties(m_pFindOnSoundCloud,
+    WFindOnWebMenu::populateFromTrackProperties(
             track,
             QString(tr("SoundCloud")),
             Service::SoundCloud);
     WFindOnWebMenu::populateFromTrackProperties(
-            m_pFindOnLastFm, track, QString(tr("LastFm")), Service::LastFm);
+            track, QString(tr("LastFm")), Service::LastFm);
     WFindOnWebMenu::populateFromTrackProperties(
-            m_pFindOnDiscogs, track, QString(tr("Discogs")), Service::Discogs);
+            track, QString(tr("Discogs")), Service::Discogs);
 }
 
 void WFindOnWebMenu::addActionsArtist(Service service,
@@ -238,14 +227,14 @@ void WFindOnWebMenu::openInBrowser(Service service,
     QDesktopServices::openUrl(url);
 }
 
-void WFindOnWebMenu::populateFromTrackProperties(QMenu* pServiceMenu,
+void WFindOnWebMenu::populateFromTrackProperties(
         const Track& track,
         const QString& serviceTitle,
         Service service) {
     const auto artist = track.getArtist();
-    pServiceMenu = new QMenu(this);
-    pServiceMenu->setTitle(serviceTitle);
-    addMenu(pServiceMenu);
+    m_pServiceMenu = new QMenu(this);
+    m_pServiceMenu->setTitle(serviceTitle);
+    addMenu(m_pServiceMenu);
     addSeparator();
     {
         const auto trackTitle = track.getTitle();
@@ -253,11 +242,11 @@ void WFindOnWebMenu::populateFromTrackProperties(QMenu* pServiceMenu,
         if (!trackTitle.isEmpty()) {
             addActionsTrackTitle(service,
                     trackTitle,
-                    pServiceMenu,
+                    m_pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::Title);
             addActionsTrackTitle(service,
                     artistWithTrackTitle,
-                    pServiceMenu,
+                    m_pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle);
         }
     }
@@ -267,7 +256,7 @@ void WFindOnWebMenu::populateFromTrackProperties(QMenu* pServiceMenu,
         if (!album.isEmpty()) {
             addActionsAlbum(service,
                     artistWithAlbum,
-                    pServiceMenu,
+                    m_pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum);
         }
     }
@@ -275,7 +264,7 @@ void WFindOnWebMenu::populateFromTrackProperties(QMenu* pServiceMenu,
         if (!artist.isEmpty()) {
             addActionsArtist(service,
                     artist,
-                    pServiceMenu,
+                    m_pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::Artist);
         }
     }
