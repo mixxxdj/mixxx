@@ -746,7 +746,11 @@ void importTrackMetadataFromTag(
     const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
     const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
 #if defined(__EXTRA_METADATA__)
-    // Use new grouping/work mapping unconditionally
+    // Unconditionally adopt the the new grouping/work/movement mapping
+    // from Apple iTunes. This ensures that now information is lost, even
+    // if it ends up in the wrong track properties.
+    // The code must be consistent with the corresponding write function!
+    // FIXME: Revisit this decision before enabling the code.
     if (!appleGroupingFrames.isEmpty()) {
         pTrackMetadata->refTrackInfo().setGrouping(
                 firstNonEmptyFrameToQString(appleGroupingFrames));
@@ -761,10 +765,12 @@ void importTrackMetadataFromTag(
                 firstNonEmptyFrameToQString(movementFrames));
     }
 #else  // __EXTRA_METADATA__
-    // Use a conditional, content-sensitive strategy for determining which
-    // frames might contain the grouping metadata. If any "GRP1" frames are
-    // present in the file then these are preferred, even if their content
-    // is empty.
+    // Read the grouping from the new GRP1 frame if these frames are
+    // present in the file. Do so even if it all are empty! If no GRP1
+    // frames are present then read it from the traditional TIT1 frames.
+    // This content-sensitive, conditional behavior must match the
+    // corresponding implementation of the write function for consistent
+    // results!
     const QString traditionalGrouping = firstNonEmptyFrameToQString(traditionalGroupingFrames);
     if (appleGroupingFrames.isEmpty()) {
         // Fallback
@@ -774,10 +780,12 @@ void importTrackMetadataFromTag(
     } else {
         const QString appleGrouping =
                 firstNonEmptyFrameToQString(appleGroupingFrames);
-        if (!traditionalGrouping.isEmpty() &&
+        if (!traditionalGrouping.trimmed().isEmpty() &&
                 traditionalGrouping != appleGrouping) {
-            // This is fine if the TIT1 frame stores the "work" field that
-            // is not yet supported by Mixxx (see __EXTRA_METADATA__).
+            // Only log an informational message if the TIT1 frames carry
+            // meaningful data that differs from the GRP1 data. This might
+            // be fine if the TIT1 frames stores the "work" field that is not
+            // yet supported by Mixxx (see __EXTRA_METADATA__).
             qInfo() << "ID3v2: Discarding content of TIT1" << traditionalGrouping
                     << "in favor of GRP1" << appleGrouping
                     << "for grouping (content group) field";
@@ -1150,7 +1158,11 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             trackMetadata.getTrackInfo().getComposer());
 
 #if defined(__EXTRA_METADATA__)
-    // Use new grouping/work mapping unconditionally
+    // Unconditionally adopt the the new grouping/work/movement mapping
+    // from Apple iTunes. This ensures that now information is lost, even
+    // if it ends up in the wrong ID3v2 tags.
+    // The code must be consistent with the corresponding write function!
+    // FIXME: Revisit this decision before enabling the code.
     writeTextIdentificationFrame(
             pTag,
             "GRP1",
@@ -1164,10 +1176,12 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             "MVNM",
             trackMetadata.getTrackInfo().getMovement());
 #else  // __EXTRA_METADATA__
-    // Use new grouping mapping only if the GRP1 frame is
-    // already present in the file. This content-sensitive,
-    // conditional behavior matches the implementation of
-    // the corresponding read function.
+    // Write the grouping back into the new GRP1 frame if any GRP1
+    // frames are already present in the file. Otherwise write it
+    // into the traditional TIT1 frame.
+    // This content-sensitive, conditional behavior must match the
+    // corresponding implementation of the read function for consistent
+    // results!
     if (pTag->frameListMap().contains("GRP1")) {
         writeTextIdentificationFrame(
                 pTag,
