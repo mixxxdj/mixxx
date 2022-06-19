@@ -18,15 +18,15 @@ constexpr double kSignificiantRateThreshold =
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_pCOBeatActive(std::make_unique<ControlObject>(
-              ConfigKey(group, "beat_active"))),
+                  ConfigKey(group, "beat_active"))),
           m_pBeatCountNextCue(std::make_unique<ControlObject>(
-              ConfigKey(group, "beat_count_next_cue"))),
+                  ConfigKey(group, "beat_count_next_cue"))),
           m_pLoopEnabled(
-              std::make_unique<ControlProxy>(group, "loop_enabled", this)),
+                  std::make_unique<ControlProxy>(group, "loop_enabled", this)),
           m_pLoopStartPosition(std::make_unique<ControlProxy>(
-              group, "loop_start_position", this)),
+                  group, "loop_start_position", this)),
           m_pLoopEndPosition(std::make_unique<ControlProxy>(
-              group, "loop_end_position", this)),
+                  group, "loop_end_position", this)),
           m_lastPlayDirectionWasForwards(true),
           m_lastEvaluatedPosition(mixxx::audio::kStartFramePos),
           m_prevBeatPosition(mixxx::audio::kStartFramePos),
@@ -50,8 +50,7 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
     }
     trackBeatsUpdated(pBeats);
     QObject::connect(
-        pNewTrack.get(), &Track::cuesUpdatedWithCueList, 
-        this, &ClockControl::trackCuesUpdated);
+            pNewTrack.get(), &Track::cuesUpdatedWithCueList, this, &ClockControl::trackCuesUpdated);
 }
 
 void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
@@ -222,11 +221,11 @@ void ClockControl::updateIndicators(const double dRate,
     m_lastEvaluatedPosition = currentPosition;
 }
 
-void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats, 
-    mixxx::audio::FramePos currentFramePos) {
+void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats,
+        mixxx::audio::FramePos currentFramePos) {
     //Initialize FramePos to hold an invalid position unless overriden
     mixxx::audio::FramePos nextCueFramePos =
-        mixxx::audio::FramePos();
+            mixxx::audio::FramePos();
 
     //Iterate through current Track cues and get the closest to the current play position
     for (const auto& cue : m_pTrackCues) {
@@ -237,7 +236,7 @@ void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats,
                     nextCueFramePos = cueFramePos;
                 } else if (nextCueFramePos >= cueFramePos) {
                     nextCueFramePos = cueFramePos;
-                } 
+                }
             }
         }
     }
@@ -245,8 +244,8 @@ void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats,
     //ToDo (Maldini) - Get beat counters for every cue point to help with multi drop mixes
     if (nextCueFramePos.isValid()) {
         m_pBeatCountNextCue->forceSet(
-            pBeats->numBeatsInRange(
-                currentFramePos, nextCueFramePos));
+                pBeats->numBeatsInRange(
+                        currentFramePos, nextCueFramePos));
     } else {
         //ToDo (Maldini) - Count until outro after the last cue point
         m_pBeatCountNextCue->forceSet(-1.0);

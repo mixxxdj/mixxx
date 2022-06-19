@@ -101,13 +101,13 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
         if (m_pBeatCountNextCue && m_pBeatCountNextCue->get() >= 0) {
             //ToDo (Maldini) - Count until outro after the last cue point
             setText(QString::fromStdString(
-                std::to_string((int)m_pBeatCountNextCue->get()) + " beats | " + "-") +
-                timeFormat(dTimeRemaining, precision));
+                            std::to_string((int)m_pBeatCountNextCue->get()) + " beats | " + "-") +
+                    timeFormat(dTimeRemaining, precision));
         } else {
             //Fallback to remaining time display
             setText(QLatin1String("-") % timeFormat(dTimeRemaining, precision));
         }
-    } 
+    }
     m_dOldTimeElapsed = dTimeElapsed;
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMouseEvent>
+
 #include "preferences/dialog/dlgprefdeck.h"
 #include "wnumber.h"
 
