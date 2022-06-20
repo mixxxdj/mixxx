@@ -553,6 +553,10 @@ void WTrackMenu::setupActions() {
         }
 
         m_pMetadataMenu->addMenu(m_pCoverMenu);
+        if (featureIsEnabled(Feature::FindOnWeb)) {
+            m_pMetadataMenu->addMenu(m_pFindOnMenu);
+            addSeparator();
+        }
         addMenu(m_pMetadataMenu);
     }
 
@@ -603,10 +607,6 @@ void WTrackMenu::setupActions() {
         addAction(m_pFileBrowserAct);
     }
 
-    if (featureIsEnabled(Feature::FindOnWeb)) {
-        addSeparator();
-        addMenu(m_pFindOnMenu);
-    }
 
     if (featureIsEnabled(Feature::Properties)) {
         addSeparator();
