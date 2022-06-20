@@ -398,10 +398,10 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
-        m_pAnalyzeAction = new QAction(tr("Add to Queue"), this);
+        m_pAnalyzeAction = new QAction(tr("Analyze"), this);
         connect(m_pAnalyzeAction, &QAction::triggered, this, &WTrackMenu::slotAnalyze);
 
-        m_pReanalyzeAction = new QAction(tr("Reset BPM + Add to Queue"), this);
+        m_pReanalyzeAction = new QAction(tr("Reanalyze"), this);
         connect(m_pReanalyzeAction, &QAction::triggered, this, &WTrackMenu::slotReanalyze);
     }
 
