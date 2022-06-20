@@ -607,7 +607,6 @@ void WTrackMenu::setupActions() {
         addAction(m_pFileBrowserAct);
     }
 
-
     if (featureIsEnabled(Feature::Properties)) {
         addSeparator();
         addAction(m_pPropertiesAct);
