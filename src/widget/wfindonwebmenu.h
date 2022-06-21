@@ -57,5 +57,5 @@ class WFindOnWebMenu : public QMenu {
             QMenu* pServiceMenu,
             TrackSearchProperties trackSearchProperty);
 
-    QMenu* m_pServiceMenu;
+    QMenu* pServiceMenu;
 };
