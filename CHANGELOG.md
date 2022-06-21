@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.3](https://launchpad.net/mixxx/+milestone/2.3.3) (unreleased)
+## [2.3.3](https://launchpad.net/mixxx/+milestone/2.3.3) (2022-06-21)
 
 * Pioneer DDJ-SB3: Fix controller breaking when releasing the shift button [#4659](https://github.com/mixxxdj/mixxx/pull/4659)
 * Traktor S3: Push two deck switches to explicitly clone decks [#4665](https://github.com/mixxxdj/mixxx/pull/4665) [#4671](https://github.com/mixxxdj/mixxx/pull/4671) [lp:1960680](https://bugs.launchpad.net/mixxx/+bug/1960680)

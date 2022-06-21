@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.3" type="development">
+    <release version="2.3.3" type="stable" date="2022-06-21" timestamp="1655769600">
       <description>
  <ul>
   <li>
