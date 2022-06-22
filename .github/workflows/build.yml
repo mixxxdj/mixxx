@@ -160,7 +160,7 @@ jobs:
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
-      uses: seanmiddleditch/gha-setup-vsdevenv@v3
+      uses: seanmiddleditch/gha-setup-vsdevenv@v4
 
     - name: "[macOS] install ccache and make"
       if: runner.os == 'macOS'
