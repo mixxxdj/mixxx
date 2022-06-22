@@ -644,12 +644,12 @@
   [#4542](https://github.com/mixxxdj/mixxx/pull/4542)
   [#4559](https://github.com/mixxxdj/mixxx/pull/4559)
 
-## [2.3.3](https://launchpad.net/mixxx/+milestone/2.3.3) (unreleased)
+## [2.3.3](https://launchpad.net/mixxx/+milestone/2.3.3) (2022-06-21)
 
-* Pioneer-DDJ-SB3: Fix controller breaking when releasing the shift button [#4659](https://github.com/mixxxdj/mixxx/pull/4659)
+* Pioneer DDJ-SB3: Fix controller breaking when releasing the shift button [#4659](https://github.com/mixxxdj/mixxx/pull/4659)
 * Traktor S3: Push two deck switches to explicitly clone decks [#4665](https://github.com/mixxxdj/mixxx/pull/4665) [#4671](https://github.com/mixxxdj/mixxx/pull/4671) [lp:1960680](https://bugs.launchpad.net/mixxx/+bug/1960680)
-* Behringer DDM4000: Improve stability and add soft-takeover for encoder knobs [#4318](https://github.com/mixxxdj/mixxx/pull/4318)
-* MC7000: Fix 'inverted shift' bug in the controller mapping [#4755](https://github.com/mixxxdj/mixxx/pull/4755)
+* Behringer DDM4000: Improve stability and add soft-takeover for encoder knobs [#4318](https://github.com/mixxxdj/mixxx/pull/4318) [#4799](https://github.com/mixxxdj/mixxx/pull/4799)
+* Denon MC7000: Fix 'inverted shift' bug in the controller mapping [#4755](https://github.com/mixxxdj/mixxx/pull/4755)
 * Fix spinback and break effect in the controller engine [#4708](https://github.com/mixxxdj/mixxx/pull/4708)
 * Fix scratch on first wheel touch [#4761](https://github.com/mixxxdj/mixxx/pull/4761) [lp:1800343](https://bugs.launchpad.net/mixxx/+bug/1800343)
 * Preferences: Prevent controller settings being treated as changed even though they were not [#4721](https://github.com/mixxxdj/mixxx/pull/4721) [lp:1920844](https://bugs.launchpad.net/mixxx/+bug/1920844)
@@ -666,6 +666,7 @@
 * Restore keylock from configuration and fix pitch ratio rounding issue [#4756](https://github.com/mixxxdj/mixxx/pull/4756) [lp:1943180](https://bugs.launchpad.net/mixxx/+bug/1943180)
 * Improve CSV export of playlists and crates and fix empty rating column [#4762](https://github.com/mixxxdj/mixxx/pull/4762)
 * Fix passthrough-related crash in waveform code [#4789](https://github.com/mixxxdj/mixxx/pull/4789) [#4791](https://github.com/mixxxdj/mixxx/pull/4791) [lp:1959489](https://bugs.launchpad.net/mixxx/+bug/1959489) [lp:1977662](https://bugs.launchpad.net/mixxx/+bug/1977662)
+* Passthrough: stop rendering waveforms and disable Cue/Play indicators [4793](https://github.com/mixxxdj/mixxx/pull/4793)
 
 ## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (2022-01-31)
 

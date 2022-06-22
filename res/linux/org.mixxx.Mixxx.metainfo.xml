@@ -1106,11 +1106,11 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.3" type="development">
+    <release version="2.3.3" type="stable" date="2022-06-21" timestamp="1655769600">
       <description>
  <ul>
   <li>
-   Pioneer-DDJ-SB3: Fix controller breaking when releasing the shift button
+   Pioneer DDJ-SB3: Fix controller breaking when releasing the shift button
    #4659
   </li>
   <li>
@@ -1122,9 +1122,10 @@
   <li>
    Behringer DDM4000: Improve stability and add soft-takeover for encoder knobs
    #4318
+   #4799
   </li>
   <li>
-   MC7000: Fix 'inverted shift' bug in the controller mapping
+   Denon MC7000: Fix 'inverted shift' bug in the controller mapping
    #4755
   </li>
   <li>
@@ -1206,6 +1207,10 @@
    #4791
    lp:1959489
    lp:1977662
+  </li>
+  <li>
+   Passthrough: stop rendering waveforms and disable Cue/Play indicators
+   4793
   </li>
  </ul>
 </description>
