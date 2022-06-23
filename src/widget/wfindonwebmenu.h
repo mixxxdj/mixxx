@@ -56,6 +56,4 @@ class WFindOnWebMenu : public QMenu {
             const QString& album,
             QMenu* pServiceMenu,
             TrackSearchProperties trackSearchProperty);
-
-    QMenu* pServiceMenu;
 };
