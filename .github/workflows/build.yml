@@ -61,8 +61,6 @@ jobs:
               -DMACOS_BUNDLE=ON
               -DMODPLUG=OFF
               -DWAVPACK=OFF
-              -DVCPKG_TARGET_TRIPLET=x64-osx-min10.12
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min10.12
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -162,7 +160,7 @@ jobs:
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
-      uses: seanmiddleditch/gha-setup-vsdevenv@v3
+      uses: seanmiddleditch/gha-setup-vsdevenv@v4
 
     - name: "[macOS] install ccache and make"
       if: runner.os == 'macOS'
@@ -435,7 +433,7 @@ jobs:
 
     - name: "Upload GitHub Actions artifacts"
       if: matrix.artifacts_path != null
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.artifacts_name }}
         path: ${{ matrix.artifacts_path }}
