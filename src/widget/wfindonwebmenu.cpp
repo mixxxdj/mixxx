@@ -36,47 +36,47 @@ QString composePrefixAction(WFindOnWebMenu::TrackSearchProperties trackSearchPro
     }
 }
 
-const QString ksearchUrlSoundCloudArtist = QStringLiteral("https://soundcloud.com/search/people?");
+const QString kSearchUrlSoundCloudArtist = QStringLiteral("https://soundcloud.com/search/people?");
 
-const QString ksearchUrlSoundCloudTitle = QStringLiteral("https://soundcloud.com/search/sounds?");
+const QString kSearchUrlSoundCloudTitle = QStringLiteral("https://soundcloud.com/search/sounds?");
 
-const QString ksearchUrlSoundCloudAlbum = QStringLiteral("https://soundcloud.com/search/albums?");
+const QString kSearchUrlSoundCloudAlbum = QStringLiteral("https://soundcloud.com/search/albums?");
 
-const QString ksearchUrlDiscogsGen = QStringLiteral("https://www.discogs.com/search/?");
+const QString kSearchUrlDiscogsGen = QStringLiteral("https://www.discogs.com/search/?");
 
-const QString ksearchUrlLastFmArtist = QStringLiteral("https://www.last.fm/search/artists?");
+const QString kSearchUrlLastFmArtist = QStringLiteral("https://www.last.fm/search/artists?");
 
-const QString ksearchUrlLastFmTitle = QStringLiteral("https://www.last.fm/search/tracks?");
+const QString kSearchUrlLastFmTitle = QStringLiteral("https://www.last.fm/search/tracks?");
 
-const QString ksearchUrlLastFmAlbum = QStringLiteral("https://www.last.fm/search/albums?");
+const QString kSearchUrlLastFmAlbum = QStringLiteral("https://www.last.fm/search/albums?");
 
-const QString ksearchUrlDefault = QStringLiteral("https://soundcloud.com/search?");
+const QString kSearchUrlDefault = QStringLiteral("https://soundcloud.com/search?");
 
 QString getServiceUrl(WFindOnWebMenu::Service service,
         WFindOnWebMenu::TrackSearchProperties trackSearchProperty) {
     switch (service) {
     case WFindOnWebMenu::Service::Discogs:
-        return ksearchUrlDiscogsGen;
+        return kSearchUrlDiscogsGen;
     case WFindOnWebMenu::Service::LastFm:
         if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
                 trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
-            return ksearchUrlLastFmTitle;
+            return kSearchUrlLastFmTitle;
         } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
-            return ksearchUrlLastFmArtist;
+            return kSearchUrlLastFmArtist;
         } else {
-            return ksearchUrlLastFmAlbum;
+            return kSearchUrlLastFmAlbum;
         }
     case WFindOnWebMenu::Service::SoundCloud:
         if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
                 trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
-            return ksearchUrlSoundCloudTitle;
+            return kSearchUrlSoundCloudTitle;
         } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
-            return ksearchUrlSoundCloudArtist;
+            return kSearchUrlSoundCloudArtist;
         } else {
-            return ksearchUrlSoundCloudAlbum;
+            return kSearchUrlSoundCloudAlbum;
         }
     default:
-        return ksearchUrlDefault;
+        return kSearchUrlDefault;
     }
 }
 } // namespace
