@@ -96,124 +96,17 @@ void WFindOnWebMenu::addSubmenusForServices(const Track& track) {
             track, QString(tr("Discogs")), Service::Discogs);
 }
 
-void WFindOnWebMenu::addActionsArtist(Service service,
-        const QString& artist,
+void WFindOnWebMenu::addActions(Service service,
+        const QString& trackProperty,
         QMenu* pServiceMenu,
         TrackSearchProperties trackSearchProperty) {
     const QString prefixAction = composePrefixAction(trackSearchProperty);
-    switch (service) {
-    case Service::SoundCloud: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, artist),
-                this,
-                [this, service, trackSearchProperty, artist]() {
-                    emit triggerBrowser(service, trackSearchProperty, artist);
-                });
-        break;
-    }
-
-    case Service::LastFm: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, artist),
-                this,
-                [this, service, trackSearchProperty, artist]() {
-                    emit triggerBrowser(service, trackSearchProperty, artist);
-                });
-        break;
-    }
-
-    case Service::Discogs: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, artist),
-                this,
-                [this, service, trackSearchProperty, artist]() {
-                    emit triggerBrowser(service, trackSearchProperty, artist);
-                });
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void WFindOnWebMenu::addActionsAlbum(Service service,
-        const QString& albumName,
-        QMenu* pServiceMenu,
-        TrackSearchProperties trackSearchProperty) {
-    const QString prefixAction = composePrefixAction(trackSearchProperty);
-    switch (service) {
-    case Service::SoundCloud: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, albumName),
-                this,
-                [this, service, trackSearchProperty, albumName]() {
-                    emit triggerBrowser(service, trackSearchProperty, albumName);
-                });
-        break;
-    }
-
-    case Service::LastFm: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, albumName),
-                this,
-                [this, service, trackSearchProperty, albumName]() {
-                    emit triggerBrowser(service, trackSearchProperty, albumName);
-                });
-        break;
-    }
-
-    case Service::Discogs: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, albumName),
-                this,
-                [this, service, trackSearchProperty, albumName]() {
-                    emit triggerBrowser(service, trackSearchProperty, albumName);
-                });
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void WFindOnWebMenu::addActionsTrackTitle(Service service,
-        const QString& trackTitle,
-        QMenu* pServiceMenu,
-        TrackSearchProperties trackSearchProperty) {
-    const QString prefixAction = composePrefixAction(trackSearchProperty);
-    switch (service) {
-    case Service::SoundCloud: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, trackTitle),
-                this,
-                [this, service, trackSearchProperty, trackTitle]() {
-                    emit triggerBrowser(service, trackSearchProperty, trackTitle);
-                });
-        break;
-    }
-
-    case Service::LastFm: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, trackTitle),
-                this,
-                [this, service, trackSearchProperty, trackTitle]() {
-                    emit triggerBrowser(service, trackSearchProperty, trackTitle);
-                });
-        break;
-    }
-
-    case Service::Discogs: {
-        pServiceMenu->addAction(
-                composeActionText(prefixAction, trackTitle),
-                this,
-                [this, service, trackSearchProperty, trackTitle]() {
-                    emit triggerBrowser(service, trackSearchProperty, trackTitle);
-                });
-        break;
-    }
-    default:
-        break;
-    }
+    pServiceMenu->addAction(
+            composeActionText(prefixAction, trackProperty),
+            this,
+            [this, service, trackSearchProperty, trackProperty]() {
+                emit triggerBrowser(service, trackSearchProperty, trackProperty);
+            });
 }
 
 void WFindOnWebMenu::openInBrowser(Service service,
@@ -237,7 +130,7 @@ void WFindOnWebMenu::populateFromTrackProperties(
     addMenu(pServiceMenu);
     addSeparator();
     if (!artist.isEmpty()) {
-        addActionsArtist(service,
+        addActions(service,
                 artist,
                 pServiceMenu,
                 WFindOnWebMenu::TrackSearchProperties::Artist);
@@ -246,11 +139,11 @@ void WFindOnWebMenu::populateFromTrackProperties(
         const auto trackTitle = track.getTitle();
         const auto artistWithTrackTitle = composeSearchQuery(trackTitle, artist);
         if (!trackTitle.isEmpty()) {
-            addActionsTrackTitle(service,
+            addActions(service,
                     artistWithTrackTitle,
                     pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle);
-            addActionsTrackTitle(service,
+            addActions(service,
                     trackTitle,
                     pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::Title);
@@ -260,7 +153,7 @@ void WFindOnWebMenu::populateFromTrackProperties(
         const auto album = track.getAlbum();
         const auto artistWithAlbum = composeSearchQuery(album, artist);
         if (!album.isEmpty()) {
-            addActionsAlbum(service,
+            addActions(service,
                     artistWithAlbum,
                     pServiceMenu,
                     WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum);

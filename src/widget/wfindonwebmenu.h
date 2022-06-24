@@ -44,16 +44,8 @@ class WFindOnWebMenu : public QMenu {
             const QString& serviceTitle,
             Service service);
 
-    void addActionsArtist(Service service,
-            const QString& artist,
-            QMenu* pServiceMenu,
-            TrackSearchProperties trackSearchProperty);
-    void addActionsTrackTitle(Service service,
-            const QString& trackTitle,
-            QMenu* pServiceMenu,
-            TrackSearchProperties trackSearchProperty);
-    void addActionsAlbum(Service service,
-            const QString& album,
+    void addActions(Service service,
+            const QString& trackProperty,
             QMenu* pServiceMenu,
             TrackSearchProperties trackSearchProperty);
 };
