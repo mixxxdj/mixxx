@@ -197,11 +197,15 @@ void WTrackMenu::createMenus() {
                 [this] {
                     m_pFindOnMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
-                    if (pTrack) {
+                    const bool checkTrackProperties =
+                            (pTrack->getArtist().isEmpty() &&
+                                    pTrack->getAlbum().isEmpty() &&
+                                    pTrack->getTitle().isEmpty());
+                    if (pTrack && !checkTrackProperties) {
                         m_pFindOnMenu->addSubmenusForServices(*pTrack);
+                        m_pFindOnMenu->setEnabled(
+                                !m_pFindOnMenu->isEmpty());
                     }
-                    m_pFindOnMenu->setEnabled(
-                            !m_pFindOnMenu->isEmpty());
                 });
 
         connect(m_pFindOnMenu,
