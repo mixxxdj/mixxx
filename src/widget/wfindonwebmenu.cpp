@@ -130,6 +130,8 @@ void WFindOnWebMenu::populateFromTrackProperties(
         const QString& serviceTitle,
         Service service) {
     const auto artist = track.getArtist();
+    const auto trackTitle = track.getTitle();
+    const auto album = track.getAlbum();
     auto pServiceMenu = make_parented<QMenu>(this);
     pServiceMenu->setTitle(serviceTitle);
     addMenu(pServiceMenu);
@@ -140,28 +142,22 @@ void WFindOnWebMenu::populateFromTrackProperties(
                 pServiceMenu,
                 WFindOnWebMenu::TrackSearchProperties::Artist);
     }
-    {
-        const auto trackTitle = track.getTitle();
+    if (!trackTitle.isEmpty()) {
         const auto artistWithTrackTitle = composeSearchQuery(trackTitle, artist);
-        if (!trackTitle.isEmpty()) {
-            addActions(service,
-                    artistWithTrackTitle,
-                    pServiceMenu,
-                    WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle);
-            addActions(service,
-                    trackTitle,
-                    pServiceMenu,
-                    WFindOnWebMenu::TrackSearchProperties::Title);
-        }
+        addActions(service,
+                artistWithTrackTitle,
+                pServiceMenu,
+                WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle);
+        addActions(service,
+                trackTitle,
+                pServiceMenu,
+                WFindOnWebMenu::TrackSearchProperties::Title);
     }
-    {
-        const auto album = track.getAlbum();
+    if (!album.isEmpty()) {
         const auto artistWithAlbum = composeSearchQuery(album, artist);
-        if (!album.isEmpty()) {
-            addActions(service,
-                    artistWithAlbum,
-                    pServiceMenu,
-                    WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum);
-        }
+        addActions(service,
+                artistWithAlbum,
+                pServiceMenu,
+                WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum);
     }
 }
