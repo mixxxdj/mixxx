@@ -23,15 +23,16 @@ QString composeSearchQuery(const QString& trackAlbumOrTitle, const QString& arti
 }
 
 QString composePrefixAction(WFindOnWebMenu::TrackSearchProperties trackSearchProperty) {
-    if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title) {
+    switch (trackSearchProperty) {
+    case WFindOnWebMenu::TrackSearchProperties::Title:
         return QObject::tr("Title");
-    } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
+    case WFindOnWebMenu::TrackSearchProperties::Artist:
         return QObject::tr("Artist");
-    } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
+    case WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle:
         return QObject::tr("Title + Artist");
-    } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum) {
+    case WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum:
         return QObject::tr("Album + Artist");
-    } else {
+    default:
         return QObject::tr("Album");
     }
 }
@@ -117,6 +118,10 @@ void WFindOnWebMenu::openInBrowser(Service service,
     urlQuery.addQueryItem("q", query);
     QUrl url(serviceUrl);
     url.setQuery(urlQuery);
+    VERIFY_OR_DEBUG_ASSERT(!url.isEmpty()) {
+        qWarning() << "URL has no data!";
+        return;
+    }
     QDesktopServices::openUrl(url);
 }
 
