@@ -59,7 +59,7 @@ void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
 }
 
-void ClockControl::trackCuesUpdated(const QList<CuePointer> cuePointerList) {
+void ClockControl::trackCuesUpdated(const QList<CuePointer>& cuePointerList) {
     m_pTrackCues = cuePointerList;
 }
 
@@ -223,7 +223,7 @@ void ClockControl::updateIndicators(const double dRate,
 
 void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats,
         mixxx::audio::FramePos currentFramePos) {
-    //Initialize FramePos to hold an invalid position unless overriden
+    //Initialize FramePos to hold an invalid position unless overridden
     mixxx::audio::FramePos nextCueFramePos =
             mixxx::audio::FramePos();
 
