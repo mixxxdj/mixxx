@@ -26,7 +26,7 @@ class ClockControl : public EngineControl {
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
-    void trackCuesUpdated(QList<CuePointer>& cuePointerList);
+    void trackCuesUpdated(const QList<CuePointer>& cuePointerList);
 
   private:
     //Updates the beat_count_next_cue CO with the number of beats until next cue
