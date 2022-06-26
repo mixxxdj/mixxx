@@ -3,14 +3,14 @@
     See also: https://doc.qt.io/qt-5/qtquick-debugging.html#console-api
 */
 
-declare class QJSEngineConsoleExtension {
+declare namespace console {
     /**
      * Prints debugging information to the console, when
      * QT_LOGGING_RULES="js.debug=true;" or
      * Mixxx is started with --controller-debug
      * This fuction is identical to console.debug
     */
-    public log(message?:any, ...args:any[]):void;
+    function log(message?:any, ...args:any[]):void;
 
     /**
      * Prints debugging information to the console, when
@@ -18,28 +18,28 @@ declare class QJSEngineConsoleExtension {
      * Mixxx is started with --controller-debug
      * This function is identical to console.log
     */
-    public debug(message?:any, ...args:any[]):void;
+    function debug(message?:any, ...args:any[]):void;
 
     /**
      * Prints information to the console, when
      * QT_LOGGING_RULES="js.info=true;" or
      * Mixxx is started with --controller-debug
     */
-    public info(message?:any, ...args:any[]):void;
+    function info(message?:any, ...args:any[]):void;
 
     /**
      * Prints a warning message to the console, when
      * QT_LOGGING_RULES="js.warning=true;" or
      * Mixxx is started with --controller-debug
     */
-    public warn(message?:any, ...args:any[]):void;
+    function warn(message?:any, ...args:any[]):void;
 
     /**
      * Prints an error message to the console, when
      * QT_LOGGING_RULES="js.critical=true;" or
      * Mixxx is started with --controller-debug
     */
-    public error(message?:any, ...args:any[]):void;
+    function error(message?:any, ...args:any[]):void;
 
     /**
      * Tests that an expression is true.
@@ -48,20 +48,20 @@ declare class QJSEngineConsoleExtension {
      * @param message
      * @param args
     */
-    public assert(expression:boolean, message?:string, ...args: any[]):void;
+    function assert(expression:boolean, message?:string, ...args: any[]):void;
 
     /**
      * Starts the time measurement, which will be printed by timeEnd
      *
      * @param label string argument that identifies the measurement.
      */
-    public time(label?:string):void;
+    function time(label?:string):void;
     /**
      * Logs the time (in milliseconds) that was spent since the call of the time method.
      *
      * @param label string argument that identifies the measurement.
      */
-    public timeEnd(label?:string):void;
+    function timeEnd(label?:string):void;
 
     /**
      * Prints the stack trace of the JavaScript execution at the point where it was called.
@@ -71,28 +71,28 @@ declare class QJSEngineConsoleExtension {
      * @param message
      * @param args
      */
-    public trace(message?:any, ...args:any[]):void;
+    function trace(message?:any, ...args:any[]):void;
 
     /**
      * Prints the current number of times a particular piece of code has run, along with a message.
      *
      * @param label
      */
-    public count(label?:string):void;
+    function count(label?:string):void;
 
     /**
      *  Turns on the JavaScript profiler.
      *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      *
      */
-     public profile(label?:string):void;
+     function profile(label?:string):void;
 
     /**
      *  Turns off the JavaScript profiler.
      *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      *
      */
-    public profileEnd(label?:string):void;
+    function profileEnd(label?:string):void;
 
     /**
      * Prints an error message together with the stack trace of JavaScript execution at the point where it is called.
@@ -100,7 +100,6 @@ declare class QJSEngineConsoleExtension {
      * @param message
      * @param args
      */
-    public exception(message?:any, ...args:any[]):void;
+    function exception(message?:any, ...args:any[]):void;
 
     }
-var console = new QJSEngineConsoleExtension;

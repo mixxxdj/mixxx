@@ -1,12 +1,14 @@
 
-declare class ControllerScriptInterfaceLegacy {
+/** ControllerScriptInterfaceLegacy */
+
+declare namespace engine {
     /**
      * Gets the control value
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control (within it's range according Mixxx Controls manual page)
      */
-    public getValue(group:string, name:string):number;
+    function getValue(group:string, name:string):number;
 
     /**
      * Sets a control value
@@ -14,7 +16,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set (within it's range according Mixxx Controls manual page)
      */
-    public setValue(group:string, name:string, newValue: number):void;
+    function setValue(group:string, name:string, newValue: number):void;
 
     /**
      * Gets the control value normalized to a range of 0..1
@@ -22,7 +24,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control normalized to range of 0..1
      */
-    public getParameter(group:string, name:string):number;
+    function getParameter(group:string, name:string):number;
 
     /**
      * Sets the control value specified with normalized range of 0..1
@@ -30,7 +32,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set, normalized to a range of 0..1
      */
-    public setParameter(group:string, name:string, newValue:number):void;
+    function setParameter(group:string, name:string, newValue:number):void;
 
     /**
      * Normalizes a specified value using the range of the given control,
@@ -40,14 +42,14 @@ declare class ControllerScriptInterfaceLegacy {
      * @param value Value with the controls range according Mixxx Controls manual page
      * @returns Value normalized to range of 0..1
      */
-    public getParameterForValue(group:string, name:string, value:number):number;
+    function getParameterForValue(group:string, name:string, value:number):number;
 
     /**
      * Resets the control to its default value
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
-    public reset(group:string, name:string):void;
+    function reset(group:string, name:string):void;
 
     /**
      * Returns the default value of a control
@@ -55,7 +57,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Default value with the controls range according Mixxx Controls manual page
      */
-    public getDefaultValue(group:string, name:string):number;
+    function getDefaultValue(group:string, name:string):number;
 
     /**
      * Returns the default value of a control, normalized to a range of 0..1
@@ -63,7 +65,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Default value of the specified control normalized to range of 0..1
      */
-    public getDefaultParameter(group:string, name:string):number;
+    function getDefaultParameter(group:string, name:string):number;
 
     /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
      * @details This connection has a FIFO buffer - all value change events are processed in serial order.
@@ -71,7 +73,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param name Name of the control e.g. "play_indicator"
      * @param  callback JS function, which will be called everytime, the value of the connected control changes.
      */
-    public makeConnection(group:string, name:string, callback:(value:number, group:string, name:string)=>any):any;
+    function makeConnection(group:string, name:string, callback:(value:number, group:string, name:string)=>any):any;
 
     /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
      * @details This connection is unbuffered - when value change events occur faster, than the mapping can process them,
@@ -80,10 +82,10 @@ declare class ControllerScriptInterfaceLegacy {
      * @param name Name of the control e.g. "VuMeter"
      * @param callback JS function, which will be called everytime, the value of the connected control changes.
      */
-    public  makeUnbufferedConnection(group:string, name:string, callback:(value:number, group:string, name:string)=>any):any;
+    function  makeUnbufferedConnection(group:string, name:string, callback:(value:number, group:string, name:string)=>any):any;
 
     /** @deprecated Use makeConnection instead */
-    public  connectControl(group:string, name:string, passedCallback:(value:number, group:string, name:string)=>any, disconnect:boolean = false):any;
+    function  connectControl(group:string, name:string, passedCallback:(value:number, group:string, name:string)=>any, disconnect:boolean = false):any;
 
 
     /**
@@ -91,10 +93,10 @@ declare class ControllerScriptInterfaceLegacy {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
-    public trigger(group:string, name:string):void;
+    function trigger(group:string, name:string):void;
 
     /** @deprecated Use console.log instead */
-    public log(message:string):void;
+    function log(message:string):void;
 
     /**
      * Starts a timer that will call the specified script function
@@ -104,17 +106,17 @@ declare class ControllerScriptInterfaceLegacy {
      *                   you can also use closures as:
      *                   function() { print("Executed Timer") }
      * @param oneShot If true the function is only once,
-     *                if false the function is executed repeatedly
+     *                if false the function is executed repeatedly  [default = false]
      * @returns timerId which is needed to stop a timer.
      *          In case of an error, 0 is returned.
      */
-    public beginTimer(interval:number, scriptCode:()=>any, oneShot:boolean = false):number;
+    function beginTimer(interval:number, scriptCode:()=>any, oneShot?:boolean):number;
 
     /**
      * Stops the specified timer
      * @param timerId ID of the timer
      */
-    public stopTimer(timerId:number):void;
+    function stopTimer(timerId:number):void;
 
     /**
      * Jogwheel function to be called when scratching starts (usually when the wheel is touched)
@@ -125,30 +127,30 @@ declare class ControllerScriptInterfaceLegacy {
      * @param rpm The speed of the imaginary record at 0% pitch (in revolutions per minute (RPM) typically 33+1/3, adjust for comfort)
      * @param alpha The alpha coefficient of the filter (start with 1/8 (0.125) and tune from there)
      * @param beta The beta coefficient of the filter (start with alpha/32 and tune from there)
-     * @param ramp Set true to ramp the deck speed down. Set false to stop instantly
+     * @param ramp Set true to ramp the deck speed down. Set false to stop instantly [default = true]
      */
-    public scratchEnable(deck:number, intervalsPerRev:number, rpm:number, alpha:number, beta:number, ramp:boolean = true):void;
+    function scratchEnable(deck:number, intervalsPerRev:number, rpm:number, alpha:number, beta:number, ramp?:boolean):void;
 
     /**
      * Function to be called each time the jogwheel is moved during scratching
      * @param deck The deck number to use, e.g: 1
      * @param interval The movement value (typically 1 for one "tick" forwards, -1 for one "tick" backwards)
      */
-    public scratchTick(deck:number, interval:number):void;
+    function scratchTick(deck:number, interval:number):void;
 
     /**
      * Jogwheel function to be called when scratching ends (usually when the wheel is released)
      * @param deck The deck number to use, e.g: 1
-     * @param ramp  Set true to ramp the deck speed up. Set false to jump to normal play speed instantly
+     * @param ramp  Set true to ramp the deck speed up. Set false to jump to normal play speed instantly [default = true]
      */
-    public scratchDisable(deck:number, ramp:boolean = true):void;
+    function scratchDisable(deck:number, ramp?:boolean):void;
 
     /**
      * Returns true if scratching is enabled
      * @param deck The deck number to use, e.g: 1
      * @returns True if scratching is enabled
      */
-    public isScratching(deck:number):boolean;
+    function isScratching(deck:number):boolean;
 
     /**
      * If enabled, soft-takeover prevents sudden wide parameter changes,
@@ -159,7 +161,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param name Name of the control e.g. "pregain"
      * @param enable Set true to enable soft-takeover for the specified control
      */
-    public softTakeover(group:string, name:string, enable:boolean):void;
+    function softTakeover(group:string, name:string, enable:boolean):void;
 
     /**
      * Inhibits a suden value change from the hardware control.
@@ -168,7 +170,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "pregain"
      */
-    public softTakeoverIgnoreNextValue(group:string, name:string):void;
+    function softTakeoverIgnoreNextValue(group:string, name:string):void;
 
     /**
      * To achieve a brake effect of the playback speed
@@ -178,11 +180,11 @@ declare class ControllerScriptInterfaceLegacy {
      * @param factor Defines how quickly the deck should come to a stop.
      *               Start with a value of 1 and increase to increase the acceleration.
      *               Be aware that brake called with low factors (about 0.5 and lower),
-     *               would keep the deck running altough the resulting very low sounds are not audible anymore.
+     *               would keep the deck running altough the resulting very low sounds are not audible anymore. [default = 1.0]
      * @param rate The initial speed of the deck when enabled. "1" (default) means 10x speed in forward.
-     *             Negative values like "-1" also work, though then it's spinning reverse obviously.
+     *             Negative values like "-1" also work, though then it's spinning reverse obviously. [default = 1.0]
      */
-    public brake(deck:number, activate:boolean, factor:number = 1.0, rate:number = 1.0):void;
+    function brake(deck:number, activate:boolean, factor?:number, rate?:number):void;
 
     /**
      * To achieve a spinback effect of the playback speed
@@ -192,11 +194,11 @@ declare class ControllerScriptInterfaceLegacy {
      * @param factor Defines how quickly the deck should come to normal playback rate.
      *               Start with a value of 1 and increase to increase the acceleration.
      *               Be aware that spinback called with low factors (about 0.5 and lower),
-     *               would keep the deck running altough the resulting very low sounds are not audible anymore.
+     *               would keep the deck running altough the resulting very low sounds are not audible anymore. [default = 1.8]
      * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x speed in reverse.
-     *             Positive values like "10" also work, though then it's spinning forward obviously.
+     *             Positive values like "10" also work, though then it's spinning forward obviously. [default = -10.0]
      */
-    public spinback(deck:number, activate:boolean, factor:number = 1.8, rate:number = -10.0):void;
+    function spinback(deck:number, activate:boolean, factor?:number, rate?:number):void;
 
     /**
      * To achieve a forward acceleration effect from standstill to normal speed.
@@ -205,8 +207,7 @@ declare class ControllerScriptInterfaceLegacy {
      * @param activate Set true to activate, or false to disable
      * @param factor Defines how quickly the deck should come to normal playback rate.
      *               Start with a value of 1 and increase to increase the acceleration.
-     *               SoftStart with low factors would take a while until sound is audible.
+     *               SoftStart with low factors would take a while until sound is audible. [default = 1.0]
      */
-    public softStart(deck:number, activate:boolean, factor:number = 1.0):void;
+    function softStart(deck:number, activate:boolean, factor?:number):void;
 }
-var engine = new ControllerScriptInterfaceLegacy;

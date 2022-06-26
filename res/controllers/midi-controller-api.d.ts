@@ -1,5 +1,7 @@
 
-declare class MidiControllerJSProxy {
+/** MidiControllerJSProxy */
+
+declare namespace controller {
 
     /**
      * Sends a 3 byte MIDI short message
@@ -7,22 +9,21 @@ declare class MidiControllerJSProxy {
      * @param byte1 Data byte 1
      * @param byte2 Data byte 2
      */
-    public sendShortMsg(status:number, byte1:number, byte2:number):void;
+    function sendShortMsg(status:number, byte1:number, byte2:number):void;
 
     /**
      * Alias for {@link sendSysexMsg}
      * Sends a MIDI system-exclusive message of arbitrary number of bytes
      * @param dataList List of bytes to send
-     * @param length This is no longer evaluated, and only here for backwards compatibility to old scripts
+     * @param length This is no longer evaluated, and only here for backwards compatibility to old scripts [default = 0]
     */
-    public send(dataList:number[], length:number=0):void;
+    function send(dataList:number[], length?:number):void;
 
     /**
      * Sends a MIDI system-exclusive message of arbitrary number of bytes
      * @param dataList List of bytes to send
-     * @param length This is no longer evaluated, and only here for backwards compatibility to old scripts
+     * @param length This is no longer evaluated, and only here for backwards compatibility to old scripts [default = 0]
      */
-    public sendSysexMsg(dataList:number[], length:number=0):void;
+    function sendSysexMsg(dataList:number[], length?:number):void;
 
     }
-var controller = new MidiControllerJSProxy;
