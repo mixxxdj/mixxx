@@ -98,7 +98,8 @@ declare class ControllerScriptInterfaceLegacy {
 
     /**
      * Starts a timer that will call the specified script function
-     * @param interval Time in milliseconds until the function is executed
+     * @param interval Time in milliseconds until the function is executed.
+     *                 Intervals below 20ms are not allowed.
      * @param scriptCode Function to be executed,
      *                   you can also use closures as:
      *                   function() { print("Executed Timer") }
