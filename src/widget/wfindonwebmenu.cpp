@@ -118,8 +118,8 @@ void WFindOnWebMenu::openInBrowser(Service service,
     urlQuery.addQueryItem("q", query);
     QUrl url(serviceUrl);
     url.setQuery(urlQuery);
-    VERIFY_OR_DEBUG_ASSERT(!url.isEmpty()) {
-        qWarning() << "URL has no data!";
+    VERIFY_OR_DEBUG_ASSERT(url.isValid()) {
+        qWarning() << "QDesktopServices::openUrl() failed " << url;
         return;
     }
     QDesktopServices::openUrl(url);
