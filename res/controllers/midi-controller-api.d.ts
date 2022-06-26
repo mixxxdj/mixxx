@@ -10,7 +10,7 @@ declare class MidiControllerJSProxy {
     public sendShortMsg(status:number, byte1:number, byte2:number):void;
 
     /**
-     * Alias for sendSysexMsg.
+     * Alias for {@link sendSysexMsg}
      * Sends a MIDI system-exclusive message of arbitrary number of bytes
      * @param dataList List of bytes to send
      * @param length This is no longer evaluated, and only here for backwards compatibility to old scripts
