@@ -118,11 +118,10 @@ void WFindOnWebMenu::openInBrowser(Service service,
     urlQuery.addQueryItem("q", query);
     QUrl url(serviceUrl);
     url.setQuery(urlQuery);
-    VERIFY_OR_DEBUG_ASSERT(url.isValid()) {
-        qWarning() << "QDesktopServices::openUrl() failed " << url;
-        return;
+    if (!QDesktopServices::openUrl(url)) {
+        qWarning() << "QDesktopServices::openUrl() failed for " << url;
+        DEBUG_ASSERT(false);
     }
-    QDesktopServices::openUrl(url);
 }
 
 void WFindOnWebMenu::populateFromTrackProperties(
