@@ -149,7 +149,7 @@ jobs:
       run: git fetch origin --force --tags
 
     - name: "[macOS] Set up cmake"
-      uses: jwlawson/actions-setup-cmake@v1.9
+      uses: jwlawson/actions-setup-cmake@v1.12
       # Ubuntu 20.04 should use the CMake version from the repos, and Visual
       # Studio on Windows comes with its own CMake version anyway.
       if: runner.os == 'macOS'
