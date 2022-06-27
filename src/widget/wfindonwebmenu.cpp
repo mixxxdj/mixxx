@@ -124,6 +124,13 @@ void WFindOnWebMenu::openInBrowser(Service service,
     }
 }
 
+bool WFindOnWebMenu::hasEntriesForTrack(const Track& track) {
+    const auto artist = track.getArtist();
+    const auto trackTitle = track.getTitle();
+    const auto album = track.getAlbum();
+    return (artist.isEmpty() && album.isEmpty() && trackTitle.isEmpty());
+}
+
 void WFindOnWebMenu::populateFromTrackProperties(
         const Track& track,
         const QString& serviceTitle,

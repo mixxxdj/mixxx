@@ -27,6 +27,8 @@ class WFindOnWebMenu : public QMenu {
         Title
     };
 
+    static bool hasEntriesForTrack(const Track& track);
+
     void openInBrowser(WFindOnWebMenu::Service service,
             WFindOnWebMenu::TrackSearchProperties trackSearchProperty,
             const QString& query);

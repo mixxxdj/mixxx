@@ -197,15 +197,11 @@ void WTrackMenu::createMenus() {
                 [this] {
                     m_pFindOnMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
-                    const bool checkTrackProperties =
-                            (pTrack->getArtist().isEmpty() &&
-                                    pTrack->getAlbum().isEmpty() &&
-                                    pTrack->getTitle().isEmpty());
-                    if (pTrack && !checkTrackProperties) {
+                    if (pTrack) {
                         m_pFindOnMenu->addSubmenusForServices(*pTrack);
-                        m_pFindOnMenu->setEnabled(
-                                !m_pFindOnMenu->isEmpty());
                     }
+                    m_pFindOnMenu->setEnabled(
+                            !m_pFindOnMenu->isEmpty());
                 });
 
         connect(m_pFindOnMenu,
@@ -896,6 +892,11 @@ void WTrackMenu::updateMenus() {
 
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct->setEnabled(singleTrackSelected);
+    }
+
+    if (featureIsEnabled(Feature::FindOnWeb)) {
+        const auto pTrack = getFirstTrackPointer();
+        m_pFindOnMenu->setEnabled(!WFindOnWebMenu::hasEntriesForTrack(*pTrack));
     }
 }
 
