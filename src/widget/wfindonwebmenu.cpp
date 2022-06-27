@@ -142,21 +142,30 @@ void WFindOnWebMenu::populateFromTrackProperties(
                 WFindOnWebMenu::TrackSearchProperties::Artist);
     }
     if (!trackTitle.isEmpty()) {
-        const auto artistWithTrackTitle = composeSearchQuery(trackTitle, artist);
-        addActions(service,
-                artistWithTrackTitle,
-                pServiceMenu,
-                WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle);
+        if (!artist.isEmpty()) {
+            const auto artistWithTrackTitle = composeSearchQuery(trackTitle, artist);
+            addActions(service,
+                    artistWithTrackTitle,
+                    pServiceMenu,
+                    WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle);
+        }
         addActions(service,
                 trackTitle,
                 pServiceMenu,
                 WFindOnWebMenu::TrackSearchProperties::Title);
     }
     if (!album.isEmpty()) {
-        const auto artistWithAlbum = composeSearchQuery(album, artist);
-        addActions(service,
-                artistWithAlbum,
-                pServiceMenu,
-                WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum);
+        if (!artist.isEmpty()) {
+            const auto artistWithAlbum = composeSearchQuery(album, artist);
+            addActions(service,
+                    artistWithAlbum,
+                    pServiceMenu,
+                    WFindOnWebMenu::TrackSearchProperties::ArtistAndAlbum);
+        } else {
+            addActions(service,
+                    album,
+                    pServiceMenu,
+                    WFindOnWebMenu::TrackSearchProperties::Album);
+        }
     }
 }
