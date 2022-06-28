@@ -215,6 +215,7 @@ class WTrackMenu : public QMenu {
     const ControlProxy* m_pNumPreviewDecks{};
 
     // Submenus
+    QMenu* m_pAutoDJMenu{};
     QMenu* m_pLoadToMenu{};
     QMenu* m_pDeckMenu{};
     QMenu* m_pSamplerMenu{};
