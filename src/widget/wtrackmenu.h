@@ -229,7 +229,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
-    QMenu* m_pRemoveFromDiskMenu{};
+    QMenu* m_pFileMenu{};
 
     // Update ReplayGain from Track
     QAction* m_pUpdateReplayGainAct{};

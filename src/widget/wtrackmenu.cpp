@@ -190,9 +190,10 @@ void WTrackMenu::createMenus() {
                 });
     }
 
-    if (featureIsEnabled(Feature::RemoveFromDisk)) {
-        m_pRemoveFromDiskMenu = new QMenu(this);
-        m_pRemoveFromDiskMenu->setTitle(tr("Delete Track Files"));
+    if (featureIsEnabled(Feature::RemoveFromDisk) ||
+            featureIsEnabled(Feature::FileBrowser)) {
+        m_pFileMenu = new QMenu(this);
+        m_pFileMenu->setTitle(tr("Track Files"));
     }
 }
 
@@ -250,8 +251,13 @@ void WTrackMenu::createActions() {
         connect(m_pPurgeAct, &QAction::triggered, this, &WTrackMenu::slotPurge);
     }
 
+    if (featureIsEnabled(Feature::FileBrowser)) {
+        m_pFileBrowserAct = new QAction(tr("Open in File Browser"), m_pFileMenu);
+        connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
+    }
+
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
-        m_pRemoveFromDiskAct = new QAction(tr("Delete Files from Disk"), m_pRemoveFromDiskMenu);
+        m_pRemoveFromDiskAct = new QAction(tr("Delete Files from Disk"), m_pFileMenu);
         connect(m_pRemoveFromDiskAct,
                 &QAction::triggered,
                 this,
@@ -271,11 +277,6 @@ void WTrackMenu::createActions() {
                             kPropertiesShortcutKey));
         }
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
-    }
-
-    if (featureIsEnabled(Feature::FileBrowser)) {
-        m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
-        connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
     }
 
     if (featureIsEnabled(Feature::SelectInLibrary)) {
@@ -595,13 +596,14 @@ void WTrackMenu::setupActions() {
         }
     }
 
-    if (featureIsEnabled(Feature::RemoveFromDisk)) {
-        m_pRemoveFromDiskMenu->addAction(m_pRemoveFromDiskAct);
-        addMenu(m_pRemoveFromDiskMenu);
-    }
-
-    if (featureIsEnabled(Feature::FileBrowser)) {
-        addAction(m_pFileBrowserAct);
+    if (m_pFileMenu) {
+        if (featureIsEnabled(Feature::FileBrowser)) {
+            m_pFileMenu->addAction(m_pFileBrowserAct);
+        }
+        if (featureIsEnabled(Feature::RemoveFromDisk)) {
+            m_pFileMenu->addAction(m_pRemoveFromDiskAct);
+        }
+        addMenu(m_pFileMenu);
     }
 
     if (featureIsEnabled(Feature::Properties)) {
