@@ -252,6 +252,27 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
 
+    // BPM snapping
+    int bpm_snap_enabled = m_pConfig->getValue<int>(
+            ConfigKey("[Controls]", "bpm_snap_enabled"),
+            0);
+    for (ControlProxy* pControl : qAsConst(m_bpmSnapEnabledControls)) {
+        pControl->set(static_cast<int>(bpm_snap_enabled));
+    }
+    connect(checkBoxSnapBpm,
+            &QCheckBox::clicked,
+            this,
+            [this](bool checked) {
+                spinBoxSnapBpmDecimals->setEnabled(checked);
+            });
+
+    int bpm_snap_decimals = m_pConfig->getValue<int>(
+            ConfigKey("[Controls]", "bpm_snap_decimals"),
+            1);
+    for (ControlProxy* pControl : qAsConst(m_bpmSnapDecimalsControls)) {
+        pControl->set(static_cast<int>(bpm_snap_decimals));
+    }
+
     //
     // Key lock mode
     //
@@ -420,6 +441,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
 DlgPrefDeck::~DlgPrefDeck() {
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirectionControls);
+    qDeleteAll(m_bpmSnapEnabledControls);
+    qDeleteAll(m_bpmSnapDecimalsControls);
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
     qDeleteAll(m_keylockModeControls);
@@ -448,6 +471,12 @@ void DlgPrefDeck::slotUpdate() {
 
     double rateDirection = m_rateDirectionControls[0]->get();
     checkBoxInvertSpeedSlider->setChecked(rateDirection == kRateDirectionInverted);
+
+    bool bpm_snap_enabled = static_cast<bool>(m_bpmSnapEnabledControls[0]->get());
+    checkBoxSnapBpm->setChecked(bpm_snap_enabled);
+    spinBoxSnapBpmDecimals->setEnabled(bpm_snap_enabled);
+    int bpm_snap_decimals = static_cast<int>(m_bpmSnapDecimalsControls[0]->get());
+    spinBoxSnapBpmDecimals->setValue(std::clamp(bpm_snap_decimals, 0, 2));
 
     double cueMode = m_cueControls[0]->get();
     index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
@@ -703,6 +732,19 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
             static_cast<int>(m_bRateDownIncreasesSpeed));
 
+    int bpm_snap_enabled = static_cast<int>(checkBoxSnapBpm->isChecked());
+    for (ControlProxy* pControl : qAsConst(m_bpmSnapEnabledControls)) {
+        pControl->set(static_cast<double>(bpm_snap_enabled));
+    }
+    m_pConfig->setValue(ConfigKey("[Controls]", "bpm_snap_enabled"),
+            bpm_snap_enabled);
+    int bpm_snap_decimals = spinBoxSnapBpmDecimals->value();
+    for (ControlProxy* pControl : qAsConst(m_bpmSnapDecimalsControls)) {
+        pControl->set(static_cast<double>(bpm_snap_decimals));
+    }
+    m_pConfig->setValue(ConfigKey("[Controls]", "bpm_snap_decimals"),
+            bpm_snap_decimals);
+
     int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 
     if (m_speedAutoReset && m_pitchAutoReset) {
@@ -762,6 +804,10 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
                 group, "rateRange"));
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
+        m_bpmSnapEnabledControls.push_back(new ControlProxy(
+                group, "bpm_snap_enabled"));
+        m_bpmSnapDecimalsControls.push_back(new ControlProxy(
+                group, "bpm_snap_decimals"));
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
@@ -795,6 +841,10 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
                 group, "rateRange"));
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
+        m_bpmSnapEnabledControls.push_back(new ControlProxy(
+                group, "bpm_snap_enabled"));
+        m_bpmSnapDecimalsControls.push_back(new ControlProxy(
+                group, "bpm_snap_decimals"));
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
