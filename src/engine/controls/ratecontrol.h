@@ -128,6 +128,9 @@ private:
   ControlObject* m_pBackButton;
   ControlObject* m_pForwardButton;
 
+  std::unique_ptr<ControlPushButton> m_pBpmSnapEnabled;
+  std::unique_ptr<ControlPushButton> m_pBpmSnapDecimals;
+
   ControlTTRotary* m_pWheel;
   ControlObject* m_pScratch2;
   PositionScratchController* m_pScratchController;

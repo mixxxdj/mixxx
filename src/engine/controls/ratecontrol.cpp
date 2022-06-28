@@ -133,6 +133,25 @@ RateControl::RateControl(const QString& group,
     m_pButtonRateTempUpSmall =
         new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
 
+    // Snap BPM controls
+    m_pBpmSnapEnabled = std::make_unique<ControlPushButton>(ConfigKey(group, "bpm_snap_enabled"));
+    m_pBpmSnapEnabled->setStates(2);
+    //m_pBpmSnapEnabled->connectValueChangeRequest(
+    //        this,
+    //        [this](double value) {
+    //            m_pBpmSnapEnabled->setAndConfirm(value);
+    //            slotUpdateEngineBpm(m_pRateRatio->get());
+    //        });
+    m_pBpmSnapDecimals = std::make_unique<ControlPushButton>(ConfigKey(group, "bpm_snap_decimals"));
+    m_pBpmSnapDecimals->setStates(3);
+    //m_pBpmSnapDecimals->connectValueChangeRequest(
+    //        this,
+    //        [this](double value) {
+    //            double newVal = std::clamp(static_cast<int>(value), 0, 2);
+    //            m_pBpmSnapDecimals->setAndConfirm(newVal);
+    //            slotUpdateEngineBpm(m_pRateRatio->get());
+    //        });
+
     // We need the sample rate so we can guesstimate something close
     // what latency is.
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
@@ -280,11 +299,39 @@ void RateControl::slotRateRangeChanged(double) {
 }
 
 void RateControl::slotRateSliderChanged(double v) {
+    qDebug() << "   .";
+    qDebug() << "   rate slider" << v;
     double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * v;
+
+    // If enabled, snap BPM to N decimals or int BPM
+    bool snap = rateRatio != 1.0 && m_pBpmSnapEnabled->get() > 0 &&
+            m_pBpmSnapDecimals->get() >= 0;
+    if (snap) {
+        double localBpm = mixxx::Bpm(m_pBpmControl->getLocalBpm()).value();
+        double newBpm = localBpm * rateRatio;
+        if (m_pBpmControl) {
+            // First calculate new, snapped BPM
+            int precFactor = static_cast<int>(pow(10, m_pBpmSnapDecimals->get()));
+            newBpm = round(newBpm * precFactor) / precFactor;
+            // Then reverse to get the snapped rateRatio
+            rateRatio = newBpm / localBpm;
+            // one line without temp. newBpm debug value
+            //rateRatio = (round(newBpm * precFactor) / precFactor) / localBpm;
+            qDebug() << "   snap to " << newBpm;
+        }
+    }
+
     m_pRateRatio->set(rateRatio);
+
+    // Update rate slider with snapped value
+    if (snap) {
+        slotRateRatioChanged(rateRatio);
+    }
 }
 
 void RateControl::slotRateRatioChanged(double v) {
+    qDebug() << "     .";
+    qDebug() << "     rate ratio" << v;
     double rateRange = m_pRateRange->get();
     if (rateRange > 0.0) {
         double newRate = m_pRateDir->get() * (v - 1) / rateRange;
@@ -292,6 +339,7 @@ void RateControl::slotRateRatioChanged(double v) {
     } else {
         m_pRateSlider->set(0);
     }
+    qDebug() << "     .";
 }
 
 void RateControl::slotReverseRollActivate(double v) {
