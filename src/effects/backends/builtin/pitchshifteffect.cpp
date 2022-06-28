@@ -70,12 +70,8 @@ void PitchShiftEffect::loadEngineEffectParameters(
 }
 
 // Returns RubberBand process latency.
-unsigned int PitchShiftEffect::getGroupDelay() {
-    return m_groupDelay;
-}
-
-void PitchShiftEffect::setGroupDelay(unsigned int groupDelay) {
-    m_groupDelay = groupDelay;
+SINT PitchShiftEffect::getGroupDelayFrames() {
+    return m_groupDelayFrames;
 }
 
 void PitchShiftEffect::processChannel(
@@ -110,8 +106,8 @@ void PitchShiftEffect::processChannel(
             engineParameters.framesPerBuffer(),
             false);
 
-    // Sets number of samples for current RubberBand process latency.
-    setGroupDelay(pState->m_pRubberBand->getLatency() * engineParameters.channelCount());
+    // Sets number of frames for current RubberBand process latency.
+    m_groupDelayFrames = pState->m_pRubberBand->getLatency();
 
     SINT framesAvailable = pState->m_pRubberBand->available();
     SINT framesToRead = math_min(

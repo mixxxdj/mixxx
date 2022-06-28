@@ -10,6 +10,7 @@
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
+#include "util/types.h"
 
 namespace RubberBand {
 class RubberBandStretcher;
@@ -45,16 +46,14 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
-    unsigned int getGroupDelay() override;
+    SINT getGroupDelayFrames() override;
 
   private:
     QString debugString() const {
         return getId();
     }
 
-    void setGroupDelay(unsigned int groupDelay);
-
-    unsigned int m_groupDelay;
+    SINT m_groupDelayFrames;
     EngineEffectParameterPointer m_pPitchParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PitchShiftEffect);

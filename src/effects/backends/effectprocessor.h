@@ -99,8 +99,17 @@ class EffectProcessor {
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) = 0;
 
-    /// This method returns the number of samples for the current effect delay.
-    virtual unsigned int getGroupDelay() = 0;
+    /// This method is used for obtaining the delay of the output buffer
+    /// compared to the input buffer based on the internal effect processing.
+    /// The method returns the number of frames by which the input buffer
+    /// needs to be delayed so that buffers at the input and output
+    /// of the effect overlap. The return value represents the current effect
+    /// latency. The value is used in the EngineEffectChain::process method
+    /// to calculate the resulting latency of the effect chain. Based
+    /// on the sum of the delay value of every effect in the effect chain,
+    /// the dry signal is delayed to overlap with the output wet signal
+    /// after processing all effects in the effects chain.
+    virtual SINT getGroupDelayFrames() = 0;
 };
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of
@@ -153,8 +162,8 @@ class EffectProcessorImpl : public EffectProcessor {
             const GroupFeatureState& groupFeatures) = 0;
 
     /// By default, the group delay for every effect is zero. The effect implementation
-    /// can override this method and set actual number of samples for the effect delay.
-    virtual unsigned int getGroupDelay() override {
+    /// can override this method and set actual number of frames for the effect delay.
+    virtual SINT getGroupDelayFrames() override {
         return 0;
     }
 

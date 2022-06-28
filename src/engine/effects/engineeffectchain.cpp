@@ -12,7 +12,8 @@ EngineEffectChain::EngineEffectChain(const QString& group,
           m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
           m_buffer1(MAX_BUFFER_LEN),
-          m_buffer2(MAX_BUFFER_LEN) {
+          m_buffer2(MAX_BUFFER_LEN),
+          m_tmpBuffer(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 
@@ -24,7 +25,7 @@ EngineEffectChain::EngineEffectChain(const QString& group,
         m_chainStatusForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
 
-    m_effectsDelay = new EngineEffectsDelay();
+    m_pEffectsDelay = std::make_unique<EngineEffectsDelay>();
 }
 
 EngineEffectChain::~EngineEffectChain() {
@@ -267,7 +268,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         // requires that the input buffer does not get modified.
         CSAMPLE* pIntermediateInput = pIn;
         CSAMPLE* pIntermediateOutput;
-        unsigned int effectChainGroupDelay = 0;
+        SINT effectChainGroupDelayFrames = 0;
         bool firstAddDryToWetEffectProcessed = false;
 
         for (EngineEffect* pEffect : qAsConst(m_effects)) {
@@ -311,7 +312,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                     }
 
                     processingOccured = true;
-                    effectChainGroupDelay += pEffect->getGroupDelay();
+                    effectChainGroupDelayFrames += pEffect->getGroupDelayFrames();
 
                     // Output of this effect becomes the input of the next effect
                     pIntermediateInput = pIntermediateOutput;
@@ -319,8 +320,10 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
             }
         }
 
-        m_effectsDelay->setDelay(effectChainGroupDelay);
-        m_effectsDelay->process(pIn, pIn, numSamples);
+        m_pEffectsDelay->setDelayFrames(effectChainGroupDelayFrames);
+        m_pEffectsDelay->process(pIn, m_tmpBuffer.data(), numSamples);
+
+        SampleUtil::copy(pIn, m_tmpBuffer.data(), numSamples);
 
         if (processingOccured) {
             // pIntermediateInput is the output of the last processed effect. It would be the
