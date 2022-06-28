@@ -896,7 +896,8 @@ void WTrackMenu::updateMenus() {
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
         const auto pTrack = getFirstTrackPointer();
-        m_pFindOnMenu->setEnabled(!WFindOnWebMenu::hasEntriesForTrack(*pTrack));
+        const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
+        m_pFindOnMenu->setEnabled(enableMenu);
     }
 }
 
