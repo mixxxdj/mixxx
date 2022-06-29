@@ -1,7 +1,8 @@
-#include <cstdlib>
-#include <cstddef>
-
 #include "util/sample.h"
+
+#include <cstddef>
+#include <cstdlib>
+
 #include "util/math.h"
 
 #ifdef __WINDOWS__
@@ -17,7 +18,7 @@ typedef qint32 int32_t;
 // This also utilizes AVX registers when compiled for a recent 64-bit CPU
 // using scons optimize=native.
 // "SINT i" is the preferred loop index type that should allow vectorization in
-// general. Unfortunatly there are expetions where "int i" is required for some reasons.
+// general. Unfortunately there are exceptions where "int i" is required for some reasons.
 
 namespace {
 
@@ -71,7 +72,7 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
         // 16-byte aligned. We record a pointer to the true start of the buffer
         // in the slack space as well so that we can free it correctly.
         const size_t alignment = kAlignment;
-        const size_t unaligned_size = sizeof(CSAMPLE[size]) + alignment;
+        const size_t unaligned_size = sizeof(CSAMPLE) * size + alignment;
         void* pUnaligned = std::malloc(unaligned_size);
         if (pUnaligned == NULL) {
             return NULL;
@@ -85,7 +86,7 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
 #endif
     } else {
         // Our platform already produces aligned pointers (or is an exotic target)
-        return new CSAMPLE[size];
+        return static_cast<CSAMPLE*>(std::malloc(sizeof(CSAMPLE) * size));
     }
 }
 
@@ -104,7 +105,7 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
         std::free(*((void**)((void*)pBuffer) - 1));
 #endif
     } else {
-        delete[] pBuffer;
+        std::free(pBuffer);
     }
 }
 

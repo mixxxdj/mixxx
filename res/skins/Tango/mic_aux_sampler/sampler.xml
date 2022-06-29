@@ -109,7 +109,7 @@ Variables:
                 <TooltipId>text</TooltipId>
                 <Size>1me,1min</Size>
                 <Group><Variable name="group"/></Group>
-                <Property>durationFormatted</Property>
+                <Property>durationTextSeconds</Property>
               </TrackProperty>
 
               <Template src="skin:../Tango/controls/button_3state.xml">

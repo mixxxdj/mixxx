@@ -4,13 +4,14 @@
 #include <QContextMenuEvent>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
+#include <QEvent>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QPoint>
 #include <QTimerEvent>
 #include <QTreeView>
-#include <QEvent>
 
+#include "library/library_decl.h"
 #include "widget/wbasewidget.h"
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
@@ -29,10 +30,12 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   public slots:
     void selectIndex(const QModelIndex&);
+    void selectChildIndex(const QModelIndex&, bool selectItem = true);
     void slotSetFont(const QFont& font);
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
+    FocusWidget setLibraryFocus(FocusWidget newFocus);
 
   protected:
     bool event(QEvent* pEvent) override;

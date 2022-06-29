@@ -1,3 +1,5 @@
+#ifdef __BROADCAST__
+
 #include <QFile>
 #include <QString>
 
@@ -215,3 +217,5 @@ TEST(BroadcastProfileTest, DefaultValues) {
 }
 
 } // namespace
+
+#endif // __BROADCAST__

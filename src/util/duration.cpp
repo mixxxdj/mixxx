@@ -11,9 +11,9 @@ namespace mixxx {
 
 namespace {
 
-static const qint64 kSecondsPerMinute = 60;
-static const qint64 kSecondsPerHour = 60 * kSecondsPerMinute;
-static const qint64 kSecondsPerDay = 24 * kSecondsPerHour;
+static constexpr qint64 kSecondsPerMinute = 60;
+static constexpr qint64 kSecondsPerHour = 60 * kSecondsPerMinute;
+static constexpr qint64 kSecondsPerDay = 24 * kSecondsPerHour;
 
 } // namespace
 

@@ -197,8 +197,8 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         QDomElement revision = revisionMap[nextVersion];
         QDomElement eDescription = revision.firstChildElement("description");
         QDomElement eSql = revision.firstChildElement("sql");
-        QString minCompatibleVersion = revision.attribute("min_compatible");
 
+        QString minCompatibleVersion = revision.attribute("min_compatible");
         // Default the min-compatible version to the current version string if
         // it's not in the schema.xml
         if (minCompatibleVersion.isNull()) {
@@ -216,7 +216,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         QString sql = eSql.text();
 
         kLogger.info()
-                << "Upgrading to database schema to version"
+                << "Upgrading database schema to version"
                 << nextVersion << ":"
                 << description.trimmed();
 
@@ -238,21 +238,19 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
             FwdSqlQuery query(m_settingsDao.database(), statement);
             result = query.isPrepared() && query.execPrepared();
             if (!result &&
-                    query.hasError() &&
-                    query.lastError().databaseText().startsWith(
-                            QStringLiteral("duplicate column name: "))) {
+                    query.hasDuplicateColumnNameError()) {
                 // New columns may have already been added during a previous
                 // migration to a different (= preceding) schema version. This
                 // is a very common situation during development when switching
-                // between schema versions. Since SQLite does not allow to add
-                // new columns only if they do not yet exist we need to account
-                // for and handle those errors here after they occurred. If the
-                // remaining migration finishes without other errors this is
-                // probably ok.
-                kLogger.warning()
-                        << "Ignoring failed statement"
+                // between schema versions. Since SQLite only allows to add new
+                // columns if they do not yet exist, we need to account for and
+                // handle those errors here after they occurred.
+                // If the remaining migration finishes without other errors this
+                // is probably ok.
+                kLogger.info()
+                        << "Safely ignoring failed statement"
                         << statement
-                        << "and continuing with schema migration";
+                        << "while re-applying a schema migration";
                 result = true;
             }
         }

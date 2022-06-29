@@ -2,6 +2,7 @@
 
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
+#include "library/library_prefs.h"
 #include "moc_columncache.cpp"
 #include "util/db/dbconnection.h"
 
@@ -15,7 +16,7 @@ const QString kSortNoCaseLex = mixxx::DbConnection::collateLexicographically(
 } // namespace
 
 ColumnCache::ColumnCache(const QStringList& columns) {
-    m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
+    m_pKeyNotationCP = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
     // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
@@ -62,6 +63,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_DATETIMEADDED, LIBRARYTABLE_DATETIMEADDED);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_HEADERPARSED, LIBRARYTABLE_HEADERPARSED);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, LIBRARYTABLE_TIMESPLAYED);
+    insertColumnNameByEnum(COLUMN_LIBRARYTABLE_LAST_PLAYED_AT, LIBRARYTABLE_LAST_PLAYED_AT);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_PLAYED, LIBRARYTABLE_PLAYED);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_RATING, LIBRARYTABLE_RATING);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_KEY, LIBRARYTABLE_KEY);
@@ -73,6 +75,8 @@ void ColumnCache::setColumns(const QStringList& columns) {
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COVERART_SOURCE, LIBRARYTABLE_COVERART_SOURCE);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COVERART_TYPE, LIBRARYTABLE_COVERART_TYPE);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COVERART_LOCATION, LIBRARYTABLE_COVERART_LOCATION);
+    insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COVERART_COLOR, LIBRARYTABLE_COVERART_COLOR);
+    insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COVERART_DIGEST, LIBRARYTABLE_COVERART_DIGEST);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COVERART_HASH, LIBRARYTABLE_COVERART_HASH);
 
     insertColumnNameByEnum(COLUMN_TRACKLOCATIONSTABLE_LOCATION, TRACKLOCATIONSTABLE_LOCATION);

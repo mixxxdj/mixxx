@@ -18,18 +18,18 @@
  * the Pioneer Professional DJ ecosystem, because it is the format that
  * their rekordbox software uses to write USB and SD media which can be
  * mounted in DJ controllers and used to play and mix music.
- * 
+ *
  * It has been reverse-engineered to facilitate sophisticated
  * integrations with light and laser shows, videos, and other musical
  * instruments, by supporting deep knowledge of what is playing and
  * what is coming next through monitoring the network communications of
  * the players.
- * 
+ *
  * The file is divided into fixed-size blocks. The first block has a
  * header that establishes the block size, and lists the tables
  * available in the database, identifying their types and the index of
  * the first of the series of linked pages that make up that table.
- * 
+ *
  * Each table is made up of a series of rows which may be spread across
  * any number of pages. The pages start with a header describing the
  * page and linking to the next page. The rest of the page is used as a
@@ -37,14 +37,14 @@
  * structure that builds backwards from the end of the page. Each row
  * of a given type has a fixed size structure which links to any
  * variable-sized strings by their offsets within the page.
- * 
+ *
  * As changes are made to the table, some records may become unused,
  * and there may be gaps within the heap that are too small to be used
  * by other data. There is a bit map in the row index that identifies
  * which rows are actually present. Rows that are not present must be
  * ignored: they do not contain valid (or even necessarily well-formed)
  * data.
- * 
+ *
  * The majority of the work in reverse-engineering this format was
  * performed by @henrybetts and @flesniak, for which I am hugely
  * grateful. @GreyCat helped me learn the intricacies (and best

@@ -6,6 +6,9 @@
     /** @private */
     var components = global.components;
 
+    /** @private */
+    var engine = global.engine;
+
     /**
      * Contains functions to print a message to the log.
      * `debug` output is suppressed unless the caller owns a truthy property `debug`.
@@ -52,14 +55,18 @@
      * @private
      */
     var stringifyComponent = function(component) {
-        if (component === undefined) {
+        if (!component) {
             return;
         }
-        var id = findComponentId(component.midi);
-        if (id !== undefined) {
-            var key = component.inKey || component.outKey;
-            return "(" + id + ": " + component.group + "," + key + ")";
+        var key = component.inKey || component.outKey;
+        var value = component.group + "," + key;
+        if (component.midi) {
+            var id = findComponentId(component.midi);
+            if (id !== undefined) {
+                value = id + ": " + value;
+            }
         }
+        return "(" + value + ")";
     };
 
     /**
@@ -93,6 +100,43 @@
     };
 
     /**
+     * Perform an action, throttled if the owner supports throttling.
+     *
+     * @param {function} action The action to perform
+     * @param {object} owner Object used as `this` for the action
+     * @private
+     * @see `Throttler`
+     */
+    var throttle = function(action, owner) {
+        if (owner.throttler) {
+            owner.throttler.schedule(action, owner);
+        } else {
+            action.call(owner);
+        }
+    };
+
+    /**
+     * A component that uses the parameter instead of the value as output.
+     *
+     * @constructor
+     * @extends {components.Component}
+     * @param {object} options Options object
+     * @public
+     */
+    var ParameterComponent = function(options) {
+        components.Component.call(this, options);
+    };
+    ParameterComponent.prototype = deriveFrom(components.Component, {
+        outValueScale: function(_value) {
+            /*
+             * We ignore the argument and use the parameter (0..1) instead because value scale is
+             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
+             */
+            return convertToMidiValue.call(this, this.outGetParameter());
+        },
+    });
+
+    /**
      * A button to toggle un-/shift on a target component.
      *
      * @constructor
@@ -105,12 +149,13 @@
         components.Button.call(this, options);
     };
     ShiftButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, value, _status, _group) {
+        inSetValue: function(value) {
             if (value) {
                 this.target.shift();
             } else {
                 this.target.unshift();
             }
+            components.Button.prototype.inSetValue.call(this, value);
         },
     });
 
@@ -177,7 +222,7 @@
      * Use `start(action)` to start and `reset()` to reset.
      *
      * @constructor
-     * @param {number} options.timeout Duration between start and action
+     * @param {number} options.timeout Duration between start and action (in ms)
      * @param {boolean} options.oneShot If `true`, the action is run once;
      *                          otherwise, it is run periodically until the timer is reset.
      * @param {function} options.action Function that is executed whenever the timer expires
@@ -214,6 +259,53 @@
             } else {
                 this.reset();
             }
+        }
+    };
+
+    /**
+     * An object that enforces a constant delay between the execution of consecutive actions.
+     *
+     * Use `schedule(action, owner)` to perform an action on the owner as soon as the delay has
+     * elapsed after the preceding action has finished.
+     *
+     * @constructor
+     * @param {number} options.delay Minimal delay between two consecutive actions (in ms)
+     * @public
+     */
+    var Throttler = function(options) {
+        options = options || {};
+        options.delay = options.delay || 0;
+        _.assign(this, options);
+        this.locked = false;
+        this.jobs = [];
+        this.unlockTimer = new Timer(
+            {timeout: this.delay, oneShot: true, action: this.unlock, owner: this});
+    };
+    Throttler.prototype = {
+        schedule: function(action, owner) {
+            this.jobs.push({action: action, owner: owner});
+            this.notify();
+        },
+
+        notify: function() {
+            if (this.jobs.length > 0 && this.acquireLock()) {
+                var job = this.jobs.shift();
+                job.action.call(job.owner);
+                this.unlockTimer.start();
+            }
+        },
+
+        acquireLock: function() {
+            var unlocked = !this.locked;
+            if (unlocked) {
+                this.locked = true;
+            }
+            return unlocked;
+        },
+
+        unlock: function() {
+            this.locked = false;
+            this.notify();
         }
     };
 
@@ -289,6 +381,14 @@
      * Turning the encoder to the right means "forwards" and returns 1;
      * turning it to the left means "backwards" and returns -1.
      *
+     * This component supports an optional relative mode as an alternative to
+     * dealing with soft takeover. To use it, set the `relative` property to
+     * `true` in the options object for the constructor. In this mode, moving
+     * the Pot will adjust the Mixxx Control relative to its current value.
+     * Holding shift and moving the encoder will not affect the Mixxx Control.
+     * This allows the user to continue adjusting the Mixxx Control after
+     * the encoder has reached the end of its physical range.
+     *
      * @constructor
      * @extends {components.Encoder}
      * @param {object} options Options object
@@ -302,14 +402,21 @@
         min: 0,
         inValueScale: function(value) {
             var direction = 0;
-            if (value > this.previousValue || value === this.max) {
-                direction = 1;
-            } else if (value < this.previousValue || value === this.min) {
-                direction = -1;
+            if (!(this.relative && this.isShifted)) {
+                if (value > this.previousValue || value === this.max) {
+                    direction = 1;
+                } else if (value < this.previousValue || value === this.min) {
+                    direction = -1;
+                }
+                this.previousValue = value;
             }
-            this.previousValue = value;
-
             return direction;
+        },
+        shift: function() {
+            this.isShifted = true;
+        },
+        unshift: function() {
+            this.isShifted = false;
         },
     });
 
@@ -332,6 +439,22 @@
             /* 0..1 => 0..127 */
             return convertToMidiValue.call(this, normalizedValue);
         },
+    });
+
+    /**
+     * A pot for a value range of [-bound..0..+bound].
+     *
+     * @constructor
+     * @extends {components.Pot}
+     * @param {object} options Options object
+     * @param {number} options.bound A positive integer defining the range bounds
+     * @public
+     */
+    var RangeAwarePot = function(options) {
+        components.Pot.call(this, options);
+    };
+    RangeAwarePot.prototype = deriveFrom(components.Pot, {
+        outValueScale: RangeAwareEncoder.prototype.outValueScale
     });
 
     /**
@@ -380,7 +503,9 @@
      * @extends {components.Encoder}
      * @param {object} options Options object
      * @param {Array} options.values An array containing the enumeration values
+     * @param {boolean} options.softTakeover (optional) Enable soft-takeover; default: `true`
      * @public
+     * @see https://github.com/mixxxdj/mixxx/wiki/Midi-Scripting#soft-takeover
      */
     var EnumEncoder = function(options) {
         options = options || {};
@@ -388,10 +513,22 @@
             log.error("EnumEncoder constructor was called without specifying enum values.");
             options.values = [];
         }
+        if (options.softTakeover === undefined) { // do not use '||' to allow false
+            options.softTakeover = true;
+        }
         options.maxIndex = options.values.length - 1;
         components.Encoder.call(this, options);
     };
     EnumEncoder.prototype = deriveFrom(components.Encoder, {
+        input: function(_channel, _control, value, _status, _group) {
+            var scaledValue = this.inValueScale(value);
+            if (!this.softTakeover
+                || this.previousValue === undefined
+                || this.previousValue === this.inGetValue()) {
+                this.inSetParameter(scaledValue);
+            }
+            this.previousValue = scaledValue;
+        },
         inValueScale: function(value) {
             var normalizedValue = value / this.max;
             var index = Math.round(normalizedValue * this.maxIndex);
@@ -435,7 +572,7 @@
      * `sizeControl` being preferred.
      *
      * @constructor
-     * @extends {components.Encoder}
+     * @extends {DirectionEncoder}
      * @param {object} options Options object
      * @param {number} options.size (optional) Size given in number of beats; default: 0.5
      * @param {string} options.sizeControl (optional) Name of a control that contains `size`
@@ -451,7 +588,7 @@
         inValueScale: function(value) {
             var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
             var beats = this.sizeControl
-                ? global.engine.getValue(this.group, this.sizeControl)
+                ? engine.getValue(this.group, this.sizeControl)
                 : this.size;
             return direction * beats;
         },
@@ -467,13 +604,13 @@
      */
     var BackLoopButton = function(options) {
         options = options || {};
-        options.outKey = options.outKey || "loop_enabled";
+        options.key = options.key || "loop_enabled";
         components.Button.call(this, options);
     };
     BackLoopButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, value, _status, group) {
-            var engine = global.engine;
+        inSetValue: function(value) {
             var script = global.script;
+            var group = this.group;
             if (value) {
                 var loopSize = engine.getValue(group, "beatloop_size");
                 var beatjumpSize = engine.getValue(group, "beatjump_size");
@@ -545,16 +682,9 @@
         }
         this.source = options.source;
         this.sync();
-        components.Component.call(this, options);
+        ParameterComponent.call(this, options);
     };
-    Publisher.prototype = deriveFrom(components.Component, {
-        outValueScale: function(_value) {
-            /*
-             * We ignore the argument and use the parameter (0..1) instead because value scale is
-             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
-             */
-            return convertToMidiValue.call(this, this.outGetParameter());
-        },
+    Publisher.prototype = deriveFrom(ParameterComponent, {
         sync: function() {
             this.midi = this.source.midi;
             this.group = this.source.group;
@@ -572,11 +702,45 @@
         },
     });
 
+    var EffectUnit = function(rack, deckGroup) {
+        components.ComponentContainer.call(this);
+        var effectGroup = "[" + rack + "_" + deckGroup + "_Effect1]";
+        var channelGroup = "[" + rack + "_" + deckGroup + "]";
+
+        var ParameterKnob = function(parameterNumber) {
+            components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
+        };
+        ParameterKnob.prototype = deriveFrom(components.Pot);
+        var ParameterButton = function(parameterNumber) {
+            components.Button.call(this, {group: effectGroup, key: "button_parameter" + parameterNumber});
+        };
+        ParameterButton.prototype = deriveFrom(
+            components.Button, {type: components.Button.prototype.types.powerWindow});
+
+        this.enabled = new components.Button(
+            {group: effectGroup, key: "enabled", type: components.Button.prototype.types.powerWindow});
+        this.meta = new components.Pot({group: effectGroup, key: "meta"});
+        this.super1 = new components.Pot({group: channelGroup, key: "super1"});
+        this.mix = new components.Pot({group: channelGroup, key: "mix"});
+
+        this.parameterKnobs = new components.ComponentContainer();
+        var parameterKnobCount = engine.getValue(effectGroup, "num_parameters");
+        for (var knobIndex = 1; knobIndex <= parameterKnobCount; knobIndex++) {
+            this.parameterKnobs[knobIndex] = new ParameterKnob(knobIndex);
+        }
+
+        this.parameterButtons = new components.ComponentContainer();
+        var parameterButtonCount = engine.getValue(effectGroup, "num_button_parameters");
+        for (var buttonIndex = 1; buttonIndex <= parameterButtonCount; buttonIndex++) {
+            this.parameterButtons[buttonIndex] = new ParameterButton(buttonIndex);
+        }
+    };
+    EffectUnit.prototype = deriveFrom(components.ComponentContainer);
+
     /**
      * @typedef {components.ComponentContainer} EqualizerUnit
      *
      * @property {components.Button} enabled En-/disable equalizer unit
-     * @property {components.Pot} super1 QuickEffect super knob
      * @property {components.Pot} parameterKnobs.1 Low knob
      * @property {components.Pot} parameterKnobs.2 Mid knob
      * @property {components.Pot} parameterKnobs.3 High knob
@@ -595,33 +759,38 @@
      * @public
      */
     var EqualizerUnit = function(deckGroup) {
-        components.ComponentContainer.call(this);
-        var effectGroup = "[EqualizerRack1_" + deckGroup + "_Effect1]";
-
-        var ParameterKnob = function(parameterNumber) {
-            components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
-        };
-        ParameterKnob.prototype = deriveFrom(components.Pot);
-        var ParameterButton = function(parameterNumber) {
-            components.Button.call(this, {
-                group: effectGroup, key: "button_parameter" + parameterNumber
-            });
-        };
-        ParameterButton.prototype = deriveFrom(
-            components.Button, {type: components.Button.prototype.types.powerWindow});
-
-        this.enabled = new components.Button(
-            {group: "[QuickEffectRack1_" + deckGroup + "_Effect1]", key: "enabled"});
-        this.super1 = new components.Pot(
-            {group: "[QuickEffectRack1_" + deckGroup + "]", key: "super1"});
-        this.parameterKnobs = new components.ComponentContainer();
-        this.parameterButtons = new components.ComponentContainer();
-        for (var i = 1; i <= 3; i++) {
-            this.parameterKnobs[i] = new ParameterKnob(i);
-            this.parameterButtons[i] = new ParameterButton(i);
-        }
+        EffectUnit.call(this, "EqualizerRack1", deckGroup);
     };
-    EqualizerUnit.prototype = deriveFrom(components.ComponentContainer);
+    EqualizerUnit.prototype = deriveFrom(EffectUnit);
+
+    /**
+     * @typedef {components.ComponentContainer} QuickEffectUnit
+     *
+     * @property {components.Button} enabled En-/disable quick effect unit
+     * @property {components.Pot} meta Meta knob
+     * @property {components.Pot} super1 Super knob
+     * @property {components.Pot} parameterKnobs.1 Parameter 1
+     * @property {components.Pot} parameterKnobs.2 Parameter 2
+     * @property {components.Pot} parameterKnobs.3 Parameter 3
+     * @property {components.Pot} parameterKnobs.4 Parameter 4
+     * @property {components.Pot} parameterKnobs.5 Parameter 5
+     * @property {components.Button} parameterButtons.1 Parameter Button 1
+     * @property {components.Button} parameterButtons.2 Parameter Button 2
+     */
+
+    /**
+     * A component container for quick effect controls.
+     *
+     * @constructor
+     * @extends {components.ComponentContainer}
+     * @param {string} deckGroup Group of the deck this unit belongs to (e.g. `[Channel1]`)
+     * @yields {QuickEffectUnit}
+     * @public
+     */
+    var QuickEffectUnit = function(deckGroup) {
+        EffectUnit.call(this, "QuickEffectRack1", deckGroup);
+    };
+    QuickEffectUnit.prototype = deriveFrom(EffectUnit);
 
     /**
      * Manage Components in named ComponentContainers.
@@ -722,6 +891,11 @@
         register: function(component, containerName) {
             if (component === undefined) {
                 log.error("Missing component");
+                return;
+            }
+            if (!component.midi) {
+                log.debug(containerName + ": ignore "
+                    + stringifyComponent(component) + " without MIDI address");
                 return;
             }
             var id = findComponentId(component.midi);
@@ -985,6 +1159,11 @@
      *     +- init: (optional) A function that is called when Mixxx is started
      *     +- shutdown: (optional) A function that is called when Mixxx is shutting down
      *     |
+     *     +- throttleDelay (optional): A positive number (in ms) that is used to slow down the
+     *     |                            initialization of the controller; this option is useful if
+     *     |                            the hardware is limited to process a certain number of MIDI
+     *     |                            messages per time.
+     *     |
      *     +- decks: An array of deck definitions (may be empty or omitted)
      *     |  +- deck:
      *     |     +- deckNumbers: As defined by {components.Deck}
@@ -997,31 +1176,45 @@
      *     |     |     +- options: Additional options for the component (object, required)
      *     |     |                 Example: {midi: [0xB0, 0x43], key: "reverse"}
      *     |     +- equalizerUnit: Equalizer unit definition (optional)
-     *     |        +- components: An object of component definitions for the unit.
-     *     |        |              Each definition is a key-value pair for a component of
-     *     |        |              `EqualizerUnit` where `key` is the name of
-     *     |        |              the component and `value` is the MIDI address.
-     *     |        |              Example: `super1: [0xB0, 0x29]`
-     *     |        +- feedback: Enable controller feedback (boolean, optional)
-     *     |        |            When set to `true`, values of the components in this unit are sent
-     *     |        |            to the hardware controller on changes. The address of the MIDI
-     *     |        |            message is taken from the `midi` property of the affected
-     *     |        |            component.
-     *     |        +- output: Additional output definitions (optional).
-     *     |                   The structure of this object is the same as the structure of
-     *     |                   `components`. Every value change of a component contained in `output`
-     *     |                   causes a MIDI message to be sent to the hardware controller, using
-     *     |                   the configured address instead of the component's `midi` property.
-     *     |                   This option is independent of the `feedback` option.
+     *     |     |  +- midi: An object of component definitions for the unit.
+     *     |     |  |        Each definition is a key-value pair for a component of `EqualizerUnit`
+     *     |     |  |        where `key` is the name of the component and `value` is the MIDI
+     *     |     |  |        address. Examples:
+     *     |     |  |          `super1: [0xB0, 0x29]`
+     *     |     |  |          `parameterKnobs: {1: [0xB0, 0x06], 2: [0xB0, 0x05], 3: [0xB0, 0x04]}`
+     *     |     |  +- feedback: Enable controller feedback (boolean, optional)
+     *     |     |  |            When set to `true`, values of the components in this unit are sent
+     *     |     |  |            to the hardware controller on changes. The address of the MIDI
+     *     |     |  |            message is taken from the `midi` property of the affected
+     *     |     |  |            component.
+     *     |     |  +- output: Additional output definitions (optional).
+     *     |     |             The structure of this object is the same as the structure of
+     *     |     |             `midi`. Every value change of a component contained in `output`
+     *     |     |             causes a MIDI message to be sent to the hardware controller, using
+     *     |     |             the configured address instead of the component's `midi` property.
+     *     |     |             This option is independent of the `feedback` option.
+     *     |     +- quickEffectUnit: Quick effect unit definition (optional)
+     *     |        +- midi: As described for equalizer unit using `components.QuickEffectUnit` instead of
+     *     |        |        `EqualizerUnit`. Examples:
+     *     |        |          `enabled: [0x90, 0x02]`
+     *     |        |          `super1: [0xB0, 0x06]`
+     *     |        +- feedback: As described for equalizer unit
+     *     |        +- output: As described for equalizer unit
      *     |
      *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
      *     |  +- effectUnit
      *     |     +- unitNumbers: As defined by `components.EffectUnit`.
-     *     |     +- components: As described for equalizer unit using `components.EffectUnit`
-     *     |     |              instead of `EqualizerUnit`.
-     *     |     |              Example: `effectFocusButton: [0xB0, 0x15]`
+     *     |     +- midi: As described for equalizer unit using `components.EffectUnit` instead of
+     *     |     |        `EqualizerUnit`. Examples:
+     *     |     |          `effectFocusButton: [0xB0, 0x15]`
+     *     |     |          `knobs: {1: [0xB0, 0x26], 2: [0xB0, 0x25], 3: [0xB0, 0x24]}`
      *     |     +- feedback: As described for equalizer unit
      *     |     +- output: As described for equalizer unit
+     *     |     +- sendShiftedFor: Type of components that send shifted MIDI messages (optional)
+     *     |                        When set, all components of this type within this effect unit
+     *     |                        are configured to send shifted MIDI messages
+     *     |                        (`sendShifted: true`).
+     *     |                        Example: `sendShiftedFor: c.Button`
      *     |
      *     +- containers: An array of component container definitions (may be empty or omitted)
      *        +- componentContainer
@@ -1051,14 +1244,6 @@
     GenericMidiController.prototype = deriveFrom(components.ComponentContainer, {
 
         /**
-         * Contains all decks and effect units so that a (un)shift operation
-         * is delegated to the decks, effect units and their children.
-         *
-         * @private
-         */
-        componentContainers: [],
-
-        /**
          * Initialize the controller mapping.
          * This function is called by Mixxx on startup.
          *
@@ -1070,9 +1255,22 @@
             this.controllerId = controllerId;
             this.debug = debug;
 
+            var delay = this.config.throttleDelay;
+            if (delay > 0) {
+                log.debug("Component registration is throttled using a delay of " + delay + "ms");
+                this.throttler = new Throttler({delay: delay});
+            }
+
             if (typeof this.config.init === "function") {
                 this.config.init(controllerId, debug);
             }
+
+            /*
+             * Contains all decks and effect units so that a (un)shift operation
+             * is delegated to the decks, effect units and their children.
+             */
+            this.componentContainers = [];
+
             this.layerManager = this.createLayerManager(
                 this.componentContainers,
                 this.config.decks || [],
@@ -1142,6 +1340,10 @@
                         registerComponents(
                             deckDefinition.equalizerUnit.midi, deckImplementation.equalizerUnit);
                     }
+                    if (deckDefinition.quickEffectUnit) {
+                        registerComponents(
+                            deckDefinition.quickEffectUnit.midi, deckImplementation.quickEffectUnit);
+                    }
                 }
             },
             {
@@ -1160,9 +1362,11 @@
             }].forEach(function(context) {
                 if (Array.isArray(context.definitions)) {
                     context.definitions.forEach(function(definition) {
-                        var implementation = context.factory.call(this, definition, target);
-                        target.push(implementation);
-                        context.register(definition, implementation);
+                        throttle(function() {
+                            var implementation = context.factory.call(this, definition, target);
+                            target.push(implementation);
+                            context.register(definition, implementation);
+                        }, this);
                     }, this);
                 } else {
                     log.error(this.controllerId + ": Skipping a part of the configuration because "
@@ -1185,19 +1389,20 @@
         createDeck: function(deckDefinition, componentStorage) {
             var deck = new components.Deck(deckDefinition.deckNumbers);
             deckDefinition.components.forEach(function(componentDefinition, index) {
-                if (componentDefinition && componentDefinition.type) {
-                    var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
-                    deck[index] = new componentDefinition.type(options);
-                } else {
-                    log.error("Skipping component without type on Deck of " + deck.currentDeck
-                        + ": " + stringifyObject(componentDefinition));
-                    deck[index] = null;
-                }
+                var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
+                var definition = _.merge(componentDefinition, {options: options});
+                deck[index] = this.createComponent(definition);
             }, this);
             if (deckDefinition.equalizerUnit) {
                 deck.equalizerUnit = this.setupMidi(
                     deckDefinition.equalizerUnit,
                     new EqualizerUnit(deck.currentDeck),
+                    componentStorage);
+            }
+            if (deckDefinition.quickEffectUnit) {
+                deck.quickEffectUnit = this.setupMidi(
+                    deckDefinition.quickEffectUnit,
+                    new QuickEffectUnit(deck.currentDeck),
                     componentStorage);
             }
             return deck;
@@ -1213,7 +1418,7 @@
          * @private
          */
         processMidiAddresses: function(definition, implementation, action) {
-            if (Array.isArray(definition)) {
+            if (Array.isArray(definition) || !definition) {
                 action.call(this, definition, implementation);
             } else if (typeof definition === "object") {
                 Object.keys(definition).forEach(function(name) {
@@ -1307,6 +1512,19 @@
                 new components.EffectUnit(effectUnitDefinition.unitNumbers, true),
                 componentStorage,
                 ["onFocusChange", "shift", "unshift"]);
+            var shiftType = effectUnitDefinition.sendShiftedFor;
+            /*
+             * `shiftType` is expected to be a JS component (e.g. `c.Button` or `c.Component`)
+             * which in terms of JS means that it is of type `function`. If something else is given
+             * (e.g. a string), `instanceof` will cause a runtime error, so check to avoid this.
+             */
+            if (typeof shiftType === "function") {
+                effectUnit.forEachComponent(function(component) {
+                    if (component instanceof shiftType) {
+                        component.sendShifted = true;
+                    }
+                });
+            }
             effectUnit.init();
             return effectUnit;
         },
@@ -1378,6 +1596,7 @@
 
     var exports = {};
     exports.deriveFrom = deriveFrom;
+    exports.ParameterComponent = ParameterComponent;
     exports.ShiftButton = ShiftButton;
     exports.Trigger = Trigger;
     exports.CustomButton = CustomButton;
@@ -1386,6 +1605,7 @@
     exports.BlinkingButton = BlinkingButton;
     exports.DirectionEncoder = DirectionEncoder;
     exports.RangeAwareEncoder = RangeAwareEncoder;
+    exports.RangeAwarePot = RangeAwarePot;
     exports.EnumToggleButton = EnumToggleButton;
     exports.EnumEncoder = EnumEncoder;
     exports.LoopEncoder = LoopEncoder;

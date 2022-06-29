@@ -4,7 +4,7 @@
 
 #Mixxx,
 WWidget,
-WLabel, QLabel,
+WLabel,
 WNumber, WNumberPos,
 WPushButton,
 WKey,
@@ -19,14 +19,16 @@ WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
 WOverview, /* Hotcue labels in the overview */
-WEffect,
+WEffectName,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-WLibrary QPushButton,
-WLibrary QLabel,
-WLibrary QRadioButton,
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton,
 WTrackTableViewHeader,
 WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
@@ -120,20 +122,21 @@ WTrackMenu QMenu::right-arrow {
   height: 0.7em;
 }
 
-WEffectSelector QAbstractScrollArea {
-  /* This would set the maximum width only. The minimum seems to be
-    defined by the widget itself. Unfortunately, the widget width
-    is also used to calculate the text elide (center) TODO(ronso0) */
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea {
   min-width: 160px;
 }
 #fadeModeCombobox QAbstractScrollArea {
   min-width: 185px;
   }
   WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     margin: 2px;
   }
   WEffectSelector::down-arrow,
+  WEffectChainPresetSelector::down-arrow,
+  WSearchLineEdit::down-arrow,
   #fadeModeCombobox::down-arrow,
   WTrackTableView::indicator {
     border: 0;
@@ -145,8 +148,16 @@ WEffectSelector::checked, /* selected item */
 WEffectSelector::indicator, /* checkbox, tick mark */
 WEffectSelector::indicator:unchecked,
 WEffectSelector::drop-down,
-#fadeModeCombobox::checked, /* selected mode */
-#fadeModeCombobox::indicator, /* checkbox, tick mark */
+WEffectChainPresetSelector::checked,
+WEffectChainPresetSelector::indicator,
+WEffectChainPresetSelector::indicator:unchecked,
+WEffectChainPresetSelector::drop-down,
+WSearchLineEdit::checked,
+WSearchLineEdit::indicator,
+WSearchLineEdit::indicator:unchecked,
+WSearchLineEdit::drop-down,
+#fadeModeCombobox::checked,
+#fadeModeCombobox::indicator,
 #fadeModeCombobox::indicator:unchecked,
 #fadeModeCombobox::drop-down {
   padding: 0px;
@@ -157,13 +168,16 @@ WEffectSelector::drop-down,
 }
 /* Remove 3D border from unchecked effects checkmark space */
 WEffectSelector::item:selected,
+WEffectChainPresetSelector:item:selected,
+WSearchLineEdit::item:selected,
 #fadeModeCombobox::item:selected {
   border: 0px;
 }
 
   WLibrarySidebar QMenu::indicator,
   WTrackTableViewHeader QMenu::indicator,
-  WTrackMenu QMenu QCheckBox::indicator {
+  WTrackMenu QMenu QCheckBox::indicator,
+  WEffectChainPresetButton QMenu QCheckBox::indicator {
     border: 1px solid #333;
     border-radius: 1px;
     background-color: #000;
@@ -202,6 +216,8 @@ WPushButton,
 WKey,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 #LibraryFeatureControls QLabel,
@@ -292,7 +308,7 @@ WTrackTableViewHeader::item {
   WTrackTableViewHeader::down-arrow {
     width: 0.8em;
     padding: 0 0.15em;
-    }
+  }
 
 
 #HotcueButton {
@@ -437,13 +453,16 @@ WSpinny { /*
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
+#RateSliderBoxCompactSync {
+  margin-left: 5px;
+}
 /************** Decks  ********************************************************/
 
 
 
 /************** Mixer  ********************************************************/
 #MixerContainer {
-  qproperty-layoutAlignment: 'AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #MixerDecks {
@@ -585,21 +604,48 @@ WEffectSelector {
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
+WEffectChainPresetSelector {
+  border:  0px;
+}
 #fadeModeCombobox {
   height: 18px;
   margin: 0px 0px 3px 1px;
   padding: 1px 0px 1px 4px;
   }
 
+  /* QuickEffect selector of left-hand decks and in 4-decks mixer
+    has it's down arrow on the left side, below the QuickEffect toggle */
+  WEffectChainPresetSelector#QuickEffectSelectorLeft {
+    padding: 0px -5px 0px -1px;
+    margin: 0px;
+    text-align: left;
+    }
+    WEffectChainPresetSelector#QuickEffectSelectorLeft::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: left center;
+    }
+  WEffectChainPresetSelector#QuickEffectSelectorRight {
+    padding: 0px -1px 0px -5px;
+    margin: 0px;
+    text-align: right;
+    }
+    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: right center;
+    }
+
   WEffectSelector QAbstractScrollArea,
+  WEffectChainPresetSelector QAbstractScrollArea,
+  WSearchLineEdit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
     margin: 0px;
   }
-  /* selected item */
+  /* checked item */
   WEffectSelector:checked,
+  WEffectChainPresetSelector:checked,
   #fadeModeCombobox:checked {
     /* not applied
     padding-left: 5px;	*/
@@ -609,15 +655,13 @@ WEffectSelector {
   }
   /* hovered items */
   WEffectSelector::item:selected,
+  WEffectChainPresetSelector::item:selected,
+  WSearchLineEdit::item:selected,
   #fadeModeCombobox::item:selected {
-    background-color: #333;
   /* Already one of those properties destroys font config and
      puts tick mark behind text:
     margin: 0px;
     padding: 0px; */
-  /* This moves the tick mark behind item text,
-    text sits at left border now
-    border: 0; */
   }
   WEffectSelector::indicator,
   #fadeModeCombobox::indicator {
@@ -628,6 +672,18 @@ WEffectSelector {
     margin: 0px;
     padding: 0px;*/
   }
+
+WEffectChainPresetButton,
+WEffectChainPresetButton::menu-indicator {
+  background-color: transparent;
+  border:  0px;
+  margin:  0px;
+  padding: 0px;
+}
+WEffectChainPresetButton::menu-indicator {
+  subcontrol-origin: margin;
+  subcontrol-position:  center center;
+}
 /************** Effects *******************************************************/
 
 
@@ -718,7 +774,7 @@ WEffectSelector {
 
 
 
-/************** Skin setttings ************************************************/
+/************** Skin settings *************************************************/
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';

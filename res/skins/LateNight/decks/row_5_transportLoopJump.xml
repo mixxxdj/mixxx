@@ -237,12 +237,13 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/button_2state_right.xml">
+                  <Template src="skin:/controls/button_2state_right_display.xml">
                     <SetVariable name="TooltipId">beatloop_activate</SetVariable>
                     <SetVariable name="ObjectName">LoopActivate</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beatloop_activate</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatlooproll_activate</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,loop_enabled</SetVariable>
                   </Template>
 
                   <BeatSpinBox>
@@ -266,13 +267,12 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/button_2state_right_display.xml">
+                  <Template src="skin:/controls/button_2state_right.xml">
                     <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                     <SetVariable name="ObjectName">Reloop</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,reloop_toggle</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,reloop_andstop</SetVariable>
-                    <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,loop_enabled</SetVariable>
                   </Template>
 
                   <Template src="skin:/controls/button_1state_right.xml">
@@ -293,6 +293,10 @@
                 </Children>
               </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_loop_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-80px wide -->
@@ -351,6 +355,10 @@
                 </Children>
               </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_beatjump_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup>

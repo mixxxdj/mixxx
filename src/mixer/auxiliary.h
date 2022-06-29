@@ -14,12 +14,12 @@ class SoundManager;
 class Auxiliary : public BasePlayer {
     Q_OBJECT
   public:
-    Auxiliary(QObject* pParent,
-              const QString& group,
-              int index,
-              SoundManager* pSoundManager,
-              EngineMaster* pMixingEngine,
-              EffectsManager* pEffectsManager);
+    Auxiliary(PlayerManager* pParent,
+            const QString& group,
+            int index,
+            SoundManager* pSoundManager,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager);
     ~Auxiliary() override;
 
   signals:

@@ -8,11 +8,11 @@ namespace network {
 
 typedef int HttpStatusCode;
 
-const HttpStatusCode kHttpStatusCodeInvalid = -1;
-const HttpStatusCode kHttpStatusCodeOk = 200;
-const HttpStatusCode kHttpStatusCodeCreated = 201;
-const HttpStatusCode kHttpStatusCodeAccepted = 202;
-const HttpStatusCode kHttpStatusCodeNoContent = 204;
+constexpr HttpStatusCode kHttpStatusCodeInvalid = -1;
+constexpr HttpStatusCode kHttpStatusCodeOk = 200;
+constexpr HttpStatusCode kHttpStatusCodeCreated = 201;
+constexpr HttpStatusCode kHttpStatusCodeAccepted = 202;
+constexpr HttpStatusCode kHttpStatusCodeNoContent = 204;
 
 inline bool HttpStatusCode_isInformational(
         int statusCode) {

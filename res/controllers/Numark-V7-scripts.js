@@ -1584,12 +1584,12 @@ NumarkV7.DeckSelectR = function (channel, control, value, status, group) {
 	}
 }
 NumarkV7.MasterL = function (channel, control, value, status, group) {
-	if (value == 00) {
+	if (value == 0x00) {
 		NumarkV7.init;
 	}
 }
 NumarkV7.MasterR = function (channel, control, value, status, group) {
-	if ((value == 00)&&(!NumarkV7.ScratchDisableB)) {
+	if ((value == 0x00)&&(!NumarkV7.ScratchDisableB)) {
 		engine.scratchEnable(2, 37056, NumarkV7.RPM, (1.0), (0.27), false);
 	}
 	if (value == 0x7F){
@@ -2127,4 +2127,3 @@ NumarkV7.ScratchB = function (channel, control, value, status, group) {
 //          :P           //
 //                       //
 ///////////////////////////
-

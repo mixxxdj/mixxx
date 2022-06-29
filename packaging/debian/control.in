@@ -20,6 +20,7 @@ Build-Depends: debhelper (>= 11),
 # QtXml
                qt5keychain-dev,
 # We additionally need headers for QtOpenGL, QtScript, and QtSvg.
+               qtdeclarative5-dev,
                qtscript5-dev,
                libqt5opengl5-dev,
                libqt5svg5-dev,
@@ -54,6 +55,11 @@ Build-Depends: debhelper (>= 11),
                libmodplug-dev,
                libmp3lame-dev,
                libebur128-dev,
+               libwavpack-dev,
+               libudev-dev,
+# Note: libdjinterop is available within the Mixxx PPA
+               libdjinterop-dev,
+               libmsgsl-dev,
 # for running mixxx-test
                xvfb
 Rules-Requires-Root: no

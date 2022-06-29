@@ -2,6 +2,7 @@
 
 #include "control/controlproxy.h"
 #include "controllers/midi/midimessage.h"
+#include "util/runtimeloggingcategory.h"
 
 class MidiController;
 
@@ -13,7 +14,8 @@ class MidiOutputHandler : public QObject {
     Q_OBJECT
   public:
     MidiOutputHandler(MidiController* controller,
-                      const MidiOutputMapping& mapping);
+            const MidiOutputMapping& mapping,
+            const RuntimeLoggingCategory& logger);
     virtual ~MidiOutputHandler();
 
     bool validate();
@@ -27,4 +29,5 @@ class MidiOutputHandler : public QObject {
     const MidiOutputMapping m_mapping;
     ControlProxy m_cos;
     int m_lastVal;
+    const RuntimeLoggingCategory m_logger;
 };

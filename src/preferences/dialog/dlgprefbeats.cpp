@@ -17,7 +17,7 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
 
     m_availablePlugins = AnalyzerBeats::availablePlugins();
     for (const auto& info : qAsConst(m_availablePlugins)) {
-        comboBoxBeatPlugin->addItem(info.name, info.id);
+        comboBoxBeatPlugin->addItem(info.name(), info.id());
     }
 
     loadSettings();
@@ -61,6 +61,7 @@ void DlgPrefBeats::loadSettings() {
     m_bAnalyzerEnabled = m_bpmSettings.getBpmDetectionEnabled();
     m_bFixedTempoEnabled = m_bpmSettings.getFixedTempoAssumption();
     m_bReanalyze =  m_bpmSettings.getReanalyzeWhenSettingsChange();
+    m_bReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bFastAnalysisEnabled = m_bpmSettings.getFastAnalysis();
 
     slotUpdate();
@@ -68,12 +69,13 @@ void DlgPrefBeats::loadSettings() {
 
 void DlgPrefBeats::slotResetToDefaults() {
     if (m_availablePlugins.size() > 0) {
-        m_selectedAnalyzerId = m_availablePlugins[0].id;
+        m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
     m_bAnalyzerEnabled = m_bpmSettings.getBpmDetectionEnabledDefault();
     m_bFixedTempoEnabled = m_bpmSettings.getFixedTempoAssumptionDefault();
     m_bFastAnalysisEnabled = m_bpmSettings.getFastAnalysisDefault();
     m_bReanalyze = m_bpmSettings.getReanalyzeWhenSettingsChangeDefault();
+    m_bReanalyzeImported = m_bpmSettings.getReanalyzeImportedDefault();
 
     slotUpdate();
 }
@@ -82,7 +84,7 @@ void DlgPrefBeats::pluginSelected(int i) {
     if (i == -1) {
         return;
     }
-    m_selectedAnalyzerId = m_availablePlugins[i].id;
+    m_selectedAnalyzerId = m_availablePlugins[i].id();
     slotUpdate();
 }
 
@@ -113,10 +115,10 @@ void DlgPrefBeats::slotUpdate() {
         bool found = false;
         for (int i = 0; i < m_availablePlugins.size(); ++i) {
             const auto& info = m_availablePlugins.at(i);
-            if (info.id == m_selectedAnalyzerId) {
+            if (info.id() == m_selectedAnalyzerId) {
                 found = true;
                 comboBoxBeatPlugin->setCurrentIndex(i);
-                if (!m_availablePlugins[i].constantTempoSupported) {
+                if (!m_availablePlugins[i].isConstantTempoSupported()) {
                     checkBoxFixedTempo->setEnabled(false);
                 }
                 break;
@@ -124,7 +126,7 @@ void DlgPrefBeats::slotUpdate() {
         }
         if (!found) {
             comboBoxBeatPlugin->setCurrentIndex(0);
-            m_selectedAnalyzerId = m_availablePlugins[0].id;
+            m_selectedAnalyzerId = m_availablePlugins[0].id();
         }
     }
 

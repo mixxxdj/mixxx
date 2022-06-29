@@ -50,7 +50,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
             }
 
             BulkController* currentDevice =
-                    new BulkController(m_pConfig, m_context, handle, &desc);
+                    new BulkController(m_context, handle, &desc);
             m_devices.push_back(currentDevice);
         }
     }

@@ -1,16 +1,18 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include "track/taglib/trackmetadata.h"
-
-#include "util/logger.h"
-#include "util/memory.h"
+#include <taglib/opusfile.h>
+#include <taglib/vorbisfile.h>
 
 #include <QFile>
 #include <QFileInfo>
+#include <QThread>
+#include <memory>
 
-#include <taglib/vorbisfile.h>
-#if (TAGLIB_HAS_OPUSFILE)
-#include <taglib/opusfile.h>
+#include "track/taglib/trackmetadata.h"
+#include "util/logger.h"
+
+#if defined(__WINDOWS__)
+#include <Windows.h>
 #endif
 
 namespace mixxx {
@@ -29,6 +31,11 @@ const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 // file. Should not be longer than kSafelyWritableTempFileSuffix to avoid
 // potential failures caused by exceeded path length.
 const QString kSafelyWritableOrigFileSuffix = QStringLiteral("_orig");
+
+#if defined(__WINDOWS__)
+const int kWindowsSharingViolationMaxRetries = 5;
+const int kWindowsSharingViolationSleepBeforeNextRetryMillis = 100;
+#endif
 
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
@@ -75,20 +82,24 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
     }
 };
 
-inline QDateTime getMetadataSynchronized(const QFileInfo& fileInfo) {
-    return fileInfo.lastModified();
-}
-
 } // anonymous namespace
 
 std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
 MetadataSourceTagLib::afterImport(ImportResult importResult) const {
-    return std::make_pair(importResult, getMetadataSynchronized(QFileInfo(m_fileName)));
+    const auto sourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(QFile(m_fileName));
+    DEBUG_ASSERT(sourceSynchronizedAt.isValid() ||
+            importResult != ImportResult::Succeeded);
+    return std::make_pair(importResult, sourceSynchronizedAt);
 }
 
 std::pair<MetadataSourceTagLib::ExportResult, QDateTime>
 MetadataSourceTagLib::afterExport(ExportResult exportResult) const {
-    return std::make_pair(exportResult, getMetadataSynchronized(QFileInfo(m_fileName)));
+    const auto sourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(QFile(m_fileName));
+    DEBUG_ASSERT(sourceSynchronizedAt.isValid() ||
+            exportResult != ExportResult::Succeeded);
+    return std::make_pair(exportResult, sourceSynchronizedAt);
 }
 
 std::pair<MetadataSource::ImportResult, QDateTime>
@@ -211,7 +222,6 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-#if (TAGLIB_HAS_OPUSFILE)
     case taglib::FileType::OPUS: {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
@@ -225,7 +235,6 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-#endif // TAGLIB_HAS_OPUSFILE
     case taglib::FileType::WV: {
         TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
@@ -246,11 +255,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             break;
         }
         if (taglib::hasID3v2Tag(file)) {
-#if (TAGLIB_HAS_WAV_ID3V2TAG)
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
-#else
-            const TagLib::ID3v2::Tag* pTag = file.tag();
-#endif
             DEBUG_ASSERT(pTag);
             taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
             taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
@@ -466,7 +471,6 @@ class OggTagSaver : public TagSaver {
     bool m_modifiedTags;
 };
 
-#if (TAGLIB_HAS_OPUSFILE)
 class OpusTagSaver : public TagSaver {
   public:
     OpusTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
@@ -494,7 +498,6 @@ class OpusTagSaver : public TagSaver {
     TagLib::Ogg::Opus::File m_file;
     bool m_modifiedTags;
 };
-#endif // TAGLIB_HAS_OPUSFILE
 
 class WavPackTagSaver : public TagSaver {
   public:
@@ -553,7 +556,6 @@ class WavTagSaver : public TagSaver {
         if (pFile->isOpen()) {
             TagLib::RIFF::Info::Tag* pInfoTag = nullptr;
             // Write into all available tags
-#if (TAGLIB_HAS_WAV_ID3V2TAG)
             if (pFile->hasID3v2Tag()) {
                 modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(
                         pFile->ID3v2Tag(), trackMetadata);
@@ -567,11 +569,6 @@ class WavTagSaver : public TagSaver {
                 pInfoTag = pFile->InfoTag();
                 DEBUG_ASSERT(pInfoTag);
             }
-#else
-            modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
-            pInfoTag = pFile->InfoTag();
-            DEBUG_ASSERT(pInfoTag);
-#endif
             modifiedTags |= exportTrackMetadataIntoRIFFTag(pInfoTag, trackMetadata);
         }
         return modifiedTags;
@@ -702,6 +699,102 @@ class SafelyWritableFile final {
         if (m_tempFileName.isNull()) {
             return true; // nothing to do
         }
+        QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
+#ifdef __WINDOWS__
+        // After Mixxx has closed the track file, the indexer or virus scanner
+        // might kick in and fail ReplaceFileW() with a sharing violation when
+        // replacing the original file with the one with the updated metadata.
+        int i = 0;
+        for (; i < kWindowsSharingViolationMaxRetries; ++i) {
+            if (ReplaceFileW(
+                        reinterpret_cast<LPCWSTR>(m_origFileName.utf16()),
+                        reinterpret_cast<LPCWSTR>(m_tempFileName.utf16()),
+                        reinterpret_cast<LPCWSTR>(backupFileName.utf16()),
+                        REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS,
+                        nullptr,
+                        nullptr)) {
+                // Success, break retry loop
+                break;
+            } else {
+                DWORD error = GetLastError();
+                switch (error) {
+                case ERROR_UNABLE_TO_MOVE_REPLACEMENT:
+                    // The m_tempFileName file could not be renamed. m_origFileName
+                    // file and m_tempFileName file retain their original file names.
+                    kLogger.critical()
+                            << "Unable to rename replacement file"
+                            << m_tempFileName
+                            << "->"
+                            << m_origFileName;
+                    return false;
+                case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2:
+                    // The m_tempFileName file could not be moved. The m_tempFileName file still exists
+                    // under its original name; however, it has inherited the file streams and
+                    // attributes from the file it is replacing. The m_origFileName file still exists.
+                    kLogger.critical()
+                            << "Unable to move replacement file"
+                            << m_tempFileName
+                            << "->"
+                            << m_origFileName;
+                    return false;
+                case ERROR_UNABLE_TO_REMOVE_REPLACED:
+                    // The replaced file could not be deleted. The replaced and replacement files
+                    // retain their original file names.
+                    kLogger.critical()
+                            << "Unable to remove"
+                            << m_origFileName
+                            << "before replacing by"
+                            << m_tempFileName;
+                    return false;
+                case ERROR_SHARING_VIOLATION:
+                    // The process cannot access the file because it is being used by another process.
+                    kLogger.warning()
+                            << "Unable to replace"
+                            << m_origFileName
+                            << "by"
+                            << m_tempFileName
+                            << "because it is used by another process";
+                    QThread::msleep(kWindowsSharingViolationSleepBeforeNextRetryMillis);
+                    continue; // Retry
+                case ERROR_ACCESS_DENIED:
+                    kLogger.critical()
+                            << "Unable to replace"
+                            << m_origFileName
+                            << "by"
+                            << m_tempFileName
+                            << "Access is denied";
+                    return false;
+                default:
+                    // If any other error is returned, such as ERROR_INVALID_PARAMETER, the replaced
+                    // and replacement files will retain their original file names. In this scenario,
+                    // a backup file does not exist and it is not guaranteed that the replacement file
+                    // will have inherited all of the attributes and streams of the replaced file.
+                    kLogger.critical()
+                            << "Error"
+                            << error
+                            << "during replacing"
+                            << m_origFileName
+                            << "by"
+                            << m_tempFileName;
+                    return false;
+                }
+            }
+        }
+        QFile backupFile(backupFileName);
+        if (backupFile.exists()) {
+            if (!backupFile.remove()) {
+                kLogger.warning()
+                        << backupFile.errorString()
+                        << "- Failed to remove backup file after writing:"
+                        << backupFile.fileName();
+                return false;
+            }
+        }
+        if (i >= kWindowsSharingViolationMaxRetries) {
+            // We have given up after the maximum retries in the loop above.
+            return false;
+        }
+#else
         QFile newFile(m_tempFileName);
         if (!newFile.exists()) {
             kLogger.warning()
@@ -711,7 +804,6 @@ class SafelyWritableFile final {
         }
         QFile oldFile(m_origFileName);
         if (oldFile.exists()) {
-            QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
             DEBUG_ASSERT(!QFile::exists(backupFileName)); // very unlikely, otherwise renaming fails
             if (!oldFile.rename(backupFileName)) {
                 kLogger.critical()
@@ -753,6 +845,7 @@ class SafelyWritableFile final {
                 return false;
             }
         }
+#endif
         // Prevent any further interaction and file access
         m_origFileName = QString();
         m_tempFileName = QString();
@@ -819,12 +912,10 @@ MetadataSourceTagLib::exportTrackMetadata(
         pTagSaver = std::make_unique<OggTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-#if (TAGLIB_HAS_OPUSFILE)
     case taglib::FileType::OPUS: {
         pTagSaver = std::make_unique<OpusTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-#endif // TAGLIB_HAS_OPUSFILE
     case taglib::FileType::WV: {
         pTagSaver = std::make_unique<WavPackTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;

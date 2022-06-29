@@ -12,20 +12,34 @@
 
 class LibraryView {
   public:
-    virtual ~LibraryView() {};
+    virtual ~LibraryView() {
+    }
 
     virtual void onShow() = 0;
     virtual bool hasFocus() const = 0;
+    virtual void setFocus() {
+    }
     /// Reimplement if LibraryView should be able to search
     virtual void onSearch(const QString& text) {Q_UNUSED(text);}
 
     /// If applicable, requests that the LibraryView load the selected
     /// track. Does nothing otherwise.
-    virtual void loadSelectedTrack() {};
+    virtual void activateSelectedTrack() {
+    }
 
-    virtual void slotAddToAutoDJBottom() {};
-    virtual void slotAddToAutoDJTop() {};
-    virtual void slotAddToAutoDJReplace() {};
+    virtual void slotAddToAutoDJBottom() {
+    }
+    virtual void slotAddToAutoDJTop() {
+    }
+    virtual void slotAddToAutoDJReplace() {
+    }
+    virtual void saveCurrentViewState() {
+    }
+    /// @brief restores current view state.
+    /// @return true if restore succeeded
+    virtual bool restoreCurrentViewState() {
+        return false;
+    };
 
     /// If applicable, requests that the LibraryView load the selected track to
     /// the specified group. Does nothing otherwise.
@@ -40,9 +54,11 @@ class LibraryView {
 
     virtual TrackModel::SortColumnId getColumnIdFromCurrentIndex() {
         return TrackModel::SortColumnId::Invalid;
-    };
+    }
     /// If applicable, requests that the LibraryView changes the track color of
     /// the selected track. Does nothing otherwise.
-    virtual void assignPreviousTrackColor(){};
-    virtual void assignNextTrackColor(){};
+    virtual void assignPreviousTrackColor() {
+    }
+    virtual void assignNextTrackColor() {
+    }
 };

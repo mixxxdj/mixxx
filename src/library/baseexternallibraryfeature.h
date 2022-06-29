@@ -16,7 +16,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   public:
     BaseExternalLibraryFeature(
             Library* pLibrary,
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            const QString& iconName);
     ~BaseExternalLibraryFeature() override = default;
 
   public slots:

@@ -127,7 +127,7 @@
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
         <property name="minimum">
-         <number>-9</number>
+         <number>-99</number>
         </property>
        </widget>
       </item>
@@ -171,7 +171,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButtonAddRandom">
+       <widget class="QPushButton" name="pushButtonAddRandomTrack">
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>

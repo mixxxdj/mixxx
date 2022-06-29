@@ -10,9 +10,9 @@
 #include "preferences/usersettings.h"
 #include "util/sample.h"
 
-EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
+EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handleGroup,
         EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager,
+        : EngineChannel(handleGroup, EngineChannel::CENTER, pEffectsManager,
                   /*isTalkoverChannel*/ true,
                   /*isPrimaryDeck*/ false),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),

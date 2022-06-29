@@ -26,7 +26,9 @@ QString zeroTerminatedUtf8StringtoQString(QDataStream* stream) {
     quint8 byte = '\xFF';
     while (byte != '\x00') {
         *stream >> byte;
-        data.append(byte);
+        if (byte != '\x00') {
+            data.append(byte);
+        }
         if (stream->status() != QDataStream::Status::Ok) {
             return QString();
         }
@@ -420,12 +422,7 @@ bool SeratoMarkers2::parseCommon(
         }
 
         // Entry Size
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         auto entrySize = qFromBigEndian<quint32>(data.mid(offset, 4));
-#else
-        auto entrySize = qFromBigEndian<quint32>(
-                reinterpret_cast<const uchar*>(data.mid(offset, 4).constData()));
-#endif
         offset += 4;
 
         QByteArray entryData = data.mid(offset, entrySize);
@@ -537,7 +534,7 @@ QByteArray SeratoMarkers2::dumpCommon() const {
         QByteArray entryData = entry->dump();
         stream.writeRawData(entryName.constData(), entryName.length());
         stream << static_cast<quint8>('\x00') // terminating null-byte
-               << entryData.length();
+               << static_cast<quint32>(entryData.length());
         stream.writeRawData(entryData.constData(), entryData.length());
     }
     data.append('\0');
@@ -767,7 +764,7 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
         QByteArray entryData = entry->dump();
         stream.writeRawData(entryName.constData(), entryName.length());
         stream << static_cast<quint8>(0x00) // terminating null-byte
-               << entryData.length();
+               << static_cast<quint32>(entryData.length());
         stream.writeRawData(entryData.constData(), entryData.length());
     }
     innerData.append('\0');

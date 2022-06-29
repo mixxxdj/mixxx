@@ -14,28 +14,32 @@ namespace {
 
 constexpr int kDefaultTrackColorAlpha = 255;
 
-const WTrackMenu::Features kTrackMenuFeatures =
+constexpr WTrackMenu::Features kTrackMenuFeatures =
+        WTrackMenu::Feature::SearchRelated |
         WTrackMenu::Feature::Playlist |
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
         WTrackMenu::Feature::Reset |
+        WTrackMenu::Feature::Analyze |
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
-        WTrackMenu::Feature::Properties;
+        WTrackMenu::Feature::Properties |
+        WTrackMenu::Feature::UpdateReplayGainFromPregain |
+        WTrackMenu::Feature::SelectInLibrary;
 
 } // anonymous namespace
 
 WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         const QString& group)
         : WWidgetGroup(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_trackColorAlpha(kDefaultTrackColorAlpha),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
+                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 
@@ -120,7 +124,7 @@ void WTrackWidgetGroup::dropEvent(QDropEvent* event) {
 void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
     }

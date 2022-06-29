@@ -3,6 +3,7 @@
 #include <QWidget>
 
 QT_FORWARD_DECLARE_CLASS(QProgressBar);
+QT_FORWARD_DECLARE_CLASS(QLabel);
 
 // This is a widget that is shown in the Mixxx main window
 // until the skin is ready to use.
@@ -37,11 +38,11 @@ class LaunchImage: public QWidget {
     Q_OBJECT
   public:
     LaunchImage(QWidget* pParent, const QString& styleSheet);
-    virtual ~LaunchImage();
-    void progress(int value);
+    ~LaunchImage() override = default;
+    void progress(int value, const QString& serviceName);
 
   protected:
-    virtual void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent*) override;
 
   private:
     QProgressBar* m_pProgressBar;

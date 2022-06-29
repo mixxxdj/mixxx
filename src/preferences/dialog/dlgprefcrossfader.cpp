@@ -127,8 +127,8 @@ void DlgPrefCrossfader::slotUpdate() {
 // has been made.
 void DlgPrefCrossfader::drawXfaderDisplay()
 {
-    const int kGrindXLines = 4;
-    const int kGrindYLines = 6;
+    constexpr int kGrindXLines = 4;
+    constexpr int kGrindYLines = 6;
 
     int sizeX = graphicsViewXfader->width();
     int sizeY = graphicsViewXfader->height();

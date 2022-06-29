@@ -15,7 +15,7 @@ bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
     CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
 
-    if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLength() <= 0) {
+    if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLengthFrames() <= 0) {
         return true;
     }
     return false;
@@ -32,7 +32,9 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
           m_iSignalEnd(-1) {
 }
 
-bool AnalyzerSilence::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
+bool AnalyzerSilence::initialize(TrackPointer pTrack,
+        mixxx::audio::SampleRate sampleRate,
+        int totalSamples) {
     Q_UNUSED(sampleRate);
     Q_UNUSED(totalSamples);
 
@@ -90,53 +92,60 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
-    double firstSound = mixxx::kAnalysisChannels * m_iSignalStart;
-    double lastSound = mixxx::kAnalysisChannels * m_iSignalEnd;
+    const auto firstSoundPosition = mixxx::audio::FramePos(m_iSignalStart);
+    const auto lastSoundPosition = mixxx::audio::FramePos(m_iSignalEnd);
 
     CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
     if (pAudibleSound == nullptr) {
-        pAudibleSound = pTrack->createAndAddCue();
-        pAudibleSound->setType(mixxx::CueType::AudibleSound);
+        pAudibleSound = pTrack->createAndAddCue(
+                mixxx::CueType::AudibleSound,
+                Cue::kNoHotCue,
+                firstSoundPosition,
+                lastSoundPosition);
+    } else {
+        // The user has no way to directly edit the AudibleSound cue. If the user
+        // has deleted the Intro or Outro Cue, this analysis will be rerun when
+        // the track is loaded again. In this case, adjust the AudibleSound Cue's
+        // positions. This could be helpful, for example, when the track length
+        // is changed in a different program, or the silence detection threshold
+        // is changed.
+        pAudibleSound->setStartAndEndPosition(firstSoundPosition, lastSoundPosition);
     }
-    // The user has no way to directly edit the AudibleSound cue. If the user
-    // has deleted the Intro or Outro Cue, this analysis will be rerun when
-    // the track is loaded again. In this case, adjust the AudibleSound Cue's
-    // positions. This could be helpful, for example, when the track length
-    // is changed in a different program, or the silence detection threshold
-    // is changed.
-    pAudibleSound->setStartPosition(firstSound);
-    pAudibleSound->setEndPosition(lastSound);
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
 
-    double mainCue = pTrack->getCuePoint().getPosition();
-    double introStart = firstSound;
+    mixxx::audio::FramePos mainCuePosition = pTrack->getMainCuePosition();
+    mixxx::audio::FramePos introStartPosition = firstSoundPosition;
     // Before Mixxx 2.3, the default position for the main cue was 0.0. In this
     // case, move the main cue point to the first sound. This case can be
     // distinguished from a user intentionally setting the main cue position
     // to 0.0 at a later time after analysis because in that case the intro cue
     // would have already been created by this analyzer.
-    bool upgradingWithMainCueAtDefault = (mainCue == 0.0 && pIntroCue == nullptr);
-    if (mainCue == Cue::kNoPosition || upgradingWithMainCueAtDefault) {
-        pTrack->setCuePoint(CuePosition(firstSound));
+    bool upgradingWithMainCueAtDefault =
+            (mainCuePosition == mixxx::audio::kStartFramePos &&
+                    pIntroCue == nullptr);
+    if (!mainCuePosition.isValid() || upgradingWithMainCueAtDefault) {
+        pTrack->setMainCuePosition(firstSoundPosition);
         // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
     } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
             pIntroCue == nullptr) {
-        introStart = mainCue;
+        introStartPosition = mainCuePosition;
     }
 
     if (pIntroCue == nullptr) {
-        pIntroCue = pTrack->createAndAddCue();
-        pIntroCue->setType(mixxx::CueType::Intro);
-        pIntroCue->setStartPosition(introStart);
-        pIntroCue->setEndPosition(Cue::kNoPosition);
+        pIntroCue = pTrack->createAndAddCue(
+                mixxx::CueType::Intro,
+                Cue::kNoHotCue,
+                introStartPosition,
+                mixxx::audio::kInvalidFramePos);
     }
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
     if (pOutroCue == nullptr) {
-        pOutroCue = pTrack->createAndAddCue();
-        pOutroCue->setType(mixxx::CueType::Outro);
-        pOutroCue->setStartPosition(Cue::kNoPosition);
-        pOutroCue->setEndPosition(lastSound);
+        pOutroCue = pTrack->createAndAddCue(
+                mixxx::CueType::Outro,
+                Cue::kNoHotCue,
+                mixxx::audio::kInvalidFramePos,
+                lastSoundPosition);
     }
 }
