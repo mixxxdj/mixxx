@@ -47,6 +47,11 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
         }
 
     } else {
+        VERIFY_OR_DEBUG_ASSERT(m_delaySamples >= 0) {
+            SampleUtil::copy(pOutput, pIn, iBufferSize);
+            return;
+        }
+
         int delaySourcePos = (m_delayPos + kiMaxDelay - m_delaySamples +
                                      iBufferSize / 2) %
                 kiMaxDelay;
