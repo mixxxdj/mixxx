@@ -22,8 +22,8 @@ QString composeSearchQuery(const QString& trackAlbumOrTitle, const QString& arti
     return trackAlbumOrTitle + QStringLiteral(" ") + artist;
 }
 
-QString composePrefixAction(WFindOnWebMenu::TrackSearchProperties trackSearchProperty) {
-    switch (trackSearchProperty) {
+QString composePrefixAction(WFindOnWebMenu::TrackSearchProperties trackSearchProperties) {
+    switch (trackSearchProperties) {
     case WFindOnWebMenu::TrackSearchProperties::Title:
         return QObject::tr("Title");
     case WFindOnWebMenu::TrackSearchProperties::Artist:
@@ -54,24 +54,24 @@ const QString kSearchUrlLastFmAlbum = QStringLiteral("https://www.last.fm/search
 const QString kSearchUrlDefault = QStringLiteral("https://soundcloud.com/search?");
 
 QString getServiceUrl(WFindOnWebMenu::Service service,
-        WFindOnWebMenu::TrackSearchProperties trackSearchProperty) {
+        WFindOnWebMenu::TrackSearchProperties trackSearchProperties) {
     switch (service) {
     case WFindOnWebMenu::Service::Discogs:
         return kSearchUrlDiscogsGen;
     case WFindOnWebMenu::Service::LastFm:
-        if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
-                trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
+        if (trackSearchProperties == WFindOnWebMenu::TrackSearchProperties::Title ||
+                trackSearchProperties == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
             return kSearchUrlLastFmTitle;
-        } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
+        } else if (trackSearchProperties == WFindOnWebMenu::TrackSearchProperties::Artist) {
             return kSearchUrlLastFmArtist;
         } else {
             return kSearchUrlLastFmAlbum;
         }
     case WFindOnWebMenu::Service::SoundCloud:
-        if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Title ||
-                trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
+        if (trackSearchProperties == WFindOnWebMenu::TrackSearchProperties::Title ||
+                trackSearchProperties == WFindOnWebMenu::TrackSearchProperties::ArtistAndTitle) {
             return kSearchUrlSoundCloudTitle;
-        } else if (trackSearchProperty == WFindOnWebMenu::TrackSearchProperties::Artist) {
+        } else if (trackSearchProperties == WFindOnWebMenu::TrackSearchProperties::Artist) {
             return kSearchUrlSoundCloudArtist;
         } else {
             return kSearchUrlSoundCloudAlbum;
@@ -98,24 +98,24 @@ void WFindOnWebMenu::addSubmenusForServices(const Track& track) {
 }
 
 void WFindOnWebMenu::addActions(Service service,
-        const QString& trackProperty,
+        const QString& queryValue,
         QMenu* pServiceMenu,
-        TrackSearchProperties trackSearchProperty) {
-    const QString prefixAction = composePrefixAction(trackSearchProperty);
+        TrackSearchProperties trackSearchProperties) {
+    const QString prefixAction = composePrefixAction(trackSearchProperties);
     pServiceMenu->addAction(
-            composeActionText(prefixAction, trackProperty),
+            composeActionText(prefixAction, queryValue),
             this,
-            [this, service, trackSearchProperty, trackProperty]() {
-                emit triggerBrowser(service, trackSearchProperty, trackProperty);
+            [this, service, trackSearchProperties, queryValue]() {
+                emit triggerBrowser(service, trackSearchProperties, queryValue);
             });
 }
 
 void WFindOnWebMenu::openInBrowser(Service service,
-        TrackSearchProperties trackSearchProperty,
-        const QString& query) {
-    const QString serviceUrl = getServiceUrl(service, trackSearchProperty);
+        TrackSearchProperties trackSearchProperties,
+        const QString& queryValue) {
+    const QString serviceUrl = getServiceUrl(service, trackSearchProperties);
     QUrlQuery urlQuery;
-    urlQuery.addQueryItem("q", query);
+    urlQuery.addQueryItem("q", queryValue);
     QUrl url(serviceUrl);
     url.setQuery(urlQuery);
     if (!QDesktopServices::openUrl(url)) {

@@ -30,14 +30,14 @@ class WFindOnWebMenu : public QMenu {
     static bool hasEntriesForTrack(const Track& track);
 
     void openInBrowser(WFindOnWebMenu::Service service,
-            WFindOnWebMenu::TrackSearchProperties trackSearchProperty,
+            WFindOnWebMenu::TrackSearchProperties trackSearchProperties,
             const QString& query);
 
     void addSubmenusForServices(const Track& track);
 
   signals:
     void triggerBrowser(WFindOnWebMenu::Service service,
-            WFindOnWebMenu::TrackSearchProperties trackSearchProperty,
+            WFindOnWebMenu::TrackSearchProperties trackSearchProperties,
             const QString& query);
 
   private:
@@ -47,7 +47,7 @@ class WFindOnWebMenu : public QMenu {
             Service service);
 
     void addActions(Service service,
-            const QString& trackProperty,
+            const QString& queryValue,
             QMenu* pServiceMenu,
-            TrackSearchProperties trackSearchProperty);
+            TrackSearchProperties trackSearchProperties);
 };
