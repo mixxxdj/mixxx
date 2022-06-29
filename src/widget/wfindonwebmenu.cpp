@@ -134,9 +134,9 @@ void WFindOnWebMenu::populateFromTrackProperties(
         const Track& track,
         const QString& serviceTitle,
         Service service) {
-    const auto artist = track.getArtist();
-    const auto trackTitle = track.getTitle();
-    const auto album = track.getAlbum();
+    const QString artist = track.getArtist();
+    const QString trackTitle = track.getTitle();
+    const QString album = track.getAlbum();
     auto pServiceMenu = make_parented<QMenu>(this);
     pServiceMenu->setTitle(serviceTitle);
     addMenu(pServiceMenu);
@@ -149,7 +149,7 @@ void WFindOnWebMenu::populateFromTrackProperties(
     }
     if (!trackTitle.isEmpty()) {
         if (!artist.isEmpty()) {
-            const auto artistWithTrackTitle = composeSearchQuery(trackTitle, artist);
+            const QString artistWithTrackTitle = composeSearchQuery(trackTitle, artist);
             addActions(service,
                     artistWithTrackTitle,
                     pServiceMenu,
@@ -162,7 +162,7 @@ void WFindOnWebMenu::populateFromTrackProperties(
     }
     if (!album.isEmpty()) {
         if (!artist.isEmpty()) {
-            const auto artistWithAlbum = composeSearchQuery(album, artist);
+            const QString artistWithAlbum = composeSearchQuery(album, artist);
             addActions(service,
                     artistWithAlbum,
                     pServiceMenu,
