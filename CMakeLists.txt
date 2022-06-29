@@ -1632,6 +1632,7 @@ add_executable(mixxx-test
   #src/test/effectchainslottest.cpp
   src/test/enginebufferscalelineartest.cpp
   src/test/enginebuffertest.cpp
+  src/test/engineeffectsdelay_test.cpp
   src/test/enginefilterbiquadtest.cpp
   src/test/enginemastertest.cpp
   src/test/enginemicrophonetest.cpp
