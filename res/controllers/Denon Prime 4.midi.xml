@@ -200,6 +200,16 @@
                     <normal/>
                 </options>
             </control>
+			<control> <!-- Deck 1 - Sweep FX Knob -->
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <control> <!-- Deck 1 - PFL Button -->
                 <group>[Channel1]</group>
                 <key>pfl</key>
@@ -277,6 +287,16 @@
                 <description>MIDI Learned from 480 messages.</description>
                 <status>0xB1</status>
                 <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+			<control> <!-- Deck 2 - Sweep FX Knob -->
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
                 <options>
                     <normal/>
                 </options>
@@ -362,6 +382,16 @@
                     <normal/>
                 </options>
             </control>
+			<control> <!-- Deck 3 - Sweep FX Knob -->
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>super1</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB2</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <control> <!-- Deck 3 - PFL Button -->
                 <group>[Channel3]</group>
                 <key>pfl</key>
@@ -439,6 +469,16 @@
                 <description>MIDI Learned from 340 messages.</description>
                 <status>0xB3</status>
                 <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+			<control> <!-- Deck 4 - Sweep FX Knob -->
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>super1</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB3</status>
+                <midino>0x0B</midino>
                 <options>
                     <normal/>
                 </options>
