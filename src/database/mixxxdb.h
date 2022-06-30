@@ -17,8 +17,8 @@ class MixxxDb : public QObject {
 
     static bool initDatabaseSchema(
             const QSqlDatabase& database,
-            const QString& schemaFile = kDefaultSchemaFile,
-            int schemaVersion = kRequiredSchemaVersion);
+            int schemaVersion = kRequiredSchemaVersion,
+            const QString& schemaFile = kDefaultSchemaFile);
 
     explicit MixxxDb(
             const UserSettingsPointer& pConfig,

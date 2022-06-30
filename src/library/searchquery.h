@@ -2,14 +2,13 @@
 #define SEARCHQUERY_H
 
 #include <QList>
-#include <QRegExp>
 #include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
 #include <utility>
 #include <vector>
 
-#include "library/crate/cratestorage.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "proto/keys.pb.h"
 #include "track/track_decl.h"
 #include "util/assert.h"
@@ -22,13 +21,13 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
 class QueryNode {
   public:
     QueryNode(const QueryNode&) = delete; // prevent copying
-    virtual ~QueryNode() {}
+    virtual ~QueryNode() = default;
 
     virtual bool match(const TrackPointer& pTrack) const = 0;
     virtual QString toSql() const = 0;
 
   protected:
-    QueryNode() {}
+    QueryNode() = default;
 
     static QString concatSqlClauses(const QStringList& sqlClauses, const QString& sqlConcatOp);
 };
@@ -62,7 +61,7 @@ class AndNode : public GroupNode {
 class NotNode : public QueryNode {
   public:
     explicit NotNode(std::unique_ptr<QueryNode> pNode)
-        : m_pNode(std::move(pNode)) {
+            : m_pNode(std::move(pNode)) {
         DEBUG_ASSERT(m_pNode);
     }
 
@@ -76,8 +75,8 @@ class NotNode : public QueryNode {
 class TextFilterNode : public QueryNode {
   public:
     TextFilterNode(const QSqlDatabase& database,
-                   const QStringList& sqlColumns,
-                   const QString& argument);
+            const QStringList& sqlColumns,
+            const QString& argument);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
@@ -91,7 +90,7 @@ class TextFilterNode : public QueryNode {
 class NullOrEmptyTextFilterNode : public QueryNode {
   public:
     NullOrEmptyTextFilterNode(const QSqlDatabase& database,
-                   const QStringList& sqlColumns)
+            const QStringList& sqlColumns)
             : m_database(database),
               m_sqlColumns(sqlColumns) {
     }
@@ -104,11 +103,10 @@ class NullOrEmptyTextFilterNode : public QueryNode {
     QStringList m_sqlColumns;
 };
 
-
 class CrateFilterNode : public QueryNode {
   public:
     CrateFilterNode(const CrateStorage* pCrateStorage,
-                    const QString& crateNameLike);
+            const QString& crateNameLike);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
@@ -152,7 +150,7 @@ class NumericFilterNode : public QueryNode {
     void init(QString argument);
 
   private:
-    virtual double parse(const QString& arg, bool *ok);
+    virtual double parse(const QString& arg, bool* ok);
 
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
@@ -216,6 +214,5 @@ class SqlNode : public QueryNode {
   private:
     QString m_sql;
 };
-
 
 #endif /* SEARCHQUERY_H */

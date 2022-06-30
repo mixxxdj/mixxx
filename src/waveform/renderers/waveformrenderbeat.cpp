@@ -56,12 +56,14 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     //          << "firstDisplayedPosition" << firstDisplayedPosition
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
-    std::unique_ptr<mixxx::BeatIterator> it(trackBeats->findBeats(
-            firstDisplayedPosition * trackSamples,
-            lastDisplayedPosition * trackSamples));
+    const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(
+            firstDisplayedPosition * trackSamples);
+    const auto endPosition = mixxx::audio::FramePos::fromEngineSamplePos(
+            lastDisplayedPosition * trackSamples);
+    auto it = trackBeats->iteratorFrom(startPosition);
 
     // if no beat do not waste time saving/restoring painter
-    if (!it || !it->hasNext()) {
+    if (it == trackBeats->cend() || *it > endPosition) {
         return;
     }
 
@@ -79,8 +81,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     int beatCount = 0;
 
-    while (it->hasNext()) {
-        double beatPosition = it->next();
+    for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
+        double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 

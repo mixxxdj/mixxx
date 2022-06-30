@@ -1,43 +1,54 @@
 #pragma once
 
-
+#include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <QSqlError>
-
-#include "util/db/dbid.h"
-#include "util/db/dbfieldindex.h"
+#include <QString>
+#include <QVariant>
 
 #include "util/assert.h"
+#include "util/db/dbfieldindex.h"
+#include "util/db/dbid.h"
 
 // forward declarations
 class SqlQueryFinisher;
 class FwdSqlQuerySelectResult;
 
-
-// A forward-only QSqlQuery that is prepared immediately
-// during initialization. It offers a limited set of functions
-// from QSqlQuery.
-//
-// Setting QSqlQuery to forward-only causes memory savings since
-// QSqlCachedResult (what QtSQLite uses) won't allocate a giant
-// in-memory table that we won't use at all when invoking only
-// QSqlQuery::next() to iterate over the results.
-//
-// Prefer to use this derived class instead of QSqlQuery to avoid
-// performance bottlenecks and for implicit logging failed query
-// executions.
-//
-// Please note that forward-only queries don't provide information
-// about the size of the result set!
-class FwdSqlQuery: protected QSqlQuery {
+/// A forward-only QSqlQuery that is prepared immediately
+/// during initialization. It offers a limited set of functions
+/// from QSqlQuery.
+///
+/// Setting QSqlQuery to forward-only causes memory savings since
+/// QSqlCachedResult (what QtSQLite uses) won't allocate a giant
+/// in-memory table that we won't use at all when invoking only
+/// QSqlQuery::next() to iterate over the results.
+///
+/// Prefer to use this derived class instead of QSqlQuery to avoid
+/// performance bottlenecks and for implicit logging failed query
+/// executions.
+///
+/// Please note that forward-only queries don't provide information
+/// about the size of the result set!
+///
+/// Since the destructor of the base class QSqlQuery is non-virtual
+/// FwdSqlQuery must not contain any members with a non-trivial
+/// destructor to prevent memory leaks!
+class FwdSqlQuery final : protected QSqlQuery {
     friend class SqlQueryFinisher;
     friend class FwdSqlQuerySelectResult;
 
   public:
+    FwdSqlQuery()
+            : m_prepared(false) {
+    }
     FwdSqlQuery(
             const QSqlDatabase& database,
             const QString& statement);
+    // The copy constructor of QSqlQuery is marked as deprecated in Qt6
+    FwdSqlQuery(const FwdSqlQuery&) = delete;
+    FwdSqlQuery(FwdSqlQuery&&) = default;
+
+    FwdSqlQuery& operator=(FwdSqlQuery&&) = default;
 
     bool isPrepared() const {
         return m_prepared;
@@ -47,6 +58,7 @@ class FwdSqlQuery: protected QSqlQuery {
         return lastError().isValid() &&
                 (lastError().type() != QSqlError::NoError);
     }
+    bool hasDuplicateColumnNameError() const;
     QSqlError lastError() const {
         return QSqlQuery::lastError();
     }
@@ -58,6 +70,10 @@ class FwdSqlQuery: protected QSqlQuery {
     // Overloaded function for type DbId
     void bindValue(const QString& placeholder, const DbId& value) {
         bindValue(placeholder, value.toVariant());
+    }
+
+    QString executedQuery() const {
+        return QSqlQuery::executedQuery();
     }
 
     // Execute the prepared query and log errors on failure.
@@ -102,7 +118,5 @@ class FwdSqlQuery: protected QSqlQuery {
     bool fieldValueBoolean(DbFieldIndex fieldIndex) const;
 
   private:
-    FwdSqlQuery() = default; // hidden
-
     bool m_prepared;
 };

@@ -55,6 +55,11 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int createUniquePlaylist(QString* pName, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
+    /// Delete Playlists with fewer entries then "length"
+    /// Needs to be called inside a transaction.
+    /// @return number of deleted playlists, -1 on error
+    int deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::HiddenType type,
+            int minNumberOfTracks);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
@@ -124,6 +129,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void trackAdded(int playlistId, TrackId trackId, int position);
     void trackRemoved(int playlistId, TrackId trackId, int position);
     void tracksChanged(const QSet<int>& playlistIds); // added/removed/reordered
+    void tracksRemovedFromPlayedHistory(const QSet<TrackId>& playedTrackIds);
 
   private:
     bool removeTracksFromPlaylist(int playlistId, int startIndex);

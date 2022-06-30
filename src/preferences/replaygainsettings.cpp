@@ -15,7 +15,7 @@ const char* kReplayGainReanalyze = "ReplayGainReanalyze";
 
 const char* kReplayGainEnabled = "ReplayGainEnabled";
 
-const int kInitialDefaultBoostDefault = -6;
+constexpr int kInitialDefaultBoostDefault = -6;
 } // anonymous namespace
 
 ReplayGainSettings::ReplayGainSettings(UserSettingsPointer pConfig)

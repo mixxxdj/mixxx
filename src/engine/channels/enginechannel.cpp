@@ -4,12 +4,12 @@
 #include "control/controlpushbutton.h"
 #include "moc_enginechannel.cpp"
 
-EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
+EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
         EngineChannel::ChannelOrientation defaultOrientation,
         EffectsManager* pEffectsManager,
         bool isTalkoverChannel,
         bool isPrimaryDeck)
-        : m_group(handle_group),
+        : m_group(handleGroup),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
           m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
@@ -38,7 +38,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
     m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 
     if (m_pEffectsManager != nullptr) {
-        m_pEffectsManager->registerInputChannel(handle_group);
+        m_pEffectsManager->registerInputChannel(handleGroup);
     }
 }
 
@@ -96,13 +96,20 @@ void EngineChannel::slotOrientationCenter(double v) {
 }
 
 EngineChannel::ChannelOrientation EngineChannel::getOrientation() const {
-    double dOrientation = m_pOrientation->get();
-    if (dOrientation == LEFT) {
-        return LEFT;
-    } else if (dOrientation == CENTER) {
+    const double dOrientation = m_pOrientation->get();
+    const int iOrientation = static_cast<int>(dOrientation);
+    if (dOrientation != iOrientation) {
         return CENTER;
-    } else if (dOrientation == RIGHT) {
+    }
+    switch (iOrientation) {
+    case LEFT:
+        return LEFT;
+    case CENTER:
+        return CENTER;
+    case RIGHT:
         return RIGHT;
+    default:
+        return CENTER;
     }
     return CENTER;
 }

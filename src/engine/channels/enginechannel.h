@@ -21,7 +21,7 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
-    EngineChannel(const ChannelHandleAndGroup& handle_group,
+    EngineChannel(const ChannelHandleAndGroup& handleGroup,
             ChannelOrientation defaultOrientation,
             EffectsManager* pEffectsManager,
             bool isTalkoverChannel,
@@ -30,7 +30,7 @@ class EngineChannel : public EngineObject {
 
     virtual ChannelOrientation getOrientation() const;
 
-    inline const ChannelHandle& getHandle() const {
+    inline ChannelHandle getHandle() const {
         return m_group.handle();
     }
 

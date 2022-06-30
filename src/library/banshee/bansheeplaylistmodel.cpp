@@ -9,7 +9,6 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "moc_bansheeplaylistmodel.cpp"
-#include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/track.h"
 
@@ -78,73 +77,56 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         m_playlistId = playlistId;
 
         QSqlQuery query(m_database);
-        QString strQuery("CREATE TEMP TABLE IF NOT EXISTS %1"
-            " (" CLM_TRACK_ID " INTEGER, "
-                 CLM_VIEW_ORDER " INTEGER, "
-                 CLM_ARTIST " TEXT, "
-                 CLM_TITLE " TEXT, "
-                 CLM_DURATION " INTEGER, "
-                 CLM_URI " TEXT, "
-                 CLM_ALBUM " TEXT, "
-                 CLM_ALBUM_ARTIST " TEXT, "
-                 CLM_YEAR " INTEGER, "
-                 CLM_RATING " INTEGER, "
-                 CLM_GENRE " TEXT, "
-                 CLM_GROUPING " TEXT, "
-                 CLM_TRACKNUMBER " INTEGER, "
-                 CLM_DATEADDED " INTEGER, "
-                 CLM_BPM " INTEGER, "
-                 CLM_BITRATE " INTEGER, "
-                 CLM_COMMENT " TEXT, "
-                 CLM_PLAYCOUNT" INTEGER, "
-                 CLM_COMPOSER " TEXT, "
-                 CLM_PREVIEW " TEXT)");
-        if (!query.exec(strQuery.arg(m_tempTableName))) {
+        if (!query.exec(QStringLiteral(
+                    "CREATE TEMP TABLE IF NOT EXISTS %1 (" //
+                    CLM_TRACK_ID " INTEGER, "              //
+                    CLM_VIEW_ORDER " INTEGER, "            //
+                    CLM_ARTIST " TEXT, "                   //
+                    CLM_TITLE " TEXT, "                    //
+                    CLM_DURATION " INTEGER, "              //
+                    CLM_URI " TEXT, "                      //
+                    CLM_ALBUM " TEXT, "                    //
+                    CLM_ALBUM_ARTIST " TEXT, "             //
+                    CLM_YEAR " INTEGER, "                  //
+                    CLM_RATING " INTEGER, "                //
+                    CLM_GENRE " TEXT, "                    //
+                    CLM_GROUPING " TEXT, "                 //
+                    CLM_TRACKNUMBER " INTEGER, "           //
+                    CLM_DATEADDED " INTEGER, "             //
+                    CLM_BPM " INTEGER, "                   //
+                    CLM_BITRATE " INTEGER, "               //
+                    CLM_COMMENT " TEXT, "                  //
+                    CLM_PLAYCOUNT " INTEGER, "             //
+                    CLM_COMPOSER " TEXT, "                 //
+                    CLM_PREVIEW " TEXT)")
+                                .arg(m_tempTableName))) {
             LOG_FAILED_QUERY(query);
         }
 
-        QString strQuery2("INSERT INTO %1"
-                " (" CLM_TRACK_ID ", "
-                     CLM_VIEW_ORDER ", "
-                     CLM_ARTIST ", "
-                     CLM_TITLE ", "
-                     CLM_DURATION ", "
-                     CLM_URI ", "
-                     CLM_ALBUM ", "
-                     CLM_ALBUM_ARTIST ", "
-                     CLM_YEAR ", "
-                     CLM_RATING ", "
-                     CLM_GENRE ", "
-                     CLM_GROUPING ", "
-                     CLM_TRACKNUMBER ", "
-                     CLM_DATEADDED ", "
-                     CLM_BPM ", "
-                     CLM_BITRATE ", "
-                     CLM_COMMENT ", "
-                     CLM_PLAYCOUNT ", "
-                     CLM_COMPOSER ") "
-                     "VALUES (:"
-                     CLM_TRACK_ID ", :"
-                     CLM_VIEW_ORDER ", :"
-                     CLM_ARTIST ", :"
-                     CLM_TITLE ", :"
-                     CLM_DURATION ", :"
-                     CLM_URI ", :"
-                     CLM_ALBUM ", :"
-                     CLM_ALBUM_ARTIST ", :"
-                     CLM_YEAR ", :"
-                     CLM_RATING ", :"
-                     CLM_GENRE ", :"
-                     CLM_GROUPING ", :"
-                     CLM_TRACKNUMBER ", :"
-                     CLM_DATEADDED ", :"
-                     CLM_BPM ", :"
-                     CLM_BITRATE ", :"
-                     CLM_COMMENT ", :"
-                     CLM_PLAYCOUNT ", :"
-                     CLM_COMPOSER ") ");
-
-        query.prepare(strQuery2.arg(m_tempTableName));
+        QStringList insertColumns;
+        insertColumns
+                << CLM_TRACK_ID
+                << CLM_VIEW_ORDER
+                << CLM_ARTIST
+                << CLM_TITLE
+                << CLM_DURATION
+                << CLM_URI
+                << CLM_ALBUM
+                << CLM_ALBUM_ARTIST
+                << CLM_YEAR
+                << CLM_RATING
+                << CLM_GENRE
+                << CLM_GROUPING
+                << CLM_TRACKNUMBER
+                << CLM_DATEADDED
+                << CLM_BPM
+                << CLM_BITRATE
+                << CLM_COMMENT
+                << CLM_PLAYCOUNT
+                << CLM_COMPOSER;
+        query.prepare(
+                QStringLiteral("INSERT INTO %1 (%2) VALUES (:%3)")
+                        .arg(m_tempTableName, insertColumns.join(", "), insertColumns.join(", :")));
 
         QList<struct BansheeDbConnection::PlaylistEntry> list =
                 m_pConnection->getPlaylistEntries(playlistId);
@@ -169,7 +151,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                 query.bindValue(":" CLM_GROUPING, entry.pTrack->grouping);
                 query.bindValue(":" CLM_TRACKNUMBER, entry.pTrack->tracknumber);
                 QDateTime timeAdded;
-                timeAdded.setTime_t(entry.pTrack->dateadded);
+                timeAdded.setSecsSinceEpoch(entry.pTrack->dateadded);
                 query.bindValue(":" CLM_DATEADDED, timeAdded.toString(Qt::ISODate));
                 query.bindValue(":" CLM_BPM, entry.pTrack->bpm);
                 query.bindValue(":" CLM_BITRATE, entry.pTrack->bitrate);
@@ -189,34 +171,37 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
 
     QStringList tableColumns;
     tableColumns
-         << CLM_TRACK_ID // 0
-         << CLM_VIEW_ORDER
-         << CLM_PREVIEW; // 3
+            << CLM_TRACK_ID // 0
+            << CLM_VIEW_ORDER
+            << CLM_PREVIEW; // 3
 
     QStringList trackSourceColumns;
     trackSourceColumns
-         << CLM_TRACK_ID // 0
-         << CLM_ARTIST
-         << CLM_TITLE
-         << CLM_DURATION
-         << CLM_URI
-         << CLM_ALBUM
-         << CLM_ALBUM_ARTIST
-         << CLM_YEAR
-         << CLM_RATING
-         << CLM_GENRE
-         << CLM_GROUPING
-         << CLM_TRACKNUMBER
-         << CLM_DATEADDED
-         << CLM_BPM
-         << CLM_BITRATE
-         << CLM_COMMENT
-         << CLM_PLAYCOUNT
-         << CLM_COMPOSER;
+            << CLM_TRACK_ID // 0
+            << CLM_ARTIST
+            << CLM_TITLE
+            << CLM_DURATION
+            << CLM_URI
+            << CLM_ALBUM
+            << CLM_ALBUM_ARTIST
+            << CLM_YEAR
+            << CLM_RATING
+            << CLM_GENRE
+            << CLM_GROUPING
+            << CLM_TRACKNUMBER
+            << CLM_DATEADDED
+            << CLM_BPM
+            << CLM_BITRATE
+            << CLM_COMMENT
+            << CLM_PLAYCOUNT
+            << CLM_COMPOSER;
 
     QSharedPointer<BaseTrackCache> trackSource(
-            new BaseTrackCache(m_pTrackCollectionManager->internalCollection(), m_tempTableName, CLM_TRACK_ID,
-                    trackSourceColumns, false));
+            new BaseTrackCache(m_pTrackCollectionManager->internalCollection(),
+                    m_tempTableName,
+                    CLM_TRACK_ID,
+                    trackSourceColumns,
+                    false));
 
     setTable(m_tempTableName, CLM_TRACK_ID, tableColumns, trackSource);
     setSearch("");
@@ -224,16 +209,14 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
-TrackModel::CapabilitiesFlags BansheePlaylistModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOSAMPLER;
+TrackModel::Capabilities BansheePlaylistModel::getCapabilities() const {
+    return Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler;
 }
 
-Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
@@ -241,7 +224,7 @@ TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
     if (pTrack) {
         for (int row = 0; row < rowCount(); ++row) {
             const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
-            if (TrackFile::fromUrl(rowUrl) == pTrack->getFileInfo()) {
+            if (mixxx::FileInfo::fromQUrl(rowUrl) == pTrack->getFileInfo()) {
                 return TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
             }
         }
@@ -269,7 +252,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
@@ -282,7 +265,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setAlbum(getFieldString(index, CLM_ALBUM));
         pTrack->setAlbumArtist(getFieldString(index, CLM_ALBUM_ARTIST));
         pTrack->setYear(getFieldString(index, CLM_YEAR));
-        pTrack->setGenre(getFieldString(index, CLM_GENRE));
+        updateTrackGenre(pTrack.get(), getFieldString(index, CLM_GENRE));
         pTrack->setGrouping(getFieldString(index, CLM_GROUPING));
         pTrack->setRating(getFieldString(index, CLM_RATING).toInt());
         pTrack->setTrackNumber(getFieldString(index, CLM_TRACKNUMBER));
@@ -304,28 +287,35 @@ TrackId BansheePlaylistModel::getTrackId(const QModelIndex& index) const {
     }
 }
 
+QUrl BansheePlaylistModel::getTrackUrl(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return {};
+    }
+    return QUrl(getFieldString(index, CLM_URI));
+}
+
 // Gets the on-disk location of the track at the given location.
 QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return "";
+    const QUrl url = getTrackUrl(index);
+    if (!url.isValid()) {
+        return {};
     }
-    QUrl url(getFieldString(index, CLM_URI));
 
-    QString location = TrackFile::fromUrl(url).location();
-    qDebug() << location << " = " << url;
-    if (!location.isEmpty()) {
-        return location;
+    if (url.isLocalFile()) {
+        const QString location = mixxx::FileInfo::fromQUrl(url).location();
+        if (!location.isEmpty()) {
+            return location;
+        }
     }
 
     // Try to convert a smb path location = url.toLocalFile();
     QString temp_location = url.toString();
-
     if (temp_location.startsWith("smb://")) {
         // Hack for samba mounts works only on German GNOME Linux
         // smb://daniel-desktop/volume/Musik/Lastfm/Limp Bizkit/Chocolate Starfish And The Hot Dog Flavored Water/06 - Rollin' (Air Raid Vehicle).mp3"
         // TODO(xxx): use gio instead
 
-        location = QDir::homePath() + "/.gvfs/";
+        QString location = QDir::homePath() + "/.gvfs/";
         location += temp_location.section('/', 3, 3);
         location += " auf ";
         location += temp_location.section('/', 2, 2);
@@ -335,11 +325,11 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
         return location;
     }
 
-    return QString();
+    return {};
 }
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
     return (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)));
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)));
 }

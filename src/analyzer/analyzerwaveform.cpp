@@ -3,7 +3,6 @@
 #include "engine/engineobject.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "engine/filters/enginefilterbutterworth8.h"
-#include "library/trackcollection.h"
 #include "track/track.h"
 #include "util/logger.h"
 #include "waveform/waveformfactory.h"
@@ -34,7 +33,9 @@ AnalyzerWaveform::~AnalyzerWaveform() {
     destroyFilters();
 }
 
-bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerWaveform::initialize(TrackPointer tio,
+        mixxx::audio::SampleRate sampleRate,
+        int totalSamples) {
     if (totalSamples == 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
@@ -52,9 +53,9 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
     createFilters(sampleRate);
 
     //TODO (vrince) Do we want to expose this as settings or whatever ?
-    const int mainWaveformSampleRate = 441;
+    constexpr int mainWaveformSampleRate = 441;
     // two visual sample per pixel in full width overview in full hd
-    const int summaryWaveformSamples = 2 * 1920;
+    constexpr int summaryWaveformSamples = 2 * 1920;
 
     m_waveform = WaveformPointer(new Waveform(
             sampleRate, totalSamples, mainWaveformSampleRate, -1));
@@ -145,7 +146,7 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-void AnalyzerWaveform::createFilters(int sampleRate) {
+void AnalyzerWaveform::createFilters(mixxx::audio::SampleRate sampleRate) {
     // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
     // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
     // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);

@@ -114,12 +114,12 @@ MixtrackPlatinum.init = function(id, debug) {
     engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinum.timeElapsedCallback);
 
     // setup vumeter tracking
-    engine.makeConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
 };
 
 MixtrackPlatinum.shutdown = function() {
@@ -265,7 +265,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             components.Pot.prototype.input.call(this, channel, control, value, status, group);
         },
         connect: function() {
-            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange.bind(this));
             this.focus_connection.trigger();
         },
         disconnect: function() {
@@ -367,7 +367,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         },
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange.bind(this));
         },
         disconnect: function() {
             components.Button.prototype.disconnect.call(this);
@@ -405,7 +405,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                     button.send(button.off);
                     button.flash_state = true;
                 }
-            });
+            }.bind(this));
         },
         stopFlash: function() {
             engine.stopTimer(this.flash_timer);
@@ -426,7 +426,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                 engine.setValue(eu.group, "show_parameters", 1);
             }
         }
-    });
+    }.bind(this));
     this.show_focus_connection.trigger();
 
     this.touch_strip = new this.EffectUnitTouchStrip();
@@ -563,7 +563,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         type: components.Button.prototype.types.toggle,
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle);
+            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle.bind(this));
         },
     });
 
@@ -1020,7 +1020,7 @@ MixtrackPlatinum.HeadGain.prototype = new components.Pot({
         // control only if the control was moved when focus was switched. This
         // is to avoid a phantom triggering of soft takeover that can happen if
         // ignoreNextValue() is called un-conditionally when the control target
-        // is changed (like in shfit()/unshift()).
+        // is changed (like in shift()/unshift()).
         if (this.ignore_next == "sampler" && !this.shifted) {
             this.sampler.forEachComponent(function(component) {
                 engine.softTakeoverIgnoreNextValue(component.group, 'volume');

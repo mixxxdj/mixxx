@@ -7,7 +7,7 @@
 #include "util/math.h"
 #include "util/sample.h"
 
-static const int kNumChannels = 2;
+static constexpr int kNumChannels = 2;
 
 ReadAheadManager::ReadAheadManager()
         : m_pLoopingControl(nullptr),
@@ -46,10 +46,15 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
 
     //qDebug() << "start" << start_sample << requested_samples;
 
-    double target;
+    mixxx::audio::FramePos targetPosition;
     // A loop will only limit the amount we can read in one shot.
-    const double loop_trigger = m_pLoopingControl->nextTrigger(
-            in_reverse, m_currentPosition, &target);
+    const mixxx::audio::FramePos loopTriggerPosition =
+            m_pLoopingControl->nextTrigger(in_reverse,
+                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                            m_currentPosition),
+                    &targetPosition);
+    const double loop_trigger = loopTriggerPosition.toEngineSamplePosMaybeInvalid();
+    const double target = targetPosition.toEngineSamplePosMaybeInvalid();
 
     SINT preloop_samples = 0;
     double samplesToLoopTrigger = 0.0;
@@ -183,7 +188,7 @@ void ReadAheadManager::notifySeek(double seekPosition) {
     // }
 }
 
-void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
+void ReadAheadManager::hintReader(double dRate, gsl::not_null<HintVector*> pHintList) {
     bool in_reverse = dRate < 0;
     Hint current_position;
 
@@ -211,7 +216,7 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     }
 
     // top priority, we need to read this data immediately
-    current_position.priority = 1;
+    current_position.type = Hint::Type::CurrentPosition;
     pHintList->append(current_position);
 }
 
@@ -254,7 +259,10 @@ double ReadAheadManager::getFilePlaypositionFromLog(
         // (Not looping control)
         if (shouldNotifySeek) {
             if (m_pRateControl) {
-                m_pRateControl->notifySeek(entry.virtualPlaypositionStart);
+                const auto seekPosition =
+                        mixxx::audio::FramePos::fromEngineSamplePos(
+                                entry.virtualPlaypositionStart);
+                m_pRateControl->notifySeek(seekPosition);
             }
         }
 
@@ -270,4 +278,13 @@ double ReadAheadManager::getFilePlaypositionFromLog(
     }
 
     return filePlayposition;
+}
+
+mixxx::audio::FramePos ReadAheadManager::getFilePlaypositionFromLog(
+        mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FrameDiff_t numConsumedFrames) {
+    const double positionSamples =
+            getFilePlaypositionFromLog(currentPosition.toEngineSamplePos(),
+                    numConsumedFrames * mixxx::kEngineChannelCount);
+    return mixxx::audio::FramePos::fromEngineSamplePos(positionSamples);
 }

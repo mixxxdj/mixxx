@@ -314,64 +314,6 @@ static wchar_t *dup_wcs(const wchar_t *s)
 	return ret;
 }
 
-/* hidapi_IOHIDDeviceGetService()
- *
- * Return the io_service_t corresponding to a given IOHIDDeviceRef, either by:
- * - on OS X 10.6 and above, calling IOHIDDeviceGetService()
- * - on OS X 10.5, extract it from the IOHIDDevice struct
- */
-static io_service_t hidapi_IOHIDDeviceGetService(IOHIDDeviceRef device)
-{
-	static void *iokit_framework = NULL;
-	typedef io_service_t (*dynamic_IOHIDDeviceGetService_t)(IOHIDDeviceRef device);
-	static dynamic_IOHIDDeviceGetService_t dynamic_IOHIDDeviceGetService = NULL;
-
-	/* Use dlopen()/dlsym() to get a pointer to IOHIDDeviceGetService() if it exists.
-	 * If any of these steps fail, dynamic_IOHIDDeviceGetService will be left NULL
-	 * and the fallback method will be used.
-	 */
-	if (iokit_framework == NULL) {
-		iokit_framework = dlopen("/System/Library/Frameworks/IOKit.framework/IOKit", RTLD_LAZY);
-
-		if (iokit_framework != NULL)
-			dynamic_IOHIDDeviceGetService = (dynamic_IOHIDDeviceGetService_t) dlsym(iokit_framework, "IOHIDDeviceGetService");
-	}
-
-	if (dynamic_IOHIDDeviceGetService != NULL) {
-		/* Running on OS X 10.6 and above: IOHIDDeviceGetService() exists */
-		return dynamic_IOHIDDeviceGetService(device);
-	}
-	else
-	{
-		/* Running on OS X 10.5: IOHIDDeviceGetService() doesn't exist.
-		 *
-		 * Be naughty and pull the service out of the IOHIDDevice.
-		 * IOHIDDevice is an opaque struct not exposed to applications, but its
-		 * layout is stable through all available versions of OS X.
-		 * Tested and working on OS X 10.5.8 i386, x86_64, and ppc.
-		 */
-		struct IOHIDDevice_internal {
-			/* The first field of the IOHIDDevice struct is a
-			 * CFRuntimeBase (which is a private CF struct).
-			 *
-			 * a, b, and c are the 3 fields that make up a CFRuntimeBase.
-			 * See http://opensource.apple.com/source/CF/CF-476.18/CFRuntime.h
-			 *
-			 * The second field of the IOHIDDevice is the io_service_t we're looking for.
-			 */
-			uintptr_t a;
-			uint8_t b[4];
-#if __LP64__
-			uint32_t c;
-#endif
-			io_service_t service;
-		};
-		struct IOHIDDevice_internal *tmp = (struct IOHIDDevice_internal *) device;
-
-		return tmp->service;
-	}
-}
-
 /* Initialize the IOHIDManager. Return 0 for success and -1 for failure. */
 static int init_hid_manager(void)
 {
@@ -439,7 +381,7 @@ static struct hid_device_info *create_device_info_with_usage(IOHIDDeviceRef dev,
 	struct hid_device_info *cur_dev;
 	io_object_t iokit_dev;
 	kern_return_t res;
-	io_string_t path;
+	uint64_t entry_id;
 
 	if (dev == NULL) {
 		return NULL;
@@ -459,13 +401,30 @@ static struct hid_device_info *create_device_info_with_usage(IOHIDDeviceRef dev,
 	/* Fill out the record */
 	cur_dev->next = NULL;
 
-	/* Fill in the path (IOService plane) */
-	iokit_dev = hidapi_IOHIDDeviceGetService(dev);
-	res = IORegistryEntryGetPath(iokit_dev, kIOServicePlane, path);
-	if (res == KERN_SUCCESS)
-		cur_dev->path = strdup(path);
-	else
+	/* Fill in the path (as a unique ID of the service entry) */
+	cur_dev->path = NULL;
+	iokit_dev = IOHIDDeviceGetService(dev);
+	if (iokit_dev != MACH_PORT_NULL) {
+		res = IORegistryEntryGetRegistryEntryID(iokit_dev, &entry_id);
+	}
+	else {
+		res = KERN_INVALID_ARGUMENT;
+	}
+
+	if (res == KERN_SUCCESS) {
+		/* max value of entry_id(uint64_t) is 18446744073709551615 which is 20 characters long,
+		   so for (max) "path" string 'DevSrvsID:18446744073709551615' we would need
+		   9+1+20+1=31 bytes byffer, but allocate 32 for simple alignment */
+		cur_dev->path = calloc(1, 32);
+		if (cur_dev->path != NULL) {
+			sprintf(cur_dev->path, "DevSrvsID:%llu", entry_id);
+		}
+	}
+
+	if (cur_dev->path == NULL) {
+		/* for whatever reason, trying to keep it a non-NULL string */
 		cur_dev->path = strdup("");
+	}
 
 	/* Serial Number */
 	get_serial_number(dev, buf, BUF_LEN);
@@ -817,11 +776,33 @@ static void *read_thread(void *param)
 	return NULL;
 }
 
-/* hid_open_path()
- *
- * path must be a valid path to an IOHIDDevice in the IOService plane
- * Example: "IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/EHC1@1D,7/AppleUSBEHCI/PLAYSTATION(R)3 Controller@fd120000/IOUSBInterface@0/IOUSBHIDDriver"
- */
+/* \p path must be one of:
+     - in format 'DevSrvsID:<RegistryEntryID>' (as returned by hid_enumerate);
+     - a valid path to an IOHIDDevice in the IOService plane (as returned by IORegistryEntryGetPath,
+       e.g.: "IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/EHC1@1D,7/AppleUSBEHCI/PLAYSTATION(R)3 Controller@fd120000/IOUSBInterface@0/IOUSBHIDDriver");
+   Second format is for compatibility with paths accepted by older versions of HIDAPI.
+*/
+static io_registry_entry_t hid_open_service_registry_from_path(const char *path)
+{
+	if (path == NULL)
+		return MACH_PORT_NULL;
+
+	/* Get the IORegistry entry for the given path */
+	if (strncmp("DevSrvsID:", path, 10) == 0) {
+		char *endptr;
+		uint64_t entry_id = strtoull(path + 10, &endptr, 10);
+		if (*endptr == '\0') {
+			return IOServiceGetMatchingService(kIOMasterPortDefault, IORegistryEntryIDMatching(entry_id));
+		}
+	}
+	else {
+		/* Fallback to older format of the path */
+		return IORegistryEntryFromPath(kIOMasterPortDefault, path);
+	}
+
+	return MACH_PORT_NULL;
+}
+
 hid_device * HID_API_EXPORT hid_open_path(const char *path)
 {
 	hid_device *dev = NULL;
@@ -835,7 +816,7 @@ hid_device * HID_API_EXPORT hid_open_path(const char *path)
 	dev = new_hid_device();
 
 	/* Get the IORegistry entry for the given path */
-	entry = IORegistryEntryFromPath(kIOMasterPortDefault, path);
+	entry = hid_open_service_registry_from_path(path);
 	if (entry == MACH_PORT_NULL) {
 		/* Path wasn't valid (maybe device was removed?) */
 		goto return_error;
@@ -898,7 +879,13 @@ static int set_report(hid_device *dev, IOHIDReportType type, const unsigned char
 	const unsigned char *data_to_send = data;
 	CFIndex length_to_send = length;
 	IOReturn res;
-	const unsigned char report_id = data[0];
+	unsigned char report_id;
+
+	if (!data || (length == 0)) {
+		return -1;
+	}
+
+	report_id = data[0];
 
 	if (report_id == 0x0) {
 		/* Not using numbered Reports.

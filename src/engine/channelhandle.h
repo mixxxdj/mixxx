@@ -1,4 +1,14 @@
 #pragma once
+
+#include <QHash>
+#include <QString>
+#include <QVarLengthArray>
+#include <QtDebug>
+#include <memory>
+
+#include "util/assert.h"
+#include "util/compatibility/qhash.h"
+
 // ChannelHandle defines a unique identifier for channels of audio in the engine
 // (e.g. headphone output, master output, deck 1, microphone 3). Previously we
 // used the group string of the channel in the engine to uniquely identify it
@@ -11,21 +21,13 @@
 // and equality of ChannelHandles are simple to calculate and a QVarLengthArray
 // can be used to create a fast associative container backed by a simple array
 // (since the keys are numbered [0, num_channels]).
-//
-// A helper class, ChannelHandleFactory, keeps a running count of handles that
-// have been assigned.
 
-#include <QHash>
-#include <QString>
-#include <QVarLengthArray>
-#include <QtDebug>
-#include <memory>
-
-#include "util/assert.h"
-
-// A wrapper around an integer handle. Used to uniquely identify and refer to
-// channels (headphone output, master output, deck 1, microphone 4, etc.) of
-// audio in the engine.
+/// A wrapper around an integer handle. Used to uniquely identify and refer to
+/// channels (headphone output, master output, deck 1, microphone 4, etc.) while
+/// avoiding slow QString comparisons incurred when using the group.
+///
+/// A helper class, ChannelHandleFactory, keeps a running count of handles that
+/// have been assigned.
 class ChannelHandle {
   public:
     ChannelHandle() : m_iHandle(-1) {
@@ -53,6 +55,14 @@ class ChannelHandle {
     friend class ChannelHandleFactory;
 };
 
+inline bool operator>(const ChannelHandle& h1, const ChannelHandle& h2) {
+    return h1.handle() > h2.handle();
+}
+
+inline bool operator<(const ChannelHandle& h1, const ChannelHandle& h2) {
+    return h1.handle() < h2.handle();
+}
+
 inline bool operator==(const ChannelHandle& h1, const ChannelHandle& h2) {
     return h1.handle() == h2.handle();
 }
@@ -66,8 +76,10 @@ inline QDebug operator<<(QDebug stream, const ChannelHandle& h) {
     return stream;
 }
 
-inline uint qHash(const ChannelHandle& handle) {
-    return qHash(handle.handle());
+inline qhash_seed_t qHash(
+        const ChannelHandle& handle,
+        qhash_seed_t seed = 0) {
+    return qHash(handle.handle(), seed);
 }
 
 // Convenience class that mimics QPair<ChannelHandle, QString> except with
@@ -83,7 +95,7 @@ class ChannelHandleAndGroup {
         return m_name;
     }
 
-    inline const ChannelHandle& handle() const {
+    inline ChannelHandle handle() const {
         return m_handle;
     }
 
@@ -104,8 +116,10 @@ inline QDebug operator<<(QDebug stream, const ChannelHandleAndGroup& g) {
     return stream;
 }
 
-inline uint qHash(const ChannelHandleAndGroup& handle_group) {
-    return qHash(handle_group.handle());
+inline qhash_seed_t qHash(
+        const ChannelHandleAndGroup& handleGroup,
+        qhash_seed_t seed = 0) {
+    return qHash(handleGroup.handle(), seed);
 }
 
 // A helper class used by EngineMaster to assign ChannelHandles to channel group
@@ -153,7 +167,7 @@ typedef std::shared_ptr<ChannelHandleFactory> ChannelHandleFactoryPointer;
 // integer value.
 template <class T>
 class ChannelHandleMap {
-    static const int kMaxExpectedGroups = 256;
+    static constexpr int kMaxExpectedGroups = 256;
     typedef QVarLengthArray<T, kMaxExpectedGroups> container_type;
   public:
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::const_iterator const_iterator;

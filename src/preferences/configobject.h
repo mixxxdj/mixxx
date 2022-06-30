@@ -1,14 +1,15 @@
 #pragma once
 
-#include <QString>
-#include <QKeySequence>
 #include <QDomNode>
-#include <QMap>
 #include <QHash>
+#include <QKeySequence>
+#include <QMap>
 #include <QMetaType>
 #include <QReadWriteLock>
+#include <QString>
 
 #include "util/assert.h"
+#include "util/compatibility/qhash.h"
 #include "util/debug.h"
 
 // Class for the key for a specific configuration element. A key consists of a
@@ -59,8 +60,11 @@ inline QDebug operator<<(QDebug stream, const ConfigKey& configKey) {
 }
 
 // QHash hash function for ConfigKey objects.
-inline uint qHash(const ConfigKey& key) {
-    return qHash(key.group) ^ qHash(key.item);
+inline qhash_seed_t qHash(
+        const ConfigKey& key,
+        qhash_seed_t seed = 0) {
+    return qHash(key.group, seed) ^
+            qHash(key.item, seed);
 }
 
 // The value corresponding to a key. The basic value is a string, but can be
@@ -92,8 +96,10 @@ inline bool operator!=(const ConfigValue& lhs, const ConfigValue& rhs) {
     return !(lhs == rhs);
 }
 
-inline uint qHash(const ConfigValue& key) {
-    return qHash(key.value.toUpper());
+inline qhash_seed_t qHash(
+        const ConfigValue& key,
+        qhash_seed_t seed = 0) {
+    return qHash(key.value.toUpper(), seed);
 }
 
 class ConfigValueKbd : public ConfigValue {
@@ -124,6 +130,7 @@ inline bool operator!=(const ConfigValueKbd& lhs, const ConfigValueKbd& rhs) {
 template <class ValueType> class ConfigObject {
   public:
     ConfigObject(const QString& file);
+    ConfigObject(const QString& file, const QString& resourcePath, const QString& settingsPath);
     ConfigObject(const QDomNode& node);
     ~ConfigObject();
 
@@ -169,6 +176,8 @@ template <class ValueType> class ConfigObject {
 
     void reopen(const QString& file);
     bool save();
+
+    static QString computeResourcePath();
 
     // Returns the resource path -- the path where controller presets, skins,
     // library schema, keyboard mappings, and more are stored.

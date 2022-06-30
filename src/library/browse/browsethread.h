@@ -4,15 +4,15 @@
 
 #pragma once
 
-#include <QThread>
-#include <QMutex>
-#include <QWaitCondition>
-#include <QStandardItem>
 #include <QList>
+#include <QMutex>
 #include <QSharedPointer>
+#include <QStandardItem>
+#include <QThread>
+#include <QWaitCondition>
 #include <QWeakPointer>
 
-#include "util/file.h"
+#include "util/fileaccess.h"
 
 // This class is a singleton and represents a thread
 // that is used to read ID3 metadata
@@ -30,12 +30,12 @@ class BrowseThread : public QThread {
     Q_OBJECT
   public:
     virtual ~BrowseThread();
-    void executePopulation(const MDir& path, BrowseTableModel* client);
+    void executePopulation(mixxx::FileAccess path, BrowseTableModel* client);
     void run();
     static BrowseThreadPointer getInstanceRef();
 
   signals:
-    void rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
+    void rowsAppended(const QList<QList<QStandardItem*>>&, BrowseTableModel*);
     void clearModel(BrowseTableModel*);
 
   private:
@@ -49,7 +49,7 @@ class BrowseThread : public QThread {
 
     // You must hold m_path_mutex to touch m_path or m_model_observer
     QMutex m_path_mutex;
-    MDir m_path;
+    mixxx::FileAccess m_path;
     BrowseTableModel* m_model_observer;
 
     static QWeakPointer<BrowseThread> m_weakInstanceRef;

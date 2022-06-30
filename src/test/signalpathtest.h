@@ -6,6 +6,7 @@
 #include <QTest>
 #include <QtDebug>
 
+#include "control/controlindicatortimer.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/bufferscalers/enginebufferscale.h"
@@ -21,16 +22,29 @@
 #include "mixer/sampler.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/defs.h"
 #include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
-#include "waveform/guitick.h"
-#include "waveform/visualsmanager.h"
 
 using ::testing::Return;
 using ::testing::_;
+
+#define EXPECT_FRAMEPOS_EQ(pos1, pos2)                    \
+    EXPECT_EQ((pos1).isValid(), (pos2).isValid());        \
+    if ((pos1).isValid()) {                               \
+        EXPECT_DOUBLE_EQ((pos1).value(), (pos2).value()); \
+    }
+
+#define EXPECT_FRAMEPOS_EQ_CONTROL(position, control)                    \
+    {                                                                    \
+        const auto controlPos =                                          \
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid( \
+                        control->get());                                 \
+        EXPECT_FRAMEPOS_EQ(position, controlPos);                        \
+    }
 
 // Subclass of EngineMaster that provides access to the master buffer object
 // for comparison.
@@ -56,30 +70,47 @@ class TestEngineMaster : public EngineMaster {
     }
 };
 
-class BaseSignalPathTest : public MixxxTest {
+class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     BaseSignalPathTest() {
-        m_pGuiTick = std::make_unique<GuiTick>();
+        m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
-        m_pVisualsManager = new VisualsManager();
-        m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
-                                               m_pEffectsManager, m_pChannelHandleFactory,
-                                               false);
+        m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
+        m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
+        m_pEngineMaster = new TestEngineMaster(m_pConfig,
+                m_sMasterGroup,
+                m_pEffectsManager,
+                m_pChannelHandleFactory,
+                false);
 
-        m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup1);
-        m_pMixerDeck2 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup2);
-        m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup3);
+        m_pMixerDeck1 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup1));
+        m_pMixerDeck2 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup2));
+        m_pMixerDeck3 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup3));
 
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
-        m_pPreview1 = new PreviewDeck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sPreviewGroup);
+        m_pPreview1 = new PreviewDeck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sPreviewGroup));
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
 
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
@@ -94,7 +125,7 @@ class BaseSignalPathTest : public MixxxTest {
         addDeck(m_pChannel3);
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
-        ControlObject::set(ConfigKey("[Master]", "enabled"), 1.0);
+        ControlObject::set(ConfigKey(m_sMasterGroup, "enabled"), 1.0);
 
         PlayerInfo::create();
     }
@@ -112,7 +143,6 @@ class BaseSignalPathTest : public MixxxTest {
         // Deletes all EngineChannels added to it.
         delete m_pEngineMaster;
         delete m_pEffectsManager;
-        delete m_pVisualsManager;
         delete m_pNumDecks;
         PlayerInfo::destroy();
     }
@@ -125,14 +155,21 @@ class BaseSignalPathTest : public MixxxTest {
     }
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
+        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+        if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+            pEngineDeck->getEngineBuffer()->ejectTrack();
+        }
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-        while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
-            QTest::qSleep(1); // millis
+        for (int i = 0; i < 2000; ++i) {
+            if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+                break;
+            }
+            QTest::qSleep(1); // sleep 1 ms for waiting 2 s at max
         }
+        DEBUG_ASSERT(pEngineDeck->getEngineBuffer()->isTrackLoaded());
     }
 
     // Asserts that the contents of the output buffer matches a reference
@@ -148,7 +185,7 @@ class BaseSignalPathTest : public MixxxTest {
             const int iBufferSize,
             const QString& reference_title,
             const double delta = .0001) {
-        QFile f(QDir::currentPath() + "/src/test/reference_buffers/" + reference_title);
+        QFile f(getTestDir().filePath(QStringLiteral("reference_buffers/") + reference_title));
         bool pass = true;
         int i = 0;
         // If the file is not there, we will fail and write out the .actual
@@ -186,7 +223,8 @@ class BaseSignalPathTest : public MixxxTest {
             qWarning() << "Buffer does not match" << reference_title
                        << ", actual buffer written to "
                        << "reference_buffers/" + fname_actual;
-            QFile actual(QDir::currentPath() + "/src/test/reference_buffers/" + fname_actual);
+            QFile actual(getTestDir().filePath(
+                    QStringLiteral("reference_buffers/") + fname_actual));
             ASSERT_TRUE(actual.open(QFile::WriteOnly | QFile::Text));
             QTextStream out(&actual);
             for (int i = 0; i < iBufferSize; i += 2) {
@@ -203,13 +241,13 @@ class BaseSignalPathTest : public MixxxTest {
     }
 
     void ProcessBuffer() {
+        qDebug() << "------- Process Buffer -------";
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
-    std::unique_ptr<GuiTick> m_pGuiTick;
-    VisualsManager* m_pVisualsManager;
+    std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
@@ -217,11 +255,11 @@ class BaseSignalPathTest : public MixxxTest {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
+    static const QString m_sMasterGroup;
+    static const QString m_sInternalClockGroup;
     static const QString m_sGroup1;
     static const QString m_sGroup2;
     static const QString m_sGroup3;
-    static const QString m_sMasterGroup;
-    static const QString m_sInternalClockGroup;
     static const QString m_sPreviewGroup;
     static const QString m_sSamplerGroup;
     static const double kDefaultRateRange;
@@ -233,7 +271,7 @@ class BaseSignalPathTest : public MixxxTest {
 class SignalPathTest : public BaseSignalPathTest {
   protected:
     SignalPathTest() {
-        const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+        const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
         TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
         loadTrack(m_pMixerDeck1, pTrack);

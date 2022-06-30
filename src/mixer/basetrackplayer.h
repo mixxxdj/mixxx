@@ -19,7 +19,6 @@ class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
-class VisualsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.
@@ -33,18 +32,21 @@ class BaseTrackPlayer : public BasePlayer {
         RESET_SPEED
     };
 
-    BaseTrackPlayer(QObject* pParent, const QString& group);
+    BaseTrackPlayer(PlayerManager* pParent, const QString& group);
     ~BaseTrackPlayer() override = default;
 
     virtual TrackPointer getLoadedTrack() const = 0;
+    virtual void setupEqControls() = 0;
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
+    virtual void slotEjectTrack(double) = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
+    void trackUnloaded(TrackPointer pUnloadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
     void noVinylControlInputConfigured();
@@ -53,13 +55,12 @@ class BaseTrackPlayer : public BasePlayer {
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
     Q_OBJECT
   public:
-    BaseTrackPlayerImpl(QObject* pParent,
+    BaseTrackPlayerImpl(PlayerManager* pParent,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const QString& group,
+            const ChannelHandleAndGroup& handleGroup,
             bool defaultMaster,
             bool defaultHeadphones,
             bool primaryDeck);
@@ -71,19 +72,23 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // connected. Delete me when EngineMaster supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
-    void setupEqControls();
+    void setupEqControls() final;
 
     // For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;
+    void slotEjectTrack(double) final;
     void slotCloneFromGroup(const QString& group) final;
     void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, const QString& reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
-    void slotSetTrackColor(mixxx::RgbColor::optional_t color);
+    // When the replaygain is adjusted, we modify the track pregain
+    // to compensate so there is no audible change in volume.
+    void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
+    void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotPlayToggled(double);
 
   private slots:
@@ -98,6 +103,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotWaveformZoomSetDefault(double pressed);
     void slotShiftCuesMillis(double milliseconds);
     void slotShiftCuesMillisButton(double value, double milliseconds);
+    void slotUpdateReplayGainFromPregain(double pressed);
 
   private:
     void setReplayGain(double value);
@@ -114,6 +120,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;
+
+    std::unique_ptr<ControlPushButton> m_pEject;
 
     // Deck clone control
     std::unique_ptr<ControlObject> m_pCloneFromDeck;
@@ -142,6 +150,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
     std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
     std::unique_ptr<ControlObject> m_pShiftCues;
+
+    std::unique_ptr<ControlObject> m_pUpdateReplayGainFromPregain;
 
     parented_ptr<ControlProxy> m_pReplayGain;
     parented_ptr<ControlProxy> m_pPlay;

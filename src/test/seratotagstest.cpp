@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QFile>
 
+#include "test/mixxxtest.h"
 #include "track/serato/tags.h"
 #include "util/color/predefinedcolorpalettes.h"
 
@@ -21,14 +22,14 @@ bool dumpToFile(const QString& filename, const QByteArray& data) {
 
 class SeratoTagsTest : public testing::Test {
   protected:
-    void trackColorRoundtrip(mixxx::RgbColor::optional_t displayedColor) {
+    void trackColorRoundtrip(const mixxx::RgbColor::optional_t& displayedColor) {
         mixxx::RgbColor storedColor =
                 mixxx::SeratoTags::displayedToStoredTrackColor(displayedColor);
         mixxx::RgbColor::optional_t actualDisplayedColor = mixxx::SeratoTags::storedToDisplayedTrackColor(storedColor);
         EXPECT_EQ(displayedColor, actualDisplayedColor);
     }
     void trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional_t displayedColor,
+            const mixxx::RgbColor::optional_t& displayedColor,
             mixxx::RgbColor storedColor) {
         mixxx::RgbColor actualStoredColor =
                 mixxx::SeratoTags::displayedToStoredTrackColor(displayedColor);
@@ -200,7 +201,7 @@ TEST_F(SeratoTagsTest, CueColorConversionRoundtrip) {
 
 TEST_F(SeratoTagsTest, MarkersParseDumpRoundtrip) {
     const auto filetype = mixxx::taglib::FileType::MP3;
-    QDir dir(QStringLiteral("src/test/serato/data/mp3/markers_/"));
+    QDir dir(MixxxTest::getOrInitTestDir().filePath(QStringLiteral("/serato/data/mp3/markers_/")));
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << "*.octet-stream");
     const QFileInfoList fileList = dir.entryInfoList();
@@ -233,7 +234,7 @@ TEST_F(SeratoTagsTest, MarkersParseDumpRoundtrip) {
 
 TEST_F(SeratoTagsTest, Markers2RoundTrip) {
     const auto filetype = mixxx::taglib::FileType::MP3;
-    QDir dir(QStringLiteral("src/test/serato/data/mp3/markers2/"));
+    QDir dir(MixxxTest::getOrInitTestDir().filePath(QStringLiteral("serato/data/mp3/markers2/")));
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << "*.octet-stream");
     const QFileInfoList fileList = dir.entryInfoList();

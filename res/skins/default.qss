@@ -90,7 +90,7 @@ WOverview #PassthroughLabel {
 /* Lay out all context menus and the track table header with relative sizes,
 adjusting to the system-chosen font (size). Same is done for the Played checkedbox
 and the BPM lock icon in the library above.
-Appearantly, the mainmenubar needs special treatment -- see default-menu-styles-linux7windows.qss */
+Apparently, the mainmenubar needs special treatment -- see default-menu-styles-linux7windows.qss */
 QToolTip,
 #MainMenu QMenu,
 WLibrarySidebar QMenu,
@@ -101,7 +101,10 @@ WTrackMenu QMenu,
 QLineEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
+WEffectChainPresetButton QMenu,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 0.15em;
 }
@@ -111,7 +114,8 @@ WLibrarySidebar QMenu::separator,
 WTrackMenu::separator,
 WTrackMenu QMenu::separator,
 QLineEdit QMenu::separator,
-WLibraryTextBrowser QMenu::separator {
+WLibraryTextBrowser QMenu::separator,
+WEffectChainPresetButton QMenu::separator {
   height: 0px;
   margin: 0.25em;
 }
@@ -120,7 +124,8 @@ WLibraryTextBrowser QMenu::separator {
 /* All menus that have at least one item with a checkbox*/
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu::item,
-#CratesMenu::item {
+#CratesMenu::item,
+WEffectChainPresetButton QMenu::item {
 /* padding-right reserves space for the submenu expand arrow
   padding-left should be bigger than the menu icon width +
   icon margin-left/-right */
@@ -137,7 +142,8 @@ WTrackMenu QMenu::item,
 QLineEdit QMenu::item,
 WCoverArtMenu::item,
 /* for the sake of completeness: html root view of Crates, Rec etc. */
-WLibraryTextBrowser QMenu::item {
+WLibraryTextBrowser QMenu::item,
+WEffectChainPresetButton QMenu::item {
   padding: 0.17em 0.6em 0.17em 0.6em;
 }
 
@@ -158,13 +164,15 @@ WTrackTableViewHeader QMenu::indicator {
 }
 
 /* items in Crate sub menu */
-WTrackMenu QMenu QCheckBox {
+WTrackMenu QMenu QCheckBox,
+WEffectChainPresetButton QMenu QCheckBox {
   padding: 0.17em 0.6em 0.17em 0.25em;
 }
 
 WLibrarySidebar QMenu::indicator,
 WTrackTableViewHeader QMenu::indicator,
-WTrackMenu QMenu QCheckBox::indicator {
+WTrackMenu QMenu QCheckBox::indicator,
+WEffectChainPresetButton QMenu QCheckBox::indicator {
   width: 0.7em;
   height: 0.7em;
 }

@@ -16,6 +16,9 @@
             <Children>
               <!-- Sidebar etc. -->
               <WidgetGroup>
+                <!-- Required for restoring the splitter sizes, otherwise the searchbox
+                    would force.expand the left side. -->
+                <SizePolicy>i,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:preview_deck.xml"/>

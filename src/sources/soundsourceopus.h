@@ -13,10 +13,6 @@ class SoundSourceOpus final : public SoundSource {
     explicit SoundSourceOpus(const QUrl& url);
     ~SoundSourceOpus() override;
 
-    std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
-
     void close() override;
 
   protected:
@@ -38,18 +34,18 @@ class SoundSourceOpus final : public SoundSource {
 class SoundSourceProviderOpus : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
-    static const QStringList kSupportedFileExtensions;
+    static const QStringList kSupportedFileTypes;
 
     QString getDisplayName() const override {
         return kDisplayName;
     }
 
-    QStringList getSupportedFileExtensions() const override {
-        return kSupportedFileExtensions;
+    QStringList getSupportedFileTypes() const override {
+        return kSupportedFileTypes;
     }
 
     SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileExtension) const override;
+            const QString& supportedFileType) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceOpus>(url);

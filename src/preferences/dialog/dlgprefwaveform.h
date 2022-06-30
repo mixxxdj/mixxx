@@ -1,19 +1,21 @@
 #pragma once
 
 #include <QWidget>
+#include <memory>
 
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 
-class MixxxMainWindow;
 class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
     Q_OBJECT
   public:
-    DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                    UserSettingsPointer pConfig, Library* pLibrary);
+    DlgPrefWaveform(
+            QWidget* pParent,
+            UserSettingsPointer pConfig,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPrefWaveform();
 
   public slots:
@@ -38,12 +40,14 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
 
+  signals:
+    void reloadUserInterface();
+
   private:
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
 
     UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
-    MixxxMainWindow* m_pMixxx;
+    std::shared_ptr<Library> m_pLibrary;
 };

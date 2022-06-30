@@ -6,11 +6,12 @@
 #include "widget/wtracktableview.h"
 
 class WAnalysisLibraryTableView : public WTrackTableView {
+    Q_OBJECT
   public:
     WAnalysisLibraryTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             double trackTableBackgroundColorOpacity);
 
     void onSearch(const QString& text) override;

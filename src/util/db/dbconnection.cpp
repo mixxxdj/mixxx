@@ -180,7 +180,7 @@ const QChar kSqlLikeEscapeDefault = '\0';
 int sqliteStringCompareUTF16(void* pArg,
                              int len1, const void* data1,
                              int len2, const void* data2) {
-    StringCollator* pCollator = static_cast<StringCollator*>(pArg);
+    const auto* pCollator = static_cast<mixxx::StringCollator*>(pArg);
     // Construct a QString without copy
     QString string1 = QString::fromRawData(static_cast<const QChar*>(data1),
                                            len1 / sizeof(QChar));
@@ -195,9 +195,9 @@ const char kLexicographicalCollationFunc[] = "mixxxLexicographicalCollationFunc"
 // The SQL statement 'A LIKE B' is implemented as 'like(B, A)', and if there is
 // an escape character, say E, it is implemented as 'like(B, A, E)'
 //static
-void sqliteLike(sqlite3_context *context,
-                                int aArgc,
-                                sqlite3_value **aArgv) {
+void sqliteLikeUtf8(sqlite3_context* context,
+        int aArgc,
+        sqlite3_value** aArgv) {
     VERIFY_OR_DEBUG_ASSERT(aArgc == 2 || aArgc == 3) {
         return;
     }
@@ -233,7 +233,7 @@ void sqliteLike(sqlite3_context *context,
 
 #endif // __SQLITE3__
 
-bool initDatabase(const QSqlDatabase& database, StringCollator* pCollator) {
+bool initDatabase(const QSqlDatabase& database, mixxx::StringCollator* pCollator) {
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();
@@ -277,13 +277,14 @@ bool initDatabase(const QSqlDatabase& database, StringCollator* pCollator) {
     }
 
     result = sqlite3_create_function(
-                    handle,
-                    "like",
-                    2,
-                    SQLITE_ANY,
-                    nullptr,
-                    sqliteLike,
-                    nullptr, nullptr);
+            handle,
+            "like",
+            2,
+            SQLITE_UTF8 | SQLITE_DETERMINISTIC,
+            nullptr,
+            sqliteLikeUtf8,
+            nullptr,
+            nullptr);
     VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
         kLogger.warning()
                 << "Failed to install custom 2-arg LIKE function for SQLite3:"
@@ -291,13 +292,14 @@ bool initDatabase(const QSqlDatabase& database, StringCollator* pCollator) {
     }
 
     result = sqlite3_create_function(
-                    handle,
-                    "like",
-                    3,
-                    SQLITE_UTF8, // No conversion, Data is stored as UTF8
-                    nullptr,
-                    sqliteLike,
-                    nullptr, nullptr);
+            handle,
+            "like",
+            3, // 3rd arg = ESCAPE
+            SQLITE_UTF8 | SQLITE_DETERMINISTIC,
+            nullptr,
+            sqliteLikeUtf8,
+            nullptr,
+            nullptr);
     VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
         kLogger.warning()
                 << "Failed to install custom 3-arg LIKE function for SQLite3:"
