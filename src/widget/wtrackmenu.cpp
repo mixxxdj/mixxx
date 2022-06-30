@@ -203,15 +203,6 @@ void WTrackMenu::createMenus() {
                     m_pFindOnMenu->setEnabled(
                             !m_pFindOnMenu->isEmpty());
                 });
-
-        connect(m_pFindOnMenu,
-                &WFindOnWebMenu::triggerBrowser,
-                this,
-                [this](WFindOnWebMenu::Service service,
-                        WFindOnWebMenu::TrackSearchProperties trackSearchProperties,
-                        const QString& query) {
-                    m_pFindOnMenu->openInBrowser(service, trackSearchProperties, query);
-                });
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {

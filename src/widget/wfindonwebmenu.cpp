@@ -106,7 +106,7 @@ void WFindOnWebMenu::addActions(Service service,
             composeActionText(prefixAction, queryValue),
             this,
             [this, service, trackSearchProperties, queryValue]() {
-                emit triggerBrowser(service, trackSearchProperties, queryValue);
+                this->openInBrowser(service, trackSearchProperties, queryValue);
             });
 }
 
