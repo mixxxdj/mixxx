@@ -207,7 +207,7 @@
         <options>
           <script-binding />
         </options>
-      </control>      
+      </control>
       <!-- Xfader Curve -->
       <control>
         <group>[Mixer Profile]</group>

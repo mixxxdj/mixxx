@@ -28,7 +28,7 @@ NumarkScratch.LOW_LIGHT = 0x00;
 // State variable, don't touch
 NumarkScratch.shifted = false;
 
-components.Button.prototype.off = NumarkScratch.LOW_LIGHT
+components.Button.prototype.off = NumarkScratch.LOW_LIGHT;
 
 NumarkScratch.init = function() {
     // Initialize component containers
@@ -57,7 +57,7 @@ NumarkScratch.init = function() {
     });
     NumarkScratch.effect.forEachComponent(function(component) {
         component.trigger();
-    }); 
+    });
 
     // set FX buttons init light & Shift button init light
     midi.sendShortMsg(0x98, 0x00, NumarkScratch.LOW_LIGHT);
@@ -86,18 +86,18 @@ NumarkScratch.unshift = function() {
 };
 
 NumarkScratch.allEffectOff = function() {
-	NumarkScratch.effect[0].effects=[false, false, false];
-	NumarkScratch.effect[1].effects=[false, false, false];
+    NumarkScratch.effect[0].effects=[false, false, false];
+    NumarkScratch.effect[1].effects=[false, false, false];
     NumarkScratch.FxUpdateLEDs();
-	NumarkScratch.effect[0].updateEffects();
-	NumarkScratch.effect[1].updateEffects();
+    NumarkScratch.effect[0].updateEffects();
+    NumarkScratch.effect[1].updateEffects();
 };
 
 NumarkScratch.FxUpdateLEDs = function() {
-	var newStates1=[false, false, false];
-	var newStates2=[false, false, false];
-	newStates1=NumarkScratch.effect[0].effects;
-	newStates2=NumarkScratch.effect[1].effects;
+    var newStates1=[false, false, false];
+    var newStates2=[false, false, false];
+    newStates1=NumarkScratch.effect[0].effects;
+    newStates2=NumarkScratch.effect[1].effects;
     midi.sendShortMsg(0x98, 0x00, newStates1[0] ? 0x7F:NumarkScratch.LOW_LIGHT);
     midi.sendShortMsg(0x98, 0x01, newStates1[1] ? 0x7F:NumarkScratch.LOW_LIGHT);
     midi.sendShortMsg(0x98, 0x02, newStates1[2] ? 0x7F:NumarkScratch.LOW_LIGHT);
@@ -108,71 +108,68 @@ NumarkScratch.FxUpdateLEDs = function() {
 // TODO in 2.3 it is not possible to "properly" map the FX selection buttons.
 // this should be done with load_preset and QuickEffects instead (when effect
 // chain preset saving/loading is available in Mixxx)
-NumarkScratch.EffectUnit = function(deckNumber) {    
+NumarkScratch.EffectUnit = function(deckNumber) {
     this.effects = [false, false, false];
     this.isSwitchHoldOn = false;
-        
+
     this.updateEffects = function() {
-        for (var i = 1; i <= this.effects.length; i++) {            
-            engine.setValue("[EffectRack1_EffectUnit" + deckNumber + "_Effect"+i+"]", "enabled", this.effects[i-1]); 
+        for (var i = 1; i <= this.effects.length; i++) {
+            engine.setValue("[EffectRack1_EffectUnit" + deckNumber + "_Effect"+i+"]", "enabled", this.effects[i-1]);
         }
-    }
+    };
 
     // switch values are:
     // 0 - switch in the middle
     // 1 - switch up
-    // 2 - switch down    
-    this.enableSwitch = function(channel, control, value, status, group) {
-        this.isSwitchHoldOn = value != 0;         
+    // 2 - switch down
+    this.enableSwitch = function(channel, control, value, _status, _group) {
+        this.isSwitchHoldOn = value !== 0;
         engine.setValue("[EffectRack1_EffectUnit1]", "super1", Math.min(value, 1.0));
         engine.setValue("[EffectRack1_EffectUnit2]", "super1", Math.min(value, 1.0));
-        engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel" + deckNumber + "]_enable", (value != 0));
-		engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel" + deckNumber + "]_enable", (value != 0));        
+        engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel" + deckNumber + "]_enable", (value !== 0));
+        engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel" + deckNumber + "]_enable", (value !== 0));
         this.updateEffects();
-    }
+    };
 
     this.dryWetKnob = new components.Pot({
         group: "[EffectRack1_EffectUnit" + deckNumber + "]",
         inKey: "mix"
     });
-    
-    this.effect1 = function(channel, control, value, status, group) {
-        if (value == 0x7F) {
-            if (!NumarkScratch.shifted)
-			{
-				NumarkScratch.allEffectOff();
-			}
+
+    this.effect1 = function(channel, control, value, status, _group) {
+        if (value === 0x7F) {
+            if (!NumarkScratch.shifted) {
+                NumarkScratch.allEffectOff();
+            }
             this.effects[0] = !this.effects[0];
             midi.sendShortMsg(status, control, this.effects[0] ? 0x7F : NumarkScratch.LOW_LIGHT);
         }
-        
+
         this.updateEffects();
-    }
-    
-    this.effect2 = function(channel, control, value, status, group) {
-        if (value == 0x7F) {
-            if (!NumarkScratch.shifted)
-			{
-				NumarkScratch.allEffectOff();
-			}
+    };
+
+    this.effect2 = function(channel, control, value, status, _group) {
+        if (value === 0x7F) {
+            if (!NumarkScratch.shifted) {
+                NumarkScratch.allEffectOff();
+            }
             this.effects[1] = !this.effects[1];
             midi.sendShortMsg(status, control, this.effects[1] ? 0x7F : NumarkScratch.LOW_LIGHT);
         }
 
         this.updateEffects();
-    }
-    
-    this.effect3 = function(channel, control, value, status, group) {
-        if (value == 0x7F) {
-            if (!NumarkScratch.shifted) 
-			{
-				NumarkScratch.allEffectOff();
-			}
+    };
+
+    this.effect3 = function(channel, control, value, status, _group) {
+        if (value === 0x7F) {
+            if (!NumarkScratch.shifted) {
+                NumarkScratch.allEffectOff();
+            }
             this.effects[2] = !this.effects[2];
             midi.sendShortMsg(status, control, this.effects[2] ? 0x7F : NumarkScratch.LOW_LIGHT);
         }
         this.updateEffects();
-    }
+    };
 };
 NumarkScratch.EffectUnit.prototype = new components.ComponentContainer();
 
@@ -194,7 +191,7 @@ NumarkScratch.crossfader.setCurve = function(channel, control, value, _status, _
         engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
         engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
     }
-};                                         
+};
 
 NumarkScratch.crossfader.xFaderReverse = function(channel, control, value, _status, _group) {
     // 0x7F is ON, 0x00 is OFF
@@ -202,8 +199,8 @@ NumarkScratch.crossfader.xFaderReverse = function(channel, control, value, _stat
 };
 
 NumarkScratch.setChannelInput = function(channel, control, value, _status, _group) {
-    const number = (control === 0x57) ? 1 : 2;
-    const channelgroup = "[Channel" + number + "]";
+    var number = (control === 0x57) ? 1 : 2;
+    var channelgroup = "[Channel" + number + "]";
 
     switch (value) {
     case 0x00:  // PC and turn on vinyl control
@@ -221,7 +218,7 @@ NumarkScratch.Deck = function(number) {
     components.Deck.call(this, number);
 
     var channel = number - 1;
-    var deck = this;
+    //var deck = this;
 
     this.pflButton = new components.Button({
         midi: [0x90 + channel, 0x1B],
@@ -263,35 +260,33 @@ NumarkScratch.Deck = function(number) {
     this.loopEncoder = new components.Encoder({
         unshift: function() {
             if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
-                this.input = function(channel, control, value, status, group) {
+                this.input = function(channel, control, _value, _status, _group) {
                     var loopSize = engine.getValue(this.group, "beatloop_size");
-                    if (control == 52 && loopSize >= (1/16)) { //turn left
+                    if (control === 52 && loopSize >= (1/16)) { //turn left
                         engine.setValue(this.group, "beatloop_size", loopSize / 2);
-                    } else if (control == 53 && loopSize < 256) { // turn right
+                    } else if (control === 53 && loopSize < 256) { // turn right
                         engine.setValue(this.group, "beatloop_size", loopSize * 2);
                     }
                 };
-            }
-            else {
-                this.input = function(channel, control, value, status, group) { // if set to true invert function
-                    var direction = (control == 52) ? "Down" : "Up"; //turn left: turn right
+            } else {
+                this.input = function(channel, control, _value, _status, _group) { // if set to true invert function
+                    var direction = (control === 52) ? "Down" : "Up"; //turn left: turn right
                     script.triggerControl("[Library]", "Move" + direction);
                 };
             }
         },
         shift: function() {
             if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
-                this.input = function(channel, control, value, status, group) {
-                    var direction = (control == 52) ? "Down" : "Up"; //turn left: turn right
+                this.input = function(channel, control, _value, _status, _group) {
+                    var direction = (control === 52) ? "Down" : "Up"; //turn left: turn right
                     script.triggerControl("[Library]", "Move" + direction);
                 };
-            }
-            else {
-                this.input = function(channel, control, value, status, group) { // if set to true invert function
+            } else {
+                this.input = function(channel, control, _value, _status, _group) { // if set to true invert function
                     var loopSize = engine.getValue(this.group, "beatloop_size");
-                    if (control == 52 && loopSize >= (1/16)) { //turn left
+                    if (control === 52 && loopSize >= (1/16)) { //turn left
                         engine.setValue(this.group, "beatloop_size", loopSize / 2);
-                    } else if (control == 53 && loopSize < 256) { //turn  right
+                    } else if (control === 53 && loopSize < 256) { //turn  right
                         engine.setValue(this.group, "beatloop_size", loopSize * 2);
                     }
                 };
@@ -303,17 +298,14 @@ NumarkScratch.Deck = function(number) {
         shift: function() {
             if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
                 this.inKey = "LoadSelectedTrack";
-            }
-            else {
+            } else {
                 this.inKey = "beatloop_activate"; // if set to true invert function
             }
         },
         unshift: function() {
             if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
                 this.inKey = "beatloop_activate";
-            }
-            
-            else {
+            } else {
                 this.inKey = "LoadSelectedTrack"; // if set to true invert function
             }
         }
