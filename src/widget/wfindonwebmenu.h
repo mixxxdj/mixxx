@@ -34,7 +34,7 @@ class WFindOnWebMenu : public QMenu {
   private:
     void openInBrowser(WFindOnWebMenu::Service service,
             WFindOnWebMenu::TrackSearchProperties trackSearchProperties,
-            const QString& query);
+            const QString& queryValue);
 
     void populateFromTrackProperties(
             const Track& track,
