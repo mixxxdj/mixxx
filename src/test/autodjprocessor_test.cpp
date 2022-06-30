@@ -83,6 +83,8 @@ class FakeDeck : public BaseTrackPlayer {
         return loadedTrack;
     }
 
+    void setupEqControls() override{};
+
     // This method emulates requesting a track load to a player and emits no
     // signals. Normally, the reader thread attempts to load the file and emits
     // a success or failure signal. To simulate a load success, call
