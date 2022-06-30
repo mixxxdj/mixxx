@@ -475,11 +475,8 @@
                 if (this.max === Component.prototype.max) {
                     this.max = (1 << 14) - 1;
                 }
-                var maxSaved = this.max;
-                // maximum value of MSB
-                this.max = this.max >> 7;
+                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
                 this.input(channel, control, value, status, group);
-                this.max = maxSaved;
             }
             this.MSB = value;
         },
@@ -487,6 +484,8 @@
             // Make sure the first MSB has been received
             if (this.MSB !== undefined) {
                 this.input(channel, control, value, status, group);
+            } else {
+                this._firstLSB = value;
             }
         },
         connect: function() {
