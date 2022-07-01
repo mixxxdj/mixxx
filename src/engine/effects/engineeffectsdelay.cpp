@@ -52,8 +52,8 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
             return;
         }
 
-        int delaySourcePos = (m_delayPos + kiMaxDelay - m_delaySamples +
-                                     iBufferSize / 2) %
+        int delaySourcePos =
+                (m_delayPos + kiMaxDelay - m_delaySamples + iBufferSize / 2) %
                 kiMaxDelay;
         int oldDelaySourcePos =
                 (m_delayPos + kiMaxDelay - m_oldDelaySamples) %
@@ -76,8 +76,8 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
             return;
         }
 
-        double crossMix = 0.0;
-        double crossInc = 2 / static_cast<double>(iBufferSize);
+        float crossMix = 0.0f;
+        float crossInc = 2 / static_cast<float>(iBufferSize);
 
         for (int i = 0; i < iBufferSize; ++i) {
             // Put samples into delay buffer.
@@ -90,7 +90,7 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
                 pOutput[i] = m_pDelayBuffer[oldDelaySourcePos];
             } else {
                 pOutput[i] = static_cast<CSAMPLE>(
-                        m_pDelayBuffer[oldDelaySourcePos] * (1.0 - crossMix));
+                        m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix));
                 pOutput[i] += static_cast<CSAMPLE>(m_pDelayBuffer[delaySourcePos] * crossMix);
                 delaySourcePos = (delaySourcePos + 1) % kiMaxDelay;
 
