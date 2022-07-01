@@ -467,9 +467,16 @@
             // For the first messages, disregard the LSB in case
             // the first LSB is received after the first MSB.
             if (this.MSB === undefined) {
-                this.max = 127;
+                // a flaw in the Pot API does not mandate consumers
+                // to supply an accurate max value when using
+                // this with non-7-bit inputs. We cannot detect
+                // that in the constructor so set the max
+                // appropriately here
+                if (this.max === Component.prototype.max) {
+                    this.max = (1 << 14) - 1;
+                }
+                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
                 this.input(channel, control, value, status, group);
-                this.max = 16383;
             }
             this.MSB = value;
         },
@@ -477,6 +484,8 @@
             // Make sure the first MSB has been received
             if (this.MSB !== undefined) {
                 this.input(channel, control, value, status, group);
+            } else {
+                this._firstLSB = value;
             }
         },
         connect: function() {
