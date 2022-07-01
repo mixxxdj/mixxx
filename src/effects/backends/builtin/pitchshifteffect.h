@@ -46,7 +46,10 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
-    SINT getGroupDelayFrames() override;
+    // Returns RubberBand process latency.
+    SINT getGroupDelayFrames() override {
+        return m_groupDelayFrames;
+    }
 
   private:
     QString debugString() const {

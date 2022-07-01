@@ -69,11 +69,6 @@ void PitchShiftEffect::loadEngineEffectParameters(
     m_pPitchParameter = parameters.value("pitch");
 }
 
-// Returns RubberBand process latency.
-SINT PitchShiftEffect::getGroupDelayFrames() {
-    return m_groupDelayFrames;
-}
-
 void PitchShiftEffect::processChannel(
         PitchShiftGroupState* pState,
         const CSAMPLE* pInput,
