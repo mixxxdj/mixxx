@@ -18,6 +18,9 @@
 
 namespace {
 
+static_assert(mixxx::kEngineChannelCount == mixxx::audio::ChannelCount::stereo(),
+        "EngineEffectsDelayTest requires stereo input signal.");
+
 class EngineEffectsDelayTest : public MixxxTest {
   protected:
     void SetUp() override {
