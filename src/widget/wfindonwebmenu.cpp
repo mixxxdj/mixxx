@@ -89,12 +89,12 @@ WFindOnWebMenu::WFindOnWebMenu(QWidget* parent)
 void WFindOnWebMenu::addSubmenusForServices(const Track& track) {
     WFindOnWebMenu::populateFromTrackProperties(
             track,
-            QString(tr("SoundCloud")),
+            QStringLiteral("SoundCloud"),
             Service::SoundCloud);
     WFindOnWebMenu::populateFromTrackProperties(
-            track, QString(tr("LastFm")), Service::LastFm);
+            track, QStringLiteral("LastFm"), Service::LastFm);
     WFindOnWebMenu::populateFromTrackProperties(
-            track, QString(tr("Discogs")), Service::Discogs);
+            track, QStringLiteral("Discogs"), Service::Discogs);
 }
 
 void WFindOnWebMenu::addActions(Service service,
