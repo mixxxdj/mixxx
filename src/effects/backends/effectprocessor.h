@@ -101,9 +101,9 @@ class EffectProcessor {
 
     /// This method is used for obtaining the delay of the output buffer
     /// compared to the input buffer based on the internal effect processing.
-    /// The method returns the number of frames by which the input buffer
-    /// needs to be delayed so that buffers at the input and output
-    /// of the effect overlap. The return value represents the current effect
+    /// The method returns the number of frames by which the dry signal
+    /// needs to be delayed so that buffers for the dry and wet signal (output
+    /// of the effect) overlap. The return value represents the current effect
     /// latency. The value is used in the EngineEffectChain::process method
     /// to calculate the resulting latency of the effect chain. Based
     /// on the sum of the delay value of every effect in the effect chain,
