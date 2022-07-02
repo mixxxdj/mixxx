@@ -500,6 +500,11 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     if (!filter.isEmpty()) {
         filter.prepend("WHERE ");
     }
+    qDebug() << "   .";
+    qDebug() << "   .";
+    qDebug() << "   query filter:" << filter;
+    qDebug() << "   .";
+    qDebug() << "   .";
 
     QString queryString = QString("SELECT %1 FROM %2 %3 %4")
             .arg(m_idColumn, m_tableName, filter, orderByClause);

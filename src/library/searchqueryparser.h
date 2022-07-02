@@ -32,6 +32,8 @@ class SearchQueryParser {
     QString getTextArgument(QString argument,
                             QStringList* tokens) const;
 
+    QString parseDateAddedArgument(const QString& argument, bool* ok) const;
+
     TrackCollection* m_pTrackCollection;
     QStringList m_textFilters;
     QStringList m_numericFilters;

@@ -10,6 +10,12 @@ constexpr char kFuzzyPrefix[] = "~";
 const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
         QStringLiteral(" (?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"));
 
+const QRegularExpression kDateOperatorRegex(QStringLiteral("^(?<op><=|>=|<|>)(?<arg>\\d{4,})(.*)"));
+const QRegularExpression kDateWordRegex(QStringLiteral("^(last)(week|month|year)$"));
+const QRegularExpression kDateYyyyMmDdRegex(QStringLiteral("^(\\d{4}-\\d{2}-\\d{2})$"));
+const QRegularExpression kDateYyyyMmRegex(QStringLiteral("^(\\d{4}-\\d{2})"));
+const QRegularExpression kDateYyyyRegex(QStringLiteral("^(\\d{4})"));
+
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     : m_pTrackCollection(pTrackCollection) {
     m_textFilters << "artist"
@@ -33,7 +39,10 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
                      << "added"
                      << "dateadded"
                      << "datetime_added"
-                     << "date_added";
+                     << "date_added"
+                     << "lastplayed"
+                     << "last_played"
+                     << "last_played_at";
     m_ignoredColumns << "crate";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
@@ -221,8 +230,31 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                            field == "added" ||
                            field == "dateadded") {
                     field = "datetime_added";
-                    pNode = std::make_unique<TextFilterNode>(
-                        m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                    bool special = false;
+                    QString dateArg = parseDateAddedArgument(argument, &special);
+                    if (special) {
+                        //pNode = std::make_unique<SqlNode>(dateArg);
+                        pNode = std::make_unique<SqlNode>(field + dateArg);
+                    } else {
+                        pNode = std::make_unique<TextFilterNode>(
+                                m_pTrackCollection->database(),
+                                m_fieldToSqlColumns[field],
+                                argument);
+                    }
+                } else if (field == "lastplayed" ||
+                        field == "last_played" ||
+                        field == "last_played_at") {
+                    field = "last_played_at";
+                    bool special = false;
+                    QString dateArg = parseDateAddedArgument(argument, &special);
+                    if (special) {
+                        pNode = std::make_unique<SqlNode>(field + dateArg);
+                    } else {
+                        pNode = std::make_unique<TextFilterNode>(
+                                m_pTrackCollection->database(),
+                                m_fieldToSqlColumns[field],
+                                argument);
+                    }
                 }
             }
         } else {
@@ -320,4 +352,97 @@ bool SearchQueryParser::queryIsLessSpecific(const QString& original, const QStri
         return true;
     }
     return false;
+}
+
+QString SearchQueryParser::parseDateAddedArgument(const QString& argRaw,
+        bool* special) const {
+    *special = false;
+    qDebug() << "   .";
+    qDebug() << "   .";
+    qDebug() << "   parseDateAddedArgument";
+    qDebug() << "   .";
+    QString date;
+    QString query;
+
+    // First, try to find literal date args
+    // TODO Add parser for 'lastNN[days|weeks|months|years]'
+    QRegularExpressionMatch wordMatch = kDateWordRegex.match(argRaw);
+    if (wordMatch.hasMatch()) {
+        QString range = wordMatch.captured(2);
+        qDebug() << "   .";
+        qDebug() << "   .";
+        qDebug() << "   wordmatch";
+        if (range == "week") {
+            date = "datetime('now', '-1 weeks')";
+        } else if (range == "month") {
+            date = "datetime('now', '-1 months')";
+        } else { // "year"
+            date = "datetime('now', '-1 years')";
+        }
+        *special = true;
+        query = QString(" > %1").arg(date);
+        return query;
+    } else {
+        qDebug() << "   .";
+        qDebug() << "   .";
+        qDebug() << "   no wordMatch";
+        qDebug() << "   .";
+    }
+
+    // Second, try to find operator + numerical args
+    QRegularExpressionMatch opMatch = kDateOperatorRegex.match(argRaw);
+    const QString op = opMatch.captured("op");
+    const QString arg = opMatch.captured("arg") + opMatch.captured(3);
+    if (!opMatch.hasMatch()) {
+        qDebug() << "   no opMatch";
+        return QString();
+    }
+    qDebug() << "   .";
+    qDebug() << "   hasOpMatch" << opMatch.hasMatch();
+    qDebug() << "     op: " << op;
+    qDebug() << "     arg:" << arg;
+    qDebug() << "   .";
+    qDebug() << "   .";
+
+    QRegularExpressionMatch yyyymmddMatch = kDateYyyyMmDdRegex.match(arg);
+    QRegularExpressionMatch yyyymmMatch = kDateYyyyMmRegex.match(arg);
+    QRegularExpressionMatch yyyyMatch = kDateYyyyRegex.match(arg);
+
+    // Search numerical dates, fill the day and/or month depending on the operator.
+    // Note we don't validate 'yyyy-mm-dd'
+    if (yyyymmddMatch.hasMatch()) {
+        // Search complete date 'yyyy-mm-dd'
+        date = yyyymmddMatch.captured(1);
+    } else if (yyyymmMatch.hasMatch()) {
+        // Search for 'yyyy-mm'.
+        QString yyyymm = yyyymmMatch.captured(1);
+        if (op == "<" || op == ">=") {
+            // add first day of month
+            date = yyyymm + QStringLiteral("-01");
+        } else { // > || <=
+            // add last day of month
+            date = yyyymm +
+                    QString::number(QDate::fromString(
+                            QString(yyyymm + "-01"), Qt::ISODate)
+                                            .daysInMonth());
+        }
+    } else if (yyyyMatch.hasMatch()) {
+        QString yyyy = yyyyMatch.captured(1);
+        // these queries won't work with operators
+        //query = QString("YEAR(datetime_added) %1 '%2'").arg(op, yyyyMatch.captured(1));
+        //query = QString("EXTRACT(YEAR FROM datetime_added) %1 '%2'").arg(op, yyyy);
+        //query = QString("DATE(datetime_added) %1 datetime(%2)").arg(op, yyyyMatch.captured(1));
+        // this works with all ops
+        if (op == "<" || op == ">=") {
+            date = yyyy + "-01-01";
+        } else if (op == ">" || op == "<=") {
+            date = yyyy + "-12-31";
+        }
+    } else {
+        return QString();
+    }
+
+    *special = true;
+    query = QString(" %1 '%2'").arg(op, date);
+    return query;
 }
