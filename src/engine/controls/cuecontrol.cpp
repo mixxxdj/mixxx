@@ -125,6 +125,11 @@ CueControl::CueControl(const QString& group,
     m_pCuePoint->set(Cue::kNoPosition);
 
     m_pCueMode = new ControlObject(ConfigKey(group, "cue_mode"));
+
+    m_pPassthrough = make_parented<ControlProxy>(group, "passthrough");
+    m_pPassthrough->connectValueChanged(this,
+            &CueControl::passthroughChanged,
+            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
@@ -417,6 +422,52 @@ void CueControl::connectControls() {
                 this,
                 &CueControl::hotcueClear,
                 Qt::DirectConnection);
+    }
+}
+
+void CueControl::disconnectControls() {
+    disconnect(m_pCueSet, nullptr, this, nullptr);
+    disconnect(m_pCueClear, nullptr, this, nullptr);
+    disconnect(m_pCueGoto, nullptr, this, nullptr);
+    disconnect(m_pCueGotoAndPlay, nullptr, this, nullptr);
+    disconnect(m_pCuePlay, nullptr, this, nullptr);
+    disconnect(m_pCueGotoAndStop, nullptr, this, nullptr);
+    disconnect(m_pCuePreview, nullptr, this, nullptr);
+    disconnect(m_pCueCDJ, nullptr, this, nullptr);
+    disconnect(m_pCueDefault, nullptr, this, nullptr);
+    disconnect(m_pPlayStutter, nullptr, this, nullptr);
+
+    disconnect(m_pIntroStartSet, nullptr, this, nullptr);
+    disconnect(m_pIntroStartClear, nullptr, this, nullptr);
+    disconnect(m_pIntroStartActivate, nullptr, this, nullptr);
+    disconnect(m_pIntroEndSet, nullptr, this, nullptr);
+    disconnect(m_pIntroEndClear, nullptr, this, nullptr);
+    disconnect(m_pIntroEndActivate, nullptr, this, nullptr);
+
+    disconnect(m_pOutroStartSet, nullptr, this, nullptr);
+    disconnect(m_pOutroStartClear, nullptr, this, nullptr);
+    disconnect(m_pOutroStartActivate, nullptr, this, nullptr);
+    disconnect(m_pOutroEndSet, nullptr, this, nullptr);
+    disconnect(m_pOutroEndClear, nullptr, this, nullptr);
+    disconnect(m_pOutroEndActivate, nullptr, this, nullptr);
+
+    disconnect(m_pHotcueFocusColorPrev, nullptr, this, nullptr);
+    disconnect(m_pHotcueFocusColorNext, nullptr, this, nullptr);
+
+    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+        disconnect(pControl, nullptr, this, nullptr);
+    }
+}
+
+void CueControl::passthroughChanged(double enabled) {
+    if (enabled > 0) {
+        // If passthrough was enabled seeking and playing is prohibited, and the
+        // waveform and overview are blocked.
+        // Disconnect all cue controls to prevent cue changes without UI feedback.
+        disconnectControls();
+    } else {
+        // Reconnect all controls when deck returns to regular mode.
+        connectControls();
     }
 }
 
