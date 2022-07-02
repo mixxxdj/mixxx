@@ -83,7 +83,7 @@ class EngineEffectChain final : public EffectsRequestHandler {
     mixxx::SampleBuffer m_buffer2;
     mixxx::SampleBuffer m_tmpBuffer;
     ChannelHandleMap<ChannelHandleMap<ChannelStatus>> m_chainStatusForChannelMatrix;
-    std::unique_ptr<EngineEffectsDelay> m_pEffectsDelay;
+    EngineEffectsDelay m_effectsDelay;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };

@@ -24,8 +24,6 @@ EngineEffectChain::EngineEffectChain(const QString& group,
         }
         m_chainStatusForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
-
-    m_pEffectsDelay = std::make_unique<EngineEffectsDelay>();
 }
 
 EngineEffectChain::~EngineEffectChain() {
@@ -320,8 +318,8 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
             }
         }
 
-        m_pEffectsDelay->setDelayFrames(effectChainGroupDelayFrames);
-        m_pEffectsDelay->process(pIn, m_tmpBuffer.data(), numSamples);
+        m_effectsDelay.setDelayFrames(effectChainGroupDelayFrames);
+        m_effectsDelay.process(pIn, m_tmpBuffer.data(), numSamples);
 
         SampleUtil::copy(pIn, m_tmpBuffer.data(), numSamples);
 
