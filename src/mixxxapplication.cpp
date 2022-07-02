@@ -16,6 +16,7 @@
 #include "util/color/rgbcolor.h"
 #include "util/fileinfo.h"
 #include "util/math.h"
+#include "remote/remote.h"
 
 // When linking Qt statically, the Q_IMPORT_PLUGIN is needed for each linked plugin.
 // https://doc.qt.io/qt-5/plugins-howto.html#details-of-linking-static-plugins
@@ -105,6 +106,11 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::audio::FramePos>("mixxx::audio::FramePos");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
+    
+    // Mixer Remote App
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    qRegisterMetaType<mixxx::RemoteControl>("mixxx::RemoteControl");
+#endif
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
