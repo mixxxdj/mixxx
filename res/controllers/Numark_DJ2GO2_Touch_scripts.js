@@ -91,7 +91,6 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
         key: "super1"
     });
 
-    engine.setValue(this.currentDeck, "rate_dir", -1);
     this.tempoFader = new components.Pot({
         group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
         midi: [0xB0 + midiChannel, 0x09],
