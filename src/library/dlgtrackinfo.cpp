@@ -247,7 +247,8 @@ void DlgTrackInfo::populateFields(const Track& track) {
 
     // Non-editable fields
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
-    txtDateAdded->setText(mixxx::displayLocalDateTime(track.getDateAdded()));
+    txtDateAdded->setText(mixxx::displayLocalDateTime(
+            mixxx::localDateTimeFromUtc(track.getDateAdded())));
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
     txtBitrate->setText(
