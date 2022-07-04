@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3.0+">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.4.0+">
     <info>
         <name>Denon Prime 4 - Mixxx Mapping</name>
         <author>Levi "Whanake" Williams</author>
@@ -27,9 +27,7 @@
             </control>
 
             <control> <!-- FX1 - Effect 1 Button -->
-              <group>[EffectRack1_EffectUnit1_Effect1]</group>
-              <key>enabled</key>
-              <description>MIDI Learned from 10 messages.</description>
+			  <group>[EffectRack1_EffectUnit1_Effect1]</group>
               <status>0x96</status>
               <midino>0x06</midino>
               <options>
@@ -234,7 +232,7 @@
             <control> <!-- Deck 2 - FX1 Button -->
               <group>[EffectRack1_EffectUnit1]</group>
               <key>group_[Channel2]_enable</key>
-              <description>MIDI Learned from 54 messages.</description>
+              <description>MIDI Learned from 50 messages.</description>
               <status>0x91</status>
               <midino>0x01</midino>
               <options>
@@ -244,7 +242,7 @@
             <control> <!-- Deck 2 - FX2 Button -->
               <group>[EffectRack1_EffectUnit2]</group>
               <key>group_[Channel2]_enable</key>
-              <description>MIDI Learned from 56 messages.</description>
+              <description>MIDI Learned from 52 messages.</description>
               <status>0x91</status>
               <midino>0x02</midino>
               <options>
@@ -254,7 +252,7 @@
             <control> <!-- Deck 2 - Gain Knob -->
                 <group>[Channel2]</group>
                 <key>pregain</key>
-                <description>MIDI Learned from 414 messages.</description>
+                <description>MIDI Learned from 576 messages.</description>
                 <status>0xB1</status>
                 <midino>0x03</midino>
                 <options>
@@ -264,7 +262,7 @@
             <control> <!-- Deck 2 - EQ High Knob -->
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>parameter3</key>
-                <description>MIDI Learned from 460 messages.</description>
+                <description>MIDI Learned from 540 messages.</description>
                 <status>0xB1</status>
                 <midino>0x04</midino>
                 <options>
@@ -274,7 +272,7 @@
             <control> <!-- Deck 2 - EQ Mid Knob -->
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>parameter2</key>
-                <description>MIDI Learned from 374 messages.</description>
+                <description>MIDI Learned from 528 messages.</description>
                 <status>0xB1</status>
                 <midino>0x06</midino>
                 <options>
@@ -284,7 +282,7 @@
             <control> <!-- Deck 2 - EQ Low Knob -->
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>parameter1</key>
-                <description>MIDI Learned from 480 messages.</description>
+                <description>MIDI Learned from 518 messages.</description>
                 <status>0xB1</status>
                 <midino>0x08</midino>
                 <options>
@@ -304,7 +302,7 @@
             <control> <!-- Deck 2 - PFL Button -->
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <description>MIDI Learned from 4 messages.</description>
+                <description>MIDI Learned from 2 messages.</description>
                 <status>0x91</status>
                 <midino>0x0D</midino>
                 <options>
@@ -325,7 +323,7 @@
             <control> <!-- Deck 3 - FX1 Button -->
               <group>[EffectRack1_EffectUnit1]</group>
               <key>group_[Channel3]_enable</key>
-              <description>MIDI Learned from 58 messages.</description>
+              <description>MIDI Learned from 50 messages.</description>
               <status>0x92</status>
               <midino>0x01</midino>
               <options>
@@ -335,7 +333,7 @@
             <control> <!-- Deck 3 - FX2 Button -->
               <group>[EffectRack1_EffectUnit2]</group>
               <key>group_[Channel3]_enable</key>
-              <description>MIDI Learned from 60 messages.</description>
+              <description>MIDI Learned from 52 messages.</description>
               <status>0x92</status>
               <midino>0x02</midino>
               <options>
@@ -345,7 +343,7 @@
             <control> <!-- Deck 3 - Gain Knob -->
                 <group>[Channel3]</group>
                 <key>pregain</key>
-                <description>MIDI Learned from 663 messages.</description>
+                <description>MIDI Learned from 576 messages.</description>
                 <status>0xB2</status>
                 <midino>0x03</midino>
                 <options>
@@ -355,7 +353,7 @@
             <control> <!-- Deck 3 - EQ High Knob -->
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>parameter3</key>
-                <description>MIDI Learned from 476 messages.</description>
+                <description>MIDI Learned from 540 messages.</description>
                 <status>0xB2</status>
                 <midino>0x04</midino>
                 <options>
@@ -365,7 +363,7 @@
             <control> <!-- Deck 3 - EQ Mid Knob -->
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>parameter2</key>
-                <description>MIDI Learned from 510 messages.</description>
+                <description>MIDI Learned from 528 messages.</description>
                 <status>0xB2</status>
                 <midino>0x06</midino>
                 <options>
@@ -375,7 +373,7 @@
             <control> <!-- Deck 3 - EQ Low Knob -->
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>parameter1</key>
-                <description>MIDI Learned from 768 messages.</description>
+                <description>MIDI Learned from 518 messages.</description>
                 <status>0xB2</status>
                 <midino>0x08</midino>
                 <options>
@@ -395,7 +393,7 @@
             <control> <!-- Deck 3 - PFL Button -->
                 <group>[Channel3]</group>
                 <key>pfl</key>
-                <description>MIDI Learned from 6 messages.</description>
+                <description>MIDI Learned from 2 messages.</description>
                 <status>0x92</status>
                 <midino>0x0D</midino>
                 <options>
@@ -416,7 +414,7 @@
             <control> <!-- Deck 4 - FX1 Button -->
               <group>[EffectRack1_EffectUnit1]</group>
               <key>group_[Channel4]_enable</key>
-              <description>MIDI Learned from 62 messages.</description>
+              <description>MIDI Learned from 50 messages.</description>
               <status>0x93</status>
               <midino>0x01</midino>
               <options>
@@ -426,7 +424,7 @@
             <control> <!-- Deck 4 - FX2 Button -->
               <group>[EffectRack1_EffectUnit2]</group>
               <key>group_[Channel4]_enable</key>
-              <description>MIDI Learned from 64 messages.</description>
+              <description>MIDI Learned from 52 messages.</description>
               <status>0x93</status>
               <midino>0x02</midino>
               <options>
@@ -436,7 +434,7 @@
             <control> <!-- Deck 4 - Gain Knob -->
                 <group>[Channel4]</group>
                 <key>pregain</key>
-                <description>MIDI Learned from 884 messages.</description>
+                <description>MIDI Learned from 576 messages.</description>
                 <status>0xB3</status>
                 <midino>0x03</midino>
                 <options>
@@ -446,7 +444,7 @@
             <control> <!-- Deck 4 - EQ High Knob -->
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>parameter3</key>
-                <description>MIDI Learned from 504 messages.</description>
+                <description>MIDI Learned from 540 messages.</description>
                 <status>0xB3</status>
                 <midino>0x04</midino>
                 <options>
@@ -456,7 +454,7 @@
             <control> <!-- Deck 4 - EQ Mid Knob -->
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>parameter2</key>
-                <description>MIDI Learned from 760 messages.</description>
+                <description>MIDI Learned from 528 messages.</description>
                 <status>0xB3</status>
                 <midino>0x06</midino>
                 <options>
@@ -466,7 +464,7 @@
             <control> <!-- Deck 4 - EQ Low Knob -->
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>parameter1</key>
-                <description>MIDI Learned from 340 messages.</description>
+                <description>MIDI Learned from 518 messages.</description>
                 <status>0xB3</status>
                 <midino>0x08</midino>
                 <options>
@@ -486,7 +484,7 @@
             <control> <!-- Deck 4 - PFL Button -->
                 <group>[Channel4]</group>
                 <key>pfl</key>
-                <description>MIDI Learned from 8 messages.</description>
+                <description>MIDI Learned from 2 messages.</description>
                 <status>0x93</status>
                 <midino>0x0D</midino>
                 <options>
@@ -503,6 +501,7 @@
                     <normal/>
                 </options>
             </control>
+
 
             <!-- LEFT DECK (Deck A) -->
             <control> <!-- Deck A - Loop In Button -->
@@ -525,6 +524,26 @@
                 <Script-Binding/>
               </options>
             </control>
+			<control> <!-- Deck A - Censor Button ON -->
+			  <group>[Channel1]</group>
+			  <key>Prime4.leftDeck.censorButton.input</key>
+			  <description>Censor + Reverse button for left deck</description>
+			  <status>0x94</status>
+			  <midino>0x01</midino>
+			  <options>
+				<Script-Binding/>
+			  </options>
+			</control>
+			<control> <!-- Deck A - Censor Button OFF -->
+			  <group>[Channel1]</group>
+			  <key>Prime4.leftDeck.censorButton.input</key>
+			  <description>Censor + Reverse button for left deck</description>
+			  <status>0x84</status>
+			  <midino>0x01</midino>
+			  <options>
+				<Script-Binding/>
+			  </options>
+			</control>
             <control> <!-- Deck A - Track Skip Back Button -->
               <group></group>
               <key></key>
@@ -575,11 +594,21 @@
                 <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Deck A - Cue Button -->
+            <control> <!-- Deck A - Cue Button ON -->
               <group>[Channel1]</group>
               <key>Prime4.leftDeck.cueButton.input</key>
               <description>Deck A - Cue Button</description>
               <status>0x94</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Cue Button OFF -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.cueButton.input</key>
+              <description>Deck A - Cue Button</description>
+              <status>0x84</status>
               <midino>0x09</midino>
               <options>
                 <Script-Binding/>
@@ -696,10 +725,20 @@
               </options>
             </control>
             <control> <!-- Deck A - Slip Button -->
-              <group></group>
-              <key></key>
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.slipButton.input</key>
               <description>Slip Mode</description>
               <status>0x94</status>
+              <midino>0x24</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Slip Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.slipButton.input</key>
+              <description>Slip Mode</description>
+              <status>0x84</status>
               <midino>0x24</midino>
               <options>
                 <Script-Binding/>
@@ -848,6 +887,26 @@
                 <Script-Binding/>
               </options>
             </control>
+			<control> <!-- Deck B - Censor Button ON -->
+			  <group>[Channel2]</group>
+			  <key>Prime4.rightDeck.censorButton.input</key>
+			  <description>Censor + Reverse button for left deck</description>
+			  <status>0x95</status>
+			  <midino>0x01</midino>
+			  <options>
+				<Script-Binding/>
+			  </options>
+			</control>
+			<control> <!-- Deck B - Censor Button OFF -->
+			  <group>[Channel2]</group>
+			  <key>Prime4.rightDeck.censorButton.input</key>
+			  <description>Censor + Reverse button for left deck</description>
+			  <status>0x85</status>
+			  <midino>0x01</midino>
+			  <options>
+				<Script-Binding/>
+			  </options>
+			</control>
             <control> <!-- Deck B - Track Skip Back Button -->
               <group></group>
               <key></key>
@@ -898,9 +957,9 @@
                 <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Deck B - Cue Button -->
-              <group></group>
-              <key></key>
+            <control> <!-- Deck B - Cue Button ON -->
+              <group>[Channel2]</group>
+              <key>Prime4.rightDeck.cueButton.input</key>
               <description>Cue</description>
               <status>0x95</status>
               <midino>0x09</midino>
@@ -908,9 +967,19 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck B - Cue Button OFF -->
+              <group>[Channel2]</group>
+              <key>Prime4.rightDeck.cueButton.input</key>
+              <description>Cue</description>
+              <status>0x85</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck B - Play/Stop Button / Stutter Button -->
-              <group></group>
-              <key></key>
+              <group>[Channel2]</group>
+			  <key>Prime4.rightDeck.playButton.input</key>
               <description>Play/Stop</description>
               <status>0x95</status>
               <midino>0x0A</midino>

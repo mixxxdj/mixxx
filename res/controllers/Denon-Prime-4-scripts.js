@@ -1,8 +1,12 @@
+// eslint-disable-next-line-no-var
 var Prime4 = {};
 
 Prime4.init = function() {
     Prime4.leftDeck = new Prime4.Deck([1, 3], 1);
     Prime4.rightDeck = new Prime4.Deck([2, 4], 2);
+    components.Button.prototype.isPress = function(channel, control, value, status) {
+        return (status & 0xF0) === 0x90;
+    };
     // TODO: Add initialize sequence
 };
 
@@ -11,11 +15,32 @@ Prime4.shutdown = function() {
 };
 
 Prime4.Deck = function(deckNumbers, midiChannel) {
+
     components.Deck.call(this, deckNumbers);
-    this.playButton = new components.PlayButton([0x90 + midiChannel, 0x0A]);
-    this.cueButton = new components.CueButton([0x90 + midiChannel, 0x09]);
+
+    this.slipButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x24],
+        inKey: "slip_enabled",
+        outKey: "slip_enabled",
+        //type: Button.prototype.types.toggle,
+    });
+
+    this.censorButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x01],
+        key: "reverseroll",
+    });
+
     this.syncButton = new components.SyncButton([0x90 + midiChannel, 0x08]);
-    // TODO: Define necessary components
+
+    this.cueButton = new components.CueButton({
+        midi: [0x90 + midiChannel, 0x09],
+        off: 0x01,
+    });
+
+    this.playButton = new components.PlayButton({
+        midi: [0x90 + midiChannel, 0x0A],
+        off: 0x01,
+    });
 
     this.reconnectComponents(function(c) {
         if (c.group === undefined) {
@@ -36,8 +61,7 @@ Prime4.Deck.prototype = new components.Deck();
 // VIEW button (Library fullscreen?)
 //
 // DECK 1 SECTION
-// SHIFT + Play/Stop button 
-// CUE button 
+// SHIFT + Play/Stop button
 // SYNC button
 // BEAT JUMP buttons
 // SKIP buttons
