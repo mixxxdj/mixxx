@@ -6,7 +6,7 @@
 
 #include "control/controlobject.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/analysisfeature.h"
+#include "library/analysis/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"

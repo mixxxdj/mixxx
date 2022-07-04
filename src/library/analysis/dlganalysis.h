@@ -4,13 +4,13 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzerscheduledtrack.h"
-#include "library/analysislibrarytablemodel.h"
+#include "library/analysis/analysislibrarytablemodel.h"
+#include "library/analysis/ui_dlganalysis.h"
 #include "library/libraryview.h"
-#include "library/ui_dlganalysis.h"
 #include "preferences/usersettings.h"
 
-class WAnalysisLibraryTableView;
 class Library;
+class WAnalysisLibraryTableView;
 class WLibrary;
 class QItemSelection;
 

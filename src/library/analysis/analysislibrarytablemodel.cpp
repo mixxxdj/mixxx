@@ -1,4 +1,4 @@
-#include "library/analysislibrarytablemodel.h"
+#include "library/analysis/analysislibrarytablemodel.h"
 
 #include "moc_analysislibrarytablemodel.cpp"
 

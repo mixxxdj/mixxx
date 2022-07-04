@@ -1,7 +1,8 @@
-#include "library/dlganalysis.h"
+#include "library/analysis/dlganalysis.h"
 
 #include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzerscheduledtrack.h"
+#include "library/analysis/ui_dlganalysis.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "moc_dlganalysis.cpp"
