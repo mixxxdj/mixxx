@@ -443,6 +443,6 @@ QString SearchQueryParser::parseDateAddedArgument(const QString& argRaw,
     }
 
     *special = true;
-    query = QString(" %1 '%2'").arg(op, date);
+    query = QString(" %1 datetime('%2', 'utc')").arg(op, date);
     return query;
 }
