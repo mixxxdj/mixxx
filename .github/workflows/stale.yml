@@ -24,3 +24,4 @@ jobs:
         stale-pr-label: "stale"
         days-before-stale: 90
         days-before-close: -1
+        exempt-pr-labels: "needs review"
