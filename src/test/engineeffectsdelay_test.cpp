@@ -103,7 +103,7 @@ TEST_F(EngineEffectsDelayTest, WholeBufferDelay) {
 
     CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
     CSAMPLE zeroBuffer[] = {0.0, 0.0, 0.0, 0.0};
-    CSAMPLE firstExpectedResult[] = {-100.0, 100.0, -99.0, 49.5};
+    CSAMPLE firstExpectedResult[] = {-100.0, 75.0, -49.5, 24.75};
 
     CSAMPLE* secondExpectedResult = inputBuffer;
     CSAMPLE* thirdExpectedResult = zeroBuffer;
@@ -131,7 +131,7 @@ TEST_F(EngineEffectsDelayTest, HalfBufferDelay) {
 
     CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
     CSAMPLE zeroBuffer[] = {0.0, 0.0, 0.0, 0.0};
-    CSAMPLE firstExpectedResult[] = {-100.0, 100.0, -99.0, 99.5};
+    CSAMPLE firstExpectedResult[] = {-100.0, 75.0, -99.5, 99.75};
     CSAMPLE secondExpectedResult[] = {-99.0, 99.0, -100.0, 100.0};
     CSAMPLE thirdExpectedResult[] = {-99.0, 99.0, 0.0, 0.0};
 
@@ -159,7 +159,7 @@ TEST_F(EngineEffectsDelayTest, MisalignedDelayAccordingToBuffer) {
 
     CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
     CSAMPLE zeroBuffer[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    CSAMPLE firstExpectedResult[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 73.5, -98.5, 99.25};
+    CSAMPLE firstExpectedResult[] = {-100.0, 87.5, -74.25, 61.875, -49.0, 36.75, -99.25, 99.625};
     CSAMPLE secondExpectedResult[] = {-99.0, 99.0, -98.0, 98.0, -97.0, 97.0, -100.0, 100.0};
     CSAMPLE thirdExpectedResult[] = {-99.0, 99.0, -98.0, 98.0, -97.0, 97.0, 0.0, 0.0};
 
@@ -186,9 +186,9 @@ TEST_F(EngineEffectsDelayTest, CrossfadeBetweenTwoNonZeroDelays) {
 
     CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
 
-    CSAMPLE firstExpectedResult[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 98.5, -98, 98.5};
+    CSAMPLE firstExpectedResult[] = {-100.0, 87.5, -74.25, 61.875, -99.0, 99.25, -98.5, 98.75};
     CSAMPLE secondExpectedResult[] = {-98.0, 98.0, -97.0, 97.0, -100.0, 100.0, -99.0, 99.0};
-    CSAMPLE thirdExpectedResult[] = {-98.0, 98.0, -97.0, 97.0, -100.0, 99.5, -98.0, 97.5};
+    CSAMPLE thirdExpectedResult[] = {-98.0, 98.25, -97.5, 97.75, -99.0, 98.75, -97.5, 97.25};
     CSAMPLE fourthExpectedResult[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
 
     CSAMPLE* pOutput = SampleUtil::alloc(numSamples);
@@ -220,9 +220,9 @@ TEST_F(EngineEffectsDelayTest, CrossfadeSecondDelayGreaterThanInputBufferSize) {
 
     CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
 
-    CSAMPLE firstExpectedResult[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 98.5, -98.0, 98.5};
+    CSAMPLE firstExpectedResult[] = {-100.0, 87.5, -74.25, 61.875, -99.0, 99.25, -98.5, 98.75};
     CSAMPLE secondExpectedResult[] = {-98.0, 98.0, -97.0, 97.0, -100.0, 100.0, -99.0, 99.0};
-    CSAMPLE thirdExpectedResult[] = {-98.0, 98.0, -97.0, 97.0, -100.0, 99.25, -99.5, 99.75};
+    CSAMPLE thirdExpectedResult[] = {-98.0, 98.125, -97.25, 97.375, -98.5, 98.125, -99.75, 99.875};
     CSAMPLE fourthExpectedResult[] = {-99.0, 99.0, -98.0, 98.0, -97.0, 97.0, -100.0, 100.0};
 
     CSAMPLE* pOutput = SampleUtil::alloc(numSamples);
@@ -254,11 +254,11 @@ TEST_F(EngineEffectsDelayTest, CrossfadeBetweenThreeNonZeroDelays) {
 
     CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
 
-    CSAMPLE firstExpectedResult[] = {-100.0, 100.0, -99.0, 99.0, -98.0, 73.5, -98.5, 99.25};
+    CSAMPLE firstExpectedResult[] = {-100.0, 87.5, -74.25, 61.875, -49.0, 36.75, -99.25, 99.625};
     CSAMPLE secondExpectedResult[] = {-99.0, 99.0, -98.0, 98.0, -97.0, 97.0, -100.0, 100.0};
-    CSAMPLE thirdExpectedResult[] = {-99.0, 99.0, -98.0, 98.0, -97.0, 97.5, -99.0, 98.5};
+    CSAMPLE thirdExpectedResult[] = {-99.0, 98.75, -98.5, 98.75, -98.0, 98.25, -98.5, 98.25};
     CSAMPLE fourthExpectedResult[] = {-97.0, 97.0, -100.0, 100.0, -99.0, 99.0, -98.0, 98.0};
-    CSAMPLE fifthExpectedResult[] = {-97.0, 97.0, -100.0, 100.0, -99.0, 98.5, -99.0, 99.5};
+    CSAMPLE fifthExpectedResult[] = {-97.0, 97.25, -99.5, 99.25, -98.0, 97.75, -99.5, 99.75};
     CSAMPLE sixthExpectedResult[] = {-99.0, 99.0, -98.0, 98.0, -97.0, 97.0, -100.0, 100.0};
 
     CSAMPLE* pOutput = SampleUtil::alloc(numSamples);

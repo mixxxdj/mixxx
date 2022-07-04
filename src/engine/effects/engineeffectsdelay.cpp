@@ -1,5 +1,6 @@
 #include "engine/effects/engineeffectsdelay.h"
 
+#include "util/rampingvalue.h"
 #include "util/sample.h"
 
 namespace {
@@ -53,7 +54,7 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
         }
 
         int delaySourcePos =
-                (m_delayPos + kiMaxDelay - m_delaySamples + iBufferSize / 2) %
+                (m_delayPos + kiMaxDelay - m_delaySamples) %
                 kiMaxDelay;
         int oldDelaySourcePos =
                 (m_delayPos + kiMaxDelay - m_oldDelaySamples) %
@@ -76,28 +77,25 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
             return;
         }
 
-        float crossMix = 0.0f;
-        float crossInc = 2 / static_cast<float>(iBufferSize);
+        RampingValue<CSAMPLE_GAIN> delayChangeRamped(0.0f, 1.0f, iBufferSize);
 
         for (int i = 0; i < iBufferSize; ++i) {
             // Put samples into delay buffer.
             m_pDelayBuffer[m_delayPos] = pIn[i];
             m_delayPos = (m_delayPos + 1) % kiMaxDelay;
 
-            // Take delayed sample from delay buffer and copy it to dest buffer.
-            if (i < iBufferSize / 2) {
-                // Ramp only the second half of the buffer.
-                pOutput[i] = m_pDelayBuffer[oldDelaySourcePos];
-            } else {
-                pOutput[i] = static_cast<CSAMPLE>(
-                        m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix));
-                pOutput[i] += static_cast<CSAMPLE>(m_pDelayBuffer[delaySourcePos] * crossMix);
-                delaySourcePos = (delaySourcePos + 1) % kiMaxDelay;
+            // Take delayed samples from the delay buffer
+            // and with the use of ramping (cross-fading),
+            // calculate the result sample value
+            // and put it into the dest buffer.
+            CSAMPLE_GAIN crossMix = delayChangeRamped.getNth(i);
 
-                crossMix += crossInc;
-            }
+            pOutput[i] = static_cast<CSAMPLE>(
+                    m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix));
+            pOutput[i] += static_cast<CSAMPLE>(m_pDelayBuffer[delaySourcePos] * crossMix);
 
             oldDelaySourcePos = (oldDelaySourcePos + 1) % kiMaxDelay;
+            delaySourcePos = (delaySourcePos + 1) % kiMaxDelay;
         }
 
         m_oldDelaySamples = m_delaySamples;
