@@ -315,12 +315,13 @@ NumarkScratch.Deck = function(number) {
 
     this.shiftButton = new components.Button({
         input: function(channel, control, value) {
+            midi: [0x9F, 0x32],
             if (this.isPress(channel, control, value)) {
                 NumarkScratch.shift();
-                midi.sendShortMsg(0x9F, 0x32, 0x7F);
+                this.send(this.on);
             } else {
                 NumarkScratch.unshift();
-                midi.sendShortMsg(0x9F, 0x32, NumarkScratch.LOW_LIGHT);
+                this.send(this.off);
             }
         }
     });
