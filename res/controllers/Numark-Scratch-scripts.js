@@ -70,7 +70,7 @@ NumarkScratch.init = function() {
 };
 
 NumarkScratch.shutdown = function() {
-    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x04, 0xF7], 6);
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x04, 0xF7]);
 };
 
 NumarkScratch.shift = function() {
