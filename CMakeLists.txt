@@ -1030,7 +1030,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
+  src/remote/remote.cpp
 )
+
 if(QT6)
   target_sources(mixxx-lib PRIVATE
     src/qml/asyncimageprovider.cpp
@@ -1047,7 +1049,6 @@ if(QT6)
     src/qml/qmlplayerproxy.cpp
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlwaveformoverview.cpp
-    src/remote/remote.cpp
   )
 else()
   target_sources(mixxx-lib PRIVATE

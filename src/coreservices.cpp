@@ -330,6 +330,8 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pScreensaverManager.get(),
             &ScreensaverManager::slotCurrentPlayingDeckChanged);
 
+    m_pRemoteControl = std::make_shared<RemoteControl>();
+    
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
 

@@ -9,6 +9,7 @@
 #include "soundio/sounddeviceerror.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
+#include "remote/remote.h"
 
 class QApplication;
 class CmdlineArgs;
@@ -109,6 +110,10 @@ class CoreServices : public QObject {
         return m_pScreensaverManager;
     }
 
+    std::shared_ptr<RemoteControl> getRemoteControl() const {
+        return m_pRemoteControl;
+    }
+    
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
@@ -151,6 +156,8 @@ class CoreServices : public QObject {
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 
+    std::shared_ptr<mixxx::RemoteControl>m_pRemoteControl;
+    
     std::vector<std::unique_ptr<ControlPushButton>> m_uiControls;
     std::unique_ptr<ControlPushButton> m_pTouchShift;
 

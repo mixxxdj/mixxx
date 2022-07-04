@@ -106,11 +106,6 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::audio::FramePos>("mixxx::audio::FramePos");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
-    
-    // Mixer Remote App
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    qRegisterMetaType<mixxx::RemoteControl>("mixxx::RemoteControl");
-#endif
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
