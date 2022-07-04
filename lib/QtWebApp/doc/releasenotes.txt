@@ -1,0 +1,319 @@
+Dont forget to update the release number also in
+QtWebApp.pro and httpserver/httpglobal.cpp.
+
+1.8.5
+19.03.2022
+Add support for SSL peer verification and CA certificate.
+
+1.8.4
+29.10.2021
+Add Content-Length header to static file controller.
+
+1.8.3
+21.03.2021
+The minLevel for logging can now be configured as string:
+DEBUG/ALL=0, INFO=4, WARNING=1, ERROR/CRITICAL=2, FATAL=3
+Info messages are now positioned between DEBUG and WARNING.
+I also added an example for HTTP Basic authorization.
+
+1.8.2
+08.03.2021
+Fix threadId not printed in log file.
+
+1.8.1
+07.02.2021
+Add Cookie attribute "SameSite". 
+SessionStore does now emit a signal when a session expires.
+
+1.8.0
+06.02.2021
+Fix compatibility issues to Qt 4.7 and 6.0.
+Removed qtservice, use the Non-Sucking Service Manager (https://nssm.cc/) instead.
+
+1.7.11
+28.12.2019
+Fix Http Headers are not properly received if the two characters of
+a line-break (\r\n) were not received together in the same ethernet
+package.
+
+1.7.10
+04.12.2019
+Add support for other SSL implementations than OpenSSL (as far Qt supports it).
+Fix log bufffer was triggered only by severities above minLevel (should be "at least" minLevel).
+
+1.7.9
+20.06.2019
+INFO messages do not trigger writing out buffered log messages anymore when
+bufferSize>0 and minLevel>0.
+
+1.7.8
+05.02.2019
+HttpConnectionHandler closes the socket now in the thread of the socket.
+Headers and Body sent to the browser are now separated into individual ethernet packets.
+
+1.7.7
+04.02.2019
+HttpConnectionHandler creates a new Qthread instead of being itself a QThread.
+Improved formatting of thread ID in logger.
+
+1.7.6
+18.01.2019
+Code cleanup with const keywords and type conversions.
+Update Documentation.
+
+1.7.5
+17.01.2019
+Added content-types for *.xml and *.json to the StaticFileController.
+Fixed locking and memory leak in HttpSession.
+
+1.7.4
+24.05.2018
+Fixed two possible null-pointer references in case of broken HTTP requests.
+
+1.7.3
+25.04.2017
+Wait until all data are sent before closing connections.
+
+1.7.2
+17.01.2017
+Fixed compile error with MSVC.
+
+1.7.1
+10.11.2016
+Fixed a possible memory leak in case of broken Multipart HTTP Requests.
+
+1.7.0
+08.11.2016
+Introduced namespace "stefanfrings".
+Improved performance a little.
+
+1.6.7
+10.10.2016
+Fix type of socketDescriptor in qtservice library.
+Add support for INFO log messages (new since QT 5.5).
+Improve indentation of log messages.
+
+1.6.6
+25.07.2016
+Removed useless mutex from TemplateLoader.
+Add mutex to TemplateCache (which is now needed).
+
+1.6.5
+10.06.2016
+Incoming HTTP request headers are now processed case-insensitive.
+Add support for the HttpOnly flag of cookies.
+
+1.6.4
+27.03.2016
+Fixed constructor of Template class did not load the source file properly.
+Template loader and cache were not affected.
+
+1.6.3
+11.03.2016
+Fixed compilation error.
+Added missing implementation of HttpRequest::getPeerAddress().
+
+1.6.2
+06.03.2016
+Added mime types for some file extensions.
+
+1.6.1
+25.01.2016
+Fixed parser of boundary value in multi-part request, which caused that
+QHttpMultipart did not work on client side.
+
+1.6.0
+29.12.2015
+Much better output buffering, reduces the number of small IP packages.
+
+1.5.13
+29.12.2015
+Improved performance a little.
+Add support for old HTTP 1.0 clients.
+Add HttpResposne::flush() and HttpResponse::isConnected() which are helpful to support
+SSE from HTML 5 specification.
+
+1.5.12
+11.12.2015
+Fix program crash when using SSL with a variable sized thread pool on Windows.
+Changed name of HttpSessionStore::timerEvent() to fix compiler warnings since Qt 5.0.
+Add HttpRequest::getRawPath().
+HttpSessionStore::sessions is now protected.
+
+1.5.11
+21.11.2015
+Fix project file for Mac OS.
+Add HttpRequest::getPeerAddress() and HttpResponse::getStatusCode().
+
+1.5.10
+01.09.2015
+Modified StaticFileController to support ressource files (path starting with ":/" or "qrc://").
+
+1.5.9
+06.08.2015
+New HttpListener::listen() method, to restart listening after close.
+Add missing include for QObject in logger.h.
+Add a call to flush() before closing connections, which solves an issue with nginx.
+
+1.5.8
+26.07.2015
+Fixed segmentation fault error when closing the application while a HTTP request is in progress.
+New HttpListener::close() method to simplifly proper shutdown.
+
+1.5.7
+20.07.2015
+Fix Qt 5.5 compatibility issue.
+
+1.5.6
+22.06.2015
+Fixed compilation failes if QT does not support SSL.
+
+1.5.5
+16.06.2015
+Improved performance of SSL connections.
+
+1.5.4
+15.06.2015
+Support for Qt versions without OpenSsl.
+
+1.5.3
+22.05.2015
+Fixed Windows issue: QsslSocket cannot be closed from other threads than it was created in.
+
+1.5.2
+12.05.2015
+Fixed Windows issue: QSslSocket cannot send signals to another thread than it was created in.
+
+1.5.1
+14.04.2015
+Add support for pipelining.
+
+1.5.0
+03.04.2015
+Add support for HTTPS.
+
+1.4.2
+03.04.2015
+Fixed HTTP request did not work if it was split into multipe IP packages.
+
+1.4.1
+20.03.2015
+Fixed session cookie expires while the user is active, expiration time was not prolonged on each request.
+
+1.4.0
+14.03.2015
+This release has a new directory structure and new project files to support the creation of a shared library (*.dll or *.so).
+
+1.3.8
+12.03.2015
+Improved shutdown procedure.
+New config setting "host" which binds the listener to a specific network interface.
+
+1.3.7
+14.01.2015
+Fixed setting maxMultiPartSize worked only with file-uploads but not with form-data.
+
+1.3.6
+16.09.2014
+Fixed DualFileLogger produces no output.
+
+1.3.5
+11.06.2014
+Fixed a multi-threading issue with race condition in StaticFileController.
+
+1.3.4
+04.06.2014
+Fixed wrong content type when the StaticFileController returns a cached index.html.
+
+1.3.3
+17.03.2014
+Improved security of StaticFileController by denying "/.." in any position of the request path.
+Improved performance of StaticFileController a little.
+New convenience method HttpResponse::redirect(url).
+Fixed a missing return statement in StaticFileController.
+
+1.3.2
+08.01.2014
+Fixed HTTP Server ignoring URL parameters when the request contains POST parameters.
+
+1.3.1
+15.08.2013
+Fixed HTTP server not accepting connections on 64bit OS with QT 5.
+
+1.3.0
+20.04.2013
+Updated for compatibility QT 5. You may still use QT 4.7 or 4.8, if you like.
+Also added support for logging source file name, line number and function name.
+
+1.2.13
+03.03.2013
+Fixed Logger writing wrong timestamp for buffered messages.
+Improved shutdown procedure. The webserver now processes all final signals before the destructor finishes.
+
+1.2.12
+01.03.2013
+Fixed HttpResponse sending first part of data repeatedly when the amount of data is larger than the available memory for I/O buffer.
+
+1.2.11
+06.01.2013
+Added clearing the write buffer when accepting a new connection, so that it does not send remaining data from an aborted previous connection (which is possibly a bug in QT).
+
+1.2.10
+18.12.2012
+Reduced memory usage of HttpResponse in case of large response.
+
+1.2.9
+29.07.2012
+Added a mutex to HttpConnectionHandlerPool to fix a concurrency issue when a pooled object gets taken from the cache while it times out.
+Modified HttpConnectionHandler so that it does not throw an exception anymore when a connection gets closed by the peer in the middle of a read.
+
+1.2.8
+22.07.2012
+Fixed a possible concurrency issue when the file cache is so small that it stores less files than the number of threads.
+
+1.2.7
+18.07.2012
+Fixed HttpRequest ignores additional URL parameters of POST requests.
+Fixed HttpRequest ignores POST parameters of body if there is no Content-Type header.
+Removed unused tempdir variable from HttpRequest.
+Added mutex to cache of StaticFileController to prevent concurrency problems.
+Removed HTTP response with status 408 after read timeout. Connection gets simply closed now.
+
+1.2.6
+29.06.2012
+Fixed a compilation error on 64 bit if super verbose debugging is enabled.
+Fixed a typo in static file controller related to the document type header.
+
+1.2.5
+27.06.2012
+Fixed error message "QThread: Destroyed while thread is still running" during program termination.
+
+1.2.4
+02.06.2012
+Fixed template engine skipping variable tokens when a value is shorter than the token.
+
+1.2.3
+26.12.2011
+Fixed null pointer error when the HTTP server aborts a request that is too large.
+
+1.2.2
+06.11.2011
+Fixed compilation error on 64 bit platforms.
+
+1.2.1
+22.10.2011
+Fixed a multi-threading bug in HttpConnectionHandler.
+
+1.2.0
+05.12.2010
+Added a controller that serves static files, with cacheing.
+
+
+1.1.0
+19.10.2010
+Added support for sessions.
+Separated the base classes into individual libraries.
+
+1.0.0
+17.10.2010
+First release

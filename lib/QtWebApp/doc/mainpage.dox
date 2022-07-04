@@ -1,0 +1,42 @@
+/**
+  @mainpage
+  @author Stefan Frings
+  QtWebApp supports you in writing server-side web application in C++
+  based on the Qt framework. It is a light-weight implementation inspired
+  by Java Servlets.
+  <p>
+  Features:
+
+  - stefanfrings::HttpListener is a HTTP 1.1 web server with support for
+      - HTTPS
+      - IP v4 and IP v6
+      - persistent connections
+      - pipelining
+      - file uploads
+      - cookies
+      - dynamic thread pool
+      - optional file cache in stefanfrings::StaticFileController
+      - optional sessions via stefanfrings::HttpSessionStore
+  - The stefanfrings::Template engine supports
+      - multi languages via stefanfrings::TemplateLoader
+      - optional file cache via stefanfrings::TemplateCache
+      - for all text based file formats
+  - The stefanfrings::Logger classes provide
+      - automatic backups and file rotation
+      - configurable message format, see stefanfrings::LogMessage
+      - messages may contain thread-local info variables
+      - optional buffer to improve performance and reduce disk usage
+      - apply configuration changes without restart
+
+  If you write a real application based on this source, take a look into the Demo
+  applications. They set up a single listener on port 8080, however multiple
+  listeners with individual configurations are also possible.
+  <p>
+  To set up a HA system, I recommend the use of an
+  an Apache HTTP server with proxy balancer and sticky sessions.
+  <p>
+  QtWebApp is published under the license LGPL v3.<br>
+  Author: Stefan Frings<br>
+  http://stefanfrings.de/qtwebapp
+*/
+

@@ -1,0 +1,5 @@
+<map id="stefanfrings::DualFileLogger" name="stefanfrings::DualFileLogger">
+<area shape="rect" id="node1" title="Writes log messages into two log files simultaneously." alt="" coords="5,155,211,181"/>
+<area shape="rect" id="node2" href="$classstefanfrings_1_1Logger.html" title="Decorates and writes log messages to the console, stderr." alt="" coords="32,80,184,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="71,5,145,32"/>
+</map>

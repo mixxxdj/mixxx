@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,177,80,203"/>
+<area shape="rect" id="node2" href="$classstefanfrings_1_1HttpConnectionHandler.html" title="Alias for QSslConfiguration if OpenSSL is not supported." alt="" coords="129,5,339,47"/>
+<area shape="rect" id="node3" href="$classstefanfrings_1_1HttpConnectionHandlerPool.html" title="Pool of http connection handlers." alt="" coords="129,71,339,112"/>
+<area shape="rect" id="node4" href="$classstefanfrings_1_1HttpRequestHandler.html" title="The request handler generates a response for each HTTP request." alt="" coords="139,136,329,177"/>
+<area shape="rect" id="node6" href="$classstefanfrings_1_1HttpSessionStore.html" title="Stores HTTP sessions and deletes them when they have expired." alt="" coords="141,201,327,243"/>
+<area shape="rect" id="node7" href="$classstefanfrings_1_1Logger.html" title="Decorates and writes log messages to the console, stderr." alt="" coords="158,267,310,294"/>
+<area shape="rect" id="node10" href="$classstefanfrings_1_1TemplateLoader.html" title="Loads localized versions of template files." alt="" coords="128,318,340,345"/>
+<area shape="rect" id="node5" href="$classstefanfrings_1_1StaticFileController.html" title="Delivers static files." alt="" coords="408,136,576,177"/>
+<area shape="rect" id="node8" href="$classstefanfrings_1_1DualFileLogger.html" title="Writes log messages into two log files simultaneously." alt="" coords="389,217,595,243"/>
+<area shape="rect" id="node9" href="$classstefanfrings_1_1FileLogger.html" title="Logger that uses a text file for output." alt="" coords="405,267,579,294"/>
+<area shape="rect" id="node11" href="$classstefanfrings_1_1TemplateCache.html" title="Caching template loader, reduces the amount of I/O and improves performance on remote file systems." alt="" coords="388,318,596,345"/>
+</map>
