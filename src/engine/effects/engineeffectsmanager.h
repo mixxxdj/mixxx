@@ -2,7 +2,6 @@
 
 #include <QScopedPointer>
 
-#include "engine/channelhandle.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
 #include "util/fifo.h"
@@ -30,8 +29,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
     /// Process the prefader EngineEffectChains on the pInOut buffer, modifying
     /// the contents of the input buffer.
     void processPreFaderInPlace(
-            const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle,
+            GroupHandle inputHandle,
+            GroupHandle outputHandle,
             CSAMPLE* pInOut,
             const unsigned int numSamples,
             const unsigned int sampleRate);
@@ -39,8 +38,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
     /// Process the postfader EngineEffectChains on the pInOut buffer, modifying
     /// the contents of the input buffer.
     void processPostFaderInPlace(
-            const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle,
+            GroupHandle inputHandle,
+            GroupHandle outputHandle,
             CSAMPLE* pInOut,
             const unsigned int numSamples,
             const unsigned int sampleRate,
@@ -54,8 +53,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
     /// buffer for every channel, which would potentially require allocation on the
     /// audio thread because ChannelMixer supports an arbitrary number of channels.
     void processPostFaderAndMix(
-            const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle,
+            GroupHandle inputHandle,
+            GroupHandle outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
             const unsigned int numSamples,
@@ -84,8 +83,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
     void processInner(const SignalProcessingStage stage,
-            const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle,
+            GroupHandle inputHandle,
+            GroupHandle outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
             const unsigned int numSamples,

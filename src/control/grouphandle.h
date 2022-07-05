@@ -110,15 +110,15 @@ class Descriptor final {
     QString m_name;
 };
 
+inline bool operator!=(
+        const Descriptor& lhs,
+        const Descriptor& rhs) {
+    return !(lhs == rhs);
+}
+
 } // namespace grouphandle_private
 
 } // namespace mixxx
-
-inline bool operator!=(
-        const mixxx::grouphandle_private::Descriptor& lhs,
-        const mixxx::grouphandle_private::Descriptor& rhs) {
-    return !(lhs == rhs);
-}
 
 inline qhash_seed_t qHash(GroupHandle arg, qhash_seed_t seed = 0) {
     if (arg) {

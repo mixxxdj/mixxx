@@ -53,12 +53,10 @@ class TestEngineMaster : public EngineMaster {
     TestEngineMaster(UserSettingsPointer _config,
             const QString& group,
             EffectsManager* pEffectsManager,
-            ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain)
             : EngineMaster(_config,
                       group,
                       pEffectsManager,
-                      pChannelHandleFactory,
                       bEnableSidechain) {
         m_pMasterEnabled->forceSet(1);
         m_pHeadphoneEnabled->forceSet(1);
@@ -74,13 +72,11 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     BaseSignalPathTest() {
         m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
-        m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
-        m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
+        m_pEffectsManager = new EffectsManager(config());
         m_pEngineMaster = new TestEngineMaster(m_pConfig,
                 m_sMasterGroup,
                 m_pEffectsManager,
-                m_pChannelHandleFactory,
                 false);
 
         m_pMixerDeck1 = new Deck(nullptr,
@@ -245,7 +241,6 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
-    ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     EffectsManager* m_pEffectsManager;

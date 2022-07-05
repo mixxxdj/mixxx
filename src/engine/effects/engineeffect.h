@@ -25,9 +25,9 @@ class EngineEffect final : public EffectsRequestHandler {
     /// Called in main thread by EffectSlot
     EngineEffect(EffectManifestPointer pManifest,
             EffectsBackendManagerPointer pBackendManager,
-            const QSet<ChannelHandleAndGroup>& activeInputChannels,
-            const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-            const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
+            const QSet<GroupHandle>& activeInputChannels,
+            const QSet<GroupHandle>& registeredInputChannels,
+            const QSet<GroupHandle>& registeredOutputChannels);
     /// Called in main thread by EffectSlot
     ~EngineEffect();
 
@@ -35,10 +35,10 @@ class EngineEffect final : public EffectsRequestHandler {
     EffectState* createState(const mixxx::EngineParameters& engineParameters);
 
     /// Called in audio thread to load EffectStates received from the main thread
-    void loadStatesForInputChannel(ChannelHandle inputChannel,
+    void loadStatesForInputChannel(GroupHandle inputChannel,
             EffectStatesMap* pStatesMap);
     /// Called from the main thread for garbage collection after an input channel is disabled
-    void deleteStatesForInputChannel(ChannelHandle inputChannel);
+    void deleteStatesForInputChannel(GroupHandle inputChannel);
 
     /// Called in audio thread
     bool processEffectsRequest(
@@ -46,8 +46,8 @@ class EngineEffect final : public EffectsRequestHandler {
             EffectsResponsePipe* pResponsePipe) override;
 
     /// Called in audio thread
-    bool process(const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle,
+    bool process(GroupHandle inputHandle,
+            GroupHandle outputHandle,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
             const unsigned int numSamples,

@@ -23,7 +23,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
     EngineDeck(
-            const ChannelHandleAndGroup& handleGroup,
+            GroupHandle groupHandle,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,

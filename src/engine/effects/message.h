@@ -6,7 +6,6 @@
 
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
-#include "engine/channelhandle.h"
 #include "util/memory.h"
 #include "util/messagepipe.h"
 
@@ -87,10 +86,10 @@ struct EffectsRequest {
         } RemoveEffectChain;
         struct {
             EffectStatesMapArray* pEffectStatesMapArray;
-            ChannelHandle channelHandle;
+            GroupHandle channelHandle;
         } EnableInputChannelForChain;
         struct {
-            ChannelHandle channelHandle;
+            GroupHandle channelHandle;
         } DisableInputChannelForChain;
         struct {
             EngineEffect* pEffect;

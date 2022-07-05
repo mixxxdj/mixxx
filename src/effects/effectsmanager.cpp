@@ -22,10 +22,9 @@ const QString kEffectsXmlFile = QStringLiteral("effects.xml");
 } // anonymous namespace
 
 EffectsManager::EffectsManager(
-        UserSettingsPointer pConfig,
-        std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory)
+        UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_pChannelHandleFactory(pChannelHandleFactory),
+          m_masterGroupHandle(getOrCreateGroupHandleByName("[Master]")),
           m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),
           m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
@@ -74,7 +73,7 @@ void EffectsManager::setup() {
     readEffectsXml();
 }
 
-void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectsManager::registerInputChannel(GroupHandle handle_group) {
     VERIFY_OR_DEBUG_ASSERT(!m_registeredInputChannels.contains(handle_group)) {
         return;
     }
@@ -88,7 +87,7 @@ void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_gr
     }
 }
 
-void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectsManager::registerOutputChannel(GroupHandle handle_group) {
     VERIFY_OR_DEBUG_ASSERT(!m_registeredOutputChannels.contains(handle_group)) {
         return;
     }

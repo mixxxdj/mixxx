@@ -281,26 +281,28 @@ int EffectChain::numPresets() const {
     return m_pChainPresetManager->numPresets();
 }
 
-void EffectChain::registerInputChannel(const ChannelHandleAndGroup& handleGroup,
+void EffectChain::registerInputChannel(GroupHandle channelHandle,
         const double initialValue) {
-    VERIFY_OR_DEBUG_ASSERT(!m_channelEnableButtons.contains(handleGroup)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_channelEnableButtons.contains(channelHandle)) {
         return;
     }
 
     auto pEnableControl = std::make_shared<ControlPushButton>(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handleGroup.name())),
+            ConfigKey(m_group, QString("group_%1_enable").arg(nameOfGroupHandle(channelHandle))),
             true,
             initialValue);
-    m_channelEnableButtons.insert(handleGroup, pEnableControl);
+    m_channelEnableButtons.insert(channelHandle, pEnableControl);
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
     if (pEnableControl->toBool()) {
-        enableForInputChannel(handleGroup);
+        enableForInputChannel(channelHandle);
     }
 
     connect(pEnableControl.get(),
             &ControlObject::valueChanged,
             this,
-            [this, handleGroup](double value) { slotChannelStatusChanged(value, handleGroup); });
+            [this, channelHandle](double value) {
+                slotChannelStatusChanged(value, channelHandle);
+            });
 }
 
 EffectSlotPointer EffectChain::getEffectSlot(unsigned int slotNumber) {
@@ -367,11 +369,11 @@ void EffectChain::slotControlPrevChainPreset(double value) {
 }
 
 void EffectChain::slotChannelStatusChanged(
-        double value, const ChannelHandleAndGroup& handleGroup) {
+        double value, GroupHandle channelHandle) {
     if (value > 0) {
-        enableForInputChannel(handleGroup);
+        enableForInputChannel(channelHandle);
     } else {
-        disableForInputChannel(handleGroup);
+        disableForInputChannel(channelHandle);
     }
 }
 
@@ -386,15 +388,15 @@ void EffectChain::slotPresetListUpdated() {
     m_pControlNumChainPresets->forceSet(numPresets());
 }
 
-void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
-    if (m_enabledInputChannels.contains(handleGroup)) {
+void EffectChain::enableForInputChannel(GroupHandle channelHandle) {
+    if (m_enabledInputChannels.contains(channelHandle)) {
         return;
     }
 
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
-    request->EnableInputChannelForChain.channelHandle = handleGroup.handle();
+    request->EnableInputChannelForChain.channelHandle = channelHandle;
 
     // Allocate EffectStates here in the main thread to avoid allocating
     // memory in the realtime audio callback thread. Pointers to the
@@ -417,18 +419,18 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup
 
     m_pMessenger->writeRequest(request);
 
-    m_enabledInputChannels.insert(handleGroup);
+    m_enabledInputChannels.insert(channelHandle);
 }
 
-void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
-    if (!m_enabledInputChannels.remove(handleGroup)) {
+void EffectChain::disableForInputChannel(GroupHandle channelHandle) {
+    if (!m_enabledInputChannels.remove(channelHandle)) {
         return;
     }
 
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
-    request->DisableInputChannelForChain.channelHandle = handleGroup.handle();
+    request->DisableInputChannelForChain.channelHandle = channelHandle;
     m_pMessenger->writeRequest(request);
 }
 

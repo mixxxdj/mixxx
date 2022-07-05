@@ -60,7 +60,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const ChannelHandleAndGroup& handleGroup,
+            GroupHandle groupHandle,
             bool defaultMaster,
             bool defaultHeadphones,
             bool primaryDeck);

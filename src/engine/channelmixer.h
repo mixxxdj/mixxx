@@ -18,7 +18,7 @@ class ChannelMixer {
             QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>*
                     channelGainCache,
             CSAMPLE* pOutput,
-            const ChannelHandle& outputHandle,
+            GroupHandle outputHandle,
             unsigned int iBufferSize,
             unsigned int iSampleRate,
             EngineEffectsManager* pEngineEffectsManager);
@@ -30,7 +30,7 @@ class ChannelMixer {
             QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>*
                     channelGainCache,
             CSAMPLE* pOutput,
-            const ChannelHandle& outputHandle,
+            GroupHandle outputHandle,
             unsigned int iBufferSize,
             unsigned int iSampleRate,
             EngineEffectsManager* pEngineEffectsManager);

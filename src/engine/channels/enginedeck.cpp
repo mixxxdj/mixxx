@@ -11,13 +11,13 @@
 #include "waveform/waveformwidgetfactory.h"
 
 EngineDeck::EngineDeck(
-        const ChannelHandleAndGroup& handleGroup,
+        GroupHandle groupHandle,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         bool primaryDeck)
-        : EngineChannel(handleGroup, defaultOrientation, pEffectsManager,
+        : EngineChannel(groupHandle, defaultOrientation, pEffectsManager,
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),
@@ -75,7 +75,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
 
     EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
     if (pEngineEffectsManager != nullptr) {
-        pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
+        pEngineEffectsManager->processPreFaderInPlace(m_groupHandle,
                 m_pEffectsManager->getMasterHandle(),
                 pOut,
                 iBufferSize,

@@ -32,10 +32,8 @@ EngineMaster::EngineMaster(
         UserSettingsPointer pConfig,
         const QString& group,
         EffectsManager* pEffectsManager,
-        ChannelHandleFactoryPointer pChannelHandleFactory,
         bool bEnableSidechain)
-        : m_pChannelHandleFactory(pChannelHandleFactory),
-          m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
+        : m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
           m_masterGainOld(0.0),
           m_boothGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
@@ -433,7 +431,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_activeHeadphoneChannels,
                 &m_channelHeadphoneGainCache,
                 m_pHead,
-                m_headphoneHandle.handle(),
+                m_headphoneHandle,
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
                 m_pEngineEffectsManager);
@@ -451,8 +449,8 @@ void EngineMaster::process(const int iBufferSize) {
                 headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
             }
             m_pEngineEffectsManager->processPostFaderInPlace(
-                    m_headphoneHandle.handle(),
-                    m_headphoneHandle.handle(),
+                    m_headphoneHandle,
+                    m_headphoneHandle,
                     m_pHead,
                     m_iBufferSize,
                     static_cast<int>(m_sampleRate.value()),
@@ -467,7 +465,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
             m_pTalkover,
-            m_masterHandle.handle(),
+            m_masterHandle,
             m_iBufferSize,
             static_cast<int>(m_sampleRate.value()),
             m_pEngineEffectsManager);
@@ -477,8 +475,8 @@ void EngineMaster::process(const int iBufferSize) {
     GroupFeatureState busFeatures;
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->processPostFaderInPlace(
-                m_busTalkoverHandle.handle(),
-                m_masterHandle.handle(),
+                m_busTalkoverHandle,
+                m_masterHandle,
                 m_pTalkover,
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -523,7 +521,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_activeBusChannels[o],
                 &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
                 m_pOutputBusBuffers[o],
-                m_masterHandle.handle(),
+                m_masterHandle,
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
                 m_pEngineEffectsManager);
@@ -532,22 +530,22 @@ void EngineMaster::process(const int iBufferSize) {
     // Process crossfader orientation bus channel effects
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->processPostFaderInPlace(
-                m_busCrossfaderLeftHandle.handle(),
-                m_masterHandle.handle(),
+                m_busCrossfaderLeftHandle,
+                m_masterHandle,
                 m_pOutputBusBuffers[EngineChannel::LEFT],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
                 busFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(
-                m_busCrossfaderCenterHandle.handle(),
-                m_masterHandle.handle(),
+                m_busCrossfaderCenterHandle,
+                m_masterHandle,
                 m_pOutputBusBuffers[EngineChannel::CENTER],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
                 busFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(
-                m_busCrossfaderRightHandle.handle(),
-                m_masterHandle.handle(),
+                m_busCrossfaderRightHandle,
+                m_masterHandle,
                 m_pOutputBusBuffers[EngineChannel::RIGHT],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -718,8 +716,8 @@ void EngineMaster::process(const int iBufferSize) {
             masterFeatures.has_gain = true;
             masterFeatures.gain = m_pMasterGain->get();
             m_pEngineEffectsManager->processPostFaderInPlace(
-                    m_masterOutputHandle.handle(),
-                    m_masterHandle.handle(),
+                    m_masterOutputHandle,
+                    m_masterHandle,
                     m_pMaster,
                     m_iBufferSize,
                     static_cast<int>(m_sampleRate.value()),
@@ -777,8 +775,8 @@ void EngineMaster::applyMasterEffects() {
         GroupFeatureState masterFeatures;
         masterFeatures.has_gain = true;
         masterFeatures.gain = m_pMasterGain->get();
-        m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
-                m_masterHandle.handle(),
+        m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle,
+                m_masterHandle,
                 m_pMaster,
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -816,7 +814,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannel->setChannelIndex(pChannelInfo->m_index);
     pChannelInfo->m_pChannel = pChannel;
     const QString& group = pChannel->getGroup();
-    pChannelInfo->m_handle = m_pChannelHandleFactory->getOrCreateHandle(group);
+    pChannelInfo->m_pHandle = getOrCreateGroupHandleByName(group);
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
             ConfigKey(group, "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);

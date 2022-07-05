@@ -41,7 +41,6 @@ class EngineMaster : public QObject, public AudioSource {
     EngineMaster(UserSettingsPointer pConfig,
             const QString& group,
             EffectsManager* pEffectsManager,
-            ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain);
     virtual ~EngineMaster();
 
@@ -49,9 +48,8 @@ class EngineMaster : public QObject, public AudioSource {
     // be called by SoundManager.
     const CSAMPLE* buffer(const AudioOutput& output) const;
 
-    ChannelHandleAndGroup registerChannelGroup(const QString& group) {
-        return ChannelHandleAndGroup(
-                   m_pChannelHandleFactory->getOrCreateHandle(group), group);
+    GroupHandle registerChannelGroup(const QString& group) {
+        return getOrCreateGroupHandleByName(group);
     }
 
     // Register the sound I/O that does not correspond to any EngineChannel object
@@ -109,18 +107,14 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE_GAIN getMasterGain(int channelIndex) const;
 
     struct ChannelInfo {
-        ChannelInfo(int index)
-                : m_pChannel(NULL),
-                  m_pBuffer(NULL),
-                  m_pVolumeControl(NULL),
-                  m_pMuteControl(NULL),
-                  m_index(index) {
+        explicit ChannelInfo(int index)
+                : m_index(index) {
         }
-        ChannelHandle m_handle;
-        EngineChannel* m_pChannel;
-        CSAMPLE* m_pBuffer;
-        ControlObject* m_pVolumeControl;
-        ControlPushButton* m_pMuteControl;
+        GroupHandle m_pHandle{};
+        EngineChannel* m_pChannel{};
+        CSAMPLE* m_pBuffer{};
+        ControlObject* m_pVolumeControl{};
+        ControlPushButton* m_pMuteControl{};
         GroupFeatureState m_features;
         int m_index;
     };
@@ -262,7 +256,6 @@ class EngineMaster : public QObject, public AudioSource {
     // respective output.
     void processChannels(int iBufferSize);
 
-    ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMasterEffects();
     void processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphones);
     bool sidechainMixRequired() const;
@@ -336,13 +329,13 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE_GAIN m_headphoneGainOld;
     CSAMPLE_GAIN m_balleftOld;
     CSAMPLE_GAIN m_balrightOld;
-    const ChannelHandleAndGroup m_masterHandle;
-    const ChannelHandleAndGroup m_headphoneHandle;
-    const ChannelHandleAndGroup m_masterOutputHandle;
-    const ChannelHandleAndGroup m_busTalkoverHandle;
-    const ChannelHandleAndGroup m_busCrossfaderLeftHandle;
-    const ChannelHandleAndGroup m_busCrossfaderCenterHandle;
-    const ChannelHandleAndGroup m_busCrossfaderRightHandle;
+    const GroupHandle m_masterHandle;
+    const GroupHandle m_headphoneHandle;
+    const GroupHandle m_masterOutputHandle;
+    const GroupHandle m_busTalkoverHandle;
+    const GroupHandle m_busCrossfaderLeftHandle;
+    const GroupHandle m_busCrossfaderCenterHandle;
+    const GroupHandle m_busCrossfaderRightHandle;
 
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;

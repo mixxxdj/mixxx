@@ -1,9 +1,9 @@
 #pragma once
 
 #include "control/controlproxy.h"
+#include "control/grouphandle.h"
 #include "effects/effectsmanager.h"
 #include "engine/engineobject.h"
-#include "engine/channelhandle.h"
 #include "engine/enginevumeter.h"
 #include "preferences/usersettings.h"
 
@@ -21,7 +21,7 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
-    EngineChannel(const ChannelHandleAndGroup& handleGroup,
+    EngineChannel(GroupHandle groupHandle,
             ChannelOrientation defaultOrientation,
             EffectsManager* pEffectsManager,
             bool isTalkoverChannel,
@@ -30,12 +30,12 @@ class EngineChannel : public EngineObject {
 
     virtual ChannelOrientation getOrientation() const;
 
-    inline ChannelHandle getHandle() const {
-        return m_group.handle();
+    GroupHandle getHandle() const {
+        return m_groupHandle;
     }
 
-    const QString& getGroup() const {
-        return m_group.name();
+    QString getGroup() const {
+        return nameOfGroupHandle(m_groupHandle);
     }
 
     virtual bool isActive() = 0;
@@ -66,7 +66,7 @@ class EngineChannel : public EngineObject {
     }
 
   protected:
-    const ChannelHandleAndGroup m_group;
+    const GroupHandle m_groupHandle;
     EffectsManager* m_pEffectsManager;
 
     EngineVuMeter m_vuMeter;

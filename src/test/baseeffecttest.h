@@ -33,17 +33,17 @@ class MockEffectProcessor : public EffectProcessor {
     }
 
     MOCK_METHOD3(initialize,
-            void(const QSet<ChannelHandleAndGroup>& activeInputChannels,
-                    const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
+            void(const QSet<GroupHandle>& activeInputChannels,
+                    const QSet<GroupHandle>& registeredOutputChannels,
                     const mixxx::EngineParameters& engineParameters));
     MOCK_METHOD1(createState, EffectState*(const mixxx::EngineParameters& engineParameters));
     MOCK_METHOD2(loadStatesForInputChannel,
-            bool(const ChannelHandle* inputChannel,
+            bool(GroupHandle inputChannel,
                     const EffectStatesMap* pStatesMap));
-    MOCK_METHOD1(deleteStatesForInputChannel, void(const ChannelHandle* inputChannel));
+    MOCK_METHOD1(deleteStatesForInputChannel, void(GroupHandle inputChannel));
     MOCK_METHOD7(process,
-            void(const ChannelHandle& inputHandle,
-                    const ChannelHandle& outputHandle,
+            void(GroupHandle inputHandle,
+                    GroupHandle outputHandle,
                     const CSAMPLE* pInput,
                     CSAMPLE* pOutput,
                     const mixxx::EngineParameters& engineParameters,
@@ -63,9 +63,8 @@ class MockEffectInstantiator : public EffectInstantiator {
 class BaseEffectTest : public MixxxTest {
   protected:
     BaseEffectTest()
-            : m_pChannelHandleFactory(std::make_shared<ChannelHandleFactory>()),
-              m_pTestBackend(nullptr),
-              m_pEffectsManager(new EffectsManager(nullptr, config(), m_pChannelHandleFactory)) {
+            : m_pTestBackend(nullptr),
+              m_pEffectsManager(new EffectsManager(nullptr, config())) {
     }
 
     void registerTestBackend() {
@@ -74,8 +73,6 @@ class BaseEffectTest : public MixxxTest {
     }
 
     void registerTestEffect(EffectManifestPointer pManifest, bool willAddToEngine);
-
-    ChannelHandleFactoryPointer m_pChannelHandleFactory;
 
     // Deleted by EffectsManager. Do not delete.
     TestEffectBackend* m_pTestBackend;

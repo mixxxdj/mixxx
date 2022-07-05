@@ -6,9 +6,9 @@
 
 EngineEffect::EngineEffect(EffectManifestPointer pManifest,
         EffectsBackendManagerPointer pBackendManager,
-        const QSet<ChannelHandleAndGroup>& activeInputChannels,
-        const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-        const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
+        const QSet<GroupHandle>& activeInputChannels,
+        const QSet<GroupHandle>& registeredInputChannels,
+        const QSet<GroupHandle>& registeredOutputChannels)
         : m_pManifest(pManifest),
           m_pProcessor(pBackendManager->createProcessor(pManifest)),
           m_parameters(pManifest->parameters().size()) {
@@ -20,12 +20,12 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
         m_parametersById[param->id()] = pParameter;
     }
 
-    for (const ChannelHandleAndGroup& inputChannel : registeredInputChannels) {
+    for (GroupHandle inputChannel : registeredInputChannels) {
         ChannelHandleMap<EffectEnableState> outputChannelMap;
-        for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
-            outputChannelMap.insert(outputChannel.handle(), EffectEnableState::Disabled);
+        for (GroupHandle outputChannel : registeredOutputChannels) {
+            outputChannelMap.insert(outputChannel, EffectEnableState::Disabled);
         }
-        m_effectEnableStateForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
+        m_effectEnableStateForChannelMatrix.insert(inputChannel, outputChannelMap);
     }
 
     m_pProcessor->loadEngineEffectParameters(m_parametersById);
@@ -53,7 +53,7 @@ EffectState* EngineEffect::createState(const mixxx::EngineParameters& enginePara
     return m_pProcessor->createState(engineParameters);
 }
 
-void EngineEffect::loadStatesForInputChannel(ChannelHandle inputChannel,
+void EngineEffect::loadStatesForInputChannel(GroupHandle inputChannel,
         EffectStatesMap* pStatesMap) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffect::loadStatesForInputChannel" << this
@@ -62,7 +62,7 @@ void EngineEffect::loadStatesForInputChannel(ChannelHandle inputChannel,
     m_pProcessor->loadStatesForInputChannel(inputChannel, pStatesMap);
 }
 
-void EngineEffect::deleteStatesForInputChannel(ChannelHandle inputChannel) {
+void EngineEffect::deleteStatesForInputChannel(GroupHandle inputChannel) {
     m_pProcessor->deleteStatesForInputChannel(inputChannel);
 }
 
@@ -123,8 +123,9 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
     return false;
 }
 
-bool EngineEffect::process(const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+bool EngineEffect::process(
+        GroupHandle inputHandle,
+        GroupHandle outputHandle,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const unsigned int numSamples,
@@ -214,7 +215,8 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
 
     // Now that the EffectProcessor has been sent the intermediate enabling/disabling
     // signal, set the channel state to fully enabled/disabled for the next engine callback.
-    EffectEnableState& effectOnChannelState = m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
+    EffectEnableState& effectOnChannelState =
+            m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
     if (effectOnChannelState == EffectEnableState::Disabling) {
         effectOnChannelState = EffectEnableState::Disabled;
     } else if (effectOnChannelState == EffectEnableState::Enabling) {

@@ -7,6 +7,7 @@
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
+#include "control/grouphandle.h"
 #include "engine/channelhandle.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
@@ -36,7 +37,7 @@ class PlayerManagerInterface {
     virtual ~PlayerManagerInterface() = default;
 
     virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
-    virtual BaseTrackPlayer* getPlayer(const ChannelHandle& channelHandle) const = 0;
+    virtual BaseTrackPlayer* getPlayer(GroupHandle groupHandle) const = 0;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     virtual Deck* getDeck(unsigned int player) const = 0;
@@ -102,7 +103,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Auxiliaries and microphones are not players.
     BaseTrackPlayer* getPlayer(const QString& group) const override;
     // Get a BaseTrackPlayer (Deck, Sampler or PreviewDeck) by its handle.
-    BaseTrackPlayer* getPlayer(const ChannelHandle& handle) const override;
+    BaseTrackPlayer* getPlayer(GroupHandle pHandle) const override;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     Deck* getDeck(unsigned int player) const override;
@@ -293,5 +294,5 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<PreviewDeck*> m_previewDecks;
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
-    QMap<ChannelHandle, BaseTrackPlayer*> m_players;
+    QMap<GroupHandle, BaseTrackPlayer*> m_players;
 };

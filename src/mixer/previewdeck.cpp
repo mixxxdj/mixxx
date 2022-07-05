@@ -7,13 +7,13 @@ PreviewDeck::PreviewDeck(PlayerManager* pParent,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
-        const ChannelHandleAndGroup& handleGroup)
+        GroupHandle groupHandle)
         : BaseTrackPlayerImpl(pParent,
                   pConfig,
                   pMixingEngine,
                   pEffectsManager,
                   defaultOrientation,
-                  handleGroup,
+                  groupHandle,
                   /*defaultMaster*/ false,
                   /*defaultHeadphones*/ true,
                   /*primaryDeck*/ false) {

@@ -5,8 +5,8 @@
 #include "util/sample.h"
 
 EngineEffectChain::EngineEffectChain(const QString& group,
-        const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-        const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
+        const QSet<GroupHandle>& registeredInputChannels,
+        const QSet<GroupHandle>& registeredOutputChannels)
         : m_group(group),
           m_enableState(EffectEnableState::Enabled),
           m_mixMode(EffectChainMixMode::DrySlashWet),
@@ -16,12 +16,12 @@ EngineEffectChain::EngineEffectChain(const QString& group,
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 
-    for (const ChannelHandleAndGroup& inputChannel : registeredInputChannels) {
+    for (GroupHandle inputChannel : registeredInputChannels) {
         ChannelHandleMap<ChannelStatus> outputChannelMap;
-        for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
-            outputChannelMap.insert(outputChannel.handle(), ChannelStatus());
+        for (GroupHandle outputChannel : registeredOutputChannels) {
+            outputChannelMap.insert(outputChannel, ChannelStatus());
         }
-        m_chainStatusForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
+        m_chainStatusForChannelMatrix.insert(inputChannel, outputChannelMap);
     }
 }
 
@@ -146,10 +146,10 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
     return true;
 }
 
-bool EngineEffectChain::enableForInputChannel(ChannelHandle inputHandle,
+bool EngineEffectChain::enableForInputChannel(GroupHandle inputHandle,
         EffectStatesMapArray* statesForEffectsInChain) {
     if (kEffectDebugOutput) {
-        qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
+        qDebug() << "EngineEffectChain::enableForInputChannel" << this << *inputHandle;
     }
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
@@ -180,7 +180,7 @@ bool EngineEffectChain::enableForInputChannel(ChannelHandle inputHandle,
     return true;
 }
 
-bool EngineEffectChain::disableForInputChannel(ChannelHandle inputHandle) {
+bool EngineEffectChain::disableForInputChannel(GroupHandle inputHandle) {
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
         if (outputChannelStatus.enableState != EffectEnableState::Disabled) {
@@ -195,7 +195,7 @@ bool EngineEffectChain::disableForInputChannel(ChannelHandle inputHandle) {
 }
 
 // Called from the main thread for garbage collection after an input channel is disabled
-void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle inputChannel) {
+void EngineEffectChain::deleteStatesForInputChannel(GroupHandle inputHandle) {
     // If an output channel is not presently being processed, for example when
     // PFL is not active, then process() cannot be relied upon to set this
     // chain's EffectEnableState from Disabling to Disabled. This must be done
@@ -205,30 +205,31 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle inputCha
     // with an EffectState that has already been deleted and cause a crash.
     // Refer to https://bugs.launchpad.net/mixxx/+bug/1741213
     // NOTE: ChannelHandleMap is like a map in that it associates an object with
-    // a ChannelHandle key, but it actually backed by a QVarLengthArray, not a
+    // a GroupHandle key, but it actually backed by a QVarLengthArray, not a
     // QMap. So it is okay that m_chainStatusForChannelMatrix may be
     // accessed concurrently in the audio engine thread in process(),
     // enableForInputChannel(), or disableForInputChannel().
-    auto& outputMap = m_chainStatusForChannelMatrix[inputChannel];
+    auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
         outputChannelStatus.enableState = EffectEnableState::Disabled;
     }
     for (EngineEffect* pEffect : qAsConst(m_effects)) {
         if (pEffect != nullptr) {
-            pEffect->deleteStatesForInputChannel(inputChannel);
+            pEffect->deleteStatesForInputChannel(inputHandle);
         }
     }
 }
 
 EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle) {
+        GroupHandle inputHandle,
+        GroupHandle outputHandle) {
     ChannelStatus& status = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
     return status;
 }
 
-bool EngineEffectChain::process(const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+bool EngineEffectChain::process(
+        GroupHandle inputHandle,
+        GroupHandle outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         const unsigned int numSamples,

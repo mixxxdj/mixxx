@@ -69,9 +69,8 @@ class MetaLinkTest : public BaseEffectTest {
                 itemPrefix + QString("_link_inverse")));
     }
 
-    ChannelHandleFactory m_factory;
-    ChannelHandleAndGroup m_master;
-    ChannelHandleAndGroup m_headphone;
+    GroupHandle m_master;
+    GroupHandle m_headphone;
 
     EffectSlotPointer m_pEffectSlot;
     EffectChainSlotPointer m_pChainSlot;

@@ -49,7 +49,6 @@
 
 #include <QtX11Extras/QX11Info>
 
-#include "engine/channelhandle.h"
 // Xlibint.h predates C++ and defines macros which conflict
 // with references to std::max and std::min
 #undef max
@@ -253,16 +252,13 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(this);
 
-    auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-
     emit initializationProgressUpdate(20, tr("effects"));
-    m_pEffectsManager = std::make_shared<EffectsManager>(pConfig, pChannelHandleFactory);
+    m_pEffectsManager = std::make_shared<EffectsManager>(pConfig);
 
     m_pEngine = std::make_shared<EngineMaster>(
             pConfig,
             "[Master]",
             m_pEffectsManager.get(),
-            pChannelHandleFactory,
             true);
 
     emit initializationProgressUpdate(30, tr("audio interface"));
