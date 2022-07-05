@@ -12,8 +12,7 @@ EngineEffectChain::EngineEffectChain(const QString& group,
           m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
           m_buffer1(MAX_BUFFER_LEN),
-          m_buffer2(MAX_BUFFER_LEN),
-          m_tmpBuffer(MAX_BUFFER_LEN) {
+          m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 
@@ -319,9 +318,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         }
 
         m_effectsDelay.setDelayFrames(effectChainGroupDelayFrames);
-        m_effectsDelay.process(pIn, m_tmpBuffer.data(), numSamples);
-
-        SampleUtil::copy(pIn, m_tmpBuffer.data(), numSamples);
+        m_effectsDelay.process(pIn, numSamples);
 
         if (processingOccured) {
             // pIntermediateInput is the output of the last processed effect. It would be the

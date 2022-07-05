@@ -20,7 +20,7 @@
 ///
 /// After delaying the non-delayed signal, both signals (delayed
 /// and non-delayed) can be mixed and used together.
-class EngineEffectsDelay final : public EngineObjectConstIn {
+class EngineEffectsDelay final : public EngineObject {
   public:
     EngineEffectsDelay();
 
@@ -56,7 +56,7 @@ class EngineEffectsDelay final : public EngineObjectConstIn {
     /// as actual and the output buffer is filled using cross-fading
     /// of the presumed output buffer for the previous delay value
     /// and of the output buffer created using the new delay value.
-    void process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) override;
+    void process(CSAMPLE* pInOut, const int iBufferSize) override;
 
   private:
     SINT m_delaySamples;

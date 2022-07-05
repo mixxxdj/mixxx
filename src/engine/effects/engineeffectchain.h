@@ -81,7 +81,6 @@ class EngineEffectChain final : public EffectsRequestHandler {
     QList<EngineEffect*> m_effects;
     mixxx::SampleBuffer m_buffer1;
     mixxx::SampleBuffer m_buffer2;
-    mixxx::SampleBuffer m_tmpBuffer;
     ChannelHandleMap<ChannelHandleMap<ChannelStatus>> m_chainStatusForChannelMatrix;
     EngineEffectsDelay m_effectsDelay;
 

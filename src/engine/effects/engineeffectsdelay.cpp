@@ -16,11 +16,9 @@ EngineEffectsDelay::EngineEffectsDelay()
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
 }
 
-void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
-        CSAMPLE* M_RESTRICT pOutput,
+void EngineEffectsDelay::process(CSAMPLE* M_RESTRICT pInOut,
         const int iBufferSize) {
     if (m_oldDelaySamples == 0 && m_delaySamples == 0) {
-        SampleUtil::copy(pOutput, pIn, iBufferSize);
         return;
     }
 
@@ -28,28 +26,25 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
         int delaySourcePos = (m_delayPos + kiMaxDelay - m_delaySamples) % kiMaxDelay;
 
         VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
-            SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
         }
         VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(kiMaxDelay)) {
-            SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
         }
 
         for (int i = 0; i < iBufferSize; ++i) {
             // Put samples into delay buffer.
-            m_pDelayBuffer[m_delayPos] = pIn[i];
+            m_pDelayBuffer[m_delayPos] = pInOut[i];
             m_delayPos = (m_delayPos + 1) % kiMaxDelay;
 
             // Take a delayed sample from the delay buffer
             // and copy it to the destination buffer.
-            pOutput[i] = m_pDelayBuffer[delaySourcePos];
+            pInOut[i] = m_pDelayBuffer[delaySourcePos];
             delaySourcePos = (delaySourcePos + 1) % kiMaxDelay;
         }
 
     } else {
         VERIFY_OR_DEBUG_ASSERT(m_delaySamples >= 0) {
-            SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
         }
 
@@ -61,19 +56,15 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
                 kiMaxDelay;
 
         VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
-            SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
         }
         VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(kiMaxDelay)) {
-            SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
         }
         VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos >= 0) {
-            SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
         }
         VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos <= static_cast<int>(kiMaxDelay)) {
-            SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
         }
 
@@ -81,7 +72,7 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
 
         for (int i = 0; i < iBufferSize; ++i) {
             // Put samples into delay buffer.
-            m_pDelayBuffer[m_delayPos] = pIn[i];
+            m_pDelayBuffer[m_delayPos] = pInOut[i];
             m_delayPos = (m_delayPos + 1) % kiMaxDelay;
 
             // Take delayed samples from the delay buffer
@@ -90,9 +81,9 @@ void EngineEffectsDelay::process(const CSAMPLE* M_RESTRICT pIn,
             // and put it into the dest buffer.
             CSAMPLE_GAIN crossMix = delayChangeRamped.getNth(i);
 
-            pOutput[i] = static_cast<CSAMPLE>(
+            pInOut[i] = static_cast<CSAMPLE>(
                     m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix));
-            pOutput[i] += static_cast<CSAMPLE>(m_pDelayBuffer[delaySourcePos] * crossMix);
+            pInOut[i] += static_cast<CSAMPLE>(m_pDelayBuffer[delaySourcePos] * crossMix);
 
             oldDelaySourcePos = (oldDelaySourcePos + 1) % kiMaxDelay;
             delaySourcePos = (delaySourcePos + 1) % kiMaxDelay;
