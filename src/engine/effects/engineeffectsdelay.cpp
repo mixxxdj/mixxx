@@ -22,18 +22,18 @@ void EngineEffectsDelay::process(CSAMPLE* M_RESTRICT pInOut,
         return;
     }
 
+    int delaySourcePos =
+            (m_delayBufferWritePos + kiMaxDelay - m_currentDelaySamples) %
+            kiMaxDelay;
+
+    VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(kiMaxDelay)) {
+        return;
+    }
+
     if (m_prevDelaySamples == m_currentDelaySamples) {
-        int delaySourcePos =
-                (m_delayBufferWritePos + kiMaxDelay - m_currentDelaySamples) %
-                kiMaxDelay;
-
-        VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
-            return;
-        }
-        VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(kiMaxDelay)) {
-            return;
-        }
-
         for (int i = 0; i < iBufferSize; ++i) {
             // Put samples into delay buffer.
             m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
@@ -50,19 +50,10 @@ void EngineEffectsDelay::process(CSAMPLE* M_RESTRICT pInOut,
             return;
         }
 
-        int delaySourcePos =
-                (m_delayBufferWritePos + kiMaxDelay - m_currentDelaySamples) %
-                kiMaxDelay;
         int oldDelaySourcePos =
                 (m_delayBufferWritePos + kiMaxDelay - m_prevDelaySamples) %
                 kiMaxDelay;
 
-        VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
-            return;
-        }
-        VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(kiMaxDelay)) {
-            return;
-        }
         VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos >= 0) {
             return;
         }
