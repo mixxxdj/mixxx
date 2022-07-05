@@ -69,11 +69,11 @@
       <!-- Cue mix knob -->
       <control>
         <group>[Master]</group>
-        <key>NumarkScratch.cueMix.input</key>
+        <key>headMix</key>
         <status>0xBF</status>
         <midino>0x0D</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <!-- Gain -->

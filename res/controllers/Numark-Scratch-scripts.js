@@ -257,11 +257,6 @@ NumarkScratch.Deck = function(number) {
         inKey: "pregain"
     });
 
-    this.cueMix = new components.Pot({
-        group: "[Master]",
-        inKey: "headMix"
-    });
-
     this.loopEncoder = new components.Encoder({
         unshift: function() {
             if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
