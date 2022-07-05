@@ -45,8 +45,7 @@ NumarkScratch.init = function() {
     engine.setValue("[VinylControl]", "show_vinylcontrol", 1);
 
     // Send Serato SysEx messages to request initial state and unlock pads
-    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6);
-    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6);
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7]);
 
     engine.makeConnection("[Channel1]", "VuMeter", NumarkScratch.vuCallback);
     engine.makeConnection("[Channel2]", "VuMeter", NumarkScratch.vuCallback);
@@ -314,8 +313,8 @@ NumarkScratch.Deck = function(number) {
     this.padSection = new NumarkScratch.PadSection(number);
 
     this.shiftButton = new components.Button({
+        midi: [0x9F, 0x32],
         input: function(channel, control, value) {
-            midi: [0x9F, 0x32],
             if (this.isPress(channel, control, value)) {
                 NumarkScratch.shift();
                 this.send(this.on);
