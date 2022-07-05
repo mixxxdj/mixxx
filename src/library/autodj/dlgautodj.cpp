@@ -54,6 +54,13 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             this,
             &DlgAutoDJ::updateSelectionInfo);
 
+    connect(&pLibrary->trackCollectionManager()
+                     ->internalCollection()
+                     ->getPlaylistDAO(),
+            &PlaylistDAO::tracksChanged,
+            this,
+            &DlgAutoDJ::updateInfo);
+
     connect(pLibrary,
             &Library::setTrackTableFont,
             m_pTrackTableView,
@@ -212,6 +219,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
+    updateInfo();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -362,7 +370,7 @@ void DlgAutoDJ::updateSelectionInfo() {
 
     if (!indices.isEmpty()) {
         label.append(mixxx::DurationBase::formatTime(duration));
-        label.append(QString(" (%1)").arg(indices.size()));
+        label.append(QString(" (%1) / ").arg(indices.size()));
         labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
         labelSelectionInfo->setText(label);
         labelSelectionInfo->setEnabled(true);
@@ -370,6 +378,22 @@ void DlgAutoDJ::updateSelectionInfo() {
         labelSelectionInfo->setText("");
         labelSelectionInfo->setEnabled(false);
     }
+}
+
+void DlgAutoDJ::updateInfo() {
+    double duration = 0.0;
+
+    int rows = m_pAutoDJTableModel->rowCount();
+    for (int row = 0; row < rows; ++row) {
+        TrackPointer pTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(row, 0));
+        duration += pTrack->getDuration();
+    }
+
+    QString label;
+    label.append(mixxx::DurationBase::formatTime(duration));
+    label.append(QString(" (%1)").arg(rows));
+
+    labelInfo->setText(label);
 }
 
 bool DlgAutoDJ::hasFocus() const {
