@@ -69,7 +69,7 @@
       <!-- Cue mix knob -->
       <control>
         <group>[Master]</group>
-        <key>NumarkScratch.gains.cueMix.input</key>
+        <key>NumarkScratch.cueMix.input</key>
         <status>0xBF</status>
         <midino>0x0D</midino>
         <options>
