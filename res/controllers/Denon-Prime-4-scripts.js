@@ -2,45 +2,94 @@
 var Prime4 = {};
 
 Prime4.init = function() {
-    Prime4.leftDeck = new Prime4.Deck([1, 3], 1);
-    Prime4.rightDeck = new Prime4.Deck([2, 4], 2);
+    midi.sendShortMsg(0x90, 0x75, 0x00); // Turn off all LEDs
+    Prime4.leftDeck = new Prime4.Deck([1, 3], 4);
+    Prime4.rightDeck = new Prime4.Deck([2, 4], 5);
     components.Button.prototype.isPress = function(channel, control, value, status) {
         return (status & 0xF0) === 0x90;
     };
-    // TODO: Add initialize sequence
 };
 
 Prime4.shutdown = function() {
-    // TODO: Add shutdown sequence
+    midi.sendShortMsg(0x90, 0x75, 0x01); // Return all LEDs to initial dim state
 };
 
 Prime4.Deck = function(deckNumbers, midiChannel) {
 
     components.Deck.call(this, deckNumbers);
 
+    this.keylockButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x22],
+        key: "keylock",
+        on: 0x7f,
+        off: 0x01,
+        type: components.Button.prototype.types.toggle,
+    });
+
+    /*
+	this.vinylButton = new components.Button({
+		midi: [0x90 + midiChannel, 0x23],
+		//TODO: Jog Wheel Functionality First
+		on: 0x7f,
+		off: 0x01,
+		type: components.Button.prototype.types.toggle,
+	});
+	*/
+
     this.slipButton = new components.Button({
         midi: [0x90 + midiChannel, 0x24],
-        inKey: "slip_enabled",
-        outKey: "slip_enabled",
-        //type: Button.prototype.types.toggle,
+        key: "slip_enabled",
+        on: 0x7f,
+        off: 0x01,
+        type: components.Button.prototype.types.toggle,
     });
 
     this.censorButton = new components.Button({
         midi: [0x90 + midiChannel, 0x01],
         key: "reverseroll",
+        on: 0x7f,
+        off: 0x01,
     });
 
-    this.syncButton = new components.SyncButton([0x90 + midiChannel, 0x08]);
+    this.bjumpBackButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x06],
+        key: "beatjump_backward",
+        on: 0x7f,
+        off: 0x01,
+    });
+
+    this.bjumpFwdButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x07],
+        key: "beatjump_forward",
+        on: 0x7f,
+        off: 0x01,
+    });
+
+    this.syncButton = new components.SyncButton({
+        midi: [0x90 + midiChannel, 0x08],
+        on: 0x7f,
+        off: 0x01,
+    });
 
     this.cueButton = new components.CueButton({
         midi: [0x90 + midiChannel, 0x09],
+        on: 0x7f,
         off: 0x01,
     });
 
     this.playButton = new components.PlayButton({
         midi: [0x90 + midiChannel, 0x0A],
+        on: 0x7f,
         off: 0x01,
     });
+
+    /* I HAVE NO IDEA WHAT TO DO HERE LOL
+	this.deckToggleButton = function(channel, control, value, status, group) {
+		this.reconnectComponents(function(c) {
+			this.setCurrentDeck.toggle
+		});
+	};
+	*/
 
     this.reconnectComponents(function(c) {
         if (c.group === undefined) {
@@ -61,17 +110,11 @@ Prime4.Deck.prototype = new components.Deck();
 // VIEW button (Library fullscreen?)
 //
 // DECK 1 SECTION
-// SHIFT + Play/Stop button
-// SYNC button
-// BEAT JUMP buttons
 // SKIP buttons
 // Deck 1-3 toggle buttons
-// CENSOR button
 // LOOP encoder
 // LOOP buttons
-// SLIP button
 // VINYL button
-// KEY LOCK + SYNC + RESET
 // Pitch slider
 // PITCH BEND buttons
 // BEAT GRID buttons

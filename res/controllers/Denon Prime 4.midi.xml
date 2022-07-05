@@ -97,6 +97,16 @@
                 <selectknob/>
               </options>
             </control>
+			<control> <!-- VIEW Button -->
+				<group>[Master]</group>
+				<key>maximize_library</key>
+				<description>Maximize Mixxx Library View</description>
+				<status>0x9F</status>
+				<midino>0x07</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control> <!-- Headphone Gain Knob -->
               <group>[Master]</group>
               <key>headGain</key>
@@ -544,6 +554,42 @@
 				<Script-Binding/>
 			  </options>
 			</control>
+			<control> <!-- Deck 1 Button -->
+				<key>Prime4.leftDeck.deckToggleButton</key>
+				<description></description>
+				<status>0x9F</status>
+				<midino>0x1C</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.leftDeck.deckToggleButton</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1C</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control> <!-- Deck 3 Button -->
+				<key>Prime4.leftDeck.deckToggleButton</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1E</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.leftDeck.deckToggleButton</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1E</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
             <control> <!-- Deck A - Track Skip Back Button -->
               <group></group>
               <key></key>
@@ -566,7 +612,7 @@
             </control>
             <control> <!-- Deck A - Beat Jump Back Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.bjumpBackButton.input</key>
               <description>Beat-Jump Back</description>
               <status>0x94</status>
               <midino>0x06</midino>
@@ -574,9 +620,19 @@
                 <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Deck A - Beat Jump Forward Button -->
+            <control>
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <description>Beat-Jump Back</description>
+              <status>0x84</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Beat Jump Forward Button -->
+			  <group></group>
+              <key>Prime4.leftDeck.bjumpFwdButton.input</key>
               <description>Beat-Jump Forward</description>
               <status>0x94</status>
               <midino>0x07</midino>
@@ -584,11 +640,31 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control>
+              <group></group>
+              <key>Prime4.leftDeck.bjumpFwdButton.input</key>
+              <description>Beat-Jump Forward</description>
+              <status>0x84</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck A - Sync Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.syncButton.input</key>
               <description>Sync</description>
               <status>0x94</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Sync Button Release -->
+              <group></group>
+              <key>Prime4.leftDeck.syncButton.input</key>
+              <description>Sync</description>
+              <status>0x84</status>
               <midino>0x08</midino>
               <options>
                 <Script-Binding/>
@@ -705,8 +781,8 @@
               </options>
             </control>
             <control> <!-- Deck A - Key Lock Button / Reset Key Button / Key Sync Button -->
-              <group></group>
-              <key></key>
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.keylockButton.input</key>
               <description>Key Lock / Reset Keylock (Key Sync)</description>
               <status>0x94</status>
               <midino>0x22</midino>
@@ -715,8 +791,8 @@
               </options>
             </control>
             <control> <!-- Deck A - Vinyl Button -->
-              <group></group>
-              <key></key>
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.vinylButton.input</key>
               <description>Vinyl Mode</description>
               <status>0x94</status>
               <midino>0x23</midino>
@@ -1088,8 +1164,8 @@
               </options>
             </control>
             <control> <!-- Deck B - Slip Button -->
-              <group></group>
-              <key></key>
+              <group>[Channel2]</group>
+              <key>Prime4.rightDeck.slipButton.input</key>
               <description>Slip Mode</description>
               <status>0x95</status>
               <midino>0x24</midino>
@@ -1221,6 +1297,14 @@
           </controls>
         <outputs>
           <!-- LED feedback for non-JavaScript controls -->
+			<output> <!-- VIEW Button -->
+				<group>[Master]</group>
+				<key>maximize_library</key>
+				<status>0x9F</status>
+				<midino>0x07</midino>
+				<on>0x7F</on>
+				<off>0x01</off>
+			</output>
         </outputs>
     </controller>
 </MixxxControllerPreset>
