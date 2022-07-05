@@ -42,8 +42,14 @@ NumarkScratch.init = function() {
     // Send Serato SysEx messages to request initial state and unlock pads
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7]);
 
-    engine.makeConnection("[Channel1]", "VuMeter", NumarkScratch.vuCallback);
-    engine.makeConnection("[Channel2]", "VuMeter", NumarkScratch.vuCallback);
+    var createVuCallback = function(deckOffset) {
+        return function(value) {
+            midi.sendShortMsg(0xB0 + deckOffset, 0x1F, value * 90);
+        };
+    };
+
+    engine.makeConnection("[Channel1]", "VuMeter", createVuCallback(0));
+    engine.makeConnection("[Channel2]", "VuMeter", createVuCallback(1));
 
     // Trigger is needed to initialize lights to 0x01
     NumarkScratch.deck.forEachComponent(function(component) {
@@ -436,10 +442,3 @@ NumarkScratch.ModeSampler = function(deckNumber) {
     }
 };
 NumarkScratch.ModeSampler.prototype = Object.create(components.ComponentContainer.prototype);
-
-
-NumarkScratch.vuCallback = function(value, group) {
-    var level = value * 90;
-    var deckOffset = script.deckFromGroup(group) - 1;
-    midi.sendShortMsg(0xB0 + deckOffset, 0x1F, level);
-};
