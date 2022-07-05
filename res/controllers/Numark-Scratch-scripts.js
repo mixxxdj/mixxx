@@ -39,8 +39,6 @@ NumarkScratch.init = function() {
         NumarkScratch.effect[i] = new NumarkScratch.EffectUnit(i + 1);
     }
 
-    NumarkScratch.gains = new NumarkScratch.Gains();
-
     // Send Serato SysEx messages to request initial state and unlock pads
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7]);
 
@@ -253,6 +251,11 @@ NumarkScratch.Deck = function(number) {
         inKey: "pregain"
     });
 
+    this.cueMix = new components.Pot({
+        group: "[Master]",
+        inKey: "headMix"
+    });
+
     this.loopEncoder = new components.Encoder({
         unshift: function() {
             if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
@@ -434,13 +437,6 @@ NumarkScratch.ModeSampler = function(deckNumber) {
 };
 NumarkScratch.ModeSampler.prototype = Object.create(components.ComponentContainer.prototype);
 
-NumarkScratch.Gains = function() {
-    this.cueMix = new components.Pot({
-        group: "[Master]",
-        inKey: "headMix"
-    });
-};
-NumarkScratch.Gains.prototype = new components.ComponentContainer();
 
 NumarkScratch.vuCallback = function(value, group) {
     var level = value * 90;
