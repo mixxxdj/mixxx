@@ -38,7 +38,7 @@ class EngineEffectsDelay final : public EngineObject {
         // to aware problems with a number of channels. The inner
         // EngineEffectsDelay structure works with delay samples, so the value
         // is recalculated for the EngineEffectsDelay usage.
-        m_delaySamples = delayFrames * mixxx::kEngineChannelCount;
+        m_currentDelaySamples = delayFrames * mixxx::kEngineChannelCount;
     }
 
     /// The method delays the input buffer by the set number of samples
@@ -59,8 +59,8 @@ class EngineEffectsDelay final : public EngineObject {
     void process(CSAMPLE* pInOut, const int iBufferSize) override;
 
   private:
-    SINT m_delaySamples;
-    SINT m_oldDelaySamples;
-    SINT m_delayPos;
+    SINT m_currentDelaySamples;
+    SINT m_prevDelaySamples;
+    SINT m_delayBufferWritePos;
     CSAMPLE* m_pDelayBuffer;
 };

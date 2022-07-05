@@ -55,7 +55,7 @@ TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
     EXPECT_DEATH({
         m_effectsDelay.process(pInOut, numSamples);
     },
-            "m_delaySamples >= 0");
+            "m_currentDelaySamples >= 0");
 #else
     CSAMPLE* expectedResult = inputBuffer;
 
