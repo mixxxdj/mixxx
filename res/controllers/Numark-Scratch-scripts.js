@@ -41,9 +41,6 @@ NumarkScratch.init = function() {
 
     NumarkScratch.gains = new NumarkScratch.Gains();
 
-    //Toggle the vinyl control section in skins to show
-    engine.setValue("[VinylControl]", "show_vinylcontrol", 1);
-
     // Send Serato SysEx messages to request initial state and unlock pads
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7]);
 
