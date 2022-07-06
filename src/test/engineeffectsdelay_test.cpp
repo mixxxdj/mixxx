@@ -6,6 +6,7 @@
 
 #include "engine/effects/engineeffectsdelay.h"
 
+#include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 
 #include <QTest>
@@ -336,5 +337,114 @@ TEST_F(EngineEffectsDelayTest, CopyWholeBufferForZeroDelay) {
 
     SampleUtil::free(pInOut);
 }
+
+static void BM_ZeroDelay(benchmark::State& state) {
+    SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
+
+    EngineEffectsDelay effectsDelay;
+
+    CSAMPLE* pInOut = SampleUtil::alloc(bufferSizeInSamples);
+    SampleUtil::fill(pInOut, 0.0f, bufferSizeInSamples);
+
+    for (auto _ : state) {
+        effectsDelay.process(pInOut, bufferSizeInSamples);
+    }
+
+    SampleUtil::free(pInOut);
+}
+BENCHMARK(BM_ZeroDelay)->Range(64, 4 << 10);
+
+static void BM_DelaySmallerThanBufferSize(benchmark::State& state) {
+    SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
+    SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelCount;
+
+    // The delay is half of the buffer size.
+    SINT delayFrames = bufferSizeInFrames / 2;
+
+    EngineEffectsDelay effectsDelay;
+
+    CSAMPLE* pInOut = SampleUtil::alloc(bufferSizeInSamples);
+    SampleUtil::fill(pInOut, 0.0f, bufferSizeInSamples);
+
+    effectsDelay.setDelayFrames(delayFrames);
+
+    for (auto _ : state) {
+        effectsDelay.process(pInOut, bufferSizeInSamples);
+    }
+
+    SampleUtil::free(pInOut);
+}
+BENCHMARK(BM_DelaySmallerThanBufferSize)->Range(64, 4 << 10);
+
+static void BM_DelayGreaterThanBufferSize(benchmark::State& state) {
+    SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
+    SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelCount;
+
+    // The delay is the same as twice of buffer size.
+    SINT delayFrames = bufferSizeInFrames * 2;
+
+    EngineEffectsDelay effectsDelay;
+
+    CSAMPLE* pInOut = SampleUtil::alloc(bufferSizeInSamples);
+    SampleUtil::fill(pInOut, 0.0f, bufferSizeInSamples);
+
+    effectsDelay.setDelayFrames(delayFrames);
+
+    for (auto _ : state) {
+        effectsDelay.process(pInOut, bufferSizeInSamples);
+    }
+
+    SampleUtil::free(pInOut);
+}
+BENCHMARK(BM_DelayGreaterThanBufferSize)->Range(64, 4 << 10);
+
+static void BM_DelayCrossfading(benchmark::State& state) {
+    SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
+    SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelCount;
+
+    // The first delay is half of the buffer size.
+    SINT firstDelayFrames = bufferSizeInFrames / 2;
+
+    // The second delay is the same as twice of buffer size.
+    SINT secondDelayFrames = bufferSizeInFrames * 2;
+
+    EngineEffectsDelay effectsDelay;
+
+    CSAMPLE* pInOut = SampleUtil::alloc(bufferSizeInSamples);
+    SampleUtil::fill(pInOut, 0.0f, bufferSizeInSamples);
+
+    for (auto _ : state) {
+        effectsDelay.setDelayFrames(firstDelayFrames);
+        effectsDelay.process(pInOut, bufferSizeInSamples);
+        effectsDelay.setDelayFrames(secondDelayFrames);
+        effectsDelay.process(pInOut, bufferSizeInSamples);
+    }
+
+    SampleUtil::free(pInOut);
+}
+BENCHMARK(BM_DelayCrossfading)->Range(64, 4 << 10);
+
+static void BM_DelayNoCrossfading(benchmark::State& state) {
+    SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
+    SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelCount;
+
+    // The delay is half of the buffer size.
+    SINT delayFrames = bufferSizeInFrames / 2;
+
+    EngineEffectsDelay effectsDelay;
+
+    CSAMPLE* pInOut = SampleUtil::alloc(bufferSizeInSamples);
+    SampleUtil::fill(pInOut, 0.0f, bufferSizeInSamples);
+
+    for (auto _ : state) {
+        effectsDelay.setDelayFrames(delayFrames);
+        effectsDelay.process(pInOut, bufferSizeInSamples);
+        effectsDelay.setDelayFrames(delayFrames);
+        effectsDelay.process(pInOut, bufferSizeInSamples);
+    }
+
+    SampleUtil::free(pInOut);
+}
+BENCHMARK(BM_DelayNoCrossfading)->Range(64, 4 << 10);
 
 } // namespace
