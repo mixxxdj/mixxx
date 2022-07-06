@@ -69,7 +69,8 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig),
-          m_clearButton(make_parented<QToolButton>(this)) {
+          m_clearButton(make_parented<QToolButton>(this)),
+          m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
     setEditable(true);
@@ -350,7 +351,12 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         if (findCurrentTextIndex() == -1) {
             slotSaveSearch();
         }
-        slotTriggerSearch();
+        // Jump to tracks if search signal was already emitted
+        if (!m_queryEmitted) {
+            slotTriggerSearch();
+        } else {
+            emit setLibraryFocus(FocusWidget::TracksTable);
+        }
         return;
     case Qt::Key_Space:
         // Open/close popup with Ctrl + space
@@ -467,6 +473,7 @@ void WSearchLineEdit::slotTriggerSearch() {
     DEBUG_ASSERT(isEnabled());
     m_debouncingTimer.stop();
     emit search(getSearchText());
+    m_queryEmitted = true;
 }
 
 /// saves the current query as selection
@@ -705,6 +712,7 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
             << "slotTextChanged"
             << text;
 #endif // ENABLE_TRACE_LOG
+    m_queryEmitted = false;
     m_debouncingTimer.stop();
     if (!isEnabled()) {
         setTextBlockSignals(kDisabledText);
