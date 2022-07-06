@@ -555,7 +555,7 @@
 			  </options>
 			</control>
 			<control> <!-- Deck 1 Button -->
-				<key>Prime4.leftDeck.deckToggleButton</key>
+				<key>Prime4.leftDeck.deckToggleButtonA</key>
 				<description></description>
 				<status>0x9F</status>
 				<midino>0x1C</midino>
@@ -564,7 +564,7 @@
 				</options>
 			</control>
 			<control>
-				<key>Prime4.leftDeck.deckToggleButton</key>
+				<key>Prime4.leftDeck.deckToggleButtonA</key>
 				<description></description>
 				<status>0x8F</status>
 				<midino>0x1C</midino>
@@ -573,16 +573,16 @@
 				</options>
 			</control>
 			<control> <!-- Deck 3 Button -->
-				<key>Prime4.leftDeck.deckToggleButton</key>
+				<key>Prime4.leftDeck.deckToggleButtonB</key>
 				<description></description>
-				<status>0x8F</status>
+				<status>0x9F</status>
 				<midino>0x1E</midino>
 				<options>
 					<Script-Binding/>
 				</options>
 			</control>
 			<control>
-				<key>Prime4.leftDeck.deckToggleButton</key>
+				<key>Prime4.leftDeck.deckToggleButtonB</key>
 				<description></description>
 				<status>0x8F</status>
 				<midino>0x1E</midino>
@@ -982,6 +982,42 @@
 			  <options>
 				<Script-Binding/>
 			  </options>
+			</control>
+			<control> <!-- Deck 2 Button -->
+				<key>Prime4.rightDeck.deckToggleButtonA</key>
+				<description></description>
+				<status>0x9F</status>
+				<midino>0x1D</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.rightDeck.deckToggleButtonA</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1D</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control> <!-- Deck 3 Button -->
+				<key>Prime4.rightDeck.deckToggleButtonB</key>
+				<description></description>
+				<status>0x9F</status>
+				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.rightDeck.deckToggleButtonB</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
 			</control>
             <control> <!-- Deck B - Track Skip Back Button -->
               <group></group>

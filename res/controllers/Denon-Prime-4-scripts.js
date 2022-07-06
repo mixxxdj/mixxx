@@ -8,6 +8,10 @@ Prime4.init = function() {
     components.Button.prototype.isPress = function(channel, control, value, status) {
         return (status & 0xF0) === 0x90;
     };
+    midi.sendShortMsg(0x9F, 0x1C, 0x7F);
+    midi.sendShortMsg(0x9F, 0x1D, 0x7F);
+    midi.sendShortMsg(0x9F, 0x1E, 0x05);
+    midi.sendShortMsg(0x9F, 0x1F, 0x05);
 };
 
 Prime4.shutdown = function() {
@@ -83,13 +87,28 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         off: 0x01,
     });
 
-    /* I HAVE NO IDEA WHAT TO DO HERE LOL
-	this.deckToggleButton = function(channel, control, value, status, group) {
-		this.reconnectComponents(function(c) {
-			this.setCurrentDeck.toggle
-		});
-	};
-	*/
+    // change from Deck 3/4 to Deck 1/2
+    this.deckToggleButtonA = function(value) {
+        if (value > 0) {
+            const channelCheck = midiChannel - 1;
+            if (this.currentDeck === "[Channel" + channelCheck + "]") {
+                this.toggle();
+                midi.sendShortMsg(0x9F, 0x18 + midiChannel, 0x7F);
+                midi.sendShortMsg(0x9F, 0x1A + midiChannel, 0x05);
+            }
+        }
+    };
+    // change from Deck 1/2 to Deck 3/4
+    this.deckToggleButtonB = function(value) {
+        if (value > 0) {
+            const channelCheck = midiChannel - 3;
+            if (this.currentDeck === "[Channel" + channelCheck + "]") {
+                this.toggle();
+                midi.sendShortMsg(0x9F, 0x18 + midiChannel, 0x15);
+                midi.sendShortMsg(0x9F, 0x1A + midiChannel, 0x0F);
+            }
+        }
+    };
 
     this.reconnectComponents(function(c) {
         if (c.group === undefined) {
