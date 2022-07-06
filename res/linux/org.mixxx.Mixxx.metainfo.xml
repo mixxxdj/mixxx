@@ -98,6 +98,39 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.3.4" type="development">
+      <description>
+ <ul>
+  <li>
+   Track Properties: show 'date added' as local time
+   #4838
+   lp:1980658
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: Fix  sliders and knobs
+   #4835
+   lp:1948596
+  </li>
+  <li>
+   Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
+   #4495
+  </li>
+  <li>
+   Shade: Fix library sidebar splitter glitch
+   #4828
+   lp:1979823
+  </li>
+  <li>
+   MacOS builds: Perform ad-hoc signing of macOS bundle in Pull request and personal repositories
+   #4774
+  </li>
+  <li>
+   Waveform: Avoid visual glitch with ranges &lt; 1 px
+   #4804
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.3.3" type="stable" date="2022-06-21" timestamp="1655769600">
       <description>
  <ul>
