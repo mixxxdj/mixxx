@@ -208,6 +208,10 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Shortcuts") + ": \n" +
             tr("Ctrl+F") + "  " +
             tr("Focus", "Give search bar input focus") + "\n" +
+            tr("Return") + " " +
+            tr("Trigger search before search-as-you-type timeout or"
+               "jump to tracks view afterwards") +
+            "\n" +
             tr("Ctrl+Backspace") + "  " +
             tr("Clear input", "Clear the search bar input field") + "\n" +
             tr("Ctrl+Space") + "  " +
