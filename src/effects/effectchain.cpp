@@ -82,7 +82,7 @@ EffectChain::EffectChain(const QString& group,
     connect(m_pControlChainSuperParameter.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotControlChainSuperParameter(value, false); });
+            [=, this](double value) { slotControlChainSuperParameter(value, false); });
     m_pControlChainSuperParameter->set(0.0);
     m_pControlChainSuperParameter->setDefaultValue(0.0);
 

@@ -81,7 +81,7 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     connect(m_pAnalysisView,
             &DlgAnalysis::loadTrackToPlayer,
             this,
-            [=](TrackPointer track, const QString& group) {
+            [=, this](TrackPointer track, const QString& group) {
                 emit loadTrackToPlayer(track, group, false);
             });
     connect(m_pAnalysisView,

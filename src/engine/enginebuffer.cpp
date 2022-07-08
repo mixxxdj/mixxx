@@ -254,6 +254,11 @@ EngineBuffer::EngineBuffer(const QString& group,
             m_pCueControl,
             &CueControl::slotLoopEnabledChanged,
             Qt::DirectConnection);
+    connect(m_pCueControl,
+            &CueControl::loopRemove,
+            m_pLoopingControl,
+            &LoopingControl::slotLoopRemove,
+            Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
                                                m_pLoopingControl);
@@ -263,7 +268,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
-    if (m_pKeylockEngine->get() == SOUNDTOUCH) {
+    if (m_pKeylockEngine->get() == static_cast<double>(SOUNDTOUCH)) {
         m_pScaleKeylock = m_pScaleST;
     } else {
         m_pScaleKeylock = m_pScaleRB;

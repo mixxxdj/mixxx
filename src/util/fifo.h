@@ -66,5 +66,5 @@ class FIFO {
   private:
     std::vector<DataType> m_data;
     PaUtilRingBuffer m_ringBuffer;
-    DISALLOW_COPY_AND_ASSIGN(FIFO<DataType>);
+    DISALLOW_COPY_AND_ASSIGN(FIFO);
 };

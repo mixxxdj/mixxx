@@ -205,6 +205,9 @@ class CueControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
+  signals:
+    void loopRemove();
+
   public slots:
     void slotLoopReset();
     void slotLoopEnabledChanged(bool enabled);
