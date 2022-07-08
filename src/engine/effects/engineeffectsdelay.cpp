@@ -29,7 +29,7 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
     VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(kiMaxDelay)) {
+    VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= kiMaxDelay) {
         return;
     }
 
@@ -57,7 +57,7 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
         VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos >= 0) {
             return;
         }
-        VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos <= static_cast<int>(kiMaxDelay)) {
+        VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos <= kiMaxDelay) {
             return;
         }
 
@@ -74,9 +74,8 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
             // and put it into the dest buffer.
             CSAMPLE_GAIN crossMix = delayChangeRamped.getNth(i);
 
-            pInOut[i] = static_cast<CSAMPLE>(
-                    m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix));
-            pInOut[i] += static_cast<CSAMPLE>(m_pDelayBuffer[delaySourcePos] * crossMix);
+            pInOut[i] = m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix);
+            pInOut[i] += m_pDelayBuffer[delaySourcePos] * crossMix;
 
             oldDelaySourcePos = (oldDelaySourcePos + 1) % kiMaxDelay;
             delaySourcePos = (delaySourcePos + 1) % kiMaxDelay;
