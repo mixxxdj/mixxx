@@ -5,7 +5,7 @@
 
 namespace {
 // See enginedelay.cpp
-const int kiMaxDelay = static_cast<int>(0.508 *
+constexpr int kiMaxDelay = static_cast<int>(0.508 *
         mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount);
 } // anonymous namespace
 
