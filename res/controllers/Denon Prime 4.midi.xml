@@ -729,6 +729,16 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck A - Play/Stop Button / Stutter Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.playButton.input</key>
+              <description>Deck A - Play/Stop Button</description>
+              <status>0x84</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck A - Parameter Left Button -->
               <group></group>
               <key></key>
@@ -780,10 +790,20 @@
               </options>
             </control>
             <control> <!-- Deck A - Shift Button -->
-              <group></group>
-              <key></key>
+              <group>[Shift]</group>
+              <key>Prime4.shiftState</key>
               <description>Shift Button</description>
               <status>0x94</status>
+              <midino>0x1C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Shift Button -->
+              <group>[Shift]</group>
+              <key>Prime4.shiftState</key>
+              <description>Shift Button</description>
+              <status>0x84</status>
               <midino>0x1C</midino>
               <options>
                 <Script-Binding/>
