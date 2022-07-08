@@ -16,7 +16,7 @@ EngineEffectsDelay::EngineEffectsDelay()
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
 }
 
-void EngineEffectsDelay::process(CSAMPLE* M_RESTRICT pInOut,
+void EngineEffectsDelay::process(CSAMPLE* pInOut,
         const int iBufferSize) {
     if (m_prevDelaySamples == 0 && m_currentDelaySamples == 0) {
         return;
