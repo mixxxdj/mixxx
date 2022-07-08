@@ -54,7 +54,16 @@
                 <normal/>
               </options>
             </control>
-
+            <control> <!-- FX2 - Effect 1 Button -->
+              <group>[EffectRack1_EffectUnit2_Effect1]</group>
+              <key>enabled</key>
+              <description>MIDI Learned from 16 messages.</description>
+              <status>0x97</status>
+              <midino>0x06</midino>
+              <options>
+                <normal/>
+              </options>
+            </control>
             <control> <!-- FX2 - Effect 2 Button -->
               <group>[EffectRack1_EffectUnit2_Effect2]</group>
               <key>enabled</key>
@@ -75,16 +84,6 @@
                 <normal/>
               </options>
             </control>
-            <control> <!-- FX2 - Effect 1 Button -->
-              <group>[EffectRack1_EffectUnit2_Effect1]</group>
-              <key>enabled</key>
-              <description>MIDI Learned from 16 messages.</description>
-              <status>0x97</status>
-              <midino>0x06</midino>
-              <options>
-                <normal/>
-              </options>
-            </control>
 
             <!-- MIDDLE MIXER SECTION -->
             <control> <!-- Library Scroll Encoder -->
@@ -99,12 +98,22 @@
             </control>
 			<control> <!-- VIEW Button -->
 				<group>[Master]</group>
-				<key>maximize_library</key>
+				<key>Prime4.maxView.input</key>
 				<description>Maximize Mixxx Library View</description>
 				<status>0x9F</status>
 				<midino>0x07</midino>
 				<options>
-					<normal/>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Master]</group>
+				<key>Prime4.maxView.input</key>
+				<description>Maximize Mixxx Library View</description>
+				<status>0x8F</status>
+				<midino>0x07</midino>
+				<options>
+					<Script-Binding/>
 				</options>
 			</control>
             <control> <!-- Headphone Gain Knob -->
@@ -760,6 +769,22 @@
                 <Script-Binding/>
               </options>
             </control>
+			<control> <!-- Pitch Fader LSB -->
+				<key>Prime4.leftDeck.tempoFader.inputLSB</key>
+				<status>0xB4</status>
+				<midino>0x4B</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control> <!-- Pitch Fader MSB -->
+				<key>Prime4.leftDeck.tempoFader.inputMSB</key>
+				<status>0xB4</status>
+				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
             <control> <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
               <group></group>
               <key></key>
@@ -1001,7 +1026,7 @@
 					<Script-Binding/>
 				</options>
 			</control>
-			<control> <!-- Deck 3 Button -->
+			<control> <!-- Deck 4 Button -->
 				<key>Prime4.rightDeck.deckToggleButtonB</key>
 				<description></description>
 				<status>0x9F</status>
@@ -1159,6 +1184,22 @@
                 <Script-Binding/>
               </options>
             </control>
+			<control> <!-- Pitch Fader LSB -->
+				<key>Prime4.rightDeck.tempoFader.inputLSB</key>
+				<status>0xB5</status>
+				<midino>0x4B</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control> <!-- Pitch Fader MSB -->
+				<key>Prime4.rightDeck.tempoFader.inputMSB</key>
+				<status>0xB5</status>
+				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
             <control> <!-- Deck B - Pitch Bend Down Button / Pitch Range Decrease Button -->
               <group></group>
               <key></key>
@@ -1181,7 +1222,7 @@
             </control>
             <control> <!-- Deck B - Key Lock Button / Reset Key Button / Key Sync Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.keylockButton.input</key>
               <description>Key Lock / Reset Keylock (Key Sync)</description>
               <status>0x95</status>
               <midino>0x22</midino>
@@ -1332,15 +1373,6 @@
             </control>
           </controls>
         <outputs>
-          <!-- LED feedback for non-JavaScript controls -->
-			<output> <!-- VIEW Button -->
-				<group>[Master]</group>
-				<key>maximize_library</key>
-				<status>0x9F</status>
-				<midino>0x07</midino>
-				<on>0x7F</on>
-				<off>0x01</off>
-			</output>
         </outputs>
     </controller>
 </MixxxControllerPreset>
