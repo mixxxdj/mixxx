@@ -50,69 +50,69 @@ Prime4.rgbCode = {
 
 // Map RGB Hex values to MIDI values for Prime 4 LEDs
 var Prime4ColorMapper = new ColorMapper({
-	0x000055: 0x01,
-	0x0000AA: 0x02,
-	0x0000FF: 0x03,
-	0x005500: 0x04,
-	0x005555: 0x05,
-	0x0055AA: 0x06,
-	0x0055FF: 0x07,
-	0x00AA00: 0x08,
-	0x00AA55: 0x09,
-	0x00AAAA: 0x0A,
-	0x00AAFF: 0x0B,
-	0x00FF00: 0x0C,
-	0x00FF55: 0x0D,
-	0x00FFAA: 0x0E,
-	0x00FFFF: 0x0F,
-	0x550000: 0x10, 
-	0x550055: 0x11,
-	0x5500AA: 0x12,
-	0x5500FF: 0x13,
-	0x555500: 0x14,
-	0x555555: 0x15,
-	0x5555AA: 0x16,
-	0x5555FF: 0x17,
-	0x55AA00: 0x18,
-	0x55AA55: 0x19,
-	0x55AAAA: 0x1A,
-	0x55AAFF: 0x1B,
-	0x55FF00: 0x1C,
-	0x55FF55: 0x1D,
-	0x55FFAA: 0x1E,
-	0x55FFFF: 0x1F,
-	0xAA0000: 0x20,
-	0xAA0055: 0x21,
-	0xAA00AA: 0x22,
-	0xAA00FF: 0x23,
-	0xAA5500: 0x24,
-	0xAA5555: 0x25,
-	0xAA55AA: 0x26,
-	0xAA55FF: 0x27,
-	0xAAAA00: 0x28,
-	0xAAAA55: 0x29,
-	0xAAAAAA: 0x2A,
-	0xAAAAFF: 0x2B,
-	0xAAFF00: 0x2C,
-	0xAAFF55: 0x2D,
-	0xAAFFAA: 0x2E,
-	0xAAFFFF: 0x2F,
-	0xFF0000: 0x30,
-	0xFF0055: 0x31,
-	0xFF00AA: 0x32,
-	0xFF00FF: 0x33,
-	0xFF5500: 0x34,
-	0xFF5555: 0x35,
-	0xFF55AA: 0x36,
-	0xFF55FF: 0x37,
-	0xFFAA00: 0x38,
-	0xFFAA55: 0x39,
-	0xFFAAAA: 0x3A,
-	0xFFAAFF: 0x3B,
-	0xFFFF00: 0x3C,
-	0xFFFF55: 0x3D,
-	0xFFFFAA: 0x3E,
-	0xFFFFFF: 0x3F,
+    0x000055: 0x01,
+    0x0000AA: 0x02,
+    0x0000FF: 0x03,
+    0x005500: 0x04,
+    0x005555: 0x05,
+    0x0055AA: 0x06,
+    0x0055FF: 0x07,
+    0x00AA00: 0x08,
+    0x00AA55: 0x09,
+    0x00AAAA: 0x0A,
+    0x00AAFF: 0x0B,
+    0x00FF00: 0x0C,
+    0x00FF55: 0x0D,
+    0x00FFAA: 0x0E,
+    0x00FFFF: 0x0F,
+    0x550000: 0x10,
+    0x550055: 0x11,
+    0x5500AA: 0x12,
+    0x5500FF: 0x13,
+    0x555500: 0x14,
+    0x555555: 0x15,
+    0x5555AA: 0x16,
+    0x5555FF: 0x17,
+    0x55AA00: 0x18,
+    0x55AA55: 0x19,
+    0x55AAAA: 0x1A,
+    0x55AAFF: 0x1B,
+    0x55FF00: 0x1C,
+    0x55FF55: 0x1D,
+    0x55FFAA: 0x1E,
+    0x55FFFF: 0x1F,
+    0xAA0000: 0x20,
+    0xAA0055: 0x21,
+    0xAA00AA: 0x22,
+    0xAA00FF: 0x23,
+    0xAA5500: 0x24,
+    0xAA5555: 0x25,
+    0xAA55AA: 0x26,
+    0xAA55FF: 0x27,
+    0xAAAA00: 0x28,
+    0xAAAA55: 0x29,
+    0xAAAAAA: 0x2A,
+    0xAAAAFF: 0x2B,
+    0xAAFF00: 0x2C,
+    0xAAFF55: 0x2D,
+    0xAAFFAA: 0x2E,
+    0xAAFFFF: 0x2F,
+    0xFF0000: 0x30,
+    0xFF0055: 0x31,
+    0xFF00AA: 0x32,
+    0xFF00FF: 0x33,
+    0xFF5500: 0x34,
+    0xFF5555: 0x35,
+    0xFF55AA: 0x36,
+    0xFF55FF: 0x37,
+    0xFFAA00: 0x38,
+    0xFFAA55: 0x39,
+    0xFFAAAA: 0x3A,
+    0xFFAAFF: 0x3B,
+    0xFFFF00: 0x3C,
+    0xFFFF55: 0x3D,
+    0xFFFFAA: 0x3E,
+    0xFFFFFF: 0x3F,
 });
 
 const colDeck1 = eval("Prime4.rgbCode." + colourOfDeck1);
@@ -192,26 +192,26 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         midi: [0x90 + midiChannel, 0x0A],
         on: 0x7f,
         off: 0x01,
-		unshift: function() {
-			components.PlayButton.prototype.unshift.call(this);
-			this.type = components.Button.prototype.types.toggle;
-		},
-		shift: function() {
-			this.inKey = "play_stutter";
-			this.type = components.Button.prototype.types.push;
-		}
+        unshift: function() {
+            components.PlayButton.prototype.unshift.call(this);
+            this.type = components.Button.prototype.types.toggle;
+        },
+        shift: function() {
+            this.inKey = "play_stutter";
+            this.type = components.Button.prototype.types.push;
+        }
     });
 
-	this.hotcuePad = [];
-	for (var i = 1; i <= 8; i++) {
-		var hotcueColor = engine.getValue(this.currentDeck, "hotcue_" + i + "_color");
-		this.hotcuePad[i] = new components.HotcueButton({
-			number: i,
-			midi: [0x90 + midiChannel, 0x0E + i],
-			colorMapper: Prime4ColorMapper,
-			off: 0x00,
-		});
-	};
+    this.hotcuePad = [];
+    for (let i = 1; i <= 8; i++) {
+        const hotcueColor = engine.getValue(this.currentDeck, "hotcue_" + i + "_color");
+        this.hotcuePad[i] = new components.HotcueButton({
+            number: i,
+            midi: [0x90 + midiChannel, 0x0E + i],
+            colorMapper: Prime4ColorMapper,
+            off: 0x00,
+        });
+    }
 
     this.tempoFader = new components.Pot({
         midi: [0xB0 + midiChannel, 0x1F],
@@ -219,18 +219,17 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         invert: true,
     });
 
-	// LED indicator when pitch fader is at centre. slightly buggy when switching decks.
-	this.tempoFeedback = function(channel, control, value, status, group) {
-		var currentRate = engine.getParameter(this.currentDeck, "rate");
-		print(currentRate)
-		print(this.currentDeck)
-		if (currentRate >= 0.49 && currentRate <= 0.51) {
-			midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x7F);
-		}
-		else {
-			midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x00);
-		}
-	};
+    // LED indicator when pitch fader is at centre. slightly buggy when switching decks.
+    this.tempoFeedback = function(channel, control, value, status, group) {
+        const currentRate = engine.getParameter(this.currentDeck, "rate");
+        print(currentRate);
+        print(this.currentDeck);
+        if (currentRate >= 0.49 && currentRate <= 0.51) {
+            midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x7F);
+        } else {
+            midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x00);
+        }
+    };
 
     this.keylockButton = new components.Button({
         midi: [0x90 + midiChannel, 0x22],
@@ -258,19 +257,19 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         type: components.Button.prototype.types.toggle,
     });
 
-	this.loopInButton = new components.Button({
-		midi: [0x90 + midiChannel, 0x25],
-		key: "loop_in",
-		on: 0x7f,
-		off: 0x01,
-	});
+    this.loopInButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x25],
+        key: "loop_in",
+        on: 0x7f,
+        off: 0x01,
+    });
 
-	this.loopOutButton = new components.Button({
-		midi: [0x90 + midiChannel, 0x26],
-		key: "loop_out",
-		on: 0x7f,
-		off: 0x01,
-	});
+    this.loopOutButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x26],
+        key: "loop_out",
+        on: 0x7f,
+        off: 0x01,
+    });
 
     // Change from Deck 3/4 to Deck 1/2
     this.deckToggleButtonA = function(value) {
@@ -334,18 +333,17 @@ Prime4.maxView = new components.Button({
 });
 
 Prime4.shift = false;
-Prime4.shiftState = function (channel, control, value, status, group) {
-	Prime4.shift = value === 0x7F;
+Prime4.shiftState = function(channel, control, value, status, group) {
+    Prime4.shift = value === 0x7F;
 
-	if (Prime4.shift) {
-		Prime4.leftDeck.shift();
-		Prime4.rightDeck.shift();
-	}
-	else {
-		Prime4.leftDeck.unshift();
-		Prime4.rightDeck.unshift();
-	}
-}
+    if (Prime4.shift) {
+        Prime4.leftDeck.shift();
+        Prime4.rightDeck.shift();
+    } else {
+        Prime4.leftDeck.unshift();
+        Prime4.rightDeck.unshift();
+    }
+};
 
 // COMPONENTS TO IMPLEMENT:
 //
