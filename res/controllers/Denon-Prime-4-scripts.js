@@ -10,10 +10,10 @@ var Prime4 = {};
 
 // What colour would you like each deck to be?
 // Choose between "red", "yellow", "green", "cyan", "blue", "magenta", or "white".
-const colourOfDeck1 = "white";
-const colourOfDeck2 = "yellow";
-const colourOfDeck3 = "cyan";
-const colourOfDeck4 = "magenta";
+const colourOfDeck1 = "green";
+const colourOfDeck2 = "blue";
+const colourOfDeck3 = "red";
+const colourOfDeck4 = "yellow";
 
 /*
  *                   WARNING!!!
@@ -74,7 +74,8 @@ Prime4.init = function() {
     midi.sendShortMsg(0x9F, 0x1F, colDeck4Dark); // Deck 4 Toggle
     midi.sendShortMsg(0x94, 0x21, colDeck1); // Left Jog Wheel
     midi.sendShortMsg(0x95, 0x21, colDeck2); // Right Jog Wheel
-    midi.sendShortMsg(0x9F, 0x07, 0x01); // View Button
+    midi.sendShortMsg(0x94, 0x0B, colDeck1); // Hot-Cue Button - Left Deck
+    midi.sendShortMsg(0x95, 0x0B, colDeck2); // Hot-Cue Button - Right Deck
 };
 
 Prime4.shutdown = function() {
@@ -126,11 +127,44 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         off: 0x01,
     });
 
+	this.hotcuePad = [];
+	for (var i = 1; i <= 8; i++) {
+		this.hotcuePad[i] = new components.HotcueButton({
+			number: i,
+			midi: [0x90 + midiChannel, 0x0E + i],
+			colors: {
+				0: 0x03, // red
+				1: Prime4.rgbCode.green, // green
+				2: Prime4.rgbCode.cyan,// cyan
+				3: Prime4.rgbCode.yellow,
+				4: Prime4.rgbCode.blue,
+				5: Prime4.rgbCode.purple,
+				6: Prime4.rgbCode.pink,
+				7: Prime4.rgbCode.white,
+				8: 0x04,
+			},
+			off: 0x00,
+		});
+	};
+
     this.tempoFader = new components.Pot({
         midi: [0xB0 + midiChannel, 0x1F],
         inKey: "rate",
         invert: true,
     });
+
+	// LED indicator when pitch fader is at centre. slightly buggy when switching decks.
+	this.tempoFeedback = function(channel, control, value, status, group) {
+		var currentRate = engine.getParameter(this.currentDeck, "rate");
+		print(currentRate)
+		print(this.currentDeck)
+		if (currentRate >= 0.49 && currentRate <= 0.51) {
+			midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x7F);
+		}
+		else {
+			midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x00);
+		}
+	};
 
     this.keylockButton = new components.Button({
         midi: [0x90 + midiChannel, 0x22],
@@ -158,6 +192,20 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         type: components.Button.prototype.types.toggle,
     });
 
+	this.loopInButton = new components.Button({
+		midi: [0x90 + midiChannel, 0x25],
+		key: "loop_in",
+		on: 0x7f,
+		off: 0x01,
+	});
+
+	this.loopOutButton = new components.Button({
+		midi: [0x90 + midiChannel, 0x26],
+		key: "loop_out",
+		on: 0x7f,
+		off: 0x01,
+	});
+
     // Change from Deck 3/4 to Deck 1/2
     this.deckToggleButtonA = function(value) {
         if (value > 0) {
@@ -167,6 +215,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 midi.sendShortMsg(0x90 + midiChannel, 0x21, eval("colDeck" + (midiChannel - 3))); // Jog Wheel LED
                 midi.sendShortMsg(0x9F, 0x18 + midiChannel, eval("colDeck" + (midiChannel - 3))); // Active deck - bright LED
                 midi.sendShortMsg(0x9F, 0x1A + midiChannel, eval("colDeck" + (midiChannel - 1) + "Dark")); // Inactive deck - dark LED
+    			midi.sendShortMsg(0x90 + midiChannel, 0x0B, eval("colDeck" + (midiChannel - 3))); // Hot-Cue Button
             }
         }
     };
@@ -180,6 +229,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 midi.sendShortMsg(0x90 + midiChannel, 0x21, eval("colDeck" + (midiChannel - 1))); // Jog Wheel LED
                 midi.sendShortMsg(0x9F, 0x18 + midiChannel, eval("colDeck" + (midiChannel - 3) + "Dark")); // Inactive deck - dark LED
                 midi.sendShortMsg(0x9F, 0x1A + midiChannel, eval("colDeck" + (midiChannel - 1))); // Active deck - bright LED
+    			midi.sendShortMsg(0x90 + midiChannel, 0x0B, eval("colDeck" + (midiChannel - 1))); // Hot-Cue Button
             }
         }
     };
@@ -195,10 +245,7 @@ Prime4.Deck.prototype = new components.Deck();
 
 // Headphone Cue / PFL buttons for Decks 1 and 2
 
-// eslint-disable-next-line-no-var
 var headphoneCue = [];
-
-// eslint-disable-next-line-no-var
 for (var i = 1; i <= 4; i++) {
     headphoneCue[i] = new components.Button({
         midi: [0x8F + i, 0x0D],
@@ -220,7 +267,6 @@ Prime4.maxView = new components.Button({
     off: 0x01,
     type: components.Button.prototype.types.toggle,
 });
-
 
 // COMPONENTS TO IMPLEMENT:
 //

@@ -525,7 +525,7 @@
             <!-- LEFT DECK (Deck A) -->
             <control> <!-- Deck A - Loop In Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.loopInButton.input</key>
               <description>Deck 1-3 Loop In</description>
               <status>0x94</status>
               <midino>0x25</midino>
@@ -533,11 +533,31 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck A - Loop In Button -->
+              <group></group>
+              <key>Prime4.leftDeck.loopInButton.input</key>
+              <description>Deck 1-3 Loop In</description>
+              <status>0x84</status>
+              <midino>0x25</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck A - Loop Out Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.loopOutButton.input</key>
               <description>Deck 1-3 Loop Out</description>
               <status>0x94</status>
+              <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Out Button -->
+              <group></group>
+              <key>Prime4.leftDeck.loopOutButton.input</key>
+              <description>Deck 1-3 Loop Out</description>
+              <status>0x84</status>
               <midino>0x26</midino>
               <options>
                 <Script-Binding/>
@@ -785,6 +805,14 @@
 					<Script-Binding/>
 				</options>
 			</control>
+			<control>
+				<key>Prime4.leftDeck.tempoFeedback</key>
+				<status>0xB4</status>
+				<midino>0x1f</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
             <control> <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
               <group></group>
               <key></key>
@@ -888,17 +916,17 @@
             </control>
             <control> <!-- Deck A - Performance Pad 1 -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.hotcuePad[1].input</key>
               <description>Hotcue 1</description>
               <status>0x94</status>
-              <midino>0x09</midino>
+              <midino>0x0F</midino>
               <options>
                 <Script-Binding/>
               </options>
             </control>
             <control> <!-- Deck A - Performance Pad 2 -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.hotcuePad[2].input</key>
               <description>Hotcue 2</description>
               <status>0x94</status>
               <midino>0x10</midino>
@@ -908,7 +936,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 3 -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.hotcuePad[3].input</key>
               <description>Hotcue 3</description>
               <status>0x94</status>
               <midino>0x11</midino>
@@ -918,7 +946,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 4 -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.hotcuePad[4].input</key>
               <description>Hotcue 4</description>
               <status>0x94</status>
               <midino>0x12</midino>
@@ -928,7 +956,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 5 -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.hotcuePad[5].input</key>
               <description>Hotcue 5</description>
               <status>0x94</status>
               <midino>0x13</midino>
@@ -938,7 +966,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 6 -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.hotcuePad[6].input</key>
               <description>Hotcue 6</description>
               <status>0x94</status>
               <midino>0x14</midino>
@@ -948,7 +976,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 7 -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.hotcuePad[7].input</key>
               <description>Hotcue 7</description>
               <status>0x94</status>
               <midino>0x15</midino>
@@ -958,9 +986,89 @@
             </control>
             <control> <!-- Deck A - Performance Pad 8 -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.hotcuePad[8].input</key>
               <description>Hotcue 8</description>
               <status>0x94</status>
+              <midino>0x16</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 1 -->
+              <group></group>
+              <key>Prime4.leftDeck.hotcuePad[1].input</key>
+              <description>Hotcue 1</description>
+              <status>0x84</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 2 -->
+              <group></group>
+              <key>Prime4.leftDeck.hotcuePad[2].input</key>
+              <description>Hotcue 2</description>
+              <status>0x84</status>
+              <midino>0x10</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 3 -->
+              <group></group>
+              <key>Prime4.leftDeck.hotcuePad[3].input</key>
+              <description>Hotcue 3</description>
+              <status>0x84</status>
+              <midino>0x11</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 4 -->
+              <group></group>
+              <key>Prime4.leftDeck.hotcuePad[4].input</key>
+              <description>Hotcue 4</description>
+              <status>0x84</status>
+              <midino>0x12</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 5 -->
+              <group></group>
+              <key>Prime4.leftDeck.hotcuePad[5].input</key>
+              <description>Hotcue 5</description>
+              <status>0x84</status>
+              <midino>0x13</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 6 -->
+              <group></group>
+              <key>Prime4.leftDeck.hotcuePad[6].input</key>
+              <description>Hotcue 6</description>
+              <status>0x84</status>
+              <midino>0x14</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 7 -->
+              <group></group>
+              <key>Prime4.leftDeck.hotcuePad[7].input</key>
+              <description>Hotcue 7</description>
+              <status>0x84</status>
+              <midino>0x15</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 8 -->
+              <group></group>
+              <key>Prime4.leftDeck.hotcuePad[8].input</key>
+              <description>Hotcue 8</description>
+              <status>0x84</status>
               <midino>0x16</midino>
               <options>
                 <Script-Binding/>
