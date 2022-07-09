@@ -61,7 +61,7 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
             return;
         }
 
-        RampingValue<CSAMPLE_GAIN> delayChangeRamped(0.0f, 1.0f, iBufferSize);
+        const RampingValue<CSAMPLE_GAIN> delayChangeRamped(0.0f, 1.0f, iBufferSize);
 
         for (int i = 0; i < iBufferSize; ++i) {
             // Put samples into delay buffer.
