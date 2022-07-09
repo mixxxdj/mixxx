@@ -282,11 +282,7 @@ class HIDPacket {
             return;
         }
         const bytes = this.packSizes[field.pack];
-        let signed = false;
-        if (this.signedPackFormats.indexOf(field.pack) !== -1) {
-            signed = true;
-        }
-
+        const signed = this.signedPackFormats.includes(field.pack);
         if (field.type === "bitvector") {
             // TODO - fix multi byte bit vector outputs
             if (bytes > 1) {
@@ -343,10 +339,7 @@ class HIDPacket {
             return;
         }
         const bytes = this.packSizes[field.pack];
-        let signed = false;
-        if (this.signedPackFormats.indexOf(field.pack) !== -1) {
-            signed = true;
-        }
+        const signed = this.signedPackFormats.includes(field.pack);
 
         for (let field_byte = 0; field_byte < bytes; field_byte++) {
             if (data[field.offset + field_byte] === 255 && field_byte === 4) {
@@ -566,7 +559,8 @@ class HIDPacket {
         field.auto_repeat_interval = undefined;
 
         const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8);
-        if (this.signedPackFormats.indexOf(pack) !== -1) {
+        const signed = this.signedPackFormats.includes(field.pack);
+        if (signed) {
             field.min = 0 - (packet_max_value / 2) + 1;
             field.max = (packet_max_value / 2) - 1;
         } else {
@@ -581,7 +575,8 @@ class HIDPacket {
             field.mindelta = 0;
         } else {
             // bitmask is only defined for fields which are not expected to handle all bits in the control field. For fields with bitmasks, you can define same offset and pack multiple times with different bitmask values to get for example all 8 bits of a buttons state byte to different control fields in addControl input packet command. Masking multiple bits should work but has not been as widely tested.
-            if (this.signedPackFormats.indexOf(pack) !== -1) {
+            const signed = this.signedPackFormats.includes(field.pack);
+            if (signed) {
                 HIDDebug("ERROR registering bitvector: signed fields not supported");
                 return;
             }
@@ -676,8 +671,9 @@ class HIDPacket {
         field.callback = callback;
         field.toggle = undefined;
 
-        const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8);
-        if (this.signedPackFormats.indexOf(pack) !== -1) {
+        const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8);        
+        const signed = this.signedPackFormats.includes(field.pack);
+        if (signed) {
             field.min = 0 - (packet_max_value / 2) + 1;
             field.max = (packet_max_value / 2) - 1;
         } else {
