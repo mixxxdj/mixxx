@@ -108,12 +108,11 @@ class HIDBitVector {
      * @returns {number} Index of the least significant bit that is 1 in `bitmask`
      */
     getOffset(bitmask) {
-        for (let i = 0; i < 32; i++) {
-            if ((bitmask >> i) & 1) {
-                return i;
-            }
-        }
-        return 0;
+        bitmask >>>= 0 // ensures coercion to Uint32
+        // The previous implementation should have returned 32 for an empty bitmask, instead it returned 0
+        if (bitmask === 0) return 0; // skipping this step would make it return -1
+        bitmask &= -bitmask; // equivalent to `bitmask = bitmask & (~bitmask + 1)`
+        return 31 - Math.clz32(bitmask);
     }
     /**
      * Add a control bitmask to the HIDBitVector
