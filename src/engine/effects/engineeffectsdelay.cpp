@@ -22,6 +22,11 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
         return;
     }
 
+    // The "+ kiMaxDelay" addition ensures positive values for the modulo calculation.
+    // From a mathematical point of view, this addition can be removed. Anyway,
+    // from the cpp point of view, the modulo operator for negative values
+    // (for example, x % y, where x is a negative value) produces negative results
+    // (but in math the result value is positive).
     int delaySourcePos =
             (m_delayBufferWritePos + kiMaxDelay - m_currentDelaySamples) %
             kiMaxDelay;
@@ -50,6 +55,11 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
             return;
         }
 
+        // The "+ kiMaxDelay" addition ensures positive values for the modulo calculation.
+        // From a mathematical point of view, this addition can be removed. Anyway,
+        // from the cpp point of view, the modulo operator for negative values
+        // (for example, x % y, where x is a negative value) produces negative results
+        // (but in math the result value is positive).
         int oldDelaySourcePos =
                 (m_delayBufferWritePos + kiMaxDelay - m_prevDelaySamples) %
                 kiMaxDelay;
