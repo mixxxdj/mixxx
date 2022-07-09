@@ -108,7 +108,9 @@ class HIDBitVector {
      */
     getOffset(bitmask) {
         for (let i = 0; i < 32; i++) {
-            if ((1 & bitmask >> i) !== 0) { return i; }
+            if ((bitmask >> i) & 1) {
+                return i;
+            }
         }
         return 0;
     }
