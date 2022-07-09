@@ -247,7 +247,7 @@ this.HIDModifierList = HIDModifierList;
  * Each HIDPacket must be registered to HIDController.
  *
  * @param {string} name Name of packet (it makes sense to refer the HID report type and HID Report-ID here e.g. 'InputReport_0x02' or 'OutputReport_0x81')
- * @param {number} reportId ReportID of the packet. If the device does not use ReportIDs this must be 0.
+ * @param {number} reportId ReportID of the packet. If the device does not use ReportIDs this must be 0. [default = 0]
  * @param {packetCallback} callback function to call when the packet type represents an InputReport an a new report is received. If packet callback is set, the
  *          packet is not parsed by delta functions.
  *          callback is not meaningful for output packets
@@ -256,16 +256,11 @@ this.HIDModifierList = HIDModifierList;
  *          the reportId parameter instead.
  */
 class HIDPacket {
-    constructor(name, reportId, callback, header) {
+    constructor(name, reportId = 0, callback, header) {
         this.name = name;
         this.header = header;
         this.callback = callback;
-
-        this.reportId = 0;
-        if (reportId !== undefined) {
-            this.reportId = reportId;
-        }
-
+        this.reportId = reportId;
         this.groups = {};
 
         // Size of various 'pack' values in bytes
