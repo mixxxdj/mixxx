@@ -2,13 +2,14 @@
 
 /**
  * Common HID script debugging function. Just to get logging with 'HID' prefix.
- *
+ * 
+ * @deprecated Use console.log instead
  * @param {any} message Message to be printed on controller debug console output
  */
-
 var HIDDebug = function(message) {
-    print("HID " + message);
+    console.log("HID " + message);
 };
+
 /**
  * Callback function to call when, the packet represents an HID InputReport, and new data for this InputReport are received.
  * If a packet callback is defined and the data for the InputReport are received, the complete report data are sent to the callback function after field values are parsed, without calling any packet field parsing functions.
