@@ -288,7 +288,9 @@ class HIDPacket {
         }
         const bytes = this.packSizes[field.pack];
         let signed = false;
-        if (this.signedPackFormats.indexOf(field.pack) !== -1) { signed = true; }
+        if (this.signedPackFormats.indexOf(field.pack) !== -1) {
+            signed = true;
+        }
 
         if (field.type === "bitvector") {
             // TODO - fix multi byte bit vector outputs
@@ -347,15 +349,23 @@ class HIDPacket {
         }
         const bytes = this.packSizes[field.pack];
         let signed = false;
-        if (this.signedPackFormats.indexOf(field.pack) !== -1) { signed = true; }
+        if (this.signedPackFormats.indexOf(field.pack) !== -1) {
+            signed = true;
+        }
 
         for (let field_byte = 0; field_byte < bytes; field_byte++) {
-            if (data[field.offset + field_byte] === 255 && field_byte === 4) { value += 0; } else { value += data[field.offset + field_byte] * Math.pow(2, (field_byte * 8)); }
+            if (data[field.offset + field_byte] === 255 && field_byte === 4) {
+                value += 0;
+            } else {
+                value += data[field.offset + field_byte] * Math.pow(2, (field_byte * 8));
+            }
         }
         if (signed) {
             const max_value = Math.pow(2, bytes * 8);
             const split = max_value / 2 - 1;
-            if (value > split) { value = value - max_value; }
+            if (value > split) {
+                value = value - max_value;
+            }
         }
         return value;
     }
@@ -368,9 +378,15 @@ class HIDPacket {
        @returns {any} Group Returns group or undefined, when group is not existing and create is set to false
      */
     getGroup(name, create) {
-        if (this.groups === undefined) { this.groups = {}; }
-        if (name in this.groups) { return this.groups[name]; }
-        if (!create) { return undefined; }
+        if (this.groups === undefined) {
+            this.groups = {};
+        }
+        if (name in this.groups) {
+            return this.groups[name];
+        }
+        if (!create) {
+            return undefined;
+        }
         this.groups[name] = {};
         return this.groups[name];
     }
@@ -437,7 +453,9 @@ class HIDPacket {
             control_group = this.groups[group_name];
             for (const field_name in control_group) {
                 const field = control_group[field_name];
-                if (field === undefined || field.type !== "bitvector") { continue; }
+                if (field === undefined || field.type !== "bitvector") {
+                    continue;
+                }
                 for (const bit_name in field.value.bits) {
                     const bit = field.value.bits[bit_name];
                     if (bit.id === field_id) {
@@ -465,7 +483,9 @@ class HIDPacket {
         const bit_id = group + "." + name;
         for (const bit_name in field.value.bits) {
             const bit = field.value.bits[bit_name];
-            if (bit.id === bit_id) { return bit; }
+            if (bit.id === bit_id) {
+                return bit;
+            }
         }
         HIDDebug("BUG: bit not found after successful field lookup");
         return undefined;
@@ -715,7 +735,9 @@ class HIDPacket {
         if (field.type === "bitvector") {
             for (const bit_id in field.value.bits) {
                 const bit = field.value.bits[bit_id];
-                if (bit_id !== field_id) { continue; }
+                if (bit_id !== field_id) {
+                    continue;
+                }
                 bit.callback = callback;
                 return;
             }
@@ -774,7 +796,9 @@ class HIDPacket {
         for (const bit_id in field.value.bits) {
             bit = field.value.bits[bit_id];
             new_value = (bit.bitmask & value) >> bit.bit_offset;
-            if (bit.value !== undefined && bit.value !== new_value) { bits[bit_id] = bit; }
+            if (bit.value !== undefined && bit.value !== new_value) {
+                bits[bit_id] = bit;
+            }
             bit.value = new_value;
         }
         return bits;
@@ -798,7 +822,9 @@ class HIDPacket {
             group = this.groups[group_name];
             for (field_id in group) {
                 field = group[field_id];
-                if (field === undefined) { continue; }
+                if (field === undefined) {
+                    continue;
+                }
 
                 const value = this.unpack(data, field);
                 if (value === undefined) {
@@ -812,7 +838,9 @@ class HIDPacket {
                     for (const bit_name in changed_bits) { field_changes[bit_name] = changed_bits[bit_name]; }
 
                 } else if (field.type === "control") {
-                    if (field.value === value && field.mindelta !== undefined) { continue; }
+                    if (field.value === value && field.mindelta !== undefined) {
+                        continue;
+                    }
                     if (field.ignored || field.value === undefined) {
                         field.value = value;
                         continue;
@@ -987,7 +1015,9 @@ class HIDController {
     close() {
         for (const name in this.timers) {
             const timer = this.timers[name];
-            if (timer === undefined) { continue; }
+            if (timer === undefined) {
+                continue;
+            }
             engine.stopTimer(timer);
             this.timers[name] = undefined;
         }
@@ -1031,12 +1061,16 @@ class HIDController {
      */
     resolveGroup(group) {
         const channel_name = /\[Channel[0-9]+\]/;
-        if (group !== undefined && group.match(channel_name)) { return group; }
+        if (group !== undefined && group.match(channel_name)) {
+            return group;
+        }
         if (this.valid_groups.indexOf(group) !== -1) {
             return group;
         }
         if (group === "deck" || group === undefined) {
-            if (this.activeDeck === undefined) { return undefined; }
+            if (this.activeDeck === undefined) {
+                return undefined;
+            }
             return "[Channel" + this.activeDeck + "]";
         }
         if (this.activeDeck === 1 || this.activeDeck === 2) {
@@ -1086,7 +1120,9 @@ class HIDController {
      * @returns {HIDPacket} The input packet
      */
     getInputPacket(name) {
-        if (!(name in this.InputPackets)) { return undefined; }
+        if (!(name in this.InputPackets)) {
+            return undefined;
+        }
         return this.InputPackets[name];
     }
     /**
@@ -1097,7 +1133,9 @@ class HIDController {
      * @returns {HIDPacket} The output packet
      */
     getOutputPacket(name) {
-        if (!(name in this.OutputPackets)) { return undefined; }
+        if (!(name in this.OutputPackets)) {
+            return undefined;
+        }
         return this.OutputPackets[name];
     }
     /**
@@ -1136,7 +1174,9 @@ class HIDController {
      * @param {scalingCallback} callback Scaling function
      */
     setScaler(name, callback) {
-        if (name in this.scalers) { return; }
+        if (name in this.scalers) {
+            return;
+        }
         this.scalers[name] = callback;
     }
     /**
@@ -1147,7 +1187,9 @@ class HIDController {
      * @returns  {scalingCallback} Scaling function. Returns undefined if function is not registered.
      */
     getScaler(name, _callback) {
-        if (!(name in this.scalers)) { return undefined; }
+        if (!(name in this.scalers)) {
+            return undefined;
+        }
         return this.scalers[name];
     }
     /**
@@ -1215,7 +1257,9 @@ class HIDController {
         }
         field.mapped_group = m_group;
         field.mapped_name = m_name;
-        if (callback !== undefined) { field.callback = callback; }
+        if (callback !== undefined) {
+            field.callback = callback;
+        }
     }
     /**
      * TODO - implement unlinking of controls
@@ -1359,8 +1403,10 @@ class HIDController {
         /** @type {packetField} */
         let field;
         for (const name in delta) {
-            if (this.ignoredControlChanges !== undefined
-                && this.ignoredControlChanges.indexOf(name) !== -1) { continue; }
+            if (this.ignoredControlChanges !== undefined &&
+                this.ignoredControlChanges.indexOf(name) !== -1) {
+                continue;
+            }
             field = delta[name];
             if (field.type === "button") {
                 // Button/Boolean field
@@ -1385,7 +1431,9 @@ class HIDController {
         }
         const group = field.group;
         if (group === undefined) {
-            if (this.activeDeck !== undefined) { return "[Channel" + this.activeDeck + "]"; }
+            if (this.activeDeck !== undefined) {
+                return "[Channel" + this.activeDeck + "]";
+            }
         }
         if (this.valid_groups.indexOf(group) !== -1) {
             //HIDDebug("Resolving group " + group);
@@ -1400,8 +1448,11 @@ class HIDController {
      * @returns {string} Name of field
      */
     getActiveFieldControl(field) {
-        if (field.mapped_name !== undefined) { return field.mapped_name; }
-        return field.name;
+        if (field.mapped_name !== undefined) {
+            return field.mapped_name;
+        } else {
+            return field.name;
+        }
     }
     /**
      * Process given button field, triggering events
@@ -1421,7 +1472,11 @@ class HIDController {
         }
 
         if (group === "modifiers") {
-            if (field.value !== 0) { this.modifiers.set(control, true); } else { this.modifiers.set(control, false); }
+            if (field.value !== 0) {
+                this.modifiers.set(control, true);
+            } else {
+                this.modifiers.set(control, false);
+            }
             return;
         }
         if (field.auto_repeat) {
@@ -1438,14 +1493,22 @@ class HIDController {
         }
         if (control === "jog_touch") {
             if (group !== undefined) {
-                if (field.value === this.buttonStates.pressed) { this.enableScratch(group, true); } else { this.enableScratch(group, false); }
+                if (field.value === this.buttonStates.pressed) {
+                    this.enableScratch(group, true);
+                } else {
+                    this.enableScratch(group, false);
+                }
             }
             return;
         }
         if (this.toggleButtons.indexOf(control) !== -1) {
             if (field.value === this.buttonStates.released) { return; }
             if (engine.getValue(group, control)) {
-                if (control === "play") { engine.setValue(group, "stop", true); } else { engine.setValue(group, control, false); }
+                if (control === "play") {
+                    engine.setValue(group, "stop", true);
+                } else {
+                    engine.setValue(group, control, false);
+                }
             } else {
                 engine.setValue(group, control, true);
             }
@@ -1496,7 +1559,9 @@ class HIDController {
         const scaler = this.getScaler(control);
         if (field.isEncoder) {
             let field_delta = field.delta;
-            if (scaler !== undefined) { field_delta = scaler(group, control, field_delta); }
+            if (scaler !== undefined) {
+                field_delta = scaler(group, control, field_delta);
+            }
             engine.setValue(group, control, field_delta);
         } else {
             if (scaler !== undefined) {
@@ -1520,7 +1585,9 @@ class HIDController {
      * @param value
      */
     toggle(group, control, value) {
-        if (value === this.buttonStates.released) { return; }
+        if (value === this.buttonStates.released) {
+            return;
+        }
         const status = engine.getValue(group, control) !== true;
         engine.setValue(group, control, status);
     }
@@ -1531,9 +1598,15 @@ class HIDController {
      * @param {packetField} field Object that describes a field inside of a packet, which can often mapped to a Mixxx control.
      */
     togglePlay(group, field) {
-        if (field.value === this.buttonStates.released) { return; }
+        if (field.value === this.buttonStates.released) {
+            return;
+        }
         const status = !(engine.getValue(group, "play"));
-        if (!status) { engine.setValue(group, "stop", true); } else { engine.setValue(group, "play", true); }
+        if (!status) {
+            engine.setValue(group, "stop", true);
+        } else {
+            engine.setValue(group, "play", true);
+        }
     }
     /**
      * Processing of the 'jog_touch' special button name, which is used to detect
@@ -1596,12 +1669,20 @@ class HIDController {
             const deck = this.resolveDeck(active_group);
             if (deck === undefined) { return; }
             scaler = this.getScaler("jog_scratch");
-            if (scaler !== undefined) { value = scaler(active_group, "jog_scratch", value); } else { HIDDebug("WARNING non jog_scratch scaler, you likely want one"); }
+            if (scaler !== undefined) {
+                value = scaler(active_group, "jog_scratch", value);
+            } else {
+                HIDDebug("WARNING non jog_scratch scaler, you likely want one");
+            }
             engine.scratchTick(deck, value);
         } else {
             if (active_group === undefined) { return; }
             scaler = this.getScaler("jog");
-            if (scaler !== undefined) { value = scaler(active_group, "jog", value); } else { HIDDebug("WARNING non jog scaler, you likely want one"); }
+            if (scaler !== undefined) {
+                value = scaler(active_group, "jog", value);
+            } else {
+                HIDDebug("WARNING non jog scaler, you likely want one");
+            }
             engine.setValue(active_group, "jog", value);
         }
     }
@@ -1634,7 +1715,11 @@ class HIDController {
             return;
         }
         field.auto_repeat = callback;
-        if (interval) { field.auto_repeat_interval = interval; } else { field.auto_repeat_interval = controller.auto_repeat_interval; }
+        if (interval) {
+            field.auto_repeat_interval = interval;
+        } else {
+            field.auto_repeat_interval = controller.auto_repeat_interval;
+        }
         if (callback) { callback(field); }
     }
     /**
@@ -1739,7 +1824,9 @@ class HIDController {
             }
         }
         this.activeDeck = deck;
-        if (this.connectDeck !== undefined) { this.connectDeck(); }
+        if (this.connectDeck !== undefined) {
+            this.connectDeck();
+        }
     }
     /**
      * Link a virtual HID Output to mixxx control
@@ -1766,7 +1853,11 @@ class HIDController {
         field.mapped_name = m_name;
         field.mapped_callback = callback;
         engine.connectControl(controlgroup, m_name, callback);
-        if (engine.getValue(controlgroup, m_name)) { this.setOutput(m_group, m_name, "on"); } else { this.setOutput(m_group, m_name, "off"); }
+        if (engine.getValue(controlgroup, m_name)) {
+            this.setOutput(m_group, m_name, "on");
+        } else {
+            this.setOutput(m_group, m_name, "off");
+        }
     }
     /**
      * Unlink a virtual HID Output from mixxx control
@@ -1808,7 +1899,9 @@ class HIDController {
         }
         field.value = value << field.bit_offset;
         field.toggle = value << field.bit_offset;
-        if (send_packet) { field.packet.send(); }
+        if (send_packet) {
+            field.packet.send();
+        }
     }
     /**
      * Set Output to toggle between two values. Reset with setOutput(name,'off')
