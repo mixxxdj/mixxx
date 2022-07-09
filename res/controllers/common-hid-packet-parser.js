@@ -1076,7 +1076,7 @@ class HIDController {
     /**
      * Find Output control matching give group and name
      *
-     * @todo The current implementation of this often called function is very slow anddoes not scale, due to serveral nested loops.
+     * @todo The current implementation of this often called function is very slow anddoes not scale, due to several nested loops.
      * @param {string} m_group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
      * @param {string} m_name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
      * @returns {bitObject|packetField} Bit or bytewise field - Returns undefined if output field can't be found.
