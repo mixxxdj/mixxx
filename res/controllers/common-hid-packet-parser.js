@@ -2,7 +2,7 @@
 
 /**
  * Common HID script debugging function. Just to get logging with 'HID' prefix.
- * 
+ *
  * @deprecated Use console.log instead
  * @param {any} message Message to be printed on controller debug console output
  */
@@ -108,9 +108,9 @@ class HIDBitVector {
      * @returns {number} Index of the least significant bit that is 1 in `bitmask`
      */
     getOffset(bitmask) {
-        bitmask >>>= 0 // ensures coercion to Uint32
+        bitmask >>>= 0; // ensures coercion to Uint32
         // The previous implementation should have returned 32 for an empty bitmask, instead it returned 0
-        if (bitmask === 0) return 0; // skipping this step would make it return -1
+        if (bitmask === 0) { return 0; } // skipping this step would make it return -1
         bitmask &= -bitmask; // equivalent to `bitmask = bitmask & (~bitmask + 1)`
         return 31 - Math.clz32(bitmask);
     }
@@ -276,7 +276,6 @@ class HIDPacket {
      * @param {packetField} field Object that describes a field inside of a packet, which can often mapped to a Mixxx control.
      */
     pack(data, field) {
-        let value;
         if (!(field.pack in this.packSizes)) {
             HIDDebug("ERROR parsing packed value: invalid pack format " + field.pack);
             return;
@@ -296,7 +295,7 @@ class HIDPacket {
             return;
         }
 
-        value = (field.value !== undefined) ? field.value : 0;
+        const value = (field.value !== undefined) ? field.value : 0;
 
         if (value < field.min || value > field.max) {
             HIDDebug("ERROR " + field.id + " packed value out of range: " + value);
@@ -671,7 +670,7 @@ class HIDPacket {
         field.callback = callback;
         field.toggle = undefined;
 
-        const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8);        
+        const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8);
         const signed = this.signedPackFormats.includes(field.pack);
         if (signed) {
             field.min = 0 - (packet_max_value / 2) + 1;
@@ -1077,7 +1076,7 @@ class HIDController {
     /**
      * Find Output control matching give group and name
      *
-     * @todo The current implementation of this often called function is very slow anddoes not scale, due to serveral nested loops. 
+     * @todo The current implementation of this often called function is very slow anddoes not scale, due to serveral nested loops.
      * @param {string} m_group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
      * @param {string} m_name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
      * @returns {bitObject|packetField} Bit or bytewise field - Returns undefined if output field can't be found.
