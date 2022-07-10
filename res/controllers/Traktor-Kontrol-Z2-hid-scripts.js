@@ -21,6 +21,7 @@ const kLedBright = 0x7F;
 class DeckClass {
     /**
      * Creates an instance of DeckClass.
+     *
      * @param {TraktorZ2Class} parent
      * @param {number} deckNumber
      * @param {string} group
@@ -32,7 +33,7 @@ class DeckClass {
         this.group = group;
         this.activeChannel = "[Channel" + deckNumber + "]";
 
-        // Timer states to distuingish short and long press
+        // Timer states to distinguish short and long press
         this.syncPressedTimerId = 0;
         this.syncPressed = false;
         this.snapQuantizePressedTimerId = 0;
@@ -46,35 +47,34 @@ class DeckClass {
     }
 
     numberButtonHandler(field) {
-
         const sideChannel = ["[Channel1]", "[Channel2]"];
         const sideOffset = [0, 0];
 
         if (this.parent.deckSwitch["[Channel1]"] === 2) {
             sideChannel[1] = "[Channel1]";
-            sideOffset[1] = 4; // Second 4 hotcues mapped to the pads
+            sideOffset[1] = 4;  // Second 4 hotcues mapped to the pads
         } else if (this.parent.deckSwitch["[Channel3]"] === 1) {
             sideChannel[1] = "[Channel3]";
-            sideOffset[1] = 0; // First 4 hotcues mapped to the pads
+            sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
         } else if (this.parent.deckSwitch["[Channel3]"] === 2) {
             sideChannel[1] = "[Channel3]";
-            sideOffset[1] = 4; // Second 4 hotcues mapped to the pads
+            sideOffset[1] = 4;  // Second 4 hotcues mapped to the pads
         } else {
             sideChannel[1] = "[Channel1]";
-            sideOffset[1] = 0; // First 4 hotcues mapped to the pads
+            sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
         }
         if (this.parent.deckSwitch["[Channel2]"] === 2) {
             sideChannel[2] = "[Channel2]";
-            sideOffset[2] = 4; // Second 4 hotcues mapped to the pads
+            sideOffset[2] = 4;  // Second 4 hotcues mapped to the pads
         } else if (this.parent.deckSwitch["[Channel4]"] === 1) {
             sideChannel[2] = "[Channel4]";
-            sideOffset[2] = 0; // First 4 hotcues mapped to the pads
+            sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
         } else if (this.parent.deckSwitch["[Channel4]"] === 2) {
             sideChannel[2] = "[Channel4]";
-            sideOffset[2] = 4; // Second 4 hotcues mapped to the pads
+            sideOffset[2] = 4;  // Second 4 hotcues mapped to the pads
         } else {
             sideChannel[2] = "[Channel2]";
-            sideOffset[2] = 0; // First 4 hotcues mapped to the pads
+            sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
         }
         let chIdx;
         if (this.activeChannel === "[Channel1]") {
@@ -93,7 +93,8 @@ class DeckClass {
             action = "_activate";
         }
         HIDDebug("setting " + "hotcue_" + padNumber + action + " " + field.value);
-        engine.setValue(sideChannel[chIdx], "hotcue_" + (sideOffset[chIdx] + padNumber) + action, field.value);
+        engine.setValue(
+            sideChannel[chIdx], "hotcue_" + (sideOffset[chIdx] + padNumber) + action, field.value);
     }
 
     fluxHandler(field) {
@@ -104,7 +105,9 @@ class DeckClass {
     }
 
     vinylcontrolHandler(field) {
-        HIDDebug("TraktorZ2: vinylcontrolHandler" + " this.activeChannel:" + this.activeChannel + " field.value:" + field.value);
+        HIDDebug(
+            "TraktorZ2: vinylcontrolHandler " +
+            "this.activeChannel:" + this.activeChannel + " field.value:" + field.value);
         if (field.value === 0 || (engine.getValue(this.activeChannel, "passthrough") === 1)) {
             return;
         }
@@ -131,18 +134,19 @@ class DeckClass {
                 engine.setValue(this.activeChannel, "vinylcontrol_mode", vinylControlMode);
             }
         }
-
     }
 
     syncHandler(field) {
-        HIDDebug("TraktorZ2: syncHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field + "key:" + engine.getValue(this.activeChannel, "key"));
+        HIDDebug(
+            "TraktorZ2: syncHandler " +
+            "this.activeChannel:" + this.activeChannel + " field:" + field +
+            "key:" + engine.getValue(this.activeChannel, "key"));
 
         // Shift not hold down
         if (this.parent.shiftState === 0) {
             if (field.value === 1) {
                 engine.setValue(this.activeChannel, "sync_enabled", 1);
                 // Start timer to measure how long button is pressed
-                const ch = this.activeChannel; // Use variable in timer function, because this.activeChannel can change until the timer is active
                 this.syncPressedTimerId = engine.beginTimer(300, function() {
                     // Reset sync button timer state if active
                     if (this.syncPressedTimerId !== 0) {
@@ -208,8 +212,9 @@ class DeckClass {
     }
 
     /**
-     * defineButton2 allows us to configure input buttons for the two main decks of the 2+2 deck mixer layout, depending on which
-     * is appropriate.  This avoids extra logic in the function where we define all the magic numbers.
+     * defineButton2 allows us to configure input buttons for the two main decks of the 2+2 deck
+     * mixer layout, depending on which is appropriate.  This avoids extra logic in the function
+     * where we define all the magic numbers.
      *
      * @param hidReport
      * @param name
@@ -222,17 +227,20 @@ class DeckClass {
     defineButton2(hidReport, name, deck1Offset, deck1Bitmask, deck2Offset, deck2Bitmask, fn) {
         switch (this.deckNumber) {
         case 1:
-            this.parent.registerInputButton(hidReport, this.group, name, deck1Offset, deck1Bitmask, fn.bind(this));
+            this.parent.registerInputButton(
+                hidReport, this.group, name, deck1Offset, deck1Bitmask, fn.bind(this));
             break;
         case 2:
-            this.parent.registerInputButton(hidReport, this.group, name, deck2Offset, deck2Bitmask, fn.bind(this));
+            this.parent.registerInputButton(
+                hidReport, this.group, name, deck2Offset, deck2Bitmask, fn.bind(this));
             break;
         }
     }
 
     /**
-     * defineLED2 allows us to configure output LEDs for the two main decks of the 2+2 deck mixer layout, depending on which
-     * is appropriate.  This avoids extra logic in the function where we define all the magic numbers.
+     * defineLED2 allows us to configure output LEDs for the two main decks of the 2+2 deck mixer
+     * layout, depending on which is appropriate.  This avoids extra logic in the function where we
+     * define all the magic numbers.
      *
      * @param hidReport
      * @param name
@@ -241,7 +249,9 @@ class DeckClass {
      */
     defineLED2(hidReport, name, deck1Offset, deck2Offset) {
         // All LEDs of the Traktor Z2 have 7Bit outputs
-        HIDDebug("TraktorZ2: defineLED2 hidReport:" + hidReport + " this.deckNumber" + this.deckNumber + " name:" + name);
+        HIDDebug(
+            "TraktorZ2: defineLED2 " +
+            "hidReport:" + hidReport + " this.deckNumber" + this.deckNumber + " name:" + name);
 
         switch (this.deckNumber) {
         case 1:
@@ -254,8 +264,9 @@ class DeckClass {
     }
 
     /**
-     * defineLED2 allows us to configure output LEDs for all 4 decks of the 2+2 deck mixer layout, depending on which
-     * is appropriate.  This avoids extra logic in the function where we define all the magic numbers.
+     * defineLED2 allows us to configure output LEDs for all 4 decks of the 2+2 deck mixer layout,
+     * depending on which is appropriate.  This avoids extra logic in the function where we define
+     * all the magic numbers.
      *
      * @param hidReport
      * @param name
@@ -266,7 +277,9 @@ class DeckClass {
      */
     defineLED4(hidReport, name, deck1Offset, deck2Offset, deck3Offset, deck4Offset) {
         // All LEDs of the Traktor Z2 have 7Bit outputs
-        HIDDebug("TraktorZ2: defineLED4 hidReport:" + hidReport + " this.deckNumber" + this.deckNumber + " name:" + name);
+        HIDDebug(
+            "TraktorZ2: defineLED4 " +
+            "hidReport:" + hidReport + " this.deckNumber" + this.deckNumber + " name:" + name);
 
         switch (this.deckNumber) {
         case 1:
@@ -285,12 +298,13 @@ class DeckClass {
     }
 
     selectLoopHandler(field) {
-        HIDDebug("TraktorZ2: selectLoopHandler" + this.activeChannel + "  field.value:" + field.value);
+        HIDDebug(
+            "TraktorZ2: selectLoopHandler " + this.activeChannel + " field.value:" + field.value);
 
-        if (
-            ((this.parent.Decks["deck1"].syncPressed === true) && (this.activeChannel !== "[Channel1]")) ||
-            ((this.parent.Decks["deck2"].syncPressed === true) && (this.activeChannel !== "[Channel2]"))
-        ) {
+        if (((this.parent.Decks.deck1.syncPressed === true) &&
+             (this.activeChannel !== "[Channel1]")) ||
+            ((this.parent.Decks.deck2.syncPressed === true) &&
+             (this.activeChannel !== "[Channel2]"))) {
             // Display shows key not loop or beatjump -> Ignore input
             return;
         }
@@ -317,9 +331,13 @@ class DeckClass {
         } else if (this.parent.shiftState === 0x01) {
             // Shift mode not set, but shift button is pressed ->  Move loop
             if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
-                engine.setValue(this.activeChannel, "loop_move", engine.getValue(this.activeChannel, "beatloop_size") * -1);
+                engine.setValue(
+                    this.activeChannel, "loop_move",
+                    engine.getValue(this.activeChannel, "beatloop_size") * -1);
             } else {
-                engine.setValue(this.activeChannel, "loop_move", engine.getValue(this.activeChannel, "beatloop_size"));
+                engine.setValue(
+                    this.activeChannel, "loop_move",
+                    engine.getValue(this.activeChannel, "beatloop_size"));
             }
         } else if (this.parent.shiftState === 0x02) {
             // Shift mode is set, but shift button not pressed ->  Adjust beatjump size
@@ -332,9 +350,13 @@ class DeckClass {
         } else if (this.parent.shiftState === 0x03) {
             // Shift mode is set, and shift button is pressed ->  Move beatjump
             if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
-                engine.setValue(this.activeChannel, "beatjump", engine.getValue(this.activeChannel, "beatjump_size") * -1);
+                engine.setValue(
+                    this.activeChannel, "beatjump",
+                    engine.getValue(this.activeChannel, "beatjump_size") * -1);
             } else {
-                engine.setValue(this.activeChannel, "beatjump", engine.getValue(this.activeChannel, "beatjump_size"));
+                engine.setValue(
+                    this.activeChannel, "beatjump",
+                    engine.getValue(this.activeChannel, "beatjump_size"));
             }
         }
         this.loopKnobEncoderState = field.value;
@@ -364,7 +386,7 @@ class DeckClass {
         HIDDebug("TraktorZ2: snapQuantizeButtonHandler");
 
         // Depending on long or short press, sync beat or go to key sync mode
-        if (field.value === 1) {   // Start timer to measure how long button is pressed
+        if (field.value === 1) {  // Start timer to measure how long button is pressed
             this.snapQuantizePressedTimerId = engine.beginTimer(300, function() {
                 this.snapQuantizePressed = true;
 
@@ -389,13 +411,12 @@ class DeckClass {
                 }
             }
         }
-
     }
 
     pflButtonHandler(field) {
         HIDDebug("TraktorZ2: pflButtonHandler");
         if (field.value === 0) {
-            return; // Button released
+            return;  // Button released
         }
 
         let group;
@@ -415,7 +436,9 @@ class DeckClass {
     }
 
     traktorButtonHandler(field) {
-        HIDDebug("TraktorZ2: traktorButtonHandler" + " this.activeChannel: " + this.activeChannel + " field.value: " + field.value);
+        HIDDebug(
+            "TraktorZ2: traktorButtonHandler " +
+            "this.activeChannel: " + this.activeChannel + " field.value: " + field.value);
         if (field.value === 1) {
             // Taktor button pressed
             if (this.parent.shiftState & 0x01) {
@@ -426,7 +449,9 @@ class DeckClass {
     }
 
     traktorButtonStatusHandler(field) {
-        HIDDebug("TraktorZ2: traktorButtonStatusHandler" + " this.activeChannel: " + this.activeChannel + " field.value: " + field.value);
+        HIDDebug(
+            "TraktorZ2: traktorButtonStatusHandler " +
+            "this.activeChannel: " + this.activeChannel + " field.value: " + field.value);
         this.parent.traktorButtonStatus[this.activeChannel] = field.value;
         this.parent.traktorButtonOutputHandler(this.activeChannel);
     }
@@ -434,50 +459,89 @@ class DeckClass {
     registerInputs2Decks() {
         HIDDebug("TraktorZ2: registerInputs2Decks");
 
-        this.defineButton2(this.parent.inputReport01, "!pad_1", 0x06, 0x04, 0x07, 0x08, this.numberButtonHandler.bind(this));
-        this.defineButton2(this.parent.inputReport01, "!pad_2", 0x06, 0x08, 0x07, 0x10, this.numberButtonHandler.bind(this));
-        this.defineButton2(this.parent.inputReport01, "!pad_3", 0x06, 0x10, 0x07, 0x20, this.numberButtonHandler.bind(this));
-        this.defineButton2(this.parent.inputReport01, "!pad_4", 0x06, 0x20, 0x07, 0x40, this.numberButtonHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!pad_1", 0x06, 0x04, 0x07, 0x08,
+            this.numberButtonHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!pad_2", 0x06, 0x08, 0x07, 0x10,
+            this.numberButtonHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!pad_3", 0x06, 0x10, 0x07, 0x20,
+            this.numberButtonHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!pad_4", 0x06, 0x20, 0x07, 0x40,
+            this.numberButtonHandler.bind(this));
 
         // Traktor buttons
-        this.defineButton2(this.parent.inputReport01, "!traktorbutton", 0x03, 0x01, 0x03, 0x02, this.traktorButtonHandler.bind(this));
-        this.defineButton2(this.parent.inputReport01, "!stateOfTraktorbutton", 0x09, 0x08, 0x09, 0x10, this.traktorButtonStatusHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!traktorbutton", 0x03, 0x01, 0x03, 0x02,
+            this.traktorButtonHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!stateOfTraktorbutton", 0x09, 0x08, 0x09, 0x10,
+            this.traktorButtonStatusHandler.bind(this));
 
         // Quantize buttons
-        this.defineButton2(this.parent.inputReport01, "quantize", 0x03, 0x04, 0x03, 0x10, this.snapQuantizeButtonHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "quantize", 0x03, 0x04, 0x03, 0x10,
+            this.snapQuantizeButtonHandler.bind(this));
 
         // PFL Headphone CUE buttons
-        this.defineButton2(this.parent.inputReport01, "pfl", 0x04, 0x04, 0x04, 0x08, this.pflButtonHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "pfl", 0x04, 0x04, 0x04, 0x08,
+            this.pflButtonHandler.bind(this));
 
         // Vinyl control mode (REL / INTL)
-        this.defineButton2(this.parent.inputReport01, "vinylcontrol_mode", 0x04, 0x10, 0x04, 0x20, this.vinylcontrolHandler.bind(this));
-        this.defineButton2(this.parent.inputReport01, "!sync", 0x04, 0x40, 0x04, 0x80, this.syncHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "vinylcontrol_mode", 0x04, 0x10, 0x04, 0x20,
+            this.vinylcontrolHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!sync", 0x04, 0x40, 0x04, 0x80,
+            this.syncHandler.bind(this));
 
         // Load/Duplicate buttons
-        this.defineButton2(this.parent.inputReport01, "!LoadSelectedTrack", 0x04, 0x01, 0x04, 0x02, this.loadTrackHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!LoadSelectedTrack", 0x04, 0x01, 0x04, 0x02,
+            this.loadTrackHandler.bind(this));
 
         // Loop control
-        this.defineButton2(this.parent.inputReport01, "!SelectLoop", 0x01, 0xF0, 0x02, 0x0F, this.selectLoopHandler.bind(this));
-        this.defineButton2(this.parent.inputReport01, "!ActivateLoop", 0x05, 0x40, 0x08, 0x20, this.activateLoopHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!SelectLoop", 0x01, 0xF0, 0x02, 0x0F,
+            this.selectLoopHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!ActivateLoop", 0x05, 0x40, 0x08, 0x20,
+            this.activateLoopHandler.bind(this));
 
         // Flux / Tap
-        this.defineButton2(this.parent.inputReport01, "!slip_enabled", 0x06, 0x40, 0x07, 0x80, this.fluxHandler.bind(this));
+        this.defineButton2(
+            this.parent.inputReport01, "!slip_enabled", 0x06, 0x40, 0x07, 0x80,
+            this.fluxHandler.bind(this));
     }
 
     registerOutputs2Decks() {
         HIDDebug("TraktorZ2: registerOutputs2Decks");
 
         this.defineLED2(this.parent.outputReport80, "slip_enabled", 0x0E, 0x16);
-        engine.makeConnection(this.activeChannel, "slip_enabled", this.parent.basicOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "slip_enabled", this.parent.basicOutputHandler.bind(this.parent));
         engine.trigger(this.activeChannel, "slip_enabled");
 
         this.defineLED2(this.parent.outputReport80, "!vinylcontrol_orange", 0x12, 0x1A);
         this.defineLED2(this.parent.outputReport80, "!vinylcontrol_green", 0x13, 0x1B);
-        engine.makeConnection(this.activeChannel, "vinylcontrol_status", this.parent.vinylcontrolStatusOutputHandler.bind(this.parent));
-        engine.makeConnection(this.activeChannel, "vinylcontrol_mode", this.parent.vinylcontrolOutputHandler.bind(this.parent));
-        engine.makeConnection(this.activeChannel, "cue_indicator", this.parent.vinylcontrolOutputHandler.bind(this.parent));
-        engine.makeConnection(this.activeChannel, "play_indicator", this.parent.vinylcontrolOutputHandler.bind(this.parent));
-        engine.makeConnection(this.activeChannel, "vinylcontrol_enabled", this.parent.vinylcontrolOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "vinylcontrol_status",
+            this.parent.vinylcontrolStatusOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "vinylcontrol_mode",
+            this.parent.vinylcontrolOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "cue_indicator",
+            this.parent.vinylcontrolOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "play_indicator",
+            this.parent.vinylcontrolOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "vinylcontrol_enabled",
+            this.parent.vinylcontrolOutputHandler.bind(this.parent));
         engine.trigger(this.activeChannel, "vinylcontrol_status");
         engine.trigger(this.activeChannel, "vinylcontrol_mode");
         engine.trigger(this.activeChannel, "cue_indicator");
@@ -485,23 +549,37 @@ class DeckClass {
         engine.trigger(this.activeChannel, "vinylcontrol_enabled");
 
         this.defineLED2(this.parent.outputReport80, "sync_mode", 0x14, 0x1C);
-        engine.makeConnection(this.activeChannel, "sync_mode", this.parent.basicOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "sync_mode",
+            this.parent.basicOutputHandler.bind(this.parent));
         engine.trigger(this.activeChannel, "sync_mode");
 
         // Headphone button LEDs
         this.defineLED2(this.parent.outputReport81, "pfl", 0x23, 0x24);
-        engine.makeConnection(this.activeChannel, "pfl", this.parent.pflOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "pfl",
+            this.parent.pflOutputHandler.bind(this.parent));
         engine.trigger(this.activeChannel, "pfl");
 
 
         this.defineLED2(this.parent.outputReport81, "!traktorbuttonled", 0x25, 0x26);
-        engine.makeConnection(this.activeChannel, "passthrough", this.parent.vinylcontrolOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "passthrough",
+            this.parent.vinylcontrolOutputHandler.bind(this.parent));
 
-        engine.makeConnection(this.activeChannel, "key", this.parent.updateDisplayOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "key",
+            this.parent.updateDisplayOutputHandler.bind(this.parent));
         engine.trigger(this.activeChannel, "key");
-        engine.makeConnection(this.activeChannel, "beatloop_size", this.parent.updateDisplayOutputHandler.bind(this.parent));
-        engine.makeConnection(this.activeChannel, "beatjump_size", this.parent.updateDisplayOutputHandler.bind(this.parent));
-        engine.makeConnection(this.activeChannel, "loop_enabled", this.parent.updateDisplayOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "beatloop_size",
+            this.parent.updateDisplayOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "beatjump_size",
+            this.parent.updateDisplayOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "loop_enabled",
+            this.parent.updateDisplayOutputHandler.bind(this.parent));
         engine.trigger(this.activeChannel, "beatloop_size");
 
         // Define LEDs of the RGB LED pads
@@ -512,19 +590,28 @@ class DeckClass {
             "Hotcue4": 9
         };
         for (const hotcue in ledPadOffsets) {
-            this.defineLED2(this.parent.outputReport80, hotcue + "Red", 0x1D + ledPadOffsets[hotcue], 0x29 + ledPadOffsets[hotcue]);
-            this.defineLED2(this.parent.outputReport80, hotcue + "Green", 0x1E + ledPadOffsets[hotcue], 0x2A + ledPadOffsets[hotcue]);
-            this.defineLED2(this.parent.outputReport80, hotcue + "Blue", 0x1F + ledPadOffsets[hotcue], 0x2B + ledPadOffsets[hotcue]);
+            this.defineLED2(
+                this.parent.outputReport80, hotcue + "Red", 0x1D + ledPadOffsets[hotcue],
+                0x29 + ledPadOffsets[hotcue]);
+            this.defineLED2(
+                this.parent.outputReport80, hotcue + "Green", 0x1E + ledPadOffsets[hotcue],
+                0x2A + ledPadOffsets[hotcue]);
+            this.defineLED2(
+                this.parent.outputReport80, hotcue + "Blue", 0x1F + ledPadOffsets[hotcue],
+                0x2B + ledPadOffsets[hotcue]);
         }
-
     }
 
     registerOutputs4Decks() {
         HIDDebug("TraktorZ2: registerOutputs4Decks  this.activeChannel:" + this.activeChannel);
 
         for (let hotcue = 1; hotcue <= 8; hotcue++) {
-            engine.makeConnection(this.activeChannel, "hotcue_" + hotcue + "_color", this.parent.hotcueOutputHandler.bind(this.parent));
-            engine.makeConnection(this.activeChannel, "hotcue_" + hotcue + "_enabled", this.parent.hotcueOutputHandler.bind(this.parent));
+            engine.makeConnection(
+                this.activeChannel, "hotcue_" + hotcue + "_color",
+                this.parent.hotcueOutputHandler.bind(this.parent));
+            engine.makeConnection(
+                this.activeChannel, "hotcue_" + hotcue + "_enabled",
+                this.parent.hotcueOutputHandler.bind(this.parent));
         }
 
         // Deck Switch for Hotcue selection
@@ -533,19 +620,25 @@ class DeckClass {
         // ChA / ChB -> "Load/Duplicate" LED
         // ChC / ChD -> "Deck C" / "Deck" D LED
         this.defineLED4(this.parent.outputReport80, "!beatIndicator", 0x11, 0x19, 0x0B, 0x0C);
-        engine.makeUnbufferedConnection(this.activeChannel, "beat_active", this.parent.beatOutputHandler.bind(this.parent));
+        engine.makeUnbufferedConnection(
+            this.activeChannel, "beat_active",
+            this.parent.beatOutputHandler.bind(this.parent));
 
 
         this.defineLED4(this.parent.outputReport81, "!VuLabel", 0x01, 0x09, 0x11, 0x19);
         for (let i = 0; i < 6; i++) {
-            this.defineLED4(this.parent.outputReport81, "!VuMeter" + i, 0x02 + i, 0x0A + i, 0x12 + i, 0x1A + i);
+            this.defineLED4(
+                this.parent.outputReport81, "!VuMeter" + i, 0x02 + i, 0x0A + i, 0x12 + i, 0x1A + i);
         }
         this.defineLED4(this.parent.outputReport81, "!PeakIndicator", 0x08, 0x10, 0x18, 0x20);
 
         // Ch3 / Ch4 VUMeter usage depends on context -> ChC / MasterL and ChD / MasterR
-        engine.makeUnbufferedConnection(this.activeChannel, "VuMeter", this.parent.displayVuValue.bind(this.parent));
-        engine.makeConnection(this.activeChannel, "PeakIndicator", this.parent.displayPeakIndicator.bind(this.parent));
-
+        engine.makeUnbufferedConnection(
+            this.activeChannel, "VuMeter",
+            this.parent.displayVuValue.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "PeakIndicator",
+            this.parent.displayPeakIndicator.bind(this.parent));
     }
 }
 
@@ -614,20 +707,20 @@ class TraktorZ2Class {
     }
 
     init(_id) {
-
         HIDDebug(new Uint8Array(controller.getFeatureReport(0xF1)));  // 2x8Bit Logical 0...255
         // Enabling "Route mic/aux input through Traktor" in Traktor Pro sends raw data "F1 93 00".
         // Disabling "Route mic/aux input through Traktor" in Traktor Pro sends raw data "F1 93 40".
 
         HIDDebug(new Uint8Array(controller.getFeatureReport(0xF3)));  // 2x8Bit Logical 0...127
-        // The 1st 7 bit word defines the brightness of the LEDs in Off-State when the Z2 is not controlled by Mixxx
-        // The 2nd 7 bit word defines the brightness of the LEDs in ON-State when the Z2 is not controlled by Mixxx
+        // The 1st 7 bit word defines the brightness of the LEDs in Off-State when the Z2 is not
+        // controlled by Mixxx The 2nd 7 bit word defines the brightness of the LEDs in ON-State
+        // when the Z2 is not controlled by Mixxx
 
         const featureRptF1 = new Uint8Array([0x20, 0x80]);
         controller.sendFeatureReport(0xF1, featureRptF1.buffer);
         const featureRptF3 = new Uint8Array([0x55, 0x7F]);
         controller.sendFeatureReport(0xF3, featureRptF3.buffer);
-        //this.debugLights();
+        // this.debugLights();
 
         this.registerOutputPackets();
         this.registerInputPackets();
@@ -692,12 +785,15 @@ class TraktorZ2Class {
         this.controller.setOutput("[Master]", "skin_settings", kLedOff, true);
 
         // Initialize VU-Labels A and B
-        this.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
-        this.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
+        this.displayPeakIndicator(
+            engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
+        this.displayPeakIndicator(
+            engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
 
         this.hotcueOutputHandler();
 
-        // Set LED control to software control not before  initializing all LED values, to reduce visual glitches
+        // Set LED control to software control not before  initializing all LED values, to reduce
+        // visual glitches
         this.enableLEDsPerChannel();
 
         HIDDebug("TraktorZ2: Init done!");
@@ -750,11 +846,14 @@ class TraktorZ2Class {
                 }
             }
             if (numOfLoadedandEnabledEffects === 0) {
-                this.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedOff, macroFxUnitIdx === 2);
+                this.controller.setOutput(
+                    "[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedOff, macroFxUnitIdx === 2);
             } else if (numOfLoadedandEnabledEffects > 0 && numOfLoadedButDisabledEffects > 0) {
-                this.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedDimmed, macroFxUnitIdx === 2);
+                this.controller.setOutput(
+                    "[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedDimmed, macroFxUnitIdx === 2);
             } else {
-                this.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedBright, macroFxUnitIdx === 2);
+                this.controller.setOutput(
+                    "[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedBright, macroFxUnitIdx === 2);
             }
         }
     }
@@ -784,13 +883,18 @@ class TraktorZ2Class {
                 this.deckSwitch[field.group] = 2;
                 this.controller.setOutput(field.group, "!deck", kLedDimmed, true);
             }
-            this.hotcueOutputHandler(); // Set new hotcue button colors
+            this.hotcueOutputHandler();  // Set new hotcue button colors
         }
     }
 
     vinylcontrolOutputHandler(value, group, key) {
-        HIDDebug("TraktorZ2: vinylcontrolOutputHandler" + " group:" + group + " key:" + key);
-        this.traktorButtonOutputHandler(group); // Sets TaktorButton state, depending on Passthrough state
+        HIDDebug(
+            "TraktorZ2: vinylcontrolOutputHandler " +
+            "group:" + group + " key:" + key);
+
+        // Sets TaktorButton state, depending on Passthrough state
+        this.traktorButtonOutputHandler(group);
+
         if (engine.getValue(group, "passthrough") === 1) {
             // REL /INTL button has no function in Passthrough mode -> LED Off
             this.controller.setOutput(group, "!vinylcontrol_green", kLedOff, false);
@@ -828,8 +932,8 @@ class TraktorZ2Class {
                 this.controller.setOutput(group, "!vinylcontrol_green", kLedDimmed, false);
                 this.controller.setOutput(group, "!vinylcontrol_orange", kLedOff, true);
             } else if (engine.getValue(group, "vinylcontrol_mode") === 2) {
-                // Constant Mode (track tempo equals last known-steady tempo regardless of needle input
-                // Both LEDs on -> Values result in a dirty yellow
+                // Constant Mode (track tempo equals last known-steady tempo regardless of needle
+                // input Both LEDs on -> Values result in a dirty yellow
                 this.controller.setOutput(group, "!vinylcontrol_green", 0x37, false);
                 this.controller.setOutput(group, "!vinylcontrol_orange", 0x57, true);
             }
@@ -837,14 +941,18 @@ class TraktorZ2Class {
     }
 
     vinylcontrolStatusOutputHandler(vfalue, group, key) {
-        HIDDebug("TraktorZ2: vinylcontrolOutputHandler" + " group:" + group + " key:" + key);
+        HIDDebug(
+            "TraktorZ2: vinylcontrolOutputHandler " +
+            "group:" + group + " key:" + key);
         // Z2 has only one vinylcontrol status LED for both channels -> merge information of both
         if ((engine.getValue("[Channel1]", "vinylcontrol_status") === 3) ||
             (engine.getValue("[Channel2]", "vinylcontrol_status") === 3) ||
             (engine.getValue("[Channel1]", "vinylcontrol_status") === 2) ||
             (engine.getValue("[Channel2]", "vinylcontrol_status") === 2)) {
             this.controller.setOutput("[Master]", "!vinylcontrolstatus", kLedBright, true);
-        } else if ((engine.getValue("[Channel1]", "vinylcontrol_status") === 1) || (engine.getValue("[Channel2]", "vinylcontrol_status") === 1)) {
+        } else if (
+            (engine.getValue("[Channel1]", "vinylcontrol_status") === 1) ||
+            (engine.getValue("[Channel2]", "vinylcontrol_status") === 1)) {
             this.controller.setOutput("[Master]", "!vinylcontrolstatus", kLedDimmed, true);
         } else {
             this.controller.setOutput("[Master]", "!vinylcontrolstatus", kLedOff, true);
@@ -859,10 +967,10 @@ class TraktorZ2Class {
         }
         this.browseKnobEncoderState = field.value;
 
-        if (this.Decks["deck1"].snapQuantizePressed !== this.Decks["deck2"].snapQuantizePressed) {
+        if (this.Decks.deck1.snapQuantizePressed !== this.Decks.deck2.snapQuantizePressed) {
             let ch;
             // Snap / Quantize button is hold for one channel
-            if (this.Decks["deck1"].snapQuantizePressed) {
+            if (this.Decks.deck1.snapQuantizePressed) {
                 ch = "[Channel1]";
             } else {
                 ch = "[Channel2]";
@@ -910,30 +1018,45 @@ class TraktorZ2Class {
         HIDDebug("TraktorZ2: LibraryFocusHandler");
         if (field.value) {
             this.controller.setOutput("[Master]", "!crossfaderReverse", kLedBright, true);
-            if (engine.getValue("[Channel1]", "orientation") === 0) { engine.setValue("[Channel1]", "orientation", 2); }
-            if (engine.getValue("[Channel3]", "orientation") === 0) { engine.setValue("[Channel3]", "orientation", 2); }
-            if (engine.getValue("[Channel2]", "orientation") === 2) { engine.setValue("[Channel2]", "orientation", 0); }
-            if (engine.getValue("[Channel4]", "orientation") === 2) { engine.setValue("[Channel4]", "orientation", 0); }
+            if (engine.getValue("[Channel1]", "orientation") === 0) {
+                engine.setValue("[Channel1]", "orientation", 2);
+            }
+            if (engine.getValue("[Channel3]", "orientation") === 0) {
+                engine.setValue("[Channel3]", "orientation", 2);
+            }
+            if (engine.getValue("[Channel2]", "orientation") === 2) {
+                engine.setValue("[Channel2]", "orientation", 0);
+            }
+            if (engine.getValue("[Channel4]", "orientation") === 2) {
+                engine.setValue("[Channel4]", "orientation", 0);
+            }
 
         } else {
             this.controller.setOutput("[Master]", "!crossfaderReverse", kLedOff, true);
-            if (engine.getValue("[Channel1]", "orientation") === 2) { engine.setValue("[Channel1]", "orientation", 0); }
-            if (engine.getValue("[Channel3]", "orientation") === 2) { engine.setValue("[Channel3]", "orientation", 0); }
-            if (engine.getValue("[Channel2]", "orientation") === 0) { engine.setValue("[Channel2]", "orientation", 2); }
-            if (engine.getValue("[Channel4]", "orientation") === 0) { engine.setValue("[Channel4]", "orientation", 2); }
+            if (engine.getValue("[Channel1]", "orientation") === 2) {
+                engine.setValue("[Channel1]", "orientation", 0);
+            }
+            if (engine.getValue("[Channel3]", "orientation") === 2) {
+                engine.setValue("[Channel3]", "orientation", 0);
+            }
+            if (engine.getValue("[Channel2]", "orientation") === 0) {
+                engine.setValue("[Channel2]", "orientation", 2);
+            }
+            if (engine.getValue("[Channel4]", "orientation") === 0) {
+                engine.setValue("[Channel4]", "orientation", 2);
+            }
         }
     }
 
     buttonHandler(field) {
         HIDDebug("TraktorZ2: buttonHandler");
         if (field.value === 0) {
-            return; // Button released
+            return;  // Button released
         }
         script.toggleControl(field.group, field.name);
     }
 
     pflOutputHandler(value, group, key) {
-
         // TODO: Implement Channel A/C B/D switch here
 
         let ledValue = value;
@@ -949,7 +1072,9 @@ class TraktorZ2Class {
     }
 
     microphoneButtonHandler(field) {
-        HIDDebug("TraktorZ2: microphoneButtonHandler" + " field.value: " + field.value);
+        HIDDebug(
+            "TraktorZ2: microphoneButtonHandler " +
+            "field.value: " + field.value);
         if (field.value === 1) {
             // Microphone button pressed
             if (this.shiftState & 0x01) {
@@ -966,7 +1091,9 @@ class TraktorZ2Class {
     }
 
     microphoneButtonStatusHandler(field) {
-        HIDDebug("TraktorZ2: microphoneButtonStatusHandler" + " field.value: " + field.value);
+        HIDDebug(
+            "TraktorZ2: microphoneButtonStatusHandler " +
+            "field.value: " + field.value);
         this.microphoneButtonStatus = field.value;
         this.microphoneButtonOutputHandler();
     }
@@ -977,17 +1104,21 @@ class TraktorZ2Class {
             // Mic/Aux in internal mixing mode
             HIDDebug("TraktorZ2: microphoneButtonStatusHandler: internal");
             if (this.microphoneButtonStatus === 0) {
-                this.controller.setOutput("[Master]", "!microphonebuttonled", kLedOff, true); // Controller internal state OFF -> Switch LED to represent this state
+                // Controller internal state OFF -> Switch LED to represent this state
+                this.controller.setOutput("[Master]", "!microphonebuttonled", kLedOff, true);
             } else {
-                this.controller.setOutput("[Master]", "!microphonebuttonled", kLedDimmed, true); // Controller internal state ON -> Switch LED to represent this state
+                // Controller internal state ON -> Switch LED to represent this state
+                this.controller.setOutput("[Master]", "!microphonebuttonled", kLedDimmed, true);
             }
         } else {
-
             HIDDebug("TraktorZ2: microphoneButtonStatusHandler: external");
             if (this.microphoneButtonStatus === 0) {
-                this.controller.setOutput("[Master]", "!microphonebuttonled", kLedOff, true); // Controller internal state OFF -> Switch LED to represent this state
+                // Controller internal state OFF -> Switch LED to represent this state
+                this.controller.setOutput("[Master]", "!microphonebuttonled", kLedOff,
+                    true);
             } else {
-                this.controller.setOutput("[Master]", "!microphonebuttonled", kLedBright, true); // Controller internal state ON -> Switch LED to represent this state
+                // Controller internal state ON -> Switch LED to represent this state
+                this.controller.setOutput("[Master]", "!microphonebuttonled", kLedBright, true);
             }
         }
     }
@@ -997,13 +1128,18 @@ class TraktorZ2Class {
 
         if (this.traktorButtonStatus[group] === 1) {
             if (engine.getValue(group, "passthrough") === 1) {
-                this.controller.setOutput(group, "!traktorbuttonled", kLedDimmed, true); // Controller internal state ON -> Switch LED to represent this state
+                // Controller internal state ON -> Switch LED to represent this state
+                this.controller.setOutput(group, "!traktorbuttonled", kLedDimmed, true);
             } else {
-                this.controller.setOutput(group, "!traktorbuttonled", kLedBright, true); // Controller internal state OFF -> Switch LED to represent this state
+                // Controller internal state OFF -> Switch LED to represent this state
+                this.controller.setOutput(group, "!traktorbuttonled", kLedBright, true);
             }
         } else {
-            // Channel in standalone mixing mode. No external control possible until traktor button is pressed
-            this.controller.setOutput(group, "!traktorbuttonled", kLedOff, true); // Controller internal state OFF -> Switch LED to represent this state
+            // Channel in standalone mixing mode. No external control possible until traktor button
+            // is pressed
+
+            // Controller internal state OFF -> Switch LED to represent this state
+            this.controller.setOutput(group, "!traktorbuttonled", kLedOff, true);
         }
     }
 
@@ -1014,67 +1150,153 @@ class TraktorZ2Class {
         this.Decks.deck1.registerInputs2Decks();
         this.Decks.deck2.registerInputs2Decks();
 
-        this.registerInputButton(this.inputReport01, "[Channel1]", "switchDeck", 0x06, 0x02, this.deckSwitchHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[Channel2]", "switchDeck", 0x07, 0x02, this.deckSwitchHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[Channel3]", "switchDeck", 0x06, 0x01, this.deckSwitchHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[Channel4]", "switchDeck", 0x07, 0x04, this.deckSwitchHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Channel1]", "switchDeck", 0x06, 0x02,
+            this.deckSwitchHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Channel2]", "switchDeck", 0x07, 0x02,
+            this.deckSwitchHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Channel3]", "switchDeck", 0x06, 0x01,
+            this.deckSwitchHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Channel4]", "switchDeck", 0x07, 0x04,
+            this.deckSwitchHandler.bind(this));
 
-        this.registerInputButton(this.inputReport01, "[Master]", "maximize_library", 0x03, 0x08, this.buttonHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Master]", "maximize_library", 0x03, 0x08,
+            this.buttonHandler.bind(this));
 
-        this.registerInputButton(this.inputReport01, "[Master]", "!microphoneButton", 0x05, 0x01, this.microphoneButtonHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[Master]", "!stateOfMicrophoneButton", 0x09, 0x01, this.microphoneButtonStatusHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Master]", "!microphoneButton", 0x05, 0x01,
+            this.microphoneButtonHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Master]", "!stateOfMicrophoneButton", 0x09, 0x01,
+            this.microphoneButtonStatusHandler.bind(this));
 
-        this.registerInputButton(this.inputReport01, "[Master]", "shift", 0x07, 0x01, this.shiftHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Master]", "shift", 0x07, 0x01,
+            this.shiftHandler.bind(this));
 
-        this.registerInputButton(this.inputReport01, "[Master]", "!SelectTrack", 0x01, 0x0F, this.selectTrackHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[Master]", "!LibraryFocus", 0x03, 0x80, this.LibraryFocusHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Master]", "!SelectTrack", 0x01, 0x0F,
+            this.selectTrackHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Master]", "!LibraryFocus", 0x03, 0x80,
+            this.LibraryFocusHandler.bind(this));
 
 
-        this.registerInputButton(this.inputReport01, "[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x05, 0x04, this.buttonHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x05, 0x08, this.buttonHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x08, 0x02, this.buttonHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x08, 0x04, this.buttonHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x05, 0x04,
+            this.buttonHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x05, 0x08,
+            this.buttonHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x08, 0x02,
+            this.buttonHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x08, 0x04,
+            this.buttonHandler.bind(this));
 
-        this.registerInputButton(this.inputReport01, "[EffectRack1_EffectUnit1]", "!enabled", 0x05, 0x02, this.fxOnClickHandler.bind(this));
-        this.registerInputButton(this.inputReport01, "[EffectRack1_EffectUnit2]", "!enabled", 0x08, 0x01, this.fxOnClickHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[EffectRack1_EffectUnit1]", "!enabled", 0x05, 0x02,
+            this.fxOnClickHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[EffectRack1_EffectUnit2]", "!enabled", 0x08, 0x01,
+            this.fxOnClickHandler.bind(this));
 
-        this.registerInputButton(this.inputReport01, "[Master]", "!crossfaderReverse", 0x08, 0x80, this.crossfaderReverseHandler.bind(this));
+        this.registerInputButton(
+            this.inputReport01, "[Master]", "!crossfaderReverse", 0x08, 0x80,
+            this.crossfaderReverseHandler.bind(this));
 
 
         this.controller.registerInputPacket(this.inputReport01);
 
 
-        this.registerInputScaler(this.inputReport02, "[EffectRack1_EffectUnit1]", "mix", 0x0D, 0xFFFF, this.parameterHandler.bind(this)); // MACRO FX1 D/W
-        this.registerInputScaler(this.inputReport02, "[EffectRack1_EffectUnit1]", "super1", 0x0F, 0xFFFF, this.parameterHandler.bind(this)); // MACRO FX1 FX
-        this.registerInputScaler(this.inputReport02, "[EffectRack1_EffectUnit2]", "mix", 0x1B, 0xFFFF, this.parameterHandler.bind(this)); // MACRO FX2 D/W
-        this.registerInputScaler(this.inputReport02, "[EffectRack1_EffectUnit2]", "super1", 0x1D, 0xFFFF, this.parameterHandler.bind(this)); // MACRO FX2 FX
+        this.registerInputScaler(
+            this.inputReport02, "[EffectRack1_EffectUnit1]", "mix", 0x0D, 0xFFFF,
+            this.parameterHandler.bind(this));  // MACRO FX1 D/W
+        this.registerInputScaler(
+            this.inputReport02, "[EffectRack1_EffectUnit1]", "super1", 0x0F, 0xFFFF,
+            this.parameterHandler.bind(this));  // MACRO FX1 FX
+        this.registerInputScaler(
+            this.inputReport02, "[EffectRack1_EffectUnit2]", "mix", 0x1B, 0xFFFF,
+            this.parameterHandler.bind(this));  // MACRO FX2 D/W
+        this.registerInputScaler(
+            this.inputReport02, "[EffectRack1_EffectUnit2]", "super1", 0x1D, 0xFFFF,
+            this.parameterHandler.bind(this));  // MACRO FX2 FX
 
-        this.registerInputScaler(this.inputReport02, "[Channel1]", "volume", 0x2D, 0xFFFF, this.faderHandler.bind(this)); // Fader Deck A
-        this.registerInputScaler(this.inputReport02, "[Channel2]", "volume", 0x2F, 0xFFFF, this.faderHandler.bind(this)); // Fader Deck B
+        this.registerInputScaler(
+            this.inputReport02, "[Channel1]", "volume", 0x2D, 0xFFFF,
+            this.faderHandler.bind(this));  // Fader Deck A
+        this.registerInputScaler(
+            this.inputReport02, "[Channel2]", "volume", 0x2F, 0xFFFF,
+            this.faderHandler.bind(this));  // Fader Deck B
 
-        //this.registerInputScaler(this.inputReport02, "[Master]", "duckStrengh", 0x03, 0xFFFF, this.parameterHandler.bind(this)); // Mic/Aux Tone knob, where no 1:1 mapping is available
-        this.registerInputScaler(this.inputReport02, "[Microphone]", "pregain", 0x01, 0xFFFF, this.parameterHandler.bind(this));
+        // Mic/Aux Tone knob, where no 1:1 mapping is available
+        // this.registerInputScaler(
+        //     this.inputReport02, "[Master]", "duckStrengh", 0x03, 0xFFFF,
+        //     this.parameterHandler.bind(this));
+        this.registerInputScaler(
+            this.inputReport02, "[Microphone]", "pregain", 0x01, 0xFFFF,
+            this.parameterHandler.bind(this));
 
-        this.registerInputScaler(this.inputReport02, "[Channel1]", "pregain", 0x11, 0xFFFF, this.pregainHandler.bind(this)); // Rotary knob Deck A
-        this.registerInputScaler(this.inputReport02, "[Channel2]", "pregain", 0x1F, 0xFFFF, this.pregainHandler.bind(this)); // Rotary knob Deck B
-        this.registerInputScaler(this.inputReport02, "[Channel3]", "pregain", 0x29, 0xFFFF, this.pregainHandler.bind(this)); // Rotary knob Deck C
-        this.registerInputScaler(this.inputReport02, "[Channel4]", "pregain", 0x2B, 0xFFFF, this.pregainHandler.bind(this)); // Rotary knob Deck D
+        this.registerInputScaler(
+            this.inputReport02, "[Channel1]", "pregain", 0x11, 0xFFFF,
+            this.pregainHandler.bind(this));  // Rotary knob Deck A
+        this.registerInputScaler(
+            this.inputReport02, "[Channel2]", "pregain", 0x1F, 0xFFFF,
+            this.pregainHandler.bind(this));  // Rotary knob Deck B
+        this.registerInputScaler(
+            this.inputReport02, "[Channel3]", "pregain", 0x29, 0xFFFF,
+            this.pregainHandler.bind(this));  // Rotary knob Deck C
+        this.registerInputScaler(
+            this.inputReport02, "[Channel4]", "pregain", 0x2B, 0xFFFF,
+            this.pregainHandler.bind(this));  // Rotary knob Deck D
 
-        this.registerInputScaler(this.inputReport02, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xFFFF, this.eqKnobHandler.bind(this)); // High
-        this.registerInputScaler(this.inputReport02, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xFFFF, this.eqKnobHandler.bind(this)); // Mid
-        this.registerInputScaler(this.inputReport02, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xFFFF, this.eqKnobHandler.bind(this)); // Low
+        this.registerInputScaler(
+            this.inputReport02, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xFFFF,
+            this.eqKnobHandler.bind(this));  // High
+        this.registerInputScaler(
+            this.inputReport02, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xFFFF,
+            this.eqKnobHandler.bind(this));  // Mid
+        this.registerInputScaler(
+            this.inputReport02, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xFFFF,
+            this.eqKnobHandler.bind(this));  // Low
 
-        this.registerInputScaler(this.inputReport02, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x21, 0xFFFF, this.eqKnobHandler.bind(this)); // High
-        this.registerInputScaler(this.inputReport02, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x23, 0xFFFF, this.eqKnobHandler.bind(this)); // Mid
-        this.registerInputScaler(this.inputReport02, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x25, 0xFFFF, this.eqKnobHandler.bind(this)); // Low
+        this.registerInputScaler(
+            this.inputReport02, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x21, 0xFFFF,
+            this.eqKnobHandler.bind(this));  // High
+        this.registerInputScaler(
+            this.inputReport02, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x23, 0xFFFF,
+            this.eqKnobHandler.bind(this));  // Mid
+        this.registerInputScaler(
+            this.inputReport02, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x25, 0xFFFF,
+            this.eqKnobHandler.bind(this));  // Low
 
-        this.registerInputScaler(this.inputReport02, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xFFFF, this.eqKnobHandler.bind(this));
-        this.registerInputScaler(this.inputReport02, "[QuickEffectRack1_[Channel2]]", "super1", 0x27, 0xFFFF, this.eqKnobHandler.bind(this));
+        this.registerInputScaler(
+            this.inputReport02, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xFFFF,
+            this.eqKnobHandler.bind(this));
+        this.registerInputScaler(
+            this.inputReport02, "[QuickEffectRack1_[Channel2]]", "super1", 0x27, 0xFFFF,
+            this.eqKnobHandler.bind(this));
 
-        this.registerInputScaler(this.inputReport02, "[Master]", "crossfader", 0x31, 0xFFFF, this.faderHandler.bind(this));
-        //this.registerInputScaler(this.inputReport02, "[Master]", "gain", 0x09, 0xFFFF, this.parameterHandler.bind(this));
-        this.registerInputScaler(this.inputReport02, "[Master]", "headMix", 0x07, 0xFFFF, this.parameterHandler.bind(this));
-        //this.registerInputScaler(this.inputReport02, "[Master]", "headGain", 0x05, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(
+            this.inputReport02, "[Master]", "crossfader", 0x31, 0xFFFF,
+            this.faderHandler.bind(this));
+
+        // Master Gain is a function of the hardware mixer -> Don't map this knob
+        // this.registerInputScaler(this.inputReport02, "[Master]", "gain", 0x09, 0xFFFF,
+        // this.parameterHandler.bind(this));
+
+        this.registerInputScaler(
+            this.inputReport02, "[Master]", "headMix", 0x07, 0xFFFF,
+            this.parameterHandler.bind(this));
+
+        // Headphone Gain is a function of the hardware mixer -> Don't map this knob
+        // this.registerInputScaler(this.inputReport02, "[Master]", "headGain", 0x05, 0xFFFF,
+        // this.parameterHandler.bind(this));
 
         this.controller.registerInputPacket(this.inputReport02);
     }
@@ -1093,7 +1315,8 @@ class TraktorZ2Class {
         engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", true);
         engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", true);
 
-        // engine.softTakeover("[Master]", "crossfader", true); // softTakeover might be a performance issue
+        // engine.softTakeover("[Master]", "crossfader", true); // softTakeover might be a
+        // performance issue
         engine.softTakeover("[Master]", "gain", true);
         engine.softTakeover("[Master]", "headMix", true);
         engine.softTakeover("[Master]", "headGain", true);
@@ -1139,7 +1362,6 @@ class TraktorZ2Class {
 
             HIDDebug("TraktorZ2: shift pressed");
         } else if (this.shiftPressed === true && field.value === 0) {
-
             this.shiftPressed = false;
 
             HIDDebug("TraktorZ2: shift button released" + this.shiftState);
@@ -1194,9 +1416,10 @@ class TraktorZ2Class {
             };
 
             for (const idx in eqGroups) {
-
                 if (this.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "changed"] === true) {
-                    this.eqExecute(eqGroups[idx], eqParameters[idx], this.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "value"]);
+                    this.eqExecute(
+                        eqGroups[idx], eqParameters[idx],
+                        this.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "value"]);
                 }
             }
         }
@@ -1226,16 +1449,20 @@ class TraktorZ2Class {
             if (this.pregainCh3Timer !== 0) {
                 engine.stopTimer(this.pregainCh3Timer);
                 this.pregainCh3Timer = 0;
-                this.displayVuValue(engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
-                this.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
+                this.displayVuValue(
+                    engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
+                this.displayPeakIndicator(
+                    engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
             }
         } else if ((group === "[EqualizerRack1_[Channel2]_Effect1]") ||
             (group === "[QuickEffectRack1_[Channel2]]")) {
             if (this.pregainCh4Timer !== 0) {
                 engine.stopTimer(this.pregainCh4Timer);
                 this.pregainCh4Timer = 0;
-                this.displayVuValue(engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
-                this.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
+                this.displayVuValue(
+                    engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
+                this.displayPeakIndicator(
+                    engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
             }
         }
         engine.setParameter(group, name, value / 4095);
@@ -1253,36 +1480,44 @@ class TraktorZ2Class {
             engine.stopTimer(this.pregainCh3Timer);
             this.pregainCh3Timer = 0;
             this.displayVuValue(engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
-            this.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
+            this.displayPeakIndicator(
+                engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
         }
         if (field.group === "[Channel3]") {
             if (this.pregainCh3Timer !== 0) {
                 engine.stopTimer(this.pregainCh3Timer);
             }
             this.displayVuValue(engine.getValue("[Channel3]", "VuMeter"), "[Channel3]", "VuMeter");
-            this.displayPeakIndicator(engine.getValue("[Channel3]", "PeakIndicator"), "[Channel3]", "PeakIndicator");
+            this.displayPeakIndicator(
+                engine.getValue("[Channel3]", "PeakIndicator"), "[Channel3]", "PeakIndicator");
             this.pregainCh3Timer = engine.beginTimer(2500, () => {
                 this.pregainCh3Timer = 0;
-                this.displayVuValue(engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
-                this.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
+                this.displayVuValue(
+                    engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
+                this.displayPeakIndicator(
+                    engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
             }, true);
         }
         if ((field.group === "[Channel2]") && (this.pregainCh4Timer !== 0)) {
             engine.stopTimer(this.pregainCh4Timer);
             this.pregainCh4Timer = 0;
             this.displayVuValue(engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
-            this.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
+            this.displayPeakIndicator(
+                engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
         }
         if (field.group === "[Channel4]") {
             if (this.pregainCh4Timer !== 0) {
                 engine.stopTimer(this.pregainCh4Timer);
             }
             this.displayVuValue(engine.getValue("[Channel4]", "VuMeter"), "[Channel4]", "VuMeter");
-            this.displayPeakIndicator(engine.getValue("[Channel4]", "PeakIndicator"), "[Channel4]", "PeakIndicator");
+            this.displayPeakIndicator(
+                engine.getValue("[Channel4]", "PeakIndicator"), "[Channel4]", "PeakIndicator");
             this.pregainCh4Timer = engine.beginTimer(2500, () => {
                 this.pregainCh4Timer = 0;
-                this.displayVuValue(engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
-                this.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
+                this.displayVuValue(
+                    engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
+                this.displayPeakIndicator(
+                    engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
             }, true);
         }
     }
@@ -1295,7 +1530,8 @@ class TraktorZ2Class {
         //       If the interaction between this calibration tool
         //       and the values in Mixxx is understood,
         //       this implementation might be improved
-        engine.setParameter(field.group, field.name, script.absoluteLin(field.value, 0, 1, 100, 3995));
+        engine.setParameter(
+            field.group, field.name, script.absoluteLin(field.value, 0, 1, 100, 3995));
     }
 
     messageCallback(_packet, data) {
@@ -1307,7 +1543,7 @@ class TraktorZ2Class {
     }
 
     incomingData(data, length) {
-        //HIDDebug("TraktorZ2: incomingData data:" + data + "   length:" + length);
+        // HIDDebug("TraktorZ2: incomingData data:" + data + "   length:" + length);
         this.controller.parsePacket(data, length);
     }
 
@@ -1316,7 +1552,6 @@ class TraktorZ2Class {
      *  bytes do what).
      */
     debugLights() {
-
         HIDDebug("TraktorZ2: debugLights");
         const dataA = [
             /* 0x80 */
@@ -1351,14 +1586,14 @@ class TraktorZ2Class {
             0x70,  // 0x1A 7 bits control vinylcontrol Rel/Intl B button brightness (orange)
             0x30,  // 0x1B 7 bits control vinylcontrol Rel/Intl B button brightness (green)
             0x00,  // 0x1C 7 bits control Sync B button brightness (orange)
-            0x00, 0x10, 0x00, // 0x1D HotCue 1 Deck 1 RGB
-            0x00, 0x1F, 0x00, // 0x20 HotCue 2 Deck 1 RGB
-            0x00, 0x20, 0x00, // 0x23 HotCue 3 Deck 1 RGB
-            0x00, 0x2F, 0x00, // 0x26 HotCue 4 Deck 1 RGB
-            0x00, 0x00, 0x00, // 0x29 HotCue 1 Deck 2 RGB
-            0x00, 0x00, 0x00, // 0x2C HotCue 2 Deck 2 RGB
-            0x00, 0x00, 0x00, // 0x2F HotCue 3 Deck 2 RGB
-            0x00, 0x00, 0x00, // 0x32 HotCue 4 Deck 2 RGB
+            0x00, 0x10, 0x00,  // 0x1D HotCue 1 Deck 1 RGB
+            0x00, 0x1F, 0x00,  // 0x20 HotCue 2 Deck 1 RGB
+            0x00, 0x20, 0x00,  // 0x23 HotCue 3 Deck 1 RGB
+            0x00, 0x2F, 0x00,  // 0x26 HotCue 4 Deck 1 RGB
+            0x00, 0x00, 0x00,  // 0x29 HotCue 1 Deck 2 RGB
+            0x00, 0x00, 0x00,  // 0x2C HotCue 2 Deck 2 RGB
+            0x00, 0x00, 0x00,  // 0x2F HotCue 3 Deck 2 RGB
+            0x00, 0x00, 0x00,  // 0x32 HotCue 4 Deck 2 RGB
 
             0x00,  // 0x35 7 bits control Deck 1 1st 7 segment center horizontal bar brightness (orange)
             0x00,  // 0x36 7 bits control Deck 1 1st 7 segment lower right vertical bar brightness (orange)
@@ -1468,7 +1703,9 @@ class TraktorZ2Class {
      * @param key
      */
     basicOutputHandler(value, group, key) {
-        HIDDebug("TraktorZ2: basicOutputHandler" + " group:" + group + " key:" + key + " value:" + value);
+        HIDDebug(
+            "TraktorZ2: basicOutputHandler " +
+            "group:" + group + " key:" + key + " value:" + value);
         if (value === 0 || value === false) {
             // Off value
             this.controller.setOutput(group, key, kLedOff, true);
@@ -1484,37 +1721,40 @@ class TraktorZ2Class {
 
         if (this.deckSwitch["[Channel1]"] === 2) {
             sideChannel[1] = "[Channel1]";
-            sideOffset[1] = 4; // Second 4 hotcues mapped to the pads
+            sideOffset[1] = 4;  // Second 4 hotcues mapped to the pads
         } else if (this.deckSwitch["[Channel3]"] === 1) {
             sideChannel[1] = "[Channel3]";
-            sideOffset[1] = 0; // First 4 hotcues mapped to the pads
+            sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
         } else if (this.deckSwitch["[Channel3]"] === 2) {
             sideChannel[1] = "[Channel3]";
-            sideOffset[1] = 4; // Second 4 hotcues mapped to the pads
+            sideOffset[1] = 4;  // Second 4 hotcues mapped to the pads
         } else {
             sideChannel[1] = "[Channel1]";
-            sideOffset[1] = 0; // First 4 hotcues mapped to the pads
+            sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
         }
         if (this.deckSwitch["[Channel2]"] === 2) {
             sideChannel[2] = "[Channel2]";
-            sideOffset[2] = 4; // Second 4 hotcues mapped to the pads
+            sideOffset[2] = 4;  // Second 4 hotcues mapped to the pads
         } else if (this.deckSwitch["[Channel4]"] === 1) {
             sideChannel[2] = "[Channel4]";
-            sideOffset[2] = 0; // First 4 hotcues mapped to the pads
+            sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
         } else if (this.deckSwitch["[Channel4]"] === 2) {
             sideChannel[2] = "[Channel4]";
-            sideOffset[2] = 4; // Second 4 hotcues mapped to the pads
+            sideOffset[2] = 4;  // Second 4 hotcues mapped to the pads
         } else {
             sideChannel[2] = "[Channel2]";
-            sideOffset[2] = 0; // First 4 hotcues mapped to the pads
+            sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
         }
 
         for (let chidx = 1; chidx <= 2; chidx++) {
             const ch = "[Channel" + chidx + "]";
             for (let i = 1; i <= 4; i++) {
-
-                let colorCode = engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_color");
-                if (engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_enabled") === 0) { colorCode = 0; }
+                let colorCode = engine.getValue(
+                    sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_color");
+                if (engine.getValue(
+                    sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_enabled") === 0) {
+                    colorCode = 0;
+                }
                 let red = ((colorCode & 0xFF0000) >> 16);
                 let green = ((colorCode & 0x00FF00) >> 8);
                 let blue = ((colorCode & 0x0000FF));
@@ -1535,9 +1775,10 @@ class TraktorZ2Class {
                 if (engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_type") === 4) {
                     red = Math.ceil(red * 0.3);
                     green = Math.ceil(green * 0.3);
-                    blue = Math.ceil(blue * 0.25); // Blue LED is dominant -> dim it slightly
+                    blue = Math.ceil(blue * 0.25);  // Blue LED is dominant -> dim it slightly
                 }
-                //HIDDebug("Channel: " + ch + " Hotcue: " + i + " Colorcode: " + colorCode + " Red: " + red + " Green: " + green + " Blue: " + blue);
+                // HIDDebug("Channel: " + ch + " Hotcue: " + i + " Colorcode: " + colorCode +
+                // " Red: " + red + " Green: " + green + " Blue: " + blue);
                 this.controller.setOutput(ch, "Hotcue" + i + "Red", red, false);
                 this.controller.setOutput(ch, "Hotcue" + i + "Green", green, false);
                 this.controller.setOutput(ch, "Hotcue" + i + "Blue", blue, true);
@@ -1547,11 +1788,10 @@ class TraktorZ2Class {
 
     beatOutputHandler(value, group) {
         if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "play")) {
-            const playposition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
-            if (
-                (playposition >= engine.getValue(group, "loop_start_position")) &&
-                (playposition <= engine.getValue(group, "loop_end_position"))
-            ) {
+            const playposition =
+                engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
+            if ((playposition >= engine.getValue(group, "loop_start_position")) &&
+                (playposition <= engine.getValue(group, "loop_end_position"))) {
                 if (engine.getValue(group, "beatloop_size") >= 0.125) {
                     if (value !== 0) {
                         this.displayBrightness[group] = kLedBright;
@@ -1590,7 +1830,6 @@ class TraktorZ2Class {
     }
 
     displayBeatLeds(group) {
-
         if ((group === "[Channel1]") || (group === "[Channel2]")) {
             this.displayLoopCount(group, false);
         }
@@ -1598,13 +1837,15 @@ class TraktorZ2Class {
         if (engine.getValue(group, "track_loaded") === 0) {
             this.controller.setOutput(group, "!beatIndicator", kLedOff, sendNow);
         } else {
-            this.controller.setOutput(group, "!beatIndicator", this.displayBrightness[group], sendNow);
+            this.controller.setOutput(
+                group, "!beatIndicator", this.displayBrightness[group], sendNow);
         }
     }
 
     /**
      * @param group may be either[Channel1] or [Channel2]
      * @param {boolean} sendMessage: if true, send HID package immediateley
+     * @param sendMessage
      */
     displayLoopCount(group, sendMessage) {
         let numberToDisplay;
@@ -1614,11 +1855,10 @@ class TraktorZ2Class {
         if (engine.getValue(group, "track_loaded") === 0) {
             displayBrightness = kLedOff;
         } else if (engine.getValue(group, "loop_enabled") && !(this.shiftState & 0x02)) {
-            const playposition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
-            if (
-                (playposition >= engine.getValue(group, "loop_start_position")) &&
-                (playposition <= engine.getValue(group, "loop_end_position"))
-            ) {
+            const playposition =
+                engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
+            if ((playposition >= engine.getValue(group, "loop_start_position")) &&
+                (playposition <= engine.getValue(group, "loop_end_position"))) {
                 displayBrightness = this.displayBrightness[group];
             } else {
                 displayBrightness = kLedDimmed;
@@ -1643,83 +1883,83 @@ class TraktorZ2Class {
             "[Digit1]": 1000
         };
 
-        if (this.Decks["deck1"].syncPressed || this.Decks["deck2"].syncPressed) {
+        if (this.Decks.deck1.syncPressed || this.Decks.deck2.syncPressed) {
             const key = engine.getValue(group, "key");
             HIDDebug("TraktorZ2: ################ Key:" + key);
 
             let majorMinor;
 
             if (key === 1) {
-                numberToDisplay = 8; // 1d
+                numberToDisplay = 8;  // 1d
                 majorMinor = "b";
             } else if (key === 2) {
-                numberToDisplay = 3; // 8d
+                numberToDisplay = 3;  // 8d
                 majorMinor = "b";
             } else if (key === 3) {
-                numberToDisplay = 10; // 3d
+                numberToDisplay = 10;  // 3d
                 majorMinor = "b";
             } else if (key === 4) {
-                numberToDisplay = 5; // 10d
+                numberToDisplay = 5;  // 10d
                 majorMinor = "b";
             } else if (key === 5) {
-                numberToDisplay = 12; // 5d
+                numberToDisplay = 12;  // 5d
                 majorMinor = "b";
             } else if (key === 6) {
-                numberToDisplay = 7; // 12d
+                numberToDisplay = 7;  // 12d
                 majorMinor = "b";
             } else if (key === 7) {
-                numberToDisplay = 2; // 7d
+                numberToDisplay = 2;  // 7d
                 majorMinor = "b";
             } else if (key === 8) {
-                numberToDisplay = 9; // 2d
+                numberToDisplay = 9;  // 2d
                 majorMinor = "b";
             } else if (key === 9) {
-                numberToDisplay = 4; // 9d
+                numberToDisplay = 4;  // 9d
                 majorMinor = "b";
             } else if (key === 10) {
-                numberToDisplay = 11; // 4d
+                numberToDisplay = 11;  // 4d
                 majorMinor = "b";
             } else if (key === 11) {
-                numberToDisplay = 6; // 11d
+                numberToDisplay = 6;  // 11d
                 majorMinor = "b";
             } else if (key === 12) {
-                numberToDisplay = 1; // 6d
+                numberToDisplay = 1;  // 6d
                 majorMinor = "b";
             } else if (key === 13) {
-                numberToDisplay = 5; // 10m
+                numberToDisplay = 5;  // 10m
                 majorMinor = "A";
             } else if (key === 14) {
-                numberToDisplay = 12; // 5m
+                numberToDisplay = 12;  // 5m
                 majorMinor = "A";
             } else if (key === 15) {
-                numberToDisplay = 7; // 12m
+                numberToDisplay = 7;  // 12m
                 majorMinor = "A";
             } else if (key === 16) {
-                numberToDisplay = 2; // 7m
+                numberToDisplay = 2;  // 7m
                 majorMinor = "A";
             } else if (key === 17) {
-                numberToDisplay = 9; // 2m
+                numberToDisplay = 9;  // 2m
                 majorMinor = "A";
             } else if (key === 18) {
-                numberToDisplay = 4; // 9m
+                numberToDisplay = 4;  // 9m
                 majorMinor = "A";
             } else if (key === 19) {
-                numberToDisplay = 11; // 4m
+                numberToDisplay = 11;  // 4m
                 majorMinor = "A";
             } else if (key === 20) {
-                numberToDisplay = 6; // 11m
+                numberToDisplay = 6;  // 11m
                 majorMinor = "A";
             } else if (key === 21) {
-                numberToDisplay = 1; // 6m
+                numberToDisplay = 1;  // 6m
                 majorMinor = "A";
             } else if (key === 22) {
-                numberToDisplay = 8; // 1m
+                numberToDisplay = 8;  // 1m
                 majorMinor = "A";
             } else if (key === 23) {
-                numberToDisplay = 3; // 8m
+                numberToDisplay = 3;  // 8m
                 majorMinor = "A";
             } else if (key === 24) {
-                numberToDisplay = 10; // 3m
+                numberToDisplay = 10;  // 3m
                 majorMinor = "A";
             } else {
                 if (sendMessage === true) {
@@ -1740,14 +1980,16 @@ class TraktorZ2Class {
             for (const digit in ledKeyDigitModulus) {
                 let leastSignificiantDigit = (numberToDisplayRemainder % 10);
                 numberToDisplayRemainder = numberToDisplayRemainder - leastSignificiantDigit;
-                //HIDDebug(leastSignificiantDigit + " " + numberToDisplayRemainder + " " + group + " " + digit);
+                // HIDDebug(leastSignificiantDigit + " " + numberToDisplayRemainder + " " + group + " " + digit);
                 if ((digit === "[Digit1]" && numberToDisplay < 10)) {
-                    leastSignificiantDigit = -2; // Leading zero -> Blank
+                    leastSignificiantDigit = -2;  // Leading zero -> Blank
                 }
                 if (digit !== "[Digit1]") {
-                    this.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
+                    this.displayLoopCountDigit(
+                        group + digit, leastSignificiantDigit, displayBrightness);
                 } else {
-                    this.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
+                    this.displayLoopCountDigit(
+                        group + digit, leastSignificiantDigit, displayBrightness);
                 }
                 numberToDisplayRemainder /= 10;
             }
@@ -1767,17 +2009,23 @@ class TraktorZ2Class {
             for (const digit in led2DigitModulus) {
                 let leastSignificiantDigit = (numberToDisplayRemainder % 10);
                 numberToDisplayRemainder = numberToDisplayRemainder - leastSignificiantDigit;
-                //HIDDebug(leastSignificiantDigit + " " + numberToDisplayRemainder + " " + group + " " + digit);
+                // HIDDebug(leastSignificiantDigit + " " + numberToDisplayRemainder + " " + group + " " + digit);
                 if (digit === "[Digit2]" && numberToDisplay > .1) {
-                    leastSignificiantDigit = -1; // Leading zero -> Show special symbol of number 1 and the fraction stroke combined in left digit
+                    leastSignificiantDigit = -1;  // Leading zero -> Show special symbol of number 1
+                    // and the fraction stroke combined in left digit
                 }
-                this.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
+                this.displayLoopCountDigit(
+                    group + digit, leastSignificiantDigit, displayBrightness);
                 numberToDisplayRemainder /= 10;
             }
             if (numberToDisplay > .1) {
-                this.displayLoopCountDigit(group + "[Digit1]", -2, displayBrightness);  // Leading zero -> Blank
+                this.displayLoopCountDigit(
+                    group + "[Digit1]", -2, displayBrightness);  // Leading zero -> Blank
             } else {
-                this.displayLoopCountDigit(group + "[Digit1]", -1, displayBrightness); // Show special symbol of number 1 and the fraction stroke combined in left digit
+                this.displayLoopCountDigit(
+                    group + "[Digit1]", -1,
+                    displayBrightness);  // Show special symbol of number 1 and the fraction stroke
+                // combined in left digit
             }
         } else {
             // Beat integer
@@ -1785,14 +2033,18 @@ class TraktorZ2Class {
             for (const digit in led3DigitModulus) {
                 let leastSignificiantDigit = (numberToDisplayRemainder % 10);
                 numberToDisplayRemainder = numberToDisplayRemainder - leastSignificiantDigit;
-                //HIDDebug(leastSignificiantDigit + " " + numberToDisplayRemainder + " " + group + " " + digit);
-                if ((digit === "[Digit1]" && numberToDisplay < 100) || (digit === "[Digit2]" && numberToDisplay < 10)) {
-                    leastSignificiantDigit = -2; // Leading zero -> Blank
+                // HIDDebug(leastSignificiantDigit + " " + numberToDisplayRemainder + " " + group +
+                // " " + digit);
+                if ((digit === "[Digit1]" && numberToDisplay < 100) ||
+                    (digit === "[Digit2]" && numberToDisplay < 10)) {
+                    leastSignificiantDigit = -2;  // Leading zero -> Blank
                 }
                 if (digit !== "[Digit1]") {
-                    this.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
+                    this.displayLoopCountDigit(
+                        group + digit, leastSignificiantDigit, displayBrightness);
                 } else {
-                    this.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
+                    this.displayLoopCountDigit(
+                        group + digit, leastSignificiantDigit, displayBrightness);
                 }
                 numberToDisplayRemainder /= 10;
             }
@@ -1819,7 +2071,7 @@ class TraktorZ2Class {
         //  -- d --
 
         const symbolArray = {
-            "-2": [[], ["a", "b", "c", "d", "e", "f", "g"]], // All off
+            "-2": [[], ["a", "b", "c", "d", "e", "f", "g"]],  // All off
             "1": [["b", "c"], ["a", "d", "e", "f", "g"]],
             "2": [["a", "b", "d", "e", "g"], ["c", "f"]],
             "3": [["a", "b", "c", "d", "g"], ["e", "f"]],
@@ -1866,40 +2118,61 @@ class TraktorZ2Class {
         engine.trigger("[Channel2]", "quantize");
 
         this.outputReport80.addOutput("[Master]", "skin_settings", 0x05, "B", 0x7F);
-        //engine.makeConnection("[Master]", "skin_settings", this.basicOutputHandler.bind(this));
-        //engine.trigger("[Master]", "skin_settings");
+        // engine.makeConnection("[Master]", "skin_settings", this.basicOutputHandler.bind(this));
+        // engine.trigger("[Master]", "skin_settings");
         this.outputReport80.addOutput("[Master]", "shift", 0x06, "B", 0x7F);
 
         this.outputReport80.addOutput("[EffectRack1_EffectUnit1]", "!On", 0x0D, "B", 0x7F);
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "enabled", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "loaded", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect2]", "enabled", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect2]", "loaded", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "enabled", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "loaded", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit1_Effect1]", "enabled", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit1_Effect1]", "loaded", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit1_Effect2]", "enabled", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit1_Effect2]", "loaded", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit1_Effect3]", "enabled", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit1_Effect3]", "loaded", this.fxOnLedHandler.bind(this));
         engine.trigger("[EffectRack1_EffectUnit1_Effect1]", "enabled");
 
-        this.outputReport80.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x0F, "B", 0x7F);
-        engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", this.basicOutputHandler.bind(this));
+        this.outputReport80.addOutput(
+            "[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x0F, "B", 0x7F);
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", this.basicOutputHandler.bind(this));
         engine.trigger("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable");
-        this.outputReport80.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x10, "B", 0x7F);
-        engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", this.basicOutputHandler.bind(this));
+        this.outputReport80.addOutput(
+            "[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x10, "B", 0x7F);
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", this.basicOutputHandler.bind(this));
         engine.trigger("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable");
 
         this.outputReport80.addOutput("[EffectRack1_EffectUnit2]", "!On", 0x15, "B", 0x7F);
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "enabled", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "loaded", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect2]", "enabled", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect2]", "loaded", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "enabled", this.fxOnLedHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "loaded", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit2_Effect1]", "enabled", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit2_Effect1]", "loaded", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit2_Effect2]", "enabled", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit2_Effect2]", "loaded", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit2_Effect3]", "enabled", this.fxOnLedHandler.bind(this));
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit2_Effect3]", "loaded", this.fxOnLedHandler.bind(this));
         engine.trigger("[EffectRack1_EffectUnit2_Effect1]", "enabled");
 
-        this.outputReport80.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x17, "B", 0x7F);
-        engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", this.basicOutputHandler.bind(this));
+        this.outputReport80.addOutput(
+            "[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x17, "B", 0x7F);
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit1]", "group_[Channel2]_enable",
+            this.basicOutputHandler.bind(this));
         engine.trigger("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable");
-        this.outputReport80.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x18, "B", 0x7F);
-        engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", this.basicOutputHandler.bind(this));
+        this.outputReport80.addOutput(
+            "[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x18, "B", 0x7F);
+        engine.makeConnection(
+            "[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", this.basicOutputHandler.bind(this));
         engine.trigger("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable");
 
         const ledChannelOffsets = {
@@ -1914,13 +2187,34 @@ class TraktorZ2Class {
 
         for (const ch in ledChannelOffsets) {
             for (const digit in ledDigitOffsets) {
-                this.outputReport80.addOutput(ch + digit, "segment_g", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x00, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment center horizontal bar brightness (orange)
-                this.outputReport80.addOutput(ch + digit, "segment_c", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x01, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
-                this.outputReport80.addOutput(ch + digit, "segment_b", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x02, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
-                this.outputReport80.addOutput(ch + digit, "segment_a", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x03, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
-                this.outputReport80.addOutput(ch + digit, "segment_f", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x04, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
-                this.outputReport80.addOutput(ch + digit, "segment_e", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x05, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
-                this.outputReport80.addOutput(ch + digit, "segment_d", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x06, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
+                // 7 bits control Deck 1 3rd 7 segment center horizontal bar brightness (orange)
+                this.outputReport80.addOutput(
+                    ch + digit, "segment_g", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x00, "B", 0x7F);
+
+                // 7 bits control Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
+                this.outputReport80.addOutput(
+                    ch + digit, "segment_c", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x01,
+                    "B", 0x7F);
+
+                // 7 bits control Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
+                this.outputReport80.addOutput(
+                    ch + digit, "segment_b", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x02, "B", 0x7F);
+
+                // 7 bits control Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
+                this.outputReport80.addOutput(
+                    ch + digit, "segment_a", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x03, "B", 0x7F);
+
+                // 7 bits control Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
+                this.outputReport80.addOutput(
+                    ch + digit, "segment_f", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x04, "B", 0x7F);
+
+                // 7 bits control Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
+                this.outputReport80.addOutput(
+                    ch + digit, "segment_e", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x05, "B", 0x7F);
+
+                // 7 bits control Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
+                this.outputReport80.addOutput(
+                    ch + digit, "segment_d", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x06, "B", 0x7F);
             }
         }
 
@@ -1944,7 +2238,6 @@ class TraktorZ2Class {
     }
 
     displayVuValue(value, group, key) {
-
         let ch;
 
         if ((group === "[Master]") && (key === "VuMeterL")) {
@@ -1953,20 +2246,24 @@ class TraktorZ2Class {
         } else if ((group === "[Master]") && (key === "VuMeterR")) {
             // MasterR
             ch = "[Channel4]";
-        } else if ((group === "[Channel1]") && (key === "VuMeter") && (this.pregainCh3Timer === 0)) {
+        } else if (
+            (group === "[Channel1]") && (key === "VuMeter") && (this.pregainCh3Timer === 0)) {
             // ChA
             ch = "[Channel1]";
-        } else if ((group === "[Channel3]") && (key === "VuMeter") && (this.pregainCh3Timer !== 0)) {
+        } else if (
+            (group === "[Channel3]") && (key === "VuMeter") && (this.pregainCh3Timer !== 0)) {
             // ChC
             ch = "[Channel1]";
-        } else if ((group === "[Channel2]") && (key === "VuMeter") && (this.pregainCh4Timer === 0)) {
+        } else if (
+            (group === "[Channel2]") && (key === "VuMeter") && (this.pregainCh4Timer === 0)) {
             // ChB
             ch = "[Channel2]";
-        } else if ((group === "[Channel4]") && (key === "VuMeter") && (this.pregainCh4Timer !== 0)) {
+        } else if (
+            (group === "[Channel4]") && (key === "VuMeter") && (this.pregainCh4Timer !== 0)) {
             // ChD
             ch = "[Channel2]";
         } else {
-            return; // Hidden Channel of the pairs A/C or B/D
+            return;  // Hidden Channel of the pairs A/C or B/D
         }
 
         for (let i = 0; i < 6; i++) {
@@ -1982,7 +2279,6 @@ class TraktorZ2Class {
     }
 
     displayPeakIndicator(value, group, key) {
-
         let ch;
 
         if ((group === "[Master]") && (key === "PeakIndicatorL")) {
@@ -1991,28 +2287,32 @@ class TraktorZ2Class {
         } else if ((group === "[Master]") && (key === "PeakIndicatorR")) {
             // MasterR
             ch = "[Channel4]";
-        } else if ((group === "[Channel1]") && (key === "PeakIndicator") && (this.pregainCh3Timer === 0)) {
+        } else if (
+            (group === "[Channel1]") && (key === "PeakIndicator") && (this.pregainCh3Timer === 0)) {
             // ChA
             ch = "[Channel1]";
             this.controller.setOutput("[Channel1]", "!VuLabel", kLedVuMeterBrightness, false);
             this.controller.setOutput("[Channel3]", "!VuLabel", kLedOff, false);
-        } else if ((group === "[Channel3]") && (key === "PeakIndicator") && (this.pregainCh3Timer !== 0)) {
+        } else if (
+            (group === "[Channel3]") && (key === "PeakIndicator") && (this.pregainCh3Timer !== 0)) {
             // ChC
             ch = "[Channel1]";
             this.controller.setOutput("[Channel1]", "!VuLabel", kLedOff, false);
             this.controller.setOutput("[Channel3]", "!VuLabel", kLedVuMeterBrightness, false);
-        } else if ((group === "[Channel2]") && (key === "PeakIndicator") && (this.pregainCh4Timer === 0)) {
+        } else if (
+            (group === "[Channel2]") && (key === "PeakIndicator") && (this.pregainCh4Timer === 0)) {
             // ChB
             ch = "[Channel2]";
             this.controller.setOutput("[Channel2]", "!VuLabel", kLedVuMeterBrightness, false);
             this.controller.setOutput("[Channel4]", "!VuLabel", kLedOff, false);
-        } else if ((group === "[Channel4]") && (key === "PeakIndicator") && (this.pregainCh4Timer !== 0)) {
+        } else if (
+            (group === "[Channel4]") && (key === "PeakIndicator") && (this.pregainCh4Timer !== 0)) {
             // ChD
             ch = "[Channel2]";
             this.controller.setOutput("[Channel2]", "!VuLabel", kLedOff, false);
             this.controller.setOutput("[Channel4]", "!VuLabel", kLedVuMeterBrightness, false);
         } else {
-            return; // Hidden Channel of the pairs A/C or B/D
+            return;  // Hidden Channel of the pairs A/C or B/D
         }
 
         if (value !== 0) {
@@ -2042,10 +2342,11 @@ class TraktorZ2Class {
         data[0] = 0xBF;
         controller.sendFeatureReport(0xF1, data.buffer);
 
-        this.dataF1 = controller.getFeatureReport(0xF1);/*
-        this.dataF1[0] = 0x9F;
-        this.dataF1 = [0xFF, 0x40];
-        controller.sendFeatureReport(0xF1, this.dataF1);*/
+        this.dataF1 = controller.getFeatureReport(0xF1);
+        /*
+         this.dataF1[0] = 0x9F;
+         this.dataF1 = [0xFF, 0x40];
+         controller.sendFeatureReport(0xF1, this.dataF1);*/
 
         HIDDebug(controller.getFeatureReport(0xF1));  // 2x8Bit Logical 0...255
     }
@@ -2061,4 +2362,4 @@ class TraktorZ2Class {
     }
 }
 
-var TraktorZ2 = new TraktorZ2Class; // eslint-disable-line no-var, no-unused-vars
+var TraktorZ2 = new TraktorZ2Class;  // eslint-disable-line no-var, no-unused-vars
