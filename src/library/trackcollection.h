@@ -14,6 +14,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "library/trackset/playlist/playliststorage.h"
 #include "preferences/usersettings.h"
 #include "util/thread_affinity.h"
 
@@ -49,6 +50,11 @@ class TrackCollection : public QObject,
     const CrateStorage& crates() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_crates;
+    }
+
+    const PlaylistStorage& playlists() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_playlists;
     }
 
     TrackDAO& getTrackDAO() {
@@ -169,6 +175,7 @@ class TrackCollection : public QObject,
 
     PlaylistDAO m_playlistDao;
     CrateStorage m_crates;
+    PlaylistStorage m_playlists;
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;

@@ -43,9 +43,10 @@ class PlaylistFeature : public BasePlaylistFeature {
   protected:
     QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
-    QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
 
   private:
     QString getRootViewHtml() const override;
+
+    TrackCollection* const m_pTrackCollection;
 };
