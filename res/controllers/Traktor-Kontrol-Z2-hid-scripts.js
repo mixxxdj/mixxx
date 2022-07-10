@@ -19,17 +19,24 @@ const kLedBright = 0x7F;
  * Each Deck can control 2 channels a + c and b + d, which can be mapped.
  */
 class DeckClass {
+    /**
+     * Creates an instance of DeckClass.
+     * @param {TraktorZ2Class} parent
+     * @param {number} deckNumber
+     * @param {string} group
+     */
     constructor(parent, deckNumber, group) {
+        /** @type TraktorZ2Class */
         this.parent = parent;
         this.deckNumber = deckNumber;
         this.group = group;
         this.activeChannel = "[Channel" + deckNumber + "]";
 
-        // Various states
-        this.parent.syncPressedTimer[this.activeChannel] = 0;
-        this.parent.syncPressed[this.activeChannel] = false;
-        this.parent.snapQuantizePressedTimer[this.activeChannel] = 0;
-        this.parent.snapQuantizePressed[this.activeChannel] = false;
+        // Timer states to distuingish short and long press
+        this.syncPressedTimerId = 0;
+        this.syncPressed = false;
+        this.snapQuantizePressedTimerId = 0;
+        this.snapQuantizePressed = false;
 
         /**
          * Knob encoder states (hold values between 0x0 and 0xF)
@@ -136,16 +143,16 @@ class DeckClass {
                 engine.setValue(this.activeChannel, "sync_enabled", 1);
                 // Start timer to measure how long button is pressed
                 const ch = this.activeChannel; // Use variable in timer function, because this.activeChannel can change until the timer is active
-                this.parent.syncPressedTimer[ch] = engine.beginTimer(300, function() {
+                this.syncPressedTimerId = engine.beginTimer(300, function() {
                     // Reset sync button timer state if active
-                    if (this.parent.syncPressedTimer[ch] !== 0) {
-                        this.parent.syncPressedTimer[ch] = 0;
+                    if (this.syncPressedTimerId !== 0) {
+                        this.syncPressedTimerId = 0;
                     }
                 }.bind(this), true);
             } else {
-                if (this.parent.syncPressedTimer[this.activeChannel] !== 0) {
+                if (this.syncPressedTimerId !== 0) {
                     // Timer still running -> stop it and unlight LED
-                    engine.stopTimer(this.parent.syncPressedTimer[this.activeChannel]);
+                    engine.stopTimer(this.syncPressedTimerId);
                     engine.setValue(this.activeChannel, "sync_enabled", 0);
                 }
             }
@@ -162,27 +169,26 @@ class DeckClass {
         // Depending on long or short press, sync beat or go to key sync mode
         if (field.value === 1) {
             // Start timer to measure how long button is pressed
-            const ch = this.activeChannel; // Use variable in timer function, because this.activeChannel can change until the timer is active
-            this.parent.syncPressedTimer[ch] = engine.beginTimer(300, function() {
-                this.parent.syncPressed[ch] = true;
+            this.syncPressedTimerId = engine.beginTimer(300, function() {
+                this.syncPressed = true;
                 // Change display values to key notation
                 this.parent.displayLoopCount("[Channel1]", false);
                 this.parent.displayLoopCount("[Channel2]", true);
 
                 // Reset sync button timer state if active
-                if (this.parent.syncPressedTimer[ch] !== 0) {
-                    this.parent.syncPressedTimer[ch] = 0;
+                if (this.syncPressedTimerId !== 0) {
+                    this.syncPressedTimerId = 0;
                 }
             }.bind(this), true);
         } else {
-            this.parent.syncPressed[this.activeChannel] = false;
+            this.syncPressed = false;
             // Change display values to loop/beatjump
             this.parent.displayLoopCount("[Channel1]", false);
             this.parent.displayLoopCount("[Channel2]", true);
 
-            if (this.parent.syncPressedTimer[this.activeChannel] !== 0) {
+            if (this.syncPressedTimerId !== 0) {
                 // Timer still running -> stop it and unlight LED
-                engine.stopTimer(this.parent.syncPressedTimer[this.activeChannel]);
+                engine.stopTimer(this.syncPressedTimerId);
                 script.triggerControl(this.activeChannel, "sync_key");
             }
         }
@@ -282,14 +288,14 @@ class DeckClass {
         HIDDebug("TraktorZ2: selectLoopHandler" + this.activeChannel + "  field.value:" + field.value);
 
         if (
-            ((this.parent.syncPressed["[Channel1]"] === true) && (this.activeChannel !== "[Channel1]")) ||
-            ((this.parent.syncPressed["[Channel2]"] === true) && (this.activeChannel !== "[Channel2]"))
+            ((this.parent.Decks["deck1"].syncPressed === true) && (this.activeChannel !== "[Channel1]")) ||
+            ((this.parent.Decks["deck2"].syncPressed === true) && (this.activeChannel !== "[Channel2]"))
         ) {
             // Display shows key not loop or beatjump -> Ignore input
             return;
         }
 
-        if (this.parent.syncPressed[this.activeChannel] === true) {
+        if (this.syncPressed) {
             // Sync hold down -> Adjust key
             if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
                 script.triggerControl(this.activeChannel, "pitch_down");
@@ -339,7 +345,7 @@ class DeckClass {
         if (field.value === 1) {
             const isLoopActive = engine.getValue(this.activeChannel, "loop_enabled");
 
-            if (this.parent.syncPressed[this.activeChannel] === true) {
+            if (this.syncPressed) {
                 // Sync hold down -> Sync key
                 script.triggerControl(this.activeChannel, "reset_key");
             } else if (this.parent.shiftState) {
@@ -359,22 +365,21 @@ class DeckClass {
 
         // Depending on long or short press, sync beat or go to key sync mode
         if (field.value === 1) {   // Start timer to measure how long button is pressed
-            const ch = this.activeChannel; // Use variable in timer function, because this.activeChannel can change until the timer is active
-            this.parent.snapQuantizePressedTimer[ch] = engine.beginTimer(300, function() {
-                this.parent.snapQuantizePressed[ch] = true;
+            this.snapQuantizePressedTimerId = engine.beginTimer(300, function() {
+                this.snapQuantizePressed = true;
 
                 // Reset sync button timer state if active
-                if (this.parent.snapQuantizePressedTimer[ch] !== 0) {
-                    this.parent.snapQuantizePressedTimer[ch] = 0;
+                if (this.snapQuantizePressedTimerId !== 0) {
+                    this.snapQuantizePressedTimerId = 0;
                 }
             }.bind(this), true);
         } else {
-            this.parent.snapQuantizePressed[this.activeChannel] = false;
+            this.snapQuantizePressed = false;
             // Change display values to loop/beatjump
 
-            if (this.parent.snapQuantizePressedTimer[this.activeChannel] !== 0) {
+            if (this.snapQuantizePressedTimerId !== 0) {
                 // Timer still running -> stop it
-                engine.stopTimer(this.parent.snapQuantizePressedTimer[this.activeChannel]);
+                engine.stopTimer(this.snapQuantizePressedTimerId);
 
                 if (this.parent.shiftState !== 0) {
                     // Adjust Beatgrid to current trackposition
@@ -559,11 +564,6 @@ class TraktorZ2Class {
          */
         this.shiftState = 0x00;
 
-        this.syncPressedTimer = [];
-        this.syncPressed = [];
-        this.snapQuantizePressedTimer = [];
-        this.snapQuantizePressed = [];
-
         this.microphoneButtonStatus = undefined;
         this.traktorButtonStatus = [];
 
@@ -592,11 +592,11 @@ class TraktorZ2Class {
             this.displayBrightness["[Channel" + chidx + "]"] = kLedDimmed;
         }
 
-        this.inputReport01 = new HIDPacket;
-        this.inputReport02 = new HIDPacket;
+        this.inputReport01 = new HIDPacket("InputReport01", 0x01, this.messageCallback.bind(this));
+        this.inputReport02 = new HIDPacket("InputReport02", 0x02, this.messageCallback.bind(this));
 
-        this.outputReport80 = new HIDPacket;
-        this.outputReport81 = new HIDPacket;
+        this.outputReport80 = new HIDPacket("OutputReport80", 0x80);
+        this.outputReport81 = new HIDPacket("OutputReport81", 0x81);
 
         this.deckSwitch = {
             "[Channel1]": 1,
@@ -702,9 +702,9 @@ class TraktorZ2Class {
 
         HIDDebug("TraktorZ2: Init done!");
 
-        engine.beginTimer(50, function() {
+        engine.beginTimer(50, () => {
             this.controller.setOutput("[Master]", "!VuLabelMst", kLedVuMeterBrightness, true);
-        }.bind(this));
+        });
 
         HIDDebug("TraktorZ2: Init done!");
     }
@@ -859,11 +859,10 @@ class TraktorZ2Class {
         }
         this.browseKnobEncoderState = field.value;
 
-        if (this.snapQuantizePressed["[Channel1]"] !== this.snapQuantizePressed["[Channel2]"]
-        ) {
+        if (this.Decks["deck1"].snapQuantizePressed !== this.Decks["deck2"].snapQuantizePressed) {
             let ch;
             // Snap / Quantize button is hold for one channel
-            if (this.snapQuantizePressed["[Channel1]"]) {
+            if (this.Decks["deck1"].snapQuantizePressed) {
                 ch = "[Channel1]";
             } else {
                 ch = "[Channel2]";
@@ -1011,14 +1010,9 @@ class TraktorZ2Class {
     registerInputPackets() {
         HIDDebug("TraktorZ2: registerInputPackets");
 
-        this.inputReport01 = new HIDPacket("InputReport01", 0x01, this.messageCallback.bind(this));
-        this.inputReport02 = new HIDPacket("InputReport02", 0x02, this.messageCallback.bind(this));
-
-
         // Register inputs, which only exist on the 2 main decks
         this.Decks.deck1.registerInputs2Decks();
         this.Decks.deck2.registerInputs2Decks();
-
 
         this.registerInputButton(this.inputReport01, "[Channel1]", "switchDeck", 0x06, 0x02, this.deckSwitchHandler.bind(this));
         this.registerInputButton(this.inputReport01, "[Channel2]", "switchDeck", 0x07, 0x02, this.deckSwitchHandler.bind(this));
@@ -1132,7 +1126,7 @@ class TraktorZ2Class {
             this.shiftState |= 0x01;
             this.controller.setOutput("[Master]", "shift", kLedBright, true);
 
-            this.shiftPressedTimer = engine.beginTimer(200, function() {
+            this.shiftPressedTimer = engine.beginTimer(200, () => {
                 // Reset sync button timer state if active
                 if (this.shiftPressedTimer !== 0) {
                     this.shiftPressedTimer = 0;
@@ -1141,7 +1135,7 @@ class TraktorZ2Class {
                 this.displayLoopCount("[Channel1]", false);
                 this.displayLoopCount("[Channel2]", true);
                 HIDDebug("TraktorZ2: shift unlocked");
-            }.bind(this), true);
+            }, true);
 
             HIDDebug("TraktorZ2: shift pressed");
         } else if (this.shiftPressed === true && field.value === 0) {
@@ -1248,6 +1242,10 @@ class TraktorZ2Class {
         this.eqValueStorage[group + name + "changed"] = false;
     }
 
+    /// The Traktor Z2 has a dedicated pre-gain knob for all 4 channels,
+    /// but only 2 multiplexed channel VU-Meters.
+    /// An additional LED indicates if the left VU-Meter shows the signal from with channel A or C.
+    /// The same applies for the right VU-Meter an the letters B or D
     pregainHandler(field) {
         HIDDebug("TraktorZ2: pregainHandler");
         engine.setParameter(field.group, field.name, field.value / 4095);
@@ -1263,11 +1261,11 @@ class TraktorZ2Class {
             }
             this.displayVuValue(engine.getValue("[Channel3]", "VuMeter"), "[Channel3]", "VuMeter");
             this.displayPeakIndicator(engine.getValue("[Channel3]", "PeakIndicator"), "[Channel3]", "PeakIndicator");
-            this.pregainCh3Timer = engine.beginTimer(2500, function() {
+            this.pregainCh3Timer = engine.beginTimer(2500, () => {
                 this.pregainCh3Timer = 0;
                 this.displayVuValue(engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
                 this.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
-            }.bind(this), true);
+            }, true);
         }
         if ((field.group === "[Channel2]") && (this.pregainCh4Timer !== 0)) {
             engine.stopTimer(this.pregainCh4Timer);
@@ -1281,11 +1279,11 @@ class TraktorZ2Class {
             }
             this.displayVuValue(engine.getValue("[Channel4]", "VuMeter"), "[Channel4]", "VuMeter");
             this.displayPeakIndicator(engine.getValue("[Channel4]", "PeakIndicator"), "[Channel4]", "PeakIndicator");
-            this.pregainCh4Timer = engine.beginTimer(2500, function() {
+            this.pregainCh4Timer = engine.beginTimer(2500, () => {
                 this.pregainCh4Timer = 0;
                 this.displayVuValue(engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
                 this.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
-            }.bind(this), true);
+            }, true);
         }
     }
 
@@ -1604,10 +1602,11 @@ class TraktorZ2Class {
         }
     }
 
+    /**
+     * @param group may be either[Channel1] or [Channel2]
+     * @param {boolean} sendMessage: if true, send HID package immediateley
+     */
     displayLoopCount(group, sendMessage) {
-        // @param group may be either[Channel1] or [Channel2]
-        // sendMessage: if true, send HID package immediateley
-        // @param this.displayBrightness[group] may be an integer value from 0x00 to 0x07
         let numberToDisplay;
 
         let displayBrightness;
@@ -1644,7 +1643,7 @@ class TraktorZ2Class {
             "[Digit1]": 1000
         };
 
-        if ((this.syncPressed["[Channel1]"] === true) || (this.syncPressed["[Channel2]"] === true)) {
+        if (this.Decks["deck1"].syncPressed || this.Decks["deck2"].syncPressed) {
             const key = engine.getValue(group, "key");
             HIDDebug("TraktorZ2: ################ Key:" + key);
 
@@ -1847,9 +1846,6 @@ class TraktorZ2Class {
 
     registerOutputPackets() {
         HIDDebug("TraktorZ2: registerOutputPackets");
-
-        this.outputReport80 = new HIDPacket("OutputReport80", 0x80);
-        this.outputReport81 = new HIDPacket("OutputReport81", 0x81);
 
         // Register outputs, which only exist on the 2 main decks
         this.Decks.deck1.registerOutputs2Decks();
