@@ -724,6 +724,67 @@
         }
     });
 
+    var JogWheelBasic = function(options) {
+        Component.call(this, options);
+
+        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
+
+        if (!_.isInteger(this.deck)) {
+            console.warn("missing scratch deck");
+            return;
+        }
+        if (this.deck <= 0) {
+            console.warn("invalid deck number: " + this.deck);
+            return;
+        }
+        if (!_.isInteger(this.wheelResolution)) {
+            console.warn("missing jogwheel resolution");
+            return;
+        }
+        if (!_.isFinite(this.alpha)) {
+            console.warn("missing alpha scratch parameter value");
+            return;
+        }
+        if (!_.isFinite(this.beta)) {
+            this.beta = this.alpha / 32;
+        }
+        if (!_.isFinite(this.rpm)) {
+            this.rpm = 33 + 1/3;
+        }
+        if (this.group === undefined) {
+            this.group = "[Channel" + this.deck + "]";
+        }
+        this.inKey = "jog";
+    };
+
+    JogWheelBasic.prototype = new Component({
+        vinylMode: true,
+        isPress: Button.prototype.isPress,
+        inValueScale: function(value) {
+            // default implementation for converting signed ints
+            return value < 0x40 ? value : value - (this.max + 1);
+        },
+        inputWheel: function(_channel, _control, value, _status, _group) {
+            value = this.inValueScale(value);
+            if (engine.isScratching(this.deck)) {
+                engine.scratchTick(this.deck, value);
+            } else {
+                this.inSetValue(value);
+            }
+        },
+        inputTouch: function(channel, control, value, status, _group) {
+            if (this.isPress(channel, control, value, status) && this.vinylMode) {
+                engine.scratchEnable(this.deck,
+                    this.wheelResolution,
+                    this.rpm,
+                    this.alpha,
+                    this.beta);
+            } else {
+                engine.scratchDisable(this.deck);
+            }
+        },
+    });
+
     var EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
         var eu = this;
         this.focusChooseModeActive = false;
@@ -1176,6 +1237,7 @@
     exports.Encoder = Encoder;
     exports.ComponentContainer = ComponentContainer;
     exports.Deck = Deck;
+    exports.JogWheelBasic = JogWheelBasic;
     exports.EffectUnit = EffectUnit;
     global.components = exports;
 }(this));
