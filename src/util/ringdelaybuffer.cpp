@@ -152,7 +152,7 @@ SINT RingDelayBuffer::moveReadPositionBy(SINT jumpSize) {
     const SINT readAvailableLeft = -getWriteAvailable();
 
     // Jump to the left is greater than available (in negative values smaller number).
-    VERIFY_OR_DEBUG_ASSERT(jumpSize < readAvailableRight) {
+    VERIFY_OR_DEBUG_ASSERT(jumpSize <= readAvailableRight) {
         m_readPos = m_writePos;
         m_jumpLeftAroundMask = 0;
 
