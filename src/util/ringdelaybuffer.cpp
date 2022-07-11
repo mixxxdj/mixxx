@@ -140,6 +140,10 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, SINT numItems) {
 }
 
 SINT RingDelayBuffer::moveReadPositionBy(SINT jumpSize) {
+    if (jumpSize == 0) {
+        return 0;
+    }
+
     // For the positive jumpSize values, the jump way is to right.
     // For the negative jumpSize values, the jump way is to left.
 
@@ -149,17 +153,20 @@ SINT RingDelayBuffer::moveReadPositionBy(SINT jumpSize) {
 
     // The number of available elements on the left side
     // of the current read position.
-    const SINT readAvailableLeft = -getWriteAvailable();
+    const SINT readAvailableLeft = -getWriteAvailable() + 1;
 
-    // Jump to the left is greater than available (in negative values smaller number).
+    // Jump to the right is cannot be greater than the number
+    // of available items.
     VERIFY_OR_DEBUG_ASSERT(jumpSize <= readAvailableRight) {
         m_readPos = m_writePos;
         m_jumpLeftAroundMask = 0;
 
         return readAvailableRight;
     }
-    // Jump to the right is greater than available.
-    VERIFY_OR_DEBUG_ASSERT(jumpSize > readAvailableLeft) {
+
+    // Jump to the left cannot be greater than the number of available items
+    // (in negative values smaller number).
+    VERIFY_OR_DEBUG_ASSERT(jumpSize >= readAvailableLeft) {
         m_readPos = m_writePos;
         m_jumpLeftAroundMask = 0;
 
