@@ -937,6 +937,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/performancetimer.cpp
   src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
+  src/util/ringdelaybuffer.cpp
   src/util/rotary.cpp
   src/util/runtimeloggingcategory.cpp
   src/util/sample.cpp
