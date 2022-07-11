@@ -12,7 +12,8 @@
 #include "track/keyfactory.h"
 #include "track/track.h"
 
-QList<mixxx::AnalyzerPluginInfo> defaultAvailableKeyPlugins() {
+// static
+QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::defaultPluginsList() {
     QList<mixxx::AnalyzerPluginInfo> analyzers;
     // First one below is the default
     analyzers.push_back(mixxx::AnalyzerQueenMaryKey::pluginInfo());
@@ -23,7 +24,7 @@ QList<mixxx::AnalyzerPluginInfo> defaultAvailableKeyPlugins() {
 }
 
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() const {
-    return defaultAvailableKeyPlugins();
+    return defaultPluginsList();
 }
 
 AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)

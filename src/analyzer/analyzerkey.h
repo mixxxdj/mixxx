@@ -12,8 +12,6 @@
 #include "track/track_decl.h"
 #include "util/memory.h"
 
-QList<mixxx::AnalyzerPluginInfo> defaultAvailableKeyPlugins();
-
 class AnalyzerKey : private AnalyzerPluginSupportInfo, public Analyzer {
   public:
     explicit AnalyzerKey(const KeyDetectionSettings& keySettings);
@@ -25,6 +23,7 @@ class AnalyzerKey : private AnalyzerPluginSupportInfo, public Analyzer {
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
+    static QList<mixxx::AnalyzerPluginInfo> defaultPluginsList();
 
   private:
     QList<mixxx::AnalyzerPluginInfo> availablePlugins() const override;

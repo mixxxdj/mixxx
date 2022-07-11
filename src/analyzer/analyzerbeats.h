@@ -17,8 +17,6 @@
 #include "preferences/usersettings.h"
 #include "util/memory.h"
 
-QList<mixxx::AnalyzerPluginInfo> defaultAvailableBeatsPlugins();
-
 class AnalyzerBeats : private AnalyzerPluginSupportInfo, public Analyzer {
   public:
     explicit AnalyzerBeats(
@@ -32,6 +30,7 @@ class AnalyzerBeats : private AnalyzerPluginSupportInfo, public Analyzer {
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
+    static QList<mixxx::AnalyzerPluginInfo> defaultPluginsList();
 
   private:
     QList<mixxx::AnalyzerPluginInfo> availablePlugins() const override;

@@ -13,7 +13,8 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 
-QList<mixxx::AnalyzerPluginInfo> defaultAvailableBeatsPlugins() {
+// static
+QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::defaultPluginsList() {
     QList<mixxx::AnalyzerPluginInfo> plugins;
     // First one below is the default
     plugins.append(mixxx::AnalyzerQueenMaryBeats::pluginInfo());
@@ -22,7 +23,7 @@ QList<mixxx::AnalyzerPluginInfo> defaultAvailableBeatsPlugins() {
 }
 
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() const {
-    return defaultAvailableBeatsPlugins();
+    return defaultPluginsList();
 }
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
