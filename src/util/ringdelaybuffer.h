@@ -95,6 +95,7 @@ class RingDelayBuffer final {
     void clear() {
         m_readPos = 0;
         m_writePos = 0;
+        m_jumpLeftAroundMask = 0;
 
         memset(m_buffer.data(), 0, sizeof(m_buffer));
     }
