@@ -82,6 +82,23 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     slotLoadTrack(pTrack);
 }
 
+void DlgCoverArtFullSize::init(const QByteArray& fetchedCoverArtBytes) {
+    QPixmap image;
+    image.loadFromData(fetchedCoverArtBytes);
+
+    resize(image.size().width(), image.size().height());
+    show();
+    raise();
+    activateWindow();
+
+    QString fetchedCoverArtWindowTitle = "Fetched Cover Art";
+
+    setWindowTitle(fetchedCoverArtWindowTitle);
+
+    //TODO: Do a better scaling. It populates wrong if the cover art size highest.
+    coverArt->setPixmap(image);
+}
+
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
     if (m_pLoadedTrack != nullptr) {
         disconnect(m_pLoadedTrack.get(),

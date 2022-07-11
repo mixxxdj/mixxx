@@ -442,9 +442,69 @@
        </widget>
       </item>
       <item row="7" column="0">
-       <widget class="QLabel" name="label_10">
+       <widget class="QLabel" name="label_11">
         <property name="text">
          <string>You will need to restart Mixxx for these settings to take effect.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QGroupBox" name="groupBox_cover_art_fetcher">
+     <property name="title">
+      <string>Cover Art Fetcher</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_cover_art_fetcher">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButton_cover_art_fetcher_highest">
+        <property name="text">
+         <string>Highest</string>
+        </property>
+        <property name="checked">
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="radioButton_cover_art_fetcher_high">
+        <property name="text">
+         <string>High</string>
+        </property>
+        <property name="checked">
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QRadioButton" name="radioButton_cover_art_fetcher_medium">
+        <property name="text">
+         <string>Medium</string>
+        </property>
+        <property name="checked">
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QRadioButton" name="radioButton_cover_art_fetcher_lowest">
+        <property name="text">
+         <string>Low</string>
+        </property>
+        <property name="checked">
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Fetch cover art from coverartarchive.com by using Import Metadata From Musicbrainz.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Highest resolution can fetch up to very large cover arts. </string>
         </property>
        </widget>
       </item>
@@ -546,6 +606,10 @@
   <tabstop>checkBox_show_traktor</tabstop>
   <tabstop>checkBox_show_rekordbox</tabstop>
   <tabstop>checkBox_show_serato</tabstop>
+  <tabstop>radioButton_cover_art_fetcher_highest</tabstop>
+  <tabstop>radioButton_cover_art_fetcher_high</tabstop>
+  <tabstop>radioButton_cover_art_fetcher_medium</tabstop>
+  <tabstop>radioButton_cover_art_fetcher_lowest</tabstop>
   <tabstop>PushButtonOpenSettingsDir</tabstop>
  </tabstops>
  <resources/>

@@ -206,6 +206,10 @@ void DlgPrefLibrary::slotResetToDefaults() {
     radioButton_dbclick_bottom->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
+    radioButton_cover_art_fetcher_highest->setChecked(false);
+    radioButton_cover_art_fetcher_high->setChecked(false);
+    radioButton_cover_art_fetcher_medium->setChecked(false);
+    radioButton_cover_art_fetcher_lowest->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
     searchDebouncingTimeoutSpinBox->setValue(
@@ -258,6 +262,23 @@ void DlgPrefLibrary::slotUpdate() {
         break;
     default:
         radioButton_dbclick_deck->setChecked(true);
+        break;
+    }
+
+    switch (m_pConfig->getValue<int>(
+            kCoverArtFetcherQualityConfigKey,
+            static_cast<int>(CoverArtFetcherQuality::Low))) {
+    case static_cast<int>(CoverArtFetcherQuality::Highest):
+        radioButton_cover_art_fetcher_highest->setChecked(true);
+        break;
+    case static_cast<int>(CoverArtFetcherQuality::High):
+        radioButton_cover_art_fetcher_high->setChecked(true);
+        break;
+    case static_cast<int>(CoverArtFetcherQuality::Medium):
+        radioButton_cover_art_fetcher_medium->setChecked(true);
+        break;
+    default:
+        radioButton_cover_art_fetcher_lowest->setChecked(true);
         break;
     }
 
@@ -425,6 +446,18 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
+
+    int coverartfetcherquality_status;
+    if (radioButton_cover_art_fetcher_highest->isChecked()) {
+        coverartfetcherquality_status = static_cast<int>(CoverArtFetcherQuality::Highest);
+    } else if (radioButton_cover_art_fetcher_high->isChecked()) {
+        coverartfetcherquality_status = static_cast<int>(CoverArtFetcherQuality::High);
+    } else if (radioButton_cover_art_fetcher_medium->isChecked()) {
+        coverartfetcherquality_status = static_cast<int>(CoverArtFetcherQuality::Medium);
+    } else {
+        coverartfetcherquality_status = static_cast<int>(CoverArtFetcherQuality::Low);
+    }
+    m_pConfig->set(kCoverArtFetcherQualityConfigKey, ConfigValue(coverartfetcherquality_status));
 
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {

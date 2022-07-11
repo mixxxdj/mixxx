@@ -4,7 +4,11 @@
 #include <QtDebug>
 
 #include "defs_urls.h"
+#include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "library/library_prefs.h"
 #include "moc_dlgtagfetcher.cpp"
+#include "preferences/dialog/dlgpreflibrary.h"
 #include "track/track.h"
 #include "track/tracknumbers.h"
 
@@ -96,19 +100,32 @@ void updateOriginalTag(const Track& track, QTreeWidget* pParent) {
 
 } // anonymous namespace
 
-DlgTagFetcher::DlgTagFetcher(
-        const TrackModel* pTrackModel)
+DlgTagFetcher::DlgTagFetcher(UserSettingsPointer pConfig, const TrackModel* pTrackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
+          m_pConfig(pConfig),
           m_pTrackModel(pTrackModel),
-          m_tagFetcher(this) {
+          m_tagFetcher(this),
+          m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
+          m_pWCurrentCoverArtLabel(make_parented<WCoverArtLabel>(this)),
+          m_pWFetchedCoverArtLabel(make_parented<WCoverArtLabel>(this)) {
     init();
 }
 
 void DlgTagFetcher::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
+
+    currentCoverArtLayout->setAlignment(Qt::AlignRight | Qt::AlignTop | Qt::AlignCenter);
+    currentCoverArtLayout->setSpacing(0);
+    currentCoverArtLayout->setContentsMargins(0, 0, 0, 0);
+    currentCoverArtLayout->insertWidget(0, m_pWCurrentCoverArtLabel.get());
+
+    fetchedCoverArtLayout->setAlignment(Qt::AlignRight | Qt::AlignBottom | Qt::AlignCenter);
+    fetchedCoverArtLayout->setSpacing(0);
+    fetchedCoverArtLayout->setContentsMargins(0, 0, 0, 0);
+    fetchedCoverArtLayout->insertWidget(0, m_pWFetchedCoverArtLabel.get());
 
     if (m_pTrackModel) {
         connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::slotPrev);
@@ -117,6 +134,7 @@ void DlgTagFetcher::init() {
         btnNext->hide();
         btnPrev->hide();
     }
+
     connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
     connect(btnRetry, &QPushButton::clicked, this, &DlgTagFetcher::retry);
@@ -138,6 +156,31 @@ void DlgTagFetcher::init() {
     connect(&m_tagFetcher, &TagFetcher::networkError, this, &DlgTagFetcher::slotNetworkResult);
 
     loadingProgressBar->setMaximum(kMaximumValueOfQProgressBar);
+
+    btnRetry->setDisabled(true);
+
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &DlgTagFetcher::slotCoverFound);
+    }
+
+    connect(&m_tagFetcher,
+            &TagFetcher::coverArtArchiveLinksAvailable,
+            this,
+            &DlgTagFetcher::slotStartFetchCoverArt);
+
+    connect(&m_tagFetcher,
+            &TagFetcher::coverArtImageFetchAvailable,
+            this,
+            &DlgTagFetcher::slotLoadBytesToLabel);
+
+    connect(&m_tagFetcher,
+            &TagFetcher::coverArtLinkNotFound,
+            this,
+            &DlgTagFetcher::slotCoverArtLinkNotFound);
 }
 
 void DlgTagFetcher::slotNext() {
@@ -173,6 +216,16 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
                 &DlgTagFetcher::slotTrackChanged);
         m_data = Data();
     }
+    tags->clear();
+
+    CoverInfo coverInfo;
+    QPixmap pixmap;
+    m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, pixmap);
+
+    disconnect(m_track.get(),
+            &Track::changed,
+            this,
+            &DlgTagFetcher::slotTrackChanged);
 
     m_track = pTrack;
     if (!m_track) {
@@ -181,7 +234,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
-    successMessage->setVisible(false);
+    statusMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     addDivider(tr("Original tags"), tags);
@@ -202,6 +255,10 @@ void DlgTagFetcher::loadTrack(const QModelIndex& index) {
 }
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
+    if (!m_fetchedCoverArtByteArrays.isNull()) {
+        m_fetchedCoverArtByteArrays.clear();
+    }
+
     if (m_track && m_track->getId() == trackId) {
         updateOriginalTag(*m_track, tags);
     }
@@ -270,6 +327,35 @@ void DlgTagFetcher::apply() {
                 trackRelease.releaseGroupId);
     }
 #endif // __EXTRA_METADATA__
+
+    if (!m_fetchedCoverArtByteArrays.isNull()) {
+        // Worker can be called here.
+        QString coverArtLocation = m_track->getLocation() + ".jpg";
+        QFile coverArtFile(coverArtLocation);
+        coverArtFile.open(QIODevice::WriteOnly);
+        coverArtFile.write(m_fetchedCoverArtByteArrays);
+        coverArtFile.close();
+
+        auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(coverArtLocation));
+        QImage updatedCoverArtFound(coverArtLocation);
+        if (!updatedCoverArtFound.isNull()) {
+            CoverInfoRelative coverInfo;
+            coverInfo.type = CoverInfo::FILE;
+            coverInfo.source = CoverInfo::USER_SELECTED;
+            coverInfo.coverLocation = coverArtLocation;
+            coverInfo.setImage(updatedCoverArtFound);
+            m_pWCurrentCoverArtLabel->setCoverArt(
+                    CoverInfo{}, QPixmap::fromImage(updatedCoverArtFound));
+            m_track->setCoverInfo(coverInfo);
+            m_fetchedCoverArtByteArrays.clear();
+            m_pWFetchedCoverArtLabel->loadData(m_fetchedCoverArtByteArrays);
+            m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
+                    QPixmap(CoverArtUtils::defaultCoverLocation()));
+            QString coverArtAppliedMessage = tr("Cover art applied.");
+            statusMessage->setText(coverArtAppliedMessage);
+        }
+    }
+
     m_track->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
@@ -301,6 +387,12 @@ void DlgTagFetcher::showProgressOfConstantTask(const QString& text) {
     loadingProgressBar->setValue(loadingProgressBar->value() + kPercentOfConstantTask);
 }
 
+void DlgTagFetcher::loadCurrentTrackCover() {
+    m_pWCurrentCoverArtLabel->loadTrack(m_track);
+    CoverArtCache* pCache = CoverArtCache::instance();
+    pCache->requestTrackCover(this, m_track);
+}
+
 void DlgTagFetcher::showProgressOfRecordingTask() {
     QString status = tr("Fetching track data from the MusicBrainz database");
     loadingProgressBar->setFormat(status);
@@ -328,7 +420,7 @@ void DlgTagFetcher::fetchTagFinished(
         btnApply->setEnabled(true);
         btnRetry->setEnabled(false);
         loadingProgressBar->setVisible(false);
-        successMessage->setVisible(true);
+        statusMessage->setVisible(true);
 
         VERIFY_OR_DEBUG_ASSERT(m_track) {
             return;
@@ -399,4 +491,109 @@ void DlgTagFetcher::tagSelected() {
     }
     const int tagIndex = tags->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedTag = tagIndex;
+
+    if (!m_fetchedCoverArtByteArrays.isNull()) {
+        m_fetchedCoverArtByteArrays.clear();
+        CoverInfo coverInfo;
+        QPixmap pixmap;
+        m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, pixmap);
+    }
+
+    const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
+    QUuid selectedTagAlbumId = trackRelease.albumReleaseId;
+    statusMessage->setVisible(false);
+
+    QString coverArtMessage = tr("Looking for cover art");
+    loadingProgressBar->setVisible(true);
+    loadingProgressBar->setFormat(coverArtMessage);
+    loadingProgressBar->setMinimum(0);
+    loadingProgressBar->setMaximum(100);
+    loadingProgressBar->setValue(10);
+
+    m_tagFetcher.startFetchCoverArtLinks(selectedTagAlbumId);
+}
+
+void DlgTagFetcher::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        mixxx::cache_key_t requestedCacheKey,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedCacheKey);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor == this &&
+            m_track &&
+            m_track->getLocation() == coverInfo.trackLocation) {
+        m_trackRecord.setCoverInfo(coverInfo);
+        m_pWCurrentCoverArtLabel->setCoverArt(coverInfo, pixmap);
+    }
+}
+
+void DlgTagFetcher::slotUpdateStatusMessage(const QString& message) {
+    loadingProgressBar->setVisible(false);
+    statusMessage->setVisible(true);
+    statusMessage->setText(message);
+}
+
+void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
+    int fetchedCoverArtQualityConfigValue =
+            m_pConfig->getValue(mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
+                    static_cast<int>(DlgPrefLibrary::CoverArtFetcherQuality::Low));
+
+    DlgPrefLibrary::CoverArtFetcherQuality fetcherQuality =
+            static_cast<DlgPrefLibrary::CoverArtFetcherQuality>(
+                    fetchedCoverArtQualityConfigValue);
+
+    // Maximum size of the allUrls are 4.
+    if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::Highest) {
+        getCoverArt(allUrls.last());
+        qDebug() << allUrls.last();
+        return;
+    } else if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::High) {
+        qDebug() << allUrls.size();
+        qDebug() << allUrls;
+        allUrls.size() < 3 ? getCoverArt(allUrls.at(1)) : getCoverArt(allUrls.at(2));
+        return;
+    } else if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::Medium) {
+        getCoverArt(allUrls.at(1));
+        qDebug() << allUrls.at(1);
+        return;
+    } else {
+        getCoverArt(allUrls.first());
+    }
+}
+
+void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
+    loadingProgressBar->setValue(80);
+    QPixmap fetchedCoverArtPixmap;
+    fetchedCoverArtPixmap.loadFromData(data);
+    CoverInfo coverInfo;
+    coverInfo.type = CoverInfo::NONE;
+    coverInfo.source = CoverInfo::USER_SELECTED;
+    coverInfo.setImage();
+
+    loadingProgressBar->setVisible(false);
+    QString coverArtMessage = tr("Cover art found and it is ready to be applied.");
+    statusMessage->setVisible(true);
+    statusMessage->setText(coverArtMessage);
+
+    m_fetchedCoverArtByteArrays = data;
+    m_pWFetchedCoverArtLabel->loadData(
+            m_fetchedCoverArtByteArrays); //This data loaded because for full size.
+    m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
+}
+
+void DlgTagFetcher::getCoverArt(const QString& url) {
+    QString coverArtMessage = tr("Cover art found getting image");
+    loadingProgressBar->setFormat(coverArtMessage);
+    loadingProgressBar->setValue(40);
+
+    m_tagFetcher.startFetchCoverArtImage(url);
+}
+
+void DlgTagFetcher::slotCoverArtLinkNotFound() {
+    loadingProgressBar->setVisible(false);
+    statusMessage->setVisible(true);
+    QString message = tr("Cover Art not available for that tag. Please try another.");
+    statusMessage->setText(message);
 }

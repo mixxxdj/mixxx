@@ -8,6 +8,10 @@
 #include "library/ui_dlgtagfetcher.h"
 #include "musicbrainz/tagfetcher.h"
 #include "track/track_decl.h"
+#include "track/trackrecord.h"
+#include "util/parented_ptr.h"
+#include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 
 /// A dialog box to fetch track metadata from MusicBrainz.
 /// Use TrackPointer to load a track into the dialog or
@@ -19,7 +23,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   public:
     // TODO: Remove dependency on TrackModel
     explicit DlgTagFetcher(
-            const TrackModel* pTrackModel = nullptr);
+            UserSettingsPointer pConfig, const TrackModel* pTrackModel = nullptr);
     ~DlgTagFetcher() override = default;
 
     void init();
@@ -49,10 +53,25 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void reject() override;
     void slotNext();
     void slotPrev();
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            mixxx::cache_key_t requestedCacheKey,
+            bool coverInfoUpdated);
+    void slotUpdateStatusMessage(const QString& message);
+    void slotStartFetchCoverArt(const QList<QString>& allUrls);
+    void slotLoadBytesToLabel(const QByteArray& data);
+    void slotCoverArtLinkNotFound();
 
   private:
-    void updateStack();
+    // Called on population or changed via buttons Next&Prev.
+    void loadCurrentTrackCover();
+    void loadTrackInternal(const TrackPointer& track);
     void addDivider(const QString& text, QTreeWidget* parent) const;
+    void getCoverArt(const QString& url);
+
+    UserSettingsPointer m_pConfig;
 
     const TrackModel* const m_pTrackModel;
 
@@ -64,6 +83,14 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
 
     int m_percentForOneRecording;
 
+    parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
+    parented_ptr<WCoverArtLabel> m_pWCurrentCoverArtLabel;
+    parented_ptr<WCoverArtLabel> m_pWFetchedCoverArtLabel;
+
+    mixxx::TrackRecord m_trackRecord;
+
+    int m_progressBarStep;
+
     struct Data {
         Data()
                 : m_selectedTag(-1) {
@@ -72,4 +99,6 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
         QList<mixxx::musicbrainz::TrackRelease> m_tags;
     };
     Data m_data;
+
+    QByteArray m_fetchedCoverArtByteArrays;
 };
