@@ -2,11 +2,13 @@
 
 #include "util/ringdelaybuffer.h"
 
+#include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 
 #include <QTest>
 
 #include "test/mixxxtest.h"
+#include "util/sample.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
 
@@ -197,5 +199,81 @@ TEST_F(RingDelayBufferTest, WriteAvailableItems) {
 
     EXPECT_EQ(m_pRingDelayBuffer->getWriteAvailable(), 0);
 }
+
+static void BM_WriteReadWholeBufferNoSkip(benchmark::State& state) {
+    const SINT ringDelayBufferSize = static_cast<SINT>(state.range(0));
+    const SINT numSamples = ringDelayBufferSize / 2;
+
+    RingDelayBuffer m_ringDelayBuffer(ringDelayBufferSize);
+
+    mixxx::SampleBuffer input(numSamples);
+    mixxx::SampleBuffer output(numSamples);
+
+    SampleUtil::fill(input.data(), 0.0f, numSamples);
+
+    for (auto _ : state) {
+        state.PauseTiming();
+        m_ringDelayBuffer.clear();
+        state.ResumeTiming();
+
+        m_ringDelayBuffer.write(input.data(), numSamples);
+        m_ringDelayBuffer.read(output.data(), numSamples);
+        m_ringDelayBuffer.write(input.data(), numSamples);
+        m_ringDelayBuffer.read(output.data(), numSamples);
+    }
+}
+BENCHMARK(BM_WriteReadWholeBufferNoSkip)->Range(64, 4 << 10);
+
+static void BM_WriteReadWholeBufferSkipLeftNoCircle(benchmark::State& state) {
+    const SINT ringDelayBufferSize = static_cast<SINT>(state.range(0));
+    const SINT numSamples = ringDelayBufferSize / 2;
+    const SINT jumpSizeLeft = -numSamples;
+
+    RingDelayBuffer m_ringDelayBuffer(ringDelayBufferSize);
+
+    mixxx::SampleBuffer input(numSamples);
+    mixxx::SampleBuffer output(numSamples);
+
+    SampleUtil::fill(input.data(), 0.0f, numSamples);
+
+    for (auto _ : state) {
+        state.PauseTiming();
+        m_ringDelayBuffer.clear();
+        state.ResumeTiming();
+
+        m_ringDelayBuffer.write(input.data(), numSamples);
+        m_ringDelayBuffer.read(output.data(), numSamples);
+        m_ringDelayBuffer.moveReadPositionBy(jumpSizeLeft);
+        m_ringDelayBuffer.write(input.data(), numSamples);
+        m_ringDelayBuffer.read(output.data(), numSamples);
+    }
+}
+BENCHMARK(BM_WriteReadWholeBufferSkipLeftNoCircle)->Range(64, 4 << 10);
+
+static void BM_WriteReadWholeBufferSkipLeftCircle(benchmark::State& state) {
+    const SINT ringDelayBufferSize = static_cast<SINT>(state.range(0));
+    const SINT numSamples = ringDelayBufferSize / 2;
+    const SINT jumpSizeLeft = -ringDelayBufferSize + 1;
+
+    RingDelayBuffer m_ringDelayBuffer(ringDelayBufferSize);
+
+    mixxx::SampleBuffer input(numSamples);
+    mixxx::SampleBuffer output(numSamples);
+
+    SampleUtil::fill(input.data(), 0.0f, numSamples);
+
+    for (auto _ : state) {
+        state.PauseTiming();
+        m_ringDelayBuffer.clear();
+        state.ResumeTiming();
+
+        m_ringDelayBuffer.write(input.data(), numSamples);
+        m_ringDelayBuffer.read(output.data(), numSamples);
+        m_ringDelayBuffer.moveReadPositionBy(jumpSizeLeft);
+        m_ringDelayBuffer.read(output.data(), numSamples);
+        m_ringDelayBuffer.write(input.data(), numSamples);
+    }
+}
+BENCHMARK(BM_WriteReadWholeBufferSkipLeftCircle)->Range(64, 4 << 10);
 
 } // namespace
