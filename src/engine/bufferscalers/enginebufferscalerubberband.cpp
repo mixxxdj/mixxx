@@ -53,7 +53,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     //
     // References:
     // https://bugs.launchpad.net/ubuntu/+bug/1263233
-    // https://bitbucket.org/breakfastquay/rubberband/issue/4/sigfpe-zero-division-with-high-time-ratios
+    // https://todo.sr.ht/~breakfastquay/rubberband/5
     constexpr double kMinSeekSpeed = 1.0 / 128.0;
     double speed_abs = fabs(*pTempoRatio);
     if (speed_abs < kMinSeekSpeed) {
@@ -84,7 +84,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
         qWarning() << "EngineBufferScaleRubberBand inputIncrement is 0."
                    << "On RubberBand <=1.8.1 a SIGFPE is imminent despite"
                    << "our workaround. Taking evasive action."
-                   << "Please report this message to mixxx-devel@lists.sourceforge.net.";
+                   << "Please file an issue on https://github.com/mixxxdj/mixxx/issues";
 
         // This is much slower than the minimum seek speed workaround above.
         while (m_pRubberBand->getInputIncrement() == 0) {
