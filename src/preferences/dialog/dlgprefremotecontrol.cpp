@@ -3,7 +3,7 @@
 #include "preferences/dialog/dlgprefremotecontrol.h"
 
 DlgPrefRemoteControl::DlgPrefRemoteControl(QWidget *pParent,UserSettingsPointer  pSettings) : DlgPreferencePage(pParent){
-    
+    setupUi(this);
 };
 
 DlgPrefRemoteControl::~DlgPrefRemoteControl(){
