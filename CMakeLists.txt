@@ -461,8 +461,6 @@ endif()
 
 set(CLANG_TIDY "" CACHE STRING "CMAKE_CXX_CLANG_TIDY equivalent that only applies to mixxx sources, not bundled dependencies")
 
-add_subdirectory(lib/QtWebApp)
-
 # Mixxx itself
 add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
@@ -1034,7 +1032,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
-  src/remote/remote.cpp
 )
 
 if(QT6)
@@ -1863,7 +1860,7 @@ endif()
 
 # Chromaprint
 find_package(Chromaprint REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint qhttpserver)
+target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
@@ -2936,6 +2933,16 @@ if(WAVPACK)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
+
+#remote control dependencies
+add_subdirectory(
+        "${CMAKE_SOURCE_DIR}/lib/QtWebApp" 
+)
+
+add_dependencies(mixxx-lib qtwebapp)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/QtWebApp/)
+target_sources(mixxx-lib PRIVATE src/remote/remote.cpp)
+target_link_libraries(mixxx-lib PRIVATE qtwebapp)
 
 # Configure file with build options
 file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")
