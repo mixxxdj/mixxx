@@ -24,5 +24,5 @@ class DlgPrefRemoteControl: public DlgPreferencePage,
       void slotApply() override;
       void slotResetToDefaults() override;
   private:
-      std::shared_ptr<RemoteControl> m_pRemoteControl;
+      UserSettingsPointer m_pSettings; 
 };
