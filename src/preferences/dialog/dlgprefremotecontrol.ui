@@ -24,7 +24,7 @@
    </property>
    <layout class="QFormLayout" name="formLayout">
     <item row="0" column="0">
-     <widget class="QCheckBox" name="checkBox">
+     <widget class="QCheckBox" name="remoteactv">
       <property name="text">
        <string>Activate Remote Control</string>
       </property>
