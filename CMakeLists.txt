@@ -833,6 +833,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefvinyldlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
+  src/preferences/dialog/dlgprefremotecontrol.ui
+  src/preferences/dialog/dlgprefremotecontrol.cpp
   src/preferences/effectchainpresetlistmodel.cpp
   src/preferences/effectmanifesttablemodel.cpp
   src/preferences/colorpaletteeditor.cpp
