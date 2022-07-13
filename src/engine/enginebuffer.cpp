@@ -62,6 +62,8 @@ constexpr SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 // Rate at which the playpos slider is updated
 constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
+#define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+
 } // anonymous namespace
 
 EngineBuffer::EngineBuffer(const QString& group,
@@ -175,10 +177,6 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
-    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
-    m_pKeylockEngine->connectValueChanged(this, &EngineBuffer::slotKeylockEngineChanged,
-                                          Qt::DirectConnection);
-
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
 
@@ -264,15 +262,15 @@ EngineBuffer::EngineBuffer(const QString& group,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
+    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
+    m_pKeylockEngine->connectValueChanged(this,
+            &EngineBuffer::slotKeylockEngineChanged,
+            Qt::DirectConnection);
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
-    if (m_pKeylockEngine->get() == static_cast<double>(SOUNDTOUCH)) {
-        m_pScaleKeylock = m_pScaleST;
-    } else {
-        m_pScaleKeylock = m_pScaleRB;
-    }
+    slotKeylockEngineChanged(m_pKeylockEngine->get());
     m_pScaleVinyl = m_pScaleLinear;
     m_pScale = m_pScaleVinyl;
     m_pScale->clear();
@@ -802,13 +800,29 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
     if (m_bScalerOverride) {
         return;
     }
-    // static_cast<KeylockEngine>(dIndex); direct cast produces a "not used" warning with gcc
+    // direct cast produces a "not used" warning with gcc:
+    // static_cast<KeylockEngine>(dIndex);
     int iEngine = static_cast<int>(dIndex);
     KeylockEngine engine = static_cast<KeylockEngine>(iEngine);
-    if (engine == SOUNDTOUCH) {
+    switch (engine) {
+    case SOUNDTOUCH:
         m_pScaleKeylock = m_pScaleST;
-    } else {
+        break;
+    case RUBBERBAND_FASTER:
+    default:
+#if RUBBERBANDV3
+        // trigger reconstruction of RubberBandStretcher with v2 options
+        m_pScaleRB->useEngineFiner(false);
+#endif
         m_pScaleKeylock = m_pScaleRB;
+        break;
+#if RUBBERBANDV3
+    case RUBBERBAND_FINER:
+        // trigger reconstruction of RubberBandStretcher with v3 options
+        m_pScaleRB->useEngineFiner(true);
+        m_pScaleKeylock = m_pScaleRB;
+        break;
+#endif
     }
 }
 

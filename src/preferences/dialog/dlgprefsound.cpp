@@ -496,7 +496,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         engineClockComboBox->setCurrentIndex(0);
     }
 
-    // Default keylock is Rubberband.
+    // Default keylock is Rubberband v2
     int keylock_engine = m_pSettings->getValue(
             ConfigKey("[Master]", "keylock_engine"), 1);
     keylockComboBox->setCurrentIndex(keylock_engine);
@@ -681,8 +681,8 @@ void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig(m_pSoundManager.get());
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
-    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
-    m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);
+    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND_FASTER);
+    m_pKeylockEngine->set(EngineBuffer::RUBBERBAND_FASTER);
 
     masterMixComboBox->setCurrentIndex(1);
     m_pMasterEnabled->set(1.0);

@@ -113,14 +113,14 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
 
     // With Rubberband, and transport stopped it should be still keylock
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
-                       static_cast<double>(EngineBuffer::RUBBERBAND));
+            static_cast<double>(EngineBuffer::RUBBERBAND_FASTER));
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0);
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
 
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
 
-    // Paying at low rate, the vinyl scaler should be used
+    // Playing at low rate, the vinyl scaler should be used
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
 }
@@ -305,7 +305,7 @@ TEST_F(EngineBufferE2ETest, DISABLED_SoundTouchToggleTest) {
 TEST_F(EngineBufferE2ETest, DISABLED_RubberbandToggleTest) {
    // Test various cases where Rubberband toggles on and off.
    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
-                      static_cast<double>(EngineBuffer::RUBBERBAND));
+           static_cast<double>(EngineBuffer::RUBBERBAND_FASTER));
    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
    ProcessBuffer();
@@ -379,7 +379,7 @@ TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing bug #1458263
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
-                       static_cast<double>(EngineBuffer::RUBBERBAND));
+            static_cast<double>(EngineBuffer::RUBBERBAND_FASTER));
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), -1);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();

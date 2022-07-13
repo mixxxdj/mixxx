@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gtest/gtest_prod.h>
+#include <rubberband/RubberBandStretcher.h>
 
 #include <QAtomicInt>
 #include <QMutex>
@@ -76,7 +77,10 @@ class EngineBuffer : public EngineObject {
 
     enum KeylockEngine {
         SOUNDTOUCH,
-        RUBBERBAND,
+        RUBBERBAND_FASTER,
+#if (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+        RUBBERBAND_FINER,
+#endif
         KEYLOCK_ENGINE_COUNT,
     };
 
@@ -146,8 +150,12 @@ class EngineBuffer : public EngineObject {
         switch (engine) {
         case SOUNDTOUCH:
             return tr("Soundtouch (faster)");
-        case RUBBERBAND:
+        case RUBBERBAND_FASTER:
             return tr("Rubberband (better)");
+#if (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+        case RUBBERBAND_FINER:
+            return tr("Rubberband R3 (near-hi-fi quality)");
+#endif
         default:
             return tr("Unknown (bad value)");
         }

@@ -30,7 +30,8 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
         ReadAheadManager* pReadAheadManager)
         : m_pReadAheadManager(pReadAheadManager),
           m_buffer_back(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_bBackwards(false) {
+          m_bBackwards(false),
+          m_useEngineFiner(false) {
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
     // Initialize the internal buffers to prevent re-allocations
@@ -116,10 +117,12 @@ void EngineBufferScaleRubberBand::onSampleRateChanged() {
         m_pRubberBand.reset();
         return;
     }
-    RubberBandStretcher::Options rubberbandOptions = RubberBandStretcher::OptionProcessRealTime;
+    RubberBandStretcher::Options rubberbandOptions =
+            RubberBandStretcher::OptionProcessRealTime;
 #if RUBBERBANDV3
-    // TODO make this a runtime option
-    rubberbandOptions |= RubberBandStretcher::OptionEngineFiner;
+    if (m_useEngineFiner) {
+        rubberbandOptions |= RubberBandStretcher::OptionEngineFiner;
+    }
 #endif
 
     m_pRubberBand = std::make_unique<RubberBandStretcher>(
@@ -262,6 +265,13 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     double framesRead = m_dBaseRate * m_dTempoRatio * total_received_frames;
 
     return framesRead;
+}
+
+void EngineBufferScaleRubberBand::useEngineFiner(bool enable) {
+    if (isEngineFinerAvailable()) {
+        m_useEngineFiner = enable;
+        onSampleRateChanged();
+    }
 }
 
 int EngineBufferScaleRubberBand::runningEngineVersion() {
