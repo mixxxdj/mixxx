@@ -17,6 +17,8 @@ using RubberBand::RubberBandStretcher;
 
 namespace {
 
+// TODO (XXX): this should be removed. It is only needed to work around
+// a Rubberband 1.3 bug.
 // This is the default increment from RubberBand 1.8.1.
 size_t kRubberBandBlockSize = 256;
 
@@ -113,6 +115,8 @@ void EngineBufferScaleRubberBand::onSampleRateChanged() {
             getOutputSignal().getSampleRate(),
             getOutputSignal().getChannelCount(),
             RubberBandStretcher::OptionProcessRealTime);
+    // TODO (XXX): we should always be able to provide rubberband as
+    // many samples as it wants. So remove this.
     m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
     // Setting the time ratio to a very high value will cause RubberBand
     // to preallocate buffers large enough to (almost certainly)
@@ -190,6 +194,9 @@ double EngineBufferScaleRubberBand::scaleBuffer(
 
         size_t iLenFramesRequired = m_pRubberBand->getSamplesRequired();
         if (iLenFramesRequired == 0) {
+            // TODO (XXX): Rubberband 1.3 is not being packaged anymore.
+            // Remove this workaround.
+            //
             // rubberband 1.3 (packaged up through Ubuntu Quantal) has a bug
             // where it can report 0 samples needed forever which leads us to an
             // infinite loop. To work around this, we check if available() is
