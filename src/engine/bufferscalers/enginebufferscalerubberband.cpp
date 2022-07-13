@@ -22,6 +22,8 @@ namespace {
 // This is the default increment from RubberBand 1.8.1.
 size_t kRubberBandBlockSize = 256;
 
+#define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+
 }  // namespace
 
 EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
@@ -56,13 +58,15 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     // References:
     // https://bugs.launchpad.net/ubuntu/+bug/1263233
     // https://todo.sr.ht/~breakfastquay/rubberband/5
-    constexpr double kMinSeekSpeed = 1.0 / 128.0;
-    double speed_abs = fabs(*pTempoRatio);
-    if (speed_abs < kMinSeekSpeed) {
-        // Let the caller know we ignored their speed.
-        speed_abs = *pTempoRatio = 0;
-    }
 
+    double speed_abs = fabs(*pTempoRatio);
+    if (runningEngineVersion() == 2) {
+        constexpr double kMinSeekSpeed = 1.0 / 128.0;
+        if (speed_abs < kMinSeekSpeed) {
+            // Let the caller know we ignored their speed.
+            speed_abs = *pTempoRatio = 0;
+        }
+    }
     // RubberBand handles checking for whether the change in pitchScale is a
     // no-op.
     double pitchScale = fabs(base_rate * *pPitchRatio);
@@ -82,21 +86,22 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
         m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
     }
 
-    if (m_pRubberBand->getInputIncrement() == 0) {
-        qWarning() << "EngineBufferScaleRubberBand inputIncrement is 0."
-                   << "On RubberBand <=1.8.1 a SIGFPE is imminent despite"
-                   << "our workaround. Taking evasive action."
-                   << "Please file an issue on https://github.com/mixxxdj/mixxx/issues";
+    if (runningEngineVersion() == 2) {
+        if (m_pRubberBand->getInputIncrement() == 0) {
+            qWarning() << "EngineBufferScaleRubberBand inputIncrement is 0."
+                       << "On RubberBand <=1.8.1 a SIGFPE is imminent despite"
+                       << "our workaround. Taking evasive action."
+                       << "Please file an issue on https://github.com/mixxxdj/mixxx/issues";
 
-        // This is much slower than the minimum seek speed workaround above.
-        while (m_pRubberBand->getInputIncrement() == 0) {
-            timeRatioInverse += 0.001;
-            m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
+            // This is much slower than the minimum seek speed workaround above.
+            while (m_pRubberBand->getInputIncrement() == 0) {
+                timeRatioInverse += 0.001;
+                m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
+            }
+            speed_abs = timeRatioInverse / base_rate;
+            *pTempoRatio = m_bBackwards ? -speed_abs : speed_abs;
         }
-        speed_abs = timeRatioInverse / base_rate;
-        *pTempoRatio = m_bBackwards ? -speed_abs : speed_abs;
     }
-
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = base_rate;
     m_dTempoRatio = speed_abs;
@@ -111,10 +116,16 @@ void EngineBufferScaleRubberBand::onSampleRateChanged() {
         m_pRubberBand.reset();
         return;
     }
+    RubberBandStretcher::Options rubberbandOptions = RubberBandStretcher::OptionProcessRealTime;
+#if RUBBERBANDV3
+    // TODO make this a runtime option
+    rubberbandOptions |= RubberBandStretcher::OptionEngineFiner;
+#endif
+
     m_pRubberBand = std::make_unique<RubberBandStretcher>(
             getOutputSignal().getSampleRate(),
             getOutputSignal().getChannelCount(),
-            RubberBandStretcher::OptionProcessRealTime);
+            rubberbandOptions);
     // TODO (XXX): we should always be able to provide rubberband as
     // many samples as it wants. So remove this.
     m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
@@ -251,4 +262,12 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     double framesRead = m_dBaseRate * m_dTempoRatio * total_received_frames;
 
     return framesRead;
+}
+
+int EngineBufferScaleRubberBand::runningEngineVersion() {
+#if RUBBERBANDV3
+    return m_pRubberBand->getEngineVersion();
+#else
+    return 2;
+#endif
 }
