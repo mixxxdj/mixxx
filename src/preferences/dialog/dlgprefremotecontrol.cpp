@@ -40,6 +40,6 @@ void DlgPrefRemoteControl::slotApply(){
 void DlgPrefRemoteControl::slotResetToDefaults(){
     this->remoteactv->setChecked(false);
     this->remoteaddr->setText("0.0.0.0");
-    this->remoteport->setText("8443");
+    this->remoteport->setText("8080");
     this->remotepass->setText("mixxx");      
 }
