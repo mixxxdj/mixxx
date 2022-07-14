@@ -43,14 +43,13 @@ function checkauth(sessionid){
             if(resp){
                 var resp=JSON.parse(xmlhttp.responseText);
                 for(var i=0; i<resp.length; ++i){
-                    if(resp[i].logintime){
-                        return true; 
+                    if(!resp[i].logintime){
+                        window.location.replace("/login.html"); 
                     }
                 }
             }
         }
     }
-    return false;
 }
 
 function search(searchtext){
