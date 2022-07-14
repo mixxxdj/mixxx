@@ -54,12 +54,11 @@ namespace mixxx {
                 for(QJsonArray::Iterator i = requroot.begin(); i<requroot.end(); ++i){
                     QJsonObject cur=i->toObject();
                     if(!cur["login"].isNull()){
-                        if(cur["login"].toObject()["password"].toString()==
-                            m_pSettings->get(ConfigKey("[RemoteControl]","pass")).value
+                        if(QString::compare(cur["login"].toObject()["password"].toString(),
+                            m_pSettings->get(ConfigKey("[RemoteControl]","pass")).value)==0
                         ){
                             
-                            QJsonObject sessid;
-                            
+                            QJsonObject sessid;                           
                             Session session;
                             session.sessionid = QUuid::createUuid();
                             session.loginTime = QTime::currentTime();
@@ -71,17 +70,30 @@ namespace mixxx {
                             response.flush();
                             kLogger.debug() << "successfuly login";
                             return;
+                        }else{
+                            QJsonObject err;
+                            err.insert("error","wrong password");
+                            resproot.push_back(err);
+                            jsonResponse.setArray(resproot);
+                            response.write(jsonResponse.toJson());
+                            response.flush();
+                            return;
                         };
                     }
                 }
+                
                 bool auth = false;
+                
                 for(QJsonArray::Iterator i =requroot.begin(); i<requroot.end(); ++i){
                     QJsonObject cur=i->toObject();
                     if(!cur["sessionid"].isNull()){
                         std::vector<Session>::iterator it;
                         for (it = m_Session.begin(); it < m_Session.end(); it++){
-                            if(cur["sessionid"].toString()==it->sessionid){
+                            if(QString::compare(cur["sessionid"].toString(),it->sessionid.toString())==0){
                                 auth=true;
+                                QJsonObject auth;
+                                auth.insert("logintime",it->loginTime.toString());
+                                resproot.push_back(auth);
                             }
                         }
                     }
@@ -99,14 +111,17 @@ namespace mixxx {
                 
                 for(QJsonArray::Iterator i =requroot.begin(); i<requroot.end(); ++i){
                     QJsonObject cur=i->toObject();
-                    if(!cur["getLibrary"].isNull()){
+                    if(!cur["searchtrack"].isNull()){
                         QJsonArray list;
-                        TrackCollectionManager *mtrack=m_pLibrary->trackCollectionManager();
-                        resproot.push_back(list);
-                        jsonResponse.setArray(resproot);
-                        response.write(jsonResponse.toJson());                     
+                        kLogger.debug() << cur["searchtrack"].toString();
+                        m_pLibrary->search(cur["searchtrack"].toString());
+//                         resproot.push_back();                   
                     }
                 }
+                
+                jsonResponse.setArray(resproot);
+                response.write(jsonResponse.toJson());
+                response.flush();
             }else{
                 m_staticFileController->service(request,response);
             }
