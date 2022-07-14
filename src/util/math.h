@@ -38,15 +38,11 @@ inline bool even(T value) {
 #pragma intrinsic(fabs)
 #endif
 
-inline int roundUpToPowerOf2(int v) {
-    int power = 1;
-    while (power < v && power > 0) {
+inline unsigned int roundUpToPowerOf2(int v) {
+    DEBUG_ASSERT(v >= 0);
+    unsigned int power = 1;
+    while (power <= v && power > 0) {
         power *= 2;
-    }
-    // There is not a power of 2 higher than v representable by our
-    // architecture's integer size.
-    if (power < 0) {
-        return -1;
     }
     return power;
 }
