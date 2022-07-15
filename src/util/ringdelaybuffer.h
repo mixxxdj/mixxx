@@ -82,7 +82,7 @@ class RingDelayBuffer final {
   public:
     RingDelayBuffer(SINT bufferSize);
 
-    bool isFull() {
+    bool isFull() const {
         return getWriteAvailable() == 0;
     }
 
@@ -102,20 +102,20 @@ class RingDelayBuffer final {
         return m_buffer.size();
     }
 
-    SINT getReadAvailable() {
+    SINT getReadAvailable() const {
         // The m_ringFullMask has to be XORed with m_jumpLeftAroundMask
         // to handle the situation, that the read position jump crossed the left side
         // of the delay buffer and the extra bit was set as empty.
         return (m_writePos - m_readPos) & (m_ringFullMask ^ m_jumpLeftAroundMask);
     }
 
-    SINT getWriteAvailable() {
+    SINT getWriteAvailable() const {
         return m_buffer.size() - getReadAvailable();
     }
 
-    SINT read(CSAMPLE* pBuffer, const SINT itemsToRead);
+    SINT read(CSAMPLE* pBuffer, const SINT numItems);
     SINT write(const CSAMPLE* pBuffer, const SINT numItems);
-    SINT moveReadPositionBy(SINT jumpSize);
+    SINT moveReadPositionBy(const SINT jumpSize);
 
   private:
     // Position of next readable element.

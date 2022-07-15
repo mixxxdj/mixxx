@@ -62,8 +62,9 @@ RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
     memset(bufferData, 0, sizeof(*bufferData) * bufferSize);
 }
 
-SINT RingDelayBuffer::read(CSAMPLE* pBuffer, SINT itemsToRead) {
+SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT numItems) {
     const SINT available = getReadAvailable();
+    SINT itemsToRead = numItems;
 
     VERIFY_OR_DEBUG_ASSERT(itemsToRead <= available) {
         itemsToRead = available;
@@ -106,17 +107,18 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, SINT itemsToRead) {
     return itemsToRead;
 }
 
-SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, SINT numItems) {
+SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT numItems) {
     const SINT available = getWriteAvailable();
+    SINT itemsToWrite = numItems;
 
     VERIFY_OR_DEBUG_ASSERT(numItems <= available) {
-        numItems = available;
+        itemsToWrite = available;
     }
 
     const SINT position = m_writePos & m_ringMask;
 
     // Check to see if the write is not contiguous.
-    if ((position + numItems) > m_buffer.size()) {
+    if ((position + itemsToWrite) > m_buffer.size()) {
         // Write is not contiguous.
         SINT firstDataBlockSize = m_buffer.size() - position;
 
@@ -124,21 +126,21 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, SINT numItems) {
         pBuffer = pBuffer + firstDataBlockSize;
 
         // The second data part is the start of the ring buffer.
-        memcpy(m_buffer.data(), pBuffer, (numItems - firstDataBlockSize) * sizeof(CSAMPLE));
+        memcpy(m_buffer.data(), pBuffer, (itemsToWrite - firstDataBlockSize) * sizeof(CSAMPLE));
     } else {
         // Write is contiguous.
-        memcpy(m_buffer.data(position), pBuffer, numItems * sizeof(CSAMPLE));
+        memcpy(m_buffer.data(position), pBuffer, itemsToWrite * sizeof(CSAMPLE));
     }
 
     // Calculate the new write position. If the new write position
     // is after the ring delay buffer end, move it around from the start
     // of the ring delay buffer.
-    m_writePos = (m_writePos + numItems) & m_ringFullMask;
+    m_writePos = (m_writePos + itemsToWrite) & m_ringFullMask;
 
-    return numItems;
+    return itemsToWrite;
 }
 
-SINT RingDelayBuffer::moveReadPositionBy(SINT jumpSize) {
+SINT RingDelayBuffer::moveReadPositionBy(const SINT jumpSize) {
     if (jumpSize == 0) {
         return 0;
     }
