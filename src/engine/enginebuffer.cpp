@@ -62,8 +62,6 @@ constexpr SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 // Rate at which the playpos slider is updated
 constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
-#define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
-
 } // anonymous namespace
 
 EngineBuffer::EngineBuffer(const QString& group,
@@ -810,19 +808,21 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         break;
     case RUBBERBAND_FASTER:
     default:
-#if RUBBERBANDV3
-        // trigger reconstruction of RubberBandStretcher with v2 options
-        m_pScaleRB->useEngineFiner(false);
-#endif
+        if (m_pScaleRB->isEngineFinerAvailable()) {
+            // trigger reconstruction of RubberBandStretcher with v2 options
+            m_pScaleRB->useEngineFiner(false);
+        }
         m_pScaleKeylock = m_pScaleRB;
         break;
-#if RUBBERBANDV3
     case RUBBERBAND_FINER:
-        // trigger reconstruction of RubberBandStretcher with v3 options
-        m_pScaleRB->useEngineFiner(true);
+        if (m_pScaleRB->isEngineFinerAvailable()) {
+            // trigger reconstruction of RubberBandStretcher with v3 options
+            m_pScaleRB->useEngineFiner(true);
+        } else {
+            m_pKeylockEngine->set(static_cast<double>(RUBBERBAND_FASTER));
+        }
         m_pScaleKeylock = m_pScaleRB;
         break;
-#endif
     }
 }
 
