@@ -82,8 +82,6 @@ class RingDelayBuffer final {
   public:
     RingDelayBuffer(SINT bufferSize);
 
-    virtual ~RingDelayBuffer(){};
-
     bool isFull() {
         return getWriteAvailable() == 0;
     }
