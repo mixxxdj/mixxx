@@ -8,9 +8,6 @@
 * also allowed for const where possible.
 * modified for multiple-byte-sized data elements by Sven Fischer
 *
-* Note that this is safe only for a single-thread reader
-* and a single-thread writer.
-*
 * This program is distributed with the PortAudio Portable Audio Library.
 * For more information see: http://www.portaudio.com
 * Copyright (c) 1999-2000 Ross Bencina and Phil Burk
