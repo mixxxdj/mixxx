@@ -17,11 +17,10 @@ namespace {
 class RingDelayBufferTest : public MixxxTest {
   protected:
     void SetUp() override {
-        m_pRingDelayBuffer = new RingDelayBuffer(m_ringDelayBufferSize);
+        m_pRingDelayBuffer = std::make_unique<RingDelayBuffer>(m_ringDelayBufferSize);
     }
 
     void TearDown() override {
-        delete m_pRingDelayBuffer;
     }
 
     void AssertIdenticalBufferEquals(const CSAMPLE* pBuffer,
@@ -35,7 +34,7 @@ class RingDelayBufferTest : public MixxxTest {
         }
     }
 
-    RingDelayBuffer* m_pRingDelayBuffer;
+    std::unique_ptr<RingDelayBuffer> m_pRingDelayBuffer;
     const SINT m_ringDelayBufferSize = 8;
 };
 
