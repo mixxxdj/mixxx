@@ -12,6 +12,27 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: Ubuntu 22.04 (gcc)
+            os: ubuntu-22.04
+            cmake_args: >-
+              -DWARNINGS_FATAL=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
+            cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/debian_buildenv.sh
+            artifacts_name: Ubuntu 22.04 DEB
+            artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-jammy
+            qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
             cmake_args: >-
@@ -34,7 +55,7 @@ jobs:
             artifacts_slug: ubuntu-focal
             qt_qpa_platform: offscreen
           - name: Arch Linux (Qt 6.3, gcc)
-            os: ubuntu-20.04
+            os: ubuntu-22.04
             # The Dockerfile for this container can be found at:
             # https://github.com/Holzhaus/mixxx-ci-docker
             container: holzhaus/mixxx-ci:20220612-qt6
@@ -150,7 +171,7 @@ jobs:
 
     - name: "[macOS] Set up cmake"
       uses: jwlawson/actions-setup-cmake@v1.12
-      # Ubuntu 20.04 should use the CMake version from the repos, and Visual
+      # Ubuntu 22.04 should use the CMake version from the repos, and Visual
       # Studio on Windows comes with its own CMake version anyway.
       if: runner.os == 'macOS'
       with:
@@ -319,7 +340,7 @@ jobs:
 
     - name: "Package for PPA"
       # No need to do the PPA build for both Ubuntu versions
-      if: matrix.os == 'ubuntu-20.04' && matrix.container == null
+      if: matrix.os == 'ubuntu-22.04' && matrix.container == null
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
