@@ -99,7 +99,7 @@ class RingDelayBuffer final {
     }
 
     SINT length() const {
-        return m_bufferSize;
+        return m_buffer.size();
     }
 
     SINT getReadAvailable() {
@@ -110,7 +110,7 @@ class RingDelayBuffer final {
     }
 
     SINT getWriteAvailable() {
-        return m_bufferSize - getReadAvailable();
+        return m_buffer.size() - getReadAvailable();
     }
 
     SINT read(CSAMPLE* pBuffer, const SINT itemsToRead);
@@ -118,8 +118,6 @@ class RingDelayBuffer final {
     SINT moveReadPositionBy(SINT jumpSize);
 
   private:
-    // Size of the ring delay buffer.
-    SINT m_bufferSize;
     // Position of next readable element.
     SINT m_readPos;
     // Position of next writable element.

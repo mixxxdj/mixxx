@@ -49,8 +49,7 @@
 #include "ringdelaybuffer.h"
 
 RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
-        : m_bufferSize(bufferSize),
-          m_readPos(0),
+        : m_readPos(0),
           m_writePos(0),
           m_ringFullMask((bufferSize * 2) - 1),
           m_ringMask(bufferSize - 1),
@@ -73,9 +72,9 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, SINT itemsToRead) {
     const SINT position = m_readPos & m_ringMask;
 
     // Check to see if the read is not contiguous.
-    if ((position + itemsToRead) > m_bufferSize) {
+    if ((position + itemsToRead) > m_buffer.size()) {
         // Read is not contiguous.
-        SINT firstDataBlockSize = m_bufferSize - position;
+        SINT firstDataBlockSize = m_buffer.size() - position;
 
         memcpy(pBuffer, m_buffer.data(position), firstDataBlockSize * sizeof(CSAMPLE));
         pBuffer = pBuffer + firstDataBlockSize;
@@ -95,9 +94,9 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, SINT itemsToRead) {
     // to handle the situation, when the read position extra bit can't be set
     // as full for jumping to left. Otherwise, use only the m_ringFullMask
     // for masking.
-    if ((position > m_bufferSize) && (m_readPos < m_bufferSize)) {
-        // position > m_bufferSize  -> cross the right side of the buffer
-        // m_readPos < m_bufferSize -> extra bit is set as empty
+    if ((position > m_buffer.size()) && (m_readPos < m_buffer.size())) {
+        // position > m_buffer.size()  -> cross the right side of the buffer
+        // m_readPos < m_buffer.size() -> extra bit is set as empty
         m_readPos = (m_readPos + itemsToRead) & (m_ringFullMask ^ m_jumpLeftAroundMask);
         m_jumpLeftAroundMask = 0;
     } else {
@@ -117,9 +116,9 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, SINT numItems) {
     const SINT position = m_writePos & m_ringMask;
 
     // Check to see if the write is not contiguous.
-    if ((position + numItems) > m_bufferSize) {
+    if ((position + numItems) > m_buffer.size()) {
         // Write is not contiguous.
-        SINT firstDataBlockSize = m_bufferSize - position;
+        SINT firstDataBlockSize = m_buffer.size() - position;
 
         memcpy(m_buffer.data(position), pBuffer, firstDataBlockSize * sizeof(CSAMPLE));
         pBuffer = pBuffer + firstDataBlockSize;
@@ -190,7 +189,7 @@ SINT RingDelayBuffer::moveReadPositionBy(SINT jumpSize) {
         // This computation step solves the problem of not setting
         // the extra bit on full for the read position.
         m_readPos = (m_readPos + jumpSize) & m_ringMask;
-        m_jumpLeftAroundMask = m_bufferSize & (~m_writePos);
+        m_jumpLeftAroundMask = m_buffer.size() & (~m_writePos);
     } else {
         // This branch contains all other cases that can be process normally.
         // If the extra bit for the read position is set as empty
@@ -201,9 +200,9 @@ SINT RingDelayBuffer::moveReadPositionBy(SINT jumpSize) {
         // for masking.
         const SINT position = m_readPos & m_ringMask;
 
-        if ((position > m_bufferSize) && (m_readPos < m_bufferSize)) {
-            // position > m_bufferSize  -> cross the right side of the buffer
-            // m_readPos < m_bufferSize -> extra bit is set as empty
+        if ((position > m_buffer.size()) && (m_readPos < m_buffer.size())) {
+            // position > m_buffer.size()  -> cross the right side of the buffer
+            // m_readPos < m_buffer.size() -> extra bit is set as empty
             m_readPos = (m_readPos + jumpSize) & (m_ringFullMask ^ m_jumpLeftAroundMask);
             m_jumpLeftAroundMask = 0;
         } else {
