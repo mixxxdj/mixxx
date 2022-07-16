@@ -7,7 +7,8 @@
 #include "remote.h"
 
 #include "library/library.h"
-#include "library/trackcollectionmanager.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectioniterator.h"
 
 #include <httpserver/httplistener.h>
 #include <httpserver/staticfilecontroller.h>
@@ -31,10 +32,11 @@ namespace mixxx {
     
     class RemoteController : public ::stefanfrings::HttpRequestHandler {
     public:
-        RemoteController(UserSettingsPointer settings,::Library *mlib,QObject* parent=0) : 
+        RemoteController(UserSettingsPointer settings,TrackCollectionManager *collectionManager,QObject* parent=0) : 
                     ::stefanfrings::HttpRequestHandler(parent){
             m_pSettings=settings;
-            m_pLibrary=mlib;
+            m_Parent=parent;
+            m_TrackCollectionManager=collectionManager;
         };
         
         virtual ~RemoteController(){
@@ -113,9 +115,15 @@ namespace mixxx {
                     QJsonObject cur=i->toObject();
                     if(!cur["searchtrack"].isNull()){
                         QJsonArray list;
-                        kLogger.debug() << cur["searchtrack"].toString();
-                        m_pLibrary->search(cur["searchtrack"].toString());
-//                         resproot.push_back();                   
+                        TrackIdList tracklist;
+                        TrackByIdCollectionIterator curcoll(m_TrackCollectionManager,tracklist);
+                        do{
+                            for(TrackIdList::Iterator curtrack=tracklist.begin(); curtrack<tracklist.end(); curtrack++){
+                                list.push_back(curtrack->toString());
+                                kLogger.info() << curtrack->toString();
+                            };
+                        }while(curcoll.nextItem());
+                        resproot.push_back(list);                   
                     }
                 }
                 
@@ -127,15 +135,17 @@ namespace mixxx {
             }
         };
     private:
-        UserSettingsPointer m_pSettings;
-        Library            *m_pLibrary;
+        TrackCollectionManager *m_TrackCollectionManager;
+        UserSettingsPointer     m_pSettings;
+        QObject*                m_Parent;
     };
 };
 
-mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,::Library *mlib,
+mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,TrackCollectionManager *trackscollmngr,
                                     QObject* pParent){
     kLogger.debug() << "Starting RemoteControl";
     m_pSettings=pConfig;
+    m_pTrackCollectionManager=trackscollmngr;
     if(QVariant(m_pSettings->get(
                         ConfigKey("[RemoteControl]","actv")
                     ).value).toBool()){
@@ -166,7 +176,7 @@ mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,::Library *mlib,
         
         m_FileSettings->setValue("maxCachedFileSize",0);
         
-        m_RemoteController = std::make_shared<RemoteController>(pConfig,mlib);
+        m_RemoteController = std::make_shared<RemoteController>(pConfig,m_pTrackCollectionManager,pParent);
         
         m_staticFileController=std::make_shared<::stefanfrings::StaticFileController>
                                 (m_FileSettings.get(),pParent);
