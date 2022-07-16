@@ -216,6 +216,15 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     m_pKeylockEngine =
             new ControlProxy("[Master]", "keylock_engine", this);
+    // if EngineBuffer doesn't accept the new engine it resets to RubberBand v2
+    m_pKeylockEngine->connectValueChanged(
+            this,
+            [this](double value) {
+                m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
+                        ConfigValue(value));
+                keylockComboBox->setCurrentIndex(static_cast<int>(value));
+            },
+            Qt::DirectConnection);
 
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
