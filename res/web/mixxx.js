@@ -21,7 +21,7 @@ function login(password){
             for(var i=0; i<resp.length; ++i){
                 document.cookie = "sessionid="+resp[i].sessionid +"; SameSite=Lax";
                 if(resp[i].sessionid)
-                    window.location.replace("/search.html");
+                    window.location.replace("/library.html");
             }
         }
     }
