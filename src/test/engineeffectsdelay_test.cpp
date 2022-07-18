@@ -11,7 +11,6 @@
 
 #include <QTest>
 #include <QtDebug>
-#include <algorithm> // std::transform
 #include <span>
 
 #include "engine/engine.h"
@@ -31,14 +30,18 @@ class EngineEffectsDelayTest : public MixxxTest {
             const std::span<const CSAMPLE> referenceBuffer) {
         EXPECT_EQ(buffer.size(), referenceBuffer.size());
 
-        std::transform(buffer.begin(),
-                buffer.end(),
-                referenceBuffer.begin(),
-                buffer.begin(),
-                [&](const auto& original, const auto& reference) {
-                    EXPECT_FLOAT_EQ(original, reference);
-                    return original;
-                });
+        std::span<CSAMPLE>::iterator pBufferIterator =
+                buffer.begin();
+        std::span<const CSAMPLE>::iterator pReferenceBufferIterator =
+                referenceBuffer.begin();
+
+        while (pBufferIterator != buffer.end() &&
+                pReferenceBufferIterator != referenceBuffer.end()) {
+            EXPECT_FLOAT_EQ(*pBufferIterator, *pReferenceBufferIterator);
+
+            ++pBufferIterator;
+            ++pReferenceBufferIterator;
+        }
     }
 
     EngineEffectsDelay m_effectsDelay;
