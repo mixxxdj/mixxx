@@ -11,6 +11,8 @@
 
 #include <QTest>
 #include <QtDebug>
+#include <algorithm> // std::transform
+#include <span>
 
 #include "engine/engine.h"
 #include "test/mixxxtest.h"
@@ -25,15 +27,18 @@ static_assert(mixxx::kEngineChannelCount == mixxx::audio::ChannelCount::stereo()
 
 class EngineEffectsDelayTest : public MixxxTest {
   protected:
-    void AssertIdenticalBufferEquals(const CSAMPLE* pBuffer,
-            int iBufferLen,
-            const CSAMPLE* pReferenceBuffer,
-            int iReferenceBufferLength) {
-        EXPECT_EQ(iBufferLen, iReferenceBufferLength);
+    void AssertIdenticalBufferEquals(const std::span<CSAMPLE> buffer,
+            const std::span<const CSAMPLE> referenceBuffer) {
+        EXPECT_EQ(buffer.size(), referenceBuffer.size());
 
-        for (int i = 0; i < iBufferLen; ++i) {
-            EXPECT_FLOAT_EQ(pBuffer[i], pReferenceBuffer[i]);
-        }
+        std::transform(buffer.begin(),
+                buffer.end(),
+                referenceBuffer.begin(),
+                buffer.begin(),
+                [&](const auto& original, const auto& reference) {
+                    EXPECT_FLOAT_EQ(original, reference);
+                    return original;
+                });
     }
 
     EngineEffectsDelay m_effectsDelay;
@@ -59,10 +64,10 @@ TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
     },
             "m_currentDelaySamples >= 0");
 #else
-    const CSAMPLE* expectedResult = inputBuffer;
+    const CSAMPLE expectedResult[] = {-100.0, 100.0, -99.0, 99.0};
 
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, expectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), expectedResult);
 #endif
 }
 
@@ -87,10 +92,10 @@ TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
     },
             "delaySourcePos >= 0");
 #else
-    const CSAMPLE* expectedResult = inputBuffer;
+    const CSAMPLE expectedResult[] = {-100.0, 100.0, -99.0, 99.0};
 
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, expectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), expectedResult);
 #endif
 }
 
@@ -105,22 +110,22 @@ TEST_F(EngineEffectsDelayTest, WholeBufferDelay) {
     const CSAMPLE zeroBuffer[] = {0.0, 0.0, 0.0, 0.0};
     const CSAMPLE firstExpectedResult[] = {-100.0, 75.0, -49.5, 24.75};
 
-    const CSAMPLE* secondExpectedResult = inputBuffer;
-    const CSAMPLE* thirdExpectedResult = zeroBuffer;
+    const CSAMPLE secondExpectedResult[] = {-100.0, 100.0, -99.0, 99.0};
+    const CSAMPLE thirdExpectedResult[] = {0.0, 0.0, 0.0, 0.0};
 
     mixxx::SampleBuffer pInOut(numSamples);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, firstExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), firstExpectedResult);
 
     SampleUtil::copy(pInOut.data(), zeroBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), secondExpectedResult);
 
     SampleUtil::copy(pInOut.data(), zeroBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, thirdExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), thirdExpectedResult);
 }
 
 TEST_F(EngineEffectsDelayTest, HalfBufferDelay) {
@@ -140,15 +145,15 @@ TEST_F(EngineEffectsDelayTest, HalfBufferDelay) {
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, firstExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), firstExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), secondExpectedResult);
 
     SampleUtil::copy(pInOut.data(), zeroBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, thirdExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), thirdExpectedResult);
 }
 
 TEST_F(EngineEffectsDelayTest, MisalignedDelayAccordingToBuffer) {
@@ -174,15 +179,15 @@ TEST_F(EngineEffectsDelayTest, MisalignedDelayAccordingToBuffer) {
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, firstExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), firstExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), secondExpectedResult);
 
     SampleUtil::copy(pInOut.data(), zeroBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, thirdExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), thirdExpectedResult);
 }
 
 TEST_F(EngineEffectsDelayTest, CrossfadeBetweenTwoNonZeroDelays) {
@@ -208,11 +213,11 @@ TEST_F(EngineEffectsDelayTest, CrossfadeBetweenTwoNonZeroDelays) {
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, firstExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), firstExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), secondExpectedResult);
 
     // Set the number of delay frames as the size of the input buffer.
     numDelayFrames = 4;
@@ -220,11 +225,11 @@ TEST_F(EngineEffectsDelayTest, CrossfadeBetweenTwoNonZeroDelays) {
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, thirdExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), thirdExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, fourthExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), fourthExpectedResult);
 }
 
 TEST_F(EngineEffectsDelayTest, CrossfadeSecondDelayGreaterThanInputBufferSize) {
@@ -249,11 +254,11 @@ TEST_F(EngineEffectsDelayTest, CrossfadeSecondDelayGreaterThanInputBufferSize) {
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, firstExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), firstExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), secondExpectedResult);
 
     // Set the number of frames greater than the size of the input buffer.
     numDelayFrames = 7;
@@ -261,11 +266,11 @@ TEST_F(EngineEffectsDelayTest, CrossfadeSecondDelayGreaterThanInputBufferSize) {
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, thirdExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), thirdExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, fourthExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), fourthExpectedResult);
 }
 
 TEST_F(EngineEffectsDelayTest, CrossfadeBetweenThreeNonZeroDelays) {
@@ -294,22 +299,22 @@ TEST_F(EngineEffectsDelayTest, CrossfadeBetweenThreeNonZeroDelays) {
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, firstExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), firstExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), secondExpectedResult);
 
     numDelayFrames = 1;
     m_effectsDelay.setDelayFrames(numDelayFrames);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, thirdExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), thirdExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, fourthExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), fourthExpectedResult);
 
     // Set the number of frames greater than the size of the input buffer.
     numDelayFrames = 7;
@@ -317,11 +322,11 @@ TEST_F(EngineEffectsDelayTest, CrossfadeBetweenThreeNonZeroDelays) {
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, fifthExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), fifthExpectedResult);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, sixthExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), sixthExpectedResult);
 }
 
 TEST_F(EngineEffectsDelayTest, CopyWholeBufferForZeroDelay) {
@@ -329,18 +334,18 @@ TEST_F(EngineEffectsDelayTest, CopyWholeBufferForZeroDelay) {
 
     const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
     const CSAMPLE zeroBuffer[] = {0.0, 0.0, 0.0, 0.0};
-    const CSAMPLE* firstExpectedResult = inputBuffer;
-    const CSAMPLE* secondExpectedResult = zeroBuffer;
+    const CSAMPLE firstExpectedResult[] = {-100.0, 100.0, -99.0, 99.0};
+    const CSAMPLE secondExpectedResult[] = {0.0, 0.0, 0.0, 0.0};
 
     mixxx::SampleBuffer pInOut(numSamples);
 
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, firstExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), firstExpectedResult);
 
     SampleUtil::copy(pInOut.data(), zeroBuffer, numSamples);
     m_effectsDelay.process(pInOut.data(), numSamples);
-    AssertIdenticalBufferEquals(pInOut.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), secondExpectedResult);
 }
 
 static void BM_ZeroDelay(benchmark::State& state) {
