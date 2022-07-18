@@ -54,11 +54,9 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
-/**
- * Read the SoundManagerConfig xml serialization at the predetermined
- * path
- * @returns false if the file can't be read or is invalid XML, true otherwise
- */
+/// Read the SoundManagerConfig xml serialization at the predetermined
+/// path
+/// @returns false if the file can't be read or is invalid XML, true otherwise
 bool SoundManagerConfig::readFromDisk() {
     QFile file(m_configFile.absoluteFilePath());
     QDomDocument doc;
@@ -281,12 +279,10 @@ void SoundManagerConfig::setAPI(const QString &api) {
     m_api = api;
 }
 
-/**
- * Checks that the API in the object is valid according to the list of APIs
- * given by SoundManager.
- * @returns false if the API is not found in SoundManager's list, otherwise
- *          true
- */
+/// Checks that the API in the object is valid according to the list of APIs
+/// given by SoundManager.
+/// @returns false if the API is not found in SoundManager's list, otherwise
+///          true
 bool SoundManagerConfig::checkAPI() {
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
@@ -324,12 +320,10 @@ void SoundManagerConfig::setForceNetworkClock(bool force) {
     m_forceNetworkClock = force;
 }
 
-/**
- * Checks that the sample rate in the object is valid according to the list of
- * sample rates given by SoundManager.
- * @returns false if the sample rate is not found in SoundManager's list,
- *          otherwise true
- */
+/// Checks that the sample rate in the object is valid according to the list of
+/// sample rates given by SoundManager.
+/// @returns false if the sample rate is not found in SoundManager's list,
+///          otherwise true
 bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
     if (!soundManager.getSampleRates(m_api).contains(m_sampleRate)) {
         return false;
@@ -412,13 +406,12 @@ double SoundManagerConfig::getProcessingLatency() const {
     return static_cast<double>(getFramesPerBuffer()) / m_sampleRate * 1000.0;
 }
 
-
-// Set the audio buffer size
-// @warning This IS NOT a value in milliseconds, or a number of frames per
-// buffer. It is an index, where 1 is the first power-of-two buffer size (in
-// frames) which corresponds to a latency greater than or equal to 1 ms, 2 is
-// the second, etc. This is so that latency values are roughly equivalent
-// between different sample rates.
+/// Set the audio buffer size
+/// @warning This IS NOT a value in milliseconds, or a number of frames per
+/// buffer. It is an index, where 1 is the first power-of-two buffer size (in
+/// frames) which corresponds to a latency greater than or equal to 1 ms, 2 is
+/// the second, etc. This is so that latency values are roughly equivalent
+/// between different sample rates.
 void SoundManagerConfig::setAudioBufferSizeIndex(unsigned int sizeIndex) {
     // latency should be either the min of kMaxAudioBufferSizeIndex and the passed value
     // if it's 0, pretend it was 1 -- bkgood
@@ -464,13 +457,11 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
     return m_bExternalRecordBroadcastConnected;
 }
 
-/**
- * Loads default values for API, master output, sample rate and/or latency.
- * @param soundManager pointer to SoundManager instance to load data from
- * @param flags Bitfield to determine which defaults to load, use something
- *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
- *              load default API and master device.
- */
+/// Loads default values for API, master output, sample rate and/or latency.
+/// @param soundManager pointer to SoundManager instance to load data from
+/// @param flags Bitfield to determine which defaults to load, use something
+///              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
+///              load default API and master device.
 void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
         QList<QString> apiList = soundManager->getHostAPIList();
