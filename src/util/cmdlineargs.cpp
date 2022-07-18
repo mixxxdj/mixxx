@@ -146,6 +146,16 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(settingsPath);
     parser.addOption(settingsPathDeprecated);
 
+    // sound configuration file
+    const QCommandLineOption soundConfig(QStringLiteral("sound-config"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Sound config file in specified settings path"
+                                      "Mixxx should use. "
+                                      "Default is: soundconfig.xml")
+                            : QString(),
+            QStringLiteral("path"));
+    parser.addOption(soundConfig);
+
     // resource path
     QCommandLineOption resourcePath(QStringLiteral("resource-path"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -317,6 +327,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
             m_settingsPath.append("/");
         }
         m_settingsPathSet = true;
+    }
+
+    if (parser.isSet(soundConfig)) {
+        m_soundConfig = parser.value(soundConfig);
     }
 
     if (parser.isSet(resourcePath)) {
