@@ -51,7 +51,20 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
       m_iNumMicInputs(0),
       m_bExternalRecordBroadcastConnected(false),
       m_pSoundManager(pSoundManager) {
-    m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
+    CmdlineArgs& cla = CmdlineArgs::Instance();
+    QDir settDir = QDir(cla.getSettingsPath());
+    // Try to load custom sound config first
+    QString customCfg = cla.getSoundConfig();
+    if (!customCfg.isEmpty()) {
+        QFileInfo customCfgFileInfo = QFileInfo(settDir.filePath(customCfg));
+        QFile customCfgFile(customCfgFileInfo.absoluteFilePath());
+        if (customCfgFile.open(QIODevice::ReadOnly)) {
+            m_configFile = customCfgFileInfo;
+            return;
+        }
+    }
+    // Else use the default file
+    m_configFile = QFileInfo(settDir.filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
 /**
