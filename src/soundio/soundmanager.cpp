@@ -48,7 +48,7 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
           m_paInitialized(false),
-          m_config(this),
+          m_soundConfig(this),
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0) {
@@ -77,8 +77,8 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
 
     queryDevices();
 
-    if (!m_config.readFromDisk()) {
-        m_config.loadDefaults(this, SoundManagerConfig::ALL);
+    if (!m_soundConfig.readFromDisk()) {
+        m_soundConfig.loadDefaults(this, SoundManagerConfig::ALL);
     }
     checkConfig();
     // Don't write config to disk, yet -- it may be reset to defaults in case
@@ -359,7 +359,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
     // load with all configured devices.
     // all found devices are removed below
-    QSet<SoundDeviceId> devicesNotFound = m_config.getDevices();
+    QSet<SoundDeviceId> devicesNotFound = m_soundConfig.getDevices();
 
     // pair is isInput, isOutput
     QVector<DeviceMode> toOpen;
@@ -370,7 +370,7 @@ SoundDeviceError SoundManager::setupDevices() {
         pDevice->clearInputs();
         pDevice->clearOutputs();
         m_pErrorDevice = pDevice;
-        const auto inputs = m_config.getInputs().values(pDevice->getDeviceId());
+        const auto inputs = m_soundConfig.getInputs().values(pDevice->getDeviceId());
         for (const auto& in : inputs) {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
@@ -394,13 +394,13 @@ SoundDeviceError SoundManager::setupDevices() {
             }
         }
         QList<AudioOutput> outputs =
-                m_config.getOutputs().values(pDevice->getDeviceId());
+                m_soundConfig.getOutputs().values(pDevice->getDeviceId());
 
         // Statically connect the Network Device to the Sidechain
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
             AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
             outputs.append(out);
-            if (m_config.getForceNetworkClock()) {
+            if (m_soundConfig.getForceNetworkClock()) {
                 pNewMasterClockRef = pDevice;
             }
         }
@@ -424,7 +424,7 @@ SoundDeviceError SoundManager::setupDevices() {
                 goto closeAndError;
             }
 
-            if (!m_config.getForceNetworkClock()) {
+            if (!m_soundConfig.getForceNetworkClock()) {
                 if (out.getType() == AudioOutput::MASTER) {
                     pNewMasterClockRef = pDevice;
                 } else if ((out.getType() == AudioOutput::DECK ||
@@ -444,8 +444,8 @@ SoundDeviceError SoundManager::setupDevices() {
         }
 
         if (mode.isInput || mode.isOutput) {
-            pDevice->setSampleRate(m_config.getSampleRate());
-            pDevice->setFramesPerBuffer(m_config.getFramesPerBuffer());
+            pDevice->setSampleRate(m_soundConfig.getSampleRate());
+            pDevice->setFramesPerBuffer(m_soundConfig.getFramesPerBuffer());
             toOpen.append(mode);
         }
     }
@@ -463,7 +463,7 @@ SoundDeviceError SoundManager::setupDevices() {
                        << pDevice->getDisplayName();
         }
 
-        int syncBuffers = m_config.getSyncBuffers();
+        int syncBuffers = m_soundConfig.getSyncBuffers();
         // If we are in safe mode and using experimental polling support, use
         // the default of 2 sync buffers instead.
         if (CmdlineArgs::Instance().getSafeMode() && syncBuffers == 0) {
@@ -547,12 +547,12 @@ QString SoundManager::getLastErrorMessage(SoundDeviceError err) const {
 }
 
 SoundManagerConfig SoundManager::getConfig() const {
-    return m_config;
+    return m_soundConfig;
 }
 
-SoundDeviceError SoundManager::setConfig(const SoundManagerConfig& config) {
+SoundDeviceError SoundManager::setConfig(const SoundManagerConfig& soundConfig) {
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
-    m_config = config;
+    m_soundConfig = soundConfig;
     checkConfig();
 
     // Close open devices. After this call we will not get any more
@@ -564,29 +564,29 @@ SoundDeviceError SoundManager::setConfig(const SoundManagerConfig& config) {
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),
-                   ConfigValue(static_cast<int>(m_config.getSampleRate())));
+    m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"),
+            ConfigValue(static_cast<int>(m_soundConfig.getSampleRate())));
 
     err = setupDevices();
     if (err == SOUNDDEVICE_ERROR_OK) {
-        m_config.writeToDisk();
+        m_soundConfig.writeToDisk();
     }
     return err;
 }
 
 void SoundManager::checkConfig() {
-    if (!m_config.checkAPI()) {
-        m_config.setAPI(SoundManagerConfig::kDefaultAPI);
-        m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
+    if (!m_soundConfig.checkAPI()) {
+        m_soundConfig.setAPI(SoundManagerConfig::kDefaultAPI);
+        m_soundConfig.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
-    if (!m_config.checkSampleRate(*this)) {
-        m_config.setSampleRate(SoundManagerConfig::kFallbackSampleRate);
-        m_config.loadDefaults(this, SoundManagerConfig::OTHER);
+    if (!m_soundConfig.checkSampleRate(*this)) {
+        m_soundConfig.setSampleRate(SoundManagerConfig::kFallbackSampleRate);
+        m_soundConfig.loadDefaults(this, SoundManagerConfig::OTHER);
     }
 
     // Even if we have a two-deck skin, if someone has configured a deck > 2
     // then the configuration needs to know about that extra deck.
-    m_config.setCorrectDeckCount(getConfiguredDeckCount());
+    m_soundConfig.setCorrectDeckCount(getConfiguredDeckCount());
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
@@ -680,13 +680,13 @@ void SoundManager::setConfiguredDeckCount(int count) {
         // Unchanged
         return;
     }
-    m_config.setDeckCount(count);
+    m_soundConfig.setDeckCount(count);
     checkConfig();
-    m_config.writeToDisk();
+    m_soundConfig.writeToDisk();
 }
 
 int SoundManager::getConfiguredDeckCount() const {
-    return m_config.getDeckCount();
+    return m_soundConfig.getDeckCount();
 }
 
 void SoundManager::processUnderflowHappened() {
@@ -695,8 +695,9 @@ void SoundManager::processUnderflowHappened() {
             m_pMasterAudioLatencyOverload->set(1.0);
             m_pMasterAudioLatencyOverloadCount->set(
                     m_pMasterAudioLatencyOverloadCount->get() + 1);
-            m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
-                    / m_config.getFramesPerBuffer() / 1000;
+            m_underflowUpdateCount = CPU_OVERLOAD_DURATION *
+                    m_soundConfig.getSampleRate() /
+                    m_soundConfig.getFramesPerBuffer() / 1000;
 
             m_underflowHappened = 0; // resetting here is not thread safe,
                                      // but that is OK, because we count only
