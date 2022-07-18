@@ -644,6 +644,15 @@
   [#4542](https://github.com/mixxxdj/mixxx/pull/4542)
   [#4559](https://github.com/mixxxdj/mixxx/pull/4559)
 
+## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (unreleased)
+
+* Track Properties: show 'date added' as local time [#4838](https://github.com/mixxxdj/mixxx/pull/4838) [lp:1980658](https://bugs.launchpad.net/mixxx/+bug/1980658)
+* Numark DJ2GO2 Touch: Fix  sliders and knobs [#4835](https://github.com/mixxxdj/mixxx/pull/4835) [lp:1948596](https://bugs.launchpad.net/mixxx/+bug/1948596)
+* Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts [#4495](https://github.com/mixxxdj/mixxx/pull/4495)
+* Shade: Fix library sidebar splitter glitch [#4828](https://github.com/mixxxdj/mixxx/pull/4828) [lp:1979823](https://bugs.launchpad.net/mixxx/+bug/1979823)
+* MacOS builds: Perform ad-hoc signing of macOS bundle in Pull request and personal repositories [#4774](https://github.com/mixxxdj/mixxx/pull/4774)
+* Waveform: Avoid visual glitch with ranges < 1 px [#4804](https://github.com/mixxxdj/mixxx/pull/4804)
+
 ## [2.3.3](https://launchpad.net/mixxx/+milestone/2.3.3) (2022-06-21)
 
 * Pioneer DDJ-SB3: Fix controller breaking when releasing the shift button [#4659](https://github.com/mixxxdj/mixxx/pull/4659)
