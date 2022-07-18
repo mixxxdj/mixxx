@@ -14,8 +14,9 @@
    <string>Sound Hardware Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+
    <item>
-    <layout class="QGridLayout" name="gridLayout">
+    <layout class="QGridLayout" name="soundOptionsLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="apiLabel">
        <property name="text">
@@ -223,6 +224,7 @@
      </item>
     </layout>
    </item>
+
    <item>
     <widget class="Line" name="line_2">
      <property name="orientation">
@@ -230,8 +232,9 @@
      </property>
     </widget>
    </item>
+
    <item>
-    <layout class="QHBoxLayout" name="buttonsHLayout">
+    <layout class="QHBoxLayout" name="queryButtonHLayout">
      <item>
       <widget class="QPushButton" name="queryButton">
        <property name="text">
@@ -254,6 +257,7 @@
      </item>
     </layout>
    </item>
+
    <item>
     <widget class="QTabWidget" name="ioTabs">
      <property name="sizePolicy">
@@ -313,6 +317,7 @@
      </widget>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="Hints">
      <property name="title">
@@ -403,6 +408,7 @@
      </layout>
     </widget>
    </item>
+
    <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
