@@ -1308,6 +1308,7 @@ retry:
             }
 #endif
             self->state = SHOUT_STATE_REQ_CREATION;
+        /* fall through */
 
         case SHOUT_STATE_REQ_CREATION:
             if ((rc = create_request(self)) != SHOUTERR_SUCCESS)
