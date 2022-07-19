@@ -206,6 +206,10 @@ class Track : public QObject {
     QString getComment() const;
     // Sets the user commnet
     void setComment(const QString&);
+    // Clear comment
+    void clearComment() {
+        setComment(QString());
+    }
     // Return composer
     QString getComposer() const;
     // Set composer
@@ -462,6 +466,7 @@ class Track : public QObject {
     void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
+    void loopRemove();
     void analyzed();
 
     void changed(TrackId trackId);

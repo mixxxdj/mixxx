@@ -299,11 +299,11 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 
     setWindowTitle(track.getInfo());
 
+    // Cover art, file type and 'date added'
     replaceTrackRecord(
             track.getRecord(),
             track.getLocation());
 
-    // Non-editable track fields
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
 
     reloadTrackBeats(track);
@@ -329,7 +329,8 @@ void DlgTrackInfo::replaceTrackRecord(
             m_trackRecord.getFileType());
     txtDateAdded->setText(
             mixxx::displayLocalDateTime(
-                    m_trackRecord.getDateAdded()));
+                    mixxx::localDateTimeFromUtc(
+                            m_trackRecord.getDateAdded())));
 
     updateTrackMetadataFields();
 }

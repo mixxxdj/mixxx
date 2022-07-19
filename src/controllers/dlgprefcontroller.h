@@ -121,5 +121,6 @@ class DlgPrefController : public DlgPreferencePage {
     QSortFilterProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
+    bool m_GuiInitialized;
     bool m_bDirty;
 };

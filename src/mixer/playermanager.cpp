@@ -437,6 +437,9 @@ void PlayerManager::addDeckInner() {
 
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup);
+
+    // Setup EQ ControlProxies used for resetting EQs on track load
+    pDeck->setupEqControls();
 }
 
 void PlayerManager::loadSamplers() {

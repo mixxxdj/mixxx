@@ -7,6 +7,8 @@
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
+class Library;
+
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
 
@@ -40,6 +42,7 @@ class SetlogFeature : public BasePlaylistFeature {
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
 
   private:
+    void deleteAllUnlockedPlaylistsWithFewerTracks();
     void reloadChildModel(int playlistId);
     QString getRootViewHtml() const override;
 
@@ -48,4 +51,6 @@ class SetlogFeature : public BasePlaylistFeature {
     QAction* m_pStartNewPlaylist;
     int m_playlistId;
     QPointer<WLibrary> m_libraryWidget;
+    Library* m_pLibrary;
+    UserSettingsPointer m_pConfig;
 };

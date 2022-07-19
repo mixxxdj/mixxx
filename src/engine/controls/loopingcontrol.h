@@ -41,7 +41,7 @@ class LoopingControl : public EngineControl {
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
-    void hintReader(HintVector* pHintList) override;
+    void hintReader(gsl::not_null<HintVector*> pHintList) override;
     mixxx::audio::FramePos getSyncPositionInsideLoop(
             mixxx::audio::FramePos requestedPlayPosition,
             mixxx::audio::FramePos syncedPlayPosition);
@@ -98,6 +98,7 @@ class LoopingControl : public EngineControl {
     void slotLoopScale(double scaleFactor);
     void slotLoopDouble(double pressed);
     void slotLoopHalve(double pressed);
+    void slotLoopRemove();
 
   private slots:
     void slotLoopEnabledValueChangeRequest(double enabled);
@@ -154,6 +155,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopScale;
     ControlPushButton* m_pLoopHalveButton;
     ControlPushButton* m_pLoopDoubleButton;
+    ControlPushButton* m_pLoopRemoveButton;
     ControlObject* m_pSlipEnabled;
     RateControl* m_pRateControl;
     ControlObject* m_pPlayButton;

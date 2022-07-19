@@ -128,8 +128,12 @@ LoopingControl::LoopingControl(const QString& group,
     // DEPRECATED: Use beatloop_size and beatloop_set instead.
     // Activates a beatloop of a specified number of beats.
     m_pCOBeatLoop = new ControlObject(ConfigKey(group, "beatloop"), false);
-    connect(m_pCOBeatLoop, &ControlObject::valueChanged, this,
-            [=](double value){slotBeatLoop(value);}, Qt::DirectConnection);
+    connect(
+            m_pCOBeatLoop,
+            &ControlObject::valueChanged,
+            this,
+            [=, this](double value) { slotBeatLoop(value); },
+            Qt::DirectConnection);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);
@@ -219,6 +223,13 @@ LoopingControl::LoopingControl(const QString& group,
     connect(m_pLoopDoubleButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopDouble);
 
+    m_pLoopRemoveButton = new ControlPushButton(ConfigKey(group, "loop_remove"));
+    m_pLoopRemoveButton->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pLoopRemoveButton,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotLoopRemove);
+
     m_pPlayButton = ControlObject::getControl(ConfigKey(group, "play"));
 }
 
@@ -237,6 +248,7 @@ LoopingControl::~LoopingControl() {
     delete m_pCOLoopScale;
     delete m_pLoopHalveButton;
     delete m_pLoopDoubleButton;
+    delete m_pLoopRemoveButton;
 
     delete m_pCOBeatLoop;
     while (!m_beatLoops.isEmpty()) {
@@ -474,7 +486,7 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
     return mixxx::audio::kInvalidFramePos;
 }
 
-void LoopingControl::hintReader(HintVector* pHintList) {
+void LoopingControl::hintReader(gsl::not_null<HintVector*> pHintList) {
     LoopInfo loopInfo = m_loopInfo.getValue();
     Hint loop_hint;
     // If the loop is enabled, then this is high priority because we will loop
@@ -486,14 +498,14 @@ void LoopingControl::hintReader(HintVector* pHintList) {
         // direction we're going in, but that this is much simpler, and hints
         // aren't that bad to make anyway.
         if (loopInfo.startPosition.isValid()) {
-            loop_hint.priority = 2;
+            loop_hint.type = Hint::Type::LoopStartEnabled;
             loop_hint.frame = static_cast<SINT>(
                     loopInfo.startPosition.toLowerFrameBoundary().value());
             loop_hint.frameCount = Hint::kFrameCountForward;
             pHintList->append(loop_hint);
         }
         if (loopInfo.endPosition.isValid()) {
-            loop_hint.priority = 10;
+            loop_hint.type = Hint::Type::LoopEndEnabled;
             loop_hint.frame = static_cast<SINT>(
                     loopInfo.endPosition.toUpperFrameBoundary().value());
             loop_hint.frameCount = Hint::kFrameCountBackward;
@@ -501,7 +513,7 @@ void LoopingControl::hintReader(HintVector* pHintList) {
         }
     } else {
         if (loopInfo.startPosition.isValid()) {
-            loop_hint.priority = 10;
+            loop_hint.type = Hint::Type::LoopStart;
             loop_hint.frame = static_cast<SINT>(
                     loopInfo.startPosition.toLowerFrameBoundary().value());
             loop_hint.frameCount = Hint::kFrameCountForward;
@@ -691,6 +703,18 @@ void LoopingControl::setLoopInToCurrentPosition() {
 
     m_loopInfo.setValue(loopInfo);
     //qDebug() << "set loop_in to " << loopInfo.startPosition;
+}
+
+// Clear the last active loop while saved loop (cue + info) remains untouched
+void LoopingControl::slotLoopRemove() {
+    setLoopingEnabled(false);
+    LoopInfo loopInfo = m_loopInfo.getValue();
+    loopInfo.startPosition = mixxx::audio::kInvalidFramePos;
+    loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
+    loopInfo.seekMode = LoopSeekMode::None;
+    m_loopInfo.setValue(loopInfo);
+    m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
+    m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
 }
 
 void LoopingControl::slotLoopIn(double pressed) {

@@ -446,6 +446,14 @@ void Tooltips::addStandardTooltips() {
     add("hotcue_toggle")
             << tr("Changes the number of hotcue buttons displayed in the deck");
 
+    // Show Loop Controls
+    add("show_loop_controls")
+            << tr("Toggle visibility of Loop Controls");
+
+    // Show Beatjump Controls
+    add("show_beatjump_controls")
+            << tr("Toggle visibility of Beatjump Controls");
+
     // Show Rate Control
     add("rate_toggle")
             << tr("Toggle visibility of Rate Control");
@@ -905,6 +913,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Super Knob")
             << tr("Controls the Meta Knob of all effects in this unit together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectUnit_chain_preset_menu")
+            << tr("Effect Chain Preset Settings")
+            << tr("Show the effect chain settings menu for this unit.");
 
     add("EffectUnit_next_chain")
             << tr("Next Chain")

@@ -198,7 +198,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     }
 
     // If the channel is fully disabled, do not let intermediate
-    // enabling/disabing signals from the chain's enable switch override
+    // enabling/disabling signals from the chain's enable switch override
     // the channel's state.
     if (effectiveChainEnableState != EffectEnableState::Disabled) {
         if (m_enableState != EffectEnableState::Enabled) {

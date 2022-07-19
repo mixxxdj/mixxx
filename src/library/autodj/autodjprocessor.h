@@ -21,16 +21,15 @@ class DeckAttributes : public QObject {
     Q_OBJECT
   public:
     DeckAttributes(int index,
-                   BaseTrackPlayer* pPlayer,
-                   EngineChannel::ChannelOrientation orientation);
+            BaseTrackPlayer* pPlayer);
     virtual ~DeckAttributes();
 
     bool isLeft() const {
-        return m_orientation == EngineChannel::LEFT;
+        return m_orientation.get() == static_cast<double>(EngineChannel::LEFT);
     }
 
     bool isRight() const {
-        return m_orientation == EngineChannel::RIGHT;
+        return m_orientation.get() == static_cast<double>(EngineChannel::RIGHT);
     }
 
     bool isPlaying() const {
@@ -125,7 +124,7 @@ class DeckAttributes : public QObject {
     bool loading; // The data is inconsistent during loading a deck
 
   private:
-    EngineChannel::ChannelOrientation m_orientation;
+    ControlProxy m_orientation;
     ControlProxy m_playPos;
     ControlProxy m_play;
     ControlProxy m_repeat;
@@ -265,6 +264,8 @@ class AutoDJProcessor : public QObject {
             double fromDeckSecond,
             double fadeEndSecond,
             double toDeckStartSecond);
+    DeckAttributes* getLeftDeck();
+    DeckAttributes* getRightDeck();
     DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck);
     DeckAttributes* getFromDeck();
 
@@ -277,7 +278,6 @@ class AutoDJProcessor : public QObject {
     bool removeTrackFromTopOfQueue(TrackPointer pTrack);
     void maybeFillRandomTracks();
     UserSettingsPointer m_pConfig;
-    PlayerManagerInterface* m_pPlayerManager;
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;

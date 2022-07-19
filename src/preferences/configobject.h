@@ -177,6 +177,8 @@ template <class ValueType> class ConfigObject {
     void reopen(const QString& file);
     bool save();
 
+    static QString computeResourcePath();
+
     // Returns the resource path -- the path where controller presets, skins,
     // library schema, keyboard mappings, and more are stored.
     QString getResourcePath() const {

@@ -36,7 +36,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QJSValue wrapArrayBufferCallback(const QJSValue& callback);
     bool callFunctionOnObjects(const QList<QString>& scriptFunctionPrefixes,
             const QString&,
-            const QJSValueList& args = QJSValueList(),
+            const QJSValueList& args = {},
             bool bFatalError = false);
 
     QJSValue m_makeArrayBufferWrapperFunction;

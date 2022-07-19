@@ -15,8 +15,10 @@ class FIFO {
         if (size < 0) {
             return;
         }
-        PaUtil_InitializeRingBuffer(
-                &m_ringBuffer, sizeof(DataType), m_data.size(), m_data.data());
+        PaUtil_InitializeRingBuffer(&m_ringBuffer,
+                static_cast<ring_buffer_size_t>(sizeof(DataType)),
+                static_cast<ring_buffer_size_t>(m_data.size()),
+                m_data.data());
     }
     virtual ~FIFO() {
     }
@@ -64,5 +66,5 @@ class FIFO {
   private:
     std::vector<DataType> m_data;
     PaUtilRingBuffer m_ringBuffer;
-    DISALLOW_COPY_AND_ASSIGN(FIFO<DataType>);
+    DISALLOW_COPY_AND_ASSIGN(FIFO);
 };

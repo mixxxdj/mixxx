@@ -1032,6 +1032,10 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
+    // If loop cues are removed, also clear the last active loop
+    if (type == mixxx::CueType::Loop) {
+        emit loopRemove();
+    }
     if (compareAndSet(m_record.ptrMainCuePosition(), mixxx::audio::kStartFramePos)) {
         dirty = true;
     }
@@ -1200,7 +1204,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
     // connect new cue points
     for (const auto& pCue : qAsConst(m_cuePoints)) {
         DEBUG_ASSERT(pCue->thread() == thread());
-        // Start listening to cue point updatess AFTER setting
+        // Start listening to cue point updates AFTER setting
         // the track id. Otherwise we would receive unwanted
         // signals about changed cue points that may cause all
         // sorts of issues, e.g. when adding new tracks during

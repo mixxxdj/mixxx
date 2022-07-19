@@ -2243,7 +2243,7 @@
 			<output>
 				<group>[EffectRack1_EffectUnit2_Effect3]</group>
 				<key>enabled</key>
-				<description>Effect On/Off buttonn</description>
+				<description>Effect On/Off button</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x92</status>

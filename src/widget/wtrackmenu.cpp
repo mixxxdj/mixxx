@@ -34,9 +34,11 @@
 #include "util/parented_ptr.h"
 #include "util/qt.h"
 #include "util/widgethelper.h"
+#include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
+#include "widget/wfindonwebmenu.h"
 #include "widget/wsearchrelatedtracksmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wstarrating.h"
@@ -89,11 +91,19 @@ int WTrackMenu::getTrackCount() const {
     }
 }
 
+void WTrackMenu::closeEvent(QCloseEvent* event) {
+    // Actually the event is accepted by default. doing it explicitly doesn't hurt.
+    // If it's not accepted the menu remains open and entire GUI will be blocked!
+    event->accept();
+    emit trackMenuVisible(false);
+}
+
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
     if (isEmpty()) {
         return;
     }
     QMenu::popup(pos, at);
+    emit trackMenuVisible(true);
 }
 
 void WTrackMenu::createMenus() {
@@ -148,6 +158,11 @@ void WTrackMenu::createMenus() {
         m_pClearMetadataMenu->setTitle(tr("Reset"));
     }
 
+    if (featureIsEnabled(Feature::Analyze)) {
+        m_pAnalyzeMenu = new QMenu(this);
+        m_pAnalyzeMenu->setTitle(tr("Analyze"));
+    }
+
     if (featureIsEnabled(Feature::SearchRelated)) {
         DEBUG_ASSERT(!m_pSearchRelatedMenu);
         m_pSearchRelatedMenu =
@@ -172,6 +187,25 @@ void WTrackMenu::createMenus() {
                 });
     }
 
+    if (featureIsEnabled(Feature::FindOnWeb)) {
+        DEBUG_ASSERT(!m_pFindOnWebMenu);
+        m_pFindOnWebMenu = make_parented<WFindOnWebMenu>(this);
+        connect(m_pFindOnWebMenu,
+                &QMenu::aboutToShow,
+                this,
+                [this] {
+                    m_pFindOnWebMenu->clear();
+                    const auto pTrack = getFirstTrackPointer();
+                    if (pTrack) {
+                        mixxx::library::createFindOnWebSubmenus(
+                                m_pFindOnWebMenu,
+                                *pTrack);
+                    }
+                    m_pFindOnWebMenu->setEnabled(
+                            !m_pFindOnWebMenu->isEmpty());
+                });
+    }
+
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
         m_pRemoveFromDiskMenu = new QMenu(this);
         m_pRemoveFromDiskMenu->setTitle(tr("Delete Track Files"));
@@ -180,7 +214,9 @@ void WTrackMenu::createMenus() {
 
 void WTrackMenu::createActions() {
     const auto hideRemoveKeySequence =
-            QKeySequence(kHideRemoveShortcutModifier | kHideRemoveShortcutKey);
+            // TODO(XXX): Qt6 replace enum | with QKeyCombination
+            QKeySequence(static_cast<int>(kPropertiesShortcutModifier) |
+                    kPropertiesShortcutKey);
 
     if (featureIsEnabled(Feature::AutoDJ)) {
         m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
@@ -245,7 +281,10 @@ void WTrackMenu::createActions() {
         // The keypress is caught in WTrackTableView::keyPressEvent
         if (m_pTrackModel) {
             m_pPropertiesAct->setShortcut(
-                    QKeySequence(kPropertiesShortcutModifier | kPropertiesShortcutKey));
+                    // TODO(XXX): Qt6 replace enum | with QKeyCombination
+                    QKeySequence(
+                            static_cast<int>(kPropertiesShortcutModifier) |
+                            kPropertiesShortcutKey));
         }
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
     }
@@ -253,6 +292,11 @@ void WTrackMenu::createActions() {
     if (featureIsEnabled(Feature::FileBrowser)) {
         m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
         connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
+    }
+
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        m_pSelectInLibraryAct = new QAction(tr("Select in Library"), this);
+        connect(m_pSelectInLibraryAct, &QAction::triggered, this, &WTrackMenu::slotSelectInLibrary);
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
@@ -320,8 +364,8 @@ void WTrackMenu::createActions() {
         m_pClearOutroCueAction = new QAction(tr("Outro"), m_pClearMetadataMenu);
         connect(m_pClearOutroCueAction, &QAction::triggered, this, &WTrackMenu::slotClearOutroCue);
 
-        m_pClearLoopAction = new QAction(tr("Loop"), m_pClearMetadataMenu);
-        connect(m_pClearLoopAction, &QAction::triggered, this, &WTrackMenu::slotClearLoop);
+        m_pClearLoopsAction = new QAction(tr("Loops"), m_pClearMetadataMenu);
+        connect(m_pClearLoopsAction, &QAction::triggered, this, &WTrackMenu::slotClearLoops);
 
         m_pClearKeyAction = new QAction(tr("Key"), m_pClearMetadataMenu);
         connect(m_pClearKeyAction, &QAction::triggered, this, &WTrackMenu::slotClearKey);
@@ -331,6 +375,9 @@ void WTrackMenu::createActions() {
 
         m_pClearWaveformAction = new QAction(tr("Waveform"), m_pClearMetadataMenu);
         connect(m_pClearWaveformAction, &QAction::triggered, this, &WTrackMenu::slotClearWaveform);
+
+        m_pClearCommentAction = new QAction(tr("Comment"), m_pClearMetadataMenu);
+        connect(m_pClearCommentAction, &QAction::triggered, this, &WTrackMenu::slotClearComment);
 
         m_pClearAllMetadataAction = new QAction(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
@@ -376,10 +423,21 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotClearBeats);
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
-        m_pUpdateReplayGain =
+    if (featureIsEnabled(Feature::Analyze)) {
+        m_pAnalyzeAction = new QAction(tr("Analyze"), this);
+        connect(m_pAnalyzeAction, &QAction::triggered, this, &WTrackMenu::slotAnalyze);
+
+        m_pReanalyzeAction = new QAction(tr("Reanalyze"), this);
+        connect(m_pReanalyzeAction, &QAction::triggered, this, &WTrackMenu::slotReanalyze);
+    }
+
+    // This action is only usable when m_deckGroup is set. That is true only
+    // for WTrackmenu instantiated by WTrackProperty and other deck widgets, thus
+    // don't create it if a track model is set.
+    if (!m_pTrackModel && featureIsEnabled(Feature::UpdateReplayGainFromPregain)) {
+        m_pUpdateReplayGainAct =
                 new QAction(tr("Update ReplayGain from Deck Gain"), m_pClearMetadataMenu);
-        connect(m_pUpdateReplayGain,
+        connect(m_pUpdateReplayGainAct,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotUpdateReplayGainFromPregain);
@@ -401,6 +459,14 @@ void WTrackMenu::createActions() {
 void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::SearchRelated)) {
         addMenu(m_pSearchRelatedMenu);
+    }
+
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        addAction(m_pSelectInLibraryAct);
+    }
+
+    if (featureIsEnabled(Feature::SearchRelated) ||
+            featureIsEnabled(Feature::SelectInLibrary)) {
         addSeparator();
     }
 
@@ -497,6 +563,10 @@ void WTrackMenu::setupActions() {
         }
 
         m_pMetadataMenu->addMenu(m_pCoverMenu);
+        if (featureIsEnabled(Feature::FindOnWeb)) {
+            m_pMetadataMenu->addMenu(m_pFindOnWebMenu);
+        }
+        addSeparator();
         addMenu(m_pMetadataMenu);
     }
 
@@ -504,12 +574,12 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
         m_pClearMetadataMenu->addAction(m_pClearRatingAction);
-        // FIXME: Why is clearing the loop not working?
+        m_pClearMetadataMenu->addAction(m_pClearCommentAction);
         m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
         m_pClearMetadataMenu->addAction(m_pClearIntroCueAction);
         m_pClearMetadataMenu->addAction(m_pClearOutroCueAction);
-        //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
+        m_pClearMetadataMenu->addAction(m_pClearLoopsAction);
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
@@ -518,11 +588,20 @@ void WTrackMenu::setupActions() {
         addMenu(m_pClearMetadataMenu);
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
-        addAction(m_pUpdateReplayGain);
+    if (featureIsEnabled(Feature::Analyze)) {
+        m_pAnalyzeMenu->addAction(m_pAnalyzeAction);
+        m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
+        addMenu(m_pAnalyzeMenu);
+    }
+
+    // This action is created only for menus instantiated by deck widgets (e.g.
+    // WTrackProperty) and if UpdateReplayGainFromPregain is supported.
+    if (m_pUpdateReplayGainAct) {
+        addAction(m_pUpdateReplayGainAct);
     }
 
     addSeparator();
+
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             addAction(m_pHideAct);
@@ -755,8 +834,11 @@ void WTrackMenu::updateMenus() {
         }
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
-        m_pUpdateReplayGain->setEnabled(!m_deckGroup.isEmpty());
+    // This action is created only for menus instantiated by deck widgets (e.g.
+    // WTrackProperty) and if UpdateReplayGainFromPregain is supported.
+    // Disable it if no deck group was set.
+    if (m_pUpdateReplayGainAct) {
+        m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -797,8 +879,22 @@ void WTrackMenu::updateMenus() {
         }
     }
 
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        bool enabled = false;
+        if (m_pTrack) {
+            enabled = m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId());
+        }
+        m_pSelectInLibraryAct->setEnabled(enabled);
+    }
+
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct->setEnabled(singleTrackSelected);
+    }
+
+    if (featureIsEnabled(Feature::FindOnWeb)) {
+        const auto pTrack = getFirstTrackPointer();
+        const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
+        m_pFindOnWebMenu->setEnabled(enableMenu);
     }
 }
 
@@ -947,6 +1043,12 @@ void WTrackMenu::slotOpenInFileBrowser() {
         locations << trackRef.getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
+}
+
+void WTrackMenu::slotSelectInLibrary() {
+    if (m_pTrack) {
+        emit m_pLibrary->selectTrack(m_pTrack->getId());
+    }
 }
 
 namespace {
@@ -1256,6 +1358,25 @@ void WTrackMenu::addSelectionToNewCrate() {
     }
 }
 
+void WTrackMenu::addToAnalysis() {
+    const TrackIdList trackIds = getTrackIds();
+    if (trackIds.empty()) {
+        qWarning() << "No tracks selected for analysis";
+        return;
+    }
+
+    emit m_pLibrary->analyzeTracks(trackIds);
+}
+
+void WTrackMenu::slotAnalyze() {
+    addToAnalysis();
+}
+
+void WTrackMenu::slotReanalyze() {
+    clearBeats();
+    addToAnalysis();
+}
+
 void WTrackMenu::slotLockBpm() {
     lockBpm(true);
 }
@@ -1423,7 +1544,7 @@ class ResetBeatsTrackPointerOperation : public mixxx::TrackPointerOperation {
 
 } // anonymous namespace
 
-void WTrackMenu::slotClearBeats() {
+void WTrackMenu::clearBeats() {
     const auto progressLabelText =
             tr("Resetting beats of %n track(s)", "", getTrackCount());
     const auto trackOperator =
@@ -1431,6 +1552,10 @@ void WTrackMenu::slotClearBeats() {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+}
+
+void WTrackMenu::slotClearBeats() {
+    clearBeats();
 }
 
 namespace {
@@ -1451,6 +1576,29 @@ void WTrackMenu::slotClearRating() {
             tr("Clearing rating of %n track(s)", "", getTrackCount());
     const auto trackOperator =
             ResetRatingTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
+class ClearCommentTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->clearComment();
+    }
+};
+
+} // anonymous namespace
+
+//slot for clearing the comment field of one or more tracks
+void WTrackMenu::slotClearComment() {
+    const auto progressLabelText =
+            tr("Clearing comment of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ClearCommentTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
@@ -1505,7 +1653,7 @@ void WTrackMenu::slotClearIntroCue() {
             &trackOperator);
 }
 
-void WTrackMenu::slotClearLoop() {
+void WTrackMenu::slotClearLoops() {
     const auto progressLabelText =
             tr("Removing loop cues from %n track(s)", "", getTrackCount());
     const auto trackOperator =
@@ -2070,6 +2218,10 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
                         TrackModel::Capability::RemoveCrate);
     case Feature::Metadata:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+    case Feature::Analyze:
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::Capability::EditMetadata |
+                TrackModel::Capability::Analyze);
     case Feature::Reset:
         return m_pTrackModel->hasCapabilities(
                 TrackModel::Capability::EditMetadata |
@@ -2086,12 +2238,14 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk);
     case Feature::FileBrowser:
         return true;
+    case Feature::FindOnWeb:
+        return true;
     case Feature::Properties:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
-    case Feature::UpdateReplayGain:
-        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+    case Feature::SelectInLibrary:
+        return m_pTrack != nullptr;
     default:
         DEBUG_ASSERT(!"unreachable");
         return false;

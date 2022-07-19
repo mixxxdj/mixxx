@@ -2,6 +2,7 @@
 
 #include <QList>
 #include <QPair>
+#include <gsl/pointers>
 #include <list>
 
 #include "audio/frame.h"
@@ -53,7 +54,7 @@ class ReadAheadManager {
 
     /// hintReader allows the ReadAheadManager to provide hints to the reader to
     /// indicate that the given portion of a song is about to be read.
-    virtual void hintReader(double dRate, HintVector* hintList);
+    virtual void hintReader(double dRate, gsl::not_null<HintVector*> pHintList);
 
     virtual double getFilePlaypositionFromLog(
             double currentFilePlayposition,

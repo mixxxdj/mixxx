@@ -70,6 +70,23 @@ inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
     }
 }
 
+void appendCueHint(gsl::not_null<HintVector*> pHintList,
+        const mixxx::audio::FramePos& frame,
+        Hint::Type type) {
+    if (frame.isValid()) {
+        const Hint cueHint = {
+                /*.frame =*/static_cast<SINT>(frame.toLowerFrameBoundary().value()),
+                /*.frameCount =*/Hint::kFrameCountForward,
+                /*.type =*/type};
+        pHintList->append(cueHint);
+    }
+}
+
+void appendCueHint(HintVector* pHintList, const double playPos, Hint::Type type) {
+    const auto frame = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(playPos);
+    appendCueHint(pHintList, frame, type);
+}
+
 } // namespace
 
 CueControl::CueControl(const QString& group,
@@ -453,6 +470,12 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             this,
             &CueControl::trackCuesUpdated,
             Qt::DirectConnection);
+
+    connect(m_pLoadedTrack.get(),
+            &Track::loopRemove,
+            this,
+            &CueControl::loopRemove);
+
     lock.unlock();
 
     // Use pNewTrack from now, because m_pLoadedTrack might have been reset
@@ -1159,30 +1182,26 @@ void CueControl::hotcueEndPositionChanged(
     }
 }
 
-void CueControl::hintReader(HintVector* pHintList) {
-    Hint cueHint;
-    const auto mainCuePosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pCuePoint->get());
-    if (mainCuePosition.isValid()) {
-        cueHint.frame = static_cast<SINT>(mainCuePosition.toLowerFrameBoundary().value());
-        cueHint.frameCount = Hint::kFrameCountForward;
-        cueHint.priority = 10;
-        pHintList->append(cueHint);
-    }
+void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
+    appendCueHint(pHintList, m_pCuePoint->get(), Hint::Type::MainCue);
 
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
     for (const auto& pControl : qAsConst(m_hotcueControls)) {
-        const mixxx::audio::FramePos position = pControl->getPosition();
-        if (position.isValid()) {
-            cueHint.frame = static_cast<SINT>(position.toLowerFrameBoundary().value());
-            cueHint.frameCount = Hint::kFrameCountForward;
-            cueHint.priority = 10;
-            pHintList->append(cueHint);
-        }
+        appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
     }
+
+    CuePointer pAudibleSound =
+            m_pLoadedTrack->findCueByType(mixxx::CueType::AudibleSound);
+    if (pAudibleSound) {
+        const mixxx::audio::FramePos frame = pAudibleSound->getPosition();
+        appendCueHint(pHintList, frame, Hint::Type::FirstSound);
+    }
+
+    appendCueHint(pHintList, m_pIntroStartPosition->get(), Hint::Type::IntroStart);
+    appendCueHint(pHintList, m_pIntroEndPosition->get(), Hint::Type::IntroEnd);
+    appendCueHint(pHintList, m_pOutroStartPosition->get(), Hint::Type::OutroStart);
 }
 
 // Moves the cue point to current position or to closest beat in case

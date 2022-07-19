@@ -103,8 +103,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 }
 
 void VinylControlManager::slotVinylControlEnabledChanged(int deck) {
-    if (deck < 0 || deck >= m_pVcEnabled.size()) {
-        DEBUG_ASSERT(false);
+    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_pVcEnabled.size()) {
         return;
     }
 

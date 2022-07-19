@@ -105,8 +105,8 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
                 audio::Bitrate(8),
                 Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)),
         });
-
-        return std::make_pair(ImportResult::Succeeded, QFileInfo(modFile).lastModified());
+        const auto sourceSynchronizedAt = getFileSynchronizedAt(modFile);
+        return std::make_pair(ImportResult::Succeeded, sourceSynchronizedAt);
     }
 
     // The modplug library currently does not support reading cover-art from

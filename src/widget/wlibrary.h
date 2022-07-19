@@ -29,6 +29,12 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
 
     LibraryView* getActiveView() const;
 
+    // This returns true if the current view is or has a WTracksTableView and
+    // contains trackId, otherwise false.
+    // This is primarily used to disable the "Select track in library" track menu action
+    // to avoid unintended behaviour if the current view has no tracks table.
+    bool isTrackInCurrentView(const TrackId& trackId);
+
     // Alpha value for row color background
     static constexpr double kDefaultTrackTableBackgroundColorOpacity = 0.125; // 12.5% opacity
     static constexpr double kMinTrackTableBackgroundColorOpacity = 0.0; // 0% opacity
@@ -47,6 +53,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     // view is the specified view, or if the name does not specify any
     // registered view.
     void switchToView(const QString& name);
+    void slotSelectTrackInActiveTrackView(const TrackId& trackId);
 
     void search(const QString&);
 

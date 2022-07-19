@@ -16,12 +16,16 @@
 #include "engine/enginemaster.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
 #include "preferences/settingsmanager.h"
+#ifdef __MODPLUG__
+#include "preferences/dialog/dlgprefmodplug.h"
+#endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
@@ -312,6 +316,13 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pVCManager->init();
 #endif
 
+#ifdef __MODPLUG__
+    // Restore the configuration for the modplug library before trying to load a module.
+    DlgPrefModplug modplugPrefs{nullptr, pConfig};
+    modplugPrefs.loadSettings();
+    modplugPrefs.applySettings();
+#endif
+
     // Inhibit Screensaver
     m_pScreensaverManager = std::make_shared<ScreensaverManager>(pConfig);
     connect(&PlayerInfo::instance(),
@@ -375,7 +386,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // Scan the library for new files and directories
     bool rescan = pConfig->getValue<bool>(
-            ConfigKey("[Library]", "RescanOnStartup"));
+            library::prefs::kRescanOnStartupConfigKey);
     // rescan the library if we get a new plugin
     QList<QString> prev_plugins_list =
             pConfig->getValueString(

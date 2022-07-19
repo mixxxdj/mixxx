@@ -50,7 +50,7 @@ void WEffectChainPresetButton::populateMenu() {
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         QString title = pChainPreset->name();
         if (title == m_pChain->presetName()) {
-            title = "\u2713 " + title;
+            title = QStringLiteral("\u2713 ") + title;
             chainIsPreset = true;
         }
         m_pMenu->addAction(title, this, [this, pChainPreset]() {
@@ -136,4 +136,12 @@ void WEffectChainPresetButton::populateMenu() {
         });
         m_pMenu->addMenu(pEffectMenu);
     }
+}
+
+bool WEffectChainPresetButton::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+
+    return QPushButton::event(pEvent);
 }
