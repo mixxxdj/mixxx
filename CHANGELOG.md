@@ -45,6 +45,7 @@
 * Fix reset to default of search timeout in preferences [#4504](https://github.com/mixxxdj/mixxx/pull/4504) [lp:1948690](https://bugs.launchpad.net/mixxx/+bug/1948690)
 * Search: Ctrl+F in focused search box selects the entire search string [#4515](https://github.com/mixxxdj/mixxx/pull/4515)
 * Search: Improve keypress handling, fix glitch in popup, strip whitespaces [#4658](https://github.com/mixxxdj/mixxx/pull/4658)
+* Search: Enter jumps to track table if search query was transmitted [#4844](https://github.com/mixxxdj/mixxx/pull/4844)
 * Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
 * Add new library column that shows the last time a track was played
   [#3140](https://github.com/mixxxdj/mixxx/pull/3140)
@@ -73,6 +74,7 @@
 * Track Metadata: Fix synchronization (import/export) of file tags
   [#4628](https://github.com/mixxxdj/mixxx/pull/4628)
   [#4631](https://github.com/mixxxdj/mixxx/pull/4631)
+  [#4847](https://github.com/mixxxdj/mixxx/pull/4847) [lp:1981106](https://bugs.launchpad.net/bugs/1981106)
 * Logging: Suppress expected and harmless schema migration errors [#4248](https://github.com/mixxxdj/mixxx/pull/4248)
 * Only show the date in Date Added / Last Played columns. Move the time of day to tooltips [#3945](https://github.com/mixxxdj/mixxx/pull/3945)
 * Fix handling of undefined BPM values
@@ -89,7 +91,8 @@
 * Fix playlists sidebar navigation/activation [#4193](https://github.com/mixxxdj/mixxx/pull/4193) [lp:1939082](https://bugs.launchpad.net/mixxx/+bug/1939082)
 * Sidebar: Map Left Arrow Key to jump to parent node and activates it [#4253](https://github.com/mixxxdj/mixxx/pull/4253)
 * Fix assertion when navigating history playlists [#4297](https://github.com/mixxxdj/mixxx/pull/4297) [lp:1943643](https://bugs.launchpad.net/mixxx/+bug/1943643)
-* Library: Add keyboard shortcut Ctrl+Enter to open track properties [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
+* Track table: Add keyboard shortcut Ctrl+Enter to open track properties [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
+* Track table: Home/End keys jump to first/last row [#4850](https://github.com/mixxxdj/mixxx/pull/4850)
 * Re-enable shortcuts after editing controls
   [#4360](https://github.com/mixxxdj/mixxx/pull/4360)
   [lp:1902125](https://bugs.launchpad.net/mixxx/+bug/1902125)
@@ -106,11 +109,12 @@
 * Fix accasional resetting of played counter in database [#4578](https://github.com/mixxxdj/mixxx/pull/4578) [lp:1955159](https://bugs.launchpad.net/mixxx/+bug/1955159)
 * Recording: Fix table refresh issues [#4648](https://github.com/mixxxdj/mixxx/pull/4648)
 * Add popup before deletion playlist and crates [#4697](https://github.com/mixxxdj/mixxx/pull/4697) [#4700](https://github.com/mixxxdj/mixxx/pull/4700) [lp:1912475](https://bugs.launchpad.net/mixxx/+bug/1912475)
-* Experimental: Fix writing of undefined MusicBrainz Recording ID   [#4694](https://github.com/mixxxdj/mixxx/pull/4694)
+* Experimental: Fix writing of undefined MusicBrainz Recording ID [#4694](https://github.com/mixxxdj/mixxx/pull/4694)
 * Traktor library: fix importing track key [#4701](https://github.com/mixxxdj/mixxx/pull/4701)
 * Add History cleanup options [#4726](https://github.com/mixxxdj/mixxx/pull/4726) [lp:1766163](https://bugs.launchpad.net/mixxx/+bug/1766163) [lp:1969217](https://bugs.launchpad.net/mixxx/+bug/1969217)
 * Track Menu: Add ability to select loaded track in library [#4740](https://github.com/mixxxdj/mixxx/pull/4740)
-* Add track context menu entry for Analyze and Reanlyze [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
+* Add a track context menu entry for Analyze and Reanlyze [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
+* Add a track context menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
 * Refactoring of library code
   [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
   [#2717](https://github.com/mixxxdj/mixxx/pull/2717)
@@ -197,7 +201,7 @@
 * Fix/Improve snapping to beats in various situations [#4366](https://github.com/mixxxdj/mixxx/pull/4366) [lp:1945238](https://bugs.launchpad.net/mixxx/+bug/1945238)
 * Allow to cancel active loops via beatloop_activate [#4328](https://github.com/mixxxdj/mixxx/pull/4328) [lp:1876003](https://bugs.launchpad.net/mixxx/+bug/1876003)
 * Don't wipe inapplicable sound config immediately [#4544](https://github.com/mixxxdj/mixxx/pull/4544)
-* Allow to reset loops via "channel", "loop_remove" control object [#4802](https://github.com/mixxxdj/mixxx/pull/4802) [lp:1978507](https://bugs.launchpad.net/mixxx/+bug/1978507)
+* Allow to reset loops via "[ChannelN], loop_remove" control object [#4802](https://github.com/mixxxdj/mixxx/pull/4802) [lp:1978507](https://bugs.launchpad.net/mixxx/+bug/1978507)
 * Refactoring of beatgrid/beatmap code
   [#4044](https://github.com/mixxxdj/mixxx/pull/4044)
   [#4048](https://github.com/mixxxdj/mixxx/pull/4048)
@@ -290,7 +294,7 @@
 * Introduce new control object `[Library],clear_search` [#4331](https://github.com/mixxxdj/mixxx/pull/4331)
 * Introduce new control object `[Library],focused_widget` to focus library directly [#4369](https://github.com/mixxxdj/mixxx/pull/4369) [#4490](https://github.com/mixxxdj/mixxx/pull/4490)
 * Serch bar: Remove ESC shortcut in favour of new `[Library],focused_widget` [#4571](https://github.com/mixxxdj/mixxx/pull/4571)
-* Beat spinBox/AutoDJ spinbox: Enter & Esc also move focus to library [#4617](https://github.com/mixxxdj/mixxx/pull/4617)
+* Beat spinBox/AutoDJ spinbox: Enter & Esc also move focus to library [#4617](https://github.com/mixxxdj/mixxx/pull/4617) [#4845](https://github.com/mixxxdj/mixxx/pull/4845)
 * Don't automatically enable controller if it was disabled before [#4244](https://github.com/mixxxdj/mixxx/pull/4244) [lp:1941042](https://bugs.launchpad.net/mixxx/+bug/1941042)
 * Enable Qt logging categories for controller logging [#4523](https://github.com/mixxxdj/mixxx/pull/4523)
 * Fix segfault during Mixxx shutdown due to a stale controller connection [#4476](https://github.com/mixxxdj/mixxx/pull/4476) [lp:1946581](https://bugs.launchpad.net/mixxx/+bug/1946581)
@@ -516,8 +520,8 @@
   [#3735](https://github.com/mixxxdj/mixxx/pull/3735)
   [#3736](https://github.com/mixxxdj/mixxx/pull/3736)
   [#3985](https://github.com/mixxxdj/mixxx/pull/3985)
-* Drop Ubuntu Groovy support because of EOL
-  [#4283](https://github.com/mixxxdj/mixxx/pull/4283)
+* Drop Ubuntu Groovy and Impish support because of EOL
+  [#4283](https://github.com/mixxxdj/mixxx/pull/4283) [#4849](https://github.com/mixxxdj/mixxx/pull/4849)
 * Support Ubuntu Kinetic Kudo [#4780](https://github.com/mixxxdj/mixxx/pull/4780)
 * Add NixOS support
   [#2820](https://github.com/mixxxdj/mixxx/pull/2820)
@@ -795,6 +799,7 @@
   [#4782](https://github.com/mixxxdj/mixxx/pull/4782)
   [#4780](https://github.com/mixxxdj/mixxx/pull/4800)
   [#4791](https://github.com/mixxxdj/mixxx/pull/4791)
+  [#4848](https://github.com/mixxxdj/mixxx/pull/4848)
 
 ## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (unreleased)
 

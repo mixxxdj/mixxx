@@ -185,6 +185,10 @@
    #4658
   </li>
   <li>
+   Search: Enter jumps to track table if search query was transmitted
+   #4844
+  </li>
+  <li>
    Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
    #3076
   </li>
@@ -228,6 +232,8 @@
    Track Metadata: Fix synchronization (import/export) of file tags
    #4628
    #4631
+   #4847
+   lp:1981106
   </li>
   <li>
    Logging: Suppress expected and harmless schema migration errors
@@ -277,8 +283,12 @@
    lp:1943643
   </li>
   <li>
-   Library: Add keyboard shortcut Ctrl+Enter to open track properties
+   Track table: Add keyboard shortcut Ctrl+Enter to open track properties
    #4347
+  </li>
+  <li>
+   Track table: Home/End keys jump to first/last row
+   #4850
   </li>
   <li>
    Re-enable shortcuts after editing controls
@@ -342,8 +352,13 @@
    #4740
   </li>
   <li>
-   Add track context menu entry for Analyze and Reanlyze
+   Add a track context menu entry for Analyze and Reanlyze
    #4806
+  </li>
+  <li>
+   Add a track context menu for looking up track metadata at Discogs, Soundcoud and LastFM
+   #4772
+   #4836
   </li>
   <li>
    Refactoring of library code
@@ -515,7 +530,7 @@
    #4544
   </li>
   <li>
-   Allow to reset loops via "channel", "loop_remove" control object
+   Allow to reset loops via "[ChannelN], loop_remove" control object
    #4802
    lp:1978507
   </li>
@@ -669,6 +684,7 @@
   <li>
    Beat spinBox/AutoDJ spinbox: Enter &amp; Esc also move focus to library
    #4617
+   #4845
   </li>
   <li>
    Don't automatically enable controller if it was disabled before
@@ -1037,8 +1053,9 @@
    #3985
   </li>
   <li>
-   Drop Ubuntu Groovy support because of EOL
+   Drop Ubuntu Groovy and Impish support because of EOL
    #4283
+   #4849
   </li>
   <li>
    Support Ubuntu Kinetic Kudo
@@ -1435,6 +1452,7 @@
    #4782
    #4780
    #4791
+   #4848
   </li>
  </ul>
 </description>
