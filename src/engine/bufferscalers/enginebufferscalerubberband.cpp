@@ -133,8 +133,8 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         SINT frames) {
     SINT frames_available = m_pRubberBand->available();
     SINT frames_to_read = math_min(frames_available, frames);
-    SINT received_frames = m_pRubberBand->retrieve(
-            (float* const*)m_retrieve_buffer, frames_to_read);
+    SINT received_frames = static_cast<SINT>(m_pRubberBand->retrieve(
+            (float* const*)m_retrieve_buffer, frames_to_read));
 
     SampleUtil::interleaveBuffer(pBuffer,
                                  m_retrieve_buffer[0],
@@ -188,7 +188,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
             break;
         }
 
-        size_t iLenFramesRequired = m_pRubberBand->getSamplesRequired();
+        SINT iLenFramesRequired = static_cast<SINT>(m_pRubberBand->getSamplesRequired());
         if (iLenFramesRequired == 0) {
             // rubberband 1.3 (packaged up through Ubuntu Quantal) has a bug
             // where it can report 0 samples needed forever which leads us to an

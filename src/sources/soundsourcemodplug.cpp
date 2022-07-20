@@ -186,7 +186,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(
     initFrameIndexRangeOnce(
             IndexRange::forward(
                     0,
-                    getSignalInfo().samples2frames(m_sampleBuf.size())));
+                    getSignalInfo().samples2frames(static_cast<SINT>(m_sampleBuf.size()))));
 
     return OpenResult::Succeeded;
 }
