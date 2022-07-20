@@ -32,6 +32,10 @@
 #   include <arpa/inet.h>
 #endif
 
+#ifdef _WIN32
+#include <process.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
