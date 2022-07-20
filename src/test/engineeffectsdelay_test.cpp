@@ -30,17 +30,8 @@ class EngineEffectsDelayTest : public MixxxTest {
             const std::span<const CSAMPLE> referenceBuffer) {
         EXPECT_EQ(buffer.size(), referenceBuffer.size());
 
-        std::span<CSAMPLE>::iterator pBufferIterator =
-                buffer.begin();
-        std::span<const CSAMPLE>::iterator pReferenceBufferIterator =
-                referenceBuffer.begin();
-
-        while (pBufferIterator != buffer.end() &&
-                pReferenceBufferIterator != referenceBuffer.end()) {
-            EXPECT_FLOAT_EQ(*pBufferIterator, *pReferenceBufferIterator);
-
-            ++pBufferIterator;
-            ++pReferenceBufferIterator;
+        for (std::span<CSAMPLE>::size_type i = 0; i < buffer.size(); ++i) {
+            EXPECT_FLOAT_EQ(buffer[i], referenceBuffer[i]);
         }
     }
 
