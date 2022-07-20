@@ -57,8 +57,7 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
     QString customCfg = cla.getSoundConfig();
     if (!customCfg.isEmpty()) {
         QFileInfo customCfgFileInfo = QFileInfo(settDir.filePath(customCfg));
-        QFile customCfgFile(customCfgFileInfo.absoluteFilePath());
-        if (customCfgFile.open(QIODevice::ReadOnly)) {
+        if (customCfgFileInfo.exists() && customCfgFileInfo.isReadable()) {
             m_configFile = customCfgFileInfo;
             return;
         }
