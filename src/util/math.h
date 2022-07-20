@@ -45,14 +45,14 @@ constexpr bool even(T value) {
 #pragma intrinsic(fabs)
 #endif
 
-constexpr unsigned int roundUpToPowerOf2(int v) {
-    DEBUG_ASSERT(v >= 0);
-#ifdef __cpp_lib_bitops
+// return value of 0 indicates failure (no greater power possible)
+constexpr unsigned int roundUpToPowerOf2(unsigned int v) {
     const auto uv = static_cast<unsigned int>(v);
+#ifdef __cpp_lib_int_pow2
     return std::bit_ceil(uv);
 #else
     unsigned int power = 1;
-    while (power < v && power > 0) {
+    while (power < uv && power > 0) {
         power *= 2;
     }
     return power;
