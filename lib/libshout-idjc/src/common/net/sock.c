@@ -569,7 +569,7 @@ int sock_connected (sock_t sock, int timeout)
     FD_ZERO(&wfds);
     FD_SET(sock, &wfds);
 
-    switch (select(sock + 1, NULL, &wfds, NULL, timeval))
+    switch (select((int)sock + 1, NULL, &wfds, NULL, timeval))
     {
         case 0:
             return SOCK_TIMEOUT;
