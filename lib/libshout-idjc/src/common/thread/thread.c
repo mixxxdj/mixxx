@@ -529,7 +529,7 @@ void thread_cond_timedwait_c(cond_t *cond, int millis, int line, char *file)
     struct timespec time;
 
     time.tv_sec = millis/1000;
-    time.tv_nsec = (millis - time.tv_sec*1000)*1000000;
+    time.tv_nsec = (long)((millis - time.tv_sec*1000)*1000000);
 
     pthread_mutex_lock(&cond->cond_mutex);
     pthread_cond_timedwait(&cond->sys_cond, &cond->cond_mutex, &time);
@@ -606,7 +606,7 @@ void thread_exit_c(long val, int line, char *file)
         _mutex_unlock(&_threadtree_mutex);
     }
 
-    pthread_exit ((void*)val);
+    pthread_exit ((void*)(size_t)val);
 }
 
 /* sleep for a number of microseconds */
