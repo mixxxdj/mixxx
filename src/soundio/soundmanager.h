@@ -129,7 +129,7 @@ class SoundManager : public QObject {
     void setJACKName() const;
 
     EngineMaster *m_pMaster;
-    UserSettingsPointer m_pConfig;
+    UserSettingsPointer m_pSettings;
     bool m_paInitialized;
     mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;

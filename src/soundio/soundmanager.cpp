@@ -43,10 +43,10 @@ constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
 } // anonymous namespace
 
-SoundManager::SoundManager(UserSettingsPointer pConfig,
+SoundManager::SoundManager(UserSettingsPointer pSettings,
         EngineMaster* pMaster)
         : m_pMaster(pMaster),
-          m_pConfig(pConfig),
+          m_pSettings(pSettings),
           m_paInitialized(false),
           m_soundConfig(this),
           m_pErrorDevice(nullptr),
@@ -300,7 +300,7 @@ void SoundManager::queryDevicesPortaudio() {
          */
         const auto deviceTypeId = paApiIndexToTypeId.value(deviceInfo->hostApi);
         auto currentDevice = SoundDevicePointer(new SoundDevicePortAudio(
-                m_pConfig, this, deviceInfo, deviceTypeId, i));
+                m_pSettings, this, deviceInfo, deviceTypeId, i));
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
@@ -312,7 +312,7 @@ void SoundManager::queryDevicesPortaudio() {
 
 void SoundManager::queryDevicesMixxx() {
     auto currentDevice = SoundDevicePointer(new SoundDeviceNetwork(
-            m_pConfig, this, m_pNetworkStream));
+            m_pSettings, this, m_pNetworkStream));
     m_devices.append(currentDevice);
 }
 
@@ -559,7 +559,7 @@ SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& soundConfig)
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"),
+    m_pSettings->set(ConfigKey("[Soundcard]", "Samplerate"),
             ConfigValue(static_cast<int>(m_soundConfig.getSampleRate())));
 
     status = setupDevices();
