@@ -52,10 +52,6 @@
 #include <log/log.h>
 #endif
 
-#ifdef _WIN32
-#define __FUNCTION__ __FILE__
-#endif
-
 #ifdef THREAD_DEBUG
 #define CATMODULE "thread"
 #define LOG_ERROR(y) log_write(_logid, 1, CATMODULE "/", __FUNCTION__, y)
