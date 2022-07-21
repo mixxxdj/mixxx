@@ -1,6 +1,7 @@
 #pragma once
 
 #include <span>
+#include <type_traits>
 
 #include "util/assert.h"
 
@@ -22,8 +23,10 @@ class SpanUtil {
     /// At the same time, the method provides appropriate lower bound checking.
     template<typename T, typename S, typename T2 = typename std::span<T>::size_type>
     static T2 castToSizeType(S size) {
-        VERIFY_OR_DEBUG_ASSERT(size >= 0) {
-            size = 0;
+        if constexpr (std::is_signed_v<S>) {
+            VERIFY_OR_DEBUG_ASSERT(size >= 0) {
+                size = 0;
+            }
         }
 
         return static_cast<T2>(size);
