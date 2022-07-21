@@ -75,10 +75,11 @@ class SampleBuffer final {
     }
 
     std::span<CSAMPLE> span() {
-        return mixxx::SpanUtil::spanFromPtrLen(m_data, m_size);
+        mixxx::spanutil::spanFromPtrLen(m_data, m_size);
+        return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
     }
     const std::span<CSAMPLE> span() const {
-        return mixxx::SpanUtil::spanFromPtrLen(m_data, m_size);
+        return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
     }
 
     CSAMPLE& operator[](SINT index) {
