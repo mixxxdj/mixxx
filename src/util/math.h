@@ -47,12 +47,11 @@ constexpr bool even(T value) {
 
 // return value of 0 indicates failure (no greater power possible)
 constexpr unsigned int roundUpToPowerOf2(unsigned int v) {
-    const auto uv = static_cast<unsigned int>(v);
 #ifdef __cpp_lib_int_pow2
-    return std::bit_ceil(uv);
+    return std::bit_ceil(v);
 #else
     unsigned int power = 1;
-    while (power < uv && power > 0) {
+    while (power < v && power > 0) {
         power *= 2;
     }
     return power;
