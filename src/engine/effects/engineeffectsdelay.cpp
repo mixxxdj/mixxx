@@ -4,9 +4,7 @@
 #include "util/sample.h"
 
 namespace {
-// See enginedelay.cpp
-constexpr int kMaxDelay = static_cast<int>(0.508 *
-        mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount);
+static constexpr int kMaxDelay = mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount;
 } // anonymous namespace
 
 EngineEffectsDelay::EngineEffectsDelay()
@@ -14,6 +12,7 @@ EngineEffectsDelay::EngineEffectsDelay()
           m_prevDelaySamples(0),
           m_delayBufferWritePos(0) {
     m_pDelayBuffer = SampleUtil::alloc(kMaxDelay);
+    SampleUtil::clear(m_pDelayBuffer, kMaxDelay);
 }
 
 void EngineEffectsDelay::process(CSAMPLE* pInOut,

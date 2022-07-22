@@ -66,7 +66,7 @@ TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
 }
 
 TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
-    const SINT numDelayFrames = mixxx::audio::SampleRate::kValueMax;
+    const SINT numDelayFrames = mixxx::audio::SampleRate::kValueMax + 2;
     const SINT numSamples = 4;
 
     // Set delay greater than the size of the delay buffer.
