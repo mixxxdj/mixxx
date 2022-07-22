@@ -42,7 +42,8 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
                 iSampleRate,
                 pChannelInfo->m_features,
                 oldGain,
-                newGain);
+                newGain,
+                pChannelInfo->m_pVuMeterPostFader);
     }
 }
 
@@ -83,7 +84,8 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
                 iSampleRate,
                 pChannelInfo->m_features,
                 oldGain,
-                newGain);
+                newGain,
+                pChannelInfo->m_pVuMeterPostFader);
         SampleUtil::add(pOutput, pChannelInfo->m_pBuffer, iBufferSize);
     }
 }

@@ -18,23 +18,42 @@ constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
 
 } // namespace
 
-EngineVuMeter::EngineVuMeter(const QString& group) {
+const EngineVuMeter::ControlNames EngineVuMeter::defaultControlNames = ControlNames{
+        "VuMeter",
+        "VuMeterL",
+        "VuMeterR",
+        "PeakIndicator",
+        "PeakIndicatorL",
+        "PeakIndicatorR"};
+
+const EngineVuMeter::ControlNames EngineVuMeter::postFaderControlNames = ControlNames{
+        "VuMeterPostFader",
+        "VuMeterPostFaderL",
+        "VuMeterPostFaderR",
+        "PeakIndicatorPostFader",
+        "PeakIndicatorPostFaderL",
+        "PeakIndicatorPostFaderR"};
+
+EngineVuMeter::EngineVuMeter(const QString& group, const ControlNames& controlNames) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
-    m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
+    m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, controlNames.vuMeter), 0., 1.);
     // left channel VU meter
-    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
+    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, controlNames.vuMeterL), 0., 1.);
     // right channel VU meter
-    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
+    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, controlNames.vuMeterR), 0., 1.);
 
     // Used controlpotmeter as the example used it :/ perhaps someone with more
     // knowledge could use something more suitable...
-    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"),
-                                              0., 1.);
-    m_ctrlPeakIndicatorL = new ControlPotmeter(ConfigKey(group, "PeakIndicatorL"),
-                                              0., 1.);
-    m_ctrlPeakIndicatorR = new ControlPotmeter(ConfigKey(group, "PeakIndicatorR"),
-                                              0., 1.);
+    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, controlNames.peakIndicator),
+            0.,
+            1.);
+    m_ctrlPeakIndicatorL = new ControlPotmeter(ConfigKey(group, controlNames.peakIndicatorL),
+            0.,
+            1.);
+    m_ctrlPeakIndicatorR = new ControlPotmeter(ConfigKey(group, controlNames.peakIndicatorR),
+            0.,
+            1.);
 
     m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 

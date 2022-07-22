@@ -11,6 +11,7 @@
 
 class EngineEffectChain;
 class EngineEffect;
+class EngineVuMeter;
 
 /// EngineEffectsManager is the entry point for processing effects in the audio
 /// thread. It also passes EffectsRequests from EffectsMessenger down to the
@@ -46,7 +47,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const unsigned int sampleRate,
             const GroupFeatureState& groupFeatures,
             const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
+            EngineVuMeter* postFaderVuMeter = nullptr);
 
     /// Process the postfader EngineEffectChains, leaving the pIn buffer unmodified
     /// and mixing the output into the pOut buffer. Using EngineEffectsManager's
@@ -62,7 +64,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const unsigned int sampleRate,
             const GroupFeatureState& groupFeatures,
             const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
+            EngineVuMeter* postFaderVuMeter = nullptr);
 
     bool processEffectsRequest(
             EffectsRequest& message,
@@ -92,7 +95,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const unsigned int sampleRate,
             const GroupFeatureState& groupFeatures,
             const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
+            EngineVuMeter* vuMeter = nullptr);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
     QHash<SignalProcessingStage, QList<EngineEffectChain*>> m_chainsByStage;
