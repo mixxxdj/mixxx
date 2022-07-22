@@ -28,7 +28,7 @@ class EngineEffectsDelayTest : public MixxxTest {
   protected:
     void AssertIdenticalBufferEquals(const std::span<CSAMPLE> buffer,
             const std::span<const CSAMPLE> referenceBuffer) {
-        EXPECT_EQ(buffer.size(), referenceBuffer.size());
+        ASSERT_EQ(buffer.size(), referenceBuffer.size());
 
         for (std::span<CSAMPLE>::size_type i = 0; i < buffer.size(); ++i) {
             EXPECT_FLOAT_EQ(buffer[i], referenceBuffer[i]);
