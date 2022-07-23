@@ -669,7 +669,7 @@ class HIDPacket {
             field.type = "bitvector";
             field.name = field_name;
             field.id = group + "." + field_name;
-            bitvector = new HIDBitVector(field.max);
+            bitvector = new HIDBitVector();
             bitvector.size = field.max;
             bitvector.addBitMask(group, name, bitmask);
             field.value = bitvector;
