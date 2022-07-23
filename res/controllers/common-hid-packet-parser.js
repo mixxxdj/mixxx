@@ -6,7 +6,7 @@
  * @deprecated Use console.log instead
  * @param {any} message Message to be printed on controller debug console output
  */
-var HIDDebug = function(message) {
+this.HIDDebug = function(message) {
     console.log("HID " + message);
 };
 
