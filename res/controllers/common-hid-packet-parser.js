@@ -96,6 +96,7 @@ this.HIDDebug = function(message) {
  *              - 'button'
  *              - 'output'
  * @property {boolean} value
+ * @property {number} toggle
  */
 
 /**
@@ -106,7 +107,7 @@ this.HIDDebug = function(message) {
  * created manually.
  *
  * @property {number} size
- * @property {bitObject{}} bits
+ * @property {bitObject[]} bits
  */
 class HIDBitVector {
     constructor() {
@@ -330,7 +331,7 @@ class HIDPacket {
             return;
         }
 
-        const value = (field.value !== undefined) ? field.value : 0;
+        const value = Number((field.value !== undefined) ? field.value : 0);
 
         if (value < field.min || value > field.max) {
             console.error("HIDPacket.pack - " + field.id + " packed value out of range: " + value);
@@ -714,7 +715,6 @@ class HIDPacket {
         const control_group = this.getGroup(group, true);
         /** @type {packetField} */
         let field;
-        let bitvector = undefined;
         const field_id = group + "." + name;
 
         if (control_group === undefined) {
@@ -736,8 +736,8 @@ class HIDPacket {
                 console.error("HIDPacket.addOutput - Overwrite non-bitmask control " + group + "." + name);
                 return;
             }
-            bitvector = field.value;
-            bitvector.addOutputMask(group, name, bitmask);
+            let bitvector = field.value;
+            bitvector.addOutputMask(group, name, bitmask);            
             return;
         }
 
@@ -775,7 +775,7 @@ class HIDPacket {
             field.type = "bitvector";
             field.id = group + "." + field_name;
             field.name = field_name;
-            bitvector = new HIDBitVector();
+            let bitvector = new HIDBitVector();
             bitvector.size = field.max;
             bitvector.addOutputMask(group, name, bitmask);
             field.value = bitvector;
@@ -880,7 +880,7 @@ class HIDPacket {
      * @returns {HIDBitVector} List of modified bits (delta)
      */
     parseBitVector(field, value) {
-        const bits = {};
+        const bits = new HIDBitVector;
         let bit;
         let new_value;
         for (const bit_id in field.value.bits) {
@@ -1156,7 +1156,7 @@ class HIDController {
             return undefined;
         }
         const str = group.replace(/\[Channel/, "");
-        return str.substring(0, str.length - 1);
+        return Number(str.substring(0, str.length - 1));
     }
     /**
      * Return the group name from given deck number.
@@ -1913,7 +1913,7 @@ class HIDController {
         if (interval) {
             field.auto_repeat_interval = interval;
         } else {
-            field.auto_repeat_interval = controller.auto_repeat_interval;
+            field.auto_repeat_interval = this.auto_repeat_interval;
         }
         if (callback) {
             callback(field);
