@@ -1034,10 +1034,8 @@ this.HIDPacket = HIDPacket;
  * @property {number} scratchRPM               RPM value for scratch_enable
  * @property {number} scratchAlpha             Alpha value for scratch_enable
  * @property {number} scratchBeta              Beta value for scratch_enable
- * @property {boolean} scratchRampOnEnable     UNUSED If 'ramp' is used when enabling scratch
- * @property {boolean} scratchRampOnDisable    UNUSED If 'ramp' is used when disabling scratch
- * @property {boolean} rampedScratchEnable
- * @property {boolean} rampedScratchDisable
+ * @property {boolean} scratchRampOnEnable     Set true to ramp the deck speed down. Set false to stop instantly [default = false]
+ * @property {boolean} scratchRampOnDisable    Set true to ramp the deck speed up. Set false to jump to normal play speed instantly [default = false]
  * @property {any} enableScratchCallback
  * @property {number} auto_repeat_interval     Auto repeat interval default for fields, where not
  * specified individual
@@ -1814,14 +1812,14 @@ class HIDController {
                 this.scratchRPM,
                 this.scratchAlpha,
                 this.scratchBeta,
-                this.rampedScratchEnable
+                this.scratchRampOnEnable
             );
             if (this.enableScratchCallback !== undefined) {
                 this.enableScratchCallback(true);
             }
         } else {
             this.isScratchEnabled = false;
-            engine.scratchDisable(deck, this.rampedScratchDisable);
+            engine.scratchDisable(deck, this.scratchRampOnDisable);
             if (this.enableScratchCallback !== undefined) {
                 this.enableScratchCallback(false);
             }
