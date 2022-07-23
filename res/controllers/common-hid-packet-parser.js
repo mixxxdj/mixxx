@@ -736,8 +736,8 @@ class HIDPacket {
                 console.error("HIDPacket.addOutput - Overwrite non-bitmask control " + group + "." + name);
                 return;
             }
-            let bitvector = field.value;
-            bitvector.addOutputMask(group, name, bitmask);            
+            const bitvector = field.value;
+            bitvector.addOutputMask(group, name, bitmask);
             return;
         }
 
@@ -775,7 +775,7 @@ class HIDPacket {
             field.type = "bitvector";
             field.id = group + "." + field_name;
             field.name = field_name;
-            let bitvector = new HIDBitVector();
+            const bitvector = new HIDBitVector();
             bitvector.size = field.max;
             bitvector.addOutputMask(group, name, bitmask);
             field.value = bitvector;
