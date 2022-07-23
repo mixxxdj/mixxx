@@ -116,6 +116,7 @@ this.HIDDebug = function(message) {
  * @property {number} size
  * @property {bitObject[]} bits
  */
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 class HIDBitVector {
     constructor() {
         this.size = 0;
@@ -203,6 +204,7 @@ class HIDBitVector {
     }
 }
 // Add class HIDBitVector to the Global JavaScript object
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 this.HIDBitVector = HIDBitVector;
 
 
@@ -212,6 +214,7 @@ this.HIDBitVector = HIDBitVector;
  * Wraps all defined modifiers to one object with uniform API.
  * Don't call directly, this is available as HIDController.modifiers
  */
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 class HIDModifierList {
     constructor() {
         this.modifiers = Object();
@@ -274,6 +277,7 @@ class HIDModifierList {
     }
 }
 // Add class HIDModifierList to the Global JavaScript object
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 this.HIDModifierList = HIDModifierList;
 
 
@@ -297,6 +301,7 @@ this.HIDModifierList = HIDModifierList;
  *          of packet. Do NOT put the report ID in this; use
  *          the reportId parameter instead.
  */
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 class HIDPacket {
     constructor(name, reportId = 0, callback, header) {
         this.name = name;
@@ -1009,6 +1014,7 @@ class HIDPacket {
     }
 }
 // Add class HIDPacket to the Global JavaScript object
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 this.HIDPacket = HIDPacket;
 
 
@@ -1047,6 +1053,7 @@ this.HIDPacket = HIDPacket;
  * @property {number} auto_repeat_interval     Auto repeat interval default for fields, where not
  * specified individual
  */
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 class HIDController {
     constructor() {
         this.initialized = false;
@@ -2160,4 +2167,5 @@ class HIDController {
     }
 }
 // Add class HIDController to the Global JavaScript object
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 this.HIDController = HIDController;
