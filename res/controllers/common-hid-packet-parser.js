@@ -306,6 +306,7 @@ class HIDPacket {
      * Pack a field value to the packet.
      * Can only pack bits and byte values, patches welcome.
      *
+     * @todo Implement multi byte bit vector outputs
      * @param {number[]} data Data received as InputReport from the device
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
@@ -318,7 +319,6 @@ class HIDPacket {
         const bytes = this.packSizes[field.pack];
         const signed = this.signedPackFormats.includes(field.pack);
         if (field.type === "bitvector") {
-            // TODO - fix multi byte bit vector outputs
             if (bytes > 1) {
                 console.error("HIDPacket.pack - Packing multibyte bit vectors not yet supported");
                 return;
@@ -1206,7 +1206,7 @@ class HIDController {
     /**
      * Find Output control matching give group and name
      *
-     * @todo The current implementation of this often called function is very slow anddoes not
+     * @todo The current implementation of this often called function is very slow and does not
      * scale, due to several nested loops.
      * @param {string} m_group Defines the group name for the field. The group can be any string,
      *     but if it matches a valid Mixxx control group name, it is possible to map a field to a
@@ -1365,8 +1365,7 @@ class HIDController {
         this.modifiers.set(modifier);
     }
     /**
-     * TODO - implement unlinking of modifiers
-     *
+     * @todo Implement unlinking of modifiers
      * @param {string} _group Unused
      * @param {string} _name Unused
      * @param _modifier Unused
@@ -1414,8 +1413,7 @@ class HIDController {
         }
     }
     /**
-     * TODO - implement unlinking of controls
-     *
+     * @todo Implement unlinking of controls
      * @param {string} _group Defines the group name for the field. The group can be any string, but
      *     if it matches a valid Mixxx control group name, it is possible to map a field to a
      *     control or output without any additional code.
