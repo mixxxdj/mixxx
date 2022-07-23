@@ -46,6 +46,13 @@ this.HIDDebug = function(message) {
  * @returns {number} Scaled value
  */
 /**
+ * Callback function to call when, jog wheel scratching got enabled or disabled by
+ * the button with the special name 'jog_touch'
+ *
+ * @callback scratchingCallback
+ * @param {boolean} isScratchEnabled True, when button 'jog_touch' is active
+ */
+/**
  * @typedef packetField
  * @type {object}
  * @property {HIDPacket} packet
@@ -1036,7 +1043,7 @@ this.HIDPacket = HIDPacket;
  * @property {number} scratchBeta              Beta value for scratch_enable
  * @property {boolean} scratchRampOnEnable     Set true to ramp the deck speed down. Set false to stop instantly [default = false]
  * @property {boolean} scratchRampOnDisable    Set true to ramp the deck speed up. Set false to jump to normal play speed instantly [default = false]
- * @property {any} enableScratchCallback
+ * @property {scratchingCallback} enableScratchCallback Callback function to call when, jog wheel scratching got enabled or disabled
  * @property {number} auto_repeat_interval     Auto repeat interval default for fields, where not
  * specified individual
  */
@@ -1064,6 +1071,8 @@ class HIDController {
         this.scratchBeta = this.scratchAlpha / 32;
         this.scratchRampOnEnable = false;
         this.scratchRampOnDisable = false;
+
+        this.enableScratchCallback = undefined;
 
         // Button states available
         this.buttonStates = {released: 0, pressed: 1};
