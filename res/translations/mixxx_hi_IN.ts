@@ -14244,7 +14244,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="348"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>टिप्पणी</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="351"/>

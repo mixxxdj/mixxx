@@ -24,10 +24,10 @@
  * This library depends on Lodash, which is copyright JS Foundation
  * and other contributors and licensed under the MIT license. Refer to
  * the lodash.mixxx.js file in this directory for details.
-**/
+ */
 
 (function(global) {
-    var Component = function(options) {
+    const Component = function(options) {
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
@@ -118,7 +118,7 @@
             by calling this.disconnect(). This can be helpful for multicolor LEDs that show a
             different color depending on the state of different Mixxx COs. Refer to
             SamplerButton.connect() and SamplerButton.output() for an example.
-            **/
+             */
             if (undefined !== this.group &&
                 undefined !== this.outKey &&
                 undefined !== this.output &&
@@ -159,7 +159,7 @@
         },
     };
 
-    var Button = function(options) {
+    const Button = function(options) {
         Component.call(this, options);
     };
     Button.prototype = new Component({
@@ -215,7 +215,7 @@
         },
     });
 
-    var PlayButton = function(options) {
+    const PlayButton = function(options) {
         Button.call(this, options);
     };
     PlayButton.prototype = new Button({
@@ -229,7 +229,7 @@
         outKey: "play_indicator",
     });
 
-    var CueButton = function(options) {
+    const CueButton = function(options) {
         Button.call(this, options);
     };
     CueButton.prototype = new Button({
@@ -246,7 +246,7 @@
         outKey: "cue_indicator",
     });
 
-    var SyncButton = function(options) {
+    const SyncButton = function(options) {
         Button.call(this, options);
     };
     SyncButton.prototype = new Button({
@@ -278,7 +278,7 @@
         outKey: "sync_enabled",
     });
 
-    var LoopToggleButton = function(options) {
+    const LoopToggleButton = function(options) {
         Button.call(this, options);
     };
     LoopToggleButton.prototype = new Button({
@@ -289,9 +289,9 @@
         outKey: "loop_enabled",
     });
 
-    var HotcueButton = function(options) {
+    const HotcueButton = function(options) {
         if (options.number === undefined) {
-            print("ERROR: No hotcue number specified for new HotcueButton.");
+            console.warn("ERROR: No hotcue number specified for new HotcueButton.");
             return;
         }
         if (options.colorMapper !== undefined || options.sendRGB !== undefined) {
@@ -309,7 +309,7 @@
             this.inKey = "hotcue_" + this.number + "_clear";
         },
         output: function(value) {
-            var outval = this.outValueScale(value);
+            const outval = this.outValueScale(value);
             // NOTE: outputColor only handles hotcueColors
             // and there is no hotcueColor for turning the LED
             // off. So the `send()` function is responsible for turning the
@@ -324,7 +324,7 @@
             // Sends the color from the colorCode to the controller. This
             // method will not be called if no colorKey has been specified.
             if (colorCode === undefined || colorCode < 0 || colorCode > 0xFFFFFF) {
-                print("Ignoring invalid color code '" + colorCode + "' in outputColor()");
+                console.warn("Ignoring invalid color code '" + colorCode + "' in outputColor()");
                 return;
             }
 
@@ -332,7 +332,7 @@
                 // This HotcueButton holds a reference to a ColorMapper. This means
                 // that the controller only supports a fixed set of colors, so we
                 // get the MIDI value for the nearest supported color and send it.
-                var nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
+                const nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
                 this.send(nearestColorValue);
             } else {
                 // Since outputColor has been called but no ColorMapper is
@@ -357,9 +357,9 @@
             }
         },
     });
-    var SamplerButton = function(options) {
+    const SamplerButton = function(options) {
         if (options.number === undefined) {
-            print("ERROR: No sampler number specified for new SamplerButton.");
+            console.warn("ERROR: No sampler number specified for new SamplerButton.");
             return;
         }
         this.volumeByVelocity = options.volumeByVelocity;
@@ -433,7 +433,7 @@
         outKey: null, // hack to get Component constructor to call connect()
     });
 
-    var EffectAssignmentButton = function(options) {
+    const EffectAssignmentButton = function(options) {
         options.key = "group_" + options.group + "_enable";
         options.group = "[EffectRack1_EffectUnit" + options.effectUnit + "]";
         Button.call(this, options);
@@ -442,7 +442,7 @@
         type: Button.prototype.types.toggle,
     });
 
-    var Pot = function(options) {
+    const Pot = function(options) {
         Component.call(this, options);
 
         this.firstValueReceived = false;
@@ -452,7 +452,7 @@
             if (this.MSB !== undefined) {
                 value = (this.MSB << 7) + value;
             }
-            var newValue = this.inValueScale(value);
+            let newValue = this.inValueScale(value);
             if (this.invert) {
                 newValue = 1 - newValue;
             }
@@ -467,9 +467,16 @@
             // For the first messages, disregard the LSB in case
             // the first LSB is received after the first MSB.
             if (this.MSB === undefined) {
-                this.max = 127;
+                // a flaw in the Pot API does not mandate consumers
+                // to supply an accurate max value when using
+                // this with non-7-bit inputs. We cannot detect
+                // that in the constructor so set the max
+                // appropriately here
+                if (this.max === Component.prototype.max) {
+                    this.max = (1 << 14) - 1;
+                }
+                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
                 this.input(channel, control, value, status, group);
-                this.max = 16383;
             }
             this.MSB = value;
         },
@@ -477,6 +484,8 @@
             // Make sure the first MSB has been received
             if (this.MSB !== undefined) {
                 this.input(channel, control, value, status, group);
+            } else {
+                this._firstLSB = value;
             }
         },
         connect: function() {
@@ -495,13 +504,15 @@
     /**
     The generic Component code provides everything to implement an Encoder. This Encoder Component
     exists so instanceof can be used to separate Encoders from other Components.
-    **/
-    var Encoder = function(options) {
+     *
+     * @param options
+     */
+    const Encoder = function(options) {
         Component.call(this, options);
     };
     Encoder.prototype = new Component();
 
-    var ComponentContainer = function(initialLayer) {
+    const ComponentContainer = function(initialLayer) {
         if (typeof initialLayer === "object") {
             this.applyLayer(initialLayer);
         }
@@ -509,12 +520,12 @@
     ComponentContainer.prototype = {
         forEachComponent: function(operation, recursive) {
             if (typeof operation !== "function") {
-                print("ERROR: ComponentContainer.forEachComponent requires a function argument");
+                console.warn("ERROR: ComponentContainer.forEachComponent requires a function argument");
                 return;
             }
             if (recursive === undefined) { recursive = true; }
 
-            var that = this;
+            const that = this;
             var applyOperationTo = function(obj) {
                 if (obj instanceof Component) {
                     operation.call(that, obj);
@@ -527,7 +538,7 @@
                 }
             };
 
-            for (var memberName in this) {
+            for (const memberName in this) {
                 if (ComponentContainer.prototype.hasOwnProperty.call(this, memberName)) {
                     applyOperationTo(this[memberName]);
                 }
@@ -535,12 +546,12 @@
         },
         forEachComponentContainer: function(operation, recursive) {
             if (typeof operation !== "function") {
-                print("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
+                console.warn("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
                 return;
             }
             if (recursive === undefined) { recursive = true; }
 
-            var that = this;
+            const that = this;
             var applyOperationTo = function(obj) {
                 if (obj instanceof ComponentContainer) {
                     operation.call(that, obj);
@@ -555,7 +566,7 @@
                 }
             };
 
-            for (var memberName in this) {
+            for (const memberName in this) {
                 if (ComponentContainer.prototype.hasOwnProperty.call(this, memberName)) {
                     applyOperationTo(this[memberName]);
                 }
@@ -663,7 +674,7 @@
         },
     };
 
-    var Deck = function(deckNumbers) {
+    const Deck = function(deckNumbers) {
         if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
             // These must be unique to each instance,
             // so they cannot be in the prototype.
@@ -673,7 +684,7 @@
                 isFinite(deckNumbers)) {
             this.deckNumbers = [deckNumbers];
         } else {
-            print("ERROR! new Deck() called without specifying any deck numbers");
+            console.warn("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
         this.currentDeck = "[Channel" + this.deckNumbers[0] + "]";
@@ -703,7 +714,7 @@
         },
         toggle: function() {
             // cycle through deckNumbers array
-            var index = this.deckNumbers.indexOf(parseInt(
+            let index = this.deckNumbers.indexOf(parseInt(
                 script.channelRegEx.exec(this.currentDeck)[1]
             ));
             if (index === (this.deckNumbers.length - 1)) {
@@ -715,8 +726,69 @@
         }
     });
 
-    var EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
-        var eu = this;
+    const JogWheelBasic = function(options) {
+        Component.call(this, options);
+
+        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
+
+        if (!_.isInteger(this.deck)) {
+            console.warn("missing scratch deck");
+            return;
+        }
+        if (this.deck <= 0) {
+            console.warn("invalid deck number: " + this.deck);
+            return;
+        }
+        if (!_.isInteger(this.wheelResolution)) {
+            console.warn("missing jogwheel resolution");
+            return;
+        }
+        if (!_.isFinite(this.alpha)) {
+            console.warn("missing alpha scratch parameter value");
+            return;
+        }
+        if (!_.isFinite(this.beta)) {
+            this.beta = this.alpha / 32;
+        }
+        if (!_.isFinite(this.rpm)) {
+            this.rpm = 33 + 1/3;
+        }
+        if (this.group === undefined) {
+            this.group = "[Channel" + this.deck + "]";
+        }
+        this.inKey = "jog";
+    };
+
+    JogWheelBasic.prototype = new Component({
+        vinylMode: true,
+        isPress: Button.prototype.isPress,
+        inValueScale: function(value) {
+            // default implementation for converting signed ints
+            return value < 0x40 ? value : value - (this.max + 1);
+        },
+        inputWheel: function(_channel, _control, value, _status, _group) {
+            value = this.inValueScale(value);
+            if (engine.isScratching(this.deck)) {
+                engine.scratchTick(this.deck, value);
+            } else {
+                this.inSetValue(value);
+            }
+        },
+        inputTouch: function(channel, control, value, status, _group) {
+            if (this.isPress(channel, control, value, status) && this.vinylMode) {
+                engine.scratchEnable(this.deck,
+                    this.wheelResolution,
+                    this.rpm,
+                    this.alpha,
+                    this.beta);
+            } else {
+                engine.scratchDisable(this.deck);
+            }
+        },
+    });
+
+    const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
+        const eu = this;
         this.focusChooseModeActive = false;
 
         // This is only connected if allowFocusWhenParametersHidden is false.
@@ -777,8 +849,8 @@
             // Do not enable soft takeover upon EffectUnit construction
             // so initial values can be loaded from knobs.
             if (this.hasInitialized === true) {
-                for (var n = 1; n <= 3; n++) {
-                    var effect = "[EffectRack1_EffectUnit" + this.currentUnitNumber +
+                for (let n = 1; n <= 3; n++) {
+                    const effect = "[EffectRack1_EffectUnit" + this.currentUnitNumber +
                                 "_Effect" + n + "]";
                     engine.softTakeover(effect, "meta", true);
                     engine.softTakeover(effect, "parameter1", true);
@@ -789,12 +861,12 @@
 
             this.reconnectComponents(function(component) {
                 // update [EffectRack1_EffectUnitX] groups
-                var unitMatch = component.group.match(script.effectUnitRegEx);
+                const unitMatch = component.group.match(script.effectUnitRegEx);
                 if (unitMatch !== null) {
                     component.group = eu.group;
                 } else {
                     // update [EffectRack1_EffectUnitX_EffectY] groups
-                    var effectMatch = component.group.match(script.individualEffectRegEx);
+                    const effectMatch = component.group.match(script.individualEffectRegEx);
                     if (effectMatch !== null) {
                         component.group = "[EffectRack1_EffectUnit" +
                                           eu.currentUnitNumber +
@@ -806,7 +878,7 @@
 
         this.toggle = function() {
             // cycle through unitNumbers array
-            var index = this.unitNumbers.indexOf(this.currentUnitNumber);
+            let index = this.unitNumbers.indexOf(this.currentUnitNumber);
             if (index === (this.unitNumbers.length - 1)) {
                 index = 0;
             } else {
@@ -822,7 +894,7 @@
                   isFinite(unitNumbers)) {
             this.unitNumbers = [unitNumbers];
         } else {
-            print("ERROR! new EffectUnit() called without specifying any unit numbers!");
+            console.warn("ERROR! new EffectUnit() called without specifying any unit numbers!");
             return;
         }
 
@@ -876,7 +948,7 @@
                     this.inSetParameter(this.inValueScale(value));
 
                     if (this.previousValueReceived === undefined) {
-                        var effect = "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
+                        const effect = "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
                                     "_Effect" + this.number + "]";
                         engine.softTakeover(effect, "meta", true);
                         engine.softTakeover(effect, "parameter1", true);
@@ -905,12 +977,12 @@
                         return;
                     }
 
-                    var change = value - this.valueAtLastEffectSwitch;
+                    const change = value - this.valueAtLastEffectSwitch;
                     if (Math.abs(change) >= this.changeThreshold
                         // this.valueAtLastEffectSwitch can be undefined if
                         // shift was pressed before the first MIDI value was received.
                         || this.valueAtLastEffectSwitch === undefined) {
-                        var effectGroup = "[EffectRack1_EffectUnit" +
+                        const effectGroup = "[EffectRack1_EffectUnit" +
                                            eu.currentUnitNumber + "_Effect" +
                                            this.number + "]";
                         engine.setValue(effectGroup, "effect_selector", change);
@@ -1041,7 +1113,7 @@
 
         this.knobs = new ComponentContainer();
         this.enableButtons = new ComponentContainer();
-        for (var n = 1; n <= 3; n++) {
+        for (let n = 1; n <= 3; n++) {
             this.knobs[n] = new this.EffectUnitKnob(n);
             this.enableButtons[n] = new this.EffectEnableButton(n);
         }
@@ -1073,7 +1145,7 @@
             },
             unshift: function() {
                 this.input = function(channel, control, value, status, _group) {
-                    var showParameters = engine.getValue(this.group, "show_parameters");
+                    const showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout,
                             this.startEffectFocusChooseMode.bind(this),
@@ -1153,7 +1225,7 @@
     };
     EffectUnit.prototype = new ComponentContainer();
 
-    var exports = {};
+    const exports = {};
     exports.Component = Component;
     exports.Button = Button;
     exports.PlayButton = PlayButton;
@@ -1167,6 +1239,7 @@
     exports.Encoder = Encoder;
     exports.ComponentContainer = ComponentContainer;
     exports.Deck = Deck;
+    exports.JogWheelBasic = JogWheelBasic;
     exports.EffectUnit = EffectUnit;
     global.components = exports;
 }(this));

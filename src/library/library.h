@@ -131,6 +131,7 @@ class Library: public QObject {
     void enableCoverArtDisplay(bool);
     void selectTrack(const TrackId&);
     void trackSelected(TrackPointer pTrack);
+    void analyzeTracks(const QList<TrackId>& trackIds);
 #ifdef __ENGINEPRIME__
     void exportLibrary();
     void exportCrate(CrateId crateId);

@@ -689,6 +689,11 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
             importTrackMetadataAndCoverImage(
                     &trackMetadata,
                     pCoverImg);
+    VERIFY_OR_DEBUG_ASSERT(!sourceSynchronizedAt.isValid() ||
+            sourceSynchronizedAt.timeSpec() == Qt::UTC) {
+        qWarning() << "Converting source synchronization time to UTC:" << sourceSynchronizedAt;
+        sourceSynchronizedAt = sourceSynchronizedAt.toUTC();
+    }
     if (metadataImportResult ==
             mixxx::MetadataSource::ImportResult::Failed) {
         kLogger.warning()

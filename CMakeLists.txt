@@ -40,7 +40,7 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
 endif()
 
 if(DEFINED VCPKG_ROOT)
-  set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
+  set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
 
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
     set(VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/ports")
@@ -89,12 +89,25 @@ option(QT6 "Build with Qt6" OFF)
 if(APPLE)
   if(QT6)
     # Minimum macOS version supported by Qt 6
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
+    if(NOT VCPKG_TARGET_TRIPLET)
+      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
+    endif()
   else()
     # Minimum macOS version supported by Qt 5.12
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
+    if(NOT VCPKG_TARGET_TRIPLET)
+      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.12")
+    endif()
     # Needed for deployment target < 10.14
     add_compile_options(-fno-aligned-allocation)
+  endif()
+endif()
+
+if(DEFINED VCPKG_ROOT AND DEFINED VCPKG_TARGET_TRIPLET)
+  if(NOT EXISTS "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}")
+    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET} "
+        "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
   endif()
 endif()
 
@@ -111,6 +124,7 @@ set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 include(CMakeDependentOption)
 include(CheckSymbolExists)
+include(CheckIncludeFileCXX)
 include(ExternalProject)
 include(GNUInstallDirs)
 include(DefaultOption)
@@ -139,7 +153,7 @@ endif()
 
 #######################################################################
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 if(MSVC)
   # Ensure MSVC populates __cplusplus correctly.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
@@ -565,6 +579,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
   src/effects/backends/builtin/phasereffect.cpp
+  src/effects/backends/builtin/pitchshifteffect.cpp
   src/effects/backends/builtin/reverbeffect.cpp
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
@@ -950,6 +965,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
   src/widget/controlwidgetconnection.cpp
+  src/widget/findonwebmenufactory.cpp
+  src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
+  src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
+  src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
   src/widget/hexspinbox.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
@@ -975,6 +994,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectparameternamebase.cpp
   src/widget/weffectpushbutton.cpp
   src/widget/weffectselector.cpp
+  src/widget/wfindonwebmenu.cpp
   src/widget/whotcuebutton.cpp
   src/widget/wimagestore.cpp
   src/widget/wkey.cpp
@@ -1311,9 +1331,9 @@ if(WIN32)
     set(WINDOWS_CODESIGN_CERTIFICATE_PATH "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PATH}" CACHE STRING "Path to signtool certificate")
     set(WINDOWS_CODESIGN_CERTIFICATE_PASSWORD "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" CACHE STRING "Password of signtool certificate")
     if("${WINDOWS_CODESIGN_CERTIFICATE_PATH}" STREQUAL "" AND "${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" STREQUAL "")
-        set(WINDOWS_CODESIGN_ARGS /a /t http://timestamp.verisign.com/scripts/timstamp.dll CACHE STRING "parameters for signtool (list)")
+        set(WINDOWS_CODESIGN_ARGS /td sha256 /fd sha256 /tr http://timestamp.sectigo.com /a CACHE STRING "parameters for signtool (list)")
     else()
-        set(WINDOWS_CODESIGN_ARGS /f ${WINDOWS_CODESIGN_CERTIFICATE_PATH} /p ${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD} CACHE STRING "parameters for signtool (list)")
+        set(WINDOWS_CODESIGN_ARGS /td sha256 /fd sha256 /tr http://timestamp.sectigo.com /f ${WINDOWS_CODESIGN_CERTIFICATE_PATH} /p ${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD} CACHE STRING "parameters for signtool (list)")
     endif()
     find_program(SIGNTOOL_EXECUTABLE signtool)
     if(NOT SIGNTOOL_EXECUTABLE)
@@ -1855,7 +1875,7 @@ find_package(SQLite3)
 if(NOT SQLite3_FOUND)
   set(LOCALECOMPARE_DEFAULT OFF)
 else()
-  is_static_library(SQLite3_IS_STATIC SQLite3::SQLite3)
+  is_static_library(SQLite3_IS_STATIC SQLite::SQLite3)
   if(SQLite3_IS_STATIC OR NOT APPLE)
     set(LOCALECOMPARE_DEFAULT ON)
   else()
@@ -1868,10 +1888,10 @@ if(LOCALECOMPARE)
     message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
-  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
+  target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
 elseif(SQLite3_IS_STATIC)
   # in the static case we need to link SQLite3 uncoditionally
-  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
+  target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
 endif()
 
 # Denon Engine Prime library export support (using libdjinterop)
@@ -2777,6 +2797,19 @@ if(MODPLUG)
   target_link_libraries(mixxx-lib PRIVATE Modplug::Modplug)
 endif()
 
+find_package(Microsoft.GSL CONFIG)
+if(Microsoft.GSL_FOUND)
+  target_link_libraries(mixxx-lib PRIVATE Microsoft.GSL::GSL)
+else()
+  # check if the headers have been installed without cmake config (< 3.1.0)
+  check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
+  if(NOT HAVE_GSL_GSL)
+    unset(HAVE_GSL_GSL CACHE) # unset cache to re-evaluate this until it succeeds. check_include_file_cxx() has no REQUIRED flag.
+    message(FATAL_ERROR "ms-gsl deveopment headers (libmsgsl-dev) not found")
+  endif()
+endif()
+
+
 # QtKeychain
 option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
 if(QTKEYCHAIN)
@@ -2956,7 +2989,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal impish jammy kinetic)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal jammy kinetic)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
@@ -2976,6 +3009,14 @@ if(APPLE AND MACOS_BUNDLE)
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
     set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
     set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/entitlements.plist")
+
+    # Starting with arm64 macOS Apple will require ad-hoc code signatures,
+    # which can be generated by setting the identity to a single dash (-).
+    # These only include a checksum for verifying integrity, not an actual
+    # signature.
+    if (NOT APPLE_CODESIGN_IDENTITY)
+      set(APPLE_CODESIGN_IDENTITY -)
+    endif()
 
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
     install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")

@@ -743,33 +743,56 @@ void importTrackMetadataFromTag(
     // frames.
     // https://discussions.apple.com/thread/7900430
     // http://blog.jthink.net/2016/11/the-reason-why-is-grouping-field-no.html
-    if (tag.frameListMap().contains("GRP1")) {
-        // New grouping/work mapping
-        const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
-        if (!appleGroupingFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setGrouping(
-                    firstNonEmptyFrameToQString(appleGroupingFrames));
-        }
+    const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
+    const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
 #if defined(__EXTRA_METADATA__)
-        const TagLib::ID3v2::FrameList workFrames = tag.frameListMap()["TIT1"];
-        if (!workFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setWork(
-                    firstNonEmptyFrameToQString(workFrames));
-        }
-        const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
-        if (!movementFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setMovement(
-                    firstNonEmptyFrameToQString(movementFrames));
-        }
-#endif // __EXTRA_METADATA__
-    } else {
-        // No Apple grouping frame found -> Use the traditional mapping
-        const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
-        if (!traditionalGroupingFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setGrouping(
-                    firstNonEmptyFrameToQString(traditionalGroupingFrames));
-        }
+    // Unconditionally adopt the the new grouping/work/movement mapping
+    // from Apple iTunes. This ensures that now information is lost, even
+    // if it ends up in the wrong track properties.
+    // The code must be consistent with the corresponding write function!
+    // FIXME: Revisit this decision before enabling the code.
+    if (!appleGroupingFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setGrouping(
+                firstNonEmptyFrameToQString(appleGroupingFrames));
     }
+    if (!traditionalGroupingFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setWork(
+                firstNonEmptyFrameToQString(traditionalGroupingFrames));
+    }
+    const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
+    if (!movementFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setMovement(
+                firstNonEmptyFrameToQString(movementFrames));
+    }
+#else  // __EXTRA_METADATA__
+    // Read the grouping from the new GRP1 frame if these frames are
+    // present in the file. Do so even if it all are empty! If no GRP1
+    // frames are present then read it from the traditional TIT1 frames.
+    // This content-sensitive, conditional behavior must match the
+    // corresponding implementation of the write function for consistent
+    // results!
+    const QString traditionalGrouping = firstNonEmptyFrameToQString(traditionalGroupingFrames);
+    if (appleGroupingFrames.isEmpty()) {
+        // Fallback
+        if (!traditionalGroupingFrames.isEmpty()) {
+            pTrackMetadata->refTrackInfo().setGrouping(traditionalGrouping);
+        }
+    } else {
+        const QString appleGrouping =
+                firstNonEmptyFrameToQString(appleGroupingFrames);
+        if (!traditionalGrouping.trimmed().isEmpty() &&
+                traditionalGrouping != appleGrouping) {
+            // Only log an informational message if the TIT1 frames carry
+            // meaningful data that differs from the GRP1 data. This might
+            // be fine if the TIT1 frames stores the "work" field that is not
+            // yet supported by Mixxx (see __EXTRA_METADATA__).
+            qInfo() << "ID3v2: Discarding content of TIT1" << traditionalGrouping
+                    << "in favor of GRP1" << appleGrouping
+                    << "for grouping (content group) field";
+        }
+        pTrackMetadata->refTrackInfo().setGrouping(appleGrouping);
+    }
+#endif // __EXTRA_METADATA__
 
     // ID3v2.4.0: TDRC replaces TYER + TDAT
     const QString recordingTime(
@@ -1134,35 +1157,36 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             "TCOM",
             trackMetadata.getTrackInfo().getComposer());
 
-    // We can use the TIT1 frame only once, either for storing the Work
-    // like Apple decided to do or traditionally for the Content Group.
-    // Rationale: If the the file already has one or more GRP1 frames
-    // or if the track has a Work field then store the Grouping in a
-    // GRP1 frame instead of using TIT1.
-    // See also: importTrackMetadataFromTag()
-    if (
 #if defined(__EXTRA_METADATA__)
-            !trackMetadata.getTrackInfo().getWork().isNull() ||
-            !trackMetadata.getTrackInfo().getMovement().isNull() ||
-#endif // __EXTRA_METADATA__
-            pTag->frameListMap().contains("GRP1")) {
-        // New grouping/work/movement mapping if properties for classical
-        // music are available or if the GRP1 frame is already present in
-        // the file.
+    // Unconditionally adopt the the new grouping/work/movement mapping
+    // from Apple iTunes. This ensures that now information is lost, even
+    // if it ends up in the wrong ID3v2 tags.
+    // The code must be consistent with the corresponding write function!
+    // FIXME: Revisit this decision before enabling the code.
+    writeTextIdentificationFrame(
+            pTag,
+            "GRP1",
+            trackMetadata.getTrackInfo().getGrouping());
+    writeTextIdentificationFrame(
+            pTag,
+            "TIT1",
+            trackMetadata.getTrackInfo().getWork());
+    writeTextIdentificationFrame(
+            pTag,
+            "MVNM",
+            trackMetadata.getTrackInfo().getMovement());
+#else  // __EXTRA_METADATA__
+    // Write the grouping back into the new GRP1 frame if any GRP1
+    // frames are already present in the file. Otherwise write it
+    // into the traditional TIT1 frame.
+    // This content-sensitive, conditional behavior must match the
+    // corresponding implementation of the read function for consistent
+    // results!
+    if (pTag->frameListMap().contains("GRP1")) {
         writeTextIdentificationFrame(
                 pTag,
                 "GRP1",
                 trackMetadata.getTrackInfo().getGrouping());
-#if defined(__EXTRA_METADATA__)
-        writeTextIdentificationFrame(
-                pTag,
-                "TIT1",
-                trackMetadata.getTrackInfo().getWork());
-        writeTextIdentificationFrame(
-                pTag,
-                "MVNM",
-                trackMetadata.getTrackInfo().getMovement());
-#endif // __EXTRA_METADATA__
     } else {
         // Stick to the traditional CONTENTGROUP mapping.
         writeTextIdentificationFrame(
@@ -1170,6 +1194,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getGrouping());
     }
+#endif // __EXTRA_METADATA__
 
     // According to the specification "The 'TBPM' frame contains the number
     // of beats per minute in the mainpart of the audio. The BPM is an

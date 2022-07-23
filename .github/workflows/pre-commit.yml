@@ -20,7 +20,7 @@ jobs:
         fetch-depth: 2
 
     - name: "Detect code style issues (push)"
-      uses: pre-commit/action@v2.0.3
+      uses: pre-commit/action@v3.0.0
       if: github.event_name == 'push'
       # There are too many files in the repo that have formatting issues. We'll
       # disable these checks for now when pushing directly (but still run these
@@ -29,7 +29,7 @@ jobs:
         SKIP: clang-format,eslint,no-commit-to-branch
 
     - name: "Detect code style issues (pull_request)"
-      uses: pre-commit/action@v2.0.3
+      uses: pre-commit/action@v3.0.0
       if: github.event_name == 'pull_request'
       env:
         SKIP: no-commit-to-branch
@@ -48,7 +48,7 @@ jobs:
 
     - name: "Upload patch artifact"
       if: failure() && env.UPLOAD_PATCH_FILE != null
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ env.UPLOAD_PATCH_FILE }}
         path: ${{ env.UPLOAD_PATCH_FILE }}

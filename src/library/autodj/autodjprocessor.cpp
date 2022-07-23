@@ -116,7 +116,6 @@ AutoDJProcessor::AutoDJProcessor(
         int iAutoDJPlaylistId)
         : QObject(pParent),
           m_pConfig(pConfig),
-          m_pPlayerManager(pPlayerManager),
           m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),

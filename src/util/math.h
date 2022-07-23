@@ -7,29 +7,36 @@
 #include "util/assert.h"
 #include "util/fpclassify.h"
 
+#if __has_include(<bit>)
+#include <bit>
+#endif
+
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
 using std::fabs;
 
 #define math_max std::max
 #define math_min std::min
-#define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
-#define math_min3(a, b, c) math_min(math_min((a), (b)), (c))
+#define math_max3(a, b, c) std::max({a, b, c});
+#define math_min3(a, b, c) std::min({a, b, c});
 
 // Restrict value to the range [min, max]. Undefined behavior if min > max.
-template <typename T>
-inline T math_clamp(T value, T min, T max) {
+template<typename T>
+constexpr T math_clamp(T value, T min, T max) {
     // DEBUG_ASSERT compiles out in release builds so it does not affect
     // vectorization or pipelining of clamping in tight loops.
     DEBUG_ASSERT(min <= max);
-    return math_max(min, math_min(max, value));
+    return std::clamp(value, min, max);
 }
 
 // NOTE(rryan): It is an error to call even() on a floating point number. Do not
 // hack this to support floating point values! The programmer should be required
 // to manually convert so they are aware of the conversion.
-template <typename T>
-inline bool even(T value) {
+template<typename T>
+constexpr bool even(T value) {
+    // since we also want to this to work on size_t and ptrdiff_t, is_integer would be too strict.
+    static_assert(std::is_arithmetic_v<T> && !std::is_floating_point_v<T>,
+            "even only supports integral types");
     return value % 2 == 0;
 }
 
@@ -38,19 +45,20 @@ inline bool even(T value) {
 #pragma intrinsic(fabs)
 #endif
 
-inline int roundUpToPowerOf2(int v) {
-    int power = 1;
+// return value of 0 indicates failure (no greater power possible)
+constexpr unsigned int roundUpToPowerOf2(unsigned int v) {
+#if (defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L)
+    return std::bit_ceil(v);
+#else
+    unsigned int power = 1;
     while (power < v && power > 0) {
         power *= 2;
     }
-    // There is not a power of 2 higher than v representable by our
-    // architecture's integer size.
-    if (power < 0) {
-        return -1;
-    }
     return power;
+#endif
 }
 
+// TODO (XXX): make this constexpr once <cmath> has constexpr support
 inline double roundToFraction(double value, int denominator) {
     int wholePart = static_cast<int>(value);
     double fractionPart = value - wholePart;
@@ -58,20 +66,16 @@ inline double roundToFraction(double value, int denominator) {
     return wholePart + numerator / denominator;
 }
 
-template <typename T>
+// TODO (XXX): make this constexpr once <cmath> has constexpr support
+template<typename T>
 inline const T ratio2db(const T a) {
-    static_assert(std::is_same<float, T>::value ||
-                  std::is_same<double, T>::value ||
-                  std::is_same<long double, T>::value,
-                  "ratio2db works only for floating point types");
+    static_assert(std::is_floating_point_v<T>, "ratio2db works only for floating point types");
     return log10(a) * 20;
 }
 
-template <typename T>
+// TODO (XXX): make this constexpr once <cmath> has constexpr support
+template<typename T>
 inline const T db2ratio(const T a) {
-    static_assert(std::is_same<float, T>::value ||
-                  std::is_same<double, T>::value ||
-                  std::is_same<long double, T>::value,
-                  "db2ratio works only for floating point types");
+    static_assert(std::is_floating_point_v<T>, "db2ratio works only for floating point type");
     return static_cast<T>(pow(10, a / 20));
 }

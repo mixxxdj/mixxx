@@ -1106,6 +1106,148 @@
  </ul>
 </description>
     </release>
+    <release version="2.3.4" type="development">
+      <description>
+ <ul>
+  <li>
+   Track Properties: show 'date added' as local time
+   #4838
+   lp:1980658
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: Fix  sliders and knobs
+   #4835
+   lp:1948596
+  </li>
+  <li>
+   Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
+   #4495
+  </li>
+  <li>
+   Shade: Fix library sidebar splitter glitch
+   #4828
+   lp:1979823
+  </li>
+  <li>
+   MacOS builds: Perform ad-hoc signing of macOS bundle in Pull request and personal repositories
+   #4774
+  </li>
+  <li>
+   Waveform: Avoid visual glitch with ranges &lt; 1 px
+   #4804
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.3.3" type="stable" date="2022-06-21" timestamp="1655769600">
+      <description>
+ <ul>
+  <li>
+   Pioneer DDJ-SB3: Fix controller breaking when releasing the shift button
+   #4659
+  </li>
+  <li>
+   Traktor S3: Push two deck switches to explicitly clone decks
+   #4665
+   #4671
+   lp:1960680
+  </li>
+  <li>
+   Behringer DDM4000: Improve stability and add soft-takeover for encoder knobs
+   #4318
+   #4799
+  </li>
+  <li>
+   Denon MC7000: Fix 'inverted shift' bug in the controller mapping
+   #4755
+  </li>
+  <li>
+   Fix spinback and break effect in the controller engine
+   #4708
+  </li>
+  <li>
+   Fix scratch on first wheel touch
+   #4761
+   lp:1800343
+  </li>
+  <li>
+   Preferences: Prevent controller settings being treated as changed even though they were not
+   #4721
+   lp:1920844
+  </li>
+  <li>
+   Fix rare crash when closing the progress dialog
+   #4695
+  </li>
+  <li>
+   Prevent preferences dialog from going out of screen
+   #4613
+  </li>
+  <li>
+   Fix undesired jump-cuts in Auto DJ
+   #4693
+   lp:1948975
+   lp:1893197
+  </li>
+  <li>
+   Fix bug that caused Auto DJ to stop playback after some time
+   #4698
+   lp:1893197
+   lp:1961970
+  </li>
+  <li>
+   Do not reset crossfader when Auto DJ is deactivated
+   #4714
+   lp:1965298
+  </li>
+  <li>
+   Change the minimum Auto DJ transition time to -99
+   #4768
+   lp:1975552
+  </li>
+  <li>
+   Samplers, crates, playlists: fix storing import/export paths
+   #4699
+   lp:1964508
+  </li>
+  <li>
+   Library: keep hidden tracks in history
+   #4725
+  </li>
+  <li>
+   Broadcasting: allow multiple connections to same mount if only one is enabled
+   #4750
+   lp:1972813
+  </li>
+  <li>
+   Fix a rare mouse vanish bug when controlling knobs
+   #4744
+   lp:1130794
+   lp:1969278
+  </li>
+  <li>
+   Restore keylock from configuration and fix pitch ratio rounding issue
+   #4756
+   lp:1943180
+  </li>
+  <li>
+   Improve CSV export of playlists and crates and fix empty rating column
+   #4762
+  </li>
+  <li>
+   Fix passthrough-related crash in waveform code
+   #4789
+   #4791
+   lp:1959489
+   lp:1977662
+  </li>
+  <li>
+   Passthrough: stop rendering waveforms and disable Cue/Play indicators
+   4793
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.3.2" type="stable" date="2022-01-31" timestamp="1643587200">
       <description>
  <ul>

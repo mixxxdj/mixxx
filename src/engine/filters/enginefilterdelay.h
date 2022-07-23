@@ -34,6 +34,11 @@ class EngineFilterDelay : public EngineObjectConstIn {
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
         if (m_oldDelaySamples == m_delaySamples) {
+            // The "+ SIZE" addition ensures positive values for the modulo calculation.
+            // From a mathematical point of view, this addition can be removed. Anyway,
+            // from the cpp point of view, the modulo operator for negative values
+            // (for example, x % y, where x is a negative value) produces negative results
+            // (but in math the result value is positive).
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples) % SIZE;
 
             VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
@@ -55,6 +60,11 @@ class EngineFilterDelay : public EngineObjectConstIn {
                 delaySourcePos = (delaySourcePos + 1) % SIZE;
             }
         } else {
+            // The "+ SIZE" addition ensures positive values for the modulo calculation.
+            // From a mathematical point of view, this addition can be removed. Anyway,
+            // from the cpp point of view, the modulo operator for negative values
+            // (for example, x % y, where x is a negative value) produces negative results
+            // (but in math the result value is positive).
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) % SIZE;
             int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
 

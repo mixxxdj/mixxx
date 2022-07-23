@@ -702,11 +702,45 @@
         },
     });
 
+    var EffectUnit = function(rack, deckGroup) {
+        components.ComponentContainer.call(this);
+        var effectGroup = "[" + rack + "_" + deckGroup + "_Effect1]";
+        var channelGroup = "[" + rack + "_" + deckGroup + "]";
+
+        var ParameterKnob = function(parameterNumber) {
+            components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
+        };
+        ParameterKnob.prototype = deriveFrom(components.Pot);
+        var ParameterButton = function(parameterNumber) {
+            components.Button.call(this, {group: effectGroup, key: "button_parameter" + parameterNumber});
+        };
+        ParameterButton.prototype = deriveFrom(
+            components.Button, {type: components.Button.prototype.types.powerWindow});
+
+        this.enabled = new components.Button(
+            {group: effectGroup, key: "enabled", type: components.Button.prototype.types.powerWindow});
+        this.meta = new components.Pot({group: effectGroup, key: "meta"});
+        this.super1 = new components.Pot({group: channelGroup, key: "super1"});
+        this.mix = new components.Pot({group: channelGroup, key: "mix"});
+
+        this.parameterKnobs = new components.ComponentContainer();
+        var parameterKnobCount = engine.getValue(effectGroup, "num_parameters");
+        for (var knobIndex = 1; knobIndex <= parameterKnobCount; knobIndex++) {
+            this.parameterKnobs[knobIndex] = new ParameterKnob(knobIndex);
+        }
+
+        this.parameterButtons = new components.ComponentContainer();
+        var parameterButtonCount = engine.getValue(effectGroup, "num_button_parameters");
+        for (var buttonIndex = 1; buttonIndex <= parameterButtonCount; buttonIndex++) {
+            this.parameterButtons[buttonIndex] = new ParameterButton(buttonIndex);
+        }
+    };
+    EffectUnit.prototype = deriveFrom(components.ComponentContainer);
+
     /**
      * @typedef {components.ComponentContainer} EqualizerUnit
      *
      * @property {components.Button} enabled En-/disable equalizer unit
-     * @property {components.Pot} super1 QuickEffect super knob
      * @property {components.Pot} parameterKnobs.1 Low knob
      * @property {components.Pot} parameterKnobs.2 Mid knob
      * @property {components.Pot} parameterKnobs.3 High knob
@@ -725,33 +759,38 @@
      * @public
      */
     var EqualizerUnit = function(deckGroup) {
-        components.ComponentContainer.call(this);
-        var effectGroup = "[EqualizerRack1_" + deckGroup + "_Effect1]";
-
-        var ParameterKnob = function(parameterNumber) {
-            components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
-        };
-        ParameterKnob.prototype = deriveFrom(components.Pot);
-        var ParameterButton = function(parameterNumber) {
-            components.Button.call(this, {
-                group: effectGroup, key: "button_parameter" + parameterNumber
-            });
-        };
-        ParameterButton.prototype = deriveFrom(
-            components.Button, {type: components.Button.prototype.types.powerWindow});
-
-        this.enabled = new components.Button(
-            {group: "[QuickEffectRack1_" + deckGroup + "_Effect1]", key: "enabled"});
-        this.super1 = new components.Pot(
-            {group: "[QuickEffectRack1_" + deckGroup + "]", key: "super1"});
-        this.parameterKnobs = new components.ComponentContainer();
-        this.parameterButtons = new components.ComponentContainer();
-        for (var i = 1; i <= 3; i++) {
-            this.parameterKnobs[i] = new ParameterKnob(i);
-            this.parameterButtons[i] = new ParameterButton(i);
-        }
+        EffectUnit.call(this, "EqualizerRack1", deckGroup);
     };
-    EqualizerUnit.prototype = deriveFrom(components.ComponentContainer);
+    EqualizerUnit.prototype = deriveFrom(EffectUnit);
+
+    /**
+     * @typedef {components.ComponentContainer} QuickEffectUnit
+     *
+     * @property {components.Button} enabled En-/disable quick effect unit
+     * @property {components.Pot} meta Meta knob
+     * @property {components.Pot} super1 Super knob
+     * @property {components.Pot} parameterKnobs.1 Parameter 1
+     * @property {components.Pot} parameterKnobs.2 Parameter 2
+     * @property {components.Pot} parameterKnobs.3 Parameter 3
+     * @property {components.Pot} parameterKnobs.4 Parameter 4
+     * @property {components.Pot} parameterKnobs.5 Parameter 5
+     * @property {components.Button} parameterButtons.1 Parameter Button 1
+     * @property {components.Button} parameterButtons.2 Parameter Button 2
+     */
+
+    /**
+     * A component container for quick effect controls.
+     *
+     * @constructor
+     * @extends {components.ComponentContainer}
+     * @param {string} deckGroup Group of the deck this unit belongs to (e.g. `[Channel1]`)
+     * @yields {QuickEffectUnit}
+     * @public
+     */
+    var QuickEffectUnit = function(deckGroup) {
+        EffectUnit.call(this, "QuickEffectRack1", deckGroup);
+    };
+    QuickEffectUnit.prototype = deriveFrom(EffectUnit);
 
     /**
      * Manage Components in named ComponentContainers.
@@ -1137,23 +1176,30 @@
      *     |     |     +- options: Additional options for the component (object, required)
      *     |     |                 Example: {midi: [0xB0, 0x43], key: "reverse"}
      *     |     +- equalizerUnit: Equalizer unit definition (optional)
-     *     |        +- midi: An object of component definitions for the unit.
-     *     |        |        Each definition is a key-value pair for a component of `EqualizerUnit`
-     *     |        |        where `key` is the name of the component and `value` is the MIDI
-     *     |        |        address. Examples:
-     *     |        |          `super1: [0xB0, 0x29]`
-     *     |        |          `parameterKnobs: {1: [0xB0, 0x06], 2: [0xB0, 0x05], 3: [0xB0, 0x04]}`
-     *     |        +- feedback: Enable controller feedback (boolean, optional)
-     *     |        |            When set to `true`, values of the components in this unit are sent
-     *     |        |            to the hardware controller on changes. The address of the MIDI
-     *     |        |            message is taken from the `midi` property of the affected
-     *     |        |            component.
-     *     |        +- output: Additional output definitions (optional).
-     *     |                   The structure of this object is the same as the structure of
-     *     |                   `midi`. Every value change of a component contained in `output`
-     *     |                   causes a MIDI message to be sent to the hardware controller, using
-     *     |                   the configured address instead of the component's `midi` property.
-     *     |                   This option is independent of the `feedback` option.
+     *     |     |  +- midi: An object of component definitions for the unit.
+     *     |     |  |        Each definition is a key-value pair for a component of `EqualizerUnit`
+     *     |     |  |        where `key` is the name of the component and `value` is the MIDI
+     *     |     |  |        address. Examples:
+     *     |     |  |          `super1: [0xB0, 0x29]`
+     *     |     |  |          `parameterKnobs: {1: [0xB0, 0x06], 2: [0xB0, 0x05], 3: [0xB0, 0x04]}`
+     *     |     |  +- feedback: Enable controller feedback (boolean, optional)
+     *     |     |  |            When set to `true`, values of the components in this unit are sent
+     *     |     |  |            to the hardware controller on changes. The address of the MIDI
+     *     |     |  |            message is taken from the `midi` property of the affected
+     *     |     |  |            component.
+     *     |     |  +- output: Additional output definitions (optional).
+     *     |     |             The structure of this object is the same as the structure of
+     *     |     |             `midi`. Every value change of a component contained in `output`
+     *     |     |             causes a MIDI message to be sent to the hardware controller, using
+     *     |     |             the configured address instead of the component's `midi` property.
+     *     |     |             This option is independent of the `feedback` option.
+     *     |     +- quickEffectUnit: Quick effect unit definition (optional)
+     *     |        +- midi: As described for equalizer unit using `components.QuickEffectUnit` instead of
+     *     |        |        `EqualizerUnit`. Examples:
+     *     |        |          `enabled: [0x90, 0x02]`
+     *     |        |          `super1: [0xB0, 0x06]`
+     *     |        +- feedback: As described for equalizer unit
+     *     |        +- output: As described for equalizer unit
      *     |
      *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
      *     |  +- effectUnit
@@ -1294,6 +1340,10 @@
                         registerComponents(
                             deckDefinition.equalizerUnit.midi, deckImplementation.equalizerUnit);
                     }
+                    if (deckDefinition.quickEffectUnit) {
+                        registerComponents(
+                            deckDefinition.quickEffectUnit.midi, deckImplementation.quickEffectUnit);
+                    }
                 }
             },
             {
@@ -1347,6 +1397,12 @@
                 deck.equalizerUnit = this.setupMidi(
                     deckDefinition.equalizerUnit,
                     new EqualizerUnit(deck.currentDeck),
+                    componentStorage);
+            }
+            if (deckDefinition.quickEffectUnit) {
+                deck.quickEffectUnit = this.setupMidi(
+                    deckDefinition.quickEffectUnit,
+                    new QuickEffectUnit(deck.currentDeck),
                     componentStorage);
             }
             return deck;

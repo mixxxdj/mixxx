@@ -466,6 +466,7 @@ class Track : public QObject {
     void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
+    void loopRemove();
     void analyzed();
 
     void changed(TrackId trackId);

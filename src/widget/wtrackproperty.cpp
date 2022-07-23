@@ -16,12 +16,14 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
         WTrackMenu::Feature::Reset |
+        WTrackMenu::Feature::Analyze |
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::RemoveFromDisk |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties |
         WTrackMenu::Feature::UpdateReplayGainFromPregain |
+        WTrackMenu::Feature::FindOnWeb |
         WTrackMenu::Feature::SelectInLibrary;
 } // namespace
 
