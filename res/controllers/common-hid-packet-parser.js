@@ -308,6 +308,7 @@ class HIDPacket {
         this.callback = callback;
         this.reportId = reportId;
         this.groups = {};
+        this.length = 0;
 
         // Size of various 'pack' values in bytes
         this.packSizes = {b: 1, B: 1, h: 2, H: 2, i: 4, I: 4};
@@ -319,7 +320,7 @@ class HIDPacket {
      * Can only pack bits and byte values, patches welcome.
      *
      * @todo Implement multi byte bit vector outputs
-     * @param {number[]} data Data received as InputReport from the device
+     * @param {Uint8Array} data Data received as InputReport from the device
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      */
@@ -373,7 +374,7 @@ class HIDPacket {
      *  - i       signed integer
      *  - I       unsigned integer
      *
-     * @param {number[]} data Data received as InputReport from the device
+     * @param {Uint8Array} data Data received as InputReport from the device
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      * @returns {number} Value for the field in data, represented according the fields packing type
@@ -775,6 +776,7 @@ class HIDPacket {
             }
             const bitVector = /** @type {HIDBitVector} */ (fieldByOffset.value);
             bitVector.addOutputMask(group, name, bitmask);
+            if (this.length < offset) { this.length = offset; }
             return;
         }
 
@@ -822,6 +824,7 @@ class HIDPacket {
         }
 
         // Add Output to HID packet
+        if (this.length < field.end_offset) { this.length = field.end_offset; }
         control_group[field.id] = field;
     }
     /**
@@ -943,7 +946,7 @@ class HIDPacket {
      * Data is expected to be a Packet() received from HID device.
      * BitVectors are returned as bits you can iterate separately.
      *
-     * @param {number[]} data Data received as InputReport from the device
+     * @param {Uint8Array} data Data received as InputReport from the device
      * @returns {packetField[]|bitObject[]} List of changed fields with new value.
      */
     parse(data) {
@@ -1018,7 +1021,7 @@ class HIDPacket {
      * @param {boolean} [debug=false] Enables debug output to console
      */
     send(debug) {
-        const data = [];
+        const data = new Uint8Array(this.length);
 
         if (this.header !== undefined) {
             for (let header_byte = 0; header_byte < this.header.length; header_byte++) {
@@ -1044,7 +1047,7 @@ class HIDPacket {
             }
             console.log("Sending packet with Report ID " + this.reportId + ": " + packet_string);
         }
-        controller.send(data, data.length, this.reportId);
+        controller.sendOutputReport(this.reportId, data.buffer);
     }
 }
 // Add class HIDPacket to the Global JavaScript object
@@ -1536,7 +1539,7 @@ class HIDController {
      *  - Calls processIncomingPacket and processes automated events there.
      *  - If defined, calls processDelta for results after processing automated fields
      *
-     * @param {number[]} data The data received from an HID InputReport.
+     * @param {Uint8Array} data The data received from an HID InputReport.
      *                        In case of HID devices, which use ReportIDs to enumerate the reports,
      * the ReportID is stored in the first byte and the data start at the second byte
      * @param {number} length Length of the data array in bytes
