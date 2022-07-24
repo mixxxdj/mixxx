@@ -2118,9 +2118,9 @@ class HIDController {
         field.mapped_callback = callback;
         engine.connectControl(controlgroup, m_name, callback);
         if (engine.getValue(controlgroup, m_name)) {
-            this.setOutput(m_group, m_name, true);
+            this.setOutput(m_group, m_name, this.LEDColors.on);
         } else {
-            this.setOutput(m_group, m_name, false);
+            this.setOutput(m_group, m_name, this.LEDColors.off);
         }
     }
     /**
