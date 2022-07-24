@@ -62,7 +62,7 @@
     "yoda": "warn"
   },
   "globals": {
-    "console": "readable"
+    "console": "readonly"
   },
   "overrides": [
     {
@@ -74,7 +74,7 @@
     {
       "files": ["res/controllers/common-hid-packet-parser.js"],
       "globals": {
-        "console": "readable",
+        "console": "readonly",
         "print": "writable"
       }
     },
@@ -82,7 +82,7 @@
       "files": ["res/controllers/*.js"],
       "excludedFiles": "res/controllers/common-hid-packet-parser.js",
       "globals": {
-        "console": "readable",
+        "console": "readonly",
         "svg": "writable",
         "HIDController": "writable",
         "HIDDebug": "writable",
