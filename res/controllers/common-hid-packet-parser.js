@@ -920,7 +920,7 @@ class HIDPacket {
      * @returns {bitObject[]} List of modified bits (delta)
      */
     parseBitVector(field, value) {
-        /** @type bitObject[]*/
+        /** @type {bitObject[]}*/
         const bits = new Array();
         let bit;
         let new_value;
