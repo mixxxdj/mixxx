@@ -2031,7 +2031,7 @@ class HIDController {
                             engine.connectControl(
                                 controlgroup, bit.mapped_name, bit.mapped_callback, true);
                             engine.connectControl(new_group, bit.mapped_name, bit.mapped_callback);
-                            var value = engine.getValue(new_group, bit.mapped_name);
+                            const value = engine.getValue(new_group, bit.mapped_name);
                             console.log("Bit " + bit.group + "." + bit.name + " value " + value);
                             if (value) {
                                 this.setOutput(
@@ -2054,7 +2054,7 @@ class HIDController {
                     engine.connectControl(
                         controlgroup, field.mapped_name, field.mapped_callback, true);
                     engine.connectControl(new_group, field.mapped_name, field.mapped_callback);
-                    value = engine.getValue(new_group, field.mapped_name);
+                    const value = engine.getValue(new_group, field.mapped_name);
                     if (value) {
                         this.setOutput(
                             field.group, field.name,
@@ -2089,7 +2089,6 @@ class HIDController {
      * @param {controlCallback} callback Callback function for the control
      */
     linkOutput(group, name, m_group, m_name, callback) {
-        let controlgroup;
         const field = this.getOutputField(group, name);
         if (field === undefined) {
             console.error("HIDController.linkOutput - Linked output not found: " + group + "." + name);
@@ -2099,7 +2098,7 @@ class HIDController {
             console.warn("HIDController.linkOutput - Output already linked: " + field.mapped_group);
             return;
         }
-        controlgroup = this.resolveGroup(m_group);
+        const controlgroup = this.resolveGroup(m_group);
         field.mapped_group = m_group;
         field.mapped_name = m_name;
         field.mapped_callback = callback;
@@ -2124,7 +2123,6 @@ class HIDController {
      */
     unlinkOutput(group, name, callback) {
         const field = this.getOutputField(group, name);
-        let controlgroup;
         if (field === undefined) {
             console.warn("HIDController.unlinkOutput - Output to be unlinked not found: " + group + "." + name);
             return;
@@ -2133,7 +2131,7 @@ class HIDController {
             console.warn("HIDController.unlinkOutput - Output to be unlinked not mapped: " + group + "." + name);
             return;
         }
-        controlgroup = this.resolveGroup(field.mapped_group);
+        const controlgroup = this.resolveGroup(field.mapped_group);
         engine.connectControl(controlgroup, field.mapped_name, callback, true);
         field.mapped_group = undefined;
         field.mapped_name = undefined;
