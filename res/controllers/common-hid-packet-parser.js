@@ -332,12 +332,13 @@ class HIDPacket {
         const bytes = this.packSizes[field.pack];
         const signed = this.signedPackFormats.includes(field.pack);
         if (field.type === "bitvector") {
+            const bitVector = /** @type {HIDBitVector} */ (field.value);
             if (bytes > 1) {
                 console.error("HIDPacket.pack - Packing multibyte bit vectors not yet supported");
                 return;
             }
-            for (const bit_id in field.value.bits) {
-                const bit = field.value.bits[bit_id];
+            for (const bit_id in bitVector.bits) {
+                const bit = bitVector.bits[bit_id];
                 data[field.offset] = data[field.offset] | bit.value;
             }
             return;
@@ -538,9 +539,14 @@ class HIDPacket {
             console.error("HIDPacket.lookupBit - Bitvector match not found: " + group + "." + name);
             return undefined;
         }
+        if (field.type !== "bitvector") {
+            console.error("HIDPacket.lookupBit - Control doesn't refer a field of type bitvector: " + group + "." + name);
+            return undefined;
+        }
+        const bitVector = /** @type {HIDBitVector} */ (field.value);
         const bit_id = group + "." + name;
-        for (const bit_name in field.value.bits) {
-            const bit = field.value.bits[bit_name];
+        for (const bit_name in bitVector.bits) {
+            const bit = bitVector.bits[bit_name];
             if (bit.id === bit_id) {
                 return bit;
             }
@@ -610,18 +616,23 @@ class HIDPacket {
                 console.error("HIDPacket.addControl - Trying to overwrite non-bitmask control " + group + " " + name);
                 return;
             }
-            bitvector = field.value;
-            bitvector.addBitMask(group, name, bitmask);
-            if (callback !== undefined) {
-                if (typeof callback !== "function") {
-                    console.error(
-                        "HIDPacket.addControl - Callback provided for " + group + "." + name +
-                        " is not a function.");
-                    return;
+            if (field.type !== "bitvector") {
+                console.error("HIDPacket.addControl - Field is not of type bitvector: " + group + "." + name);
+                return undefined;
+            } else {
+                const bitVector = /** @type {HIDBitVector} */ (field.value);
+                bitVector.addBitMask(group, name, bitmask);
+                if (callback !== undefined) {
+                    if (typeof callback !== "function") {
+                        console.error(
+                            "HIDPacket.addControl - Callback provided for " + group + "." + name +
+                            " is not a function.");
+                        return;
+                    }
+                    this.setCallback(group, name, callback);
                 }
-                this.setCallback(group, name, callback);
+                return;
             }
-            return;
         }
 
         field = {};
@@ -748,8 +759,12 @@ class HIDPacket {
                 console.error("HIDPacket.addOutput - Overwrite non-bitmask control " + group + "." + name);
                 return;
             }
-            const bitvector = field.value;
-            bitvector.addOutputMask(group, name, bitmask);
+            if (field.type !== "bitvector") {
+                console.error("HIDPacket.addOutput - Field is not of type bitvector: " + group + "." + name);
+                return;
+            }
+            const bitVector = /** @type {HIDBitVector} */ (field.value);
+            bitVector.addOutputMask(group, name, bitmask);
             return;
         }
 
@@ -823,8 +838,9 @@ class HIDPacket {
             return;
         }
         if (field.type === "bitvector") {
-            for (const bit_id in field.value.bits) {
-                const bit = field.value.bits[bit_id];
+            const bitVector = /** @type {HIDBitVector} */ (field.value);
+            for (const bit_id in bitVector.bits) {
+                const bit = bitVector.bits[bit_id];
                 if (bit_id !== field_id) {
                     continue;
                 }
@@ -893,11 +909,16 @@ class HIDPacket {
      */
     parseBitVector(field, value) {
         /** @type bitObject[]*/
-        let bits;
+        const bits = new Array();
         let bit;
         let new_value;
-        for (const bit_id in field.value.bits) {
-            bit = field.value.bits[bit_id];
+        if (field.type !== "bitvector") {
+            console.error("HIDPacket.parseBitVector - Field isn't of type bitvector");
+            return undefined;
+        }
+        const bitVector = /** @type {HIDBitVector} */ (field.value);
+        for (const bit_id in bitVector.bits) {
+            bit = bitVector.bits[bit_id];
             new_value = (bit.bitmask & value) >> bit.bit_offset;
             if (bit.value !== undefined && bit.value !== new_value) {
                 bits[bit_id] = bit;
