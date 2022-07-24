@@ -889,10 +889,11 @@ class HIDPacket {
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      * @param {number} value Value must be a valid unsigned byte to parse, with enough bits.
-     * @returns {HIDBitVector} List of modified bits (delta)
+     * @returns {bitObject[]} List of modified bits (delta)
      */
     parseBitVector(field, value) {
-        const bits = new HIDBitVector;
+        /** @type bitObject[]*/
+        let bits;
         let bit;
         let new_value;
         for (const bit_id in field.value.bits) {
