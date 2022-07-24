@@ -267,6 +267,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     return framesRead;
 }
 
+// static
 bool EngineBufferScaleRubberBand::isEngineFinerAvailable() {
     return RUBBERBANDV3;
 }

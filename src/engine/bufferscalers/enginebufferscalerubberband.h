@@ -18,7 +18,8 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     ~EngineBufferScaleRubberBand() override;
 
     // Let EngineBuffer know if engine v3 is available
-    bool isEngineFinerAvailable();
+    static bool isEngineFinerAvailable();
+
     // Enable engine v3 if available
     void useEngineFiner(bool enable);
 

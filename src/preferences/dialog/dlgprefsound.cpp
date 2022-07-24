@@ -88,9 +88,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     keylockComboBox->clear();
     for (int i = 0; i < EngineBuffer::KEYLOCK_ENGINE_COUNT; ++i) {
-        keylockComboBox->addItem(
-                EngineBuffer::getKeylockEngineName(
-                        static_cast<EngineBuffer::KeylockEngine>(i)));
+        const auto engine = static_cast<EngineBuffer::KeylockEngine>(i);
+        if (EngineBuffer::isKeylockEngineAvailable(engine)) {
+            keylockComboBox->addItem(
+                    EngineBuffer::getKeylockEngineName(engine), i);
+        }
     }
 
     m_pLatencyCompensation = new ControlProxy("[Master]", "microphoneLatencyCompensation", this);
@@ -216,15 +218,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     m_pKeylockEngine =
             new ControlProxy("[Master]", "keylock_engine", this);
-    // if EngineBuffer doesn't accept the new engine it resets to RubberBand v2
-    m_pKeylockEngine->connectValueChanged(
-            this,
-            [this](double value) {
-                m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
-                        ConfigValue(value));
-                keylockComboBox->setCurrentIndex(static_cast<int>(value));
-            },
-            Qt::DirectConnection);
 
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
@@ -320,9 +313,9 @@ void DlgPrefSound::slotApply() {
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
         ScopedWaitCursor cursor;
-        m_pKeylockEngine->set(keylockComboBox->currentIndex());
+        m_pKeylockEngine->set(keylockComboBox->currentData().toDouble());
         m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
-                       ConfigValue(keylockComboBox->currentIndex()));
+                ConfigValue(keylockComboBox->currentData().toInt()));
 
         err = m_pSoundManager->setConfig(m_config);
     }
@@ -506,9 +499,18 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     }
 
     // Default keylock is Rubberband v2
-    int keylock_engine = m_pSettings->getValue(
-            ConfigKey("[Master]", "keylock_engine"), 1);
-    keylockComboBox->setCurrentIndex(keylock_engine);
+    int keylock_engine =
+            m_pSettings->getValue(ConfigKey("[Master]", "keylock_engine"),
+                    static_cast<int>(EngineBuffer::RUBBERBAND_FASTER));
+    int index = keylockComboBox->findData(keylock_engine);
+    if (index >= 0) {
+        keylockComboBox->setCurrentIndex(index);
+    } else {
+        const auto engine = static_cast<EngineBuffer::KeylockEngine>(keylock_engine);
+        keylockComboBox->addItem(
+                EngineBuffer::getKeylockEngineName(engine), keylock_engine);
+        keylockComboBox->setCurrentIndex(keylockComboBox->count() - 1);
+    }
 
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
@@ -690,6 +692,14 @@ void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig(m_pSoundManager.get());
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
+
+    int keylock_engine = static_cast<int>(EngineBuffer::RUBBERBAND_FASTER);
+    int index = keylockComboBox->findData(keylock_engine);
+    DEBUG_ASSERT(index >= 0);
+    if (index >= 0) {
+        keylockComboBox->setCurrentIndex(index);
+    }
+
     keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND_FASTER);
     m_pKeylockEngine->set(EngineBuffer::RUBBERBAND_FASTER);
 

@@ -8,6 +8,7 @@
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
@@ -150,9 +151,25 @@ class EngineBuffer : public EngineObject {
         case RUBBERBAND_FASTER:
             return tr("Rubberband (better)");
         case RUBBERBAND_FINER:
-            return tr("Rubberband R3 (near-hi-fi quality)");
+            if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
+                return tr("Rubberband R3 (near-hi-fi quality)");
+            }
+            [[fallthrough]];
         default:
-            return tr("Unknown (bad value)");
+            return tr("Unknown, using Rubberband (better)");
+        }
+    }
+
+    static bool isKeylockEngineAvailable(KeylockEngine engine) {
+        switch (engine) {
+        case SOUNDTOUCH:
+            return true;
+        case RUBBERBAND_FASTER:
+            return true;
+        case RUBBERBAND_FINER:
+            return EngineBufferScaleRubberBand::isEngineFinerAvailable();
+        default:
+            return false;
         }
     }
 

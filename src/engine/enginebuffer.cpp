@@ -808,19 +808,12 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         break;
     case RUBBERBAND_FASTER:
     default:
-        if (m_pScaleRB->isEngineFinerAvailable()) {
-            // trigger reconstruction of RubberBandStretcher with v2 options
-            m_pScaleRB->useEngineFiner(false);
-        }
+        m_pScaleRB->useEngineFiner(false);
         m_pScaleKeylock = m_pScaleRB;
         break;
     case RUBBERBAND_FINER:
-        if (m_pScaleRB->isEngineFinerAvailable()) {
-            // trigger reconstruction of RubberBandStretcher with v3 options
-            m_pScaleRB->useEngineFiner(true);
-        } else {
-            m_pKeylockEngine->set(static_cast<double>(RUBBERBAND_FASTER));
-        }
+        m_pScaleRB->useEngineFiner(
+                true); // in case of Rubberband V2 it falls back to RUBBERBAND_FASTER
         m_pScaleKeylock = m_pScaleRB;
         break;
     }
