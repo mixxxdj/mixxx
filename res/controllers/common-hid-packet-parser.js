@@ -945,7 +945,7 @@ class HIDPacket {
      * BitVectors are returned as bits you can iterate separately.
      *
      * @param {number[]} data Data received as InputReport from the device
-     * @returns List of changed fields with new value.
+     * @returns {packetField|bitObject} List of changed fields with new value.
      */
     parse(data) {
         const field_changes = {};
@@ -1614,7 +1614,7 @@ class HIDController {
      *   fields in default mixxx groups. Not done if a callback was defined.
      *
      * @param packet Unused
-     * @param delta
+     * @param {packetField|bitObject} delta
      */
     processIncomingPacket(packet, delta) {
         /** @type {packetField} */
