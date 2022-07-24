@@ -19,9 +19,7 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
           m_cReceiveMsg_index(0),
           m_bInSysex(false) {
     for (int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
-        // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
-        m_midiBuffer[k].message = 0;
-        m_midiBuffer[k].timestamp = 0;
+        m_midiBuffer[k] = {0, 0};
     }
 
     // Note: We prepend the input stream's index to the device's name to prevent
