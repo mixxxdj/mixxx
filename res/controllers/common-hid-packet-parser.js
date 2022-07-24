@@ -618,7 +618,7 @@ class HIDPacket {
             }
             if (field.type !== "bitvector") {
                 console.error("HIDPacket.addControl - Field is not of type bitvector: " + group + "." + name);
-                return undefined;
+                return;
             } else {
                 const bitVector = /** @type {HIDBitVector} */ (field.value);
                 bitVector.addBitMask(group, name, bitmask);
