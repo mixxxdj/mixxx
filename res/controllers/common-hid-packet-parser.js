@@ -1780,7 +1780,7 @@ class HIDController {
         if (value === this.buttonStates.released) {
             return;
         }
-        const status = engine.getValue(group, control) !== true;
+        const status = Boolean(engine.getValue(group, control)) !== true;
         engine.setValue(group, control, status);
     }
     /**
@@ -2084,9 +2084,9 @@ class HIDController {
         field.mapped_callback = callback;
         engine.connectControl(controlgroup, m_name, callback);
         if (engine.getValue(controlgroup, m_name)) {
-            this.setOutput(m_group, m_name, "on");
+            this.setOutput(m_group, m_name, true);
         } else {
-            this.setOutput(m_group, m_name, "off");
+            this.setOutput(m_group, m_name, false);
         }
     }
     /**
@@ -2128,7 +2128,7 @@ class HIDController {
      *     but if it matches a valid Mixxx control name in the group defined for field, the system
      *     attempts to attach it directly to the correct field. Together group and name form the ID
      *     of the field (group.name)
-     * @param {number} value Value to set as new output state of the control
+     * @param {number|boolean} value Value to set as new output state of the control
      * @param {boolean} [send_packet=false] If true, the packet (an HID OutputReport) is send
      *     immediately
      */
@@ -2138,8 +2138,8 @@ class HIDController {
             console.error("HIDController.setOutput - Unknown field: " + group + "." + name);
             return;
         }
-        field.value = value << field.bit_offset;
-        field.toggle = value << field.bit_offset;
+        field.value = Number(value) << field.bit_offset;
+        field.toggle = Number(value) << field.bit_offset;
         if (send_packet) {
             field.packet.send();
         }
