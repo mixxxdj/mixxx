@@ -971,7 +971,7 @@ class HIDPacket {
                         field.value = value;
                         continue;
                     }
-                    var change;
+                    let change = 0;
                     if (field.isEncoder) {
                         if (field.value === field.max && value === field.min) {
                             change = 1;
