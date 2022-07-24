@@ -24,7 +24,7 @@ this.HIDDebug = function(message) {
  * Callback function to call when, data for specified filed in the packet is updated.
  *
  * @callback controlCallback
- * @param {packetField} field Object that describes a field inside of a packet, which can often
+ * @param {packetField|bitObject} Object that describes a field/bit inside of a packet, which can often
  *     mapped to a Mixxx control.
  */
 /**
@@ -74,9 +74,8 @@ this.HIDDebug = function(message) {
  * @property {number} auto_repeat_interval
  * @property {number} min
  * @property {number} max
- * @property {('bitvector'|'button'|'control'|'output')} type Must be either:
+ * @property {('bitvector'|'control'|'output')} type Must be either:
  *              - 'bitvector'       If value is of type HIDBitVector
- *              - 'button'          If value is a boolean
  *              - 'control'         If value is a number
  *              - 'output'
  * @property {HIDBitVector|boolean|number} value
@@ -945,10 +944,11 @@ class HIDPacket {
      * BitVectors are returned as bits you can iterate separately.
      *
      * @param {number[]} data Data received as InputReport from the device
-     * @returns {packetField|bitObject} List of changed fields with new value.
+     * @returns {packetField[]|bitObject[]} List of changed fields with new value.
      */
     parse(data) {
-        const field_changes = {};
+        /** @type {packetField[]|bitObject[]}*/
+        const field_changes = new Array();
         let group;
         let group_name;
         let field;
@@ -1544,7 +1544,6 @@ class HIDController {
     parsePacket(data, length) {
         /** @type {HIDPacket} */
         let packet;
-        let changed_data;
         if (this.InputPackets === undefined) {
             return;
         }
@@ -1571,7 +1570,7 @@ class HIDController {
                     continue;
                 }
             }
-            changed_data = packet.parse(data);
+            const changed_data = packet.parse(data);
             if (packet.callback !== undefined) {
                 packet.callback(packet, changed_data);
                 return;
@@ -1614,17 +1613,16 @@ class HIDController {
      *   fields in default mixxx groups. Not done if a callback was defined.
      *
      * @param packet Unused
-     * @param {packetField|bitObject} delta
+     * @param {packetField[]|bitObject[]} delta
      */
     processIncomingPacket(packet, delta) {
         /** @type {packetField} */
-        let field;
         for (const name in delta) {
             if (this.ignoredControlChanges !== undefined &&
                 this.ignoredControlChanges.indexOf(name) !== -1) {
                 continue;
             }
-            field = delta[name];
+            const field = delta[name];
             if (field.type === "button") {
                 // Button/Boolean field
                 this.processButton(field);
@@ -1639,7 +1637,7 @@ class HIDController {
     /**
      * Get active group for this field
      *
-     * @param {packetField} field Object that describes a field inside of a packet, which can often
+     * @param {packetField|bitObject} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      * @returns {string} Group
      */
@@ -1662,7 +1660,7 @@ class HIDController {
     /**
      * Get active control name from field
      *
-     * @param {packetField} field Object that describes a field inside of a packet, which can often
+     * @param {packetField|bitObject} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      * @returns {string} Name of field
      */
@@ -1676,7 +1674,7 @@ class HIDController {
     /**
      * Process given button field, triggering events
      *
-     * @param {packetField} field Object that describes a field inside of a packet, which can often
+     * @param {bitObject} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      */
     processButton(field) {
@@ -1692,7 +1690,7 @@ class HIDController {
         }
 
         if (group === "modifiers") {
-            if (field.value !== 0) {
+            if (field.value !== false) {
                 this.modifiers.set(control, true);
             } else {
                 this.modifiers.set(control, false);
@@ -1713,7 +1711,7 @@ class HIDController {
         }
         if (control === "jog_touch") {
             if (group !== undefined) {
-                if (field.value === this.buttonStates.pressed) {
+                if (field.value === Boolean(this.buttonStates.pressed)) {
                     this.enableScratch(group, true);
                 } else {
                     this.enableScratch(group, false);
@@ -1722,12 +1720,12 @@ class HIDController {
             return;
         }
         if (this.toggleButtons.indexOf(control) !== -1) {
-            if (field.value === this.buttonStates.released) {
+            if (field.value === Boolean(this.buttonStates.released)) {
                 return;
             }
             if (engine.getValue(group, control)) {
                 if (control === "play") {
-                    engine.setValue(group, "stop", true);
+                    engine.setValue(group, "stop", 1);
                 } else {
                     engine.setValue(group, control, false);
                 }
@@ -1736,10 +1734,10 @@ class HIDController {
             }
             return;
         }
-        if (field.auto_repeat && field.value === this.buttonStates.pressed) {
+        if (field.auto_repeat && field.value === Boolean(this.buttonStates.pressed)) {
             console.log("Callback for " + field.group);
             engine.setValue(group, control, field.auto_repeat(field));
-        } else if (engine.getValue(group, control) === false) {
+        } else if (engine.getValue(group, control) === 0) {
             engine.setValue(group, control, true);
         } else {
             engine.setValue(group, control, false);
@@ -1757,10 +1755,14 @@ class HIDController {
         const control = this.getActiveFieldControl(field);
 
         if (group === undefined) {
-            console.warn(
+            console.error(
                 "HIDController.processControl - Could not resolve group from "
                 + field.group + " " + field.mapped_group + " "
                 + field.name + " " + field.mapped_name);
+            return;
+        }
+        if (field.type === "bitvector") {
+            console.error("HIDController.processControl  - Control refers a field of type bitvector: " + group + "." + control);
             return;
         }
 
@@ -1769,7 +1771,7 @@ class HIDController {
             return;
         }
         if (group === "modifiers") {
-            this.modifiers.set(control, field.value);
+            this.modifiers.set(control, Number(field.value));
             return;
         }
         if (control === "jog_wheel") {
@@ -1788,7 +1790,7 @@ class HIDController {
             engine.setValue(group, control, field_delta);
         } else {
             if (scaler !== undefined) {
-                value = scaler(group, control, value);
+                value = scaler(group, control, Number(value));
                 // See the Traktor S4 script for how to use this.  If the scaler function has this
                 // parameter set to true, we use the effects-engine setParameter call instead of
                 // setValue.
@@ -1797,7 +1799,7 @@ class HIDController {
                     return;
                 }
             }
-            engine.setValue(group, control, value);
+            engine.setValue(group, control, Number(value));
         }
     }
     /**
