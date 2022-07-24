@@ -615,18 +615,18 @@ class HIDPacket {
             return;
         }
 
-        let field = this.getFieldByOffset(offset, pack);
-        if (field !== undefined) {
+        const fieldByOffset = this.getFieldByOffset(offset, pack);
+        if (fieldByOffset !== undefined) {
             if (bitmask === undefined) {
                 console.error("HIDPacket.addControl - Registering offset " + offset + " pack " + pack);
                 console.error("HIDPacket.addControl - Trying to overwrite non-bitmask control " + group + " " + name);
                 return;
             }
-            if (field.type !== "bitvector") {
+            if (fieldByOffset.type !== "bitvector") {
                 console.error("HIDPacket.addControl - Field is not of type bitvector: " + group + "." + name);
                 return;
             } else {
-                const bitVector = /** @type {HIDBitVector} */ (field.value);
+                const bitVector = /** @type {HIDBitVector} */ (fieldByOffset.value);
                 bitVector.addBitMask(group, name, bitmask);
                 if (callback !== undefined) {
                     if (typeof callback !== "function") {
@@ -641,7 +641,8 @@ class HIDPacket {
             }
         }
 
-        field = {};
+        /** @type {packetField} */
+        const field = {};
         field.packet = undefined;
         field.id = group + "." + name;
         field.group = group;
@@ -748,8 +749,6 @@ class HIDPacket {
      */
     addOutput(group, name, offset, pack, bitmask, callback) {
         const control_group = this.getGroup(group, true);
-        /** @type {packetField} */
-        let field;
         const field_id = group + "." + name;
 
         if (control_group === undefined) {
@@ -765,22 +764,23 @@ class HIDPacket {
         offset -= 1;
 
         // Check if we are adding a Output bit to existing bitvector
-        field = this.getFieldByOffset(offset, pack);
-        if (field !== undefined) {
+        const fieldByOffset = this.getFieldByOffset(offset, pack);
+        if (fieldByOffset !== undefined) {
             if (bitmask === undefined) {
                 console.error("HIDPacket.addOutput - Overwrite non-bitmask control " + group + "." + name);
                 return;
             }
-            if (field.type !== "bitvector") {
+            if (fieldByOffset.type !== "bitvector") {
                 console.error("HIDPacket.addOutput - Field is not of type bitvector: " + group + "." + name);
                 return;
             }
-            const bitVector = /** @type {HIDBitVector} */ (field.value);
+            const bitVector = /** @type {HIDBitVector} */ (fieldByOffset.value);
             bitVector.addOutputMask(group, name, bitmask);
             return;
         }
 
-        field = {};
+        /** @type {packetField} */
+        const field = {};
         field.id = field_id;
         field.group = group;
         field.name = name;
