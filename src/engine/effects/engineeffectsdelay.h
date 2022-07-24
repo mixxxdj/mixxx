@@ -2,8 +2,13 @@
 
 #include "engine/engine.h"
 #include "engine/engineobject.h"
+#include "util/assert.h"
 #include "util/sample.h"
 #include "util/types.h"
+
+namespace {
+static constexpr int kMaxDelay = mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount;
+} // anonymous namespace
 
 /// The effect can produce the output signal with a specific delay caused
 /// by the inner effect processing. Based on that the signal on the input
@@ -39,6 +44,17 @@ class EngineEffectsDelay final : public EngineObject {
         // EngineEffectsDelay structure works with delay samples, so the value
         // is recalculated for the EngineEffectsDelay usage.
         m_currentDelaySamples = delayFrames * mixxx::kEngineChannelCount;
+
+        VERIFY_OR_DEBUG_ASSERT(m_currentDelaySamples >= 0) {
+            m_currentDelaySamples = 0;
+        }
+
+        // When mixxx will support other channel count variants than stereo,
+        // the kMaxDelay has to be divisible by the number of channels.
+        // Otherwise, channels may be swapped.
+        VERIFY_OR_DEBUG_ASSERT(m_currentDelaySamples <= kMaxDelay - mixxx::kEngineChannelCount) {
+            m_currentDelaySamples = kMaxDelay - mixxx::kEngineChannelCount;
+        }
     }
 
     /// The method delays the input buffer by the set number of samples

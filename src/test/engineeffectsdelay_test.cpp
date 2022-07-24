@@ -39,26 +39,26 @@ class EngineEffectsDelayTest : public MixxxTest {
 };
 
 TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+    // Set thread safe for EXPECT_DEATH.
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
+
+    EXPECT_DEATH({
+        // Set negative delay value.
+        m_effectsDelay.setDelayFrames(-1);
+    },
+            "m_currentDelaySamples >= 0");
+#else
     const SINT numSamples = 4;
 
     // Set negative delay value.
     m_effectsDelay.setDelayFrames(-1);
 
     const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
+    const CSAMPLE expectedResult[] = {-100.0, 100.0, -99.0, 99.0};
 
     mixxx::SampleBuffer pInOut(numSamples);
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
-
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-    // Set thread safe for EXPECT_DEATH.
-    GTEST_FLAG_SET(death_test_style, "threadsafe");
-
-    EXPECT_DEATH({
-        m_effectsDelay.process(pInOut.data(), numSamples);
-    },
-            "m_currentDelaySamples >= 0");
-#else
-    const CSAMPLE expectedResult[] = {-100.0, 100.0, -99.0, 99.0};
 
     m_effectsDelay.process(pInOut.data(), numSamples);
     AssertIdenticalBufferEquals(pInOut.span(), expectedResult);
@@ -67,26 +67,27 @@ TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
 
 TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
     const SINT numDelayFrames = mixxx::audio::SampleRate::kValueMax + 2;
-    const SINT numSamples = 4;
-
-    // Set delay greater than the size of the delay buffer.
-    m_effectsDelay.setDelayFrames(numDelayFrames);
-
-    const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
-
-    mixxx::SampleBuffer pInOut(numSamples);
-    SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
 
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     // Set thread safe for EXPECT_DEATH.
     GTEST_FLAG_SET(death_test_style, "threadsafe");
 
     EXPECT_DEATH({
-        m_effectsDelay.process(pInOut.data(), numSamples);
+        // Set delay greater than the size of the delay buffer.
+        m_effectsDelay.setDelayFrames(numDelayFrames);
     },
-            "delaySourcePos >= 0");
+            "m_currentDelaySamples <= kMaxDelay - mixxx::kEngineChannelCount");
 #else
-    const CSAMPLE expectedResult[] = {-100.0, 100.0, -99.0, 99.0};
+    const SINT numSamples = 4;
+
+    // Set delay greater than the size of the delay buffer.
+    m_effectsDelay.setDelayFrames(numDelayFrames);
+
+    const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
+    const CSAMPLE expectedResult[] = {-100.0, 75.0, -49.5, 24.75};
+
+    mixxx::SampleBuffer pInOut(numSamples);
+    SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
 
     m_effectsDelay.process(pInOut.data(), numSamples);
     AssertIdenticalBufferEquals(pInOut.span(), expectedResult);
