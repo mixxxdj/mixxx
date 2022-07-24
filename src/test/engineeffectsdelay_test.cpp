@@ -38,6 +38,7 @@ class EngineEffectsDelayTest : public MixxxTest {
     EngineEffectsDelay m_effectsDelay;
 };
 
+//Test's purpose is to test clamping of the delay value in setter (lower bound).
 TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     // Set thread safe for EXPECT_DEATH.
@@ -65,6 +66,7 @@ TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
 #endif
 }
 
+//Test's purpose is to test clamping of the delay value in setter (upper bound).
 TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
     const SINT numDelayFrames = mixxx::audio::SampleRate::kValueMax + 2;
 
