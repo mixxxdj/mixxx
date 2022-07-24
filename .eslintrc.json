@@ -74,8 +74,10 @@
     {
       "files": ["res/controllers/common-hid-packet-parser.js"],
       "globals": {
-        "console": "readonly",
-        "print": "writable"
+        "console": "readonly"
+      },
+      "rules": {
+        "camelcase": "off"
       }
     },
     {
