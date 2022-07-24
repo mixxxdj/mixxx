@@ -530,7 +530,7 @@ class HIDPacket {
      *     but if it matches a valid Mixxx control name in the group defined for field, the system
      *     attempts to attach it directly to the correct field. Together group and name form the ID
      *     of the field (group.name)
-     * @returns {packetField} Reference to a bit in a bitvector field
+     * @returns {bitObject} Reference to a bit in a bitvector field
      */
     lookupBit(group, name) {
         const field = this.getField(group, name);
@@ -1399,13 +1399,13 @@ class HIDController {
             return;
         }
         const bit_id = group + "." + name;
-        const field = packet.lookupBit(group, name);
-        if (field === undefined) {
+        const bitField = packet.lookupBit(group, name);
+        if (bitField === undefined) {
             console.error("HIDController.linkModifier - Bit field not found: " + bit_id);
             return;
         }
-        field.group = "modifiers";
-        field.name = modifier;
+        bitField.group = "modifiers";
+        bitField.name = modifier;
         this.modifiers.set(modifier);
     }
     /**
@@ -1437,22 +1437,28 @@ class HIDController {
             console.error("HIDController.linkControl - Creating modifier: input packet " + this.defaultPacket + " not found");
             return;
         }
-        let field = packet.getField(group, name);
+        const field = packet.getField(group, name);
         if (field === undefined) {
             console.error("HIDController.linkControl - Field not found: " + group + "." + name);
             return;
         }
-        if (field.type === "bitvector") {
-            field = packet.lookupBit(group, name);
+        if (field.type !== "bitvector") {
+            field.mapped_group = m_group;
+            field.mapped_name = m_name;
+            if (callback !== undefined) {
+                field.callback = callback;
+            }
+        } else {
+            const bitField = packet.lookupBit(group, name);
             if (field === undefined) {
                 console.error("HIDController.linkControl - Bit not found: " + group + "." + name);
                 return;
             }
-        }
-        field.mapped_group = m_group;
-        field.mapped_name = m_name;
-        if (callback !== undefined) {
-            field.callback = callback;
+            bitField.mapped_group = m_group;
+            bitField.mapped_name = m_name;
+            if (callback !== undefined) {
+                bitField.callback = callback;
+            }
         }
     }
     /**
