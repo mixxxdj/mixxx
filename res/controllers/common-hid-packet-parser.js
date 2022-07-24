@@ -588,7 +588,13 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param pack      control packing format for unpack(), one of b/B, h/H, i/I
+     * @param {object} pack Is one of the field packing types:
+     *              - b       signed byte
+     *              - B       unsigned byte
+     *              - h       signed short
+     *              - H       unsigned short
+     *              - i       signed integer
+     *              - I       unsigned integer
      * @param {number} bitmask  A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      *           Note: For controls that use full bytes (8bit, 16bit, ...), you can set this to
@@ -729,7 +735,13 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param pack control packing format for pack(), one of b/B, h/H, i/I
+     * @param {object} pack Is one of the field packing types:
+     *              - b       signed byte
+     *              - B       unsigned byte
+     *              - h       signed short
+     *              - H       unsigned short
+     *              - i       signed integer
+     *              - I       unsigned integer
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      * @param {controlCallback} [callback=undefined] Callback function for the control
