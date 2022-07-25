@@ -93,6 +93,7 @@ this.HIDDebug = function(message) {
  * @property {string} name
  * @property {string} mapped_group
  * @property {string} mapped_name
+ * @property {controlCallback} mapped_callback
  * @property {number} bitmask
  * @property {number} bit_offset
  * @property {controlCallback} callback
@@ -101,7 +102,7 @@ this.HIDDebug = function(message) {
  * @property {('button'|'output')} type Must be either:
  *              - 'button'
  *              - 'output'
- * @property {boolean} value
+ * @property {number} value
  * @property {number} toggle
  */
 
@@ -111,15 +112,22 @@ this.HIDDebug = function(message) {
  * Collection of bits in one parsed packet field. These objects are
  * created by HIDPacket addControl and addOutput and should not be
  * created manually.
- *
- * @property {number} size
- * @property {bitObject[]} bits
  */
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
 class HIDBitVector {
     constructor() {
+        /**
+         * Number of bitObjects in bits array
+         *
+         * @type {number}
+         */
         this.size = 0;
-        this.bits = {};
+        /**
+         * Array of bitObjects
+         *
+         * @type {bitObject[]}
+         */
+        this.bits = new Array();
     }
     /**
      * Get the index of the least significant bit that is 1 in `bitmask`
@@ -210,13 +218,26 @@ this.HIDBitVector = HIDBitVector;
 /**
  * HID Modifiers object
  *
+ * e.g. a shift button can be defined as modifier for the behavior of other controls.
+ *
  * Wraps all defined modifiers to one object with uniform API.
  * Don't call directly, this is available as HIDController.modifiers
  */
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
 class HIDModifierList {
     constructor() {
-        this.modifiers = Object();
+        /**
+         * Actual value of the modifier
+         *
+         * @type {boolean[]}
+         */
+        this.modifiers = new Array();
+
+        /**
+         * Function to be called after modifier value changes
+         *
+         * @type {packetCallback[]}
+         */
         this.callbacks = Object();
     }
     /**
@@ -235,7 +256,7 @@ class HIDModifierList {
      * Set modifier value
      *
      * @param {string} name Name of modifier
-     * @param {number|boolean} value Value to be set
+     * @param {boolean} value Value to be set
      */
     set(name, value) {
         if (!(name in this.modifiers)) {
@@ -252,12 +273,12 @@ class HIDModifierList {
      * Get modifier value
      *
      * @param {string} name Name of modifier
-     * @returns {number|boolean} Value of modifier
+     * @returns {boolean} Value of modifier
      */
     get(name) {
         if (!(name in this.modifiers)) {
             console.error("HIDModifierList.get - Unknown modifier: " + name);
-            return false;
+            return undefined;
         }
         return this.modifiers[name];
     }
@@ -287,28 +308,57 @@ this.HIDModifierList = HIDModifierList;
  * currently not supported)
  *
  * Each HIDPacket must be registered to HIDController.
- *
- * @param {string} name Name of packet (it makes sense to refer the HID report type and HID
- *     Report-ID here e.g. 'InputReport_0x02' or 'OutputReport_0x81')
- * @param {number} reportId ReportID of the packet. If the device does not use ReportIDs this must
- *     be 0. [default = 0]
- * @param {packetCallback} callback function to call when the packet type represents an InputReport
- *     an a new report is received. If packet callback is set, the
- *          packet is not parsed by delta functions.
- *          callback is not meaningful for output packets
- * @param {number[]} header   (optional) list of bytes to match from beginning
- *          of packet. Do NOT put the report ID in this; use
- *          the reportId parameter instead.
  */
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
 class HIDPacket {
-    constructor(name, reportId = 0, callback, header) {
+    /**
+     * @param {string} name Name of packet (it makes sense to refer the HID report type and HID
+     * ReportID here e.g. 'InputReport_0x02' or 'OutputReport_0x81')
+     * @param {number} reportId ReportID of the packet. If the device does not use ReportIDs this
+     * must be 0. [default = 0]
+     * @param {packetCallback} callback function to call when the packet type represents an InputReport,
+     * and a new report is received. If packet callback is set, the packet is not parsed by delta
+     * functions. Note, that a callback is not meaningful for output packets.
+     * @param {number[]} header (optional) List of bytes to match from beginning of packet.
+     * Do NOT put the report ID in this - use the reportId parameter instead.
+     */
+    constructor(name, reportId = 0, callback = undefined, header = []) {
+        /**
+         * Name of packet
+         *
+         * @type {string}
+         */
         this.name = name;
-        this.header = header;
-        this.callback = callback;
+
+        /**
+         * ReportID of the packet. If the device does not use ReportIDs this must be 0.
+         *
+         * @type {number}
+         */
         this.reportId = reportId;
+
+        /**
+         * Function to call when the packet type represents an InputReport, and a new report is received.
+         *
+         * @type {packetCallback}
+         */
+        this.callback = callback;
+
+        /**
+         * List of bytes to match from beginning of packet
+         *
+         * @type {number[]}
+         */
+        this.header = header;
+
         this.groups = {};
-        this.length = 0;
+
+        /**
+         * Length of packet in bytes
+         *
+         * @type {number}
+         */
+        this.length = this.header.length;
 
         // Size of various 'pack' values in bytes
         this.packSizes = {b: 1, B: 1, h: 2, H: 2, i: 4, I: 4};
@@ -1049,50 +1099,45 @@ this.HIDPacket = HIDPacket;
 
 
 /**
- * HID Controller Class
- *
- * HID Controller with packet parser
- * Global attributes include:
- *
- * @property {boolean} initialized          by default false, you should set this to true when
- *                      controller is found and everything is OK
- * @property {string} activeDeck           by default undefined, used to map the virtual deck
- *                      names 'deck','deck1' and 'deck2' to actual [ChannelX]
- * @property {boolean} isScratchEnabled     set to true, when button 'jog_touch' is active
- * @property buttonStates         valid state values for buttons, should contain fields
- *                      released (default 0) and pressed (default 1)
- * @property LEDColors            possible Output colors named, must contain 'off' value
- * @property deckOutputColors        Which colors to use for each deck. Default 'on' for first
- *                      four decks. Values are like {1: 'red', 2: 'green' }
- *                      and must reference valid OutputColors fields.
- * @property {number} OutputUpdateInterval    By default undefined. If set, it's a value for timer
- *                      executed every n ms to update Outputs with updateOutputs()
- * @property {HIDModifierList} modifiers            Reference to HIDModifierList object
- * @property toggleButtons        List of button names you wish to act as 'toggle', i.e.
- *                      pressing the button and releasing toggles state of the
- *                      control and does not set it off again when released.
- *
- * Scratch variables (initialized with 'common' defaults, you can override):
- * @property {number} scratchintervalsPerRev   Intervals value for scratch_enable
- * @property {number} scratchRPM               RPM value for scratch_enable
- * @property {number} scratchAlpha             Alpha value for scratch_enable
- * @property {number} scratchBeta              Beta value for scratch_enable
- * @property {boolean} scratchRampOnEnable     Set true to ramp the deck speed down. Set false to stop instantly [default = false]
- * @property {boolean} scratchRampOnDisable    Set true to ramp the deck speed up. Set false to jump to normal play speed instantly [default = false]
- * @property {scratchingCallback} enableScratchCallback Callback function to call when, jog wheel scratching got enabled or disabled
- * @property {number} auto_repeat_interval     Auto repeat interval default for fields, where not
- * specified individual
+ * HID Controller Class with packet parser
  */
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
 class HIDController {
     constructor() {
+
+        /**
+         * - By default 'false'
+         * - Should be set 'true', when controller is found and everything is OK
+         *
+         * @type {boolean}
+         */
         this.initialized = false;
+
+        /**
+         * @type {number}
+         */
         this.activeDeck = undefined;
 
-        this.InputPackets = {};
-        this.OutputPackets = {};
-        // Default input control packet name: can be modified for controllers
-        // which can swap modes (wiimote for example)
+        /**
+         * Array of HIDPackets representing HID InputReports
+         *
+         * @type {HIDPacket[]}
+         */
+        this.InputPackets = new Array();
+
+        /**
+         * Array of HIDPackets representing HID OutputReports
+         *
+         * @type {HIDPacket[]}
+         */
+        this.OutputPackets = new Array();
+
+        /**
+         * Default input packet name: can be modified for controllers
+         * which can swap modes (wiimote for example)
+         *
+         * @type {string}
+         */
         this.defaultPacket = "control";
 
         // Callback functions called by deck switching. Undefined by default
@@ -1101,36 +1146,121 @@ class HIDController {
 
         // Scratch parameter defaults for this.scratchEnable function
         // override for custom control
+        /**
+         * Set to true, when button 'jog_touch' is active
+         *
+         * @type {boolean}
+         */
         this.isScratchEnabled = false;
+
+        /**
+         * The resolution of the jogwheel HID control (in intervals per revolution)
+         * - Default is 128
+         *
+         * @type {number}
+         */
         this.scratchintervalsPerRev = 128;
+
+        /**
+         * The speed of the imaginary record at 0% pitch - in revolutions per minute (RPM)
+         * - Default 33+1/3 - adjust for comfort
+         *
+         * @type {number}
+         */
         this.scratchRPM = 33 + 1 / 3;
+
+        /**
+         * The alpha coefficient of the filter
+         * - Default is 1/8 (0.125) - start tune from there
+         *
+         * @type {number}
+         */
         this.scratchAlpha = 1.0 / 8;
+
+        /**
+         * The beta coefficient of the filter
+         * - Default is scratchAlpha/32 - start tune from there
+         *
+         * @type {number}
+         */
         this.scratchBeta = this.scratchAlpha / 32;
+
+        /**
+         * - Set 'true' to ramp the deck speed down.
+         * - Set 'false' to stop instantly (default)
+         *
+         * @type {boolean}
+         */
         this.scratchRampOnEnable = false;
+
+        /**
+         * - Set 'true' to ramp the deck speed up.
+         * - Set 'false' to jump to normal play speed instantly (default)
+         *
+         * @type {boolean}
+         */
         this.scratchRampOnDisable = false;
 
+        /**
+         * Callback function to call when, jog wheel scratching got enabled or disabled
+         *
+         * @type {scratchingCallback}
+         */
         this.enableScratchCallback = undefined;
 
-        // Button states available
+        /**
+         * List of valid state values for buttons, should contain fields:
+         * - 'released' (default 0)
+         * - 'pressed' (default 1)
+         */
         this.buttonStates = {released: 0, pressed: 1};
-        // Output color values to send
+
+        /**
+         * List of named output colors to send
+         * - must contain 'off' value
+         */
         this.LEDColors = {off: 0x0, on: 0x7f};
-        // Toggle buttons
+
+        /**
+         * List of button names you wish to act as 'toggle'
+         *
+         * i.e. pressing the button and releasing toggles state of the control and doesn't set it off again when released.
+         */
         this.toggleButtons = [
             "play", "pfl", "keylock", "quantize", "reverse", "slip_enabled",
             "group_[Channel1]_enable", "group_[Channel2]_enable",
             "group_[Channel3]_enable", "group_[Channel4]_enable"
         ];
 
-        // Override to set specific colors for multicolor button Output per deck
+        /**
+         * List of colors to use for each deck
+         * - Default is 'on' for first four decks.
+         *
+         * Override to set specific colors for multicolor button output per deck:
+         * - Values are like {1: 'red', 2: 'green' } and must reference valid OutputColors fields.
+         */
         this.deckOutputColors = {1: "on", 2: "on", 3: "on", 4: "on"};
-        // Mapping of automatic deck switching with deckSwitch function
+
+        //
+        /**
+         * Used to map the virtual deck names 'deck', 'deck1' or 'deck2' to actual [ChannelX]
+         *
+         * @type {string[]}
+         */
         this.virtualDecks = ["deck", "deck1", "deck2", "deck3", "deck4"];
+
+        /**
+         * Mapping of automatic deck switching with switchDeck function
+         */
         this.deckSwitchMap = {1: 2, 2: 1, 3: 4, 4: 3, undefined: 1};
 
-        // Standard target groups available in mixxx. This is used by
-        // HID packet parser to recognize group parameters we should
-        // try sending to mixxx.
+        /**
+         * Standard target groups available in mixxx.
+         *
+         * This is used by HID packet parser to recognize group parameters we should try sending to mixxx.
+         *
+         * @type {string[]}
+         */
         this.valid_groups = [
             "[Channel1]",
             "[Channel2]",
@@ -1157,13 +1287,44 @@ class HIDController {
             "[InternalClock]"
         ];
 
-        // Set to value in ms to update Outputs periodically
+        //
+        /**
+         * Set to value in ms to update Outputs periodically
+         * - By default undefined.
+         * - If set, it's a value for timer executed every n ms to update Outputs with updateOutputs()
+         *
+         * @todo This is unused and updateOutputs() doesn't exist - Remove?
+         * @type number
+         */
         this.OutputUpdateInterval = undefined;
 
+        /**
+         * Reference to HIDModifierList object
+         *
+         * @type {HIDModifierList}
+         */
         this.modifiers = new HIDModifierList();
-        this.scalers = {};
-        this.timers = {};
 
+        /**
+         * Array of scaling function callbacks
+         *
+         * @type {scalingCallback[]}
+         */
+        this.scalers = new Array();
+
+        /**
+         * Array of timers
+         *
+         * @type {number[]}
+         */
+        this.timers = new Array();
+
+        /**
+         * Auto repeat interval default for fields, where not specified individual (in milliseconds)
+         * - Default = 100
+         *
+         * @type {number}
+         */
         this.auto_repeat_interval = 100;
     }
     /** Function to close the controller object cleanly */
@@ -1406,7 +1567,7 @@ class HIDController {
         }
         bitField.group = "modifiers";
         bitField.name = modifier;
-        this.modifiers.set(modifier);
+        this.modifiers.set(modifier, Boolean(bitField.value));
     }
     /**
      * @todo Implement unlinking of modifiers
@@ -1690,7 +1851,7 @@ class HIDController {
         }
 
         if (group === "modifiers") {
-            if (field.value !== false) {
+            if (field.value !== 0) {
                 this.modifiers.set(control, true);
             } else {
                 this.modifiers.set(control, false);
@@ -1700,6 +1861,7 @@ class HIDController {
         if (field.auto_repeat) {
             const timer_id = "auto_repeat_" + field.id;
             if (field.value) {
+                // @ts-ignore startAutoRepeatTimer needs to be implemented in the users mapping
                 this.startAutoRepeatTimer(timer_id, field.auto_repeat_interval);
             } else {
                 this.stopAutoRepeatTimer(timer_id);
@@ -1711,7 +1873,7 @@ class HIDController {
         }
         if (control === "jog_touch") {
             if (group !== undefined) {
-                if (field.value === Boolean(this.buttonStates.pressed)) {
+                if (field.value === this.buttonStates.pressed) {
                     this.enableScratch(group, true);
                 } else {
                     this.enableScratch(group, false);
@@ -1720,7 +1882,7 @@ class HIDController {
             return;
         }
         if (this.toggleButtons.indexOf(control) !== -1) {
-            if (field.value === Boolean(this.buttonStates.released)) {
+            if (field.value === this.buttonStates.released) {
                 return;
             }
             if (engine.getValue(group, control)) {
@@ -1734,7 +1896,7 @@ class HIDController {
             }
             return;
         }
-        if (field.auto_repeat && field.value === Boolean(this.buttonStates.pressed)) {
+        if (field.auto_repeat && field.value === this.buttonStates.pressed) {
             console.log("Callback for " + field.group);
             engine.setValue(group, control, field.auto_repeat(field));
         } else if (engine.getValue(group, control) === 0) {
@@ -1770,7 +1932,7 @@ class HIDController {
             return;
         }
         if (group === "modifiers") {
-            this.modifiers.set(control, Number(field.value));
+            this.modifiers.set(control, Boolean(field.value));
             return;
         }
         if (control === "jog_wheel") {
