@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QJSValue>
 #include <QRegularExpression>
+#include <algorithm>
 
 #include "controllers/defs_controllers.h"
 #include "moc_controller.cpp"
@@ -99,11 +100,9 @@ void Controller::send(const QList<int>& data, unsigned int length) {
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
 
-    int size = data.size();
-    QByteArray msg(size, 0);
-    for (int i = 0; i < size; ++i) {
-        msg[i] = data.at(i);
-    }
+    QByteArray msg;
+    msg.resize(data.size());
+    std::copy(data.cbegin(), data.cend(), msg.begin());
     sendBytes(msg);
 }
 
