@@ -14,6 +14,12 @@ EngineEffectsDelay::EngineEffectsDelay()
 void EngineEffectsDelay::process(CSAMPLE* pInOut,
         const int iBufferSize) {
     if (m_prevDelaySamples == 0 && m_currentDelaySamples == 0) {
+        for (int i = 0; i < iBufferSize; ++i) {
+            // Put samples into delay buffer.
+            m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
+            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
+        }
+
         return;
     }
 
