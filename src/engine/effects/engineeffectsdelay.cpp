@@ -7,8 +7,8 @@ EngineEffectsDelay::EngineEffectsDelay()
         : m_currentDelaySamples(0),
           m_prevDelaySamples(0),
           m_delayBufferWritePos(0) {
-    m_pDelayBuffer = SampleUtil::alloc(kMaxDelay);
-    SampleUtil::clear(m_pDelayBuffer, kMaxDelay);
+    m_pDelayBuffer = SampleUtil::alloc(kDelayBufferSize);
+    SampleUtil::clear(m_pDelayBuffer, kDelayBufferSize);
 }
 
 void EngineEffectsDelay::process(CSAMPLE* pInOut,
@@ -17,43 +17,43 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
         return;
     }
 
-    // The "+ kMaxDelay" addition ensures positive values for the modulo calculation.
+    // The "+ kDelayBufferSize" addition ensures positive values for the modulo calculation.
     // From a mathematical point of view, this addition can be removed. Anyway,
     // from the cpp point of view, the modulo operator for negative values
     // (for example, x % y, where x is a negative value) produces negative results
     // (but in math the result value is positive).
     int delaySourcePos =
-            (m_delayBufferWritePos + kMaxDelay - m_currentDelaySamples) %
-            kMaxDelay;
+            (m_delayBufferWritePos + kDelayBufferSize - m_currentDelaySamples) %
+            kDelayBufferSize;
 
     if (m_prevDelaySamples == m_currentDelaySamples) {
         for (int i = 0; i < iBufferSize; ++i) {
             // Put samples into delay buffer.
             m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
-            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kMaxDelay;
+            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
 
             // Take a delayed sample from the delay buffer
             // and copy it to the destination buffer.
             pInOut[i] = m_pDelayBuffer[delaySourcePos];
-            delaySourcePos = (delaySourcePos + 1) % kMaxDelay;
+            delaySourcePos = (delaySourcePos + 1) % kDelayBufferSize;
         }
 
     } else {
-        // The "+ kMaxDelay" addition ensures positive values for the modulo calculation.
+        // The "+ kDelayBufferSize" addition ensures positive values for the modulo calculation.
         // From a mathematical point of view, this addition can be removed. Anyway,
         // from the cpp point of view, the modulo operator for negative values
         // (for example, x % y, where x is a negative value) produces negative results
         // (but in math the result value is positive).
         int oldDelaySourcePos =
-                (m_delayBufferWritePos + kMaxDelay - m_prevDelaySamples) %
-                kMaxDelay;
+                (m_delayBufferWritePos + kDelayBufferSize - m_prevDelaySamples) %
+                kDelayBufferSize;
 
         const RampingValue<CSAMPLE_GAIN> delayChangeRamped(0.0f, 1.0f, iBufferSize);
 
         for (int i = 0; i < iBufferSize; ++i) {
             // Put samples into delay buffer.
             m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
-            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kMaxDelay;
+            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
 
             // Take delayed samples from the delay buffer
             // and with the use of ramping (cross-fading),
@@ -64,8 +64,8 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
             pInOut[i] = m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix);
             pInOut[i] += m_pDelayBuffer[delaySourcePos] * crossMix;
 
-            oldDelaySourcePos = (oldDelaySourcePos + 1) % kMaxDelay;
-            delaySourcePos = (delaySourcePos + 1) % kMaxDelay;
+            oldDelaySourcePos = (oldDelaySourcePos + 1) % kDelayBufferSize;
+            delaySourcePos = (delaySourcePos + 1) % kDelayBufferSize;
         }
 
         m_prevDelaySamples = m_currentDelaySamples;

@@ -48,7 +48,7 @@ TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
         // Set negative delay value.
         m_effectsDelay.setDelayFrames(-1);
     },
-            "m_currentDelaySamples >= 0");
+            "delayFrames >= 0");
 #else
     const SINT numSamples = 4;
 
@@ -78,7 +78,7 @@ TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
         // Set delay greater than the size of the delay buffer.
         m_effectsDelay.setDelayFrames(numDelayFrames);
     },
-            "m_currentDelaySamples <= kMaxDelay - mixxx::kEngineChannelCount");
+            "delayFrames <= kMaxDelayFrames");
 #else
     const SINT numSamples = 4;
 
