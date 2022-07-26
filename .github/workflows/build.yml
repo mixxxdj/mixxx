@@ -55,8 +55,8 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-focal
             qt_qpa_platform: offscreen
-          - name: macOS 10.15
-            os: macos-10.15
+          - name: macOS 11
+            os: macos-11
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -146,14 +146,14 @@ jobs:
       run: git fetch origin --force --tags
 
     - name: "[macOS/Ubuntu 18.04] Set up cmake"
-      uses: jwlawson/actions-setup-cmake@v1.4
+      uses: jwlawson/actions-setup-cmake@v1.12
       # Ubuntu 20.04 should use the CMake version from the repos, and Visual
       # Studio on Windows comes with its own CMake version anyway.
       if: runner.os == 'macOS' || matrix.os == 'ubuntu-18.04'
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
-        cmake-version: '3.16.x'
+        cmake-version: '3.19.x'
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
