@@ -29,16 +29,30 @@ this.HIDDebug = function(message) {
 /**
  * Callback function to call when, data for specified filed in the packet is updated.
  *
- * @callback controlCallback
+ * @callback fieldChangeCallback
  * @param {packetField|bitObject} Object that describes a field/bit inside of a packet, which can often
  *     mapped to a Mixxx control.
  */
+
+/**
+ * Callback function, which will be called every time, the value of the connected control changes.
+ *
+ * @callback controlCallback
+ * @param {number} value New value of the control
+ * @param {string} group Mixxx control group name
+ * @param {string} name Mixxx control name
+ * @returns {any} Value
+ */
+
 /**
  * In almost every case, a HID controller sends data values with input fields which are not directly
  * suitable for Mixxx control values. To solve this issue, HIDController contains function to scale
  * the input value to suitable range automatically before calling any field processing functions.
- * Scalers can be registered with HIDController.registerScalingFunction(group,name,callback) in
- * HIDController.
+ * Scalers can be registered with HIDController.setScaler.
+ *
+ * The ScallingCallback function can also have a boolean property .useSetParameter, if:
+ * - 'false' or 'undefined', engine.setValue is used
+ * - 'true' engine.setParameter is used
  *
  * @callback scalingCallback
  * @param {string} group Defines the group name for the field. The group can be any string, but if
@@ -82,10 +96,10 @@ this.HIDDebug = function(message) {
  * @property {number} end_offset
  * @property {number} bitmask
  * @property {boolean} isEncoder
- * @property {controlCallback} callback
+ * @property {fieldChangeCallback} callback
  * @property {boolean} soft_takeover
  * @property {boolean} ignored
- * @property {controlCallback} auto_repeat
+ * @property {fieldChangeCallback} auto_repeat
  * @property {number} auto_repeat_interval
  * @property {number} min
  * @property {number} max
@@ -111,8 +125,8 @@ this.HIDDebug = function(message) {
  * @property {controlCallback} mapped_callback
  * @property {number} bitmask
  * @property {number} bit_offset
- * @property {controlCallback} callback
- * @property {controlCallback} auto_repeat
+ * @property {fieldChangeCallback} callback
+ * @property {fieldChangeCallback} auto_repeat
  * @property {number} auto_repeat_interval
  * @property {('button'|'output')} type Must be either:
  *              - 'button'
@@ -665,7 +679,7 @@ class HIDPacket {
      * undefined NOTE: Parsing bitmask with multiple bits is not supported yet.
      * @param {boolean} isEncoder indicates if this is an encoder which should be wrapped and delta
      *     reported
-     * @param {controlCallback} callback Callback function for the control
+     * @param {fieldChangeCallback} callback Callback function for the control
      */
     addControl(group, name, offset, pack, bitmask, isEncoder, callback) {
         const control_group = this.getGroup(group, true);
@@ -808,7 +822,7 @@ class HIDPacket {
      *              - I       unsigned integer
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
-     * @param {controlCallback} [callback=undefined] Callback function for the control
+     * @param {fieldChangeCallback} [callback=undefined] Callback function for the control
      */
     addOutput(group, name, offset, pack, bitmask, callback) {
         const control_group = this.getGroup(group, true);
@@ -901,7 +915,7 @@ class HIDPacket {
      *     but if it matches a valid Mixxx control name in the group defined for field, the system
      *     attempts to attach it directly to the correct field. Together group and name form the ID
      *     of the field (group.name)
-     * @param {controlCallback} callback Callback function for the control
+     * @param {fieldChangeCallback} callback Callback function for the control
      */
     setCallback(group, name, callback) {
         const field = this.getField(group, name);
@@ -1317,7 +1331,7 @@ class HIDController {
          * - If set, it's a value for timer executed every n ms to update Outputs with updateOutputs()
          *
          * @todo This is unused and updateOutputs() doesn't exist - Remove?
-         * @type number
+         * @type {number}
          */
         this.OutputUpdateInterval = undefined;
 
@@ -1349,6 +1363,23 @@ class HIDController {
          * @type {number}
          */
         this.auto_repeat_interval = 100;
+
+        /**
+         * Deprecated: Use postProcessDelta instead
+         * (not used in any official mapping)
+         *
+         * @type {packetCallback}
+         */
+        this.processDelta = undefined;
+
+        /**
+         * Callback that is executed after parsing incoming packet
+         * (see Traktor-Kontrol-F1-scripts.js for an example)
+         *
+         * @type {packetCallback}
+         */
+        this.postProcessDelta = undefined;
+
     }
     /** Function to close the controller object cleanly */
     close() {
@@ -1527,7 +1558,7 @@ class HIDController {
      *     but if it matches a valid Mixxx control name in the group defined for field, the system
      *     attempts to attach it directly to the correct field. Together group and name form the ID
      *     of the field (group.name)
-     * @param {controlCallback} callback Callback function for the control
+     * @param {fieldChangeCallback} callback Callback function for the control
      */
     setCallback(packet, group, name, callback) {
         const input_packet = this.getInputPacket(packet);
@@ -1554,11 +1585,11 @@ class HIDController {
      * Lookup scaling function for control
      *
      * @param {string} name Reference of the scaling function in scalers list of HIDController
-     * @param _callback Unused
-     * @returns  {scalingCallback} Scaling function. Returns undefined if function is not
+     * @param {any} _callback Unused
+     * @returns {scalingCallback} Scaling function. Returns undefined if function is not
      *     registered.
      */
-    getScaler(name, _callback) {
+    getScaler(name, _callback = undefined) {
         if (!(name in this.scalers)) {
             return undefined;
         }
@@ -1574,7 +1605,7 @@ class HIDController {
      *     but if it matches a valid Mixxx control name in the group defined for field, the system
      *     attempts to attach it directly to the correct field. Together group and name form the ID
      *     of the field (group.name)
-     * @param {any} modifier
+     * @param {string} modifier Name of the modifier e.g. 'shiftbutton'
      */
     linkModifier(group, name, modifier) {
         const packet = this.getInputPacket(this.defaultPacket);
@@ -1592,15 +1623,17 @@ class HIDController {
         bitField.name = modifier;
         this.modifiers.set(modifier, Boolean(bitField.value));
     }
+
     /**
      * @todo Implement unlinking of modifiers
      * @param {string} _group Unused
      * @param {string} _name Unused
-     * @param _modifier Unused
+     * @param {string} _modifier Unused
      */
     unlinkModifier(_group, _name, _modifier) {
         console.warn("HIDController.unlinkModifier - Unlinking of modifiers not yet implemented");
     }
+
     /**
      * Link a previously declared HID control to actual mixxx control
      *
@@ -1613,7 +1646,7 @@ class HIDController {
      *     of the field (group.name)
      * @param {string} m_group Mapped group
      * @param {string} m_name Mapped name
-     * @param {controlCallback} callback Callback function for the control
+     * @param {fieldChangeCallback} callback Callback function for the control
      */
     linkControl(group, name, m_group, m_name, callback) {
         const packet = this.getInputPacket(this.defaultPacket);
@@ -1719,7 +1752,7 @@ class HIDController {
      * Parse a packet representing an HID InputReport, and processes each field with "unpack":
      *  - Calls packet callback and returns, if packet callback was defined
      *  - Calls processIncomingPacket and processes automated events there.
-     *  - If defined, calls processDelta for results after processing automated fields
+     *  - If defined, calls postProcessDelta for results after processing automated fields
      *
      * @param {Uint8Array} data The data received from an HID InputReport.
      *                        In case of HID devices, which use ReportIDs to enumerate the reports,
@@ -1796,13 +1829,16 @@ class HIDController {
      * - Finally tries run matching engine.setValue() function for control
      *   fields in default mixxx groups. Not done if a callback was defined.
      *
-     * @param packet Unused
+     * @param {any} packet Unused
      * @param {Record.<string, packetField | bitObject>} delta
      */
     processIncomingPacket(packet, delta) {
         /** @type {packetField} */
         for (const name in delta) {
+            // @ts-ignore ignoredControlChanges should be defined in  the users mapping
+            // see EKS-Otus.js for an example
             if (this.ignoredControlChanges !== undefined &&
+                // @ts-ignore
                 this.ignoredControlChanges.indexOf(name) !== -1) {
                 continue;
             }
@@ -1992,8 +2028,8 @@ class HIDController {
      * @param {string} group Defines the group name for the field. The group can be any string, but
      *     if it matches a valid Mixxx control group name, it is possible to map a field to a
      *     control or output without any additional code.
-     * @param control
-     * @param value
+     * @param {string} control Name of the control (button)
+     * @param {number} value Value defined in this.buttonStates
      */
     toggle(group, control, value) {
         if (value === this.buttonStates.released) {
@@ -2083,11 +2119,15 @@ class HIDController {
      */
     jog_wheel(field) {
         const active_group = this.getActiveFieldGroup(field);
-        let value = undefined;
+        if (field.type === "bitvector") {
+            console.error("HIDPacket.jog_wheel - Setting field.value of type for bitvector packet does not make sense");
+            return;
+        }
+        let value;
         if (field.isEncoder) {
-            value = field.delta;
+            value = Number(field.delta);
         } else {
-            value = field.value;
+            value = Number(field.value);
         }
         if (this.isScratchEnabled) {
             const deck = this.resolveDeck(active_group);
@@ -2132,7 +2172,7 @@ class HIDController {
      *
      * @param {string} group
      * @param {string} name
-     * @param {controlCallback} callback Callback function for the control
+     * @param {fieldChangeCallback} callback Callback function for the control
      * @param {number} interval
      */
     setAutoRepeat(group, name, callback, interval) {
