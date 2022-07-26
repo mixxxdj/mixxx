@@ -6,6 +6,9 @@
 
 template<unsigned int SIZE>
 class EngineFilterDelay : public EngineObjectConstIn {
+    static_assert(SIZE % mixxx::kEngineChannelCount == 0,
+            "The buffer size has to be divisible by the number of channels.");
+
   public:
     EngineFilterDelay()
             : m_delaySamples(0),
@@ -28,16 +31,18 @@ class EngineFilterDelay : public EngineObjectConstIn {
     }
 
     void setDelay(unsigned int delaySamples) {
-        m_delaySamples = delaySamples;
+        unsigned int unalignedSamples = delaySamples % mixxx::kEngineChannelCount;
 
-        // When mixxx will support other channel count variants than stereo,
-        // the kMaxDelay has to be divisible by the number of channels.
-        // Otherwise, channels may be swapped.
-        const int maxDelaySamples = static_cast<int>(SIZE - mixxx::kEngineChannelCount);
-
-        VERIFY_OR_DEBUG_ASSERT(m_delaySamples <= maxDelaySamples) {
-            m_delaySamples = maxDelaySamples;
+        VERIFY_OR_DEBUG_ASSERT(unalignedSamples == 0) {
+            // Round to the previous multiple of the number of channel count.
+            delaySamples = delaySamples - unalignedSamples;
         }
+
+        VERIFY_OR_DEBUG_ASSERT(delaySamples < SIZE) {
+            delaySamples = SIZE - mixxx::kEngineChannelCount;
+        }
+
+        m_delaySamples = delaySamples;
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
