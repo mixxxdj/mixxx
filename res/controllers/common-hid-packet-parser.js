@@ -51,6 +51,7 @@ this.HIDDebug = function(message) {
  * @param {number} value Value to be scaled
  * @returns {number} Scaled value
  */
+
 /**
  * Callback function to call when, jog wheel scratching got enabled or disabled by
  * the button with the special name 'jog_touch'
@@ -58,11 +59,19 @@ this.HIDDebug = function(message) {
  * @callback scratchingCallback
  * @param {boolean} isScratchEnabled True, when button 'jog_touch' is active
  */
+
+/**
+ * A string of group and control name separated by a dot
+ *
+ * @typedef packetItemId
+ * @type {string}
+ */
+
 /**
  * @typedef packetField
  * @type {object}
  * @property {HIDPacket} packet
- * @property {string} id Group and control name separated by a dot
+ * @property {packetItemId} id Group and control name separated by a dot
  * @property {string} group
  * @property {string} name
  * @property {string} mapped_group
@@ -94,7 +103,7 @@ this.HIDDebug = function(message) {
  * @typedef bitObject
  * @type {object}
  * @property {HIDPacket} packet
- * @property {string} id Group and control name separated by a dot
+ * @property {packetItemId} id Group and control name separated by a dot
  * @property {string} group
  * @property {string} name
  * @property {string} mapped_group
@@ -131,7 +140,7 @@ class HIDBitVector {
         /**
          * Object of bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<string, bitObject>}
+         * @type {Record.<packetItemId, bitObject>}
          */
         this.bits = {};
     }
@@ -973,13 +982,13 @@ class HIDPacket {
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      * @param {number} value Value must be a valid unsigned byte to parse, with enough bits.
-     * @returns {Record.<string, bitObject>} List of modified bits (delta)
+     * @returns {Record.<packetItemId, bitObject>} List of modified bits (delta)
      */
     parseBitVector(field, value) {
         /**
          * Object of bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<string, bitObject>}
+         * @type {Record.<packetItemId, bitObject>}
          */
         const bits = {};
 
@@ -1004,13 +1013,13 @@ class HIDPacket {
      * BitVectors are returned as bits you can iterate separately.
      *
      * @param {Uint8Array} data Data received as InputReport from the device
-     * @returns {Record.<string, packetField | bitObject>} List of changed fields with new value.
+     * @returns {Record.<packetItemId, packetField | bitObject>} List of changed fields with new value.
      */
     parse(data) {
         /**
          * Object of packetField or bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<string, packetField | bitObject>}
+         * @type {Record.<packetItemId, packetField | bitObject>}
          */
         const field_changes = {};
 
