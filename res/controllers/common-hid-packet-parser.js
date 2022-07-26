@@ -18,7 +18,13 @@ this.HIDDebug = function(message) {
  *
  * @callback packetCallback
  * @param {HIDPacket} packet The packet that represents the InputReport
- * @param {number[]} changed_data The data received from the device
+ * @param {Record.<string, packetField | bitObject>} changed_data The data received from the device
+ */
+/**
+ * Callback function to call when, the value of a modifier control changed
+ *
+ * @callback modifierCallback
+ * @param {boolean} Value of the modifier control
  */
 /**
  * Callback function to call when, data for specified filed in the packet is updated.
@@ -123,11 +129,11 @@ class HIDBitVector {
          */
         this.size = 0;
         /**
-         * Array of bitObjects
+         * Object of bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {bitObject[]}
+         * @type {Record.<string, bitObject>}
          */
-        this.bits = new Array();
+        this.bits = {};
     }
     /**
      * Get the index of the least significant bit that is 1 in `bitmask`
@@ -229,14 +235,14 @@ class HIDModifierList {
         /**
          * Actual value of the modifier
          *
-         * @type {boolean[]}
+         * @type {Record.<string, boolean>}
          */
-        this.modifiers = new Array();
+        this.modifiers = Object();
 
         /**
          * Function to be called after modifier value changes
          *
-         * @type {packetCallback[]}
+         * @type {Record.<string, modifierCallback>}
          */
         this.callbacks = Object();
     }
@@ -286,7 +292,7 @@ class HIDModifierList {
      * Set modifier callback function
      *
      * @param {string} name Name of reference in HIDModifierList
-     * @param {packetCallback} callback Function to be called after modifier value changes
+     * @param {modifierCallback} callback Function to be called after modifier value changes
      */
     setCallback(name, callback) {
         if (!(name in this.modifiers)) {
@@ -967,11 +973,15 @@ class HIDPacket {
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      * @param {number} value Value must be a valid unsigned byte to parse, with enough bits.
-     * @returns {bitObject[]} List of modified bits (delta)
+     * @returns {Record.<string, bitObject>} List of modified bits (delta)
      */
     parseBitVector(field, value) {
-        /** @type {bitObject[]}*/
-        const bits = new Array();
+        /**
+         * Object of bitObjects, referred by a string of group and control name separated by a dot
+         *
+         * @type {Record.<string, bitObject>}
+         */
+        const bits = {};
 
         if (field.type !== "bitvector") {
             console.error("HIDPacket.parseBitVector - Field isn't of type bitvector");
@@ -994,11 +1004,15 @@ class HIDPacket {
      * BitVectors are returned as bits you can iterate separately.
      *
      * @param {Uint8Array} data Data received as InputReport from the device
-     * @returns {packetField[]|bitObject[]} List of changed fields with new value.
+     * @returns {Record.<string, packetField | bitObject>} List of changed fields with new value.
      */
     parse(data) {
-        /** @type {packetField[]|bitObject[]}*/
-        const field_changes = new Array();
+        /**
+         * Object of packetField or bitObjects, referred by a string of group and control name separated by a dot
+         *
+         * @type {Record.<string, packetField | bitObject>}
+         */
+        const field_changes = {};
 
         for (const group_name in this.groups) {
             const group = this.groups[group_name];
@@ -1119,18 +1133,18 @@ class HIDController {
         this.activeDeck = undefined;
 
         /**
-         * Array of HIDPackets representing HID InputReports
+         * HIDPackets representing HID InputReports, by packet name
          *
-         * @type {HIDPacket[]}
+         * @type {Record.<string, HIDPacket>}
          */
-        this.InputPackets = new Array();
+        this.InputPackets = {};
 
         /**
-         * Array of HIDPackets representing HID OutputReports
+         * HIDPackets representing HID OutputReports, by packet name
          *
-         * @type {HIDPacket[]}
+         * @type {Record.<string, HIDPacket>}
          */
-        this.OutputPackets = new Array();
+        this.OutputPackets = {};
 
         /**
          * Default input packet name: can be modified for controllers
@@ -1306,18 +1320,18 @@ class HIDController {
         this.modifiers = new HIDModifierList();
 
         /**
-         * Array of scaling function callbacks
+         * Object of scaling function callbacks by name
          *
-         * @type {scalingCallback[]}
+         * @type {Record.<string, scalingCallback>}
          */
-        this.scalers = new Array();
+        this.scalers = {};
 
         /**
-         * Array of timers
+         * Object of engine timer IDs, by hid-parser timer IDs
          *
-         * @type {number[]}
+         * @type {Record.<number, number>}
          */
-        this.timers = new Array();
+        this.timers = {};
 
         /**
          * Auto repeat interval default for fields, where not specified individual (in milliseconds)
@@ -1774,7 +1788,7 @@ class HIDController {
      *   fields in default mixxx groups. Not done if a callback was defined.
      *
      * @param packet Unused
-     * @param {packetField[]|bitObject[]} delta
+     * @param {Record.<string, packetField | bitObject>} delta
      */
     processIncomingPacket(packet, delta) {
         /** @type {packetField} */
