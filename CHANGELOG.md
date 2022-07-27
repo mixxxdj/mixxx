@@ -420,6 +420,7 @@
 * Add a Noise effect [#2921](https://github.com/mixxxdj/mixxx/pull/2921)
 * Add a pitch shift effect [#4775](https://github.com/mixxxdj/mixxx/pull/4775) [lp:1299035](https://bugs.launchpad.net/mixxx/+bug/1299035)
 * Use '---' instead of 'None' for empty slots to spot them easier [#4469](https://github.com/mixxxdj/mixxx/pull/4469)
+* EngineFilterDelay: clamp wrong delay values [#4869](https://github.com/mixxxdj/mixxx/pull/4869)
 * Effect refactoring: Effect chain saving/loading, parameter hiding/rearrangement, effect preferences overhaul
   [#4467](https://github.com/mixxxdj/mixxx/pull/4467)
   [#4431](https://github.com/mixxxdj/mixxx/pull/4431)
@@ -523,6 +524,7 @@
 * Drop Ubuntu Groovy and Impish support because of EOL
   [#4283](https://github.com/mixxxdj/mixxx/pull/4283) [#4849](https://github.com/mixxxdj/mixxx/pull/4849)
 * Support Ubuntu Kinetic Kudo [#4780](https://github.com/mixxxdj/mixxx/pull/4780)
+* Provide Ubuntu Jammy CI builds [#4857](https://github.com/mixxxdj/mixxx/pull/4857)
 * Add NixOS support
   [#2820](https://github.com/mixxxdj/mixxx/pull/2820)
   [#2828](https://github.com/mixxxdj/mixxx/pull/2828)
@@ -800,6 +802,8 @@
   [#4780](https://github.com/mixxxdj/mixxx/pull/4800)
   [#4791](https://github.com/mixxxdj/mixxx/pull/4791)
   [#4848](https://github.com/mixxxdj/mixxx/pull/4848)
+  [#4856](https://github.com/mixxxdj/mixxx/pull/4856)
+  [#4860](https://github.com/mixxxdj/mixxx/pull/4860)
 
 ## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (unreleased)
 

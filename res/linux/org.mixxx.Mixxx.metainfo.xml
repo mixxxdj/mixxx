@@ -938,6 +938,10 @@
    #4469
   </li>
   <li>
+   EngineFilterDelay: clamp wrong delay values
+   #4869
+  </li>
+  <li>
    Effect refactoring: Effect chain saving/loading, parameter hiding/rearrangement, effect preferences overhaul
    #4467
    #4431
@@ -1060,6 +1064,10 @@
   <li>
    Support Ubuntu Kinetic Kudo
    #4780
+  </li>
+  <li>
+   Provide Ubuntu Jammy CI builds
+   #4857
   </li>
   <li>
    Add NixOS support
@@ -1453,6 +1461,8 @@
    #4780
    #4791
    #4848
+   #4856
+   #4860
   </li>
  </ul>
 </description>
