@@ -173,6 +173,10 @@ class EngineBuffer : public EngineObject {
         }
     }
 
+    static KeylockEngine defaultKeylockEngine() {
+        return RUBBERBAND_FASTER;
+    }
+
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.

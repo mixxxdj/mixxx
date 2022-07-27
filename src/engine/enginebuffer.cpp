@@ -807,7 +807,6 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         m_pScaleKeylock = m_pScaleST;
         break;
     case RUBBERBAND_FASTER:
-    default:
         m_pScaleRB->useEngineFiner(false);
         m_pScaleKeylock = m_pScaleRB;
         break;
@@ -815,6 +814,9 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         m_pScaleRB->useEngineFiner(
                 true); // in case of Rubberband V2 it falls back to RUBBERBAND_FASTER
         m_pScaleKeylock = m_pScaleRB;
+        break;
+    default:
+        slotKeylockEngineChanged(defaultKeylockEngine());
         break;
     }
 }
