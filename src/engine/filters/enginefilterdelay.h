@@ -6,6 +6,9 @@
 
 template<unsigned int SIZE>
 class EngineFilterDelay : public EngineObjectConstIn {
+    static_assert(SIZE % mixxx::kEngineChannelCount == 0,
+            "The buffer size has to be divisible by the number of channels.");
+
   public:
     EngineFilterDelay()
             : m_delaySamples(0),
@@ -28,6 +31,17 @@ class EngineFilterDelay : public EngineObjectConstIn {
     }
 
     void setDelay(unsigned int delaySamples) {
+        unsigned int unalignedSamples = delaySamples % mixxx::kEngineChannelCount;
+
+        VERIFY_OR_DEBUG_ASSERT(unalignedSamples == 0) {
+            // Round to the previous multiple of the number of channel count.
+            delaySamples = delaySamples - unalignedSamples;
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(delaySamples < SIZE) {
+            delaySamples = SIZE - mixxx::kEngineChannelCount;
+        }
+
         m_delaySamples = delaySamples;
     }
 
@@ -40,15 +54,6 @@ class EngineFilterDelay : public EngineObjectConstIn {
             // (for example, x % y, where x is a negative value) produces negative results
             // (but in math the result value is positive).
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples) % SIZE;
-
-            VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
-                SampleUtil::copy(pOutput, pIn, iBufferSize);
-                return;
-            }
-            VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(SIZE)) {
-                SampleUtil::copy(pOutput, pIn, iBufferSize);
-                return;
-            }
 
             for (int i = 0; i < iBufferSize; ++i) {
                 // put sample into delay buffer:
@@ -67,23 +72,6 @@ class EngineFilterDelay : public EngineObjectConstIn {
             // (but in math the result value is positive).
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) % SIZE;
             int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
-
-            VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
-                SampleUtil::copy(pOutput, pIn, iBufferSize);
-                return;
-            }
-            VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(SIZE)) {
-                SampleUtil::copy(pOutput, pIn, iBufferSize);
-                return;
-            }
-            VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos >= 0) {
-                SampleUtil::copy(pOutput, pIn, iBufferSize);
-                return;
-            }
-            VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos <= static_cast<int>(SIZE)) {
-                SampleUtil::copy(pOutput, pIn, iBufferSize);
-                return;
-            }
 
             double cross_mix = 0.0;
             double cross_inc = 2 / static_cast<double>(iBufferSize);
