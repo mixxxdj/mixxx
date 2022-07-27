@@ -75,6 +75,8 @@ class EngineBuffer : public EngineObject {
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
+    // This enum is also used in mixxx.cfg
+    // Don't remove or swap values to keep backward compatibility
     enum KeylockEngine {
         SOUNDTOUCH,
         RUBBERBAND_FASTER,
