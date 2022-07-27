@@ -39,8 +39,8 @@ this.HIDDebug = function(message) {
  *
  * @callback controlCallback
  * @param {number} value New value of the control
- * @param {string} group Mixxx control group name
- * @param {string} name Mixxx control name
+ * @param {string} group Mixxx control group name e.g. "[Channel1]"
+ * @param {string} name Mixxx control name "pregain"
  * @returns {any} Value
  */
 
@@ -55,13 +55,8 @@ this.HIDDebug = function(message) {
  * - 'true' engine.setParameter is used
  *
  * @callback scalingCallback
- * @param {string} group Defines the group name for the field. The group can be any string, but if
- *     it matches a valid Mixxx control group name, it is possible to map a field to a control or
- *     output without any additional code.
- * @param {string} name Is the name of the control for the field. The name can be any string, but if
- *     it matches a valid Mixxx control name in the group defined for field, the system attempts to
- *     attach it directly to the correct field. Together group and name form the ID of the field
- *     (group.name)
+ * @param {string} group Control group name e.g. "[Channel1]"
+ * @param {string} name Control name "pregain"
  * @param {number} value Value to be scaled
  * @returns {number} Scaled value
  */
@@ -88,8 +83,8 @@ this.HIDDebug = function(message) {
  * @property {packetItemId} id Group and control name separated by a dot
  * @property {string} group
  * @property {string} name
- * @property {string} mapped_group
- * @property {string} mapped_name
+ * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
+ * @property {string} mapped_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
  * @property {controlCallback} mapped_callback
  * @property {object} pack Control packing format for unpack(), one of b/B, h/H, i/I
  * @property {number} offset
@@ -120,8 +115,8 @@ this.HIDDebug = function(message) {
  * @property {packetItemId} id Group and control name separated by a dot
  * @property {string} group
  * @property {string} name
- * @property {string} mapped_group
- * @property {string} mapped_name
+ * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
+ * @property {string} mapped_name Name of mapped control, must be a valid Mixxx control name "cue_indicator"
  * @property {controlCallback} mapped_callback
  * @property {number} bitmask
  * @property {number} bit_offset
@@ -178,15 +173,8 @@ class HIDBitVector {
     /**
      * Add a control bitmask to the HIDBitVector
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control without any additional code. Defines the group name for the field. The group can
-     *     be any string, but if it matches a valid Mixxx control group name, it is possible to map
-     *     a field to a control or output without any additional code
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "play"
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      */
@@ -211,13 +199,8 @@ class HIDBitVector {
     /**
      * Add an output control bitmask to the HIDBitVector
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to an
-     *     output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "play"
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      */
@@ -559,13 +542,8 @@ class HIDPacket {
      * Return a field by group and name from the packet,
      * Returns undefined if field could not be found
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "play"
      * @returns {packetField} Field
      */
     getField(group, name) {
@@ -602,13 +580,8 @@ class HIDPacket {
     /**
      * Return reference to a bit in a bitvector field
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "play"
      * @returns {bitObject} Reference to a bit in a bitvector field
      */
     lookupBit(group, name) {
@@ -635,13 +608,8 @@ class HIDPacket {
     /**
      * Remove a control registered. Normally not needed
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "play"
      */
     removeControl(group, name) {
         const control_group = this.getGroup(group);
@@ -654,13 +622,11 @@ class HIDPacket {
     /**
      * Register a numeric value to parse from input packet
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.     control group name
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * 'group' and 'name' form the ID of the field, if it matches a valid Mixxx control name,
+     * the system attempts to attach it directly to the correct field.
+     *
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "play"
      * @param {number} offset The field's offset from the start of the packet in bytes:
      *                        - For HID devices which don't use ReportIDs, the data bytes starts at
      * position 0
@@ -801,13 +767,8 @@ class HIDPacket {
      * It is recommended to define callbacks after packet creation with
      * setCallback instead of adding it directly here. But you can do it.
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "VuMeter"
      * @param {number} offset The field's offset from the start of the packet in bytes:
      *                        - For HID devices which don't use ReportIDs, the data bytes starts at
      * position 0
@@ -908,13 +869,8 @@ class HIDPacket {
      * Register a callback to field or a bit vector bit.
      * Does not make sense for Output fields but you can do that.
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "play"
      * @param {fieldChangeCallback} callback Callback function for the control
      */
     setCallback(group, name, callback) {
@@ -948,13 +904,8 @@ class HIDPacket {
      * still wanted to define, to make packet format complete from specifications. If field is
      * ignored, it is not reported in 'delta' objects.
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "pregain"
      * @param {boolean} ignored 'ignored' flag for field to given value (true or false)
      */
     setIgnored(group, name, ignored) {
@@ -969,13 +920,8 @@ class HIDPacket {
      * Adjust field's minimum delta value.
      * Input value changes smaller than this are not reported in delta
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "pregain"
      * @param {number} mindelta Minimum delta value.
      */
     setMinDelta(group, name, mindelta) {
@@ -1401,9 +1347,7 @@ class HIDController {
      * Return deck number from deck name. Deck name can't be virtual deck name
      * in this function call.
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
+     * @param {string} group Control group name e.g. "[Channel1]"
      * @returns {number} Number of deck
      */
     resolveDeck(group) {
@@ -1433,9 +1377,7 @@ class HIDController {
      * Map virtual deck names to real deck group. If group is already
      * a real mixxx group value, just return it as it without mapping.
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
+     * @param {string} group Control group name e.g. "[Channel1]"
      * @returns {string} Channel
      */
     resolveGroup(group) {
@@ -1467,13 +1409,8 @@ class HIDController {
      *
      * @todo The current implementation of this often called function is very slow and does not
      * scale, due to several nested loops.
-     * @param {string} m_group Defines the group name for the field. The group can be any string,
-     *     but if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} m_name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} m_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
+     * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
      * @returns {bitObject|packetField} Bit or bytewise field - Returns undefined if output field
      *     can't be found.
      */
@@ -1551,13 +1488,8 @@ class HIDController {
      * callback is called directly after unpacking fields from packet.
      *
      * @param {string} packet The name of the input packet e.g. 'InputReport_0x02'
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "pregain"
      * @param {fieldChangeCallback} callback Callback function for the control
      */
     setCallback(packet, group, name, callback) {
@@ -1598,13 +1530,8 @@ class HIDController {
     /**
      * Change type of a previously defined field to modifier and register it
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name
      * @param {string} modifier Name of the modifier e.g. 'shiftbutton'
      */
     linkModifier(group, name, modifier) {
@@ -1637,15 +1564,10 @@ class HIDController {
     /**
      * Link a previously declared HID control to actual mixxx control
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
-     * @param {string} m_group Mapped group
-     * @param {string} m_name Mapped name
+     * @param {string} group Control group name
+     * @param {string} name Control name
+     * @param {string} m_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
+     * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "pregain"
      * @param {fieldChangeCallback} callback Callback function for the control
      */
     linkControl(group, name, m_group, m_name, callback) {
@@ -1680,13 +1602,8 @@ class HIDController {
     }
     /**
      * @todo Implement unlinking of controls
-     * @param {string} _group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} _name  Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} _group Mixxx control group name e.g. "[Channel1]"
+     * @param {string} _name  Mixxx control name "pregain"
      */
     unlinkControl(_group, _name) {}
     /**
@@ -2025,9 +1942,7 @@ class HIDController {
     /**
      * Toggle control state from toggle button
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
+     * @param {string} group Control group name e.g. "[Channel1]"
      * @param {string} control Name of the control (button)
      * @param {number} value Value defined in this.buttonStates
      */
@@ -2041,9 +1956,7 @@ class HIDController {
     /**
      * Toggle play/pause state
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
+     * @param {string} group Control group name e.g. "[Channel1]"
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      */
@@ -2063,9 +1976,7 @@ class HIDController {
      * when scratching should be enabled.
      * Deck is resolved from group with 'resolveDeck'
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
+     * @param {string} group Control group name e.g. "[Channel1]"
      * @param {boolean} status Enable or Disable scratching:
      * - true enables scratching (press 'jog_touch' button)
      * Sets the internal 'isScratchEnabled' attribute to true, and calls scratchEnable
@@ -2305,15 +2216,10 @@ class HIDController {
     /**
      * Link a virtual HID Output to mixxx control
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name  Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
-     * @param {string} m_group Mapped group
-     * @param {string} m_name Name of mapped control
+     * @param {string} group Control group name
+     * @param {string} name  Control name
+     * @param {string} m_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
+     * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
      * @param {controlCallback} callback Callback function for the control
      */
     linkOutput(group, name, m_group, m_name, callback) {
@@ -2340,13 +2246,8 @@ class HIDController {
     /**
      * Unlink a virtual HID Output from mixxx control
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name  Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Mixxx control group name e.g. "[Channel1]"
+     * @param {string} name Mixxx control name "VuMeter"
      * @param {controlCallback} callback Callback function for the control
      */
     unlinkOutput(group, name, callback) {
@@ -2368,13 +2269,8 @@ class HIDController {
     /**
      * Set output state to given value
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name  Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "cue_indicator"
      * @param {number|boolean} value Value to set as new output state of the control
      * @param {boolean} [send_packet=false] If true, the packet (an HID OutputReport) is send
      *     immediately
@@ -2394,13 +2290,8 @@ class HIDController {
     /**
      * Set Output to toggle between two values. Reset with setOutput(name,'off')
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but
-     *     if it matches a valid Mixxx control group name, it is possible to map a field to a
-     *     control or output without any additional code.
-     * @param {string} name  Is the name of the control for the field. The name can be any string,
-     *     but if it matches a valid Mixxx control name in the group defined for field, the system
-     *     attempts to attach it directly to the correct field. Together group and name form the ID
-     *     of the field (group.name)
+     * @param {string} group Control group name e.g. "[Channel1]"
+     * @param {string} name Control name "cue_indicator"
      * @param toggle_value
      */
     setOutputToggle(group, name, toggle_value) {
