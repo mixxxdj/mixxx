@@ -73,8 +73,8 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
             qt_qpa_platform: offscreen
-          - name: macOS 10.15
-            os: macos-10.15
+          - name: macOS 11
+            os: macos-11
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -177,7 +177,7 @@ jobs:
       with:
         # This should always match the minimum required version in
         # our CMakeLists.txt
-        cmake-version: '3.16.x'
+        cmake-version: '3.19.x'
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
