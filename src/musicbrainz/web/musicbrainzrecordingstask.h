@@ -29,6 +29,7 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             const network::WebResponse& response,
             int errorCode,
             const QString& errorMessage);
+    void currentRecordingFetched();
 
   private:
     QNetworkReply* doStartNetworkRequest(

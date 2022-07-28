@@ -80,10 +80,19 @@ void DlgTagFetcher::init() {
     }
     connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
+    connect(btnRetry, &QPushButton::clicked, this, &DlgTagFetcher::retry);
     connect(results, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::resultSelected);
 
     connect(&m_tagFetcher, &TagFetcher::resultAvailable, this, &DlgTagFetcher::fetchTagFinished);
     connect(&m_tagFetcher, &TagFetcher::fetchProgress, this, &DlgTagFetcher::fetchTagProgress);
+    connect(&m_tagFetcher,
+            &TagFetcher::currentRecordingFetched,
+            this,
+            &DlgTagFetcher::progressBarSetCurrentStep);
+    connect(&m_tagFetcher,
+            &TagFetcher::recordingsAvailable,
+            this,
+            &DlgTagFetcher::progressBarSetTotalSteps);
     connect(&m_tagFetcher, &TagFetcher::networkError, this, &DlgTagFetcher::slotNetworkResult);
 }
 
@@ -222,6 +231,13 @@ void DlgTagFetcher::apply() {
             QDateTime::currentDateTimeUtc());
 }
 
+void DlgTagFetcher::retry() {
+    results->clear();
+    addDivider(tr("Original tags"), results);
+    addTrack(trackColumnValues(*m_track), -1, results);
+    m_tagFetcher.startFetch(m_track);
+}
+
 void DlgTagFetcher::quit() {
     m_tagFetcher.cancel();
     accept();
@@ -234,7 +250,21 @@ void DlgTagFetcher::reject() {
 
 void DlgTagFetcher::fetchTagProgress(const QString& text) {
     QString status = tr("Status: %1");
-    loadingStatus->setText(status.arg(text));
+    loadingProgressBar->setFormat(status.arg(text));
+    m_progressBarStep++;
+    loadingProgressBar->setValue(m_progressBarStep);
+}
+
+void DlgTagFetcher::progressBarSetCurrentStep() {
+    QString status = tr("Fetching track data from the MusicBrainz database");
+    loadingProgressBar->setFormat(status);
+    m_progressBarStep++;
+    loadingProgressBar->setValue(m_progressBarStep);
+}
+
+void DlgTagFetcher::progressBarSetTotalSteps(int totalRecordingsFound) {
+    loadingProgressBar->setTextVisible(true);
+    loadingProgressBar->setMaximum(totalRecordingsFound);
 }
 
 void DlgTagFetcher::fetchTagFinished(
@@ -250,44 +280,55 @@ void DlgTagFetcher::fetchTagFinished(
 }
 
 void DlgTagFetcher::slotNetworkResult(
-        int httpError, const QString& app, const QString& message, int code) {
+        int httpError,
+        const QString& app,
+        const QString& message,
+        int code) {
     m_networkResult = httpError == 0 ? NetworkResult::UnknownError : NetworkResult::HttpError;
     m_data.m_pending = false;
-    QString strError = tr("HTTP Status: %1");
-    QString strCode = tr("Code: %1");
-    httpStatus->setText(strError.arg(httpError) + "\n" + strCode.arg(code) + "\n" + message);
-    QString unknownError = tr("Mixxx can't connect to %1 for an unknown reason.");
-    cantConnectMessage->setText(unknownError.arg(app));
-    QString cantConnect = tr("Mixxx can't connect to %1.");
-    cantConnectHttp->setText(cantConnect.arg(app));
+    if (m_networkResult == NetworkResult::UnknownError) {
+        QString unknownError = tr("Mixxx can't connect to %1 for an unknown reason.");
+        loadingProgressBar->setFormat(unknownError.arg(app));
+    } else if (m_networkResult == NetworkResult::HttpError) {
+        QString cantConnect = tr("Mixxx can't connect to %1.");
+        loadingProgressBar->setFormat(cantConnect.arg(app));
+    } else {
+        QString strError = tr("HTTP Status: %1");
+        QString strCode = tr("Code: %1");
+        loadingProgressBar->setFormat(strError.arg(httpError) + " " +
+                strCode.arg(code) + " " + message);
+    }
     updateStack();
 }
 
 void DlgTagFetcher::updateStack() {
+    m_progressBarStep = 0;
+    loadingProgressBar->setValue(m_progressBarStep);
+    results->clear();
+    addDivider(tr("Original tags"), results);
+    addTrack(trackColumnValues(*m_track), -1, results);
     if (m_data.m_pending) {
-        stack->setCurrentWidget(loading_page);
         return;
     } else if (m_networkResult == NetworkResult::HttpError) {
-        stack->setCurrentWidget(networkError_page);
+        loadingProgressBar->setValue(loadingProgressBar->maximum());
         return;
     } else if (m_networkResult == NetworkResult::UnknownError) {
-        stack->setCurrentWidget(generalnetworkError_page);
+        loadingProgressBar->setValue(loadingProgressBar->maximum());
         return;
     } else if (m_data.m_results.isEmpty()) {
-        stack->setCurrentWidget(error_page);
+        loadingProgressBar->setValue(loadingProgressBar->maximum());
+        QString emptyMessage = tr("Mixxx could not find this track in the musicbrainz database.");
+        loadingProgressBar->setFormat(emptyMessage);
         return;
     }
     btnApply->setEnabled(true);
-    stack->setCurrentWidget(results_page);
-
-    results->clear();
+    loadingProgressBar->setValue(loadingProgressBar->maximum());
+    QString finishedMessage = tr("Mixxx found the metadata.");
+    loadingProgressBar->setFormat(finishedMessage);
 
     VERIFY_OR_DEBUG_ASSERT(m_track) {
         return;
     }
-
-    addDivider(tr("Original tags"), results);
-    addTrack(trackColumnValues(*m_track), -1, results);
 
     addDivider(tr("Suggested tags"), results);
     {
