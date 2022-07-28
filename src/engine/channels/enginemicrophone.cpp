@@ -10,9 +10,9 @@
 #include "preferences/usersettings.h"
 #include "util/sample.h"
 
-EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handleGroup,
+EngineMicrophone::EngineMicrophone(GroupHandle groupHandle,
         EffectsManager* pEffectsManager)
-        : EngineChannel(handleGroup, EngineChannel::CENTER, pEffectsManager,
+        : EngineChannel(groupHandle, EngineChannel::CENTER, pEffectsManager,
                   /*isTalkoverChannel*/ true,
                   /*isPrimaryDeck*/ false),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
@@ -78,7 +78,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
             pEngineEffectsManager->processPreFaderInPlace(
-                    m_group.handle(), m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
+                    m_groupHandle, m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
                     // TODO(jholthuis): Use mixxx::audio::SampleRate instead
                     static_cast<unsigned int>(m_pSampleRate->get()));
         }

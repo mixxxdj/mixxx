@@ -14,11 +14,11 @@ StandardEffectChain::StandardEffectChain(unsigned int iChainNumber,
         addEffectSlot(formatEffectSlotGroup(iChainNumber, i));
     }
 
-    const QSet<ChannelHandleAndGroup>& registeredChannels =
+    const QSet<GroupHandle>& registeredChannels =
             m_pEffectsManager->registeredInputChannels();
-    for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
+    for (GroupHandle handle_group : registeredChannels) {
         int deckNumber;
-        if (PlayerManager::isDeckGroup(handle_group.name(), &deckNumber) &&
+        if (PlayerManager::isDeckGroup(nameOfGroupHandle(handle_group), &deckNumber) &&
                 (iChainNumber + 1) == (unsigned)deckNumber) {
             registerInputChannel(handle_group, 1.0);
         } else {

@@ -10,6 +10,6 @@ class PreviewDeck : public BaseTrackPlayerImpl {
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const ChannelHandleAndGroup& handleGroup);
+            GroupHandle groupHandle);
     ~PreviewDeck() override = default;
 };

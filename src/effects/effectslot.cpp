@@ -201,7 +201,7 @@ void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
     if (isLoaded()) {
         for (const auto& outputChannel :
                 m_pEffectsManager->registeredOutputChannels()) {
-            pStatesMap->insert(outputChannel.handle(),
+            pStatesMap->insert(outputChannel,
                     m_pEngineEffect->createState(engineParameters));
         }
     } else {

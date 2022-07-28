@@ -14,7 +14,7 @@ Microphone::Microphone(PlayerManager* pParent,
         EngineMaster* pEngine,
         EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
-    ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
+    GroupHandle channelGroup = pEngine->registerChannelGroup(group);
     EngineMicrophone* pMicrophone =
             new EngineMicrophone(channelGroup, pEffectsManager);
     pEngine->addChannel(pMicrophone);

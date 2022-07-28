@@ -5,9 +5,9 @@
 #include <QSet>
 
 #include "control/controlpotmeter.h"
+#include "control/grouphandle.h"
 #include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
-#include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
 
@@ -20,8 +20,7 @@ class EngineEffectsManager;
 /// responsible for specific parts of the effects system.
 class EffectsManager {
   public:
-    EffectsManager(UserSettingsPointer pConfig,
-            std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory);
+    EffectsManager(UserSettingsPointer pConfig);
 
     virtual ~EffectsManager();
 
@@ -40,8 +39,8 @@ class EffectsManager {
         return m_pEngineEffectsManager;
     }
 
-    const ChannelHandle getMasterHandle() const {
-        return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
+    GroupHandle getMasterHandle() const {
+        return m_masterGroupHandle;
     }
 
     const EffectChainPresetManagerPointer getChainPresetManager() const {
@@ -59,13 +58,13 @@ class EffectsManager {
         return m_pVisibleEffectsList;
     }
 
-    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
-    const QSet<ChannelHandleAndGroup>& registeredInputChannels() const {
+    void registerInputChannel(GroupHandle handle_group);
+    const QSet<GroupHandle>& registeredInputChannels() const {
         return m_registeredInputChannels;
     }
 
-    void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
-    const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const {
+    void registerOutputChannel(GroupHandle handle_group);
+    const QSet<GroupHandle>& registeredOutputChannels() const {
         return m_registeredOutputChannels;
     }
 
@@ -81,9 +80,12 @@ class EffectsManager {
     void readEffectsXml();
     void saveEffectsXml();
 
-    QSet<ChannelHandleAndGroup> m_registeredInputChannels;
-    QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
+
+    const GroupHandle m_masterGroupHandle;
+
+    QSet<GroupHandle> m_registeredInputChannels;
+    QSet<GroupHandle> m_registeredOutputChannels;
     QHash<QString, EffectChainPointer> m_effectChainSlotsByGroup;
 
     QList<StandardEffectChainPointer> m_standardEffectChains;
@@ -92,7 +94,6 @@ class EffectsManager {
     QHash<QString, QuickEffectChainPointer> m_quickEffectChains;
 
     EffectsBackendManagerPointer m_pBackendManager;
-    std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
 
     EngineEffectsManager* m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;

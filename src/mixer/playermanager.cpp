@@ -389,9 +389,9 @@ void PlayerManager::addConfiguredDecks() {
 
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
-    ChannelHandleAndGroup handleGroup =
+    GroupHandle groupHandle =
             m_pEngine->registerChannelGroup(groupForDeck(m_decks.count()));
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(groupHandle)) {
         return;
     }
 
@@ -402,7 +402,7 @@ void PlayerManager::addDeckInner() {
             m_pEngine,
             m_pEffectsManager,
             deckIndex % 2 == 1 ? EngineChannel::RIGHT : EngineChannel::LEFT,
-            handleGroup);
+            groupHandle);
     connect(pDeck->getEngineDeck(),
             &EngineDeck::noPassthroughInputConfigured,
             this,
@@ -423,7 +423,7 @@ void PlayerManager::addDeckInner() {
                 &PlayerManager::slotAnalyzeTrack);
     }
 
-    m_players[handleGroup.handle()] = pDeck;
+    m_players[groupHandle] = pDeck;
     m_decks.append(pDeck);
 
     // Register the deck output with SoundManager.
@@ -436,7 +436,7 @@ void PlayerManager::addDeckInner() {
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, deckIndex), pEngineDeck);
 
     // Setup equalizer and QuickEffect chain for this deck.
-    m_pEffectsManager->addDeck(handleGroup.m_name);
+    m_pEffectsManager->addDeck(nameOfGroupHandle(groupHandle));
 
     // Setup EQ ControlProxies used for resetting EQs on track load
     pDeck->setupEqControls();
@@ -455,9 +455,9 @@ void PlayerManager::addSampler() {
 
 void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
-    ChannelHandleAndGroup handleGroup =
+    GroupHandle groupHandle =
             m_pEngine->registerChannelGroup(groupForSampler(m_samplers.count()));
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(groupHandle)) {
         return;
     }
 
@@ -469,7 +469,7 @@ void PlayerManager::addSamplerInner() {
             m_pEngine,
             m_pEffectsManager,
             orientation,
-            handleGroup);
+            groupHandle);
     if (m_pTrackAnalysisScheduler) {
         connect(pSampler,
                 &BaseTrackPlayer::newTrackLoaded,
@@ -481,7 +481,7 @@ void PlayerManager::addSamplerInner() {
             this,
             &PlayerManager::slotSaveEjectedTrack);
 
-    m_players[handleGroup.handle()] = pSampler;
+    m_players[groupHandle] = pSampler;
     m_samplers.append(pSampler);
 }
 
@@ -492,9 +492,9 @@ void PlayerManager::addPreviewDeck() {
 
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
-    ChannelHandleAndGroup handleGroup = m_pEngine->registerChannelGroup(
+    GroupHandle groupHandle = m_pEngine->registerChannelGroup(
             groupForPreviewDeck(m_previewDecks.count()));
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(groupHandle)) {
         return;
     }
 
@@ -506,7 +506,7 @@ void PlayerManager::addPreviewDeckInner() {
             m_pEngine,
             m_pEffectsManager,
             orientation,
-            handleGroup);
+            groupHandle);
     if (m_pTrackAnalysisScheduler) {
         connect(pPreviewDeck,
                 &BaseTrackPlayer::newTrackLoaded,
@@ -514,7 +514,7 @@ void PlayerManager::addPreviewDeckInner() {
                 &PlayerManager::slotAnalyzeTrack);
     }
 
-    m_players[handleGroup.handle()] = pPreviewDeck;
+    m_players[groupHandle] = pPreviewDeck;
     m_previewDecks.append(pPreviewDeck);
 }
 
@@ -560,14 +560,14 @@ void PlayerManager::addAuxiliaryInner() {
 }
 
 BaseTrackPlayer* PlayerManager::getPlayer(const QString& group) const {
-    return getPlayer(m_pEngine->registerChannelGroup(group).handle());
+    return getPlayer(m_pEngine->registerChannelGroup(group));
 }
 
-BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle& handle) const {
+BaseTrackPlayer* PlayerManager::getPlayer(GroupHandle pHandle) const {
     const auto locker = lockMutex(&m_mutex);
 
-    if (m_players.contains(handle)) {
-        return m_players[handle];
+    if (m_players.contains(pHandle)) {
+        return m_players[pHandle];
     }
     return nullptr;
 }

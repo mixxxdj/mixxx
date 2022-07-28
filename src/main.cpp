@@ -15,6 +15,7 @@
 #else
 #include "mixxxmainwindow.h"
 #endif
+#include "control/grouphandle.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -71,6 +72,9 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         }
     }
 #endif
+
+    DEBUG_ASSERT(pCoreServices.use_count() == 1);
+
     return exitCode;
 }
 
@@ -196,6 +200,10 @@ int main(int argc, char * argv[]) {
     QObject::connect(&app, &MixxxApplication::lastWindowClosed, &app, &MixxxApplication::quit);
 
     int exitCode = runMixxx(&app, args);
+
+    // Avoid warnings about memory leaks by deleting all allocated
+    // group descriptors/handles before finally exiting the application.
+    resetAllGroupHandles();
 
     qDebug() << "Mixxx shutdown complete with code" << exitCode;
 

@@ -14,7 +14,6 @@
 #include "effects/effectknobparameterslot.h"
 #include "effects/effectparameter.h"
 #include "effects/presets/effectpreset.h"
-#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/engine.h"
 #include "util/class.h"

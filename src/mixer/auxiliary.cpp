@@ -14,7 +14,7 @@ Auxiliary::Auxiliary(PlayerManager* pParent,
         EngineMaster* pEngine,
         EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
-    ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
+    GroupHandle channelGroup = pEngine->registerChannelGroup(group);
     EngineAux* pAuxiliary = new EngineAux(channelGroup, pEffectsManager);
     pEngine->addChannel(pAuxiliary);
     AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 2, index);

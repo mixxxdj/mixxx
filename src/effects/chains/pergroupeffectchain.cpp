@@ -16,17 +16,17 @@ PerGroupEffectChain::PerGroupEffectChain(const QString& group,
     sendParameterUpdate();
 
     // TODO(rryan): remove.
-    const ChannelHandleAndGroup* handleAndGroup = nullptr;
-    for (const ChannelHandleAndGroup& handle_group :
+    GroupHandle handleAndGroup = nullptr;
+    for (GroupHandle handle_group :
             m_pEffectsManager->registeredInputChannels()) {
-        if (handle_group.name() == group) {
-            handleAndGroup = &handle_group;
+        if (nameOfGroupHandle(handle_group) == group) {
+            handleAndGroup = handle_group;
             break;
         }
     }
     DEBUG_ASSERT(handleAndGroup != nullptr);
 
     // Register this channel alone with the chain slot.
-    registerInputChannel(*handleAndGroup);
-    enableForInputChannel(*handleAndGroup);
+    registerInputChannel(handleAndGroup);
+    enableForInputChannel(handleAndGroup);
 }

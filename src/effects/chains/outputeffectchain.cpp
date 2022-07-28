@@ -12,21 +12,21 @@ OutputEffectChain::OutputEffectChain(EffectsManager* pEffectsManager,
     m_effectSlots[0]->setEnabled(true);
 
     // Register the master channel
-    const ChannelHandleAndGroup* masterHandleAndGroup = nullptr;
+    GroupHandle masterHandleAndGroup = nullptr;
 
-    // TODO(Be): Remove this hideous hack to get the ChannelHandleAndGroup
-    const QSet<ChannelHandleAndGroup>& registeredChannels =
+    // TODO(Be): Remove this hideous hack to get the GroupHandle
+    const QSet<GroupHandle>& registeredChannels =
             m_pEffectsManager->registeredInputChannels();
-    for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
-        if (handle_group.name() == "[MasterOutput]") {
-            masterHandleAndGroup = &handle_group;
+    for (GroupHandle handle_group : registeredChannels) {
+        if (nameOfGroupHandle(handle_group) == "[MasterOutput]") {
+            masterHandleAndGroup = handle_group;
             break;
         }
     }
     DEBUG_ASSERT(masterHandleAndGroup != nullptr);
 
-    registerInputChannel(*masterHandleAndGroup);
-    enableForInputChannel(*masterHandleAndGroup);
+    registerInputChannel(masterHandleAndGroup);
+    enableForInputChannel(masterHandleAndGroup);
     m_pControlChainMix->set(1.0);
     sendParameterUpdate();
 }

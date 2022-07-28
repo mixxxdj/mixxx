@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "control/controlpotmeter.h"
+#include "control/grouphandle.h"
 #include "effects/builtin/autopaneffect.h"
 #include "effects/builtin/bessel4lvmixeqeffect.h"
 #include "effects/builtin/bessel8lvmixeqeffect.h"
@@ -16,7 +17,6 @@
 #include "effects/builtin/moogladder4filtereffect.h"
 #include "effects/builtin/phasereffect.h"
 #include "effects/builtin/reverbeffect.h"
-#include "engine/channelhandle.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "test/baseeffecttest.h"
 #include "util/samplebuffer.h"
@@ -35,12 +35,11 @@ void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& engi
                                             benchmark::State* pState, EffectsManager* pEffectsManager) {
     EffectManifestPointer pManifest = EffectType::getManifest();
 
-    ChannelHandleFactory factory;
-    QSet<ChannelHandleAndGroup> activeInputChannels;
+    QSet<GroupHandle> activeInputChannels;
 
     QString channel1_group = QString("[Channel1]");
-    ChannelHandle channel1 = factory.getOrCreateHandle(channel1_group);
-    ChannelHandleAndGroup handle_and_group(channel1, channel1_group);
+    GroupHandle channel1 = factory.getOrCreateHandle(channel1_group);
+    GroupHandle handle_and_group(channel1, channel1_group);
     pEffectsManager->registerInputChannel(handle_and_group);
     pEffectsManager->registerOutputChannel(handle_and_group);
     activeInputChannels.insert(handle_and_group);

@@ -40,13 +40,11 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
     void SetUp() override {
         // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
         // but it does a lot of local disk / settings setup.
-        auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
+        m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig);
         m_pEngine = std::make_shared<EngineMaster>(
                 m_pConfig,
                 "[Master]",
                 m_pEffectsManager.get(),
-                pChannelHandleFactory,
                 true);
         m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
         m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);

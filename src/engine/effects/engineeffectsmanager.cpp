@@ -94,8 +94,9 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+void EngineEffectsManager::processPreFaderInPlace(
+        GroupHandle inputHandle,
+        GroupHandle outputHandle,
         CSAMPLE* pInOut,
         const unsigned int numSamples,
         const unsigned int sampleRate) {
@@ -113,8 +114,8 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHand
 }
 
 void EngineEffectsManager::processPostFaderInPlace(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+        GroupHandle inputHandle,
+        GroupHandle outputHandle,
         CSAMPLE* pInOut,
         const unsigned int numSamples,
         const unsigned int sampleRate,
@@ -134,8 +135,8 @@ void EngineEffectsManager::processPostFaderInPlace(
 }
 
 void EngineEffectsManager::processPostFaderAndMix(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+        GroupHandle inputHandle,
+        GroupHandle outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         const unsigned int numSamples,
@@ -157,8 +158,8 @@ void EngineEffectsManager::processPostFaderAndMix(
 
 void EngineEffectsManager::processInner(
         const SignalProcessingStage stage,
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+        GroupHandle inputHandle,
+        GroupHandle outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         const unsigned int numSamples,
@@ -174,7 +175,8 @@ void EngineEffectsManager::processInner(
         SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
         for (EngineEffectChain* pChain : chains) {
             if (pChain) {
-                if (pChain->process(inputHandle,
+                if (pChain->process(
+                            inputHandle,
                             outputHandle,
                             pIn,
                             pOut,

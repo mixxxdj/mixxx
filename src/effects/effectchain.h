@@ -10,7 +10,6 @@
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
 #include "effects/presets/effectchainpreset.h"
-#include "engine/channelhandle.h"
 #include "util/class.h"
 #include "util/memory.h"
 
@@ -48,11 +47,11 @@ class EffectChain : public QObject {
 
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void registerInputChannel(const ChannelHandleAndGroup& handleGroup,
+    void registerInputChannel(GroupHandle channelHandle,
             const double initialValue = 0.0);
     /// Do not store this in EffectSlot! The enabled input channels are a property
     /// of the chain, not the effect.
-    const QSet<ChannelHandleAndGroup>& getActiveChannels() const {
+    const QSet<GroupHandle>& getActiveChannels() const {
         return m_enabledInputChannels;
     }
 
@@ -94,8 +93,8 @@ class EffectChain : public QObject {
     virtual int numPresets() const;
 
     // Activates EffectChain processing for the provided channel.
-    void enableForInputChannel(const ChannelHandleAndGroup& handleGroup);
-    void disableForInputChannel(const ChannelHandleAndGroup& handleGroup);
+    void enableForInputChannel(GroupHandle channelHandle);
+    void disableForInputChannel(GroupHandle channelHandle);
 
     // Protected so QuickEffectChain can use the separate QuickEffect
     // chain preset list.
@@ -120,7 +119,7 @@ class EffectChain : public QObject {
     void slotControlChainPresetSelector(double value);
     void slotControlNextChainPreset(double value);
     void slotControlPrevChainPreset(double value);
-    void slotChannelStatusChanged(double value, const ChannelHandleAndGroup& handleGroup);
+    void slotChannelStatusChanged(double value, GroupHandle channelHandle);
 
   private:
     QString debugString() const {
@@ -155,8 +154,8 @@ class EffectChain : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlChainFocusedEffect;
 
     SignalProcessingStage m_signalProcessingStage;
-    QHash<ChannelHandleAndGroup, std::shared_ptr<ControlPushButton>> m_channelEnableButtons;
-    QSet<ChannelHandleAndGroup> m_enabledInputChannels;
+    QHash<GroupHandle, std::shared_ptr<ControlPushButton>> m_channelEnableButtons;
+    QSet<GroupHandle> m_enabledInputChannels;
     EngineEffectChain* m_pEngineEffectChain;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
