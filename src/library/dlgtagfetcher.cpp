@@ -319,13 +319,13 @@ void DlgTagFetcher::updateStack() {
         return;
     } else if (m_data.m_results.isEmpty()) {
         loadingProgressBar->setValue(loadingProgressBar->maximum());
-        QString emptyMessage = tr("Mixxx could not find this track in the musicbrainz database.");
+        QString emptyMessage = tr("Mixxx could not find this track in the MusicBrainz database.");
         loadingProgressBar->setFormat(emptyMessage);
         return;
     }
     btnApply->setEnabled(true);
     loadingProgressBar->setValue(loadingProgressBar->maximum());
-    QString finishedMessage = tr("Mixxx found the metadata.");
+    QString finishedMessage = tr("The results are ready to be applied.");
     loadingProgressBar->setFormat(finishedMessage);
 
     VERIFY_OR_DEBUG_ASSERT(m_track) {
