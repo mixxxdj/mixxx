@@ -233,9 +233,11 @@ void DlgTagFetcher::apply() {
 
 void DlgTagFetcher::retry() {
     results->clear();
+    m_data = Data();
     addDivider(tr("Original tags"), results);
     addTrack(trackColumnValues(*m_track), -1, results);
     m_tagFetcher.startFetch(m_track);
+    updateStack();
 }
 
 void DlgTagFetcher::quit() {
