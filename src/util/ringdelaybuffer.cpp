@@ -55,8 +55,7 @@ RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
     // TODO(davidchocholaty) Handle to allow only power of two for the size of the ring delay buffer.
 
     // Set the ring delay buffer items to 0.
-    CSAMPLE* bufferData = m_buffer.data();
-    memset(bufferData, 0, sizeof(*bufferData) * bufferSize);
+    m_buffer.fill(0);
 }
 
 SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT numItems) {
