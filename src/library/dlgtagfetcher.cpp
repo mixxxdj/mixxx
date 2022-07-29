@@ -384,6 +384,10 @@ void DlgTagFetcher::resultSelected() {
         return;
     }
 
+    if (results->currentItem()->data(0, Qt::UserRole).toInt() == -1) {
+        results->currentItem()->setFlags(Qt::NoItemFlags);
+        return;
+    }
     const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedResult = resultIndex;
 }
