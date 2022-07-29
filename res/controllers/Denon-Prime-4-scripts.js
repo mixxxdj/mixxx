@@ -37,18 +37,29 @@ var Prime4 = {};
 // What default colour would you like each deck to be?
 // (Choose between "red", "yellow", "green", "cyan", "blue", "magenta", or "white")
 const deckColors = [
-    "cyan",  // Deck 1
-    "cyan",  // Deck 2
-    "magenta",  // Deck 3
-    "magenta",  // Deck 4
+
+    // Deck 1
+    "cyan",
+
+    // Deck 2
+    "cyan",
+
+    // Deck 3
+    "magenta",
+
+    // Deck 4
+    "magenta",
+
 ];
 
-/*
- *                   WARNING!!!
- *
- *      DO NOT EDIT ANYTHING PAST THIS POINT
- *       UNLESS YOU KNOW WHAT YOU'RE DOING.
- */
+/**************************************************
+ *                                                *
+ *                   WARNING!!!                   *
+ *                                                *
+ *      DO NOT EDIT ANYTHING PAST THIS POINT      *
+ *       UNLESS YOU KNOW WHAT YOU'RE DOING.       *
+ *                                                *
+ **************************************************/
 
 // 'Off' value sets lights to dim instead of off
 components.Button.prototype.off = 0x01;
@@ -100,8 +111,6 @@ const Prime4ColorMapper = new ColorMapper({
     //  0x550055: 0x11, // dark magenta
     //  0x5500AA: 0x12,
     //  0x5500FF: 0x13,
-    //  0x555500: 0x14, // dark yellow
-    //  0x555555: 0x15, // dark white/grey
     //  0x5555AA: 0x16,
     //  0x5555FF: 0x17,
     //  0x55AA00: 0x18,
