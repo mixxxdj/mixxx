@@ -265,7 +265,10 @@ void DlgTagFetcher::progressBarSetCurrentStep() {
 }
 
 void DlgTagFetcher::progressBarSetTotalSteps(int totalRecordingsFound) {
-    loadingProgressBar->setTextVisible(true);
+    if (totalRecordingsFound < 4) {
+        totalRecordingsFound = 4;
+    }
+
     loadingProgressBar->setMaximum(totalRecordingsFound);
 }
 
