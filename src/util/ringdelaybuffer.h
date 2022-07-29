@@ -95,7 +95,7 @@ class RingDelayBuffer final {
         m_writePos = 0;
         m_jumpLeftAroundMask = 0;
 
-        memset(m_buffer.data(), 0, sizeof(m_buffer));
+        m_buffer.fill(0);
     }
 
     SINT length() const {
