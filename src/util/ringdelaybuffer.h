@@ -87,26 +87,36 @@ class RingDelayBuffer final {
     }
 
     bool isEmpty() const {
-        return m_readPos == m_writePos;
+        return getReadAvailable() == 0;
     }
 
     void clear() {
+        m_fullFlag = false;
+
         m_readPos = 0;
         m_writePos = 0;
-        m_jumpLeftAroundMask = 0;
 
         m_buffer.fill(0);
     }
 
-    SINT length() const {
+    SINT size() const {
         return m_buffer.size();
     }
 
     SINT getReadAvailable() const {
-        // The m_ringFullMask has to be XORed with m_jumpLeftAroundMask
-        // to handle the situation, that the read position jump crossed the left side
-        // of the delay buffer and the extra bit was set as empty.
-        return (m_writePos - m_readPos) & (m_ringFullMask ^ m_jumpLeftAroundMask);
+        if (m_writePos > m_readPos) {
+            return (m_writePos - m_readPos);
+        } else if (m_writePos < m_readPos) {
+            return (m_buffer.size() - m_readPos) + m_writePos;
+        } else {
+            // The write position equals the read position (m_writePos == m_readPos).
+            // The buffer is full or empty (m_fullFlag).
+            if (m_fullFlag) {
+                return m_buffer.size();
+            }
+
+            return 0;
+        }
     }
 
     SINT getWriteAvailable() const {
@@ -118,21 +128,14 @@ class RingDelayBuffer final {
     SINT moveReadPositionBy(const SINT jumpSize);
 
   private:
+    // The two special cases can occur if the read position
+    // equals the write position: the buffer is full or empty.
+    // The full flag serves to distinguish between the mentioned two cases.
+    bool m_fullFlag;
     // Position of next readable element.
     SINT m_readPos;
     // Position of next writable element.
     SINT m_writePos;
-    // Used for wrapping indices with extra bit to distinguish full/empty.
-    SINT m_ringFullMask;
-    // Used for fitting indices to buffer.
-    SINT m_ringMask;
-    // In the case that the read position circled the delay buffer
-    // and crossed the left side of the delay buffer, so, for next crossing
-    // of the right size of the delay buffer this mask including the full mask
-    // is used for masking. It handles specific situations, where the extra bit
-    // for write position is empty (so, for the read position too)
-    // and the read position jumps to the left over the left delay buffer side.
-    SINT m_jumpLeftAroundMask;
     // Ring delay buffer.
     mixxx::SampleBuffer m_buffer;
 };

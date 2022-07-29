@@ -48,14 +48,10 @@
 #include "util/sample.h"
 
 RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
-        : m_readPos(0),
+        : m_fullFlag(false),
+          m_readPos(0),
           m_writePos(0),
-          m_ringFullMask((bufferSize * 2) - 1),
-          m_ringMask(bufferSize - 1),
-          m_jumpLeftAroundMask(0),
           m_buffer(bufferSize) {
-    // TODO(davidchocholaty) Handle to allow only power of two for the size of the ring delay buffer.
-
     // Set the ring delay buffer items to 0.
     m_buffer.fill(0);
 }
@@ -68,38 +64,33 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT numItems) {
         itemsToRead = available;
     }
 
-    const SINT position = m_readPos & m_ringMask;
-
     // Check to see if the read is not contiguous.
-    if ((position + itemsToRead) > m_buffer.size()) {
+    if ((m_readPos + itemsToRead) > m_buffer.size()) {
         // Read is not contiguous.
-        SINT firstDataBlockSize = m_buffer.size() - position;
+        SINT firstDataBlockSize = m_buffer.size() - m_readPos;
 
-        SampleUtil::copy(pBuffer, m_buffer.data(position), firstDataBlockSize);
+        SampleUtil::copy(pBuffer, m_buffer.data(m_readPos), firstDataBlockSize);
         pBuffer = pBuffer + firstDataBlockSize;
 
         // The second data part is the start of the ring buffer.
         SampleUtil::copy(pBuffer, m_buffer.data(), itemsToRead - firstDataBlockSize);
     } else {
         // Read is contiguous.
-        SampleUtil::copy(pBuffer, m_buffer.data(position), itemsToRead);
+        SampleUtil::copy(pBuffer, m_buffer.data(m_readPos), itemsToRead);
     }
 
     // Calculate the new read position. If the new read position
     // is after the ring delay buffer end, move it around from the start
-    // of the ring delay buffer. If the extra bit for the read position
-    // is set as empty and the jump will cross the right side of the buffer,
-    // the m_ringFullMask has to be XORed with the m_jumpLeftAroundMask,
-    // to handle the situation, when the read position extra bit can't be set
-    // as full for jumping to left. Otherwise, use only the m_ringFullMask
-    // for masking.
-    if ((position > m_buffer.size()) && (m_readPos < m_buffer.size())) {
-        // position > m_buffer.size()  -> cross the right side of the buffer
-        // m_readPos < m_buffer.size() -> extra bit is set as empty
-        m_readPos = (m_readPos + itemsToRead) & (m_ringFullMask ^ m_jumpLeftAroundMask);
-        m_jumpLeftAroundMask = 0;
-    } else {
-        m_readPos = (m_readPos + itemsToRead) & m_ringFullMask;
+    // of the ring delay buffer.
+    m_readPos = (m_readPos + itemsToRead);
+
+    if (m_readPos >= m_buffer.size()) {
+        m_readPos = m_readPos - m_buffer.size();
+        // The read position crossed the right bound of the buffer. So, if the situation,
+        // where the read position equals the write position arises, and before this situation,
+        // the write position does not cross the right bound of the buffer too,
+        // the buffer will be empty.
+        m_fullFlag = false;
     }
 
     return itemsToRead;
@@ -113,27 +104,34 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT numItems) {
         itemsToWrite = available;
     }
 
-    const SINT position = m_writePos & m_ringMask;
-
     // Check to see if the write is not contiguous.
-    if ((position + itemsToWrite) > m_buffer.size()) {
+    if ((m_writePos + itemsToWrite) > m_buffer.size()) {
         // Write is not contiguous.
-        SINT firstDataBlockSize = m_buffer.size() - position;
+        SINT firstDataBlockSize = m_buffer.size() - m_writePos;
 
-        SampleUtil::copy(m_buffer.data(position), pBuffer, firstDataBlockSize);
+        SampleUtil::copy(m_buffer.data(m_writePos), pBuffer, firstDataBlockSize);
         pBuffer = pBuffer + firstDataBlockSize;
 
         // The second data part is the start of the ring buffer.
         SampleUtil::copy(m_buffer.data(), pBuffer, itemsToWrite - firstDataBlockSize);
     } else {
         // Write is contiguous.
-        SampleUtil::copy(m_buffer.data(position), pBuffer, itemsToWrite);
+        SampleUtil::copy(m_buffer.data(m_writePos), pBuffer, itemsToWrite);
     }
 
     // Calculate the new write position. If the new write position
     // is after the ring delay buffer end, move it around from the start
     // of the ring delay buffer.
-    m_writePos = (m_writePos + itemsToWrite) & m_ringFullMask;
+    m_writePos = (m_writePos + itemsToWrite);
+
+    if (m_writePos >= m_buffer.size()) {
+        m_writePos = m_writePos - m_buffer.size();
+        // The write position crossed the right bound of the buffer. So, if the situation,
+        // where the write position equals the read position arises, and before this situation,
+        // the read position does not cross the right bound of the buffer too,
+        // the buffer will be full.
+        m_fullFlag = true;
+    }
 
     return itemsToWrite;
 }
@@ -158,7 +156,8 @@ SINT RingDelayBuffer::moveReadPositionBy(const SINT jumpSize) {
     // of available items.
     VERIFY_OR_DEBUG_ASSERT(jumpSize <= readAvailableRight) {
         m_readPos = m_writePos;
-        m_jumpLeftAroundMask = 0;
+        // The buffer is empty (all elements have been read).
+        m_fullFlag = false;
 
         return readAvailableRight;
     }
@@ -167,47 +166,36 @@ SINT RingDelayBuffer::moveReadPositionBy(const SINT jumpSize) {
     // (in negative values smaller number).
     VERIFY_OR_DEBUG_ASSERT(jumpSize >= readAvailableLeft) {
         m_readPos = m_writePos;
-        m_jumpLeftAroundMask = 0;
+        // The buffer is full. In this situation, the values on the left side
+        // of the read position before the jump are considered as written,
+        // even though it is about default zero values. After the jump,
+        // the samples have to be read first before samples can be written.
+        m_fullFlag = true;
 
         return readAvailableLeft;
     }
 
-    if (m_readPos + jumpSize < 0) {
-        // The case if the read position full/empty bit is empty
-        // and the jump is to left and crosses the left side
-        // of the delay buffer around. This case is special.
-        // Then, for the crossing of the right side of the delay buffer,
-        // the full/empty extra bit can't be set on full as normal.
-        // For handling this situation, the m_jumpLeftAroundMask variable
-        // is created. If the write position extra bit is empty,
-        // this mask contains only the extra full bit. Otherwise,
-        // if the write position extra bit is full, the variable value is zero.
-        // For the case, that the jump crossed the left side
-        // of the delay buffer for the mentioned case, so, when then
-        // the read position crosses the right side of the delay buffer,
-        // the m_ringFullMask is XORed with the m_jumpLeftAroundMask.
-        // This computation step solves the problem of not setting
-        // the extra bit on full for the read position.
-        m_readPos = (m_readPos + jumpSize) & m_ringMask;
-        m_jumpLeftAroundMask = m_buffer.size() & (~m_writePos);
-    } else {
-        // This branch contains all other cases that can be process normally.
-        // If the extra bit for the read position is set as empty
-        // and the jump will cross the right side of the buffer,
-        // the m_ringFullMask has to be XORed with the m_jumpLeftAroundMask,
-        // to handle the situation, when the read position extra bit can't be set
-        // as full for jumping to left. Otherwise, use only the m_ringFullMask
-        // for masking.
-        const SINT position = m_readPos & m_ringMask;
+    // Add jump size to current read position.
+    m_readPos = m_readPos + jumpSize;
 
-        if ((position > m_buffer.size()) && (m_readPos < m_buffer.size())) {
-            // position > m_buffer.size()  -> cross the right side of the buffer
-            // m_readPos < m_buffer.size() -> extra bit is set as empty
-            m_readPos = (m_readPos + jumpSize) & (m_ringFullMask ^ m_jumpLeftAroundMask);
-            m_jumpLeftAroundMask = 0;
-        } else {
-            m_readPos = (m_readPos + jumpSize) & m_ringFullMask;
-        }
+    if (m_readPos >= m_buffer.size()) {
+        // Crossing the right bound of the buffer.
+        m_readPos = m_readPos - m_buffer.size();
+
+        // The read position crossed the right bound of the buffer. So, if the situation,
+        // where the read position equals the write position arises, and before this situation,
+        // the write position does not cross the right bound of the buffer too,
+        // the buffer will be empty.
+        m_fullFlag = false;
+    } else if (m_readPos < 0) {
+        // Crossing the left bound of the buffer.
+        m_readPos = m_readPos + m_buffer.size();
+
+        // The read position crossed the left bound of the buffer. So, if the situation,
+        // where the read position equals the write position arises, the buffer will be full.
+        // In this situation, the values on the left side of the read position before the jump
+        // are considered as written, even though it is about default zero values.
+        m_fullFlag = true;
     }
 
     return jumpSize;
