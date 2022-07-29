@@ -292,10 +292,10 @@ void DlgTagFetcher::slotNetworkResult(
     m_networkResult = httpError == 0 ? NetworkResult::UnknownError : NetworkResult::HttpError;
     m_data.m_pending = false;
     if (m_networkResult == NetworkResult::UnknownError) {
-        QString unknownError = tr("Mixxx can't connect to %1 for an unknown reason.");
+        QString unknownError = tr("Can't connect to %1 for an unknown reason.");
         loadingProgressBar->setFormat(unknownError.arg(app));
     } else if (m_networkResult == NetworkResult::HttpError) {
-        QString cantConnect = tr("Mixxx can't connect to %1.");
+        QString cantConnect = tr("Can't connect to %1.");
         loadingProgressBar->setFormat(cantConnect.arg(app));
     } else {
         QString strError = tr("HTTP Status: %1");
@@ -322,7 +322,7 @@ void DlgTagFetcher::updateStack() {
         return;
     } else if (m_data.m_results.isEmpty()) {
         loadingProgressBar->setValue(loadingProgressBar->maximum());
-        QString emptyMessage = tr("Mixxx could not find this track in the MusicBrainz database.");
+        QString emptyMessage = tr("Could not find this track in the MusicBrainz database.");
         loadingProgressBar->setFormat(emptyMessage);
         return;
     }
