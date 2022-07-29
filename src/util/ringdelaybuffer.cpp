@@ -45,6 +45,8 @@
 
 #include "ringdelaybuffer.h"
 
+#include "util/sample.h"
+
 RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
         : m_readPos(0),
           m_writePos(0),
@@ -73,14 +75,14 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT numItems) {
         // Read is not contiguous.
         SINT firstDataBlockSize = m_buffer.size() - position;
 
-        memcpy(pBuffer, m_buffer.data(position), firstDataBlockSize * sizeof(CSAMPLE));
+        SampleUtil::copy(pBuffer, m_buffer.data(position), firstDataBlockSize);
         pBuffer = pBuffer + firstDataBlockSize;
 
         // The second data part is the start of the ring buffer.
-        memcpy(pBuffer, m_buffer.data(), (itemsToRead - firstDataBlockSize) * sizeof(CSAMPLE));
+        SampleUtil::copy(pBuffer, m_buffer.data(), itemsToRead - firstDataBlockSize);
     } else {
         // Read is contiguous.
-        memcpy(pBuffer, m_buffer.data(position), itemsToRead * sizeof(CSAMPLE));
+        SampleUtil::copy(pBuffer, m_buffer.data(position), itemsToRead);
     }
 
     // Calculate the new read position. If the new read position
@@ -118,14 +120,14 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT numItems) {
         // Write is not contiguous.
         SINT firstDataBlockSize = m_buffer.size() - position;
 
-        memcpy(m_buffer.data(position), pBuffer, firstDataBlockSize * sizeof(CSAMPLE));
+        SampleUtil::copy(m_buffer.data(position), pBuffer, firstDataBlockSize);
         pBuffer = pBuffer + firstDataBlockSize;
 
         // The second data part is the start of the ring buffer.
-        memcpy(m_buffer.data(), pBuffer, (itemsToWrite - firstDataBlockSize) * sizeof(CSAMPLE));
+        SampleUtil::copy(m_buffer.data(), pBuffer, itemsToWrite - firstDataBlockSize);
     } else {
         // Write is contiguous.
-        memcpy(m_buffer.data(position), pBuffer, itemsToWrite * sizeof(CSAMPLE));
+        SampleUtil::copy(m_buffer.data(position), pBuffer, itemsToWrite);
     }
 
     // Calculate the new write position. If the new write position
