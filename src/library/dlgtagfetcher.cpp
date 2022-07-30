@@ -301,14 +301,9 @@ void DlgTagFetcher::slotNetworkResult(
     if (m_networkResult == NetworkResult::UnknownError) {
         QString unknownError = tr("Can't connect to %1 for an unknown reason.");
         loadingProgressBar->setFormat(unknownError.arg(app));
-    } else if (m_networkResult == NetworkResult::HttpError) {
+    } else {
         QString cantConnect = tr("Can't connect to %1.");
         loadingProgressBar->setFormat(cantConnect.arg(app));
-    } else {
-        QString strError = tr("HTTP Status: %1");
-        QString strCode = tr("Code: %1");
-        loadingProgressBar->setFormat(strError.arg(httpError) + " " +
-                strCode.arg(code) + " " + message);
     }
     btnRetry->setVisible(true);
     updateStack();
