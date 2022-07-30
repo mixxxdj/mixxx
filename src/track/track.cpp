@@ -70,13 +70,12 @@ const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 //static
 SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
         const UserSettings& userSettings) {
-    const auto resetMissingTagMetadataOnImport = userSettings.getValue<bool>(
-            mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
-    const auto syncSeratoMetadata =
-            userSettings.getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey);
     return SyncTrackMetadataParams{
-            resetMissingTagMetadataOnImport,
-            syncSeratoMetadata,
+            .resetMissingTagMetadataOnImport =
+                    userSettings.getValue<bool>(
+                            mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey),
+            .syncSeratoMetadata = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kSyncSeratoMetadataConfigKey),
     };
 }
 
