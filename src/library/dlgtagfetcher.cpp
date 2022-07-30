@@ -265,8 +265,14 @@ void DlgTagFetcher::progressBarSetCurrentStep() {
 }
 
 void DlgTagFetcher::progressBarSetTotalSteps(int totalRecordingsFound) {
-    if (totalRecordingsFound < 4) {
-        totalRecordingsFound = 4;
+    // This function updates the bar with total metadata found for the track.
+    // Tag Fetcher has 3 steps these are:
+    // Fingerprinting the track, Identifiying the track, Retrieving metadata.
+    // For every step the progress bar is incrementing by one in order to have better scaling.
+    // If the track has less metadata then 4, the scaling jumps from %0 to %100.
+    // That is why we need to rearrenge the maximum value for to have better scaling.
+    while (totalRecordingsFound < 4) {
+        totalRecordingsFound++;
     }
 
     loadingProgressBar->setMaximum(totalRecordingsFound);
