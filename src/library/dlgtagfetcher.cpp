@@ -319,6 +319,13 @@ void DlgTagFetcher::slotNetworkResult(
         loadingProgressBar->setFormat(cantConnect.arg(app));
     }
     btnRetry->setVisible(true);
+    //Some of the tracks has additional XML, but it returns the 403 error.
+    //If it happens we let user know and prevent to retry fetching many times.
+    if (code == 403) {
+        QString cantParse = tr("Unknown error while getting metadata.");
+        loadingProgressBar->setFormat(cantParse);
+        btnRetry->setVisible(false);
+    }
     updateStack();
 }
 
@@ -340,7 +347,7 @@ void DlgTagFetcher::updateStack() {
     } else if (m_data.m_results.isEmpty()) {
         loadingProgressBar->setValue(loadingProgressBar->maximum());
         QString emptyMessage = tr("Could not find this track in the MusicBrainz database.");
-        btnRetry->setVisible(true);
+        btnRetry->setVisible(false);
         loadingProgressBar->setFormat(emptyMessage);
         return;
     }
