@@ -234,9 +234,22 @@ void DlgTagFetcher::apply() {
 
 void DlgTagFetcher::retry() {
     results->clear();
-    m_data = Data();
+    disconnect(m_track.get(),
+            &Track::changed,
+            this,
+            &DlgTagFetcher::slotTrackChanged);
+
     addDivider(tr("Original tags"), results);
     addTrack(trackColumnValues(*m_track), -1, results);
+
+    m_data = Data();
+    m_networkResult = NetworkResult::Ok;
+
+    connect(m_track.get(),
+            &Track::changed,
+            this,
+            &DlgTagFetcher::slotTrackChanged);
+
     m_tagFetcher.startFetch(m_track);
     updateStack();
 }
