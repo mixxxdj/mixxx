@@ -15,6 +15,8 @@ typedef std::weak_ptr<Track> TrackWeakPointer;
 typedef QList<TrackPointer> TrackPointerList;
 
 struct SyncTrackMetadataParams {
+    // readFromUserSettings() depends on the ordering of the members!
+    bool resetMissingTagMetadataOnImport = false;
     bool syncSeratoMetadata = false;
 
     static SyncTrackMetadataParams readFromUserSettings(

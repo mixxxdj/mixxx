@@ -162,10 +162,12 @@ void BrowseThread::populateModel() {
                 thisPath.token());
         {
             mixxx::TrackMetadata trackMetadata;
+            constexpr auto resetMissingTagMetadata = false; // no effect
             SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
                     fileAccess,
                     &trackMetadata,
-                    nullptr);
+                    nullptr,
+                    resetMissingTagMetadata);
 
             item = new QStandardItem(fileAccess.info().fileName());
             item->setToolTip(item->text());

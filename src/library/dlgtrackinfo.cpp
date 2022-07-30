@@ -663,10 +663,14 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
     QImage coverImage;
+    // Unconditionally replace or reset all existing metadata with the
+    // metadata available in file tags. The user is supposed to review
+    // the changes, so this behavior is both desired and save here.
+    constexpr auto resetMissingTagMetadata = true;
     const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
-                            &trackMetadata, &coverImage);
+                            &trackMetadata, &coverImage, resetMissingTagMetadata);
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }

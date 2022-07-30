@@ -46,10 +46,12 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 QImage CoverArtUtils::extractEmbeddedCover(
         mixxx::FileAccess trackFileAccess) {
     QImage image;
+    constexpr auto resetMissingTagMetadata = false; // no effect
     SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
             std::move(trackFileAccess),
             nullptr,
-            &image);
+            &image,
+            resetMissingTagMetadata);
     return image;
 }
 
