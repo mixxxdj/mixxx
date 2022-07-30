@@ -94,6 +94,7 @@ void DlgTagFetcher::init() {
             this,
             &DlgTagFetcher::progressBarSetTotalSteps);
     connect(&m_tagFetcher, &TagFetcher::networkError, this, &DlgTagFetcher::slotNetworkResult);
+    btnRetry->setVisible(false);
 }
 
 void DlgTagFetcher::slotNext() {
@@ -309,10 +310,12 @@ void DlgTagFetcher::slotNetworkResult(
         loadingProgressBar->setFormat(strError.arg(httpError) + " " +
                 strCode.arg(code) + " " + message);
     }
+    btnRetry->setVisible(true);
     updateStack();
 }
 
 void DlgTagFetcher::updateStack() {
+    btnApply->setDisabled(true);
     m_progressBarStep = 0;
     loadingProgressBar->setValue(m_progressBarStep);
     results->clear();
@@ -329,10 +332,12 @@ void DlgTagFetcher::updateStack() {
     } else if (m_data.m_results.isEmpty()) {
         loadingProgressBar->setValue(loadingProgressBar->maximum());
         QString emptyMessage = tr("Could not find this track in the MusicBrainz database.");
+        btnRetry->setVisible(true);
         loadingProgressBar->setFormat(emptyMessage);
         return;
     }
     btnApply->setEnabled(true);
+    btnRetry->setVisible(false);
     loadingProgressBar->setValue(loadingProgressBar->maximum());
     QString finishedMessage = tr("The results are ready to be applied.");
     loadingProgressBar->setFormat(finishedMessage);
