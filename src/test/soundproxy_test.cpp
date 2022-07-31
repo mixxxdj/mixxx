@@ -290,7 +290,8 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
             getTestDir().filePath(QStringLiteral("id3-test-data/TOAL_TPE2.mp3")));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
-    constexpr auto resetMissingTagMetadata = false; // no effect
+    // Both resetMissingTagMetadata = false/true have the same effect
+    constexpr auto resetMissingTagMetadata = false;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded,
             proxy.importTrackMetadataAndCoverImage(
                          &trackMetadata, nullptr, resetMissingTagMetadata)

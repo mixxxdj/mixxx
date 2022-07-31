@@ -1582,7 +1582,8 @@ ExportTrackMetadataResult Track::exportMetadata(
     // Otherwise floating-point values like the bpm value might become
     // inconsistent with the actual value stored by the beat grid!
     mixxx::TrackMetadata normalizedFromRecord;
-    constexpr auto resetMissingTagMetadata = false; // true would have no effect
+    // Both resetMissingTagMetadata = false/true have the same effect
+    constexpr auto resetMissingTagMetadata = false;
     if ((metadataSource.importTrackMetadataAndCoverImage(&importedFromFile,
                                nullptr,
                                resetMissingTagMetadata)

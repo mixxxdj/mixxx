@@ -46,7 +46,8 @@ class MetadataTest : public testing::Test {
         pFrame.release();
 
         mixxx::TrackMetadata trackMetadata;
-        constexpr auto resetMissingTagMetadata = false; // no effect
+        // Both resetMissingTagMetadata = false/true have the same effect
+        constexpr auto resetMissingTagMetadata = false;
         mixxx::taglib::id3v2::importTrackMetadataFromTag(
                 &trackMetadata, tag, resetMissingTagMetadata);
 
@@ -130,7 +131,8 @@ TEST_F(MetadataTest, ID3v2Year) {
                 mixxx::taglib::id3v2::exportTrackMetadataIntoTag(&tag, trackMetadata);
             }
             mixxx::TrackMetadata trackMetadata;
-            constexpr auto resetMissingTagMetadata = false; // no effect
+            // Both resetMissingTagMetadata = false/true have the same effect
+            constexpr auto resetMissingTagMetadata = false;
             mixxx::taglib::id3v2::importTrackMetadataFromTag(
                     &trackMetadata, tag, resetMissingTagMetadata);
             if (4 > majorVersion) {

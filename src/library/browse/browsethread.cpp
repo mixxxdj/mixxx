@@ -162,7 +162,8 @@ void BrowseThread::populateModel() {
                 thisPath.token());
         {
             mixxx::TrackMetadata trackMetadata;
-            constexpr auto resetMissingTagMetadata = false; // no effect
+            // Both resetMissingTagMetadata = false/true have the same effect
+            constexpr auto resetMissingTagMetadata = false;
             SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
                     fileAccess,
                     &trackMetadata,
