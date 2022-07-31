@@ -9,6 +9,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
+#include "library/library_prefs.h"
 #include "library/trackmodel.h"
 #include "moc_dlgtrackinfo.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -36,10 +37,12 @@ const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
 } // namespace
 
 DlgTrackInfo::DlgTrackInfo(
+        UserSettingsPointer pUserSettings,
         const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
+          m_pUserSettings(std::move(pUserSettings)),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
@@ -663,11 +666,8 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
     QImage coverImage;
-    // Unconditionally replace all existing metadata with the metadata
-    // found in file tags or reset/remove missing entries. The user is
-    // supposed to review the changes, so this behavior is both desired
-    // and save here.
-    constexpr auto resetMissingTagMetadata = true;
+    const auto resetMissingTagMetadata = m_pUserSettings->getValue<bool>(
+            mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
     const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
