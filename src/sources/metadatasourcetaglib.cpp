@@ -105,7 +105,8 @@ MetadataSourceTagLib::afterExport(ExportResult exportResult) const {
 std::pair<MetadataSource::ImportResult, QDateTime>
 MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
-        QImage* pCoverImage) const {
+        QImage* pCoverImage,
+        bool resetMissingTagMetadata) const {
     VERIFY_OR_DEBUG_ASSERT(pTrackMetadata || pCoverImage) {
         kLogger.warning()
                 << "Nothing to import"
@@ -136,13 +137,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
             DEBUG_ASSERT(pTag);
-            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importTrackMetadataFromTag(
+                    pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         } else if (taglib::hasAPETag(file)) {
             const TagLib::APE::Tag* pTag = file.APETag();
             DEBUG_ASSERT(pTag);
-            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::ape::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         } else if (taglib::hasID3v1Tag(file)) {
@@ -166,7 +168,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasMP4Tag(file)) {
             const TagLib::MP4::Tag* pTag = file.tag();
             DEBUG_ASSERT(pTag);
-            taglib::mp4::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::mp4::importTrackMetadataFromTag(pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::mp4::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -183,13 +185,17 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasXiphComment(file)) {
             TagLib::Ogg::XiphComment* pTag = file.xiphComment();
             DEBUG_ASSERT(pTag);
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::FLAC);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
+                    *pTag,
+                    taglib::FileType::FLAC,
+                    resetMissingTagMetadata);
             coverImageImported = taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             importSucceeded = true;
         } else if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
             DEBUG_ASSERT(pTag);
-            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importTrackMetadataFromTag(
+                    pTrackMetadata, *pTag, resetMissingTagMetadata);
             coverImageImported = taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
             importSucceeded = true;
         }
@@ -216,7 +222,10 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         TagLib::Ogg::XiphComment* pTag = file.tag();
         if (pTag) {
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::OGG);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
+                    *pTag,
+                    taglib::FileType::OGG,
+                    resetMissingTagMetadata);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -229,7 +238,10 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         TagLib::Ogg::XiphComment* pTag = file.tag();
         if (pTag) {
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::OPUS);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
+                    *pTag,
+                    taglib::FileType::OPUS,
+                    resetMissingTagMetadata);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -243,7 +255,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasAPETag(file)) {
             const TagLib::APE::Tag* pTag = file.APETag();
             DEBUG_ASSERT(pTag);
-            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::ape::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -257,7 +269,8 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
             DEBUG_ASSERT(pTag);
-            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importTrackMetadataFromTag(
+                    pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         } else if (file.hasInfoTag()) {
@@ -276,7 +289,8 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.tag();
             DEBUG_ASSERT(pTag);
-            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importTrackMetadataFromTag(
+                    pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         } else if (file.importTrackMetadataFromTextChunks(pTrackMetadata)) {
