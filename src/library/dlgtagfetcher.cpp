@@ -323,6 +323,7 @@ void DlgTagFetcher::slotNetworkResult(
     //Disabling the retry button could be an option for these tracks.
     //But OTOH, some tracks can return suggested tags.
     //After a few times of retry.
+    //More Info: https://bugs.launchpad.net/mixxx/+bug/1983204
     if (code == 403) {
         QString cantParse = tr("Unknown error while getting metadata.");
         loadingProgressBar->setFormat(cantParse);
@@ -330,6 +331,7 @@ void DlgTagFetcher::slotNetworkResult(
     btnRetry->setVisible(true);
     //If error is 203 that means there is no available metadata in response.
     //We let user know and prevent to retry fetching many times.
+    //More Info: https://bugs.launchpad.net/mixxx/+bug/1983206
     if (code == 203) {
         QString cantParse = tr("Could not find this track in the MusicBrainz database.");
         loadingProgressBar->setFormat(cantParse);
