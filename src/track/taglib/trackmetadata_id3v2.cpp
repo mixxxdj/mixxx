@@ -856,9 +856,10 @@ void importTrackMetadataFromTag(
 #endif // __EXTRA_METADATA__
 
     const TagLib::ID3v2::FrameList bpmFrames(tag.frameListMap()["TBPM"]);
-    if (!bpmFrames.isEmpty()) {
+    if (!bpmFrames.isEmpty() || resetMissingTagMetadata) {
         parseBpm(pTrackMetadata,
-                firstNonEmptyFrameToQString(bpmFrames));
+                firstNonEmptyFrameToQString(bpmFrames),
+                resetMissingTagMetadata);
         if (pTrackMetadata->getTrackInfo().getBpm().isValid()) {
             double bpmValue = pTrackMetadata->getTrackInfo().getBpm().value();
             // Some software use (or used) to write decimated values without comma,
@@ -912,15 +913,15 @@ void importTrackMetadataFromTag(
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_TRACK_GAIN"));
-    if (!trackGain.isEmpty()) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (!trackGain.isEmpty() || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_TRACK_PEAK"));
-    if (!trackPeak.isEmpty()) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (!trackPeak.isEmpty() || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -928,15 +929,15 @@ void importTrackMetadataFromTag(
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_ALBUM_GAIN"));
-    if (!albumGain.isEmpty()) {
-        parseAlbumGain(pTrackMetadata, albumGain);
+    if (!albumGain.isEmpty() || resetMissingTagMetadata) {
+        parseAlbumGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_ALBUM_PEAK"));
-    if (!albumPeak.isEmpty()) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (!albumPeak.isEmpty() || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId =

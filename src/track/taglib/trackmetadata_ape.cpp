@@ -163,27 +163,27 @@ void importTrackMetadataFromTag(
 #endif // __EXTRA_METADATA__
 
     QString bpm;
-    if (readItem(tag, "BPM", &bpm)) {
-        parseBpm(pTrackMetadata, bpm);
+    if (readItem(tag, "BPM", &bpm) || resetMissingTagMetadata) {
+        parseBpm(pTrackMetadata, bpm, resetMissingTagMetadata);
     }
 
     QString trackGain;
-    if (readItem(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain)) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (readItem(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain) || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak;
-    if (readItem(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (readItem(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak) || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
     QString albumGain;
-    if (readItem(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
-        parseTrackGain(pTrackMetadata, albumGain);
+    if (readItem(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain) || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak;
-    if (readItem(tag, "REPLAYGAIN_ALBUM_PEAK", &albumPeak)) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (readItem(tag, "REPLAYGAIN_ALBUM_PEAK", &albumPeak) || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId;

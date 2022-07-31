@@ -38,9 +38,6 @@ class MetadataSource {
     /// return Unavailable as this default implementation does.
     /// The flag resetMissingTagMetadata controls if existing metadata
     /// should be discarded if the corresponding file tags are missing.
-    /// BPM and replay gain values are unaffected and not reset if missing.
-    /// TODO: Reset BPM and replay gain values if missing for all supported
-    /// formats.
     virtual std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverImage,

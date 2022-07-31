@@ -351,10 +351,10 @@ void importTrackMetadataFromTag(
     // MusicBrainz recommends "BPM": https://picard.musicbrainz.org/docs/mappings
     // Mixxx (<= 2.0) favored "TEMPO": https://www.mixxx.org/wiki/doku.php/library_metadata_rewrite_using_taglib
     QString bpm;
-    if (!readCommentField(tag, "BPM", &bpm) || !parseBpm(pTrackMetadata, bpm)) {
-        if (readCommentField(tag, "TEMPO", &bpm)) {
-            parseBpm(pTrackMetadata, bpm);
-        }
+    if (readCommentField(tag, "BPM", &bpm) ||
+            readCommentField(tag, "TEMPO", &bpm) ||
+            resetMissingTagMetadata) {
+        parseBpm(pTrackMetadata, bpm, resetMissingTagMetadata);
     }
 
     // Reading key code information
@@ -372,22 +372,22 @@ void importTrackMetadataFromTag(
 
     // Only read track gain (not album gain)
     QString trackGain;
-    if (readCommentField(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain)) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (readCommentField(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain) || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak;
-    if (readCommentField(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (readCommentField(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak) || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
     QString albumGain;
-    if (readCommentField(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
-        parseAlbumGain(pTrackMetadata, albumGain);
+    if (readCommentField(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain) || resetMissingTagMetadata) {
+        parseAlbumGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak;
-    if (readCommentField(tag, "REPLAYGAIN_ALBUM_PEAK", &albumPeak)) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (readCommentField(tag, "REPLAYGAIN_ALBUM_PEAK", &albumPeak) || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId;

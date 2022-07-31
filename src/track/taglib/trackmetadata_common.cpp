@@ -85,8 +85,13 @@ TagLib::String firstNonEmptyStringListItem(
 
 bool parseBpm(
         TrackMetadata* pTrackMetadata,
-        const QString& sBpm) {
+        const QString& sBpm,
+        bool resetIfEmpty) {
     DEBUG_ASSERT(pTrackMetadata);
+    if (resetIfEmpty && sBpm.trimmed().isEmpty()) {
+        pTrackMetadata->refTrackInfo().setBpm(Bpm{});
+        return true;
+    }
     bool isBpmValid = false;
     const double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
     if (isBpmValid) {
@@ -97,55 +102,59 @@ bool parseBpm(
 
 bool parseTrackGain(
         TrackMetadata* pTrackMetadata,
-        const QString& dbGain) {
+        const QString& dbGain,
+        bool resetIfEmpty) {
     DEBUG_ASSERT(pTrackMetadata);
 
-    ReplayGain replayGain(pTrackMetadata->getTrackInfo().getReplayGain());
-    bool isRatioValid = parseReplayGainGain(&replayGain, dbGain);
-    if (isRatioValid) {
-        pTrackMetadata->refTrackInfo().setReplayGain(replayGain);
+    ReplayGain* pReplayGain = pTrackMetadata->refTrackInfo().ptrReplayGain();
+    if (resetIfEmpty && dbGain.trimmed().isEmpty()) {
+        pReplayGain->resetRatio();
+        return true;
     }
-    return isRatioValid;
+    return parseReplayGainGain(pReplayGain, dbGain);
 }
 
 bool parseTrackPeak(
         TrackMetadata* pTrackMetadata,
-        const QString& strPeak) {
+        const QString& strPeak,
+        bool resetIfEmpty) {
     DEBUG_ASSERT(pTrackMetadata);
 
-    ReplayGain replayGain(pTrackMetadata->getTrackInfo().getReplayGain());
-    bool isPeakValid = parseReplayGainPeak(&replayGain, strPeak);
-    if (isPeakValid) {
-        pTrackMetadata->refTrackInfo().setReplayGain(replayGain);
+    ReplayGain* pReplayGain = pTrackMetadata->refTrackInfo().ptrReplayGain();
+    if (resetIfEmpty && strPeak.trimmed().isEmpty()) {
+        pReplayGain->resetPeak();
+        return true;
     }
-    return isPeakValid;
+    return parseReplayGainPeak(pReplayGain, strPeak);
 }
 
 #if defined(__EXTRA_METADATA__)
 bool parseAlbumGain(
         TrackMetadata* pTrackMetadata,
-        const QString& dbGain) {
+        const QString& dbGain,
+        bool resetIfEmpty) {
     DEBUG_ASSERT(pTrackMetadata);
 
-    ReplayGain replayGain(pTrackMetadata->getAlbumInfo().getReplayGain());
-    bool isRatioValid = parseReplayGainGain(&replayGain, dbGain);
-    if (isRatioValid) {
-        pTrackMetadata->refAlbumInfo().setReplayGain(replayGain);
+    ReplayGain* pReplayGain = pTrackMetadata->refAlbumInfo().ptrReplayGain();
+    if (resetIfEmpty && dbGain.trimmed().isEmpty()) {
+        pReplayGain->resetRatio();
+        return true;
     }
-    return isRatioValid;
+    return parseReplayGainGain(pReplayGain, dbGain);
 }
 
 bool parseAlbumPeak(
         TrackMetadata* pTrackMetadata,
-        const QString& strPeak) {
+        const QString& strPeak,
+        bool resetIfEmpty) {
     DEBUG_ASSERT(pTrackMetadata);
 
-    ReplayGain replayGain(pTrackMetadata->getAlbumInfo().getReplayGain());
-    bool isPeakValid = parseReplayGainPeak(&replayGain, strPeak);
-    if (isPeakValid) {
-        pTrackMetadata->refAlbumInfo().setReplayGain(replayGain);
+    ReplayGain* pReplayGain = pTrackMetadata->refAlbumInfo().ptrReplayGain();
+    if (resetIfEmpty && strPeak.trimmed().isEmpty()) {
+        pReplayGain->resetPeak();
+        return true;
     }
-    return isPeakValid;
+    return parseReplayGainPeak(pReplayGain, strPeak);
 }
 #endif // __EXTRA_METADATA__
 

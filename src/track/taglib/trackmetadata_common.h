@@ -71,7 +71,8 @@ inline QString formatBpm(
 
 bool parseBpm(
         TrackMetadata* pTrackMetadata,
-        const QString& sBpm);
+        const QString& sBpm,
+        bool resetIfEmpty);
 
 inline QString formatReplayGainGain(
         const ReplayGain& replayGain) {
@@ -91,7 +92,8 @@ inline QString formatTrackGain(
 
 bool parseTrackGain(
         TrackMetadata* pTrackMetadata,
-        const QString& dbGain);
+        const QString& dbGain,
+        bool resetIfEmpty);
 
 inline QString formatTrackPeak(
         const TrackMetadata& trackMetadata) {
@@ -101,7 +103,8 @@ inline QString formatTrackPeak(
 
 bool parseTrackPeak(
         TrackMetadata* pTrackMetadata,
-        const QString& strPeak);
+        const QString& strPeak,
+        bool resetIfEmpty);
 
 #if defined(__EXTRA_METADATA__)
 inline QString formatAlbumGain(
@@ -111,7 +114,8 @@ inline QString formatAlbumGain(
 
 bool parseAlbumGain(
         TrackMetadata* pTrackMetadata,
-        const QString& dbGain);
+        const QString& dbGain,
+        bool resetIfEmpty);
 
 inline QString formatAlbumPeak(
         const TrackMetadata& trackMetadata) {
@@ -120,7 +124,8 @@ inline QString formatAlbumPeak(
 
 bool parseAlbumPeak(
         TrackMetadata* pTrackMetadata,
-        const QString& strPeak);
+        const QString& strPeak,
+        bool resetIfEmpty);
 #endif // __EXTRA_METADATA__
 
 bool parseSeratoBeatGrid(

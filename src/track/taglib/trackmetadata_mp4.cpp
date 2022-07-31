@@ -191,14 +191,18 @@ void importTrackMetadataFromTag(
         // If this field contains a valid value the integer
         // BPM value that might have been read before is
         // overwritten.
-        parseBpm(pTrackMetadata, bpm);
+        parseBpm(pTrackMetadata, bpm, resetMissingTagMetadata);
     } else if (tag.contains("tmpo")) {
         // Read the BPM as an integer value.
         const TagLib::MP4::Item tmpoItem = tag.item("tmpo");
         double bpmValue = tmpoItem.toInt();
         if (Bpm::isValidValue(bpmValue)) {
             pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+        } else if (resetMissingTagMetadata) {
+            pTrackMetadata->refTrackInfo().setBpm(Bpm{});
         }
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setBpm(Bpm{});
     }
 
     QString key;
@@ -213,22 +217,22 @@ void importTrackMetadataFromTag(
     }
 
     QString trackGain;
-    if (readAtom(tag, kAtomKeyReplayGainTrackGain, &trackGain)) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (readAtom(tag, kAtomKeyReplayGainTrackGain, &trackGain) || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak;
-    if (readAtom(tag, kAtomKeyReplayGainTrackPeak, &trackPeak)) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (readAtom(tag, kAtomKeyReplayGainTrackPeak, &trackPeak) || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
     QString albumGain;
-    if (readAtom(tag, kAtomKeyReplayGainAlbumGain, &albumGain)) {
-        parseAlbumGain(pTrackMetadata, albumGain);
+    if (readAtom(tag, kAtomKeyReplayGainAlbumGain, &albumGain) || resetMissingTagMetadata) {
+        parseAlbumGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak;
-    if (readAtom(tag, kAtomKeyReplayGainAlbumPeak, &albumPeak)) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (readAtom(tag, kAtomKeyReplayGainAlbumPeak, &albumPeak) || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId;
