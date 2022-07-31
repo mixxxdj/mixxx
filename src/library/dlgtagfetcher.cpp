@@ -94,7 +94,7 @@ void DlgTagFetcher::init() {
             this,
             &DlgTagFetcher::progressBarSetTotalSteps);
     connect(&m_tagFetcher, &TagFetcher::networkError, this, &DlgTagFetcher::slotNetworkResult);
-    btnRetry->setVisible(false);
+    btnRetry->setEnabled(false);
 }
 
 void DlgTagFetcher::slotNext() {
@@ -328,21 +328,22 @@ void DlgTagFetcher::slotNetworkResult(
         QString cantParse = tr("Unknown error while getting metadata.");
         loadingProgressBar->setFormat(cantParse);
     }
-    btnRetry->setVisible(true);
     //If error is 203 that means there is no available metadata in response.
     //We let user know and prevent to retry fetching many times.
     //More Info: https://bugs.launchpad.net/mixxx/+bug/1983206
     if (code == 203) {
         QString cantParse = tr("Could not find this track in the MusicBrainz database.");
         loadingProgressBar->setFormat(cantParse);
-        btnRetry->setVisible(false);
     }
-
+    btnRetry->setEnabled(true);
     updateStack();
 }
 
 void DlgTagFetcher::updateStack() {
     btnApply->setDisabled(true);
+
+    successMessage->setVisible(false);
+    loadingProgressBar->setVisible(true);
     m_progressBarStep = 0;
     loadingProgressBar->setValue(m_progressBarStep);
     results->clear();
@@ -359,13 +360,15 @@ void DlgTagFetcher::updateStack() {
     } else if (m_data.m_results.isEmpty()) {
         loadingProgressBar->setValue(loadingProgressBar->maximum());
         QString emptyMessage = tr("Could not find this track in the MusicBrainz database.");
-        btnRetry->setVisible(false);
+        btnRetry->setEnabled(true);
         loadingProgressBar->setFormat(emptyMessage);
         return;
     }
     btnApply->setEnabled(true);
-    btnRetry->setVisible(false);
+    btnRetry->setEnabled(false);
     loadingProgressBar->setValue(loadingProgressBar->maximum());
+    successMessage->setVisible(true);
+    loadingProgressBar->setVisible(false);
     QString finishedMessage = tr("The results are ready to be applied.");
     loadingProgressBar->setFormat(finishedMessage);
 
