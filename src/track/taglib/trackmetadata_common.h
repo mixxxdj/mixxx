@@ -7,6 +7,7 @@
 #include <QFlags>
 #include <QImage>
 #include <QString>
+#include <gsl/pointers>
 
 #if defined(__EXTRA_METADATA__)
 #include "util/quuid.h"
@@ -91,7 +92,7 @@ inline QString formatTrackGain(
 }
 
 bool parseTrackGain(
-        TrackMetadata* pTrackMetadata,
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
         const QString& dbGain,
         bool resetIfEmpty);
 
@@ -102,7 +103,7 @@ inline QString formatTrackPeak(
 }
 
 bool parseTrackPeak(
-        TrackMetadata* pTrackMetadata,
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
         const QString& strPeak,
         bool resetIfEmpty);
 
@@ -113,7 +114,7 @@ inline QString formatAlbumGain(
 }
 
 bool parseAlbumGain(
-        TrackMetadata* pTrackMetadata,
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
         const QString& dbGain,
         bool resetIfEmpty);
 
@@ -123,7 +124,7 @@ inline QString formatAlbumPeak(
 }
 
 bool parseAlbumPeak(
-        TrackMetadata* pTrackMetadata,
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
         const QString& strPeak,
         bool resetIfEmpty);
 #endif // __EXTRA_METADATA__
