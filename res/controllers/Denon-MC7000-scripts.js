@@ -531,10 +531,10 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
     } else if (MC7000.PADModeRoll[deckOffset]) {
         // TODO(all): check for actual beatloop_size and apply back after a PAD Roll
         i = control - 0x14;
-        if (control === 0x14 + i && value > 0x00) {
+        if (value > 0x00) {
             engine.setValue(group, "beatlooproll_" + MC7000.beatLoopRoll[i] + "_activate", true);
             midi.sendShortMsg(0x94 + deckOffset, 0x14 + i, MC7000.padColor.rollon);
-        } else if (control === 0x14 + i && value === 0x00) {
+        } else if (value === 0x00) {
             engine.setValue(group, "beatlooproll_activate", false);
             midi.sendShortMsg(0x94 + deckOffset, 0x14 + i, MC7000.padColor.rolloff);
         }
