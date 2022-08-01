@@ -144,6 +144,9 @@ MC7000.prevVuLevel = [0, 0, 0, 0];
 MC7000.prevJogLED = [0, 0, 0, 0];
 MC7000.prevPadLED = [0, 0, 0, 0];
 
+// Saved beat loop size - restored after releasing all roll buttons
+MC7000.beatLoopSizeBeforeRoll = undefined;
+
 // PAD Mode Colors
 MC7000.padColor = {
     "alloff": 0x01,         // switch off completely
@@ -529,14 +532,20 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             }
         }
     } else if (MC7000.PADModeRoll[deckOffset]) {
-        // TODO(all): check for actual beatloop_size and apply back after a PAD Roll
         i = control - 0x14;
         if (value > 0x00) {
+            // Save current loop size, then activate roll loop
+            MC7000.beatLoopSizeBeforeRoll = engine.getValue(group, "beatloop_size");
             engine.setValue(group, "beatlooproll_" + MC7000.beatLoopRoll[i] + "_activate", true);
             midi.sendShortMsg(0x94 + deckOffset, 0x14 + i, MC7000.padColor.rollon);
         } else if (value === 0x00) {
+            // Deactivate roll loop and restore previous loop size
             engine.setValue(group, "beatlooproll_activate", false);
             midi.sendShortMsg(0x94 + deckOffset, 0x14 + i, MC7000.padColor.rolloff);
+            if (MC7000.beatLoopSizeBeforeRoll) {
+                engine.setValue(group, "beatloop_size", MC7000.beatLoopSizeBeforeRoll);
+                MC7000.beatLoopSizeBeforeRoll = undefined;
+            }
         }
     } else if (MC7000.PADModeSavedLoop[deckOffset]) {
         if (value === 0x00) {
