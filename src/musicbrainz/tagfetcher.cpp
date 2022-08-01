@@ -124,7 +124,7 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
     }
 
     emit fetchProgress(tr("Retrieving metadata from MusicBrainz"));
-    emit recordingsAvailable(recordingIds.size());
+    emit numberOfRecordingsToFetch(recordingIds.size());
 
     DEBUG_ASSERT(!m_pMusicBrainzTask);
     m_pMusicBrainzTask = make_parented<mixxx::MusicBrainzRecordingsTask>(

@@ -62,7 +62,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
 
     QModelIndex m_currentTrackIndex;
 
-    int m_progressBarStep;
+    int m_progressBarValue;
+    int m_incrementBarValueBy;
 
     struct Data {
         Data()

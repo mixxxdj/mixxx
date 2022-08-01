@@ -198,18 +198,6 @@
        </item>
        <item alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="successMessage">
-         <property name="maximumSize">
-          <size>
-           <width>252</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-           <bold>true</bold>
-          </font>
-         </property>
          <property name="text">
           <string>The results are ready to be applied.</string>
          </property>
