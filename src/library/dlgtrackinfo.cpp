@@ -666,12 +666,12 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
     QImage coverImage;
-    const auto resetMissingTagMetadata = m_pUserSettings->getValue<bool>(
+    const auto resetMissingTagMetadataOnImport = m_pUserSettings->getValue<bool>(
             mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
     const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
-                            &trackMetadata, &coverImage, resetMissingTagMetadata);
+                            &trackMetadata, &coverImage, resetMissingTagMetadataOnImport);
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }

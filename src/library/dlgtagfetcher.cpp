@@ -214,12 +214,15 @@ void DlgTagFetcher::apply() {
                 trackRelease.releaseGroupId);
     }
 #endif // __EXTRA_METADATA__
+    // Keep all existing metadata
+    constexpr auto resetMissingTagMetadataOnImport = false;
     m_track->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp
             // to the current time.
-            QDateTime::currentDateTimeUtc());
+            QDateTime::currentDateTimeUtc(),
+            resetMissingTagMetadataOnImport);
 }
 
 void DlgTagFetcher::quit() {

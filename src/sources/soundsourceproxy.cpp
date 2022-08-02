@@ -817,7 +817,8 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
 
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
-            sourceSynchronizedAt);
+            sourceSynchronizedAt,
+            syncParams.resetMissingTagMetadataOnImport);
 
     const bool pendingBeatsImport =
             m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;

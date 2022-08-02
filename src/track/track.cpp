@@ -147,7 +147,8 @@ void Track::relocate(
 
 void Track::replaceMetadataFromSource(
         mixxx::TrackMetadata importedMetadata,
-        const QDateTime& sourceSynchronizedAt) {
+        const QDateTime& sourceSynchronizedAt,
+        bool resetMissingTagMetadataOnImport) {
     // Information stored in Serato tags is imported separately after
     // importing the metadata (see below). The Serato tags BLOB itself
     // is updated together with the metadata.
@@ -183,25 +184,33 @@ void Track::replaceMetadataFromSource(
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
         auto beatsAndBpmModified = false;
-        if (importedBpm.isValid() &&
-                (!m_pBeats ||
-                        !getBeatsPointerBpm(m_pBeats, getDuration())
-                                 .isValid())) {
-            // Only use the imported BPM if the current beat grid is either
-            // missing or not valid! The BPM value in the metadata might be
-            // imprecise (normalized or rounded), e.g. ID3v2 only supports
-            // integer values.
+        // Deliberately overwrite the current BPM with the imported value if either
+        // no beat grid is available or if the beat grid has no valid bpm.
+        // Otherwise if the imported bpm value is invalid we cannot decide if the
+        // value was either missing or could not be parsed. Deliberately reset both
+        // bpm and beat grid only if the corresponding configuration option is also
+        // enabled, i.e. if resetMissingTagMetadataOnImport == true.
+        if (!m_pBeats ||
+                !getBeatsPointerBpm(m_pBeats, getDuration()).isValid() ||
+                (!importedBpm.isValid() && resetMissingTagMetadataOnImport)) {
             beatsAndBpmModified = trySetBpmWhileLocked(importedBpm);
         }
         modified |= beatsAndBpmModified;
 
         auto keysModified = false;
-        if (importedKey != mixxx::track::io::key::INVALID) {
-            // Only update the current key with a valid value. Otherwise preserve
-            // the existing value.
-            keysModified = m_record.updateGlobalKeyText(importedKeyText,
-                                   mixxx::track::io::key::FILE_METADATA) ==
-                    mixxx::UpdateResult::Updated;
+        if (importedKeyText.isEmpty()) {
+            // Reset the key if the corresponding text field is empty.
+            if (m_record.getKeys().isValid()) {
+                m_record.resetKeys();
+                keysModified = true;
+            }
+        } else if (importedKey != mixxx::track::io::key::INVALID) {
+            // Otherwise if the text field is not empty then only update the current
+            // key if a valid value has been parsed successfully from it.
+            // We don't need to consider the corresponding configuration option here,
+            // because it has already been taken into account while importing the metadata.
+            keysModified = m_record.updateGlobalKey(
+                    importedKey, mixxx::track::io::key::FILE_METADATA);
         }
         modified |= keysModified;
 

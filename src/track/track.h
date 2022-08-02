@@ -404,7 +404,8 @@ class Track : public QObject {
     /// with file tags, either by importing or exporting the metadata.
     void replaceMetadataFromSource(
             mixxx::TrackMetadata importedMetadata,
-            const QDateTime& sourceSynchronizedAt);
+            const QDateTime& sourceSynchronizedAt,
+            bool resetMissingTagMetadataOnImport);
 
     mixxx::TrackMetadata getMetadata(
             mixxx::TrackRecord::SourceSyncStatus*
