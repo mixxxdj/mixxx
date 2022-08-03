@@ -87,11 +87,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::engineClockChanged);
 
     keylockComboBox->clear();
-    for (int i = 0; i < EngineBuffer::KEYLOCK_ENGINE_COUNT; ++i) {
-        const auto engine = static_cast<EngineBuffer::KeylockEngine>(i);
+    for (const auto engine : EngineBuffer::kKeylockEngines) {
         if (EngineBuffer::isKeylockEngineAvailable(engine)) {
             keylockComboBox->addItem(
-                    EngineBuffer::getKeylockEngineName(engine), i);
+                    EngineBuffer::getKeylockEngineName(engine), QVariant::fromValue(engine));
         }
     }
 
@@ -499,16 +498,16 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     }
 
     // Default keylock engine is Rubberband Faster (v2)
-    int keylock_engine =
+    const auto keylockEngine = static_cast<EngineBuffer::KeylockEngine>(
             m_pSettings->getValue(ConfigKey("[Master]", "keylock_engine"),
-                    static_cast<int>(EngineBuffer::defaultKeylockEngine()));
-    int index = keylockComboBox->findData(keylock_engine);
+                    static_cast<int>(EngineBuffer::defaultKeylockEngine())));
+    const auto keylockEngineVariant = QVariant::fromValue(keylockEngine);
+    const int index = keylockComboBox->findData(keylockEngineVariant);
     if (index >= 0) {
         keylockComboBox->setCurrentIndex(index);
     } else {
-        const auto engine = static_cast<EngineBuffer::KeylockEngine>(keylock_engine);
         keylockComboBox->addItem(
-                EngineBuffer::getKeylockEngineName(engine), keylock_engine);
+                EngineBuffer::getKeylockEngineName(keylockEngine), keylockEngineVariant);
         keylockComboBox->setCurrentIndex(keylockComboBox->count() - 1);
     }
 

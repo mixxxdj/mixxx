@@ -798,25 +798,22 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
     if (m_bScalerOverride) {
         return;
     }
-    // direct cast produces a "not used" warning with gcc:
-    // static_cast<KeylockEngine>(dIndex);
-    int iEngine = static_cast<int>(dIndex);
-    KeylockEngine engine = static_cast<KeylockEngine>(iEngine);
+    const KeylockEngine engine = static_cast<KeylockEngine>(dIndex);
     switch (engine) {
-    case SOUNDTOUCH:
+    case KeylockEngine::SoundTouch:
         m_pScaleKeylock = m_pScaleST;
         break;
-    case RUBBERBAND_FASTER:
+    case KeylockEngine::RubberBandFaster:
         m_pScaleRB->useEngineFiner(false);
         m_pScaleKeylock = m_pScaleRB;
         break;
-    case RUBBERBAND_FINER:
+    case KeylockEngine::RubberBandFiner:
         m_pScaleRB->useEngineFiner(
                 true); // in case of Rubberband V2 it falls back to RUBBERBAND_FASTER
         m_pScaleKeylock = m_pScaleRB;
         break;
     default:
-        slotKeylockEngineChanged(defaultKeylockEngine());
+        slotKeylockEngineChanged(static_cast<double>(defaultKeylockEngine()));
         break;
     }
 }
