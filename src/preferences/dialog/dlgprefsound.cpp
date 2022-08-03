@@ -692,13 +692,13 @@ void DlgPrefSound::slotResetToDefaults() {
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
 
-    int keylock_engine = static_cast<int>(EngineBuffer::defaultKeylockEngine());
-    int index = keylockComboBox->findData(keylock_engine);
+    const auto keylockEngine = EngineBuffer::defaultKeylockEngine();
+    const int index = keylockComboBox->findData(QVariant::fromValue(keylockEngine));
     DEBUG_ASSERT(index >= 0);
     if (index >= 0) {
         keylockComboBox->setCurrentIndex(index);
     }
-    m_pKeylockEngine->set(keylock_engine);
+    m_pKeylockEngine->set(static_cast<double>(keylockEngine));
 
     masterMixComboBox->setCurrentIndex(1);
     m_pMasterEnabled->set(1.0);
