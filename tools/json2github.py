@@ -414,7 +414,7 @@ class LaunchpadImporter:
                     rate_limit_resettime.isoformat(),
                 )
                 seconds_to_wait = (
-                    rate_limit_resettime - datetime.datetime.now()
+                    rate_limit_resettime - datetime.datetime.utcnow()
                 ).total_seconds()
                 if seconds_to_wait <= 0:
                     self.logger.warning(
