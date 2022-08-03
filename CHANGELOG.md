@@ -9,7 +9,7 @@
 * MacOS builds: Perform ad-hoc signing of macOS bundle in Pull request and personal repositories [#4774](https://github.com/mixxxdj/mixxx/pull/4774)
 * Waveform: Avoid visual glitch with ranges < 1 px [#4804](https://github.com/mixxxdj/mixxx/pull/4804)
 * Traktor S3: Fix issues with sampler and hotcue buttons [#4676](https://github.com/mixxxdj/mixxx/pull/4676)
-* Build Mixxx on MacOS 11, replacing deprecated MacOS 10.15 [#4676](https://github.com/mixxxdj/mixxx/pull/[#4863](https://github.com/mixxxdj/mixxx/pull/4863))
+* Build Mixxx on MacOS 11, replacing deprecated MacOS 10.15 [#4863](https://github.com/mixxxdj/mixxx/pull/4863)
 
 ## [2.3.3](https://launchpad.net/mixxx/+milestone/2.3.3) (2022-06-21)
 
