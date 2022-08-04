@@ -96,13 +96,20 @@ void EngineChannel::slotOrientationCenter(double v) {
 }
 
 EngineChannel::ChannelOrientation EngineChannel::getOrientation() const {
-    double dOrientation = m_pOrientation->get();
-    if (dOrientation == LEFT) {
-        return LEFT;
-    } else if (dOrientation == CENTER) {
+    const double dOrientation = m_pOrientation->get();
+    const int iOrientation = static_cast<int>(dOrientation);
+    if (dOrientation != iOrientation) {
         return CENTER;
-    } else if (dOrientation == RIGHT) {
+    }
+    switch (iOrientation) {
+    case LEFT:
+        return LEFT;
+    case CENTER:
+        return CENTER;
+    case RIGHT:
         return RIGHT;
+    default:
+        return CENTER;
     }
     return CENTER;
 }

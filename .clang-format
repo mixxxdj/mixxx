@@ -10,7 +10,7 @@ UseTab:       Never
 ColumnLimit:  0
 ---
 Language: Cpp
-Standard: c++17
+Standard: c++20
 # Customize only those options that differ from the base style!
 # Dumping the options of the base style for comparison:
 # clang-format -style=google -dump-config > .clang-format_google

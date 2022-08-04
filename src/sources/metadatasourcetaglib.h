@@ -23,7 +23,8 @@ class MetadataSourceTagLib : public MetadataSource {
 
     std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+            QImage* pCoverArt,
+            bool resetMissingTagMetadata) const override;
 
     std::pair<ExportResult, QDateTime> exportTrackMetadata(
             const TrackMetadata& trackMetadata) const override;

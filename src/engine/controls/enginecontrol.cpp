@@ -36,7 +36,7 @@ void EngineControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     Q_UNUSED(pBeats);
 }
 
-void EngineControl::hintReader(HintVector*) {
+void EngineControl::hintReader(gsl::not_null<HintVector*>) {
 }
 
 void EngineControl::setEngineMaster(EngineMaster* pEngineMaster) {

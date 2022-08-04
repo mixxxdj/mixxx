@@ -6,6 +6,7 @@
 
 #include "library/coverart.h"
 #include "library/ui_dlgtrackinfo.h"
+#include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/track_decl.h"
@@ -27,6 +28,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public:
     // TODO: Remove dependency on TrackModel
     explicit DlgTrackInfo(
+            UserSettingsPointer pUserSettings,
             const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override = default;
 
@@ -99,6 +101,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void updateTrackMetadataFields();
     void updateSpinBpmFromBeats();
+
+    const UserSettingsPointer m_pUserSettings;
 
     const TrackModel* const m_pTrackModel;
 

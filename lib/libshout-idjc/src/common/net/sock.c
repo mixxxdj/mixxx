@@ -327,7 +327,7 @@ ssize_t sock_writev (sock_t sock, const struct iovec *iov, size_t count)
 
 ssize_t sock_writev (sock_t sock, const struct iovec *iov, size_t count)
 {
-    int i = count, accum = 0, ret;
+    int i = (int)count, accum = 0, ret;
     const struct iovec *v = iov;
 
     while (i)
@@ -367,7 +367,7 @@ int sock_write_bytes(sock_t sock, const void *buff, size_t len)
         return SOCK_ERROR;
     } */
 
-    return send(sock, buff, len, 0);
+    return send(sock, buff, (int)len, 0);
 }
 
 /* sock_write_string
@@ -469,7 +469,7 @@ int sock_read_bytes(sock_t sock, char *buff, size_t len)
     if (!buff) return 0;
     if (len <= 0) return 0;
 
-    return recv(sock, buff, len, 0);
+    return recv(sock, buff, (int)len, 0);
 }
 
 /* sock_read_line
@@ -569,7 +569,7 @@ int sock_connected (sock_t sock, int timeout)
     FD_ZERO(&wfds);
     FD_SET(sock, &wfds);
 
-    switch (select(sock + 1, NULL, &wfds, NULL, timeval))
+    switch (select((int)sock + 1, NULL, &wfds, NULL, timeval))
     {
         case 0:
             return SOCK_TIMEOUT;

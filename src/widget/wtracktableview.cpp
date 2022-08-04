@@ -802,22 +802,58 @@ TrackModel* WTrackTableView::getTrackModel() const {
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
-    // Ctrl+Return opens track properties dialog.
-    // Ignore it if any cell editor is open.
-    // Note: the shortcut is displayed in the track context menu
-    if (event->key() == kPropertiesShortcutKey &&
-            (event->modifiers() & kPropertiesShortcutModifier) &&
-            state() != QTableView::EditingState) {
-        QModelIndexList indices = selectionModel()->selectedRows();
-        if (indices.length() == 1) {
-            m_pTrackMenu->loadTrackModelIndices(indices);
-            m_pTrackMenu->slotShowDlgTrackInfo();
+    switch (event->key()) {
+    case kPropertiesShortcutKey: {
+        // Ctrl+Return opens track properties dialog.
+        // Ignore it if any cell editor is open.
+        // Note: the shortcut is displayed in the track context menu
+        if ((event->modifiers() & kPropertiesShortcutModifier) &&
+                state() != QTableView::EditingState) {
+            QModelIndexList indices = selectionModel()->selectedRows();
+            if (indices.length() == 1) {
+                m_pTrackMenu->loadTrackModelIndices(indices);
+                m_pTrackMenu->slotShowDlgTrackInfo();
+            }
         }
-    } else if (event->key() == kHideRemoveShortcutKey &&
-            event->modifiers() == kHideRemoveShortcutModifier) {
-        hideOrRemoveSelectedTracks();
+    } break;
+    case kHideRemoveShortcutKey: {
+        if (event->modifiers() == kHideRemoveShortcutModifier) {
+            hideOrRemoveSelectedTracks();
+            return;
+        }
+    } break;
+    case Qt::Key_Home: { // Jump to first row
+        if (model()->rowCount() == 0) {
+            return;
+        }
+        int currCol = 0;
+        QModelIndex currIdx = currentIndex();
+        if (currIdx.isValid()) {
+            currCol = currIdx.column();
+        }
+        QModelIndex newIdx = model()->index(0, currCol);
+        selectionModel()->setCurrentIndex(newIdx,
+                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
+        scrollTo(newIdx);
+    } break;
+    case Qt::Key_End: { // Jump to last row
+        const int lastRow = model()->rowCount() - 1;
+        if (lastRow == -1) {
+            return;
+        }
+        int currCol = 0;
+        QModelIndex currIdx = currentIndex();
+        if (currIdx.isValid()) {
+            currCol = currIdx.column();
+        }
+        QModelIndex newIdx = model()->index(lastRow, currCol);
+        selectionModel()->setCurrentIndex(newIdx,
+                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
+        scrollTo(newIdx);
+    } break;
+    default:
+        QTableView::keyPressEvent(event);
     }
-    QTableView::keyPressEvent(event);
 }
 
 void WTrackTableView::hideOrRemoveSelectedTracks() {

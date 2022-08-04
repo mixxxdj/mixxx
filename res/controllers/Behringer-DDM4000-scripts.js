@@ -261,8 +261,6 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         midi: { // eslint-disable-next-line key-spacing
                             parameterKnobs:   {1: [cc,   0x06], 2: [cc,   0x05], 3: [cc,   0x04]},
                             parameterButtons: {1: [note, 0x02], 2: [note, 0x01], 3: [note, 0x00]},
-                            enabled: null,
-                            super1: null,
                         },
                         output: {
                             parameterButtons: {1: [cc,   0x3D], 2: [cc,   0x3B], 3: [cc,   0x39]}, // Amber
@@ -293,8 +291,6 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         midi: { // eslint-disable-next-line key-spacing
                             parameterKnobs:   {1: [cc,   0x0A], 2: [cc,   0x09], 3: [cc,   0x08]},
                             parameterButtons: {1: [note, 0x06], 2: [note, 0x05], 3: [note, 0x04]},
-                            enabled: null,
-                            super1: null,
                         },
                         output: {
                             parameterButtons: {1: [cc,   0x47], 2: [cc,   0x45], 3: [cc,   0x43]}, // Amber
@@ -325,8 +321,6 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         midi: { // eslint-disable-next-line key-spacing
                             parameterKnobs:   {1: [cc,   0x0E], 2: [cc,   0x0D], 3: [cc,   0x0C]},
                             parameterButtons: {1: [note, 0x0A], 2: [note, 0x09], 3: [note, 0x08]},
-                            enabled: null,
-                            super1: null,
                         },
                         output: {
                             parameterButtons: {1: [cc,   0x51], 2: [cc,   0x4F], 3: [cc,   0x4D]}, // Amber
@@ -357,8 +351,6 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         midi: { // eslint-disable-next-line key-spacing
                             parameterKnobs:   {1: [cc,   0x12], 2: [cc,   0x11], 3: [cc,   0x10]},
                             parameterButtons: {1: [note, 0x0E], 2: [note, 0x0D], 3: [note, 0x0C]},
-                            enabled: null,
-                            super1: null,
                         },
                         output: {
                             parameterButtons: {1: [cc,   0x5B], 2: [cc,   0x59], 3: [cc,   0x57]}, // Amber

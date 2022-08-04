@@ -34,7 +34,7 @@ const bool kEditMetadataSelectedClickDefault = false;
 
 extern const ConfigKey kSyncTrackMetadataConfigKey;
 
-extern const ConfigKey kSyncSeratoMetadataConfigKey;
+extern const ConfigKey kResetMissingTagMetadataOnImportConfigKey;
 
 extern const ConfigKey kSyncSeratoMetadataConfigKey;
 

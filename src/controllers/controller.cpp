@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QJSValue>
 #include <QRegularExpression>
+#include <algorithm>
 
 #include "controllers/defs_controllers.h"
 #include "moc_controller.cpp"
@@ -95,13 +96,13 @@ void Controller::send(const QList<int>& data, unsigned int length) {
     // If you change this implementation, also change it in HidController (That
     // function is required due to HID devices having report IDs)
 
+    Q_UNUSED(length);
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    length = data.size();
-    QByteArray msg(length, 0);
-    for (unsigned int i = 0; i < length; ++i) {
-        msg[i] = data.at(i);
-    }
+
+    QByteArray msg;
+    msg.resize(data.size());
+    std::copy(data.cbegin(), data.cend(), msg.begin());
     sendBytes(msg);
 }
 

@@ -102,7 +102,7 @@ static inline int tls_setup(shout_tls_t *tls)
     if (!tls->ssl)
         goto error;
 
-    if (!SSL_set_fd(tls->ssl, tls->socket))
+    if (!SSL_set_fd(tls->ssl, (int)tls->socket))
         goto error;
 
     SSL_set_tlsext_host_name(tls->ssl, tls->host);
@@ -234,12 +234,12 @@ int shout_tls_close(shout_tls_t *tls)
 
 ssize_t shout_tls_read(shout_tls_t *tls, void *buf, size_t len)
 {
-    return tls->ssl_ret = SSL_read(tls->ssl, buf, len);
+    return tls->ssl_ret = SSL_read(tls->ssl, buf, (int)len);
 }
 
 ssize_t shout_tls_write(shout_tls_t *tls, const void *buf, size_t len)
 {
-    return tls->ssl_ret = SSL_write(tls->ssl, buf, len);
+    return tls->ssl_ret = SSL_write(tls->ssl, buf, (int)len);
 }
 
 int shout_tls_recoverable(shout_tls_t *tls)

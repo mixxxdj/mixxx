@@ -545,7 +545,8 @@ std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
 SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
         mixxx::FileAccess trackFileAccess,
         mixxx::TrackMetadata* pTrackMetadata,
-        QImage* pCoverImage) {
+        QImage* pCoverImage,
+        bool resetMissingTagMetadata) {
     if (!trackFileAccess.info().checkFileExists()) {
         // Silently ignore missing files to avoid spaming the log:
         // https://bugs.launchpad.net/mixxx/+bug/1875237
@@ -567,13 +568,15 @@ SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
     }
     return SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
             pTrackMetadata,
-            pCoverImage);
+            pCoverImage,
+            resetMissingTagMetadata);
 }
 
 std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
 SoundSourceProxy::importTrackMetadataAndCoverImage(
         mixxx::TrackMetadata* pTrackMetadata,
-        QImage* pCoverImage) const {
+        QImage* pCoverImage,
+        bool resetMissingTagMetadata) const {
     if (!m_pSoundSource) {
         // The file doesn't seem to be readable or the file format
         // is not supported.
@@ -581,7 +584,8 @@ SoundSourceProxy::importTrackMetadataAndCoverImage(
     }
     return m_pSoundSource->importTrackMetadataAndCoverImage(
             pTrackMetadata,
-            pCoverImage);
+            pCoverImage,
+            resetMissingTagMetadata);
 }
 
 namespace {
@@ -688,7 +692,13 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
     auto [metadataImportResult, sourceSynchronizedAt] =
             importTrackMetadataAndCoverImage(
                     &trackMetadata,
-                    pCoverImg);
+                    pCoverImg,
+                    syncParams.resetMissingTagMetadataOnImport);
+    VERIFY_OR_DEBUG_ASSERT(!sourceSynchronizedAt.isValid() ||
+            sourceSynchronizedAt.timeSpec() == Qt::UTC) {
+        qWarning() << "Converting source synchronization time to UTC:" << sourceSynchronizedAt;
+        sourceSynchronizedAt = sourceSynchronizedAt.toUTC();
+    }
     if (metadataImportResult ==
             mixxx::MetadataSource::ImportResult::Failed) {
         kLogger.warning()

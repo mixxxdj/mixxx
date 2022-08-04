@@ -47,9 +47,6 @@ DELETE FROM PlaylistTracks WHERE track_id NOT IN (SELECT id FROM library);
 -- Analysis
 DELETE FROM track_analysis WHERE track_id NOT IN (SELECT id FROM track_locations);
 
--- Custom Tags (scheduled for 2.4.0)
---DELETE FROM track_custom_tags WHERE track_id NOT IN (SELECT id FROM library);
-
 -----------------------------------------------------------------------
 -- Fix referential integrity issues in external libraries (optional) --
 -- Enable conditionally depending on the contents of mixxxdb.sqlite  --

@@ -97,5 +97,6 @@ TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
             Capability::LoadToPreviewDeck |
             Capability::Hide |
             Capability::ResetPlayed |
-            Capability::RemoveFromDisk;
+            Capability::RemoveFromDisk |
+            Capability::Analyze;
 }

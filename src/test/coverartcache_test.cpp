@@ -13,10 +13,13 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
     void loadCoverFromMetadata(const QString& trackLocation) {
         QImage img;
+        // Both resetMissingTagMetadata = false/true have the same effect
+        constexpr auto resetMissingTagMetadata = false;
         SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
                 mixxx::FileAccess(mixxx::FileInfo(trackLocation)),
                 nullptr,
-                &img);
+                &img,
+                resetMissingTagMetadata);
         ASSERT_FALSE(img.isNull());
 
         CoverInfo info;

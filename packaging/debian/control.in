@@ -59,6 +59,7 @@ Build-Depends: debhelper (>= 11),
                libudev-dev,
 # Note: libdjinterop is available within the Mixxx PPA
                libdjinterop-dev,
+               libmsgsl-dev,
 # for running mixxx-test
                xvfb
 Rules-Requires-Root: no

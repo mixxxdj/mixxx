@@ -13,7 +13,7 @@ namespace mixxx {
 // Class for reading tracker files using libmodplug.
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
-class SoundSourceModPlug : public SoundSource {
+class SoundSourceModPlug final : public SoundSource {
   public:
     static constexpr int kChannelCount = 2;
     static constexpr int kSampleRate = 44100;
@@ -28,7 +28,8 @@ class SoundSourceModPlug : public SoundSource {
 
     std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+            QImage* pCoverArt,
+            bool resetMissingTagMetadata) const override;
 
     void close() override;
 

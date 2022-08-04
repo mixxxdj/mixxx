@@ -50,6 +50,11 @@ void EngineDelay::slotDelayChanged() {
 
 void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
     if (m_iDelay > 0) {
+        // The "+ kiMaxDelay" addition ensures positive values for the modulo calculation.
+        // From a mathematical point of view, this addition can be removed. Anyway,
+        // from the cpp point of view, the modulo operator for negative values
+        // (for example, x % y, where x is a negative value) produces negative results
+        // (but in math the result value is positive).
         int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
         VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos >= 0) {

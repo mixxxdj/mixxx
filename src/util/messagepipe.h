@@ -50,9 +50,7 @@ class MessagePipe {
     rigtorp::SPSCQueue<ReceiverMessageType>& m_sender_messages;
     QScopedPointer<BaseReferenceHolder> m_pTwoWayMessagePipeReference;
 
-#define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(MessagePipe<SenderMessageType COMMA ReceiverMessageType>);
-#undef COMMA
+    DISALLOW_COPY_AND_ASSIGN(MessagePipe);
 };
 
 // TwoWayMessagePipe is a bare-bones wrapper around the above rigtorp::SPSCQueue class that
@@ -106,9 +104,5 @@ class TwoWayMessagePipe {
     // Messages waiting to be delivered to the sender.
     rigtorp::SPSCQueue<ReceiverMessageType> m_sender_messages;
 
-    // This #define is because the macro gets confused by the template
-    // parameters.
-#define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(TwoWayMessagePipe<SenderMessageType COMMA ReceiverMessageType>);
-#undef COMMA
+    DISALLOW_COPY_AND_ASSIGN(TwoWayMessagePipe);
 };

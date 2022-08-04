@@ -32,6 +32,8 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     // Reset RubberBand library with new audio signal
     void onSampleRateChanged() override;
 
+    int runningEngineVersion();
+
     void deinterleaveAndProcess(const CSAMPLE* pBuffer, SINT frames, bool flush);
     SINT retrieveAndDeinterleave(CSAMPLE* pBuffer, SINT frames);
 

@@ -176,13 +176,15 @@ void FlangerEffect::processChannel(
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
+    int rampIndex = 0;
     for (SINT i = 0;
             i < engineParameters.samplesPerBuffer();
             i += engineParameters.channelCount()) {
-        CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
-        CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
-        double width_ramped = widthRamped.getNext();
-        double manual_ramped = manualRamped.getNext();
+        CSAMPLE_GAIN mix_ramped = mixRamped.getNth(rampIndex);
+        CSAMPLE_GAIN regen_ramped = regenRamped.getNth(rampIndex);
+        double width_ramped = widthRamped.getNth(rampIndex);
+        double manual_ramped = manualRamped.getNth(rampIndex);
+        ++rampIndex;
 
         pState->lfoFrames++;
         if (pState->lfoFrames >= lfoPeriodFrames) {

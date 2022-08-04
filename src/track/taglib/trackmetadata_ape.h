@@ -12,7 +12,8 @@ namespace ape {
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::APE::Tag& tag);
+        const TagLib::APE::Tag& tag,
+        bool resetMissingTagMetadata);
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,

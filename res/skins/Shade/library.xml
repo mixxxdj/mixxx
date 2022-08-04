@@ -16,6 +16,11 @@
             <Children>
               <!-- Sidebar etc. -->
               <WidgetGroup>
+                <!-- Required for restoring the splitter sizes, otherwise the searchbox
+                    would force.expand the left side.
+                    Also required to avoid resize (shrink) glitch with long titles loaded
+                    to the preview deck. -->
+                <SizePolicy>i,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:preview_deck.xml"/>

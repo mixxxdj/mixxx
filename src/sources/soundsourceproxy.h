@@ -102,7 +102,8 @@ class SoundSourceProxy {
     importTrackMetadataAndCoverImageFromFile(
             mixxx::FileAccess trackFileAccess,
             mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverImage);
+            QImage* pCoverImage,
+            bool resetMissingTagMetadata);
 
     /// Import both track metadata and/or the cover image of the
     /// captured track object from the corresponding file.
@@ -117,7 +118,8 @@ class SoundSourceProxy {
     std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
     importTrackMetadataAndCoverImage(
             mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverImage) const;
+            QImage* pCoverImage,
+            bool resetMissingTagMetadata) const;
 
     /// Controls which (metadata/coverart) and how tags are (re-)imported from
     /// audio files when creating a SoundSourceProxy.

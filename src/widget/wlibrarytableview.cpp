@@ -57,7 +57,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 WLibraryTableView::~WLibraryTableView() {
 }
 
-
 void WLibraryTableView::moveSelection(int delta) {
     QAbstractItemModel* pModel = model();
 
