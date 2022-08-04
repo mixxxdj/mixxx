@@ -361,6 +361,10 @@
    #4836
   </li>
   <li>
+   Fix exporting m3u files with tracks and special characters by using the URL format
+   #4752
+  </li>
+  <li>
    Refactoring of library code
    #2756
    #2717
@@ -477,6 +481,10 @@
    Fix synchronization time stamps of ModPlug files
    #4826
    lp:1979864
+  </li>
+  <li>
+   ID3v2 parsing: Improve log warnings
+   #4610
   </li>
  </ul>
  <p>
@@ -2237,10 +2245,6 @@
    Add HE-AAC encoding capabilities for recording and broadcasting
    #3615
   </li>
-  <li>
-   ID3v2 parsing: Improve log warnings
-   #4610
-  </li>
  </ul>
  <p>
   Audio Engine
@@ -2913,10 +2917,6 @@
   <li>
    Fix importing m3u files with blank lines.
    lp:1806271
-  </li>
-  <li>
-   Fix exporting m3u files with tracks and special characters by using the URL format
-   #4752
   </li>
   <li>
    Fix position in sampler overview waveforms.

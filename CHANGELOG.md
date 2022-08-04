@@ -115,6 +115,7 @@
 * Track Menu: Add ability to select loaded track in library [#4740](https://github.com/mixxxdj/mixxx/pull/4740)
 * Add a track context menu entry for Analyze and Reanlyze [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
 * Add a track context menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
+* Fix exporting m3u files with tracks and special characters by using the URL format [#4752](https://github.com/mixxxdj/mixxx/pull/4752)
 * Refactoring of library code
   [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
   [#2717](https://github.com/mixxxdj/mixxx/pull/2717)
@@ -181,6 +182,7 @@
   [#4683](https://github.com/mixxxdj/mixxx/pull/4683)
   [lp:1961623](https://bugs.launchpad.net/mixxx/+bug/1961623)
 * Fix synchronization time stamps of ModPlug files [#4826](https://github.com/mixxxdj/mixxx/pull/4826) [lp:1979864](https://bugs.launchpad.net/mixxx/+bug/1979864)
+* ID3v2 parsing: Improve log warnings [#4610](https://github.com/mixxxdj/mixxx/pull/4610)
 
 ### Audio Engine
 
@@ -995,7 +997,6 @@
 * Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
 * Remove support for SoundSource plugins because the code was not well-maintained and could lead to crashes [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
 * Add HE-AAC encoding capabilities for recording and broadcasting [#3615](https://github.com/mixxxdj/mixxx/pull/3615)
-* ID3v2 parsing: Improve log warnings [#4610](https://github.com/mixxxdj/mixxx/pull/4610)
 
 ### Audio Engine
 
@@ -1185,7 +1186,6 @@
 * Fix quoted search sentence. [lp:1784141](https://bugs.launchpad.net/mixxx/+bug/1784141)
 * Fix loading a track formerly not existing. [lp:1800395](https://bugs.launchpad.net/mixxx/+bug/1800395)
 * Fix importing m3u files with blank lines. [lp:1806271](https://bugs.launchpad.net/mixxx/+bug/1806271)
-* Fix exporting m3u files with tracks and special characters by using the URL format [#4752](https://github.com/mixxxdj/mixxx/pull/4752)
 * Fix position in sampler overview waveforms. [lp:1744170](https://bugs.launchpad.net/mixxx/+bug/1744170)
 * Don't reset rate slider, syncing a track without a beatgrid. [lp:1783020](https://bugs.launchpad.net/mixxx/+bug/1783020)
 * Clean up iTunes track context menu. [lp:1800335](https://bugs.launchpad.net/mixxx/+bug/1800335)
