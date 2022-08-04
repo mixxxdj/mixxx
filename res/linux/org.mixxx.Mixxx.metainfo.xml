@@ -1136,6 +1136,14 @@
    Waveform: Avoid visual glitch with ranges &lt; 1 px
    #4804
   </li>
+  <li>
+   Traktor S3: Fix issues with sampler and hotcue buttons
+   #4676
+  </li>
+  <li>
+   Build Mixxx on MacOS 11, replacing deprecated MacOS 10.15
+   #4863
+  </li>
  </ul>
 </description>
     </release>
