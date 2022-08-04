@@ -1,6 +1,5 @@
 #pragma once
 
-#include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
 #include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
