@@ -63,16 +63,21 @@ def fixup_ids(lp_issues, mapping):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mapping_file", type=argparse.FileType("r"))
-    parser.add_argument("--lp_issues_file", type=argparse.FileType("r"))
-    parser.add_argument("--output_file", type=argparse.FileType("w"))
+    parser.add_argument(
+        "--mapping_file", type=argparse.FileType("r"), required=True
+    )
+    parser.add_argument(
+        "--lp_issues_file", type=argparse.FileType("r"), required=True
+    )
+    parser.add_argument(
+        "--output_file", type=argparse.FileType("w"), required=True
+    )
     args = parser.parse_args(argv)
 
     mapping_file = args.mapping_file
     lp_issues = json.load(args.lp_issues_file)
 
     mapping = make_mapping(mapping_file)
-    print(mapping)
 
     fixup_ids(lp_issues, mapping)
 

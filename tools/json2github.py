@@ -542,8 +542,6 @@ class LaunchpadImporter:
         self.logger.info("Created issue comment: %r", comment)
         return comment
 
-    # TODO handing duplicates is broken again. pls fix
-
     def run_import(self, lp_issues, lp_milestones):
         num_issues = len(lp_issues.values())
         for i, issuedata in enumerate(
@@ -554,14 +552,37 @@ class LaunchpadImporter:
         ):
             gh_issue_number = issuedata.get("gh_issue_number")
             if gh_issue_number:
-                if issuedata.get("gh_comments_imported") == len(
-                    issuedata["comments"]
-                ) and issuedata.get("gh_status_comment_imported", False):
+
+                issue_milestone = issuedata["milestone"]
+
+                if (
+                    issuedata.get("gh_comments_imported")
+                    == len(issuedata["comments"])
+                    and issuedata.get("gh_status_comment_imported", False)
+                    and issue_milestone is None
+                ):
                     continue
 
                 issue = self.handle_ratelimit(
                     lambda: self.repo.get_issue(gh_issue_number)
                 )
+                # fixup milestone ownership in case it got lost
+                # (happens during bulk issue transfer between repos using
+                # githubs internal tools)
+                if issue_milestone is not None:
+                    milestone = self.name_to_milestone(issue_milestone)
+                    if issue.milestone != milestone:
+                        self.logger.info(
+                            f"fixing up milestone "
+                            f'"{issue_milestone}" for '
+                            f"issue #{gh_issue_number}"
+                        )
+                        # issue on launchpad is attached to milestone
+                        # but corresponding pre-existing issue on gh does not
+                        # have the milestone. Attach it here.
+                        self.handle_ratelimit(
+                            lambda: issue.edit(milestone=milestone)
+                        )
             else:
                 issue = self.import_issue(issuedata)
                 lp_issues[issuedata["id"]]["gh_issue_number"] = issue.number
@@ -584,6 +605,8 @@ class LaunchpadImporter:
                 "Fix Committed",
                 "Invalid",
                 "Won't Fix",
+                "Expired",
+                "Incomplete",
             ):
                 comment = (
                     f'Issue closed with status **{issuedata["status"]}**.'
