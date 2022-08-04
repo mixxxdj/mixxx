@@ -609,16 +609,27 @@ class LaunchpadImporter:
                 duplicate_issue_number = lp_issues[issuedata["id"]][
                     "gh_issue_number"
                 ]
-                original = lp_issues[duplicate_of]["gh_issue_number"]
+
+                original = lp_issues.get(duplicate_of)
+                if original is None:
+                    # Bug this is marked as a duplicate of does not
+                    # belong to mixxxx
+                    # so link to the original on launchpad
+                    original = (
+                        f"[lp:{duplicate_of}]"
+                        f"(https://bugs.launchpad.net/bugs/{duplicate_of})"
+                    )
+                else:
+                    original = f"#{original['gh_issue_number']}"
                 self.logger.info(
                     f"Marking #{duplicate_issue_number} "
-                    f"as duplicate of #{original}"
+                    f"as duplicate of {original}"
                 )
 
                 issue = self.handle_ratelimit(
                     lambda: self.repo.get_issue(duplicate_issue_number)
                 )
-                comment = f"Duplicate of #{original}"
+                comment = f"Duplicate of {original}"
                 self.handle_ratelimit(lambda: issue.create_comment(comment))
                 if issue.state != "closed":
                     self.handle_ratelimit(lambda: issue.edit(state="closed"))
