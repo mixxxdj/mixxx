@@ -22,6 +22,11 @@ jobs:
     - name: Install clang-format
       run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-format-10
 
+    # Workaround the fact that ubuntu doesn't ship a new enough system
+    # distlib version
+    - name: "Forcefully install newer distlib"
+      run: "python -m pip install --user distlib==0.3.5"
+
     - name: "Detect code style issues (push)"
       uses: pre-commit/action@v2.0.3
       if: github.event_name == 'push'
