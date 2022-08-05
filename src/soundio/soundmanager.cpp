@@ -3,6 +3,7 @@
 #include <portaudio.h>
 
 #include <QLibrary>
+#include <QRegularExpression>
 #include <QThread>
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
@@ -74,7 +75,41 @@ SoundManager::SoundManager(UserSettingsPointer pSettings,
 
     queryDevices();
 
-    if (!m_soundConfig.readFromDisk()) {
+    CmdlineArgs& cla = CmdlineArgs::Instance();
+    QDir settingsPath = QDir(cla.getSettingsPath());
+    // Set the default config file path
+    m_soundConfigFile = QFileInfo(settingsPath.filePath(
+            SOUNDMANAGERCONFIG_DEFAULT_FILE));
+    m_soundConfig.setFilePath(m_soundConfigFile);
+
+    // Check if a sound config was set by command line argument and try to load it
+    QString claProfileName = cla.getSoundConfig();
+    bool claProfileLoaded = false;
+    if (!claProfileName.isEmpty()) {
+        // Verify that the profile name matches the desired pattern,
+        // i.e. consists of alphanumerics and underscore only
+        QRegularExpression alphanum("^(\\w+)$");
+        QRegularExpressionMatch alphanumMatch = alphanum.match(&claProfileName);
+        if (alphanumMatch.hasMatch()) {
+            // Construct the file path and SoundManagerConfig::readFromDisk()
+            // takes care of the file sanity checks
+            QFileInfo claProfilePath = settingsPath.filePath(
+                    SOUNDMANAGERCONFIG_DEFAULT_NAME +
+                    QStringLiteral("_") + claProfileName +
+                    SOUNDMANAGERCONFIG_EXTENSION);
+            SoundManagerConfig claConfig(this);
+            claConfig.setFilePath(claProfilePath);
+            if (claConfig.readFromDisk()) {
+                m_soundConfigFile = claProfilePath;
+                m_soundConfig = claConfig;
+                claProfileLoaded = true;
+            }
+        }
+    }
+
+    // If the command line profile could not be loaded, try to load
+    // the regular soundconfig.xml set earlier
+    if (!claProfileLoaded && !m_soundConfig.readFromDisk()) {
         m_soundConfig.loadDefaults(this, SoundManagerConfig::ALL);
     }
     checkConfig();
@@ -548,6 +583,7 @@ SoundManagerConfig SoundManager::getConfig() const {
 SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& soundConfig) {
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     m_soundConfig = soundConfig;
+    m_soundConfig.setFilePath(m_soundConfigFile);
     checkConfig();
 
     // Close open devices. After this call we will not get any more

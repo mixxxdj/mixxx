@@ -1,12 +1,12 @@
 #pragma once
 
-#ifndef SOUNDMANAGERCONFIG_FILENAME
-#define SOUNDMANAGERCONFIG_FILENAME "soundconfig.xml"
-#endif
+#define SOUNDMANAGERCONFIG_DEFAULT_NAME "soundconfig"
+#define SOUNDMANAGERCONFIG_EXTENSION ".xml"
+#define SOUNDMANAGERCONFIG_DEFAULT_FILE "soundconfig.xml"
 
-#include <QString>
-#include <QMultiHash>
 #include <QFileInfo>
+#include <QMultiHash>
+#include <QString>
 
 #include "soundio/soundmanagerutil.h"
 
@@ -32,6 +32,7 @@ public:
   static const int kDefaultAudioBufferSizeIndex;
   static const int kDefaultSyncBuffers;
 
+  void setFilePath(const QFileInfo& configFile);
   bool readFromDisk();
   bool writeToDisk() const;
   QString getAPI() const;

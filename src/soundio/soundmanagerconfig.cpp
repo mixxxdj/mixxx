@@ -51,7 +51,10 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
       m_iNumMicInputs(0),
       m_bExternalRecordBroadcastConnected(false),
       m_pSoundManager(pSoundManager) {
-    m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
+}
+
+void SoundManagerConfig::setFilePath(const QFileInfo& configFile) {
+    m_configFile = configFile;
 }
 
 /// Read the SoundManagerConfig xml serialization at the predetermined
@@ -84,6 +87,7 @@ bool SoundManagerConfig::readFromDisk() {
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
 
+    // FIXME Why assert that late? Without SoundManager we're screwed anyway.
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
@@ -302,7 +306,6 @@ void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
     m_sampleRate = sampleRate != 0 ? sampleRate : kFallbackSampleRate;
 }
 
-
 unsigned int SoundManagerConfig::getSyncBuffers() const {
     return m_syncBuffers;
 }
@@ -324,6 +327,8 @@ void SoundManagerConfig::setForceNetworkClock(bool force) {
 /// sample rates given by SoundManager.
 /// @returns false if the sample rate is not found in SoundManager's list,
 ///          otherwise true
+// TODO(xxx) Why require SoundManager here? SoundManagerConfig can only be constructed
+// with SoundManager anyway, and SoundManager doesn't change
 bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
     if (!soundManager.getSampleRates(m_api).contains(m_sampleRate)) {
         return false;
@@ -462,6 +467,8 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
 /// @param flags Bitfield to determine which defaults to load, use something
 ///              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
 ///              load default API and master device.
+// TODO(xxx) Why require SoundManager here? SoundManagerConfig can only be constructed
+// with SoundManager anyway, and SoundManager doesn't change
 void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
         QList<QString> apiList = soundManager->getHostAPIList();
