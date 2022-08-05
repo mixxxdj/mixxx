@@ -89,8 +89,8 @@
   </screenshots>
   <url type="homepage">https://mixxx.org</url>
   <url type="bugtracker">https://bugs.launchpad.net/mixxx</url>
-  <url type="donation">https://mixxx.org/donate</url>
-  <url type="help">https://www.mixxx.org/support</url>
+  <url type="donation">https://mixxx.org/donate/</url>
+  <url type="help">https://mixxx.org/support/</url>
   <url type="translate">https://explore.transifex.com/mixxx-dj-software/</url>
   <url type="contact">https://mixxx.zulipchat.com</url>
   <!--
@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development">
+    <release version="2.3.4" type="development" date="2022-08-04" timestamp="1659591032">
       <description>
  <ul>
   <li>
