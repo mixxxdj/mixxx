@@ -10,6 +10,9 @@ jobs:
   pre-commit:
     name: Detecting code style issues
     runs-on: ubuntu-latest
+    # The Dockerfile for this container can be found at:
+    # https://github.com/Holzhaus/mixxx-ci-docker
+    container: holzhaus/mixxx-ci:20220805
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v3
@@ -20,18 +23,16 @@ jobs:
         # suffice.
         fetch-depth: 0
 
-    - name: "Set up Python"
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-
-    - name: Install clang-format
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-format-10
-
-    # Workaround the fact that ubuntu doesn't ship a new enough system
-    # distlib version
-    - name: "Forcefully install newer distlib"
-      run: "python -m pip install --user distlib==0.3.5"
+    - name: "Add GitHub workspace as a safe directory"
+      # Without this, git commands will fail due to mismatching permissions in
+      # the container. See actions/runner#2033 for details.
+      #
+      # The actions/checkout action should already take care of this thanks to
+      # commit actions/checkout@55fd82fc42c0cdd6f1f480dd23f60636a42f6f5c, but
+      # it seems like that's not working properly.
+      run: |
+        git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+        git config --global --list
 
     - name: "Detect code style issues (push)"
       uses: pre-commit/action@v3.0.0
@@ -66,9 +67,6 @@ jobs:
       with:
         name: ${{ env.UPLOAD_PATCH_FILE }}
         path: ${{ env.UPLOAD_PATCH_FILE }}
-
-    - name: "Install appstreamcli"
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends appstream
 
     # AppStream metadata has been generated/updated by a pre-commit hook
     - name: "Validate AppStream metadata"
