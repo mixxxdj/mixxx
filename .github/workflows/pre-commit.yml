@@ -14,7 +14,11 @@ jobs:
     - name: "Check out repository"
       uses: actions/checkout@v3
       with:
-        fetch-depth: 2
+        # Unfortunately we need the whole history and can't use a shallow clone
+        # because the Appstream Metadata hook parses the history to find the
+        # latest changelog modification date. Otherwise, `fetch-depth: 2` would
+        # suffice.
+        fetch-depth: 0
 
     - name: "Set up Python"
       uses: actions/setup-python@v4

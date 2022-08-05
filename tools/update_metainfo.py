@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import datetime
 import os
+import subprocess
 import re
 
 import markdown
@@ -8,7 +9,7 @@ import bs4
 from lxml import etree
 
 
-def parse_changelog(content):
+def parse_changelog(content, development_release_date):
     for section in re.split("^## ", content.strip(), flags=re.MULTILINE)[1:]:
         version, sep, description_md = section.partition("\n")
         matchobj = re.match(
@@ -27,11 +28,15 @@ def parse_changelog(content):
                 matchobj.group("date"), " (%Y-%m-%d)"
             ).replace(tzinfo=datetime.timezone.utc)
         except ValueError:
+            # Every release must have an associated timestamp, even development
+            # releases. Otherwise, `appstreamcli validate` will complain.
+            release_date = development_release_date
             attrib["type"] = "development"
         else:
             attrib["type"] = "stable"
-            attrib["date"] = release_date.strftime("%Y-%m-%d")
-            attrib["timestamp"] = "{:.0f}".format(release_date.timestamp())
+
+        attrib["date"] = release_date.strftime("%Y-%m-%d")
+        attrib["timestamp"] = "{:.0f}".format(release_date.timestamp())
 
         soup = bs4.BeautifulSoup(
             markdown.markdown(description_md), "html.parser"
@@ -74,8 +79,29 @@ def main(argv=None):
     root = tree.getroot()
     releases = root.find("releases")
     releases.clear()
-    with open(os.path.join(rootpath, "CHANGELOG.md"), mode="r") as fp:
-        for release in parse_changelog(fp.read()):
+    changelog_path = os.path.join(rootpath, "CHANGELOG.md")
+
+    # We need to define a date for development releases. We can't use
+    # `datetime.datetime.now()` or something like that, because that would
+    # involve updating the metainfo.xml during every single commit. The same
+    # goes for using the latest commit date.
+    #
+    # As a compromise, we're using the date of the commit that last updated the
+    # changelog here. The only feasible alternative is to remove development
+    # releases completely, or remove the appstream metadata from the repository
+    # and only generate it on demand when an actual package is built.
+    last_changelog_change_date = datetime.datetime.fromisoformat(
+        subprocess.check_output(
+            ("git", "log", "-1", "--format=%cI", "--", changelog_path)
+        )
+        .decode()
+        .strip()
+    )
+
+    with open(changelog_path, mode="r") as fp:
+        for release in parse_changelog(
+            fp.read(), development_release_date=last_changelog_change_date
+        ):
             releases.append(release)
     tree.write(
         metainfo_path,
