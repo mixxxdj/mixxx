@@ -112,9 +112,13 @@
 * Experimental: Fix writing of undefined MusicBrainz Recording ID [#4694](https://github.com/mixxxdj/mixxx/pull/4694)
 * Traktor library: fix importing track key [#4701](https://github.com/mixxxdj/mixxx/pull/4701)
 * Add History cleanup options [#4726](https://github.com/mixxxdj/mixxx/pull/4726) [lp:1766163](https://bugs.launchpad.net/mixxx/+bug/1766163) [lp:1969217](https://bugs.launchpad.net/mixxx/+bug/1969217)
-* Track Menu: Add ability to select loaded track in library [#4740](https://github.com/mixxxdj/mixxx/pull/4740)
-* Add a track context menu entry for Analyze and Reanlyze [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
-* Add a track context menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
+* Track Menu: Add action to select loaded track in library [#4740](https://github.com/mixxxdj/mixxx/pull/4740)
+* Track Menu: Add menu for Analyze and Reanlyze [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
+* Track Menu: Add menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
+* Track Menu: Add Remove from disk and fix undeleted message and progress dialog  [#4560](https://github.com/mixxxdj/mixxx/pull/4560) [#4831](https://github.com/mixxxdj/mixxx/pull/4831) [lp:1980091](https://bugs.launchpad.net/mixxx/+bug/1980091)
+* Track Menu: Allow to clear the comment field [#4722](https://github.com/mixxxdj/mixxx/pull/4722) [lp:1954589](https://bugs.launchpad.net/mixxx/+bug/1954589)
+* Track Menu: Allow to reset loops and also via "[ChannelN], loop_remove" control object [#4802](https://github.com/mixxxdj/mixxx/pull/4802) [lp:1978507](https://bugs.launchpad.net/mixxx/+bug/1978507)
+* Track Menu: Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
 * Fix exporting m3u files with tracks and special characters by using the URL format [#4752](https://github.com/mixxxdj/mixxx/pull/4752)
 * Refactoring of library code
   [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
@@ -177,7 +181,6 @@
 * Fix handling of files with wrong suffix
   [#4615](https://github.com/mixxxdj/mixxx/pull/4615)
   [lp:1445885](https://bugs.launchpad.net/mixxx/+bug/1445885)
-  [#4589](https://github.com/mixxxdj/mixxx/pull/4589)
   [lp:1955840](https://bugs.launchpad.net/mixxx/+bug/1955840)
   [#4683](https://github.com/mixxxdj/mixxx/pull/4683)
   [lp:1961623](https://bugs.launchpad.net/mixxx/+bug/1961623)
@@ -203,7 +206,6 @@
 * Fix/Improve snapping to beats in various situations [#4366](https://github.com/mixxxdj/mixxx/pull/4366) [lp:1945238](https://bugs.launchpad.net/mixxx/+bug/1945238)
 * Allow to cancel active loops via beatloop_activate [#4328](https://github.com/mixxxdj/mixxx/pull/4328) [lp:1876003](https://bugs.launchpad.net/mixxx/+bug/1876003)
 * Don't wipe inapplicable sound config immediately [#4544](https://github.com/mixxxdj/mixxx/pull/4544)
-* Allow to reset loops via "[ChannelN], loop_remove" control object [#4802](https://github.com/mixxxdj/mixxx/pull/4802) [lp:1978507](https://bugs.launchpad.net/mixxx/+bug/1978507)
 * Refactoring of beatgrid/beatmap code
   [#4044](https://github.com/mixxxdj/mixxx/pull/4044)
   [#4048](https://github.com/mixxxdj/mixxx/pull/4048)
@@ -281,6 +283,7 @@
   [#4535](https://github.com/mixxxdj/mixxx/pull/4535)
   [#4770](https://github.com/mixxxdj/mixxx/pull/4770)
   [#4771](https://github.com/mixxxdj/mixxx/pull/4771)
+  [#4589](https://github.com/mixxxdj/mixxx/pull/4589)
 
 ### Controllers
 
@@ -307,7 +310,7 @@
 * Denon MC6000MK2: Improve mapping code [#4385](https://github.com/mixxxdj/mixxx/pull/4385)
 * Yaeltex MiniMixxx: Add controller mapping [#4350](https://github.com/mixxxdj/mixxx/pull/4350)
 * Added Trace for the mapping connections, to allow JS profiling [#4766](https://github.com/mixxxdj/mixxx/pull/4766)
-* Fix crashe when using midi.sendShortMsg and platform vnc [#4635](https://github.com/mixxxdj/mixxx/pull/4635)
+* Fix crash when using `midi.sendShortMsg` and platform vnc [#4635](https://github.com/mixxxdj/mixxx/pull/4635)
 * Traktor S3: Fix timedelta calculation bugs [#4646](https://github.com/mixxxdj/mixxx/pull/4646) [lp:1958925](https://bugs.launchpad.net/mixxx/+bug/1958925)
 * Prepare code for upcoming ES6 based controller mapping system with module support
   [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
@@ -412,7 +415,7 @@
 * Spinny: Allow to toggle cover art at runtime [#4565](https://github.com/mixxxdj/mixxx/pull/4565) [lp:1883362](https://bugs.launchpad.net/mixxx/+bug/1883362)
 * Add new searchbox styles [#4505](https://github.com/mixxxdj/mixxx/pull/4505)
 * Add new Quick Effect selector and effect chain buttons [#4501](https://github.com/mixxxdj/mixxx/pull/4501) [#4502](https://github.com/mixxxdj/mixxx/pull/4502) [#4503](https://github.com/mixxxdj/mixxx/pull/4503) [#4590](https://github.com/mixxxdj/mixxx/pull/4590)  [#4593](https://github.com/mixxxdj/mixxx/pull/4593)
-* Fix crash when starting without a valid skin directory [#4575](https://github.com/mixxxdj/mixxx/pull/4575) [1934560](https://bugs.launchpad.net/mixxx/+bug/1934560)
+* Fix crash when starting without a valid skin directory [#4575](https://github.com/mixxxdj/mixxx/pull/4575) [lp:1934560](https://bugs.launchpad.net/mixxx/+bug/1934560)
 * LateNight: Use correct tooltip for key control toggle [#4696](https://github.com/mixxxdj/mixxx/pull/4696)
 * LateNight: Add toggles to show loop and beatjump controls [#4713](https://github.com/mixxxdj/mixxx/pull/[#4713](https://github.com/mixxxdj/mixxx/pull/4713))
 * LateNight: Remove blinking play indicator from mini samplers [#4807](https://github.com/mixxxdj/mixxx/pull/4807)
@@ -678,10 +681,6 @@
 * Track info dialog: Apply pending changes also when saving via hotkey [#4562](https://github.com/mixxxdj/mixxx/pull/4562) [lp:1954346](https://bugs.launchpad.net/mixxx/+bug/1954346)
 * Track info dialog: Fix crash when trying to scale 0.0 BPM [#4587](https://github.com/mixxxdj/mixxx/pull/4587) [1955853](https://bugs.launchpad.net/mixxx/+bug/1955853)
 * Tweak remove/hide track confirm message to match confirm exit message [#4577](https://github.com/mixxxdj/mixxx/pull/4577) [1947992](https://bugs.launchpad.net/mixxx/+bug/1947992)
-* Remove from disk: Add to deck track menu, fix undeleted message [#4560](https://github.com/mixxxdj/mixxx/pull/4560)
-* Remove from disk: Fix progress dialog [#4831](https://github.com/mixxxdj/mixxx/pull/4831) [lp:1980091](https://bugs.launchpad.net/mixxx/+bug/1980091)
-* Allow to clear the comment field from track menu [#4722](https://github.com/mixxxdj/mixxx/pull/4722) [lp:1954589](https://bugs.launchpad.net/mixxx/+bug/1954589)
-* Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
 * Implement Un-eject by pressing eject again [#4668](https://github.com/mixxxdj/mixxx/pull/4668)
 * Preferences > Effects: Fix Tab key navigation / UX [#4702](https://github.com/mixxxdj/mixxx/pull/4702) [lp:1948535](https://bugs.launchpad.net/mixxx/+bug/1948535)
 * Switch to C++20 [#4832](https://github.com/mixxxdj/mixxx/pull/4832) [#4803](https://github.com/mixxxdj/mixxx/pull/4803)

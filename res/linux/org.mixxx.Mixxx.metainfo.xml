@@ -348,17 +348,37 @@
    lp:1969217
   </li>
   <li>
-   Track Menu: Add ability to select loaded track in library
+   Track Menu: Add action to select loaded track in library
    #4740
   </li>
   <li>
-   Add a track context menu entry for Analyze and Reanlyze
+   Track Menu: Add menu for Analyze and Reanlyze
    #4806
   </li>
   <li>
-   Add a track context menu for looking up track metadata at Discogs, Soundcoud and LastFM
+   Track Menu: Add menu for looking up track metadata at Discogs, Soundcoud and LastFM
    #4772
    #4836
+  </li>
+  <li>
+   Track Menu: Add Remove from disk and fix undeleted message and progress dialog
+   #4560
+   #4831
+   lp:1980091
+  </li>
+  <li>
+   Track Menu: Allow to clear the comment field
+   #4722
+   lp:1954589
+  </li>
+  <li>
+   Track Menu: Allow to reset loops and also via "[ChannelN], loop_remove" control object
+   #4802
+   lp:1978507
+  </li>
+  <li>
+   Track Menu: Show 'Update ReplayGain' only in decks' menus
+   #4719
   </li>
   <li>
    Fix exporting m3u files with tracks and special characters by using the URL format
@@ -472,7 +492,6 @@
    Fix handling of files with wrong suffix
    #4615
    lp:1445885
-   #4589
    lp:1955840
    #4683
    lp:1961623
@@ -536,11 +555,6 @@
   <li>
    Don't wipe inapplicable sound config immediately
    #4544
-  </li>
-  <li>
-   Allow to reset loops via "[ChannelN], loop_remove" control object
-   #4802
-   lp:1978507
   </li>
   <li>
    Refactoring of beatgrid/beatmap code
@@ -622,6 +636,7 @@
    #4535
    #4770
    #4771
+   #4589
   </li>
  </ul>
  <p>
@@ -739,7 +754,9 @@
    #4766
   </li>
   <li>
-   Fix crashe when using midi.sendShortMsg and platform vnc
+   Fix crash when using
+   midi.sendShortMsg
+   and platform vnc
    #4635
   </li>
   <li>
@@ -913,7 +930,7 @@
   <li>
    Fix crash when starting without a valid skin directory
    #4575
-   1934560
+   lp:1934560
   </li>
   <li>
    LateNight: Use correct tooltip for key control toggle
@@ -1312,24 +1329,6 @@
    Tweak remove/hide track confirm message to match confirm exit message
    #4577
    1947992
-  </li>
-  <li>
-   Remove from disk: Add to deck track menu, fix undeleted message
-   #4560
-  </li>
-  <li>
-   Remove from disk: Fix progress dialog
-   #4831
-   lp:1980091
-  </li>
-  <li>
-   Allow to clear the comment field from track menu
-   #4722
-   lp:1954589
-  </li>
-  <li>
-   Show 'Update ReplayGain' only in decks' menus
-   #4719
   </li>
   <li>
    Implement Un-eject by pressing eject again
