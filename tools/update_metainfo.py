@@ -90,9 +90,23 @@ def main(argv=None):
     # changelog here. The only feasible alternative is to remove development
     # releases completely, or remove the appstream metadata from the repository
     # and only generate it on demand when an actual package is built.
+    #
+    # We need to exclude merge commits here, because the CI checks the latest
+    # commit for pushes, but actually performs a merge when checking pull
+    # requests. Therefore, the date would differ depending on the CI job reason
+    # and cause issues when merging a stable release branch into the dev
+    # branch.
     last_changelog_change_date = datetime.datetime.fromisoformat(
         subprocess.check_output(
-            ("git", "log", "-1", "--format=%cI", "--", changelog_path)
+            (
+                "git",
+                "log",
+                "-1",
+                "--no-merges",
+                "--format=%cI",
+                "--",
+                changelog_path,
+            )
         )
         .decode()
         .strip()
