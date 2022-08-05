@@ -42,6 +42,17 @@ struct DeviceMode {
 #ifdef __LINUX__
 constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
+
+// Match soundconfig_[a-z0-9_].xml and legacy soundconfig.xml
+const QRegularExpression kSoundConfigFileNameRegExp(
+        QStringLiteral("^") +
+        SOUNDMANAGERCONFIG_DEFAULT_NAME +
+        QStringLiteral("((?:_\\w+)?)\\") +
+        SOUNDMANAGERCONFIG_EXTENSION +
+        QStringLiteral("$"));
+
+//: Filler for the nameless legacy soundconfig.xml profile
+const QString kDefaultProfileName(QObject::tr("(no name)"));
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pSettings,
@@ -76,42 +87,66 @@ SoundManager::SoundManager(UserSettingsPointer pSettings,
     queryDevices();
 
     CmdlineArgs& cla = CmdlineArgs::Instance();
-    QDir settingsPath = QDir(cla.getSettingsPath());
+    m_settingsDir = QDir(cla.getSettingsPath());
     // Set the default config file path
-    m_soundConfigFile = QFileInfo(settingsPath.filePath(
+    m_soundConfigFile = QFileInfo(m_settingsDir.filePath(
             SOUNDMANAGERCONFIG_DEFAULT_FILE));
     m_soundConfig.setFilePath(m_soundConfigFile);
+
+    // Collect sound profiles in settings dir
+    collectSoundProfiles();
 
     // Check if a sound config was set by command line argument and try to load it
     QString claProfileName = cla.getSoundConfig();
     bool claProfileLoaded = false;
     if (!claProfileName.isEmpty()) {
-        // Verify that the profile name matches the desired pattern,
-        // i.e. consists of alphanumerics and underscore only
-        QRegularExpression alphanum("^(\\w+)$");
-        QRegularExpressionMatch alphanumMatch = alphanum.match(&claProfileName);
-        if (alphanumMatch.hasMatch()) {
-            // Construct the file path and SoundManagerConfig::readFromDisk()
-            // takes care of the file sanity checks
-            QFileInfo claProfilePath = settingsPath.filePath(
-                    SOUNDMANAGERCONFIG_DEFAULT_NAME +
-                    QStringLiteral("_") + claProfileName +
-                    SOUNDMANAGERCONFIG_EXTENSION);
-            SoundManagerConfig claConfig(this);
-            claConfig.setFilePath(claProfilePath);
-            if (claConfig.readFromDisk()) {
-                m_soundConfigFile = claProfilePath;
-                m_soundConfig = claConfig;
-                claProfileLoaded = true;
+        claProfileName.replace("_", " ");
+        QFileInfo claProfileInfo = m_configProfiles.value(claProfileName);
+        SoundManagerConfig claConfig(this);
+        claConfig.setFilePath(claProfileInfo);
+        if (claConfig.readFromDisk()) {
+            m_soundConfigFile = claProfileInfo;
+            m_soundConfig = claConfig;
+            claProfileLoaded = true;
+            // qDebug
+        }
+        // qWarning + notify?
+    }
+
+    // If loading the command line profile failed, try to load the previously
+    // configured profile.
+    bool savedProfileLoaded = false;
+    if (!claProfileLoaded) {
+        QString savedProfileName = getConfiguredSoundProfileName();
+        if (!savedProfileName.isEmpty()) {
+            QFileInfo savedProfileInfo(m_configProfiles.value(savedProfileName));
+            SoundManagerConfig savedConfig(this);
+            savedConfig.setFilePath(savedProfileInfo);
+            if (savedConfig.readFromDisk()) {
+                m_soundConfigFile = savedProfileInfo;
+                m_soundConfig = savedConfig;
+                savedProfileLoaded = true;
+                // qDebug
             }
+            // qWarning + notify?
         }
     }
 
-    // If the command line profile could not be loaded, try to load
-    // the regular soundconfig.xml set earlier
-    if (!claProfileLoaded && !m_soundConfig.readFromDisk()) {
-        m_soundConfig.loadDefaults(this, SoundManagerConfig::ALL);
+    // If that failed as well, try to load the default profile.
+    if (!claProfileLoaded && !savedProfileLoaded) {
+        m_soundConfigFile =
+                QFileInfo(m_settingsDir.filePath(SOUNDMANAGERCONFIG_DEFAULT_FILE));
+        m_soundConfig.setFilePath(m_soundConfigFile);
+        // Add or overwrite default config name
+        m_configProfiles.insert(kDefaultProfileName, m_soundConfigFile);
+        if (!m_soundConfig.readFromDisk()) {
+            m_soundConfig.loadDefaults(this, SoundManagerConfig::ALL);
+        }
+        // qWarning + notify?
     }
+
+    // TODO(ronso0) rename to reflect what it's actually doing:
+    // checkAndMaybeResetApiAndSampleRate ? meeh...
     checkConfig();
     // Don't write config to disk, yet -- it may be reset to defaults in case
     // previously configured devices were not found.
@@ -133,6 +168,49 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
+}
+
+void SoundManager::collectSoundProfiles() {
+    qDebug() << "   .";
+    qDebug() << "   .";
+    qDebug() << "   collectSoundProfiles:";
+    m_configProfiles.clear();
+    // Collect only soundconfig_[a-z0-9_].xml and legacy soundconfig.xml
+    QFileInfoList xmlFiles = m_settingsDir.entryInfoList(
+            QStringList() << "*" << SOUNDMANAGERCONFIG_EXTENSION, // pre-filter
+            QDir::Files | QDir::Readable | QDir::Writable,        // required attributes
+            QDir::Name);                                          // sort by name
+    for (const QFileInfo& file : xmlFiles) {
+        QString fileName = file.fileName();
+        QRegularExpressionMatch profileMatch =
+                kSoundConfigFileNameRegExp.match(fileName);
+        if (profileMatch.hasMatch()) {
+            QString name = profileMatch.captured(1);
+            QString displayName;
+            if (name.isEmpty()) { // catch soundconfig.xml
+                displayName = kDefaultProfileName;
+            } else {
+                displayName = name.remove(0, 1); // remove first _
+                displayName.replace("_", " ");   // replace all _ with space
+                // TODO(ronso0) This way we may end up with multiple profile names
+                // consisting of whitespaces. Prohibit this?
+                // Such names can easily be avoided when creating profiles in
+                // DlgPrefSound, thus whitespace names can occur only when profile files
+                // are renamed manually.
+            }
+            // TODO(ronso0) Even though there can't be multiple identical files,
+            // should we avoid inserting duplicates?
+            m_configProfiles.insert(displayName, file);
+            qDebug() << "     " << displayName << "\t" << file.fileName();
+        }
+    }
+    qDebug() << "   .";
+    qDebug() << "   .";
+}
+
+QString SoundManager::getConfiguredSoundProfileName() const {
+    // qDebug
+    return m_pSettings->getValue(ConfigKey("[Master]", "sound_profile"));
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(
