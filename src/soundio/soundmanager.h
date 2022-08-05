@@ -36,6 +36,9 @@ class SoundDeviceNotFound;
 #define SOUNDMANAGER_CONNECTING 1
 #define SOUNDMANAGER_CONNECTED 2
 
+#define SOUNDMANAGERCONFIG_DEFAULT_NAME "soundconfig"
+#define SOUNDMANAGERCONFIG_EXTENSION ".xml"
+#define SOUNDMANAGERCONFIG_DEFAULT_FILE "soundconfig.xml"
 
 class SoundManager : public QObject {
     Q_OBJECT

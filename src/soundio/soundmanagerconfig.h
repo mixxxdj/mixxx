@@ -1,9 +1,5 @@
 #pragma once
 
-#define SOUNDMANAGERCONFIG_DEFAULT_NAME "soundconfig"
-#define SOUNDMANAGERCONFIG_EXTENSION ".xml"
-#define SOUNDMANAGERCONFIG_DEFAULT_FILE "soundconfig.xml"
-
 #include <QFileInfo>
 #include <QMultiHash>
 #include <QString>
