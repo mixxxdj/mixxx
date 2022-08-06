@@ -236,6 +236,10 @@
    lp:1981106
   </li>
   <li>
+   Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1").
+   #4873
+  </li>
+  <li>
    Logging: Suppress expected and harmless schema migration errors
    #4248
   </li>
@@ -407,6 +411,7 @@
    #4480
    #4633
    #4837
+   #4864
   </li>
  </ul>
  <p>
@@ -557,6 +562,12 @@
    #4544
   </li>
   <li>
+   Rubberband: Support Version 3 "finer" (near-hi-fi quality) setting, on Windows and MacOs and when available on Linux
+   #4853
+   #4855
+   #4855
+  </li>
+  <li>
    Refactoring of beatgrid/beatmap code
    #4044
    #4048
@@ -637,6 +648,7 @@
    #4770
    #4771
    #4589
+   #1717
   </li>
  </ul>
  <p>
@@ -997,6 +1009,9 @@
    #4748
    #4833
    lp:1980078
+   #4884
+   lp:1983789
+   lp1983764
   </li>
  </ul>
  <p>
@@ -1080,6 +1095,10 @@
    #3735
    #3736
    #3985
+  </li>
+  <li>
+   Remove Ubuntu Focal CI
+   #4889
   </li>
   <li>
    Drop Ubuntu Groovy and Impish support because of EOL
@@ -1470,6 +1489,8 @@
    #4848
    #4856
    #4860
+   #4867
+   #4888
   </li>
  </ul>
 </description>

@@ -75,6 +75,7 @@
   [#4628](https://github.com/mixxxdj/mixxx/pull/4628)
   [#4631](https://github.com/mixxxdj/mixxx/pull/4631)
   [#4847](https://github.com/mixxxdj/mixxx/pull/4847) [lp:1981106](https://bugs.launchpad.net/bugs/1981106)
+* Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1"). [#4873](https://github.com/mixxxdj/mixxx/pull/4873)
 * Logging: Suppress expected and harmless schema migration errors [#4248](https://github.com/mixxxdj/mixxx/pull/4248)
 * Only show the date in Date Added / Last Played columns. Move the time of day to tooltips [#3945](https://github.com/mixxxdj/mixxx/pull/3945)
 * Fix handling of undefined BPM values
@@ -142,6 +143,7 @@
   [#4480](https://github.com/mixxxdj/mixxx/pull/4480)
   [#4633](https://github.com/mixxxdj/mixxx/pull/4633)
   [#4837](https://github.com/mixxxdj/mixxx/pull/4837)
+  [#4864](https://github.com/mixxxdj/mixxx/pull/4864)
 
 ### Sync
 
@@ -206,6 +208,10 @@
 * Fix/Improve snapping to beats in various situations [#4366](https://github.com/mixxxdj/mixxx/pull/4366) [lp:1945238](https://bugs.launchpad.net/mixxx/+bug/1945238)
 * Allow to cancel active loops via beatloop_activate [#4328](https://github.com/mixxxdj/mixxx/pull/4328) [lp:1876003](https://bugs.launchpad.net/mixxx/+bug/1876003)
 * Don't wipe inapplicable sound config immediately [#4544](https://github.com/mixxxdj/mixxx/pull/4544)
+* Rubberband: Support Version 3 "finer" (near-hi-fi quality) setting, on Windows and MacOs and when available on Linux
+  [#4853](https://github.com/mixxxdj/mixxx/pull/4853)
+  [#4855](https://github.com/mixxxdj/mixxx/pull/4855)
+  [#4855](https://github.com/mixxxdj/mixxx/pull/4855)
 * Refactoring of beatgrid/beatmap code
   [#4044](https://github.com/mixxxdj/mixxx/pull/4044)
   [#4048](https://github.com/mixxxdj/mixxx/pull/4048)
@@ -284,6 +290,7 @@
   [#4770](https://github.com/mixxxdj/mixxx/pull/4770)
   [#4771](https://github.com/mixxxdj/mixxx/pull/4771)
   [#4589](https://github.com/mixxxdj/mixxx/pull/4589)
+  [#1717](https://github.com/mixxxdj/mixxx/pull/1717)
 
 ### Controllers
 
@@ -455,6 +462,7 @@
   [#4704](https://github.com/mixxxdj/mixxx/pull/4704)
   [#4748](https://github.com/mixxxdj/mixxx/pull/4748)
   [#4833](https://github.com/mixxxdj/mixxx/pull/4833) [lp:1980078](https://bugs.launchpad.net/mixxx/+bug/1980078)
+  [#4884](https://github.com/mixxxdj/mixxx/pull/4884) [lp:1983789](https://bugs.launchpad.net/mixxx/+bug/1983789) [lp1983764](https://bugs.launchpad.net/mixxx/+bug/1983764)
 
 ### Other
 
@@ -526,6 +534,8 @@
   [#3735](https://github.com/mixxxdj/mixxx/pull/3735)
   [#3736](https://github.com/mixxxdj/mixxx/pull/3736)
   [#3985](https://github.com/mixxxdj/mixxx/pull/3985)
+* Remove Ubuntu Focal CI
+  [#4889](https://github.com/mixxxdj/mixxx/pull/4889)
 * Drop Ubuntu Groovy and Impish support because of EOL
   [#4283](https://github.com/mixxxdj/mixxx/pull/4283) [#4849](https://github.com/mixxxdj/mixxx/pull/4849)
 * Support Ubuntu Kinetic Kudo [#4780](https://github.com/mixxxdj/mixxx/pull/4780)
@@ -805,6 +815,8 @@
   [#4848](https://github.com/mixxxdj/mixxx/pull/4848)
   [#4856](https://github.com/mixxxdj/mixxx/pull/4856)
   [#4860](https://github.com/mixxxdj/mixxx/pull/4860)
+  [#4867](https://github.com/mixxxdj/mixxx/pull/4867)
+  [#4888](https://github.com/mixxxdj/mixxx/pull/4888)
 
 ## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (unreleased)
 
