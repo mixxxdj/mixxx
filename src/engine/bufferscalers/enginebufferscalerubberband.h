@@ -17,6 +17,12 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
             ReadAheadManager* pReadAheadManager);
     ~EngineBufferScaleRubberBand() override;
 
+    // Let EngineBuffer know if engine v3 is available
+    static bool isEngineFinerAvailable();
+
+    // Enable engine v3 if available
+    void useEngineFiner(bool enable);
+
     void setScaleParameters(double base_rate,
                             double* pTempoRatio,
                             double* pPitchRatio) override;
@@ -47,4 +53,6 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
 
     // Holds the playback direction
     bool m_bBackwards;
+
+    bool m_useEngineFiner;
 };
