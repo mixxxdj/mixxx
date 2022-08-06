@@ -249,7 +249,8 @@ void MixxxMainWindow::initialize() {
 
     // Sound hardware setup
     // Try to open configured devices. If that fails, display dialogs
-    // that allow to either retry, reconfigure devices or exit.
+    // that allow to either retry, reconfigure devices, try another sound config
+    // profile or exit Mixxx.
     bool retryClicked;
     do {
         retryClicked = false;

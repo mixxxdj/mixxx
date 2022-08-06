@@ -53,6 +53,8 @@ const QRegularExpression kSoundConfigFileNameRegExp(
 
 //: Filler for the nameless legacy soundconfig.xml profile
 const QString kDefaultProfileName(QObject::tr("(no name)"));
+
+const ConfigKey kSoundProfileConfigKey("[Master]", "sound_profile");
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pSettings,
@@ -108,9 +110,9 @@ SoundManager::SoundManager(UserSettingsPointer pSettings,
             m_soundConfigFile = claProfileInfo;
             m_soundConfig = claConfig;
             claProfileLoaded = true;
-            // qDebug
+            qDebug() << "Loaded sound config '" << claProfileName << "'";
         }
-        // qWarning + notify?
+        qWarning() << "Failed loading sound config '" << claProfileName << "'";
     }
 
     // If loading the command line profile failed, try to load the previously
@@ -122,13 +124,14 @@ SoundManager::SoundManager(UserSettingsPointer pSettings,
             QFileInfo savedProfileInfo(m_configProfiles.value(savedProfileName));
             SoundManagerConfig savedConfig(this);
             savedConfig.setFilePath(savedProfileInfo);
+            // readFromDisk() fails if the file does not exist or is corrupted
             if (savedConfig.readFromDisk()) {
                 m_soundConfigFile = savedProfileInfo;
                 m_soundConfig = savedConfig;
                 savedProfileLoaded = true;
-                // qDebug
+                qDebug() << "Loaded configured sound config '" << savedProfileName << "'";
             }
-            // qWarning + notify?
+            qWarning() << "Failed loading configured sound config" << savedProfileName << "'";
         }
     }
 
@@ -137,12 +140,13 @@ SoundManager::SoundManager(UserSettingsPointer pSettings,
         m_soundConfigFile =
                 QFileInfo(m_settingsDir.filePath(SOUNDMANAGERCONFIG_DEFAULT_FILE));
         m_soundConfig.setFilePath(m_soundConfigFile);
-        // Add or overwrite default config name
+        // Add or overwrite default config to profile list
         m_configProfiles.insert(kDefaultProfileName, m_soundConfigFile);
+        m_pSettings->setValue(kSoundProfileConfigKey, kDefaultProfileName);
         if (!m_soundConfig.readFromDisk()) {
             m_soundConfig.loadDefaults(this, SoundManagerConfig::ALL);
         }
-        // qWarning + notify?
+        qDebug() << "Loaded default sound config";
     }
 
     // TODO(ronso0) rename to reflect what it's actually doing:
@@ -208,9 +212,74 @@ void SoundManager::collectSoundProfiles() {
     qDebug() << "   .";
 }
 
+QStringList SoundManager::getSoundProfileNames() const {
+    qDebug() << "       getSoundProfNames:";
+    QStringList profileNames;
+    QMapIterator<QString, QFileInfo> it(m_configProfiles);
+    while (it.hasNext()) {
+        it.next();
+        const QString name = it.key();
+        qDebug() << "        " << name;
+        profileNames << name;
+    }
+    return profileNames;
+}
+
 QString SoundManager::getConfiguredSoundProfileName() const {
-    // qDebug
-    return m_pSettings->getValue(ConfigKey("[Master]", "sound_profile"));
+    return m_pSettings->getValue(kSoundProfileConfigKey);
+}
+
+QString SoundManager::getDefaultSoundProfileName() const {
+    return kDefaultProfileName;
+}
+
+SoundDeviceStatus SoundManager::setSoundProfile(const QString& profileName) {
+    qInfo() << "     +";
+    qInfo() << "     + SM::setSoundProfile:" << profileName;
+
+    SoundDeviceStatus status = SOUNDDEVICE_ERROR;
+    if (profileName.isEmpty()) {
+        qInfo() << "     + err: profile name empty";
+        qInfo() << "     + ";
+        return status;
+    }
+    if (!m_configProfiles.contains(profileName)) {
+        qInfo() << "     + profile name not in list";
+        qInfo() << "     + ";
+        return status;
+    }
+
+    SoundManagerConfig newConfig(this);
+    QFileInfo newProfileFileInfo(m_configProfiles.value(profileName));
+    newConfig.setFilePath(newProfileFileInfo);
+    if (!newConfig.readFromDisk()) {
+        qInfo() << "     + readFromDisk() failed";
+        qInfo() << "     + ";
+        return status;
+    }
+    qInfo() << "     + " << newProfileFileInfo.fileName() << "is valid";
+
+    // set file path to be used in setConfig()
+    qInfo() << "     + m_soundConfigFile =" << newProfileFileInfo.fileName();
+    m_soundConfigFile = newProfileFileInfo;
+
+    status = setConfig(newConfig);
+    // => m_soundConfig = newConfig
+    if (status == SOUNDDEVICE_OK) {
+        qInfo() << "     + success";
+        qInfo() << "     + save" << profileName << "to config";
+        //m_soundConfig = newConfig; // is set in setConfig()
+        m_pSettings->setValue(kSoundProfileConfigKey, profileName);
+    } else {
+        qInfo() << "     + fail";
+    }
+    qInfo() << "     +";
+
+    return status;
+}
+
+QString SoundManager::getCurrentSoundProfileName() const {
+    return m_configProfiles.key(m_soundConfigFile);
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(

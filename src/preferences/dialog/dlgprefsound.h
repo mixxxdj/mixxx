@@ -64,7 +64,15 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void addPath(const AudioOutput& output);
     void addPath(const AudioInput& input);
     void loadSettings();
+
+    void soundProfileSelected(int index);
+    void createNewProfile();
+    void duplicateProfile();
+    void renameProfile();
+    void deleteProfile();
+
     void apiChanged(int index);
+    void maybeAdjustGuiToJackAPI();
     void updateAPIs();
     void sampleRateChanged(int index);
     void audioBufferChanged(int index);
@@ -83,6 +91,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
     bool eventFilter(QObject* object, QEvent* event) override;
+    void updateProfileDeleteButton();
 
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;

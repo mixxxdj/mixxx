@@ -85,8 +85,18 @@ class SoundManager : public QObject {
 
     // Get all sound config files in the settings dir
     void collectSoundProfiles();
+    // Provide names of found profiles
+    QStringList getSoundProfileNames() const;
+    //QString getDefaultSoundProfileName() const {
+    //    return kDefaultProfileName;
+    //}
+    QString getDefaultSoundProfileName() const;
+    // Provide name of currently loaded profile
+    QString getCurrentSoundProfileName() const;
     // Read sound profile name from user settings
     QString getConfiguredSoundProfileName() const;
+    //void setConfiguredSoundProfileName(const QString& profileName);
+    SoundDeviceStatus setSoundProfile(const QString& profileName);
 
     void onDeviceOutputCallback(const SINT iFramesPerBuffer);
 
@@ -117,6 +127,9 @@ class SoundManager : public QObject {
     }
 
     void processUnderflowHappened();
+
+  public slots:
+    //void setSoundProfile(const QString& profileName);
 
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale

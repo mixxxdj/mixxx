@@ -16,6 +16,47 @@
   <layout class="QVBoxLayout" name="verticalLayout_2">
 
    <item>
+    <widget class="QGroupBox" name="groupBox_soundProfiles">
+     <property name="title">
+      <string>Sound Profile</string>
+     </property>
+     <layout class="QGridLayout" name="soundProfileLayout">
+      <item row="0" column="0" colspan="4">
+       <widget class="QComboBox" name="profileComboBox"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="newProfileButton">
+        <property name="text">
+         <string>Create New Profile</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="renameProfileButton">
+        <property name="text">
+         <string>Rename</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="dupProfileButton">
+        <property name="text">
+         <string>Duplicate Profile</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QPushButton" name="delProfileButton">
+        <property name="text">
+         <string>Delete Profile</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item>
     <layout class="QGridLayout" name="soundOptionsLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="apiLabel">
