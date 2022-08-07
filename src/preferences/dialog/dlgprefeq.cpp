@@ -552,9 +552,12 @@ void DlgPrefEQ::slotUpdateMainEQParameter(int value) {
                 EffectManifestParameter::ParameterType::Knob, index);
 
         if (pParameterSlot->isLoaded()) {
-            double dValue = value / 100.0;
-            pParameterSlot->setParameter(dValue);
+            // Calculate parameter value from relative slider position
+            double paramValue = static_cast<double>(value - slider->minimum()) /
+                    static_cast<double>(slider->maximum() - slider->minimum());
+            pParameterSlot->setParameter(paramValue);
             QLabel* valueLabel = m_mainEQValues[index];
+            double dValue = value / 100.0;
             QString valueText = QString::number(dValue);
             valueLabel->setText(valueText);
 
@@ -819,8 +822,12 @@ void DlgPrefEQ::setMainEQParameter(int i, double value) {
                 EffectManifestParameter::ParameterType::Knob, i);
 
         if (pParameterSlot->isLoaded()) {
-            pParameterSlot->setParameter(value);
-            m_mainEQSliders[i]->setValue(static_cast<int>(value * 100));
+            QSlider* slider = m_mainEQSliders[i];
+            // Calculate parameter value from relative slider position
+            double paramValue = static_cast<double>(value - slider->minimum()) /
+                    static_cast<double>(slider->maximum() - slider->minimum());
+            pParameterSlot->setParameter(paramValue);
+            slider->setValue(static_cast<int>(value * 100));
 
             QLabel* valueLabel = m_mainEQValues[i];
             QString valueText = QString::number(value);
