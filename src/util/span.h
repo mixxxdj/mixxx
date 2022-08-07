@@ -1,6 +1,14 @@
 #pragma once
 
+#if __has_include(<span>)
 #include <span>
+#else
+#include <gsl/span>
+namespace std {
+using gsl::span;
+} // namespace std
+#endif
+
 #include <type_traits>
 
 #include "util/assert.h"
