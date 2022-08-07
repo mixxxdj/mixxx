@@ -11,12 +11,12 @@
 
 #include <QTest>
 #include <QtDebug>
-#include <span>
 
 #include "engine/engine.h"
 #include "test/mixxxtest.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
+#include "util/span.h"
 #include "util/types.h"
 
 namespace {
