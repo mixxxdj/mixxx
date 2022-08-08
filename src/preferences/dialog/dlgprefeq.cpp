@@ -20,6 +20,7 @@ const QString kEffectForGroupPrefix = QStringLiteral("EffectForGroup_");
 const QString kEnableEqs = QStringLiteral("EnableEQs");
 const QString kEqsOnly = QStringLiteral("EQsOnly");
 const QString kSingleEq = QStringLiteral("SingleEQEffect");
+const QString kMainEQParameterKey = QStringLiteral("EffectForGroup_[Master]_parameter");
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
 const QString kDefaultQuickEffectChainName = QStringLiteral("Filter");
@@ -562,7 +563,7 @@ void DlgPrefEQ::slotApplyMainEQParameter(int value) {
             valueLabel->setText(valueText);
 
             m_pConfig->set(ConfigKey(kConfigGroup,
-                                   QString("EffectForGroup_[Master]_parameter%1").arg(index + 1)),
+                                   kMainEQParameterKey + QString::number(index + 1)),
                     ConfigValue(valueText));
         }
     }
@@ -678,7 +679,7 @@ void DlgPrefEQ::setUpMainEQ() {
 
             if (pParameterSlot->isLoaded()) {
                 QString strValue = m_pConfig->getValueString(ConfigKey(kConfigGroup,
-                        QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)));
+                        kMainEQParameterKey + QString::number(i + 1)));
                 bool ok;
                 double value = strValue.toDouble(&ok);
                 if (ok) {
@@ -834,7 +835,7 @@ void DlgPrefEQ::setMainEQParameter(int i, double value) {
             valueLabel->setText(valueText);
 
             m_pConfig->set(ConfigKey(kConfigGroup,
-                                   QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)),
+                                   kMainEQParameterKey + QString::number(i + 1)),
                     ConfigValue(valueText));
         }
     }
