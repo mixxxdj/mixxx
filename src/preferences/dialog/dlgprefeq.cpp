@@ -543,7 +543,7 @@ void DlgPrefEQ::slotUpdateLoEQ() {
     slotApply();
 }
 
-void DlgPrefEQ::slotUpdateMainEQParameter(int value) {
+void DlgPrefEQ::slotApplyMainEQParameter(int value) {
     EffectSlotPointer pEffectSlot(m_pEffectMainEQ);
     if (!pEffectSlot.isNull()) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
@@ -748,7 +748,7 @@ void DlgPrefEQ::slotMainEqEffectChanged(int effectIndex) {
                     connect(slider,
                             &QSlider::sliderMoved,
                             this,
-                            &DlgPrefEQ::slotUpdateMainEQParameter);
+                            &DlgPrefEQ::slotApplyMainEQParameter);
 
                     QLabel* valueLabel = new QLabel(this);
                     m_mainEQValues.append(valueLabel);
