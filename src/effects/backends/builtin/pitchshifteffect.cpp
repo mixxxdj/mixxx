@@ -101,9 +101,6 @@ void PitchShiftEffect::processChannel(
             engineParameters.framesPerBuffer(),
             false);
 
-    // Sets number of frames for current RubberBand process latency.
-    m_groupDelayFrames = pState->m_pRubberBand->getLatency();
-
     SINT framesAvailable = pState->m_pRubberBand->available();
     SINT framesToRead = math_min(
             framesAvailable,
