@@ -77,7 +77,7 @@ class SampleBuffer final {
     std::span<CSAMPLE> span() {
         return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
     }
-    const std::span<CSAMPLE> span() const {
+    std::span<const CSAMPLE> span() const {
         return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
     }
 
