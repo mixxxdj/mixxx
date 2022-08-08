@@ -43,7 +43,7 @@ TEST_F(RingDelayBufferTest, ReadWriteNoSkipTest) {
     const SINT numSamples = 4;
     const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
     const CSAMPLE inputBufferHalf[] = {-98.0, 98.0};
-    const CSAMPLE firstExpectedResult[] = {-100.0, 100.0};
+    const CSAMPLE firstExpectedResult[] = {-50.0, 50.0};
     const CSAMPLE secondExpectedResult[] = {-99.0, 99.0, -98.0, 98.0};
     const CSAMPLE thirdExpectedResult[] = {-100.0, 100.0, -99.0, 99.0};
 
@@ -79,9 +79,9 @@ TEST_F(RingDelayBufferTest, ReadWriteSkipTest) {
     const SINT secondJumpSizeRight = 1;
     const CSAMPLE firstInputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
     const CSAMPLE secondInputBuffer[] = {-98.0, 98.0, -97.0, 97.0};
-    const CSAMPLE firstExpectedResult[] = {-100.0, 100.0, -99.0, 99.0};
-    const CSAMPLE secondExpectedResult[] = {0.0, 0.0, -100.0, 100.0};
-    const CSAMPLE thirdExpectedResult[] = {100.0, -99.0, 99.0, -100.0};
+    const CSAMPLE firstExpectedResult[] = {-50.0, 50.0, -99.0, 99.0};
+    const CSAMPLE secondExpectedResult[] = {0.0, 0.0, -50.0, 50.0};
+    const CSAMPLE thirdExpectedResult[] = {50.0, -99.0, 99.0, -100.0};
     const CSAMPLE fourthExpectedResult[] = {-97.0, 97.0, -98.0, 98.0};
     const CSAMPLE fifthExpectedResult[] = {97.0, -98.0, 98.0, -97.0};
 

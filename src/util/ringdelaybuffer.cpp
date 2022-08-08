@@ -49,6 +49,7 @@
 
 RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
         : m_fullFlag(false),
+          m_firstInputBuffer(true),
           m_readPos(0),
           m_writePos(0),
           m_buffer(bufferSize) {
@@ -100,12 +101,20 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT numItems) {
     const SINT available = getWriteAvailable();
     SINT itemsToWrite = numItems;
 
-    VERIFY_OR_DEBUG_ASSERT(numItems <= available) {
+    VERIFY_OR_DEBUG_ASSERT(itemsToWrite <= available) {
         itemsToWrite = available;
     }
 
-    // Check to see if the write is not contiguous.
-    if ((m_writePos + itemsToWrite) > m_buffer.size()) {
+    if (m_firstInputBuffer) {
+        // If the first input buffer is written, the first sample is on the index 0.
+        // Based on the checking of an available number of samples, the situation,
+        // that the writing will be non-contiguous cannot occur.
+        // The itemsToWrite value is multiply by 2 to
+        SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
+
+        m_firstInputBuffer = false;
+    } else if ((m_writePos + itemsToWrite) > m_buffer.size()) { // Check to see
+                                                                // if the write is not contiguous.
         // Write is not contiguous.
         SINT firstDataBlockSize = m_buffer.size() - m_writePos;
 

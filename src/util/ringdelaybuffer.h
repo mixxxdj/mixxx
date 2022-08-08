@@ -92,6 +92,7 @@ class RingDelayBuffer final {
 
     void clear() {
         m_fullFlag = false;
+        m_firstInputBuffer = true;
 
         m_readPos = 0;
         m_writePos = 0;
@@ -132,6 +133,11 @@ class RingDelayBuffer final {
     // equals the write position: the buffer is full or empty.
     // The full flag serves to distinguish between the mentioned two cases.
     bool m_fullFlag;
+    // This flag ensures the "fading in" for the first input buffer
+    // into the clear ring delay buffer. It is done to avoid
+    // a crackling sound when the input samples are read after reading
+    // the previous zero samples.
+    bool m_firstInputBuffer;
     // Position of next readable element.
     SINT m_readPos;
     // Position of next writable element.
