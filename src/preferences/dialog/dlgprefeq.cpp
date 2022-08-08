@@ -756,6 +756,14 @@ void DlgPrefEQ::slotMainEqEffectChanged(int effectIndex) {
                     QString valueText = QString::number((double)slider->value() / 100);
                     valueLabel->setText(valueText);
                     slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
+
+                    // Immediately save the new (default) parameter values in preferences.
+                    // Otherwise, without pressing 'Reset parameter', the previously saved
+                    // parameter values (of another EQ effect) would be loaded on next start
+                    // which (unnoticed) messes up the parameters displayed now.
+                    m_pConfig->set(ConfigKey(kConfigGroup,
+                                           kMainEQParameterKey + QString::number(i + 1)),
+                            ConfigValue(valueText));
                 }
             }
         }
