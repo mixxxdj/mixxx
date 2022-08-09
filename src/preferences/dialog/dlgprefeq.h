@@ -71,6 +71,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     void applySelectionsToDecks();
 
+    bool eventFilter(QObject* obj, QEvent* e) override;
+
     ControlProxy m_COLoFreq;
     ControlProxy m_COHiFreq;
     UserSettingsPointer m_pConfig;

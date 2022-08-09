@@ -57,6 +57,16 @@ DlgPrefEQ::DlgPrefEQ(
           m_bEqAutoReset(false),
           m_bGainAutoReset(false) {
     setupUi(this);
+    // Set the focus policy for comboboxes and sliders and connect them to the
+    // custom event filter. See eventFilter() for details.
+    // Deck EQ & QuickEffect comboxboxes are set up accordingly in slotNumDecksChanged(),
+    // main EQ sliders in slotMainEqEffectChanged()
+    SliderHiEQ->setFocusPolicy(Qt::StrongFocus);
+    SliderHiEQ->installEventFilter(this);
+    SliderLoEQ->setFocusPolicy(Qt::StrongFocus);
+    SliderLoEQ->installEventFilter(this);
+    comboBoxMainEq->setFocusPolicy(Qt::StrongFocus);
+    comboBoxMainEq->installEventFilter(this);
 
     loadSettings();
 
@@ -111,6 +121,25 @@ DlgPrefEQ::~DlgPrefEQ() {
     m_deckQuickEffectSelectors.clear();
 }
 
+// Catch scroll events and filter them if they addressed an unfocused combobox or
+// silder and send them to the scroll area instead.
+// This avoids undesired value changes of unfocused widget when scrolling the page.
+// Values can be changed only by explicit selection, dragging sliders and with
+// Up/Down (Left/Right respectively), PageUp/PageDown as well as Home/End keys.
+bool DlgPrefEQ::eventFilter(QObject* obj, QEvent* e) {
+    if (e->type() == QEvent::Wheel) {
+        // Reject scrolling only if widget is unfocused.
+        // Object to widget cast is needed to check the focus state.
+        QComboBox* combo = qobject_cast<QComboBox*>(obj);
+        QSlider* slider = qobject_cast<QSlider*>(obj);
+        if ((combo && !combo->hasFocus()) || (slider && !slider->hasFocus())) {
+            QApplication::sendEvent(verticalLayout, e);
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, e);
+}
+
 void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     int oldDecks = m_deckEqEffectSelectors.size();
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
@@ -120,6 +149,10 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
 
         // Create the drop down list for deck EQs
         QComboBox* pEqComboBox = new QComboBox(this);
+        // Ignore scroll events if combobox is not focused.
+        // See eventFilter() for details.
+        pEqComboBox->setFocusPolicy(Qt::StrongFocus);
+        pEqComboBox->installEventFilter(this);
         m_deckEqEffectSelectors.append(pEqComboBox);
         connect(pEqComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -128,6 +161,8 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
 
         // Create the drop down list for Quick Effects
         QComboBox* pQuickEffectComboBox = new QComboBox(this);
+        pQuickEffectComboBox->setFocusPolicy(Qt::StrongFocus);
+        pQuickEffectComboBox->installEventFilter(this);
         m_deckQuickEffectSelectors.append(pQuickEffectComboBox);
         connect(pQuickEffectComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -744,10 +779,20 @@ void DlgPrefEQ::slotMainEqEffectChanged(int effectIndex) {
                     slider->setMinimumHeight(90);
                     // Set the index as a property because we need it inside slotUpdateFilter()
                     slider->setProperty("index", QVariant(i));
+                    // Ignore scroll events if slider is not focused.
+                    // See eventFilter() for details.
+                    slider->setFocusPolicy(Qt::StrongFocus);
+                    slider->installEventFilter(this);
                     slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
                     m_mainEQSliders.append(slider);
+                    // catch drag event
                     connect(slider,
                             &QSlider::sliderMoved,
+                            this,
+                            &DlgPrefEQ::slotApplyMainEQParameter);
+                    // catch scroll event
+                    connect(slider,
+                            &QSlider::valueChanged,
                             this,
                             &DlgPrefEQ::slotApplyMainEQParameter);
 
