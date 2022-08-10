@@ -23,6 +23,7 @@
 #include "util/desktophelper.h"
 #include "util/duration.h"
 #include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
 
 namespace {
@@ -45,7 +46,8 @@ DlgTrackInfo::DlgTrackInfo(
           m_pUserSettings(std::move(pUserSettings)),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
-          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
+          m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
+          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
           m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
     init();
 }
@@ -233,12 +235,14 @@ void DlgTrackInfo::init() {
                 this,
                 &DlgTrackInfo::slotCoverFound);
     }
-    connect(m_pWCoverArtLabel.get(),
-            &WCoverArtLabel::coverInfoSelected,
+
+    connect(m_pWCoverArtMenu,
+            &WCoverArtMenu::coverInfoSelected,
             this,
             &DlgTrackInfo::slotCoverInfoSelected);
-    connect(m_pWCoverArtLabel.get(),
-            &WCoverArtLabel::reloadCoverArt,
+
+    connect(m_pWCoverArtMenu,
+            &WCoverArtMenu::reloadCoverArt,
             this,
             &DlgTrackInfo::slotReloadCoverArt);
 }

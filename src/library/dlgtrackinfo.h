@@ -17,6 +17,7 @@
 class TrackModel;
 class DlgTagFetcher;
 class WCoverArtLabel;
+class WCoverArtMenu;
 class WStarRating;
 
 /// A dialog box to display and edit track properties.
@@ -118,6 +119,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
 
+    parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;
 
