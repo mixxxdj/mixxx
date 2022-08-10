@@ -224,8 +224,10 @@ void DlgCoverArtFullSize::slotCoverInfoSelected(
 }
 
 void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
-    if (m_pCoverMenu != nullptr && !m_pCoverMenu->isVisible() &&
-            event->button() == Qt::LeftButton) {
+    if (event->button() != Qt::LeftButton) {
+        return;
+    }
+    if ((m_pCoverMenu != nullptr && !m_pCoverMenu->isVisible()) || m_pCoverMenu == nullptr) {
         m_clickTimer.setSingleShot(true);
         m_clickTimer.start(500);
         m_coverPressed = true;
