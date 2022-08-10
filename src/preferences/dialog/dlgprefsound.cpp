@@ -239,7 +239,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
     // connect them to the custom event filter below so they don't accept focus
-    // when we scroll the preferences page.
+    // when we scroll the preferences page to avoid undesired value changes.
     QObjectList objList = children();
     for (int i = 0; i < objList.length(); ++i) {
         QComboBox* combo = qobject_cast<QComboBox*>(objList[i]);
