@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QLabel>
-#include <QMenu>
 #include <QMouseEvent>
 #include <QPixmap>
 #include <QWidget>
