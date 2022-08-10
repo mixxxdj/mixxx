@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QList>
 #include <QNetworkReply>
+#include <random>
 
 #include "library/dao/autodjcratesdao.h"
 
