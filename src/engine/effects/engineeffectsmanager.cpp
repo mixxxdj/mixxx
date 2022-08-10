@@ -2,6 +2,7 @@
 
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectchain.h"
+#include "engine/enginevumeter.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
@@ -120,7 +121,8 @@ void EngineEffectsManager::processPostFaderInPlace(
         const unsigned int sampleRate,
         const GroupFeatureState& groupFeatures,
         const CSAMPLE_GAIN oldGain,
-        const CSAMPLE_GAIN newGain) {
+        const CSAMPLE_GAIN newGain,
+        EngineVuMeter* postFaderVuMeter) {
     processInner(SignalProcessingStage::Postfader,
             inputHandle,
             outputHandle,
@@ -130,7 +132,8 @@ void EngineEffectsManager::processPostFaderInPlace(
             sampleRate,
             groupFeatures,
             oldGain,
-            newGain);
+            newGain,
+            postFaderVuMeter);
 }
 
 void EngineEffectsManager::processPostFaderAndMix(
@@ -142,7 +145,8 @@ void EngineEffectsManager::processPostFaderAndMix(
         const unsigned int sampleRate,
         const GroupFeatureState& groupFeatures,
         const CSAMPLE_GAIN oldGain,
-        const CSAMPLE_GAIN newGain) {
+        const CSAMPLE_GAIN newGain,
+        EngineVuMeter* postFaderVuMeter) {
     processInner(SignalProcessingStage::Postfader,
             inputHandle,
             outputHandle,
@@ -165,13 +169,17 @@ void EngineEffectsManager::processInner(
         const unsigned int sampleRate,
         const GroupFeatureState& groupFeatures,
         const CSAMPLE_GAIN oldGain,
-        const CSAMPLE_GAIN newGain) {
+        const CSAMPLE_GAIN newGain,
+        EngineVuMeter* vuMeter) {
     const QList<EngineEffectChain*>& chains = m_chainsByStage.value(stage);
 
     if (pIn == pOut) {
         // Gain and effects are applied to the buffer in place,
         // modifying the original input buffer
         SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
+        if (vuMeter) {
+            vuMeter->process(pOut, numSamples);
+        }
         for (EngineEffectChain* pChain : chains) {
             if (pChain) {
                 if (pChain->process(inputHandle,
@@ -199,6 +207,9 @@ void EngineEffectsManager::processInner(
             pIntermediateInput = pIn;
         } else {
             SampleUtil::copyWithRampingGain(pIntermediateInput, pIn, oldGain, newGain, numSamples);
+        }
+        if (vuMeter) {
+            vuMeter->process(pIntermediateInput, numSamples);
         }
 
         CSAMPLE* pIntermediateOutput;

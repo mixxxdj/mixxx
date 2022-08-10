@@ -8,7 +8,16 @@ class ControlProxy;
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
   public:
-    EngineVuMeter(const QString& group);
+    struct ControlNames {
+        QString vuMeter, vuMeterL, vuMeterR, peakIndicator, peakIndicatorL, peakIndicatorR;
+    };
+
+    static const ControlNames defaultControlNames;
+    static const ControlNames postFaderControlNames;
+
+    EngineVuMeter(const QString& group,
+            const ControlNames& controlNames =
+                    EngineVuMeter::defaultControlNames);
     virtual ~EngineVuMeter();
 
     virtual void process(CSAMPLE* pInOut, const int iBufferSize);
