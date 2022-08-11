@@ -95,6 +95,15 @@ DlgPrefEQ::DlgPrefEQ(
             &QCheckBox::stateChanged,
             this,
             &DlgPrefEQ::slotSingleEqChecked);
+    // Quick hack to update the checkbox "Use the same EQ filter for all decks"
+    // to not use the default state (checked) when slotNumDecksChanged() calls
+    // slotSingleEqChecked(state) here in constructor, because that would be written
+    // to config immediateley and thus reset the previous unchecked state.
+    // TODO(ronso0) Write only in slotApply(), read from config only in slotUpdate().
+    // Currently config is read in both slotUpdate() and loadSettings().
+    CheckBoxSingleEqEffect->setChecked(m_pConfig->getValue(
+                                               ConfigKey(kConfigKey, kSingleEq), "yes") == "yes");
+    slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
