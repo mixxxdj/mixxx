@@ -120,6 +120,7 @@ DlgAbout::DlgAbout()
             << "Maty&aacute;&scaron; Bobek"
             << "Mr. Rincewind"
             << "Stefan N&uuml;rnberger"
+            << "motific"
             << "Fatih Emre YILDIZ"
             << "Javier Vilalta"
             << "David Chocholat&yacute;";
