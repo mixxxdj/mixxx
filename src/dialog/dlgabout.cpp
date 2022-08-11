@@ -113,6 +113,8 @@ DlgAbout::DlgAbout()
             << "Pino Toscano"
             << "Alexander Horner"
             << "Michael Ehlen"
+            << "Alice Midori"
+            << "h67ma"
             << "tcoyvwac"
             << "Tobias Oszlanyi (OsZ)"
             << "Fredrik Wieczerkowski"
