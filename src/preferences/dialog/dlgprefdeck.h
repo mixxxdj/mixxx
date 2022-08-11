@@ -12,10 +12,6 @@
 #include "util/parented_ptr.h"
 
 class ControlProxy;
-class ControlPotmeter;
-class SkinLoader;
-class PlayerManager;
-class MixxxMainWindow;
 class ControlObject;
 
 namespace {
