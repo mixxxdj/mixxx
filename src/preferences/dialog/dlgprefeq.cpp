@@ -102,7 +102,7 @@ DlgPrefEQ::DlgPrefEQ(
     // TODO(ronso0) Write only in slotApply(), read from config only in slotUpdate().
     // Currently config is read in both slotUpdate() and loadSettings().
     CheckBoxSingleEqEffect->setChecked(m_pConfig->getValue(
-                                               ConfigKey(kConfigKey, kSingleEq), "yes") == "yes");
+                                               ConfigKey(kConfigGroup, kSingleEq), "yes") == "yes");
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 
     // Add drop down lists for current decks and connect num_decks control
@@ -322,17 +322,19 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
     bool do_hide = static_cast<bool>(checked);
     m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
             do_hide ? QString("yes") : QString("no"));
-    int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
-    for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
-        if (do_hide) {
-            m_deckEqEffectSelectors.at(i - 1)->setCurrentIndex(deck1EQIndex);
-            gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
-            gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
-            gridLayout_3->itemAtPosition(i, 2)->widget()->hide();
-        } else {
-            gridLayout_3->itemAtPosition(i, 0)->widget()->show();
-            gridLayout_3->itemAtPosition(i, 1)->widget()->show();
-            gridLayout_3->itemAtPosition(i, 2)->widget()->show();
+    if (m_deckEqEffectSelectors.size()) {
+        int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
+        for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
+            if (do_hide) {
+                m_deckEqEffectSelectors.at(i - 1)->setCurrentIndex(deck1EQIndex);
+                gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
+                gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
+                gridLayout_3->itemAtPosition(i, 2)->widget()->hide();
+            } else {
+                gridLayout_3->itemAtPosition(i, 0)->widget()->show();
+                gridLayout_3->itemAtPosition(i, 1)->widget()->show();
+                gridLayout_3->itemAtPosition(i, 2)->widget()->show();
+            }
         }
     }
 
