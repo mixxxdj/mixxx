@@ -1,5 +1,6 @@
 #include "widget/wcoverartmenu.h"
 
+#include <QBuffer>
 #include <QFileDialog>
 #include <QFileInfo>
 
@@ -68,8 +69,6 @@ void WCoverArtMenu::slotChange() {
         return;
     }
 
-    // TODO(rryan): Ask if user wants to copy the file.
-
     CoverInfoRelative coverInfo;
     // Create a security token for the file.
     auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(selectedCoverPath));
@@ -82,6 +81,29 @@ void WCoverArtMenu::slotChange() {
     coverInfo.source = CoverInfo::USER_SELECTED;
     coverInfo.coverLocation = selectedCoverPath;
     coverInfo.setImage(image);
+
+    QMessageBox::StandardButton saveButton = QMessageBox::question(nullptr,
+            tr("Save the Cover Art in Track Location"),
+            tr("Do you want to copy the cover art to the same path where the track located?"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+
+    if (saveButton == QMessageBox::Yes) {
+        qDebug() << "The cover art was copied where the track located.";
+
+        QByteArray coverArtByteArray;
+        QBuffer bufferCoverArt(&coverArtByteArray);
+        bufferCoverArt.open(QIODevice::WriteOnly);
+        image.save(&bufferCoverArt, "JPG");
+
+        QFile coverArtFile(fileInfo.absoluteDir().path() + "/" +
+                fileInfo.completeBaseName() + ".jpg");
+        coverArtFile.open(QIODevice::WriteOnly);
+        coverArtFile.write(coverArtByteArray);
+        bufferCoverArt.close();
+        coverArtFile.close();
+    }
+
     qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
     emit coverInfoSelected(coverInfo);
 }
