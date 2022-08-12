@@ -33,27 +33,6 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: Ubuntu 20.04 (gcc)
-            os: ubuntu-20.04
-            cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DBULK=ON
-              -DFFMPEG=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
-            compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
-            cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 20.04 DEB
-            artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-focal
-            qt_qpa_platform: offscreen
           - name: Arch Linux (Qt 6.3, gcc)
             os: ubuntu-22.04
             # The Dockerfile for this container can be found at:
