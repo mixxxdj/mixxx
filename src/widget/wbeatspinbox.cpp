@@ -299,6 +299,7 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
 void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
     // By default, Return & Enter keys apply current value.
     // Here, Return, Enter and Escape apply and move focus to tracks table.
+    // TODO(ronso0) switch to previously focused (library?) widget instead
     if (pEvent->key() == Qt::Key_Return ||
             pEvent->key() == Qt::Key_Enter ||
             pEvent->key() == Qt::Key_Escape) {

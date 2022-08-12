@@ -90,6 +90,7 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
     // After selecting an effect move focus to the tracks table in order
     // to immediately allow keyboard shortcuts again.
+    // TODO(ronso0) switch to previously focused (library?) widget instead
     ControlObject::set(ConfigKey("[Library]", "focused_widget"),
             static_cast<double>(FocusWidget::TracksTable));
 }
