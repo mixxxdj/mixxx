@@ -12,19 +12,17 @@
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
+#include "analyzer/plugins/analyzerpluginsupport.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "util/memory.h"
 
-class AnalyzerBeats : public Analyzer {
+class AnalyzerBeats : private AnalyzerPluginSupportInfo, public Analyzer {
   public:
     explicit AnalyzerBeats(
             UserSettingsPointer pConfig,
             bool enforceBpmDetection = false);
     ~AnalyzerBeats() override = default;
-
-    static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
-    static mixxx::AnalyzerPluginInfo defaultPlugin();
 
     bool initialize(TrackPointer pTrack,
             mixxx::audio::SampleRate sampleRate,
@@ -32,16 +30,15 @@ class AnalyzerBeats : public Analyzer {
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
+    static QList<mixxx::AnalyzerPluginInfo> defaultPluginsList();
 
   private:
+    QList<mixxx::AnalyzerPluginInfo> availablePlugins() const override;
     bool shouldAnalyze(TrackPointer pTrack) const;
-    static QHash<QString, QString> getExtraVersionInfo(
-            const QString& pluginId, bool bPreferencesFastAnalysis);
 
     BeatDetectionSettings m_bpmSettings;
     std::unique_ptr<mixxx::AnalyzerBeatsPlugin> m_pPlugin;
     const bool m_enforceBpmDetection;
-    QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesReanalyzeImported;
     bool m_bPreferencesFixedTempo;

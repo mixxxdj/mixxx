@@ -470,6 +470,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzersilence.cpp
   src/analyzer/analyzerthread.cpp
   src/analyzer/analyzerwaveform.cpp
+  src/analyzer/plugins/analyzerpluginsupport.cpp
   src/analyzer/plugins/analyzerqueenmarybeats.cpp
   src/analyzer/plugins/analyzerqueenmarykey.cpp
   src/analyzer/plugins/analyzersoundtouchbeats.cpp

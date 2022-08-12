@@ -14,7 +14,7 @@
 #include "track/track.h"
 
 // static
-QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
+QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::defaultPluginsList() {
     QList<mixxx::AnalyzerPluginInfo> plugins;
     // First one below is the default
     plugins.append(mixxx::AnalyzerQueenMaryBeats::pluginInfo());
@@ -22,11 +22,8 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     return plugins;
 }
 
-// static
-mixxx::AnalyzerPluginInfo AnalyzerBeats::defaultPlugin() {
-    const auto plugins = availablePlugins();
-    DEBUG_ASSERT(!plugins.isEmpty());
-    return plugins.at(0);
+QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() const {
+    return defaultPluginsList();
 }
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
@@ -66,17 +63,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
-    const auto plugins = availablePlugins();
-    if (!plugins.isEmpty()) {
-        m_pluginId = defaultPlugin().id();
-        QString pluginId = m_bpmSettings.getBeatPluginId();
-        for (const auto& info : plugins) {
-            if (info.id() == pluginId) {
-                m_pluginId = pluginId; // configured Plug-In available
-                break;
-            }
-        }
-    }
+    m_pluginId = matchOrGetDefaultPluginId(m_bpmSettings.getBeatPluginId());
 
     qDebug() << "AnalyzerBeats preference settings:"
              << "\nPlugin:" << m_pluginId
@@ -136,7 +123,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
 
     QString pluginID = m_bpmSettings.getBeatPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin().id();
+        pluginID = defaultPlugin();
     }
 
     // If the track already has a Beats object then we need to decide whether to
@@ -247,15 +234,4 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     }
 
     pTrack->trySetBeats(pBeats);
-}
-
-// static
-QHash<QString, QString> AnalyzerBeats::getExtraVersionInfo(
-        const QString& pluginId, bool bPreferencesFastAnalysis) {
-    QHash<QString, QString> extraVersionInfo;
-    extraVersionInfo["vamp_plugin_id"] = pluginId;
-    if (bPreferencesFastAnalysis) {
-        extraVersionInfo["fast_analysis"] = "1";
-    }
-    return extraVersionInfo;
 }

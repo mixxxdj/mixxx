@@ -15,7 +15,7 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
           m_bReanalyzeImported(m_bpmSettings.getReanalyzeImportedDefault()) {
     setupUi(this);
 
-    m_availablePlugins = AnalyzerBeats::availablePlugins();
+    m_availablePlugins = AnalyzerBeats::defaultPluginsList();
     for (const auto& info : qAsConst(m_availablePlugins)) {
         comboBoxBeatPlugin->addItem(info.name(), info.id());
     }

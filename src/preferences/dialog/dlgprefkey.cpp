@@ -43,7 +43,7 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     m_keyLineEdits.insert(mixxx::track::io::key::B_FLAT_MINOR, b_flat_minor_edit);
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
-    m_availablePlugins = AnalyzerKey::availablePlugins();
+    m_availablePlugins = AnalyzerKey::defaultPluginsList();
     for (const auto& info : qAsConst(m_availablePlugins)) {
         plugincombo->addItem(info.name(), info.id());
     }

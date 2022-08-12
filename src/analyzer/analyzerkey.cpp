@@ -13,7 +13,7 @@
 #include "track/track.h"
 
 // static
-QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
+QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::defaultPluginsList() {
     QList<mixxx::AnalyzerPluginInfo> analyzers;
     // First one below is the default
     analyzers.push_back(mixxx::AnalyzerQueenMaryKey::pluginInfo());
@@ -23,11 +23,8 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     return analyzers;
 }
 
-// static
-mixxx::AnalyzerPluginInfo AnalyzerKey::defaultPlugin() {
-    const auto plugins = availablePlugins();
-    DEBUG_ASSERT(!plugins.isEmpty());
-    return plugins.at(0);
+QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() const {
+    return defaultPluginsList();
 }
 
 AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
@@ -57,17 +54,7 @@ bool AnalyzerKey::initialize(TrackPointer tio,
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    const auto plugins = availablePlugins();
-    if (!plugins.isEmpty()) {
-        m_pluginId = defaultPlugin().id();
-        QString pluginId = m_keySettings.getKeyPluginId();
-        for (const auto& info : plugins) {
-            if (info.id() == pluginId) {
-                m_pluginId = pluginId; // configured Plug-In available
-                break;
-            }
-        }
-    }
+    m_pluginId = matchOrGetDefaultPluginId(m_keySettings.getKeyPluginId());
 
     qDebug() << "AnalyzerKey preference settings:"
              << "\nPlugin:" << m_pluginId
@@ -121,7 +108,7 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin().id();
+        pluginID = defaultPlugin();
     }
 
     const Keys keys(tio->getKeys());
@@ -183,15 +170,4 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
     Keys track_keys = KeyFactory::makePreferredKeys(
             key_changes, extraVersionInfo, m_iSampleRate, m_iTotalSamples);
     tio->setKeys(track_keys);
-}
-
-// static
-QHash<QString, QString> AnalyzerKey::getExtraVersionInfo(
-        const QString& pluginId, bool bPreferencesFastAnalysis) {
-    QHash<QString, QString> extraVersionInfo;
-    extraVersionInfo["vamp_plugin_id"] = pluginId;
-    if (bPreferencesFastAnalysis) {
-        extraVersionInfo["fast_analysis"] = "1";
-    }
-    return extraVersionInfo;
 }
