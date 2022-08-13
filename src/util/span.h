@@ -14,7 +14,7 @@ namespace spanutil {
 /// for signed data types.
 template<typename T, typename S, typename T2 = typename std::span<T>::size_type>
 constexpr T2 castToSizeType(S size) {
-    if constexpr (std::is_signed_v<S>) {
+    if constexpr (std::is_signed_v<S> && std::is_unsigned_v<T2>) {
         VERIFY_OR_DEBUG_ASSERT(size >= 0) {
             size = 0;
         }
