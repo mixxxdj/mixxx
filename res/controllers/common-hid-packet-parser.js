@@ -1115,6 +1115,12 @@ class HIDController {
          */
         this.OutputPackets = {};
 
+         /** A map to determine the ouptut Bit or bytewise field by group and name,
+          * accross all OutputPackets
+          * @type {Map<string,bitObject|packetField>}
+          */
+         this.OutputFieldLookup = new Map();
+
         /**
          * Default input packet name: can be modified for controllers
          * which can swap modes (wiimote for example)
@@ -1415,33 +1421,11 @@ class HIDController {
      *     can't be found.
      */
     getOutputField(m_group, m_name) {
-        for (const packet_name in this.OutputPackets) {
-            const packet = this.OutputPackets[packet_name];
-            for (const group_name in packet.groups) {
-                const group = packet.groups[group_name];
-                for (const field_name in group) {
-                    const field = group[field_name];
-                    if (field.type === "bitvector") {
-                        for (const bit_id in field.value.bits) {
-                            const bit = field.value.bits[bit_id];
-                            if (bit.mapped_group === m_group && bit.mapped_name === m_name) {
-                                return bit;
-                            }
-                            if (bit.group === m_group && bit.name === m_name) {
-                                return bit;
-                            }
-                        }
-                        continue;
-                    }
-                    if (field.mapped_group === m_group && field.mapped_name === m_name) {
-                        return field;
-                    }
-                    if (field.group === m_group && field.name === m_name) {
-                        return field;
-                    }
-                }
-            }
+        const field = this.OutputFieldLookup.get([m_group, m_name].toString());
+        if (field) {
+            return field;
         }
+
         return undefined;
     }
     /**
@@ -1660,6 +1644,20 @@ class HIDController {
                     for (const bit_id in field.value.bits) {
                         const bit = field.value.bits[bit_id];
                         bit.packet = packet;
+                        // Fill lookup map
+                        if (bit.mapped_group && bit.mapped_name) {
+                            this.OutputFieldLookup.set([bit.mapped_group, bit.mapped_name].toString(), bit);
+                        }
+                        if (bit.group && bit.name) {
+                            this.OutputFieldLookup.set([bit.group, bit.name].toString(), bit);
+                        }
+                    }
+                } else {
+                    if (field.mapped_group && field.mapped_name) {
+                        this.OutputFieldLookup.set([field.mapped_group, field.mapped_name].toString(), field);
+                    }
+                    if (field.group && field.name) {
+                        this.OutputFieldLookup.set([field.group, field.name].toString(), field);
                     }
                 }
             }
