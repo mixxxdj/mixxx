@@ -12,12 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     # The Dockerfile for this container can be found at:
     # https://github.com/Holzhaus/mixxx-ci-docker
-    container: holzhaus/mixxx-ci:20210923
+    container: holzhaus/mixxx-ci:20220805
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v3
       with:
-        fetch-depth: 2
+        # Unfortunately we need the whole history and can't use a shallow clone
+        # because the Appstream Metadata hook parses the history to find the
+        # latest changelog modification date. Otherwise, `fetch-depth: 2` would
+        # suffice.
+        fetch-depth: 0
+
+    - name: "Add GitHub workspace as a safe directory"
+      # Without this, git commands will fail due to mismatching permissions in
+      # the container. See actions/runner#2033 for details.
+      #
+      # The actions/checkout action should already take care of this thanks to
+      # commit actions/checkout@55fd82fc42c0cdd6f1f480dd23f60636a42f6f5c, but
+      # it seems like that's not working properly.
+      run: |
+        git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+        git config --global --list
 
     - name: "Detect code style issues (push)"
       uses: pre-commit/action@v3.0.0

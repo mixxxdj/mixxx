@@ -70,10 +70,12 @@ const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 //static
 SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
         const UserSettings& userSettings) {
-    const auto syncSeratoMetadata =
-            userSettings.getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey);
     return SyncTrackMetadataParams{
-            syncSeratoMetadata,
+            .resetMissingTagMetadataOnImport =
+                    userSettings.getValue<bool>(
+                            mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey),
+            .syncSeratoMetadata = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kSyncSeratoMetadataConfigKey),
     };
 }
 
@@ -1580,7 +1582,12 @@ ExportTrackMetadataResult Track::exportMetadata(
     // Otherwise floating-point values like the bpm value might become
     // inconsistent with the actual value stored by the beat grid!
     mixxx::TrackMetadata normalizedFromRecord;
-    if ((metadataSource.importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
+    // Both resetMissingTagMetadata = false/true have the same effect
+    constexpr auto resetMissingTagMetadata = false;
+    if ((metadataSource.importTrackMetadataAndCoverImage(&importedFromFile,
+                               nullptr,
+                               resetMissingTagMetadata)
+                        .first ==
                 mixxx::MetadataSource::ImportResult::Succeeded)) {
         // Prevent overwriting any file tags that are not yet stored in the
         // library database! This will in turn update the current metadata

@@ -113,6 +113,8 @@ DlgAbout::DlgAbout()
             << "Pino Toscano"
             << "Alexander Horner"
             << "Michael Ehlen"
+            << "Alice Midori"
+            << "h67ma"
             << "tcoyvwac"
             << "Tobias Oszlanyi (OsZ)"
             << "Fredrik Wieczerkowski"
@@ -120,8 +122,10 @@ DlgAbout::DlgAbout()
             << "Maty&aacute;&scaron; Bobek"
             << "Mr. Rincewind"
             << "Stefan N&uuml;rnberger"
+            << "motific"
             << "Fatih Emre YILDIZ"
-            << "Javier Vilalta";
+            << "Javier Vilalta"
+            << "David Chocholat&yacute;";
 
     QStringList specialThanks;
     specialThanks

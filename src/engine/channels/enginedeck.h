@@ -3,7 +3,6 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/channels/enginechannel.h"
