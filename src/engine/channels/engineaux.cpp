@@ -80,7 +80,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
             pEngineEffectsManager->processPreFaderInPlace(
                     m_group.handle(), m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
                     // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                    static_cast<unsigned int>(m_pSampleRate->get()));
+                    static_cast<unsigned int>(m_sampleRate.get()));
         }
         m_sampleBuffer = nullptr;
     } else {

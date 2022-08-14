@@ -33,27 +33,6 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: Ubuntu 20.04 (gcc)
-            os: ubuntu-20.04
-            cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DBULK=ON
-              -DFFMPEG=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
-            compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
-            cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 20.04 DEB
-            artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-focal
-            qt_qpa_platform: offscreen
           - name: Arch Linux (Qt 6.3, gcc)
             os: ubuntu-22.04
             # The Dockerfile for this container can be found at:
@@ -73,8 +52,8 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
             qt_qpa_platform: offscreen
-          - name: macOS 10.15
-            os: macos-10.15
+          - name: macOS 11
+            os: macos-11
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -177,7 +156,7 @@ jobs:
       with:
         # This should always match the minimum required version in
         # our CMakeLists.txt
-        cmake-version: '3.16.x'
+        cmake-version: '3.19.x'
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'

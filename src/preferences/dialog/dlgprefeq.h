@@ -45,7 +45,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
     // Update the Main EQ
-    void slotUpdateMainEQParameter(int value);
+    void slotApplyMainEQParameter(int value);
     void slotMainEQToDefault();
     void setMainEQParameter(int i, double value);
     void slotMainEqEffectChanged(int effectIndex);
@@ -70,6 +70,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
             const QList<QComboBox*>& boxList);
 
     void applySelectionsToDecks();
+
+    bool eventFilter(QObject* obj, QEvent* e) override;
 
     ControlProxy m_COLoFreq;
     ControlProxy m_COHiFreq;

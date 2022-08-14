@@ -80,7 +80,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
                 pOut,
                 iBufferSize,
                 // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                static_cast<unsigned int>(m_pSampleRate->get()));
+                static_cast<unsigned int>(m_sampleRate.get()));
     }
 
     // Update VU meter

@@ -2,7 +2,6 @@
 
 #include <QScopedPointer>
 
-#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginevumeter.h"

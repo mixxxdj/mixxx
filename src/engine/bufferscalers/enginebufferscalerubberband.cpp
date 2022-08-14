@@ -30,7 +30,8 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
         ReadAheadManager* pReadAheadManager)
         : m_pReadAheadManager(pReadAheadManager),
           m_buffer_back(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_bBackwards(false) {
+          m_bBackwards(false),
+          m_useEngineFiner(false) {
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
     // Initialize the internal buffers to prevent re-allocations
@@ -116,10 +117,12 @@ void EngineBufferScaleRubberBand::onSampleRateChanged() {
         m_pRubberBand.reset();
         return;
     }
-    RubberBandStretcher::Options rubberbandOptions = RubberBandStretcher::OptionProcessRealTime;
+    RubberBandStretcher::Options rubberbandOptions =
+            RubberBandStretcher::OptionProcessRealTime;
 #if RUBBERBANDV3
-    // TODO make this a runtime option
-    rubberbandOptions |= RubberBandStretcher::OptionEngineFiner;
+    if (m_useEngineFiner) {
+        rubberbandOptions |= RubberBandStretcher::OptionEngineFiner;
+    }
 #endif
 
     m_pRubberBand = std::make_unique<RubberBandStretcher>(
@@ -148,8 +151,8 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         SINT frames) {
     SINT frames_available = m_pRubberBand->available();
     SINT frames_to_read = math_min(frames_available, frames);
-    SINT received_frames = m_pRubberBand->retrieve(
-            (float* const*)m_retrieve_buffer, frames_to_read);
+    SINT received_frames = static_cast<SINT>(m_pRubberBand->retrieve(
+            m_retrieve_buffer, frames_to_read));
 
     SampleUtil::interleaveBuffer(pBuffer,
                                  m_retrieve_buffer[0],
@@ -164,8 +167,9 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
     SampleUtil::deinterleaveBuffer(
             m_retrieve_buffer[0], m_retrieve_buffer[1], pBuffer, frames);
 
-    m_pRubberBand->process((const float* const*)m_retrieve_buffer,
-                           frames, flush);
+    m_pRubberBand->process(m_retrieve_buffer,
+            frames,
+            flush);
 }
 
 double EngineBufferScaleRubberBand::scaleBuffer(
@@ -203,7 +207,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
             break;
         }
 
-        size_t iLenFramesRequired = m_pRubberBand->getSamplesRequired();
+        SINT iLenFramesRequired = static_cast<SINT>(m_pRubberBand->getSamplesRequired());
         if (iLenFramesRequired == 0) {
             // TODO (XXX): Rubberband 1.3 is not being packaged anymore.
             // Remove this workaround.
@@ -262,6 +266,18 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     double framesRead = m_dBaseRate * m_dTempoRatio * total_received_frames;
 
     return framesRead;
+}
+
+// static
+bool EngineBufferScaleRubberBand::isEngineFinerAvailable() {
+    return RUBBERBANDV3;
+}
+
+void EngineBufferScaleRubberBand::useEngineFiner(bool enable) {
+    if (isEngineFinerAvailable()) {
+        m_useEngineFiner = enable;
+        onSampleRateChanged();
+    }
 }
 
 int EngineBufferScaleRubberBand::runningEngineVersion() {
