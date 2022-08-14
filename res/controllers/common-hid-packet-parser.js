@@ -1115,11 +1115,13 @@ class HIDController {
          */
         this.OutputPackets = {};
 
-         /** A map to determine the ouptut Bit or bytewise field by group and name,
-          * accross all OutputPackets
-          * @type {Map<string,bitObject|packetField>}
-          */
-         this.OutputFieldLookup = new Map();
+        /**
+         * A map to determine the output Bit or bytewise field by group and name,
+         * across all OutputPackets
+         *
+         * @type {Map<string,bitObject|packetField>}
+         */
+        this.OutputFieldLookup = new Map();
 
         /**
          * Default input packet name: can be modified for controllers
