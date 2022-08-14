@@ -628,6 +628,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/controls/ratecontrol.cpp
   src/engine/effects/engineeffect.cpp
   src/engine/effects/engineeffectchain.cpp
+  src/engine/effects/engineeffectsdelay.cpp
   src/engine/effects/engineeffectsmanager.cpp
   src/engine/enginebuffer.cpp
   src/engine/enginedelay.cpp
@@ -1649,6 +1650,7 @@ add_executable(mixxx-test
   #src/test/effectchainslottest.cpp
   src/test/enginebufferscalelineartest.cpp
   src/test/enginebuffertest.cpp
+  src/test/engineeffectsdelay_test.cpp
   src/test/enginefilterbiquadtest.cpp
   src/test/enginemastertest.cpp
   src/test/enginemicrophonetest.cpp
