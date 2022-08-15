@@ -65,6 +65,10 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT numItems) {
         itemsToRead = available;
     }
 
+    if (m_fullFlag && itemsToRead > 0) {
+        m_fullFlag = false;
+    }
+
     // Check to see if the read is not contiguous.
     if ((m_readPos + itemsToRead) > m_buffer.size()) {
         // Read is not contiguous.
@@ -87,11 +91,6 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT numItems) {
 
     if (m_readPos >= m_buffer.size()) {
         m_readPos = m_readPos - m_buffer.size();
-        // The read position crossed the right bound of the buffer. So, if the situation,
-        // where the read position equals the write position arises, and before this situation,
-        // the write position does not cross the right bound of the buffer too,
-        // the buffer will be empty.
-        m_fullFlag = false;
     }
 
     return itemsToRead;
@@ -103,6 +102,10 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT numItems) {
 
     VERIFY_OR_DEBUG_ASSERT(itemsToWrite <= available) {
         itemsToWrite = available;
+    }
+
+    if (itemsToWrite == available) {
+        m_fullFlag = true;
     }
 
     if (m_firstInputBuffer) {
@@ -135,11 +138,6 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT numItems) {
 
     if (m_writePos >= m_buffer.size()) {
         m_writePos = m_writePos - m_buffer.size();
-        // The write position crossed the right bound of the buffer. So, if the situation,
-        // where the write position equals the read position arises, and before this situation,
-        // the read position does not cross the right bound of the buffer too,
-        // the buffer will be full.
-        m_fullFlag = true;
     }
 
     return itemsToWrite;
@@ -190,21 +188,9 @@ SINT RingDelayBuffer::moveReadPositionBy(const SINT jumpSize) {
     if (m_readPos >= m_buffer.size()) {
         // Crossing the right bound of the buffer.
         m_readPos = m_readPos - m_buffer.size();
-
-        // The read position crossed the right bound of the buffer. So, if the situation,
-        // where the read position equals the write position arises, and before this situation,
-        // the write position does not cross the right bound of the buffer too,
-        // the buffer will be empty.
-        m_fullFlag = false;
     } else if (m_readPos < 0) {
         // Crossing the left bound of the buffer.
         m_readPos = m_readPos + m_buffer.size();
-
-        // The read position crossed the left bound of the buffer. So, if the situation,
-        // where the read position equals the write position arises, the buffer will be full.
-        // In this situation, the values on the left side of the read position before the jump
-        // are considered as written, even though it is about default zero values.
-        m_fullFlag = true;
     }
 
     return jumpSize;
