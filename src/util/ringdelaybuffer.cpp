@@ -57,9 +57,8 @@ RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
     m_buffer.fill(0);
 }
 
-SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT numItems) {
+SINT RingDelayBuffer::read(CSAMPLE* pBuffer, SINT itemsToRead) {
     const SINT available = getReadAvailable();
-    SINT itemsToRead = numItems;
 
     VERIFY_OR_DEBUG_ASSERT(itemsToRead <= available) {
         itemsToRead = available;
@@ -96,9 +95,8 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT numItems) {
     return itemsToRead;
 }
 
-SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT numItems) {
+SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, SINT itemsToWrite) {
     const SINT available = getWriteAvailable();
-    SINT itemsToWrite = numItems;
 
     VERIFY_OR_DEBUG_ASSERT(itemsToWrite <= available) {
         itemsToWrite = available;

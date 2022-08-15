@@ -124,8 +124,8 @@ class RingDelayBuffer final {
         return m_buffer.size() - getReadAvailable();
     }
 
-    SINT read(CSAMPLE* pBuffer, const SINT numItems);
-    SINT write(const CSAMPLE* pBuffer, const SINT numItems);
+    SINT read(CSAMPLE* pBuffer, SINT itemsToRead);
+    SINT write(const CSAMPLE* pBuffer, SINT itemsToWrite);
     SINT moveReadPositionBy(const SINT jumpSize);
 
   private:
