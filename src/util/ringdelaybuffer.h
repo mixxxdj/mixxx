@@ -68,7 +68,7 @@
 #include "util/types.h"
 
 // The RingDelayBuffer is designed to be single-threaded
-// and based on that IS NOT THREAD SAVE.
+// and based on that IS NOT THREAD-SAFE.
 
 // TODO(davidchocholaty) Done documentation.
 
