@@ -1142,6 +1142,7 @@ WEffectSelector:!editable:on {
 WLabel#FxUnitLabel,
 WLabel#MicAuxLabel,
 WLabel#MicAuxLabelUnconfigured,
+WEffectChain,
 WEffectSelector,
 WEffectChainPresetSelector,
 #fadeModeCombobox {
@@ -1198,6 +1199,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+WEffectChain,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 QLineEdit QMenu,
@@ -1229,6 +1231,7 @@ WEffectChainPresetSelector:!editable:on,
 #fadeModeCombobox:!editable:on {
   color: #918273;
   }
+  WEffectChain,
   WEffectSelector:!editable,
   WEffectSelector:!editable:on,
   #fadeModeCombobox:!editable,

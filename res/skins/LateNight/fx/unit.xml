@@ -13,9 +13,28 @@
 
   <WidgetGroup>
     <ObjectName>FxUnitContainer</ObjectName>
-    <Layout>horizontal</Layout>
+    <Layout>vertical</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+          <EffectChainName>
+            <Size>140me,18f</Size>
+            <EffectUnitGroup><Variable name="FxRack_FxUnit"/></EffectUnitGroup>
+          </EffectChainName>
+
+          <WidgetGroup><Size>0min</Size></WidgetGroup>
+
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelectorRight</ObjectName>
+            <Size>140me,18f</Size>
+            <EffectUnitGroup><Variable name="FxRack_FxUnit"/></EffectUnitGroup>
+          </EffectChainPresetSelector>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
