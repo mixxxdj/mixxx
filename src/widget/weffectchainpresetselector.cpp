@@ -84,7 +84,6 @@ void WEffectChainPresetSelector::populate() {
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
-    Q_UNUSED(index);
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
     setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
@@ -97,7 +96,7 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
     setCurrentIndex(findData(name));
-    setBaseTooltip(name);
+    setBaseTooltip(itemData(currentIndex(), Qt::ToolTipRole).toString());
 }
 
 bool WEffectChainPresetSelector::event(QEvent* pEvent) {
