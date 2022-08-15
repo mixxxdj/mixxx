@@ -25,8 +25,10 @@ bool recognizeDevice(const PmDeviceInfo& deviceInfo) {
 // devices that have an equivalent "deviceName" and ### section.
 const QRegularExpression kMidiDeviceNameRegex(QStringLiteral("^(.*) MIDI (\\d+)( .*)?$"));
 
-const QRegularExpression kInputRegex(QStringLiteral("^(.*) in (\\d+)( .*)?$"));
-const QRegularExpression kOutputRegex(QStringLiteral("^(.*) out (\\d+)( .*)?$"));
+const QRegularExpression kInputRegex(QStringLiteral("^(.*) in( \\d+)?( .*)?$"),
+        QRegularExpression::CaseInsensitiveOption);
+const QRegularExpression kOutputRegex(QStringLiteral("^(.*) out( \\d+)?( .*)?$"),
+        QRegularExpression::CaseInsensitiveOption);
 
 // This is a broad pattern that matches a text blob followed by a numeral
 // potentially followed by non-numeric text. The non-numeric requirement is
