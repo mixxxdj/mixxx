@@ -65,7 +65,7 @@ void WEffectChainPresetButton::populateMenu() {
         });
     }
     m_pMenu->addAction(tr("Save As New Preset..."), this, [this]() {
-        m_pChainPresetManager->savePreset(m_pChain);
+        m_pChainPresetManager->savePresetAndReload(m_pChain);
     });
 
     m_pMenu->addSeparator();
