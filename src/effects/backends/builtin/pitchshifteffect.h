@@ -7,6 +7,7 @@
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "util/circularbuffer.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -25,12 +26,15 @@ class PitchShiftGroupState : public EffectState {
     void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
 
     std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;
+    std::unique_ptr<CircularBuffer<CSAMPLE>> m_outputBuffer;
     CSAMPLE* m_retrieveBuffer[2];
+    CSAMPLE* m_inputSamples[2];
+    CSAMPLE* m_interleavedBuffer;
 };
 
 class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> {
   public:
-    PitchShiftEffect() = default;
+    PitchShiftEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -51,6 +55,7 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
         return getId();
     }
 
+    double m_prevPitch;
     EngineEffectParameterPointer m_pPitchParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PitchShiftEffect);
