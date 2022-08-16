@@ -413,16 +413,16 @@ class LaunchpadImporter:
                     *self.gh.rate_limiting,
                     rate_limit_resettime.isoformat(),
                 )
-                seconds_to_wait = (
+                time_to_wait = (
                     rate_limit_resettime - datetime.datetime.utcnow()
-                ).total_seconds()
-                if seconds_to_wait <= 0:
+                )
+                if time_to_wait.total_seconds() <= 0:
                     self.logger.warning(
                         "Failed to detect wait time, assuming 10 seconds..."
                     )
-                    seconds_to_wait = 10
-                self.logger.warning("Sleeping for %d seconds", seconds_to_wait)
-                time.sleep(seconds_to_wait)
+                    time_to_wait = datetime.timedelta(seconds=10)
+                self.logger.warning(f"Sleeping for {time_to_wait}")
+                time.sleep(time_to_wait.total_seconds())
             except github.GithubException as e:
                 if e.status == 403 and "abuse" in e.data.get("message", ""):
                     self.logger.warning(
