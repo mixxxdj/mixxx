@@ -33,6 +33,7 @@ import re
 import textwrap
 import time
 import github
+import requests
 
 LAUNCHPAD_STATUS_MAP = {
     "Confirmed": ["confirmed"],
@@ -455,6 +456,12 @@ class LaunchpadImporter:
                     sleep_exp_backoff()
                 else:
                     raise
+            except requests.exceptions.ConnectionError as e:
+                self.logger.warning(e)
+                self.logger.warning(
+                    "encountered connection error, retrying..."
+                )
+                sleep_exp_backoff()
             else:
                 break
 
