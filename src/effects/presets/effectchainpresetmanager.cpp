@@ -123,6 +123,13 @@ void EffectChainPresetManager::importPreset() {
         EffectChainPresetPointer pPreset(
                 new EffectChainPreset(doc.documentElement()));
         if (!pPreset->isEmpty() && !pPreset->name().isEmpty()) {
+            // Don't allow '---' because it is used internally for clearing effect
+            // chains and empty Quick Effect chains
+            if (pPreset->name() == kNoEffectString) {
+                pPreset->setName(pPreset->name() +
+                        QLatin1String(" (") + tr("imported") + QLatin1String(")"));
+            }
+
             while (m_effectChainPresets.contains(pPreset->name())) {
                 pPreset->setName(pPreset->name() +
                         QLatin1String(" (") + tr("duplicate") + QLatin1String(")"));
@@ -230,7 +237,8 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
 
     QString newName;
     QString errorText;
-    while (newName.isEmpty() || m_effectChainPresets.contains(newName)) {
+    while (newName.isEmpty() || m_effectChainPresets.contains(newName) ||
+            newName == kNoEffectString) {
         bool okay = false;
         newName = QInputDialog::getText(nullptr,
                 tr("Rename effect chain preset"),
@@ -251,6 +259,8 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
                     tr("An effect chain preset named \"%1\" already exists.")
                             .arg(newName) +
                     QStringLiteral("\n");
+        } else if (newName == kNoEffectString) {
+            errorText = tr("Invalid name \"%1\"").arg(newName) + QStringLiteral("\n");
         } else {
             errorText = QString();
         }
@@ -371,7 +381,7 @@ void EffectChainPresetManager::savePreset(EffectChainPointer pChainSlot) {
 void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     QString name;
     QString errorText;
-    while (name.isEmpty() || m_effectChainPresets.contains(name)) {
+    while (name.isEmpty() || m_effectChainPresets.contains(name) || name == kNoEffectString) {
         bool okay = false;
         name = QInputDialog::getText(nullptr,
                 tr("Save preset for effect chain"),
@@ -391,6 +401,8 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
                     tr("An effect chain preset named \"%1\" already exists.")
                             .arg(name) +
                     QStringLiteral("\n");
+        } else if (name == kNoEffectString) {
+            errorText = tr("Invalid name \"%1\"").arg(name) + QStringLiteral("\n");
         } else {
             errorText = QString();
         }
@@ -444,6 +456,12 @@ void EffectChainPresetManager::importUserPresets() {
         EffectChainPresetPointer pEffectChainPreset = loadPresetFromFile(
                 savedPresetsPath + kFolderDelimiter + filePath);
         if (pEffectChainPreset && !pEffectChainPreset->isEmpty()) {
+            // Don't allow '---' because it is used internally for clearing effect
+            // chains and empty Quick Effect chains
+            if (pEffectChainPreset->name() == kNoEffectString) {
+                pEffectChainPreset->setName(pEffectChainPreset->name() +
+                        QLatin1String(" (") + tr("imported") + QLatin1String(")"));
+            }
             m_effectChainPresets.insert(
                     pEffectChainPreset->name(), pEffectChainPreset);
         }
