@@ -4,8 +4,8 @@ An audio time-stretching and pitch-shifting library.
 Copyright 2007-2022 Particular Programs Ltd.
 
 This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License as
-    published by the Free Software Foundation; either version 2 of the
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
 License, or (at your option) any later version.  See the file
 COPYING included with this distribution for more information.
 
@@ -35,7 +35,8 @@ static constexpr SINT kPrefilledFrames = 8192;
 } // anonymous namespace
 
 PitchShiftEffect::PitchShiftEffect()
-        : m_prevPitch(1.0) {
+        : m_prevPitch(1.0),
+          m_groupDelayFrames(kPrefilledFrames) {
 }
 
 PitchShiftGroupState::PitchShiftGroupState(
@@ -203,6 +204,8 @@ void PitchShiftEffect::processChannel(
             SampleUtil::fill(pOutput + offsetFrames * channelCount,
                     0.0f,
                     missingFrames * channelCount);
+
+            m_groupDelayFrames += missingFrames;
         }
 
         SINT outputFrames = math_min(toReadFrames, blockFrames);
