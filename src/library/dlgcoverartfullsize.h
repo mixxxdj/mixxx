@@ -18,7 +18,8 @@ class DlgCoverArtFullSize
   public:
     explicit DlgCoverArtFullSize(QWidget* parent,
             BaseTrackPlayer* pPlayer = nullptr,
-            WCoverArtMenu* pCoverMenu = nullptr);
+            WCoverArtMenu* pCoverMenu = nullptr,
+            UserSettingsPointer pConfig = nullptr);
     ~DlgCoverArtFullSize() override = default;
 
     void init(TrackPointer pTrack);

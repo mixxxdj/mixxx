@@ -452,6 +452,60 @@
     </widget>
    </item>
 
+    <item>
+    <widget class="QGroupBox" name="groupBox_coverArtAskUser">
+     <property name="title">
+      <string>Cover Art Update</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_coverArtAskUser">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkBox_create_copy_cover_art">
+        <property name="text">
+         <string>Make a copy of a cover art file when updated</string>
+        </property>
+        <property name="checked">
+       <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox_inform_cover_art_location">
+        <property name="text">
+         <string>Inform where the cover art will be located</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_1_coverArtAskUser">
+        <property name="text">
+         <string>Cover Art of a track is updated, this will make a copy of it automatically when it is turned on.</string>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_2_coverArtAskUser">
+        <property name="text">
+         <string>You will be warned if a cover art exists with the same name.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_3_coverArtAskUser">
+        <property name="text">
+         <string>When library is rescanned cover art will be updated automatically.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
    <item>
     <widget class="QGroupBox" name="groupBox_settingsDir">
      <property name="title">

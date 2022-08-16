@@ -2,10 +2,11 @@
 
 #include <QAction>
 #include <QMenu>
-#include <QWidget>
 #include <QPixmap>
+#include <QWidget>
 
 #include "library/coverart.h"
+#include "preferences/usersettings.h"
 
 // This class implements a context-menu with all CoverArt user actions. Callers
 // must call setCoverArt before calling exec or popup. This class does
@@ -15,7 +16,7 @@
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
-    explicit WCoverArtMenu(QWidget *parent = nullptr);
+    explicit WCoverArtMenu(QWidget* parent = nullptr, UserSettingsPointer pConfig = nullptr);
     ~WCoverArtMenu() override;
 
     void setCoverArt(const CoverInfo& coverInfo);
@@ -30,6 +31,8 @@ class WCoverArtMenu : public QMenu {
 
   private:
     void createActions();
+
+    UserSettingsPointer m_pConfig;
 
     QAction* m_pChange;
     QAction* m_pReload;

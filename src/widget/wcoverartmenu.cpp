@@ -5,11 +5,13 @@
 #include <QFileInfo>
 
 #include "library/coverartutils.h"
+#include "library/library_prefs.h"
 #include "moc_wcoverartmenu.cpp"
 #include "util/fileaccess.h"
 
-WCoverArtMenu::WCoverArtMenu(QWidget *parent)
-        : QMenu(parent) {
+WCoverArtMenu::WCoverArtMenu(QWidget* parent, UserSettingsPointer pConfig)
+        : QMenu(parent),
+          m_pConfig(pConfig) {
     createActions();
 }
 
@@ -82,22 +84,57 @@ void WCoverArtMenu::slotChange() {
     coverInfo.coverLocation = selectedCoverPath;
     coverInfo.setImage(image);
 
-    QMessageBox::StandardButton saveButton = QMessageBox::question(nullptr,
-            tr("Save the Cover Art in Track Location"),
-            tr("Do you want to copy the cover art to the same path where the track located?"),
-            QMessageBox::Yes | QMessageBox::No,
-            QMessageBox::No);
+    if (m_pConfig->getValue<bool>(mixxx::library::prefs::kCreateCopyOfTheCoverArtConfigKey)) {
+        QString savedCoverArtLocation = fileInfo.absoluteDir().path() + "/" +
+                fileInfo.completeBaseName() + ".jpg";
+        if (QFile::exists(savedCoverArtLocation)) {
+            QMessageBox saveBox(
+                    QMessageBox::Question,
+                    tr("Overwrite Existing Cover Art?"),
+                    tr("The track already has a related Cover Art in same the path\n"
+                       "Do you want to overwrite it?\n"
+                       "Cover art located at: %1")
+                            .arg(fileInfo.absoluteDir().path()));
 
-    if (saveButton == QMessageBox::Yes) {
-        qDebug() << "The cover art was copied where the track located.";
+            saveBox.setDefaultButton(QMessageBox::Yes);
+            saveBox.addButton(tr("&Overwrite"), QMessageBox::AcceptRole);
+            saveBox.addButton(tr("&Update without Overwrite"), QMessageBox::ApplyRole);
+            saveBox.addButton(tr("&Discard"), QMessageBox::DestructiveRole);
+
+            switch (saveBox.exec()) {
+            case QMessageBox::DestructiveRole:
+                qDebug() << "Cover art is not updated";
+                return;
+
+            case QMessageBox::ApplyRole:
+                qDebug() << "Cover art is updated but didn't overwrite the existing cover art";
+                qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
+                emit coverInfoSelected(coverInfo);
+                return;
+
+            case QMessageBox::AcceptRole:
+                QFile::remove(savedCoverArtLocation);
+                qDebug() << "Updated and overwritten";
+                break;
+            default:
+                break;
+            }
+        }
+
+        else {
+            if (m_pConfig->getValue<bool>(mixxx::library::prefs::
+                                kInformCoverArtLocationConfigKey)) {
+                QMessageBox::information(nullptr,
+                        tr("Cover Art Location"),
+                        tr("Cover Art saved at \n%1").arg(fileInfo.absoluteDir().path()));
+            }
+        }
 
         QByteArray coverArtByteArray;
         QBuffer bufferCoverArt(&coverArtByteArray);
         bufferCoverArt.open(QIODevice::WriteOnly);
         image.save(&bufferCoverArt, "JPG");
-
-        QFile coverArtFile(fileInfo.absoluteDir().path() + "/" +
-                fileInfo.completeBaseName() + ".jpg");
+        QFile coverArtFile(savedCoverArtLocation);
         coverArtFile.open(QIODevice::WriteOnly);
         coverArtFile.write(coverArtByteArray);
         bufferCoverArt.close();

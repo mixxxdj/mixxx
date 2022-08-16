@@ -136,7 +136,7 @@ void WTrackMenu::createMenus() {
         m_pMetadataUpdateExternalCollectionsMenu = new QMenu(m_pMetadataMenu);
         m_pMetadataUpdateExternalCollectionsMenu->setTitle(tr("Update external collections"));
 
-        m_pCoverMenu = new WCoverArtMenu(m_pMetadataMenu);
+        m_pCoverMenu = new WCoverArtMenu(m_pMetadataMenu, m_pConfig);
         m_pCoverMenu->setTitle(tr("Cover Art"));
         connect(m_pCoverMenu, &WCoverArtMenu::coverInfoSelected, this, &WTrackMenu::slotCoverInfoSelected);
         connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WTrackMenu::slotReloadCoverArt);
