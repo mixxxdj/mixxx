@@ -573,6 +573,10 @@ class LaunchpadImporter:
                 ):
                     continue
 
+                self.logger.info(
+                    f"checking if issue #{gh_issue_number} requires fixup"
+                )
+
                 issue = self.handle_ratelimit(
                     lambda: self.repo.get_issue(gh_issue_number)
                 )
