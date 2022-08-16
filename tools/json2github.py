@@ -401,6 +401,12 @@ class LaunchpadImporter:
 
     def handle_ratelimit(self, func):
         abuse_timeout = 30
+
+        def sleep_exp_backoff():
+            nonlocal abuse_timeout
+            time.sleep(abuse_timeout)
+            abuse_timeout *= EXP_BACKUP_EXPONENT
+
         while True:
             try:
                 return func()
@@ -429,8 +435,7 @@ class LaunchpadImporter:
                         "Triggered abuse detection, sleeping %d seconds...",
                         abuse_timeout,
                     )
-                    time.sleep(abuse_timeout)
-                    abuse_timeout *= EXP_BACKUP_EXPONENT
+                    sleep_exp_backoff()
                 elif e.status == 403 and "secondary rate limit" in e.data.get(
                     "message", ""
                 ):
@@ -440,16 +445,14 @@ class LaunchpadImporter:
                         "sleeping %d seconds...",
                         abuse_timeout,
                     )
-                    time.sleep(abuse_timeout)
-                    abuse_timeout *= EXP_BACKUP_EXPONENT
+                    sleep_exp_backoff()
                 elif e.status in range(500, 600):
                     self.logger.warning(
                         f"Internal server Error, sleeping {abuse_timeout} "
                         f"seconds and retrying"
                     )
                     self.logger.warning(e)
-                    time.sleep(abuse_timeout)
-                    abuse_timeout *= EXP_BACKUP_EXPONENT
+                    sleep_exp_backoff()
                 else:
                     raise
             else:
