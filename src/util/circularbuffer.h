@@ -34,6 +34,26 @@ class CircularBuffer {
         return m_iReadPos == m_iWritePos;
     }
 
+    unsigned int getReadSpace() const {
+        if (m_iWritePos > m_iReadPos) {
+            return m_iWritePos - m_iReadPos;
+        } else if (m_iWritePos < m_iReadPos) {
+            return (m_iLength - m_iReadPos) + m_iWritePos;
+        }
+
+        return 0;
+    }
+
+    unsigned int getWriteSpace() const {
+        unsigned int space = (m_iReadPos + m_iLength - m_iWritePos - 1);
+
+        if (space >= m_iLength) {
+            space -= m_iLength;
+        }
+
+        return space;
+    }
+
     inline void clear() {
         m_iReadPos = 0;
         m_iWritePos = 0;
