@@ -349,9 +349,10 @@ void EffectChain::slotControlLoadedChainPresetRequest(double value) {
     loadChainPreset(presetAtIndex(index));
 }
 
-void EffectChain::setControlLoadedPresetIndex(uint index) {
-    // add 1 to make the ControlObject 1-indexed like other ControlObjects
-    m_pControlLoadedChainPreset->setAndConfirm(index + 1);
+void EffectChain::setControlLoadedPresetIndex(std::optional<uint> index) {
+    // add 1 to make the ControlObject 1-indexed like other ControlObjects.
+    // if the effect chain is cleared (no valid index), the CO is set 0;
+    m_pControlLoadedChainPreset->setAndConfirm(index ? *index + 1 : 0);
 }
 
 void EffectChain::slotControlNextChainPreset(double value) {

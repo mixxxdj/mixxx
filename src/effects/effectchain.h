@@ -13,6 +13,7 @@
 #include "engine/channelhandle.h"
 #include "util/class.h"
 #include "util/memory.h"
+#include "util/optional.h"
 
 class ControlPushButton;
 class ControlEncoder;
@@ -142,7 +143,7 @@ class EffectChain : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlNextChainPreset;
     std::unique_ptr<ControlPushButton> m_pControlPrevChainPreset;
 
-    void setControlLoadedPresetIndex(uint index);
+    void setControlLoadedPresetIndex(std::optional<uint> index);
 
     // These COs do not affect how the effects are processed;
     // they are defined here for skins and controller mappings to communicate
