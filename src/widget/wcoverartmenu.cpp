@@ -90,11 +90,11 @@ void WCoverArtMenu::slotChange() {
         if (QFile::exists(savedCoverArtLocation)) {
             QMessageBox saveBox(
                     QMessageBox::Question,
-                    tr("Overwrite Existing Cover Art?"),
-                    tr("The track already has a related Cover Art in same the path\n"
+                    tr("The File Already Exists"),
+                    tr("The track already has a cover art exists in the path\n"
                        "Do you want to overwrite it?\n"
                        "Cover art located at: %1")
-                            .arg(fileInfo.absoluteDir().path()));
+                            .arg(savedCoverArtLocation));
 
             saveBox.setDefaultButton(QMessageBox::Yes);
             saveBox.addButton(tr("&Overwrite"), QMessageBox::AcceptRole);
@@ -126,7 +126,7 @@ void WCoverArtMenu::slotChange() {
                                 kInformCoverArtLocationConfigKey)) {
                 QMessageBox::information(nullptr,
                         tr("Cover Art Location"),
-                        tr("Cover Art saved at \n%1").arg(fileInfo.absoluteDir().path()));
+                        tr("Cover Art saved as %1").arg(savedCoverArtLocation));
             }
         }
 
