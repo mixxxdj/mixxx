@@ -696,9 +696,20 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         QDomElement presetNameElement = quickEffectNodeList.at(i).toElement();
         if (!presetNameElement.isNull()) {
             QString deckGroup = presetNameElement.attribute(QStringLiteral("group"));
-            auto pPreset = m_effectChainPresets.value(presetNameElement.text());
-            if (pPreset != nullptr) {
-                quickEffectPresets.insert(deckGroup, pPreset);
+            QString presetName = presetNameElement.text();
+            if (presetName == kNoEffectString) {
+                // kNoEffectString is not allowed as preset name (import,
+                // export, save as new), it can only be set by selecting
+                // kNoEffectString in the Quick Effect slot preset selector
+                // (skin & EQ preferences).
+                // Thus, it's safe to use kNoEffectString to explicitly load
+                // an empty preset.
+                quickEffectPresets.insert(deckGroup, nullptr);
+            } else { // any name incl. empty string
+                auto pPreset = m_effectChainPresets.value(presetName);
+                if (pPreset != nullptr) {
+                    quickEffectPresets.insert(deckGroup, pPreset);
+                }
             }
         }
     }

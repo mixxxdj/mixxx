@@ -297,23 +297,21 @@ void DlgPrefEQ::populateDeckQuickEffectBoxList(
     int deck = 0;
     for (QComboBox* box : boxList) {
         box->clear();
-        int currentIndex = -1; // Nothing selected
+
+        // Add empty item at the top: no effect
+        box->addItem(kNoEffectString);
+        // Note: now there's an index offset (items vs. actual presets).
+        // Compensate with a nullptr in slotQuickEffectChangedOnDeck().
 
         QString deckGroupName = PlayerManager::groupForDeck(deck);
         QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
         EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
-
-        // Add empty item at the top: no effect
-        box->addItem(kNoEffectString);
-        int i = 1;
         for (const auto& pChainPreset : presetList) {
             box->addItem(pChainPreset->name());
-            if (pChain->presetName() == pChainPreset->name()) {
-                currentIndex = i;
-            }
-            ++i;
         }
-        box->setCurrentIndex(currentIndex);
+
+        // Nothing selected (-1) if preset name was not found
+        box->setCurrentIndex(box->findText(pChain->presetName()));
         ++deck;
     }
 }
@@ -490,10 +488,15 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
     QString deckGroupName = PlayerManager::groupForDeck(deckNumber);
     QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
     EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
-    QList<EffectChainPresetPointer> presetList =
-            m_pChainPresetManager->getQuickEffectPresetsSorted();
-    if (pChain && effectIndex > 0 && effectIndex <= presetList.size()) {
-        pChain->loadChainPreset(presetList[effectIndex - 1]);
+    QList<EffectChainPresetPointer> presetList;
+    // add nullptr for empty kNoEffectString item so combobox effectIndex
+    // matches index in presetList
+    presetList.append(nullptr);
+    // add available Quick Effect chains
+    presetList.append(m_pChainPresetManager->getQuickEffectPresetsSorted());
+
+    if (pChain && effectIndex > -1 && effectIndex <= presetList.size()) {
+        pChain->loadChainPreset(presetList[effectIndex]);
     }
 }
 

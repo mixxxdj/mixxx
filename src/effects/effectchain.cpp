@@ -202,7 +202,24 @@ const QString& EffectChain::presetName() const {
 
 void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     slotControlClear(1);
-    VERIFY_OR_DEBUG_ASSERT(pPreset) {
+    if (!pPreset) {
+        // This may happen when a chain is cleared by selecting the empty '---'
+        // item in WEffectChainPresetSelector or in deck Quick Effect selectors
+        // in DlgPrefEq.
+        // Quick Effect chains and other chains need to be treated differently:
+        // * storing Quick Effect chain presets requires a preset name, otherwise
+        //  (empty name) will cause the default preset being loaded on next start.
+        //  Thus, we name the empty preset kNoEffectString so that the respective
+        //  item is selected in the chain preset selector and also no chain will be
+        //  loaded on next start.
+        // * storing states of regular [EffectRack1] chains doesn't require a preset
+        //  name, also they can be edited, so kNoEffectString would be incorrect
+        //  after loading an effect. Thus, if this is not a Quick Effetc chain, we
+        //  just clear the preset name which in turn clears the chain's preset
+        //  selector and chain name label.
+        m_presetName = m_isQuickEffectChain ? kNoEffectString : QString();
+        emit chainPresetChanged(m_presetName);
+        setControlLoadedPresetIndex(std::nullopt);
         return;
     }
 

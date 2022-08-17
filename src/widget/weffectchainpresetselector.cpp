@@ -63,6 +63,10 @@ void WEffectChainPresetSelector::populate() {
 
     QFontMetrics metrics(font());
 
+    // This is used to clear the effect chain
+    addItem(kNoEffectString, kNoEffectString);
+    setItemData(0, QVariant(tr("No effect chain loaded.")), Qt::ToolTipRole);
+
     QList<EffectChainPresetPointer> presetList;
     if (m_bQuickEffectChain) {
         presetList = m_pEffectsManager->getChainPresetManager()->getQuickEffectPresetsSorted();
@@ -76,7 +80,7 @@ void WEffectChainPresetSelector::populate() {
                 Qt::ElideMiddle,
                 view()->width() - 2);
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
-        setItemData(i, pChainPreset->name(), Qt::ToolTipRole);
+        setItemData(i + 1, pChainPreset->name(), Qt::ToolTipRole);
     }
 
     slotChainPresetChanged(m_pChain->presetName());
@@ -84,6 +88,8 @@ void WEffectChainPresetSelector::populate() {
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
+    // If kNoEffectString was selected the chain will be cleared.
+    // See EffectChain::loadChainPreset for details.
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
     setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
@@ -95,8 +101,12 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
 }
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
-    setCurrentIndex(findData(name));
-    setBaseTooltip(itemData(currentIndex(), Qt::ToolTipRole).toString());
+    // This is called by signal EffectChain::chainPresetChanged(name) emitted by
+    // EffectChain::loadChainPreset. See that slot for details about the preset
+    // names being emitted for different chain types.
+    int newIndex = findData(name);
+    setCurrentIndex(newIndex);
+    setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
 }
 
 bool WEffectChainPresetSelector::event(QEvent* pEvent) {
