@@ -82,19 +82,8 @@ class RingDelayBuffer final {
   public:
     RingDelayBuffer(SINT bufferSize);
 
-    bool isFull() const {
-        return getWriteAvailable() == 0;
-    }
-
-    bool isEmpty() const {
-        return getReadAvailable() == 0;
-    }
-
     void clear() {
-        m_fullFlag = false;
         m_firstInputBuffer = true;
-
-        m_readPos = 0;
         m_writePos = 0;
 
         m_buffer.fill(0);
@@ -104,42 +93,16 @@ class RingDelayBuffer final {
         return m_buffer.size();
     }
 
-    SINT getReadAvailable() const {
-        if (m_writePos > m_readPos) {
-            return (m_writePos - m_readPos);
-        } else if (m_writePos < m_readPos) {
-            return (m_buffer.size() - m_readPos) + m_writePos;
-        } else {
-            // The write position equals the read position (m_writePos == m_readPos).
-            // The buffer is full or empty (m_fullFlag).
-            if (m_fullFlag) {
-                return m_buffer.size();
-            }
-
-            return 0;
-        }
-    }
-
-    SINT getWriteAvailable() const {
-        return m_buffer.size() - getReadAvailable();
-    }
-
-    SINT read(CSAMPLE* pBuffer, const SINT itemsToRead);
+    SINT read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT delayItems);
     SINT write(const CSAMPLE* pBuffer, const SINT itemsToWrite);
     SINT moveReadPositionBy(const SINT jumpSize);
 
   private:
-    // The two special cases can occur if the read position
-    // equals the write position: the buffer is full or empty.
-    // The full flag serves to distinguish between the mentioned two cases.
-    bool m_fullFlag;
     // This flag ensures the "fading in" for the first input buffer
     // into the clear ring delay buffer. It is done to avoid
     // a crackling sound when the input samples are read after reading
     // the previous zero samples.
     bool m_firstInputBuffer;
-    // Position of next readable element.
-    SINT m_readPos;
     // Position of next writable element.
     SINT m_writePos;
     // Ring delay buffer.
