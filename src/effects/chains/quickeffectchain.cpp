@@ -11,6 +11,7 @@ QuickEffectChain::QuickEffectChain(const QString& group,
                   SignalProcessingStage::Postfader,
                   pEffectsManager,
                   pEffectsMessenger) {
+    m_isQuickEffectChain = true;
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         addEffectSlot(formatEffectSlotGroup(group, i));
         m_effectSlots.at(i)->setEnabled(true);
