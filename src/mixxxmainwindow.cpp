@@ -470,8 +470,8 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             m_pCoreServices->getSoundManager()->clearAndQueryDevices();
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
-            // Open preferences, sound hardware page is selected (default on first call)
-            m_pPrefDlg->exec();
+            m_pPrefDlg->show();
+            m_pPrefDlg->showSoundHardwarePage();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
                 return QDialog::Accepted;
             }
