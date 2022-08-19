@@ -316,13 +316,13 @@ void SoundManager::queryDevicesMixxx() {
     m_devices.append(currentDevice);
 }
 
-SoundDeviceError SoundManager::setupDevices() {
+SoundDeviceStatus SoundManager::setupDevices() {
     // NOTE(rryan): Big warning: This function is concurrent with calls to
     // pushBuffer and onDeviceOutputCallback until closeDevices() below.
 
     qDebug() << "SoundManager::setupDevices()";
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
-    SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
+    SoundDeviceStatus status = SOUNDDEVICE_OK;
     // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
     // SoundDevice that is the clock reference, then it is safe to leave it as
     // it was. Clearing it causes the engine to stop being processed which
@@ -371,8 +371,8 @@ SoundDeviceError SoundManager::setupDevices() {
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
-            err = pDevice->addInput(aib);
-            if (err != SOUNDDEVICE_ERROR_OK) {
+            status = pDevice->addInput(aib);
+            if (status != SOUNDDEVICE_OK) {
                 SampleUtil::free(aib.getBuffer());
                 goto closeAndError;
             }
@@ -414,8 +414,8 @@ SoundDeviceError SoundManager::setupDevices() {
             }
 
             AudioOutputBuffer aob(out, pBuffer);
-            err = pDevice->addOutput(aob);
-            if (err != SOUNDDEVICE_ERROR_OK) {
+            status = pDevice->addOutput(aob);
+            if (status != SOUNDDEVICE_OK) {
                 goto closeAndError;
             }
 
@@ -464,8 +464,8 @@ SoundDeviceError SoundManager::setupDevices() {
         if (CmdlineArgs::Instance().getSafeMode() && syncBuffers == 0) {
             syncBuffers = 2;
         }
-        err = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
-        if (err != SOUNDDEVICE_ERROR_OK) {
+        status = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
+        if (status != SOUNDDEVICE_OK) {
             goto closeAndError;
         }
         devicesNotFound.remove(pDevice->getDeviceId());
@@ -497,7 +497,7 @@ SoundDeviceError SoundManager::setupDevices() {
     // returns OK if we were able to open all the devices the user wanted
     if (devicesNotFound.isEmpty()) {
         emit devicesSetup();
-        return SOUNDDEVICE_ERROR_OK;
+        return SOUNDDEVICE_OK;
     }
     m_pErrorDevice = SoundDevicePointer(
             new SoundDeviceNotFound(devicesNotFound.constBegin()->name));
@@ -506,7 +506,7 @@ SoundDeviceError SoundManager::setupDevices() {
 closeAndError:
     const bool sleepAfterClosing = false;
     closeDevices(sleepAfterClosing);
-    return err;
+    return status;
 }
 
 SoundDevicePointer SoundManager::getErrorDevice() const {
@@ -521,7 +521,7 @@ QString SoundManager::getErrorDeviceName() const {
     return tr("a device");
 }
 
-QString SoundManager::getLastErrorMessage(SoundDeviceError err) const {
+QString SoundManager::getLastErrorMessage(SoundDeviceStatus status) const {
     QString error;
     QString deviceName(tr("a device"));
     QString detailedError(tr("An unknown error occurred"));
@@ -530,7 +530,7 @@ QString SoundManager::getLastErrorMessage(SoundDeviceError err) const {
         deviceName = pDevice->getDisplayName();
         detailedError = pDevice->getError();
     }
-    switch (err) {
+    switch (status) {
     case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
         error = tr("Two outputs cannot share channels on \"%1\"").arg(deviceName);
         break;
@@ -545,8 +545,8 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-SoundDeviceError SoundManager::setConfig(const SoundManagerConfig& config) {
-    SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
+SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
+    SoundDeviceStatus status = SOUNDDEVICE_OK;
     m_config = config;
     checkConfig();
 
@@ -562,11 +562,11 @@ SoundDeviceError SoundManager::setConfig(const SoundManagerConfig& config) {
     m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),
                    ConfigValue(static_cast<int>(m_config.getSampleRate())));
 
-    err = setupDevices();
-    if (err == SOUNDDEVICE_ERROR_OK) {
+    status = setupDevices();
+    if (status == SOUNDDEVICE_OK) {
         m_config.writeToDisk();
     }
-    return err;
+    return status;
 }
 
 void SoundManager::checkConfig() {

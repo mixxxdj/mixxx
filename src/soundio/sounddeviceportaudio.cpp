@@ -134,7 +134,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
 SoundDevicePortAudio::~SoundDevicePortAudio() {
 }
 
-SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
+SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
     qDebug() << "SoundDevicePortAudio::open()" << m_deviceId;
     PaError err;
 
@@ -142,7 +142,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         m_lastError = QStringLiteral(
                 "No inputs or outputs in SDPA::open() "
                 "(THIS IS A BUG, this should be filtered by SM::setupDevices)");
-        return SOUNDDEVICE_ERROR_ERR;
+        return SOUNDDEVICE_ERROR;
     }
 
     memset(&m_outputParams, 0, sizeof(m_outputParams));
@@ -325,7 +325,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     if (err != paNoError) {
         qWarning() << "Error opening stream:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
-        return SOUNDDEVICE_ERROR_ERR;
+        return SOUNDDEVICE_ERROR;
     } else {
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
@@ -347,7 +347,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             qWarning() << "PortAudio: Close stream error:"
                        << Pa_GetErrorText(err) << m_deviceId;
         }
-        return SOUNDDEVICE_ERROR_ERR;
+        return SOUNDDEVICE_ERROR;
     } else {
         qDebug() << "PortAudio: Started stream successfully";
     }
@@ -369,14 +369,14 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         m_clkRefTimer.start();
     }
     m_pStream = pStream;
-    return SOUNDDEVICE_ERROR_OK;
+    return SOUNDDEVICE_OK;
 }
 
 bool SoundDevicePortAudio::isOpen() const {
     return m_pStream != nullptr;
 }
 
-SoundDeviceError SoundDevicePortAudio::close() {
+SoundDeviceStatus SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
     PaStream* pStream = m_pStream;
     m_pStream = nullptr;
@@ -386,13 +386,13 @@ SoundDeviceError SoundDevicePortAudio::close() {
         // 1 means the stream is stopped. 0 means active.
         if (err == 1) {
             //qDebug() << "PortAudio: Stream already stopped, but no error.";
-            return SOUNDDEVICE_ERROR_OK;
+            return SOUNDDEVICE_OK;
         }
         // Real PaErrors are always negative.
         if (err < 0) {
             qWarning() << "PortAudio: Stream already stopped:"
                        << Pa_GetErrorText(err) << m_deviceId;
-            return SOUNDDEVICE_ERROR_ERR;
+            return SOUNDDEVICE_ERROR;
         }
 
         //Stop the stream.
@@ -408,7 +408,7 @@ SoundDeviceError SoundDevicePortAudio::close() {
         if (err != paNoError) {
             qWarning() << "PortAudio: Stop stream error:"
                        << Pa_GetErrorText(err) << m_deviceId;
-            return SOUNDDEVICE_ERROR_ERR;
+            return SOUNDDEVICE_ERROR;
         }
 
         // Close stream
@@ -416,7 +416,7 @@ SoundDeviceError SoundDevicePortAudio::close() {
         if (err != paNoError) {
             qWarning() << "PortAudio: Close stream error:"
                        << Pa_GetErrorText(err) << m_deviceId;
-            return SOUNDDEVICE_ERROR_ERR;
+            return SOUNDDEVICE_ERROR;
         }
 
         if (m_outputFifo) {
@@ -431,7 +431,7 @@ SoundDeviceError SoundDevicePortAudio::close() {
     m_inputFifo = nullptr;
     m_bSetThreadPriority = false;
 
-    return SOUNDDEVICE_ERROR_OK;
+    return SOUNDDEVICE_OK;
 }
 
 QString SoundDevicePortAudio::getError() const {

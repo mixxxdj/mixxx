@@ -30,9 +30,9 @@ class SoundDeviceNetwork : public SoundDevice {
                        QSharedPointer<EngineNetworkStream> pNetworkStream);
     ~SoundDeviceNetwork() override;
 
-    SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
+    SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override;
     bool isOpen() const override;
-    SoundDeviceError close() override;
+    SoundDeviceStatus close() override;
     void readProcess() override;
     void writeProcess() override;
     QString getError() const override;

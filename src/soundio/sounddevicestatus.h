@@ -1,9 +1,9 @@
 #pragma once
 
 // Used for returning errors from sounddevice functions.
-enum SoundDeviceError {
-    SOUNDDEVICE_ERROR_ERR = -1,
-    SOUNDDEVICE_ERROR_OK = 0,
+enum SoundDeviceStatus {
+    SOUNDDEVICE_ERROR = -1,
+    SOUNDDEVICE_OK = 0,
     SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL,
     SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL,
     SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL,

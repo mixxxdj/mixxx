@@ -20,14 +20,14 @@ class SoundDeviceNotFound : public SoundDevice {
         m_strDisplayName = name;
     }
 
-    SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override {
+    SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override {
         Q_UNUSED(isClkRefDevice);
         Q_UNUSED(syncBuffers);
-        return SOUNDDEVICE_ERROR_ERR;
+        return SOUNDDEVICE_ERROR;
     };
     bool isOpen() const  override { return false; };
-    SoundDeviceError close() override {
-        return SOUNDDEVICE_ERROR_ERR;
+    SoundDeviceStatus close() override {
+        return SOUNDDEVICE_ERROR;
     };
     void readProcess() override { };
     void writeProcess() override { };

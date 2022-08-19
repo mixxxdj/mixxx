@@ -46,8 +46,8 @@ QmlApplication::QmlApplication(
           m_pAppEngine(nullptr),
           m_fileWatcher({m_mainFilePath}) {
     m_pCoreServices->initialize(app);
-    SoundDeviceError result = m_pCoreServices->getSoundManager()->setupDevices();
-    if (result != SOUNDDEVICE_ERROR_OK) {
+    SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
+    if (result != SOUNDDEVICE_OK) {
         qCritical() << "Error setting up sound devices" << result;
         exit(result);
     }
