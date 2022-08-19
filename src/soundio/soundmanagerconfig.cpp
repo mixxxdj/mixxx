@@ -61,6 +61,8 @@ void SoundManagerConfig::setFilePath(const QFileInfo& configFile) {
 /// path
 /// @returns false if the file can't be read or is invalid XML, true otherwise
 bool SoundManagerConfig::readFromDisk() {
+    qDebug() << "   ***";
+    qDebug() << "   *** soundconfig::readFromDisk";
     QFile file(m_configFile.absoluteFilePath());
     QDomDocument doc;
     QDomElement rootElement;
@@ -103,6 +105,7 @@ bool SoundManagerConfig::readFromDisk() {
         if (deviceIdFromFile.name.isEmpty()) {
             continue;
         }
+        qDebug() << "   *** dev:" << deviceIdFromFile.name;
 
         // TODO: remove this ugly hack after Mixxx 2.2.3 is released
         QRegularExpressionMatch match = kLegacyFormatRegex.match(deviceIdFromFile.name);
@@ -116,9 +119,11 @@ bool SoundManagerConfig::readFromDisk() {
         }
 
         int devicesMatchingByName = 0;
+        qDebug() << "       trying to find dev amongst available devices";
         for (const auto& soundDevice : soundDevices) {
             SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
             if (hardwareDeviceId.name == deviceIdFromFile.name) {
+                qDebug() << "       found" << deviceIdFromFile.name;
                 devicesMatchingByName++;
             }
         }
@@ -127,6 +132,9 @@ bool SoundManagerConfig::readFromDisk() {
         QDomNodeList inElements(devElement.elementsByTagName(xmlElementInput));
 
         if (devicesMatchingByName == 0) {
+            qDebug() << "       ! didn't find" << deviceIdFromFile.name;
+            // TODO(ronso0) Store dvice name and somehow submit to SoundManager
+            // when it's trying to setupDevices()
             continue;
         } else if (devicesMatchingByName == 1) {
             // There is only one device with this name, so it is unambiguous

@@ -237,7 +237,7 @@ SoundDeviceStatus SoundManager::setSoundProfile(const QString& profileName) {
     qInfo() << "     +";
     qInfo() << "     + SM::setSoundProfile:" << profileName;
 
-    SoundDeviceStatus status = SOUNDDEVICE_ERROR;
+    SoundDeviceStatus status = SoundDeviceStatus::Error;
     if (profileName.isEmpty()) {
         qInfo() << "     + err: profile name empty";
         qInfo() << "     + ";
@@ -265,7 +265,7 @@ SoundDeviceStatus SoundManager::setSoundProfile(const QString& profileName) {
 
     status = setConfig(newConfig);
     // => m_soundConfig = newConfig
-    if (status == SOUNDDEVICE_OK) {
+    if (status == SoundDeviceStatus::Ok) {
         qInfo() << "     + success";
         qInfo() << "     + save" << profileName << "to config";
         //m_soundConfig = newConfig; // is set in setConfig()
@@ -502,7 +502,8 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // NOTE(rryan): Big warning: This function is concurrent with calls to
     // pushBuffer and onDeviceOutputCallback until closeDevices() below.
 
-    qDebug() << "SoundManager::setupDevices()";
+    qDebug() << "   ~~ ";
+    qDebug() << "   ~~ SoundManager::setupDevices()";
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
@@ -597,7 +598,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
             AudioOutputBuffer aob(out, pBuffer);
             status = pDevice->addOutput(aob);
+            qDebug() << "   ~~ out dev" << pDevice->getDisplayName() << " > add output";
+            qDebug() << "      status:" << static_cast<int>(status);
             if (status != SoundDeviceStatus::Ok) {
+                qDebug() << "      > closeAndError";
                 goto closeAndError;
             }
 

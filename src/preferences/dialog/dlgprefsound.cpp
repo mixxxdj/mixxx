@@ -642,11 +642,11 @@ void DlgPrefSound::soundProfileSelected(int index) {
     }
 
     // select and read new profile
-    SoundDeviceStatus status = SOUNDDEVICE_OK;
+    SoundDeviceStatus status = SoundDeviceStatus::Ok;
     {
         ScopedWaitCursor cursor;
         status = m_pSoundManager->setSoundProfile(newProfile);
-        if (status == SOUNDDEVICE_OK) {
+        if (status == SoundDeviceStatus::Ok) {
             // clear device comboboxes
             m_outputDevices.clear();
             m_inputDevices.clear();
