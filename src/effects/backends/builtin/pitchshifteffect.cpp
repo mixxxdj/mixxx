@@ -2,6 +2,10 @@
 
 #include "util/sample.h"
 
+namespace {
+static constexpr SINT kWideRangeOctaves = 2;
+} // anonymous namespace
+
 PitchShiftGroupState::PitchShiftGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters) {
@@ -61,12 +65,23 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pitch->setNeutralPointOnScale(0.0);
     pitch->setRange(-1.0, 0.0, 1.0);
 
+    EffectManifestParameterPointer wideRange = pManifest->addParameter();
+    wideRange->setId("wideRange");
+    wideRange->setName(QObject::tr("Wide Range"));
+    wideRange->setShortName(QObject::tr("Wide Range"));
+    wideRange->setDescription(QObject::tr(
+            "Double the pitch scale range."));
+    wideRange->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    wideRange->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    wideRange->setRange(0, 0, 1);
+
     return pManifest;
 }
 
 void PitchShiftEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pPitchParameter = parameters.value("pitch");
+    m_pWideRangeParameter = parameters.value("wideRange");
 }
 
 void PitchShiftEffect::processChannel(
@@ -79,15 +94,15 @@ void PitchShiftEffect::processChannel(
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
 
-    const double pitchParameter = m_pPitchParameter->value();
-
-    const double pitch = 1.0 + [=] {
-        if (pitchParameter < 0.0) {
-            return pitchParameter / 2.0;
+    const double pitchParameter = [=, this] {
+        if (m_pWideRangeParameter->toBool()) {
+            return m_pPitchParameter->value() * kWideRangeOctaves;
         } else {
-            return pitchParameter;
+            return m_pPitchParameter->value();
         }
     }();
+
+    const double pitch = std::pow(2.0, pitchParameter);
 
     pState->m_pRubberBand->setPitchScale(pitch);
 
