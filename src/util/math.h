@@ -79,3 +79,9 @@ inline const T db2ratio(const T a) {
     static_assert(std::is_floating_point_v<T>, "db2ratio works only for floating point type");
     return static_cast<T>(pow(10, a / 20));
 }
+
+template<typename T>
+inline const T sgn(const T a) {
+    static_assert(std::is_arithmetic_v<T>, "the value has to be an arithmetic type");
+    return (a > T(0)) - (a < T(0));
+}
