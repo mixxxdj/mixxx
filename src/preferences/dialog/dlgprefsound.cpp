@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QtDebug>
 
@@ -683,6 +684,46 @@ void DlgPrefSound::duplicateProfile() {
 }
 
 void DlgPrefSound::renameProfile() {
+    if (m_settingsModified) {
+        QMessageBox::information(this,
+                tr("Pending changes"),
+                tr("Please apply pending changes before renaming this "
+                   "profile."),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
+        return;
+    }
+
+    const QString oldName = profileComboBox->currentText();
+    QString newName;
+    QString errorText;
+    while (newName.isEmpty() || profileComboBox->findText(newName) != -1) {
+        bool okay = false;
+        newName = QInputDialog::getText(nullptr,
+                tr("Rename sound profile"),
+                errorText + "\n" + tr("New name for sound profile") +
+                        QStringLiteral(" \"") + oldName + QStringLiteral("\""),
+                QLineEdit::Normal,
+                oldName,
+                &okay)
+                          .trimmed();
+        if (!okay) {
+            return;
+        }
+
+        if (newName.isEmpty()) {
+            errorText = tr("Sound profile name must not be empty.") + QStringLiteral("\n");
+        } else if (profileComboBox->findText(newName) != -1) {
+            errorText =
+                    tr("A sound profile named \"%1\" already exists.")
+                            .arg(newName) +
+                    QStringLiteral("\n");
+        } else {
+            errorText = QString();
+        }
+    }
+
+    // soundmanager > newName
 }
 
 void DlgPrefSound::deleteProfile() {
