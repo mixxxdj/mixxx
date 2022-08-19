@@ -9,6 +9,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/math.h"
 #include "util/sample.h"
 #include "util/types.h"
 
@@ -52,6 +53,7 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
     }
 
     EngineEffectParameterPointer m_pPitchParameter;
+    EngineEffectParameterPointer m_pRangeModeParameter;
     EngineEffectParameterPointer m_pSemitonesModeParameter;
     EngineEffectParameterPointer m_pWideRangeParameter;
 
