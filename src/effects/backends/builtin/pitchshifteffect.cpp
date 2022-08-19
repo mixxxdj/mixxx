@@ -4,6 +4,7 @@
 
 namespace {
 static constexpr SINT kWideRangeOctaves = 2;
+static constexpr SINT kSemitones = 12;
 } // anonymous namespace
 
 PitchShiftGroupState::PitchShiftGroupState(
@@ -65,6 +66,17 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pitch->setNeutralPointOnScale(0.0);
     pitch->setRange(-1.0, 0.0, 1.0);
 
+    EffectManifestParameterPointer semitonesMode = pManifest->addParameter();
+    semitonesMode->setId("semitonesMode");
+    semitonesMode->setName(QObject::tr("Semitones"));
+    semitonesMode->setShortName(QObject::tr("Semitones"));
+    semitonesMode->setDescription(QObject::tr(
+            "Set the pitch scale to the semitones mode "
+            "instead of the contiguous mode (set as default)."));
+    semitonesMode->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    semitonesMode->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    semitonesMode->setRange(0, 1, 1);
+
     EffectManifestParameterPointer wideRange = pManifest->addParameter();
     wideRange->setId("wideRange");
     wideRange->setName(QObject::tr("Wide Range"));
@@ -81,6 +93,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
 void PitchShiftEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pPitchParameter = parameters.value("pitch");
+    m_pSemitonesModeParameter = parameters.value("semitonesMode");
     m_pWideRangeParameter = parameters.value("wideRange");
 }
 
@@ -94,13 +107,17 @@ void PitchShiftEffect::processChannel(
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
 
-    const double pitchParameter = [=, this] {
+    double pitchParameter = [=, this] {
         if (m_pWideRangeParameter->toBool()) {
             return m_pPitchParameter->value() * kWideRangeOctaves;
         } else {
             return m_pPitchParameter->value();
         }
     }();
+
+    if (m_pSemitonesModeParameter->toBool()) {
+        pitchParameter = roundToFraction(pitchParameter, kSemitones);
+    }
 
     const double pitch = std::pow(2.0, pitchParameter);
 
