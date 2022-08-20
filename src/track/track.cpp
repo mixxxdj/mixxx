@@ -1428,30 +1428,6 @@ void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
     }
 }
 
-bool Track::refreshCoverImageDigest(
-        const QImage& loadedImage) {
-    auto locked = lockMutex(&m_qMutex);
-    auto coverInfo = CoverInfo(
-            m_record.getCoverInfo(),
-            m_fileAccess.info().location());
-    if (!coverInfo.refreshImageDigest(
-                loadedImage,
-                m_fileAccess.token())) {
-        return false;
-    }
-    if (!compareAndSet(
-                m_record.ptrCoverInfo(),
-                static_cast<const CoverInfoRelative&>(coverInfo))) {
-        return false;
-    }
-    kLogger.info()
-            << "Refreshed cover image digest"
-            << m_fileAccess.info().location();
-    markDirtyAndUnlock(&locked);
-    emit coverArtUpdated();
-    return true;
-}
-
 CoverInfoRelative Track::getCoverInfo() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getCoverInfo();

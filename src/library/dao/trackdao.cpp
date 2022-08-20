@@ -1567,9 +1567,6 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         }
     }
 
-    // Validate and refresh cover image hash values if needed.
-    pTrack->refreshCoverImageDigest();
-
     // Listen to signals from Track objects and forward them to
     // receivers. TrackDAO works as a relay for selected track signals
     // that allows receivers to use permanent connections with
