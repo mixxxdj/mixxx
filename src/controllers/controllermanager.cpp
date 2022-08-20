@@ -415,6 +415,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         closeController(pController);
         // Unset the controller mapping for this controller
         m_pConfig->remove(key);
+        emit mappingApplied(false);
         return;
     }
 
@@ -432,8 +433,10 @@ void ControllerManager::slotApplyMapping(Controller* pController,
 
     if (bEnabled) {
         openController(pController);
+        emit mappingApplied(pController->isMappable());
     } else {
         closeController(pController);
+        emit mappingApplied(false);
     }
 }
 

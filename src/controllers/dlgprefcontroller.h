@@ -53,6 +53,7 @@ class DlgPrefController : public DlgPreferencePage {
     void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
+    void enableWizardAndIOTabs(bool enable);
 
     // Input mappings
     void addInputMapping();

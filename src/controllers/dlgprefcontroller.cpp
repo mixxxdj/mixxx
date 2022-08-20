@@ -97,6 +97,11 @@ DlgPrefController::DlgPrefController(
             &DlgPrefController::applyMapping,
             m_pControllerManager.get(),
             &ControllerManager::slotApplyMapping);
+    // Update GUI
+    connect(m_pControllerManager.get(),
+            &ControllerManager::mappingApplied,
+            this,
+            &DlgPrefController::enableWizardAndIOTabs);
 
     // Open script file links
     connect(m_ui.labelLoadedMappingScriptFileLinks,
@@ -471,10 +476,8 @@ void DlgPrefController::slotUpdate() {
 
     // If the controller is not mappable, disable the input and output mapping
     // sections and the learning wizard button.
-    bool isMappable = m_pController->isMappable();
-    m_ui.btnLearningWizard->setEnabled(isMappable);
-    m_ui.inputMappingsTab->setEnabled(isMappable);
-    m_ui.outputMappingsTab->setEnabled(isMappable);
+    enableWizardAndIOTabs(m_pController->isMappable() && m_pController->isOpen());
+
     // When slotUpdate() is run for the first time, this bool keeps slotPresetSelected()
     // from setting a false-postive 'dirty' flag when updating the fresh GUI.
     m_GuiInitialized = true;
@@ -535,6 +538,12 @@ void DlgPrefController::slotApply() {
 
 QUrl DlgPrefController::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
+}
+
+void DlgPrefController::enableWizardAndIOTabs(bool enable) {
+    m_ui.btnLearningWizard->setEnabled(enable);
+    m_ui.inputMappingsTab->setEnabled(enable);
+    m_ui.outputMappingsTab->setEnabled(enable);
 }
 
 QString DlgPrefController::mappingPathFromIndex(int index) const {
