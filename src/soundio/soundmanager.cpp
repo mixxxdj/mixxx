@@ -537,6 +537,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
     // load with all configured devices.
     // all found devices are removed below
+    // FIXME This is wrong: SoundManagerConfig::readFromDisk() already
+    // removes configured devices that are currently unavailable. Thus, the
+    // devicesNotFound.isEmpty() check below is kinda pointless and users will
+    // not notice missing devices unless there is is no output configured at all.
     QSet<SoundDeviceId> devicesNotFound = m_soundConfig.getDevices();
 
     // pair is isInput, isOutput

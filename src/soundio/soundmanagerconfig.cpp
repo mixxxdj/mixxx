@@ -185,6 +185,7 @@ bool SoundManagerConfig::readFromDisk() {
             }
         }
 
+        // add device outputs
         for (int j = 0; j < outElements.count(); ++j) {
             QDomElement outElement(outElements.at(j).toElement());
             if (outElement.isNull()) {
@@ -208,6 +209,7 @@ bool SoundManagerConfig::readFromDisk() {
 
             addOutput(deviceIdFromFile, out);
         }
+        // add device inputs
         for (int j = 0; j < inElements.count(); ++j) {
             QDomElement inElement(inElements.at(j).toElement());
             if (inElement.isNull()) {
