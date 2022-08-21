@@ -559,7 +559,7 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
         AUTODJACTIVETRACKS_TABLE);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     int iUnplayedTracks = 0;
@@ -643,7 +643,7 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     oQuery.bindValue (":active", iActiveTracks);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     if (oQuery.next()) {
@@ -674,7 +674,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromAutoDj(int percentActive) {
         " WHERE " AUTODJCRATESTABLE_AUTODJREFS " > 0" );
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     VERIFY_OR_DEBUG_ASSERT(oQuery.next()) {
@@ -714,7 +714,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromAutoDj(int percentActive) {
     oQuery.bindValue (":active", iActiveTracks);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     if (oQuery.next()) {
@@ -1179,7 +1179,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
     oQuery.bindValue(":id",iPlaylistId);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     int iTotalTracks = 0;
@@ -1243,7 +1243,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
     oQuery.bindValue(":offset", offset);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     if (oQuery.next()) {

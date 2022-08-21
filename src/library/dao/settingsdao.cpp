@@ -42,7 +42,7 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
         QVariant value = query.value(query.record().indexOf(kColumnValue));
         if (!value.isValid()) {
             kLogger.warning() << "Invalid value:" << value;
-            DEBUG_ASSERT(false);
+            DEBUG_ASSERT("!Invalid value");
         } else {
             return value.toString();
         }
@@ -73,7 +73,7 @@ bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
         kLogger.warning()
                 << "Failed to set" << name << "=" << value
                 << query.lastError();
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT(!"Failed query");
         return false;
     }
     return true;

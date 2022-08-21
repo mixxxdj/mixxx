@@ -63,7 +63,7 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
 
                 if (!ChromaticKey_IsValid(iKey)) {
                     qWarning() << "No valid key detected in analyzed window:" << iKey;
-                    DEBUG_ASSERT(false);
+                    DEBUG_ASSERT(!"iKey is invalid");
                     return false;
                 }
                 const auto key = static_cast<ChromaticKey>(iKey);

@@ -107,7 +107,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
             kLogger.warning()
                     << "Failed to remove obsolete child directory"
                     << oldDir;
-            DEBUG_ASSERT(false);
+            DEBUG_ASSERT(!"removeDirectory failed");
             continue;
         }
     }
