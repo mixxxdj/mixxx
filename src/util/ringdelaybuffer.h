@@ -98,6 +98,12 @@ class RingDelayBuffer final {
     SINT moveReadPositionBy(const SINT jumpSize);
 
   private:
+    void copy(const mixxx::SampleBuffer::ReadableSlice pSourceBuffer,
+            SINT sourcePos,
+            const mixxx::SampleBuffer::WritableSlice pDestBuffer,
+            SINT destPos,
+            const SINT numItems);
+
     // This flag ensures the "fading in" for the first input buffer
     // into the clear ring delay buffer. It is done to avoid
     // a crackling sound when the input samples are read after reading

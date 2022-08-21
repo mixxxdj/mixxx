@@ -45,7 +45,11 @@
 
 #include "ringdelaybuffer.h"
 
+#include "util/math.h"
 #include "util/sample.h"
+
+using ReadableSlice = mixxx::SampleBuffer::ReadableSlice;
+using WritableSlice = mixxx::SampleBuffer::WritableSlice;
 
 RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
         : m_firstInputBuffer(true),
@@ -53,6 +57,37 @@ RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
           m_buffer(bufferSize) {
     // Set the ring delay buffer items to 0.
     m_buffer.fill(0);
+}
+
+void RingDelayBuffer::copy(const ReadableSlice pSourceBuffer,
+        SINT sourcePos,
+        const WritableSlice pDestBuffer,
+        SINT destPos,
+        const SINT numItems) {
+    // Check to see if the copy is not contiguous.
+    if (sourcePos + numItems > pSourceBuffer.length() ||
+            destPos + numItems > pDestBuffer.length()) {
+        // Copy is not contiguous.
+        SINT firstDataBlockSize = math_min(pSourceBuffer.length() - sourcePos,
+                pDestBuffer.length() - destPos);
+
+        SampleUtil::copy(pDestBuffer.data(destPos),
+                pSourceBuffer.data(sourcePos),
+                firstDataBlockSize);
+
+        sourcePos = (sourcePos + firstDataBlockSize) % pSourceBuffer.length();
+        destPos = (destPos + firstDataBlockSize) % pDestBuffer.length();
+
+        // The second data part is the start of the ring buffer.
+        SampleUtil::copy(pDestBuffer.data(destPos),
+                pSourceBuffer.data(sourcePos),
+                numItems - firstDataBlockSize);
+    } else {
+        // Copy is contiguous.
+        SampleUtil::copy(pDestBuffer.data(destPos),
+                pSourceBuffer.data(sourcePos),
+                numItems);
+    }
 }
 
 SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT delayItems) {
@@ -68,20 +103,11 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT 
         readPos = readPos + m_buffer.size();
     }
 
-    // Check to see if the read is not contiguous.
-    if ((readPos + itemsToRead) > m_buffer.size()) {
-        // Read is not contiguous.
-        SINT firstDataBlockSize = m_buffer.size() - readPos;
-
-        SampleUtil::copy(pBuffer, m_buffer.data(readPos), firstDataBlockSize);
-        pBuffer = pBuffer + firstDataBlockSize;
-
-        // The second data part is the start of the ring buffer.
-        SampleUtil::copy(pBuffer, m_buffer.data(), itemsToRead - firstDataBlockSize);
-    } else {
-        // Read is contiguous.
-        SampleUtil::copy(pBuffer, m_buffer.data(readPos), itemsToRead);
-    }
+    copy(ReadableSlice(m_buffer.data(), m_buffer.size()),
+            readPos,
+            WritableSlice(pBuffer, itemsToRead),
+            0,
+            itemsToRead);
 
     return itemsToRead;
 }
@@ -98,19 +124,12 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
         // The itemsToWrite value is multiply by 2 to
         SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
         m_firstInputBuffer = false;
-    } else if ((m_writePos + itemsToWrite) > m_buffer.size()) { // Check to see
-                                                                // if the write is not contiguous.
-        // Write is not contiguous.
-        SINT firstDataBlockSize = m_buffer.size() - m_writePos;
-
-        SampleUtil::copy(m_buffer.data(m_writePos), pBuffer, firstDataBlockSize);
-        pBuffer = pBuffer + firstDataBlockSize;
-
-        // The second data part is the start of the ring buffer.
-        SampleUtil::copy(m_buffer.data(), pBuffer, itemsToWrite - firstDataBlockSize);
     } else {
-        // Write is contiguous.
-        SampleUtil::copy(m_buffer.data(m_writePos), pBuffer, itemsToWrite);
+        copy(ReadableSlice(pBuffer, itemsToWrite),
+                0,
+                WritableSlice(m_buffer.data(), m_buffer.size()),
+                m_writePos,
+                itemsToWrite);
     }
 
     // Calculate the new write position. If the new write position
