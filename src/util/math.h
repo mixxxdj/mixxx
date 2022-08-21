@@ -80,8 +80,14 @@ inline const T db2ratio(const T a) {
     return static_cast<T>(pow(10, a / 20));
 }
 
+/// https://en.wikipedia.org/wiki/Sign_function
 template<typename T>
-inline const T sgn(const T a) {
-    static_assert(std::is_arithmetic_v<T>, "the value has to be an arithmetic type");
-    return (a > T(0)) - (a < T(0));
+requires std::is_arithmetic_v<T>
+constexpr T sgn(const T a) {
+    // silence -Wtype-limits
+    if constexpr (std::is_unsigned_v<T>) {
+        return static_cast<T>(a > T(0));
+    } else {
+        return static_cast<T>(a > T(0)) - static_cast<T>(a < T(0));
+    }
 }
