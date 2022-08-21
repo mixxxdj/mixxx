@@ -84,7 +84,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
             "positive:\n"
             "\t - knob: maximum\n"
             "\t - range: from the default pitch to the highest pitch\n"
-            "negative: TODO\n"
+            "negative:\n"
             "\t - knob: minimum\n"
             "\t - range: from the default pitch to the lowest pitch"));
     rangeMode->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
