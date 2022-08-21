@@ -95,7 +95,6 @@ class RingDelayBuffer final {
 
     SINT read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT delayItems);
     SINT write(const CSAMPLE* pBuffer, const SINT itemsToWrite);
-    SINT moveReadPositionBy(const SINT jumpSize);
 
   private:
     void copy(const mixxx::SampleBuffer::ReadableSlice pSourceBuffer,
