@@ -31,7 +31,7 @@ class PitchShiftGroupState : public EffectState {
 
 class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> {
   public:
-    PitchShiftEffect() = default;
+    PitchShiftEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -52,10 +52,12 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
         return getId();
     }
 
+    bool m_currentFormant;
     EngineEffectParameterPointer m_pPitchParameter;
     EngineEffectParameterPointer m_pRangeModeParameter;
     EngineEffectParameterPointer m_pSemitonesModeParameter;
     EngineEffectParameterPointer m_pWideRangeParameter;
+    EngineEffectParameterPointer m_pFormantParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PitchShiftEffect);
 };

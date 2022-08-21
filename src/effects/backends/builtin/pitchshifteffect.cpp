@@ -8,6 +8,10 @@ static constexpr SINT kSemitones = 12;
 static constexpr SINT kWideRangeOctaves = 2;
 } // anonymous namespace
 
+PitchShiftEffect::PitchShiftEffect()
+        : m_currentFormant(false) {
+}
+
 PitchShiftGroupState::PitchShiftGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters) {
@@ -82,7 +86,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
             "\t - range: from the default pitch to the highest pitch\n"
             "negative: TODO\n"
             "\t - knob: minimum\n"
-            "\t - range: from the default pitch to the lowest pitch")); // TODO
+            "\t - range: from the default pitch to the lowest pitch"));
     rangeMode->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     rangeMode->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     rangeMode->setNeutralPointOnScale(0.0);
@@ -109,6 +113,17 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     wideRange->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     wideRange->setRange(0, 0, 1);
 
+    EffectManifestParameterPointer formant = pManifest->addParameter();
+    formant->setId("formant");
+    formant->setName(QObject::tr("Formant"));
+    formant->setShortName(QObject::tr("Formant"));
+    formant->setDescription(QObject::tr(
+            "Applies the Formant Preserving processing "
+            "and activates the handling of the formant shape."));
+    formant->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    formant->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    formant->setRange(0, 0, 1);
+
     return pManifest;
 }
 
@@ -118,6 +133,7 @@ void PitchShiftEffect::loadEngineEffectParameters(
     m_pRangeModeParameter = parameters.value("rangeMode");
     m_pSemitonesModeParameter = parameters.value("semitonesMode");
     m_pWideRangeParameter = parameters.value("wideRange");
+    m_pFormantParameter = parameters.value("formant");
 }
 
 void PitchShiftEffect::processChannel(
@@ -129,6 +145,16 @@ void PitchShiftEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
+
+    if (m_currentFormant != m_pFormantParameter->toBool()) {
+        m_currentFormant = !m_currentFormant;
+
+        pState->m_pRubberBand->setFormantOption(m_currentFormant
+                        ? RubberBand::RubberBandStretcher::
+                                  OptionFormantPreserved
+                        : RubberBand::RubberBandStretcher::
+                                  OptionFormantShifted);
+    }
 
     const double rangeModeParameter = m_pRangeModeParameter->value();
 
