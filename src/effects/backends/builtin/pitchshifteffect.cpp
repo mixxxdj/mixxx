@@ -97,8 +97,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     semitonesMode->setName(QObject::tr("Semitones"));
     semitonesMode->setShortName(QObject::tr("Semitones"));
     semitonesMode->setDescription(QObject::tr(
-            "Set the pitch scale to the semitones mode "
-            "instead of the contiguous mode (set as default)."));
+            "Change pitch in semitone-steps instead of smoothly."));
     semitonesMode->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     semitonesMode->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     semitonesMode->setRange(0, 1, 1);
