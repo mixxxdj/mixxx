@@ -155,7 +155,7 @@ void WCoverArt::slotCoverFound(
         mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
+    Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
     if (!m_bEnable) {
         return;
     }
