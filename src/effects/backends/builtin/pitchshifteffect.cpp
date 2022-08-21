@@ -117,8 +117,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     formant->setName(QObject::tr("Formant"));
     formant->setShortName(QObject::tr("Formant"));
     formant->setDescription(QObject::tr(
-            "Applies the Formant Preserving processing "
-            "and activates the handling of the formant shape."));
+            "Preserve formants."));
     formant->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     formant->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     formant->setRange(0, 0, 1);
