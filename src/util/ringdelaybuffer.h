@@ -52,12 +52,7 @@
 // For the pa_ringbuffer.c see: mixxx/lib/portaudio/pa_ringbuffer.c
 //
 // Added functions:
-// - isFull
-// - isEmpty
-// - length
-// - getReadAvailable
-// - getWriteAvailable
-// - moveReadPositionBy
+// - size
 //
 // Modified functions:
 // - clear
