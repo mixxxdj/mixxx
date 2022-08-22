@@ -85,7 +85,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     semitonesMode->setName(QObject::tr("Semitones"));
     semitonesMode->setShortName(QObject::tr("Semitones"));
     semitonesMode->setDescription(QObject::tr(
-            "Change pitch in semitone-steps instead of smoothly."));
+            "Change the pitch in semitone steps instead of continuously."));
     semitonesMode->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     semitonesMode->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     semitonesMode->setRange(0, 1, 1);
