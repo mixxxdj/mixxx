@@ -117,6 +117,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
             } else if (bestType > TRACK_BASENAME &&
                     coverBaseName.compare(trackFile.fileName(),
                             Qt::CaseInsensitive) == 0) {
+                bestType = TRACK_BASENAME;
                 bestInfo = &file;
             } else if (bestType > ALBUM_NAME &&
                        coverBaseName.compare(albumName,
