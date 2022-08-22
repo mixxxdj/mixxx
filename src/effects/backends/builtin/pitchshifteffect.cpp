@@ -69,6 +69,17 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pitch->setNeutralPointOnScale(0.0);
     pitch->setRange(-1.0, 0.0, 1.0);
 
+    EffectManifestParameterPointer range = pManifest->addParameter();
+    range->setId("range");
+    range->setName(QObject::tr("Range"));
+    range->setShortName(QObject::tr("Range"));
+    range->setDescription(QObject::tr(
+            "The range of the Pitch knob (0 - 2 octaves).\n"));
+    range->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    range->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    range->setNeutralPointOnScale(1.0);
+    range->setRange(0.0, 1.0, 2.0);
+
     EffectManifestParameterPointer semitonesMode = pManifest->addParameter();
     semitonesMode->setId("semitonesMode");
     semitonesMode->setName(QObject::tr("Semitones"));
@@ -95,6 +106,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
 void PitchShiftEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pPitchParameter = parameters.value("pitch");
+    m_pRangeParameter = parameters.value("range");
     m_pSemitonesModeParameter = parameters.value("semitonesMode");
     m_pFormantParameter = parameters.value("formant");
 }
@@ -119,7 +131,7 @@ void PitchShiftEffect::processChannel(
                                   OptionFormantShifted);
     }
 
-    double pitchParameter = m_pPitchParameter->value();
+    double pitchParameter = m_pPitchParameter->value() * m_pRangeParameter->value();
 
     if (m_pSemitonesModeParameter->toBool()) {
         pitchParameter = roundToFraction(pitchParameter, kSemitones);
