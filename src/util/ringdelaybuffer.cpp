@@ -51,15 +51,8 @@
 using ReadableSlice = mixxx::SampleBuffer::ReadableSlice;
 using WritableSlice = mixxx::SampleBuffer::WritableSlice;
 
-RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
-        : m_firstInputBuffer(true),
-          m_writePos(0),
-          m_buffer(bufferSize) {
-    // Set the ring delay buffer items to 0.
-    m_buffer.fill(0);
-}
-
-void RingDelayBuffer::copyRing(const ReadableSlice pSourceBuffer,
+namespace {
+void copyRing(const ReadableSlice pSourceBuffer,
         SINT sourcePos,
         const WritableSlice pDestBuffer,
         SINT destPos,
@@ -88,6 +81,16 @@ void RingDelayBuffer::copyRing(const ReadableSlice pSourceBuffer,
                 pSourceBuffer.data(sourcePos),
                 numItems);
     }
+}
+
+} // anonymous namespace
+
+RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
+        : m_firstInputBuffer(true),
+          m_writePos(0),
+          m_buffer(bufferSize) {
+    // Set the ring delay buffer items to 0.
+    m_buffer.fill(0);
 }
 
 SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT delayItems) {
