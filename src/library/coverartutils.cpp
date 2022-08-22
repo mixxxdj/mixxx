@@ -107,13 +107,17 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         // TODO(XXX) Sort instead so that we can fall-back if one fails to
         // open?
         foreach (const QFileInfo& file, covers) {
-            const QString coverBaseName = file.baseName();
+            const QString coverBaseName = file.completeBaseName();
             if (bestType > TRACK_BASENAME &&
-                coverBaseName.compare(trackFile.baseName(),
-                                      Qt::CaseInsensitive) == 0) {
+                    coverBaseName.compare(trackFile.completeBaseName(),
+                            Qt::CaseInsensitive) == 0) {
                 bestInfo = &file;
                 // This is the best type (TRACK_BASENAME) so we know we're done.
                 break;
+            } else if (bestType > TRACK_BASENAME &&
+                    coverBaseName.compare(trackFile.fileName(),
+                            Qt::CaseInsensitive) == 0) {
+                bestInfo = &file;
             } else if (bestType > ALBUM_NAME &&
                        coverBaseName.compare(albumName,
                                              Qt::CaseInsensitive) == 0) {
