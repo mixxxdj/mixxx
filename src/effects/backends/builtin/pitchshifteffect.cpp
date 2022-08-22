@@ -3,9 +3,7 @@
 #include "util/sample.h"
 
 namespace {
-static constexpr SINT kDefaultNorm = 2;
 static constexpr SINT kSemitones = 12;
-static constexpr SINT kWideRangeOctaves = 2;
 } // anonymous namespace
 
 PitchShiftEffect::PitchShiftEffect()
@@ -71,27 +69,6 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pitch->setNeutralPointOnScale(0.0);
     pitch->setRange(-1.0, 0.0, 1.0);
 
-    EffectManifestParameterPointer rangeMode = pManifest->addParameter();
-    rangeMode->setId("rangeMode");
-    rangeMode->setName(QObject::tr("Mode"));
-    rangeMode->setShortName(QObject::tr("Mode"));
-    rangeMode->setDescription(QObject::tr(
-            "Set the range mode. There are three possible options "
-            "based on the knob position:\n"
-            "neutral:\n"
-            "\t - knob: default\n"
-            "\t - range: from the lowest pitch to the highest pitch\n"
-            "positive:\n"
-            "\t - knob: maximum\n"
-            "\t - range: from the default pitch to the highest pitch\n"
-            "negative:\n"
-            "\t - knob: minimum\n"
-            "\t - range: from the default pitch to the lowest pitch"));
-    rangeMode->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    rangeMode->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
-    rangeMode->setNeutralPointOnScale(0.0);
-    rangeMode->setRange(-1.0, 0.0, 1.0);
-
     EffectManifestParameterPointer semitonesMode = pManifest->addParameter();
     semitonesMode->setId("semitonesMode");
     semitonesMode->setName(QObject::tr("Semitones"));
@@ -101,16 +78,6 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     semitonesMode->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     semitonesMode->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     semitonesMode->setRange(0, 1, 1);
-
-    EffectManifestParameterPointer wideRange = pManifest->addParameter();
-    wideRange->setId("wideRange");
-    wideRange->setName(QObject::tr("Wide Range"));
-    wideRange->setShortName(QObject::tr("Wide Range"));
-    wideRange->setDescription(QObject::tr(
-            "Double the pitch scale range."));
-    wideRange->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-    wideRange->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-    wideRange->setRange(0, 0, 1);
 
     EffectManifestParameterPointer formant = pManifest->addParameter();
     formant->setId("formant");
@@ -128,9 +95,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
 void PitchShiftEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pPitchParameter = parameters.value("pitch");
-    m_pRangeModeParameter = parameters.value("rangeMode");
     m_pSemitonesModeParameter = parameters.value("semitonesMode");
-    m_pWideRangeParameter = parameters.value("wideRange");
     m_pFormantParameter = parameters.value("formant");
 }
 
@@ -154,27 +119,7 @@ void PitchShiftEffect::processChannel(
                                   OptionFormantShifted);
     }
 
-    const double rangeModeParameter = m_pRangeModeParameter->value();
-
-    double pitchParameter = [=, this] {
-        if (std::abs(rangeModeParameter) < 0.5) {
-            if (m_pWideRangeParameter->toBool()) {
-                return m_pPitchParameter->value() * kWideRangeOctaves;
-            } else {
-                return m_pPitchParameter->value();
-            }
-        } else {
-            if (m_pWideRangeParameter->toBool()) {
-                return sgn(rangeModeParameter) * kWideRangeOctaves *
-                        (m_pPitchParameter->value() + 1) /
-                        kDefaultNorm;
-            } else {
-                return sgn(rangeModeParameter) *
-                        (m_pPitchParameter->value() + 1) /
-                        kDefaultNorm;
-            }
-        }
-    }();
+    double pitchParameter = m_pPitchParameter->value();
 
     if (m_pSemitonesModeParameter->toBool()) {
         pitchParameter = roundToFraction(pitchParameter, kSemitones);
