@@ -59,7 +59,7 @@ RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
     m_buffer.fill(0);
 }
 
-void RingDelayBuffer::copy(const ReadableSlice pSourceBuffer,
+void RingDelayBuffer::copyRing(const ReadableSlice pSourceBuffer,
         SINT sourcePos,
         const WritableSlice pDestBuffer,
         SINT destPos,
@@ -103,7 +103,7 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT 
         readPos = readPos + m_buffer.size();
     }
 
-    copy(ReadableSlice(m_buffer.data(), m_buffer.size()),
+    copyRing(ReadableSlice(m_buffer.data(), m_buffer.size()),
             readPos,
             WritableSlice(pBuffer, itemsToRead),
             0,
@@ -125,7 +125,7 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
         SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
         m_firstInputBuffer = false;
     } else {
-        copy(ReadableSlice(pBuffer, itemsToWrite),
+        copyRing(ReadableSlice(pBuffer, itemsToWrite),
                 0,
                 WritableSlice(m_buffer.data(), m_buffer.size()),
                 m_writePos,

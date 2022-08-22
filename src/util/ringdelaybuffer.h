@@ -92,7 +92,7 @@ class RingDelayBuffer final {
     SINT write(const CSAMPLE* pBuffer, const SINT itemsToWrite);
 
   private:
-    void copy(const mixxx::SampleBuffer::ReadableSlice pSourceBuffer,
+    void copyRing(const mixxx::SampleBuffer::ReadableSlice pSourceBuffer,
             SINT sourcePos,
             const mixxx::SampleBuffer::WritableSlice pDestBuffer,
             SINT destPos,
