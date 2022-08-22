@@ -93,7 +93,7 @@ void RingDelayBuffer::copy(const ReadableSlice pSourceBuffer,
 SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT delayItems) {
     const SINT shift = itemsToRead + delayItems;
 
-    if (shift > m_buffer.size()) {
+    VERIFY_OR_DEBUG_ASSERT(shift <= m_buffer.size()) {
         return 0;
     }
 
@@ -113,7 +113,7 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT 
 }
 
 SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
-    if (itemsToWrite > m_buffer.size()) {
+    VERIFY_OR_DEBUG_ASSERT(itemsToWrite <= m_buffer.size()) {
         return 0;
     }
 
