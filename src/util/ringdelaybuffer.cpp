@@ -52,14 +52,22 @@ using ReadableSlice = mixxx::SampleBuffer::ReadableSlice;
 using WritableSlice = mixxx::SampleBuffer::WritableSlice;
 
 namespace {
-void copyRing(const ReadableSlice pSourceBuffer,
+SINT copyRing(const ReadableSlice pSourceBuffer,
         SINT sourcePos,
         const WritableSlice pDestBuffer,
         SINT destPos,
         const SINT numItems) {
+    const SINT newSourcePos = sourcePos + numItems;
+    const SINT newDestPos = destPos + numItems;
+
+    VERIFY_OR_DEBUG_ASSERT(newSourcePos <= pSourceBuffer.length() ||
+            newDestPos <= pDestBuffer.length()) {
+        return 0;
+    }
+
     // Check to see if the copy is not contiguous.
-    if (sourcePos + numItems > pSourceBuffer.length() ||
-            destPos + numItems > pDestBuffer.length()) {
+    if (newSourcePos > pSourceBuffer.length() ||
+            newDestPos > pDestBuffer.length()) {
         // Copy is not contiguous.
         SINT firstDataBlockSize = math_min(pSourceBuffer.length() - sourcePos,
                 pDestBuffer.length() - destPos);
@@ -81,6 +89,8 @@ void copyRing(const ReadableSlice pSourceBuffer,
                 pSourceBuffer.data(sourcePos),
                 numItems);
     }
+
+    return numItems;
 }
 
 } // anonymous namespace
@@ -106,13 +116,11 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT 
         readPos = readPos + m_buffer.size();
     }
 
-    copyRing(ReadableSlice(m_buffer.data(), m_buffer.size()),
+    return copyRing(ReadableSlice(m_buffer.data(), m_buffer.size()),
             readPos,
             WritableSlice(pBuffer, itemsToRead),
             0,
             itemsToRead);
-
-    return itemsToRead;
 }
 
 SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
@@ -120,6 +128,7 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
         return 0;
     }
 
+    SINT copiedItems;
     if (m_firstInputBuffer) {
         // If the first input buffer is written, the first sample is on the index 0.
         // Based on the checking of an available number of samples, the situation,
@@ -127,8 +136,9 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
         // The itemsToWrite value is multiply by 2 to
         SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
         m_firstInputBuffer = false;
+        copiedItems = itemsToWrite;
     } else {
-        copyRing(ReadableSlice(pBuffer, itemsToWrite),
+        copiedItems = copyRing(ReadableSlice(pBuffer, itemsToWrite),
                 0,
                 WritableSlice(m_buffer.data(), m_buffer.size()),
                 m_writePos,
@@ -138,11 +148,11 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
     // Calculate the new write position. If the new write position
     // is after the ring delay buffer end, move it around from the start
     // of the ring delay buffer.
-    m_writePos = (m_writePos + itemsToWrite);
+    m_writePos = (m_writePos + copiedItems);
 
     if (m_writePos >= m_buffer.size()) {
         m_writePos = m_writePos - m_buffer.size();
     }
 
-    return itemsToWrite;
+    return copiedItems;
 }
