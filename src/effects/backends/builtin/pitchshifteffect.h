@@ -56,7 +56,7 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
     EngineEffectParameterPointer m_pPitchParameter;
     EngineEffectParameterPointer m_pRangeParameter;
     EngineEffectParameterPointer m_pSemitonesModeParameter;
-    EngineEffectParameterPointer m_pFormantParameter;
+    EngineEffectParameterPointer m_pFormantPreservingParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PitchShiftEffect);
 };

@@ -90,17 +90,17 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     semitonesMode->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     semitonesMode->setRange(0, 1, 1);
 
-    EffectManifestParameterPointer formant = pManifest->addParameter();
-    formant->setId("formant");
-    formant->setName(QObject::tr("Formant"));
-    formant->setShortName(QObject::tr("Formant"));
-    formant->setDescription(QObject::tr(
+    EffectManifestParameterPointer formantPreserving = pManifest->addParameter();
+    formantPreserving->setId("formantPreserving");
+    formantPreserving->setName(QObject::tr("Formant"));
+    formantPreserving->setShortName(QObject::tr("Formant"));
+    formantPreserving->setDescription(QObject::tr(
             "Preserve the resonant frequencies (formants) of the human vocal tract "
             "and other instruments.\n"
             "Hint: compensates \"chipmunk\" or \"growling\" voices"));
-    formant->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-    formant->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-    formant->setRange(0, 0, 1);
+    formantPreserving->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    formantPreserving->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    formantPreserving->setRange(0, 0, 1);
 
     return pManifest;
 }
@@ -110,7 +110,7 @@ void PitchShiftEffect::loadEngineEffectParameters(
     m_pPitchParameter = parameters.value("pitch");
     m_pRangeParameter = parameters.value("range");
     m_pSemitonesModeParameter = parameters.value("semitonesMode");
-    m_pFormantParameter = parameters.value("formant");
+    m_pFormantPreservingParameter = parameters.value("formant");
 }
 
 void PitchShiftEffect::processChannel(
@@ -123,7 +123,7 @@ void PitchShiftEffect::processChannel(
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
 
-    if (m_currentFormant != m_pFormantParameter->toBool()) {
+    if (m_currentFormant != m_pFormantPreservingParameter->toBool()) {
         m_currentFormant = !m_currentFormant;
 
         pState->m_pRubberBand->setFormantOption(m_currentFormant
