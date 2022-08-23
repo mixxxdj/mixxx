@@ -33,10 +33,8 @@ constexpr T math_clamp(T value, T min, T max) {
 // hack this to support floating point values! The programmer should be required
 // to manually convert so they are aware of the conversion.
 template<typename T>
-constexpr bool even(T value) {
-    // since we also want to this to work on size_t and ptrdiff_t, is_integer would be too strict.
-    static_assert(std::is_arithmetic_v<T> && !std::is_floating_point_v<T>,
-            "even only supports integral types");
+// since we also want to this to work on size_t and ptrdiff_t, is_integer would be too strict.
+requires(std::is_arithmetic_v<T> && !std::is_floating_point_v<T>) constexpr bool even(T value) {
     return value % 2 == 0;
 }
 
@@ -68,14 +66,14 @@ inline double roundToFraction(double value, int denominator) {
 
 // TODO (XXX): make this constexpr once <cmath> has constexpr support
 template<typename T>
+requires std::is_floating_point_v<T>
 inline const T ratio2db(const T a) {
-    static_assert(std::is_floating_point_v<T>, "ratio2db works only for floating point types");
     return log10(a) * 20;
 }
 
 // TODO (XXX): make this constexpr once <cmath> has constexpr support
 template<typename T>
+requires std::is_floating_point_v<T>
 inline const T db2ratio(const T a) {
-    static_assert(std::is_floating_point_v<T>, "db2ratio works only for floating point type");
     return static_cast<T>(pow(10, a / 20));
 }
