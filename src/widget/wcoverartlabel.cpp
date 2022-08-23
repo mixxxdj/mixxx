@@ -33,7 +33,7 @@ QPixmap createDefaultCover(QWidget* parent) {
 WCoverArtLabel::WCoverArtLabel(
         QWidget* parent, WCoverArtMenu* pCoverMenu, UserSettingsPointer pConfig)
         : QLabel(parent),
-          m_pCoverMenu(new WCoverArtMenu(this, pConfig)),
+          m_pCoverMenu(pCoverMenu),
           m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(
                   this, nullptr, pCoverMenu, pConfig)),
           m_defaultCover(createDefaultCover(this)) {
