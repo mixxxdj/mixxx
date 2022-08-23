@@ -95,7 +95,9 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     formant->setName(QObject::tr("Formant"));
     formant->setShortName(QObject::tr("Formant"));
     formant->setDescription(QObject::tr(
-            "Preserve formants."));
+            "Preserve the resonant frequencies (formants) of the human vocal tract "
+            "and other instruments.\n"
+            "Hint: compensates \"chipmunk\" or \"growling\" voices"));
     formant->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     formant->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     formant->setRange(0, 0, 1);
