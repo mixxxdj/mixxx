@@ -128,7 +128,7 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
         return 0;
     }
 
-    SINT copiedItems;
+    SINT copiedItems = 0;
     if (m_firstInputBuffer) {
         // If the first input buffer is written, the first sample is on the index 0.
         // Based on the checking of an available number of samples, the situation,
