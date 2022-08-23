@@ -60,7 +60,6 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
         return getId();
     }
 
-    double m_prevPitch;
     SINT m_groupDelayFrames;
     EngineEffectParameterPointer m_pPitchParameter;
 

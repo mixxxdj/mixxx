@@ -35,8 +35,7 @@ static constexpr SINT kPrefilledFrames = 8192;
 } // anonymous namespace
 
 PitchShiftEffect::PitchShiftEffect()
-        : m_prevPitch(1.0),
-          m_groupDelayFrames(kPrefilledFrames) {
+        : m_groupDelayFrames(kPrefilledFrames) {
 }
 
 PitchShiftGroupState::PitchShiftGroupState(
@@ -180,10 +179,7 @@ void PitchShiftEffect::processChannel(
         }
     }();
 
-    if (pitch != m_prevPitch) {
-        pState->m_pRubberBand->setPitchScale(pitch);
-        m_prevPitch = pitch;
-    }
+    pState->m_pRubberBand->setPitchScale(pitch);
 
     SampleUtil::deinterleaveBuffer(
             pState->m_retrieveBuffer[0],
