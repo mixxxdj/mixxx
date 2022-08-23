@@ -45,9 +45,52 @@ PitchShiftGroupState::PitchShiftGroupState(
     initializeBuffer(engineParameters);
     audioParametersChanged(engineParameters);
 
+    // Fill the buffer with zero values.
     SampleUtil::clear(m_retrieveBuffer[0], kPrefilledFrames);
     SampleUtil::clear(m_retrieveBuffer[1], kPrefilledFrames);
 
+    // Prefilling the RubberBand with zero samples. Based on filling the inner
+    // RubberBand buffers with samples, the total latency is lower. It is caused
+    // due to without filling the inner buffers, it will take more input
+    // sample buffers to produce the "meaningful" output. If some number
+    // of input frames are provided into RubberBand, we can't expect
+    // the same number of frames on the output, especially at the start
+    // of RubberBand processing. To dive a little more detailed
+    // into this problem, when the number of frames of the input buffer is not
+    // sufficient for RubberBand, the RubberBand will not produce enough
+    // output frames to fill the output buffer or actually any frames at all.
+    // At first, the RubberBand will not produce result frames. Then,
+    // it will produce some frames, but not enough to fill the whole
+    // output buffer with the same amount of frames as in the input buffer.
+    // It will take more input buffers until the RubberBand will produce enough
+    // frames to fill the entire output buffer. This situation can be shown
+    // in the following diagram:
+    //
+    // The X letter represents the real frame data.
+    //
+    // stream of input buffers:
+    //
+    // |XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX| ...
+    //
+    // stream of output buffers:
+    //
+    // |        |        |        |    XXXX|    XXXX|  XXXXXX|XXXXXXXX|XXXXXXXX| ...
+
+    // By using the RubberBand inner buffers prefilling with zero samples (silence),
+    // the latency will be exactly the same as the specific optimal amount
+    // of offered zero samples. The optimal amount of prefilled sample frames
+    // represent the kPrefilledFrames constant. The situation can be shown
+    // in the following diagram:
+    //
+    // The X letter represents the real frame data.
+    //
+    // stream of input buffers:
+    //
+    // |00000000|00000000|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX| ...
+    //
+    // stream of output buffers:
+    //
+    //                   |00000000|00000000|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX| ...
     m_pRubberBand->process(m_retrieveBuffer, kPrefilledFrames, false);
 }
 
@@ -160,6 +203,41 @@ void PitchShiftEffect::processChannel(
         SINT processedFrames = 0;
 
         while (processedFrames < blockFrames) {
+            // RubberBand is asking us for data. This practice could look
+            // like the "pull" implementation as known for RubberBand
+            // implementation, anyway, it is not for example
+            // for the following reasons:
+            //
+            // 1. Prefilling with zero samples to avoid dropouts.
+            // 2. When the last block of the input buffer is processed
+            //    and the amount of frames that RubberBand requires is greater
+            //    than the rest of the input buffer frames, only the rest
+            //    of the input buffer frames are provided and not the amount,
+            //    that RubberBand requires.
+            //
+            // The second point can be shown in the following example:
+            //
+            // Precondition:
+            // pitch setting: +12 semitones (+1 octave)
+            // frames per input buffer: 1024
+            //
+            // After some processed buffers the RubberBand requires only
+            // about 264 frames (getSamplesRequired()) for one process() call,
+            // so the buffer is split into four parts:
+            //
+            // the input buffer 1024 frames:
+            // - 264 frames
+            // - 264 frames
+            // - 264 frames
+            // - 234 frames
+            //
+            // The main difference between the clean "pull" implementation is,
+            // that the last value has to be 264 frames too because RubberBand
+            // requires it, but we can only offer the rest frames
+            // of the input buffer. So, the input buffer is just split
+            // into smaller chunks if RubberBand does not require so much data
+            // for processing.
+
             // RubberBand works with multichannel Sample FRAMES.
             SINT requiredFrames = pState->m_pRubberBand->getSamplesRequired();
             SINT toProcessFrames = math_min(blockFrames - processedFrames, requiredFrames);
