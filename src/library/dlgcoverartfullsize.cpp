@@ -18,7 +18,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
         UserSettingsPointer pConfig)
         : QDialog(parent),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(new WCoverArtMenu(this, pConfig)) {
+          m_pCoverMenu(pCoverMenu) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
