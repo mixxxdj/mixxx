@@ -65,10 +65,10 @@ constexpr unsigned int roundUpToPowerOf2(unsigned int v) {
 
 CMATH_CONSTEXPR double
 roundToFraction(double value, int denominator) {
-    int wholePart = static_cast<int>(value);
-    double fractionPart = value - wholePart;
+    double wholePart;
+    double fractionPart = std::modf(value, &wholePart);
     double numerator = std::round(fractionPart * denominator);
-    return wholePart + numerator / denominator;
+    return wholePart + (numerator / denominator);
 }
 
 template<typename T>
