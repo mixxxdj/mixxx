@@ -649,7 +649,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
                 // Timstamp column in history feature:
                 // Use localized date/time format without text: "5/20/98 03:40 AM"
-                return QLocale().toString(dt, QLocale::NarrowFormat);
+                return mixxx::displayLocalDateTime(dt);
             }
             // For Date Added, use just the date: "5/20/98"
             return dt.date();
