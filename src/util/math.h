@@ -56,24 +56,31 @@ constexpr unsigned int roundUpToPowerOf2(unsigned int v) {
 #endif
 }
 
-// TODO (XXX): make this constexpr once <cmath> has constexpr support
-inline double roundToFraction(double value, int denominator) {
+// Obsolete with C++23
+#if defined(__cpp_lib_constexpr_cmath) && __cpp_lib_constexpr_cmath >= 202202L
+#define CMATH_CONSTEXPR constexpr
+#else
+#define CMATH_CONSTEXPR inline
+#endif
+
+CMATH_CONSTEXPR double
+roundToFraction(double value, int denominator) {
     int wholePart = static_cast<int>(value);
     double fractionPart = value - wholePart;
     double numerator = std::round(fractionPart * denominator);
     return wholePart + numerator / denominator;
 }
 
-// TODO (XXX): make this constexpr once <cmath> has constexpr support
 template<typename T>
 requires std::is_floating_point_v<T>
-inline const T ratio2db(const T a) {
+        CMATH_CONSTEXPR T ratio2db(T a) {
     return log10(a) * 20;
 }
 
-// TODO (XXX): make this constexpr once <cmath> has constexpr support
 template<typename T>
 requires std::is_floating_point_v<T>
-inline const T db2ratio(const T a) {
+        CMATH_CONSTEXPR T db2ratio(T a) {
     return static_cast<T>(pow(10, a / 20));
 }
+
+#undef CMATH_CONSTEXPR
