@@ -565,6 +565,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
             if (m_GuiInitialized) {
                 setDirty(true);
             }
+            enableWizardAndIOTabs(false);
         }
     } else { // User picked a mapping
         m_ui.chkEnabledDevice->setEnabled(true);
