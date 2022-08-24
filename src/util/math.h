@@ -33,10 +33,8 @@ constexpr T math_clamp(T value, T min, T max) {
 // hack this to support floating point values! The programmer should be required
 // to manually convert so they are aware of the conversion.
 template<typename T>
-constexpr bool even(T value) {
-    // since we also want to this to work on size_t and ptrdiff_t, is_integer would be too strict.
-    static_assert(std::is_arithmetic_v<T> && !std::is_floating_point_v<T>,
-            "even only supports integral types");
+// since we also want to this to work on size_t and ptrdiff_t, is_integer would be too strict.
+requires(std::is_arithmetic_v<T> && !std::is_floating_point_v<T>) constexpr bool even(T value) {
     return value % 2 == 0;
 }
 
@@ -58,27 +56,34 @@ constexpr unsigned int roundUpToPowerOf2(unsigned int v) {
 #endif
 }
 
-// TODO (XXX): make this constexpr once <cmath> has constexpr support
-inline double roundToFraction(double value, int denominator) {
-    int wholePart = static_cast<int>(value);
-    double fractionPart = value - wholePart;
+// Obsolete with C++23
+#if defined(__cpp_lib_constexpr_cmath) && __cpp_lib_constexpr_cmath >= 202202L
+#define CMATH_CONSTEXPR constexpr
+#else
+#define CMATH_CONSTEXPR inline
+#endif
+
+CMATH_CONSTEXPR double
+roundToFraction(double value, int denominator) {
+    double wholePart;
+    double fractionPart = std::modf(value, &wholePart);
     double numerator = std::round(fractionPart * denominator);
-    return wholePart + numerator / denominator;
+    return wholePart + (numerator / denominator);
 }
 
-// TODO (XXX): make this constexpr once <cmath> has constexpr support
 template<typename T>
-inline const T ratio2db(const T a) {
-    static_assert(std::is_floating_point_v<T>, "ratio2db works only for floating point types");
+requires std::is_floating_point_v<T>
+        CMATH_CONSTEXPR T ratio2db(T a) {
     return log10(a) * 20;
 }
 
-// TODO (XXX): make this constexpr once <cmath> has constexpr support
 template<typename T>
-inline const T db2ratio(const T a) {
-    static_assert(std::is_floating_point_v<T>, "db2ratio works only for floating point type");
+requires std::is_floating_point_v<T>
+        CMATH_CONSTEXPR T db2ratio(T a) {
     return static_cast<T>(pow(10, a / 20));
 }
+
+#undef CMATH_CONSTEXPR
 
 /// https://en.wikipedia.org/wiki/Sign_function
 template<typename T>
