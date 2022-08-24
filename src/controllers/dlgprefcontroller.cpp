@@ -541,7 +541,10 @@ QUrl DlgPrefController::helpUrl() const {
 }
 
 void DlgPrefController::enableWizardAndIOTabs(bool enable) {
-    m_ui.btnLearningWizard->setEnabled(enable);
+    // We always enable the Wizard button if this is a MIDI controller so we can
+    // create a new mapping from scratch with 'No Mapping'
+    const auto* midiController = qobject_cast<MidiController*>(m_pController);
+    m_ui.btnLearningWizard->setEnabled(midiController != nullptr);
     m_ui.inputMappingsTab->setEnabled(enable);
     m_ui.outputMappingsTab->setEnabled(enable);
 }
