@@ -123,8 +123,9 @@ void PitchShiftEffect::processChannel(
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
 
-    if (m_currentFormant != m_pFormantPreservingParameter->toBool()) {
-        m_currentFormant = !m_currentFormant;
+    if (const bool formantPreserving = m_pFormantPreservingParameter->toBool();
+            m_currentFormant != formantPreserving) {
+        m_currentFormant = formantPreserving;
 
         pState->m_pRubberBand->setFormantOption(m_currentFormant
                         ? RubberBand::RubberBandStretcher::
