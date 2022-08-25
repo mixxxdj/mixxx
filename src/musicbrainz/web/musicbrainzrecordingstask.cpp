@@ -10,6 +10,7 @@
 #include "network/httpstatuscode.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
+#include "util/duration.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 #include "util/versionstore.h"
@@ -26,8 +27,12 @@ const QString kRequestPath = QStringLiteral("/ws/2/recording/");
 
 const QByteArray kUserAgentRawHeaderKey = "User-Agent";
 
-// MusicBrainz allows only a single request per second
-constexpr int kRateLimitMillis = 1000;
+// According to the MusicBrainz API Doc: https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting
+// The rate limit should be one query in a second.
+// Related Bug: https://github.com/mixxxdj/mixxx/issues/10795
+// In order to not hit the rate limits and respect their rate limiting rule.
+// Every request was delayed by one second.
+constexpr int kMinTimeBetweenMbRequests = 1000;
 
 QString userAgentRawHeaderValue() {
     return VersionStore::applicationName() +
@@ -76,6 +81,7 @@ MusicBrainzRecordingsTask::MusicBrainzRecordingsTask(
                   networkAccessManager,
                   parent),
           m_queuedRecordingIds(recordingIds),
+          m_measurementTimer(0),
           m_parentTimeoutMillis(0) {
     musicbrainz::registerMetaTypesOnce();
 }
@@ -104,6 +110,9 @@ QNetworkReply* MusicBrainzRecordingsTask::doStartNetworkRequest(
                 << "GET"
                 << networkRequest.url();
     }
+
+    m_measurementTimer.start();
+
     return networkAccessManager->get(networkRequest);
 }
 
@@ -156,7 +165,9 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
                         statusCode),
                 -1,
                 QStringLiteral("Failed to parse XML response"));
-        return;
+        if (m_queuedRecordingIds.isEmpty()) {
+            return;
+        }
     }
 
     if (m_queuedRecordingIds.isEmpty()) {
@@ -170,7 +181,17 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
 
     // Continue with next recording id
     DEBUG_ASSERT(!m_queuedRecordingIds.isEmpty());
-    slotStart(m_parentTimeoutMillis, kRateLimitMillis);
+    auto timerSinceLastRequest = m_measurementTimer.elapsed(true);
+    int timerSinceLastRequestMillis = timerSinceLastRequest.toIntegerMillis();
+    qDebug() << "Task took:" << timerSinceLastRequestMillis;
+    int delayMillis = kMinTimeBetweenMbRequests - timerSinceLastRequestMillis;
+    if (delayMillis <= 0) {
+        qDebug() << "Task took more than a second, slot is calling now.";
+        slotStart(m_parentTimeoutMillis, 0);
+    } else {
+        qDebug() << "Task took less than a second, slot is going to be called in:" << delayMillis;
+        slotStart(m_parentTimeoutMillis, delayMillis);
+    }
 }
 
 void MusicBrainzRecordingsTask::emitSucceeded(

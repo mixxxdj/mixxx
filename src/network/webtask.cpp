@@ -286,7 +286,6 @@ void WebTask::slotAbort() {
     QUrl requestUrl;
     auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
     if (pPendingNetworkReply) {
-        DEBUG_ASSERT(m_state == State::Pending);
         if (pPendingNetworkReply->isRunning()) {
             kLogger.debug()
                     << this
