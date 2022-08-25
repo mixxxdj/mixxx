@@ -3,7 +3,7 @@
 #include "util/sample.h"
 
 namespace {
-static constexpr SINT kSemitones = 12;
+static constexpr SINT kSemitonesPerOctave = 12;
 } // anonymous namespace
 
 PitchShiftEffect::PitchShiftEffect()
@@ -136,7 +136,7 @@ void PitchShiftEffect::processChannel(
     double pitchParameter = m_pPitchParameter->value() * m_pRangeParameter->value();
 
     if (m_pSemitonesModeParameter->toBool()) {
-        pitchParameter = roundToFraction(pitchParameter, kSemitones);
+        pitchParameter = roundToFraction(pitchParameter, kSemitonesPerOctave);
     }
 
     const double pitch = std::pow(2.0, pitchParameter);
