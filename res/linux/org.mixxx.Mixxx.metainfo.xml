@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2022-08-23" timestamp="1661288542">
+    <release version="2.4.0" type="development" date="2022-08-26" timestamp="1661470202">
       <description>
  <p>
   Cover Art
@@ -105,6 +105,7 @@
   <li>
    Prevent wrong cover art display due to hash conflicts
    #2524
+   #4904
   </li>
   <li>
    Add background color for quick cover art preview
@@ -412,6 +413,7 @@
    #4633
    #4837
    #4864
+   #4893
   </li>
  </ul>
  <p>
@@ -919,10 +921,6 @@
    #4525
   </li>
   <li>
-   LateNight: Move logo to the right
-   #4677
-  </li>
-  <li>
    Spinny: Allow to toggle cover art at runtime
    #4565
    lp:1883362
@@ -945,6 +943,10 @@
    lp:1934560
   </li>
   <li>
+   LateNight: Move logo to the right
+   #4677
+  </li>
+  <li>
    LateNight: Use correct tooltip for key control toggle
    #4696
   </li>
@@ -955,6 +957,10 @@
   <li>
    LateNight: Remove blinking play indicator from mini samplers
    #4807
+  </li>
+  <li>
+   LateNight: add buffer underflow indicator
+   #4906
   </li>
  </ul>
  <p>
@@ -969,6 +975,7 @@
    Add a pitch shift effect
    #4775
    lp:1299035
+   #4810
   </li>
   <li>
    Use '---' instead of 'None' for empty slots to spot them easier
@@ -1012,6 +1019,8 @@
    #4884
    lp:1983789
    lp1983764
+   #4899
+   #8817
   </li>
  </ul>
  <p>
@@ -1097,8 +1106,9 @@
    #3985
   </li>
   <li>
-   Remove Ubuntu Focal CI
+   Drop Ubuntu Focal support, require C++20
    #4889
+   #4895
   </li>
   <li>
    Drop Ubuntu Groovy and Impish support because of EOL
@@ -1285,6 +1295,10 @@
   <li>
    Moved contribution guidelines into our git repository
    #2699
+  </li>
+  <li>
+   Make windows_buildenv.bat work with spaces in path
+   #4896
   </li>
   <li>
    Automate deployment of CHANGELOG to the manual
@@ -1491,11 +1505,14 @@
    #4860
    #4867
    #4888
+   #4908
+   #4903
+   #8818
   </li>
  </ul>
 </description>
     </release>
-    <release version="2.3.4" type="development" date="2022-08-23" timestamp="1661288542">
+    <release version="2.3.4" type="development" date="2022-08-26" timestamp="1661470202">
       <description>
  <ul>
   <li>
