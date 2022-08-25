@@ -584,8 +584,9 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     }
 
     // Check if the mapping is different from the configured mapping
-    if (m_pControllerManager->getConfiguredMappingFileForDevice(
-                m_pController->getName()) != mappingPath) {
+    if (m_GuiInitialized &&
+            m_pControllerManager->getConfiguredMappingFileForDevice(
+                    m_pController->getName()) != mappingPath) {
         setDirty(true);
     }
 
