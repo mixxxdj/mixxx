@@ -105,7 +105,7 @@ class JsonWebTask : public WebTask {
     QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
-    void doNetworkReplyFinished(
+    bool doNetworkReplyFinished(
             QNetworkReply* finishedNetworkReply,
             HttpStatusCode statusCode) override;
 
