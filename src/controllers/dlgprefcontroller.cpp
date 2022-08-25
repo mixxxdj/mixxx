@@ -646,6 +646,11 @@ void DlgPrefController::savePreset() {
         newFilePath = oldFilePath;
     } else {
         presetName = askForPresetName(presetName);
+        if (presetName.isEmpty()) {
+            // QInputDialog was closed
+            qDebug() << "Mapping not saved, new name is empty";
+            return;
+        }
         newFilePath = presetNameToPath(m_pUserDir, presetName);
         m_pPreset->setName(presetName);
         qDebug() << "Mapping renamed to" << m_pPreset->name();
@@ -688,7 +693,8 @@ QString DlgPrefController::askForPresetName(const QString& prefilledName) const 
                              .remove(rxRemove)
                              .trimmed();
         if (!ok) {
-            continue;
+            // Return empty string if the dialog was canceled. Callers will deal with this.
+            return QString();
         }
         if (presetName.isEmpty()) {
             QMessageBox::warning(nullptr,
