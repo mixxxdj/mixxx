@@ -74,6 +74,10 @@ jobs:
           -DWAVPACK=ON \
           ..
       working-directory: build
+      env:
+        LD: clang++
+        CC: clang
+        CXX: clang++
     - name: Configure (coverage)
       if: matrix.name == 'coverage'
       run: |
