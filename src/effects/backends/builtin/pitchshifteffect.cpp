@@ -1,9 +1,16 @@
 #include "effects/backends/builtin/pitchshifteffect.h"
 
+#include <QString>
+
 #include "util/sample.h"
 
 namespace {
 static constexpr SINT kSemitonesPerOctave = 12;
+
+static const QString kPitchParameterId = QStringLiteral("pitch");
+static const QString kRangeParameterId = QStringLiteral("range");
+static const QString kSemitonesModeParameterId = QStringLiteral("semitonesMode");
+static const QString kFormantPreservingParameterId = QStringLiteral("formantPreserving");
 } // anonymous namespace
 
 PitchShiftEffect::PitchShiftEffect()
@@ -59,7 +66,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
             "Raises or lowers the original pitch of a sound."));
 
     EffectManifestParameterPointer pitch = pManifest->addParameter();
-    pitch->setId("pitch");
+    pitch->setId(kPitchParameterId);
     pitch->setName(QObject::tr("Pitch"));
     pitch->setShortName(QObject::tr("Pitch"));
     pitch->setDescription(QObject::tr(
@@ -70,7 +77,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pitch->setRange(-1.0, 0.0, 1.0);
 
     EffectManifestParameterPointer range = pManifest->addParameter();
-    range->setId("range");
+    range->setId(kRangeParameterId);
     range->setName(QObject::tr("Range"));
     range->setShortName(QObject::tr("Range"));
     range->setDescription(QObject::tr(
@@ -81,7 +88,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     range->setRange(0.0, 1.0, 2.0);
 
     EffectManifestParameterPointer semitonesMode = pManifest->addParameter();
-    semitonesMode->setId("semitonesMode");
+    semitonesMode->setId(kSemitonesModeParameterId);
     semitonesMode->setName(QObject::tr("Semitones"));
     semitonesMode->setShortName(QObject::tr("Semitones"));
     semitonesMode->setDescription(QObject::tr(
@@ -91,7 +98,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     semitonesMode->setRange(0, 1, 1);
 
     EffectManifestParameterPointer formantPreserving = pManifest->addParameter();
-    formantPreserving->setId("formantPreserving");
+    formantPreserving->setId(kFormantPreservingParameterId);
     formantPreserving->setName(QObject::tr("Formant"));
     formantPreserving->setShortName(QObject::tr("Formant"));
     formantPreserving->setDescription(QObject::tr(
@@ -107,10 +114,10 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
 
 void PitchShiftEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
-    m_pPitchParameter = parameters.value("pitch");
-    m_pRangeParameter = parameters.value("range");
-    m_pSemitonesModeParameter = parameters.value("semitonesMode");
-    m_pFormantPreservingParameter = parameters.value("formantPreserving");
+    m_pPitchParameter = parameters.value(kPitchParameterId);
+    m_pRangeParameter = parameters.value(kRangeParameterId);
+    m_pSemitonesModeParameter = parameters.value(kSemitonesModeParameterId);
+    m_pFormantPreservingParameter = parameters.value(kFormantPreservingParameterId);
 }
 
 void PitchShiftEffect::processChannel(
