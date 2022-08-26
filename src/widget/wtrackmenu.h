@@ -87,6 +87,7 @@ class WTrackMenu : public QMenu {
     void showDlgTrackInfo(const QString& property = QString());
     // Library management
     void slotRemoveFromDisk();
+    const QString getDeckGroup() const;
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
