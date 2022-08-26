@@ -184,16 +184,16 @@ bool MusicBrainzRecordingsTask::doNetworkReplyFinished(
 
     // Continue with next recording id
     DEBUG_ASSERT(!m_queuedRecordingIds.isEmpty());
-    auto inhibitTimerElapsed = m_measurementTimer.elapsed(true);
-    int inhibitTimerElapsedMillis = inhibitTimerElapsed.toIntegerMillis();
-    qDebug() << "Task took:" << inhibitTimerElapsedMillis;
+    auto timerSinceLastRequest = m_measurementTimer.elapsed(true);
+    int timerSinceLastRequestMillis = timerSinceLastRequest.toIntegerMillis();
+    qDebug() << "Task took:" << timerSinceLastRequestMillis;
     m_requestTimer.setSingleShot(true);
-    if (inhibitTimerElapsedMillis >= kMinTimeBetweenMbRequests) {
+    if (timerSinceLastRequestMillis >= kMinTimeBetweenMbRequests) {
         qDebug() << "Task took more than a second, slot is calling now.";
         m_requestTimer.start(1);
     } else {
         auto sleepDuration = (kMinTimeBetweenMbRequests -
-                inhibitTimerElapsedMillis);
+                timerSinceLastRequestMillis);
         qDebug() << "Task took less than a second, slot is going to be called in:" << sleepDuration;
         m_requestTimer.start(sleepDuration);
     }
@@ -205,9 +205,9 @@ void MusicBrainzRecordingsTask::triggerSlotStart() {
     slotStart(m_parentTimeoutMillis);
 }
 
-void MusicBrainzRecordingsTask::doLoopingTaskAborted() {
+void MusicBrainzRecordingsTask::doWaitingTaskAborted() {
     kLogger.info()
-            << "Aborted task was looping."
+            << "Aborted task was waiting for next slot to be called."
             << "Is QTimer active? (true) || (false):"
             << m_requestTimer.isActive();
     if (m_requestTimer.isActive()) {

@@ -38,7 +38,7 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             QNetworkReply* finishedNetworkReply,
             network::HttpStatusCode statusCode) override;
 
-    void doLoopingTaskAborted() override;
+    void doWaitingTaskAborted() override;
 
     void emitSucceeded(
             const QList<musicbrainz::TrackRelease>& trackReleases);

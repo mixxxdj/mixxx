@@ -238,7 +238,7 @@ void WebTask::slotStart(int timeoutMillis) {
 
 void WebTask::slotAbort() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    if (m_state != State::Pending && m_state != State::Looping) {
+    if (m_state != State::Pending && m_state != State::Waiting) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
         if (m_state == State::Idle) {
             kLogger.debug()
@@ -262,8 +262,8 @@ void WebTask::slotAbort() {
         m_timeoutTimerId = kInvalidTimerId;
     }
 
-    if (m_state == State::Looping) {
-        doLoopingTaskAborted();
+    if (m_state == State::Waiting) {
+        doWaitingTaskAborted();
     }
 
     auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
@@ -398,7 +398,7 @@ void WebTask::slotNetworkReplyFinished() {
     if (doNetworkReplyFinished(pFinishedNetworkReply, statusCode)) {
         m_state = State::Finished;
     } else {
-        m_state = State::Looping;
+        m_state = State::Waiting;
     }
 }
 

@@ -150,8 +150,8 @@ class WebTask : public NetworkTask {
         Idle,
         // Pending state
         Pending,
-        // Looping state
-        Looping,
+        // Waiting state for the next request slot start
+        Waiting,
         // Terminal states
         Aborted,
         TimedOut,
@@ -191,7 +191,7 @@ class WebTask : public NetworkTask {
         Q_UNUSED(abortedNetworkReply);
     }
 
-    virtual void doLoopingTaskAborted() = 0;
+    virtual void doWaitingTaskAborted() = 0;
 
     /// Handle network response.
     virtual bool doNetworkReplyFinished(
