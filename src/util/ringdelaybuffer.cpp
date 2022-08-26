@@ -128,31 +128,31 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
         return 0;
     }
 
-    SINT copiedItems = 0;
-    if (m_firstInputBuffer) {
-        // If the first input buffer is written, the first sample is on the index 0.
-        // Based on the checking of an available number of samples, the situation,
-        // that the writing will be non-contiguous cannot occur.
-        // The itemsToWrite value is multiply by 2 to
-        SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
-        m_firstInputBuffer = false;
-        copiedItems = itemsToWrite;
-    } else {
-        copiedItems = copyRing(ReadableSlice(pBuffer, itemsToWrite),
-                0,
-                WritableSlice(m_buffer.data(), m_buffer.size()),
-                m_writePos,
-                itemsToWrite);
-    }
+    const SINT numItems = [&]() {
+        if (m_firstInputBuffer) {
+            // If the first input buffer is written, the first sample is on the index 0.
+            // Based on the checking of an available number of samples, the situation,
+            // that the writing will be non-contiguous cannot occur.
+            SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
+            m_firstInputBuffer = false;
+            return itemsToWrite;
+        } else {
+            return copyRing(ReadableSlice(pBuffer, itemsToWrite),
+                    0,
+                    WritableSlice(m_buffer.data(), m_buffer.size()),
+                    m_writePos,
+                    itemsToWrite);
+        }
+    }();
 
     // Calculate the new write position. If the new write position
     // is after the ring delay buffer end, move it around from the start
     // of the ring delay buffer.
-    m_writePos = (m_writePos + copiedItems);
+    m_writePos = (m_writePos + numItems);
 
     if (m_writePos >= m_buffer.size()) {
         m_writePos = m_writePos - m_buffer.size();
     }
 
-    return copiedItems;
+    return numItems;
 }
