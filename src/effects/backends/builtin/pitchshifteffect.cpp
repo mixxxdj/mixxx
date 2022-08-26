@@ -110,7 +110,7 @@ void PitchShiftEffect::loadEngineEffectParameters(
     m_pPitchParameter = parameters.value("pitch");
     m_pRangeParameter = parameters.value("range");
     m_pSemitonesModeParameter = parameters.value("semitonesMode");
-    m_pFormantPreservingParameter = parameters.value("formant");
+    m_pFormantPreservingParameter = parameters.value("formantPreserving");
 }
 
 void PitchShiftEffect::processChannel(
