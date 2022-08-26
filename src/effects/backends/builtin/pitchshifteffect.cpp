@@ -54,7 +54,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pManifest->setName(QObject::tr("Pitch Shift"));
     pManifest->setShortName(QObject::tr("Pitch Shift"));
     pManifest->setAuthor("The Mixxx Team");
-    pManifest->setVersion("1.0");
+    pManifest->setVersion("2.0");
     pManifest->setDescription(QObject::tr(
             "Raises or lowers the original pitch of a sound."));
 
