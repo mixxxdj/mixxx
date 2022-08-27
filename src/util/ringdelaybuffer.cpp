@@ -45,48 +45,52 @@
 
 #include "ringdelaybuffer.h"
 
+#include <span>
+
 #include "util/math.h"
 #include "util/sample.h"
 
-using ReadableSlice = mixxx::SampleBuffer::ReadableSlice;
-using WritableSlice = mixxx::SampleBuffer::WritableSlice;
-
 namespace {
-SINT copyRing(const ReadableSlice pSourceBuffer,
+SINT copyRing(const std::span<const CSAMPLE> pSourceBuffer,
         SINT sourcePos,
-        const WritableSlice pDestBuffer,
+        const std::span<CSAMPLE> pDestBuffer,
         SINT destPos,
         const SINT numItems) {
-    const SINT newSourcePos = sourcePos + numItems;
-    const SINT newDestPos = destPos + numItems;
+    const unsigned int newSourcePos = sourcePos + numItems;
+    const unsigned int newDestPos = destPos + numItems;
 
-    VERIFY_OR_DEBUG_ASSERT(newSourcePos <= pSourceBuffer.length() ||
-            newDestPos <= pDestBuffer.length()) {
+    SINT sourceRemainingItems = pSourceBuffer.size() - sourcePos;
+    SINT destRemainingItems = pDestBuffer.size() - destPos;
+
+    VERIFY_OR_DEBUG_ASSERT(newSourcePos <= pSourceBuffer.size() ||
+            newDestPos <= pDestBuffer.size()) {
         return 0;
     }
 
     // Check to see if the copy is not contiguous.
-    if (newSourcePos > pSourceBuffer.length() ||
-            newDestPos > pDestBuffer.length()) {
+    if (newSourcePos > pSourceBuffer.size() ||
+            newDestPos > pDestBuffer.size()) {
         // Copy is not contiguous.
-        SINT firstDataBlockSize = math_min(pSourceBuffer.length() - sourcePos,
-                pDestBuffer.length() - destPos);
+        SINT firstDataBlockSize = math_min(sourceRemainingItems, destRemainingItems);
 
-        SampleUtil::copy(pDestBuffer.data(destPos),
-                pSourceBuffer.data(sourcePos),
+        SampleUtil::copy(pDestBuffer.last(destRemainingItems).data(),
+                pSourceBuffer.last(sourceRemainingItems).data(),
                 firstDataBlockSize);
 
-        sourcePos = (sourcePos + firstDataBlockSize) % pSourceBuffer.length();
-        destPos = (destPos + firstDataBlockSize) % pDestBuffer.length();
+        sourcePos = (sourcePos + firstDataBlockSize) % pSourceBuffer.size();
+        destPos = (destPos + firstDataBlockSize) % pDestBuffer.size();
+
+        sourceRemainingItems = pSourceBuffer.size() - sourcePos;
+        destRemainingItems = pDestBuffer.size() - destPos;
 
         // The second data part is the start of the ring buffer.
-        SampleUtil::copy(pDestBuffer.data(destPos),
-                pSourceBuffer.data(sourcePos),
+        SampleUtil::copy(pDestBuffer.last(destRemainingItems).data(),
+                pSourceBuffer.last(sourceRemainingItems).data(),
                 numItems - firstDataBlockSize);
     } else {
         // Copy is contiguous.
-        SampleUtil::copy(pDestBuffer.data(destPos),
-                pSourceBuffer.data(sourcePos),
+        SampleUtil::copy(pDestBuffer.last(destRemainingItems).data(),
+                pSourceBuffer.last(sourceRemainingItems).data(),
                 numItems);
     }
 
@@ -116,9 +120,9 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT 
         readPos = readPos + m_buffer.size();
     }
 
-    return copyRing(ReadableSlice(m_buffer.data(), m_buffer.size()),
+    return copyRing(mixxx::spanutil::spanFromPtrLen(m_buffer.data(), m_buffer.size()),
             readPos,
-            WritableSlice(pBuffer, itemsToRead),
+            mixxx::spanutil::spanFromPtrLen(pBuffer, itemsToRead),
             0,
             itemsToRead);
 }
@@ -137,9 +141,9 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
             m_firstInputBuffer = false;
             return itemsToWrite;
         } else {
-            return copyRing(ReadableSlice(pBuffer, itemsToWrite),
+            return copyRing(mixxx::spanutil::spanFromPtrLen(pBuffer, itemsToWrite),
                     0,
-                    WritableSlice(m_buffer.data(), m_buffer.size()),
+                    mixxx::spanutil::spanFromPtrLen(m_buffer.data(), m_buffer.size()),
                     m_writePos,
                     itemsToWrite);
         }
