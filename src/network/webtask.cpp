@@ -113,7 +113,7 @@ WebTask::WebTask(
         QNetworkAccessManager* networkAccessManager,
         QObject* parent)
         : NetworkTask(networkAccessManager, parent),
-          m_state(State::Idle),
+          m_state(State::Initial),
           m_timeoutTimerId(kInvalidTimerId),
           m_timeoutMillis(kNoTimeout) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
@@ -123,7 +123,7 @@ void WebTask::onNetworkError(
         QNetworkReply::NetworkError errorCode,
         const QString& errorString,
         const WebResponseWithContent& responseWithContent) {
-    DEBUG_ASSERT(m_state == State::Pending);
+    DEBUG_ASSERT(m_state == State::Failed || m_state == State::Pending);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
 
     DEBUG_ASSERT(errorCode != QNetworkReply::NoError);
@@ -183,7 +183,6 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
     // Reset state
     DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-    m_state = State::Idle;
     m_timeoutMillis = kNoTimeout;
 
     if (delayMillis > 0) {
@@ -205,7 +204,7 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
 
     auto* const pNetworkAccessManager = m_networkAccessManagerWeakPtr.data();
     VERIFY_OR_DEBUG_ASSERT(pNetworkAccessManager) {
-        m_state = State::Pending;
+        m_state = State::Failed;
         onNetworkError(
                 QNetworkReply::NetworkSessionFailedError,
                 tr("No network access"),
@@ -222,12 +221,6 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
     m_pendingNetworkReplyWeakPtr = doStartNetworkRequest(
             pNetworkAccessManager,
             timeoutMillis);
-    // Still idle, because we are in the same thread.
-    // The derived class is not allowed to abort a request
-    // during the callback before it has beeen started
-    // successfully. Instead it should return nullptr
-    // to abort the task immediately.
-    DEBUG_ASSERT(m_state == State::Idle);
     if (!m_pendingNetworkReplyWeakPtr) {
         kLogger.debug()
                 << this
@@ -260,10 +253,10 @@ void WebTask::slotAbort() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!isBusy()) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-        if (m_state == State::Idle) {
+        if (m_state == State::Initial) {
             kLogger.debug()
                     << this
-                    << "Cannot abort idle task";
+                    << "Cannot abort task in Initial state";
         } else {
             DEBUG_ASSERT(hasTerminated());
             kLogger.debug()
@@ -331,7 +324,7 @@ void WebTask::timerEvent(QTimerEvent* event) {
 
     if (m_state == State::Starting) {
         DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
-        m_state = State::Idle;
+        m_state = State::Initial;
         slotStart(m_timeoutMillis);
         return;
     }
