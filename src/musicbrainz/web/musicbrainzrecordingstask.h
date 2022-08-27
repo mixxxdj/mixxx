@@ -47,7 +47,6 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             int errorCode,
             const QString& errorMessage);
 
-    void continueWithNextRequest();
     void triggerSlotStart();
 
     const QUrlQuery m_urlQuery;
