@@ -44,8 +44,6 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             int errorCode,
             const QString& errorMessage);
 
-    void continueWithNextRequest();
-
     const QUrlQuery m_urlQuery;
 
     QList<QUuid> m_queuedRecordingIds;
