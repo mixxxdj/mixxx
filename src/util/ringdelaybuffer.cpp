@@ -51,46 +51,46 @@
 #include "util/sample.h"
 
 namespace {
-SINT copyRing(const std::span<const CSAMPLE> pSourceBuffer,
+SINT copyRing(const std::span<const CSAMPLE> sourceBuffer,
         SINT sourcePos,
-        const std::span<CSAMPLE> pDestBuffer,
+        const std::span<CSAMPLE> destBuffer,
         SINT destPos,
         const SINT numItems) {
     const unsigned int newSourcePos = sourcePos + numItems;
     const unsigned int newDestPos = destPos + numItems;
 
-    SINT sourceRemainingItems = pSourceBuffer.size() - sourcePos;
-    SINT destRemainingItems = pDestBuffer.size() - destPos;
+    SINT sourceRemainingItems = sourceBuffer.size() - sourcePos;
+    SINT destRemainingItems = destBuffer.size() - destPos;
 
-    VERIFY_OR_DEBUG_ASSERT(newSourcePos <= pSourceBuffer.size() ||
-            newDestPos <= pDestBuffer.size()) {
+    VERIFY_OR_DEBUG_ASSERT(newSourcePos <= sourceBuffer.size() ||
+            newDestPos <= destBuffer.size()) {
         return 0;
     }
 
     // Check to see if the copy is not contiguous.
-    if (newSourcePos > pSourceBuffer.size() ||
-            newDestPos > pDestBuffer.size()) {
+    if (newSourcePos > sourceBuffer.size() ||
+            newDestPos > destBuffer.size()) {
         // Copy is not contiguous.
         SINT firstDataBlockSize = math_min(sourceRemainingItems, destRemainingItems);
 
-        SampleUtil::copy(pDestBuffer.last(destRemainingItems).data(),
-                pSourceBuffer.last(sourceRemainingItems).data(),
+        SampleUtil::copy(destBuffer.last(destRemainingItems).data(),
+                sourceBuffer.last(sourceRemainingItems).data(),
                 firstDataBlockSize);
 
-        sourcePos = (sourcePos + firstDataBlockSize) % pSourceBuffer.size();
-        destPos = (destPos + firstDataBlockSize) % pDestBuffer.size();
+        sourcePos = (sourcePos + firstDataBlockSize) % sourceBuffer.size();
+        destPos = (destPos + firstDataBlockSize) % destBuffer.size();
 
-        sourceRemainingItems = pSourceBuffer.size() - sourcePos;
-        destRemainingItems = pDestBuffer.size() - destPos;
+        sourceRemainingItems = sourceBuffer.size() - sourcePos;
+        destRemainingItems = destBuffer.size() - destPos;
 
         // The second data part is the start of the ring buffer.
-        SampleUtil::copy(pDestBuffer.last(destRemainingItems).data(),
-                pSourceBuffer.last(sourceRemainingItems).data(),
+        SampleUtil::copy(destBuffer.last(destRemainingItems).data(),
+                sourceBuffer.last(sourceRemainingItems).data(),
                 numItems - firstDataBlockSize);
     } else {
         // Copy is contiguous.
-        SampleUtil::copy(pDestBuffer.last(destRemainingItems).data(),
-                pSourceBuffer.last(sourceRemainingItems).data(),
+        SampleUtil::copy(destBuffer.last(destRemainingItems).data(),
+                sourceBuffer.last(sourceRemainingItems).data(),
                 numItems);
     }
 
