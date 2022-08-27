@@ -113,7 +113,7 @@ WebTask::WebTask(
         QNetworkAccessManager* networkAccessManager,
         QObject* parent)
         : NetworkTask(networkAccessManager, parent),
-          m_state(State::Idle),
+          m_state(State::Initial),
           m_timeoutTimerId(kInvalidTimerId) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
 }
@@ -182,11 +182,9 @@ void WebTask::slotStart(int timeoutMillis) {
     // Reset state
     DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-    m_state = State::Idle;
 
     auto* const pNetworkAccessManager = m_networkAccessManagerWeakPtr.data();
     VERIFY_OR_DEBUG_ASSERT(pNetworkAccessManager) {
-        m_state = State::Pending;
         onNetworkError(
                 QNetworkReply::NetworkSessionFailedError,
                 tr("No network access"),
@@ -203,12 +201,6 @@ void WebTask::slotStart(int timeoutMillis) {
     m_pendingNetworkReplyWeakPtr = doStartNetworkRequest(
             pNetworkAccessManager,
             timeoutMillis);
-    // Still idle, because we are in the same thread.
-    // The derived class is not allowed to abort a request
-    // during the callback before it has beeen started
-    // successfully. Instead it should return nullptr
-    // to abort the task immediately.
-    DEBUG_ASSERT(m_state == State::Idle);
     if (!m_pendingNetworkReplyWeakPtr) {
         kLogger.debug()
                 << this
@@ -240,10 +232,10 @@ void WebTask::slotAbort() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_state != State::Pending && m_state != State::Waiting) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-        if (m_state == State::Idle) {
+        if (m_state == State::Initial) {
             kLogger.debug()
                     << this
-                    << "Cannot abort idle task";
+                    << "Cannot abort Initial task";
         } else {
             DEBUG_ASSERT(hasTerminated());
             kLogger.debug()

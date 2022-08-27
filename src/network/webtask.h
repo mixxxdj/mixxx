@@ -147,7 +147,7 @@ class WebTask : public NetworkTask {
 
     enum class State {
         // Initial state
-        Idle,
+        Initial,
         // Pending state
         Pending,
         // Waiting state for the next request slot start
