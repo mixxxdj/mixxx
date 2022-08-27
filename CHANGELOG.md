@@ -1,5 +1,7 @@
 # Changelog
 
+## [2.5.0](https://launchpad.net/mixxx/+milestone/2.4.0) (Unreleased)
+
 ## [2.4.0](https://launchpad.net/mixxx/+milestone/2.4.0) (Unreleased)
 
 ### Cover Art
