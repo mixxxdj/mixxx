@@ -34,6 +34,7 @@
 #include "util/parented_ptr.h"
 #include "util/qt.h"
 #include "util/widgethelper.h"
+#include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
@@ -187,21 +188,21 @@ void WTrackMenu::createMenus() {
     }
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
-        DEBUG_ASSERT(!m_pFindOnMenu);
-        m_pFindOnMenu =
-                make_parented<WFindOnWebMenu>(this);
-
-        connect(m_pFindOnMenu,
+        DEBUG_ASSERT(!m_pFindOnWebMenu);
+        m_pFindOnWebMenu = make_parented<WFindOnWebMenu>(this);
+        connect(m_pFindOnWebMenu,
                 &QMenu::aboutToShow,
                 this,
                 [this] {
-                    m_pFindOnMenu->clear();
+                    m_pFindOnWebMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
-                        m_pFindOnMenu->addSubmenusForServices(*pTrack);
+                        mixxx::library::createFindOnWebSubmenus(
+                                m_pFindOnWebMenu,
+                                *pTrack);
                     }
-                    m_pFindOnMenu->setEnabled(
-                            !m_pFindOnMenu->isEmpty());
+                    m_pFindOnWebMenu->setEnabled(
+                            !m_pFindOnWebMenu->isEmpty());
                 });
     }
 
@@ -563,9 +564,9 @@ void WTrackMenu::setupActions() {
 
         m_pMetadataMenu->addMenu(m_pCoverMenu);
         if (featureIsEnabled(Feature::FindOnWeb)) {
-            m_pMetadataMenu->addMenu(m_pFindOnMenu);
-            addSeparator();
+            m_pMetadataMenu->addMenu(m_pFindOnWebMenu);
         }
+        addSeparator();
         addMenu(m_pMetadataMenu);
     }
 
@@ -893,7 +894,7 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::FindOnWeb)) {
         const auto pTrack = getFirstTrackPointer();
         const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
-        m_pFindOnMenu->setEnabled(enableMenu);
+        m_pFindOnWebMenu->setEnabled(enableMenu);
     }
 }
 
@@ -2026,6 +2027,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
     }
     // Create a fresh dialog on invocation
     m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+            m_pConfig,
             m_pTrackModel);
     connect(m_pDlgTrackInfo.get(),
             &QDialog::finished,

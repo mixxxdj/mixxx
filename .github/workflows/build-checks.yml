@@ -14,7 +14,7 @@ jobs:
           - name: clazy
           - name: clang-tidy
           - name: coverage
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: ${{ matrix.name }}
     steps:
     - name: Check out repository
@@ -74,6 +74,10 @@ jobs:
           -DWAVPACK=ON \
           ..
       working-directory: build
+      env:
+        LD: clang++
+        CC: clang
+        CXX: clang++
     - name: Configure (coverage)
       if: matrix.name == 'coverage'
       run: |
@@ -137,6 +141,6 @@ jobs:
       continue-on-error: true
       uses: coverallsapp/github-action@master
       with:
-        flag-name: ubuntu-20.04
+        flag-name: ubuntu-22.04
         path-to-lcov: build/lcov.info
         github-token: ${{ secrets.GITHUB_TOKEN }}

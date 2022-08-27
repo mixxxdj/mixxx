@@ -97,7 +97,6 @@ void PitchShiftEffect::processChannel(
             pInput,
             engineParameters.framesPerBuffer());
     pState->m_pRubberBand->process(
-            //static_cast<const float* const*>(pState->m_retrieveBuffer),
             pState->m_retrieveBuffer,
             engineParameters.framesPerBuffer(),
             false);
@@ -107,7 +106,6 @@ void PitchShiftEffect::processChannel(
             framesAvailable,
             engineParameters.framesPerBuffer());
     SINT receivedFrames = pState->m_pRubberBand->retrieve(
-            //static_cast<float* const*>(pState->m_retrieveBuffer),
             pState->m_retrieveBuffer,
             framesToRead);
 

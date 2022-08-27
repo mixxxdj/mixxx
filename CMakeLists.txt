@@ -628,6 +628,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/controls/ratecontrol.cpp
   src/engine/effects/engineeffect.cpp
   src/engine/effects/engineeffectchain.cpp
+  src/engine/effects/engineeffectsdelay.cpp
   src/engine/effects/engineeffectsmanager.cpp
   src/engine/enginebuffer.cpp
   src/engine/enginedelay.cpp
@@ -966,6 +967,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
   src/widget/controlwidgetconnection.cpp
+  src/widget/findonwebmenufactory.cpp
+  src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
+  src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
+  src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
   src/widget/hexspinbox.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
@@ -1168,6 +1173,19 @@ else()
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
+endif()
+
+option(INFO_VECTORIZE "Let the compiler show vectorized loops" OFF)
+if (INFO_VECTORIZE)
+    if(MSVC)
+        target_compile_options(mixxx-lib PUBLIC /Qvec-report:1)
+    elseif(GNU_GCC)
+        target_compile_options(mixxx-lib PUBLIC -fopt-info-vec-optimized)
+    elseif(LLVM_CLANG)
+        target_compile_options(mixxx-lib PUBLIC -Rpass=loop-vectorize)
+    else()
+        message(STATUS "INFO_VECTORIZE not implemented for this compliler.")
+    endif()
 endif()
 
 option(WARNINGS_FATAL "Fail if compiler generates a warning" OFF)
@@ -1646,6 +1664,7 @@ add_executable(mixxx-test
   #src/test/effectchainslottest.cpp
   src/test/enginebufferscalelineartest.cpp
   src/test/enginebuffertest.cpp
+  src/test/engineeffectsdelay_test.cpp
   src/test/enginefilterbiquadtest.cpp
   src/test/enginemastertest.cpp
   src/test/enginemicrophonetest.cpp
@@ -2987,7 +3006,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal jammy kinetic)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")

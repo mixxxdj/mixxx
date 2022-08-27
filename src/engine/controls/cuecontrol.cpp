@@ -82,7 +82,7 @@ void appendCueHint(gsl::not_null<HintVector*> pHintList,
     }
 }
 
-void appendCueHint(HintVector* pHintList, const double playPos, Hint::Type type) {
+void appendCueHint(gsl::not_null<HintVector*> pHintList, const double playPos, Hint::Type type) {
     const auto frame = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(playPos);
     appendCueHint(pHintList, frame, type);
 }

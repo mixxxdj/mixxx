@@ -10,6 +10,7 @@
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
+#include "util/types.h"
 
 namespace RubberBand {
 class RubberBandStretcher;

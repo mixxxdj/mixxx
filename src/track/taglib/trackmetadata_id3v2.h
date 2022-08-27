@@ -12,7 +12,8 @@ namespace id3v2 {
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::ID3v2::Tag& tag);
+        const TagLib::ID3v2::Tag& tag,
+        bool resetMissingTagMetadata);
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,

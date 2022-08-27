@@ -50,7 +50,8 @@ void WEffectChainPresetButton::populateMenu() {
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         QString title = pChainPreset->name();
         if (title == m_pChain->presetName()) {
-            title = QStringLiteral("\u2713 ") + title;
+            title = QChar(0x2713) + // CHECK MARK
+                    QChar(' ') + title;
             chainIsPreset = true;
         }
         m_pMenu->addAction(title, this, [this, pChainPreset]() {
@@ -64,7 +65,7 @@ void WEffectChainPresetButton::populateMenu() {
         });
     }
     m_pMenu->addAction(tr("Save As New Preset..."), this, [this]() {
-        m_pChainPresetManager->savePreset(m_pChain);
+        m_pChainPresetManager->savePresetAndReload(m_pChain);
     });
 
     m_pMenu->addSeparator();

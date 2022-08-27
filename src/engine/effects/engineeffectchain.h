@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "engine/channelhandle.h"
+#include "engine/effects/engineeffectsdelay.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
 #include "util/class.h"
@@ -81,6 +82,7 @@ class EngineEffectChain final : public EffectsRequestHandler {
     mixxx::SampleBuffer m_buffer1;
     mixxx::SampleBuffer m_buffer2;
     ChannelHandleMap<ChannelHandleMap<ChannelStatus>> m_chainStatusForChannelMatrix;
+    EngineEffectsDelay m_effectsDelay;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };

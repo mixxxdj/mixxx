@@ -182,9 +182,12 @@ WSearchLineEdit,
 #VuMeterBox,
 #VuMeterBoxMaster,
 #VuMeterBoxMasterSingle,
-#LatencyMeterBox {
+#LatencyMeterBox[highlight="0"] {
   background-color: #040404;
-}
+  }
+  #LatencyMeterBox[highlight="1"] {
+    background-color: red;
+  }
 
 #VuMasterCover {
   background-color: rgba(21, 21, 21, 150);

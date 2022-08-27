@@ -94,6 +94,7 @@ void WEffectSelector::slotEffectSelected(int newIndex) {
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
     // After selecting an effect send Shift+Tab to move focus to tracks table
     // in order to immediately allow keyboard shortcuts again.
+    // TODO(ronso0) switch to previously focused (library?) widget instead
     ControlObject::set(ConfigKey("[Library]", "focused_widget"),
             static_cast<double>(FocusWidget::TracksTable));
 }
