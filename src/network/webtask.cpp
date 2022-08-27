@@ -122,7 +122,7 @@ void WebTask::onNetworkError(
         QNetworkReply::NetworkError errorCode,
         const QString& errorString,
         const WebResponseWithContent& responseWithContent) {
-    DEBUG_ASSERT(m_state == State::Pending);
+    DEBUG_ASSERT(m_state == State::Failed || m_state == State::Pending);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
 
     DEBUG_ASSERT(errorCode != QNetworkReply::NoError);
@@ -185,6 +185,7 @@ void WebTask::slotStart(int timeoutMillis) {
 
     auto* const pNetworkAccessManager = m_networkAccessManagerWeakPtr.data();
     VERIFY_OR_DEBUG_ASSERT(pNetworkAccessManager) {
+        m_state = State::Failed;
         onNetworkError(
                 QNetworkReply::NetworkSessionFailedError,
                 tr("No network access"),
