@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 
 #include <QTest>
+#include <span>
 
 #include "test/mixxxtest.h"
 #include "util/sample.h"
@@ -23,14 +24,12 @@ class RingDelayBufferTest : public MixxxTest {
     void TearDown() override {
     }
 
-    void AssertIdenticalBufferEquals(const CSAMPLE* pBuffer,
-            int iBufferLen,
-            const CSAMPLE* pReferenceBuffer,
-            int iReferenceBufferLength) {
-        EXPECT_EQ(iBufferLen, iReferenceBufferLength);
+    void AssertIdenticalBufferEquals(const std::span<CSAMPLE> buffer,
+            const std::span<const CSAMPLE> referenceBuffer) {
+        ASSERT_EQ(buffer.size(), referenceBuffer.size());
 
-        for (int i = 0; i < iBufferLen; ++i) {
-            EXPECT_FLOAT_EQ(pBuffer[i], pReferenceBuffer[i]);
+        for (std::span<CSAMPLE>::size_type i = 0; i < buffer.size(); ++i) {
+            EXPECT_FLOAT_EQ(buffer[i], referenceBuffer[i]);
         }
     }
 
@@ -52,21 +51,21 @@ TEST_F(RingDelayBufferTest, ReadWriteNoDelayTest) {
     EXPECT_EQ(m_pRingDelayBuffer->write(inputBuffer, numSamples), numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(output.data(), numSamples, 0), numSamples);
 
-    AssertIdenticalBufferEquals(output.data(),
-            numSamples,
-            firstExpectedResult,
-            numSamples);
+    AssertIdenticalBufferEquals(output.span(),
+            mixxx::spanutil::spanFromPtrLen(firstExpectedResult, numSamples));
 
     EXPECT_EQ(m_pRingDelayBuffer->write(inputBufferHalf, numSamplesHalf), numSamplesHalf);
     EXPECT_EQ(m_pRingDelayBuffer->read(output.data(), numSamples, 0), numSamples);
 
-    AssertIdenticalBufferEquals(output.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(output.span(),
+            mixxx::spanutil::spanFromPtrLen(secondExpectedResult, numSamples));
 
     // Write and read over one ring.
     EXPECT_EQ(m_pRingDelayBuffer->write(inputBuffer, numSamples), numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(output.data(), numSamples, 0), numSamples);
 
-    AssertIdenticalBufferEquals(output.data(), numSamples, thirdExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(output.span(),
+            mixxx::spanutil::spanFromPtrLen(thirdExpectedResult, numSamples));
 }
 
 TEST_F(RingDelayBufferTest, ReadWriteDelayTest) {
@@ -84,12 +83,14 @@ TEST_F(RingDelayBufferTest, ReadWriteDelayTest) {
     EXPECT_EQ(m_pRingDelayBuffer->write(inputBuffer, numSamples), numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(output.data(), numSamples, 0), numSamples);
 
-    AssertIdenticalBufferEquals(output.data(), numSamples, firstExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(output.span(),
+            mixxx::spanutil::spanFromPtrLen(firstExpectedResult, numSamples));
 
     // Read with delay.
     EXPECT_EQ(m_pRingDelayBuffer->read(output.data(), numSamples, firstDelaySize), numSamples);
 
-    AssertIdenticalBufferEquals(output.data(), numSamples, secondExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(output.span(),
+            mixxx::spanutil::spanFromPtrLen(secondExpectedResult, numSamples));
 
     // Fill the second half of the delay buffer with the first input data.
     EXPECT_EQ(m_pRingDelayBuffer->write(inputBuffer, numSamples), numSamples);
@@ -97,7 +98,8 @@ TEST_F(RingDelayBufferTest, ReadWriteDelayTest) {
     // Read with delay (not circle around).
     EXPECT_EQ(m_pRingDelayBuffer->read(output.data(), numSamples, secondDelaySize), numSamples);
 
-    AssertIdenticalBufferEquals(output.data(), numSamples, thirdExpectedResult, numSamples);
+    AssertIdenticalBufferEquals(output.span(),
+            mixxx::spanutil::spanFromPtrLen(thirdExpectedResult, numSamples));
 }
 
 static void BM_WriteReadWholeBufferNoDelay(benchmark::State& state) {
