@@ -23,12 +23,12 @@ class PitchShiftGroupState : public EffectState {
 
     ~PitchShiftGroupState() override;
     void initializeBuffer(const mixxx::EngineParameters& engineParameters);
-    void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
+    //void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
 
     std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;
-    std::unique_ptr<CircularBuffer<CSAMPLE>> m_outputBuffer;
+    std::unique_ptr<CircularBuffer<CSAMPLE>> m_inputBuffer;
     CSAMPLE* m_retrieveBuffer[2];
-    CSAMPLE* m_inputSamples[2];
+    CSAMPLE* m_offset[2];
     CSAMPLE* m_interleavedBuffer;
 };
 
@@ -60,6 +60,7 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
         return getId();
     }
 
+    bool m_fullRingBuffer;
     SINT m_groupDelayFrames;
     EngineEffectParameterPointer m_pPitchParameter;
 

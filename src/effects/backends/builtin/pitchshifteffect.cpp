@@ -1,96 +1,25 @@
-/*
-Rubber Band Library
-An audio time-stretching and pitch-shifting library.
-Copyright 2007-2022 Particular Programs Ltd.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.  See the file
-COPYING included with this distribution for more information.
-
-Alternatively, if you have a valid commercial licence for the
-Rubber Band Library obtained by agreement with the copyright
-holders, you may redistribute and/or modify it under the terms
-described in that licence.
-
-If you wish to distribute code using the Rubber Band Library
-under terms other than those of the GNU General Public License,
-you must obtain a valid commercial licence before doing so.
-*/
-
-/*
- * The PitchShiftEffect::processChannel function main algorithm
- * is based on the public ladspa-lv2 example implementation
- * by RubberBand.
- */
-
 #include "effects/backends/builtin/pitchshifteffect.h"
 
+#include "util/assert.h"
+#include "util/counter.h"
 #include "util/sample.h"
 
 namespace {
-static constexpr SINT kBlockFrames = 1024;
-static constexpr SINT kPrefilledFrames = 8192;
+// TODO for the setting of sample rate 44100Hz, input/output buffer size
+//  of 1024 frames (2048 samples) can be this value probably just 4096.
+static constexpr SINT kReservedFrames = 8192;
 } // anonymous namespace
 
 PitchShiftEffect::PitchShiftEffect()
-        : m_groupDelayFrames(kPrefilledFrames) {
+        : m_fullRingBuffer(false),
+          m_groupDelayFrames(0) {
 }
 
 PitchShiftGroupState::PitchShiftGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters) {
+    //audioParametersChanged(engineParameters);
     initializeBuffer(engineParameters);
-    audioParametersChanged(engineParameters);
-
-    // Fill the buffer with zero values.
-    SampleUtil::clear(m_retrieveBuffer[0], kPrefilledFrames);
-    SampleUtil::clear(m_retrieveBuffer[1], kPrefilledFrames);
-
-    // Prefilling the RubberBand with zero samples. Based on filling the inner
-    // RubberBand buffers with samples, the total latency is lower. It is caused
-    // due to without filling the inner buffers, it will take more input
-    // sample buffers to produce the "meaningful" output. If some number
-    // of input frames are provided into RubberBand, we can't expect
-    // the same number of frames on the output, especially at the start
-    // of RubberBand processing. To dive a little more detailed
-    // into this problem, when the number of frames of the input buffer is not
-    // sufficient for RubberBand, the RubberBand will not produce enough
-    // output frames to fill the output buffer or actually any frames at all.
-    // At first, the RubberBand will not produce result frames. Then,
-    // it will produce some frames, but not enough to fill the whole
-    // output buffer with the same amount of frames as in the input buffer.
-    // It will take more input buffers until the RubberBand will produce enough
-    // frames to fill the entire output buffer. This situation can be shown
-    // in the following diagram:
-    //
-    // The X letter represents the real frame data.
-    //
-    // stream of input buffers:
-    //
-    // |XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX| ...
-    //
-    // stream of output buffers:
-    //
-    // |        |        |        |    XXXX|    XXXX|  XXXXXX|XXXXXXXX|XXXXXXXX| ...
-
-    // By using the RubberBand inner buffers prefilling with zero samples (silence),
-    // the latency will be exactly the same as the specific optimal amount
-    // of offered zero samples. The optimal amount of prefilled sample frames
-    // represent the kPrefilledFrames constant. The situation can be shown
-    // in the following diagram:
-    //
-    // The X letter represents the real frame data.
-    //
-    // stream of input buffers:
-    //
-    // |00000000|00000000|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX| ...
-    //
-    // stream of output buffers:
-    //
-    //                   |00000000|00000000|XXXXXXXX|XXXXXXXX|XXXXXXXX|XXXXXXXX| ...
-    m_pRubberBand->process(m_retrieveBuffer, kPrefilledFrames, false);
 }
 
 PitchShiftGroupState::~PitchShiftGroupState() {
@@ -101,24 +30,27 @@ PitchShiftGroupState::~PitchShiftGroupState() {
 
 void PitchShiftGroupState::initializeBuffer(
         const mixxx::EngineParameters& engineParameters) {
-    m_outputBuffer = std::make_unique<CircularBuffer<CSAMPLE>>(engineParameters.samplesPerBuffer());
+    m_inputBuffer = std::make_unique<CircularBuffer<CSAMPLE>>(
+            kReservedFrames * engineParameters.channelCount());
+    m_interleavedBuffer = SampleUtil::alloc(
+            kReservedFrames * engineParameters.channelCount());
 
-    m_retrieveBuffer[0] = SampleUtil::alloc(
-            math_max(engineParameters.framesPerBuffer(), kPrefilledFrames));
-    m_retrieveBuffer[1] = SampleUtil::alloc(
-            math_max(engineParameters.framesPerBuffer(), kPrefilledFrames));
-
-    m_interleavedBuffer = SampleUtil::alloc(engineParameters.samplesPerBuffer());
+    m_retrieveBuffer[0] = SampleUtil::alloc(kReservedFrames);
+    m_retrieveBuffer[1] = SampleUtil::alloc(kReservedFrames);
 }
 
-void PitchShiftGroupState::audioParametersChanged(
-        const mixxx::EngineParameters& engineParameters) {
-    m_pRubberBand = std::make_unique<RubberBand::RubberBandStretcher>(
-            engineParameters.sampleRate(),
-            engineParameters.channelCount(),
-            RubberBand::RubberBandStretcher::OptionProcessRealTime |
-                    RubberBand::RubberBandStretcher::OptionPitchHighConsistency);
-};
+// TODO(davidchocholaty) there is needed to fix the bug in the Mixxx
+//  as first because the function caller will pass the invalid value of
+//  engineParameters (just the maximum possible values).
+
+//void PitchShiftGroupState::audioParametersChanged(
+//        const mixxx::EngineParameters& engineParameters) {
+//    m_pRubberBand = std::make_unique<RubberBand::RubberBandStretcher>(
+//            engineParameters.sampleRate(),
+//            engineParameters.channelCount(),
+//            RubberBand::RubberBandStretcher::OptionProcessRealTime |
+//                    RubberBand::RubberBandStretcher::OptionPitchHighConsistency);
+//}
 
 // static
 QString PitchShiftEffect::getId() {
@@ -166,8 +98,20 @@ void PitchShiftEffect::processChannel(
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
 
-    const SINT framesPerBuffer = engineParameters.framesPerBuffer();
-    const mixxx::audio::ChannelCount channelCount = engineParameters.channelCount();
+    if (!pState->m_pRubberBand) {
+        pState->m_pRubberBand = std::make_unique<RubberBand::RubberBandStretcher>(
+                engineParameters.sampleRate(),
+                engineParameters.channelCount(),
+                RubberBand::RubberBandStretcher::OptionProcessRealTime |
+                        RubberBand::RubberBandStretcher::OptionPitchHighConsistency);
+    }
+
+    //if (m_groupDelayFrames == 0) {
+    // TODO(davidchocholaty) verify if the kReservedFrames is divisible
+    //  by the number of frames, so we can just subtract the last buffer
+    //  from the group delay frames.
+    //    m_groupDelayFrames = kReservedFrames - engineParameters.framesPerBuffer();
+    //}
 
     const double pitchParameter = m_pPitchParameter->value();
 
@@ -181,111 +125,100 @@ void PitchShiftEffect::processChannel(
 
     pState->m_pRubberBand->setPitchScale(pitch);
 
-    SampleUtil::deinterleaveBuffer(
-            pState->m_retrieveBuffer[0],
-            pState->m_retrieveBuffer[1],
-            pInput,
-            framesPerBuffer);
+    // TODO(davidchocholaty) handle the situation if it would not be possible
+    //  to write the input buffer samples into the input ring buffer due to
+    //  it being full. This situation means, that the input is produced
+    //  much faster than the RubberBand takes the samples from the ring buffer.
+    pState->m_inputBuffer->write(pInput, engineParameters.samplesPerBuffer());
 
-    SINT offsetFrames = 0;
+    if (pState->m_inputBuffer->isFull()) {
+        m_fullRingBuffer = true;
+    }
 
-    while (offsetFrames < framesPerBuffer) {
-        SINT blockFrames = kBlockFrames;
+    if (!m_fullRingBuffer) {
+        SampleUtil::fill(pOutput, 0.0f, engineParameters.samplesPerBuffer());
+        return;
+    }
 
-        if (offsetFrames + blockFrames > framesPerBuffer) {
-            blockFrames = framesPerBuffer - offsetFrames;
-        }
+    bool lastReadFailed = false;
+    bool inputDataMiss = false;
 
-        SINT processedFrames = 0;
+    SINT remainingFrames = engineParameters.framesPerBuffer();
+    SINT retrievedFrames = 0;
 
-        while (processedFrames < blockFrames) {
-            // RubberBand is asking us for data. This practice could look
-            // like the "pull" implementation as known for RubberBand
-            // implementation, anyway, it is not for example
-            // for the following reasons:
-            //
-            // 1. Prefilling with zero samples to avoid dropouts.
-            // 2. When the last block of the input buffer is processed
-            //    and the amount of frames that RubberBand requires is greater
-            //    than the rest of the input buffer frames, only the rest
-            //    of the input buffer frames are provided and not the amount,
-            //    that RubberBand requires.
-            //
-            // The second point can be shown in the following example:
-            //
-            // Precondition:
-            // pitch setting: +12 semitones (+1 octave)
-            // frames per input buffer: 1024
-            //
-            // After some processed buffers the RubberBand requires only
-            // about 264 frames (getSamplesRequired()) for one process() call,
-            // so the buffer is split into four parts:
-            //
-            // the input buffer 1024 frames:
-            // - 264 frames
-            // - 264 frames
-            // - 264 frames
-            // - 234 frames
-            //
-            // The main difference between the clean "pull" implementation is,
-            // that the last value has to be 264 frames too because RubberBand
-            // requires it, but we can only offer the rest frames
-            // of the input buffer. So, the input buffer is just split
-            // into smaller chunks if RubberBand does not require so much data
-            // for processing.
+    pState->m_offset[0] = pState->m_retrieveBuffer[0];
+    pState->m_offset[1] = pState->m_retrieveBuffer[1];
 
-            // RubberBand works with multichannel Sample FRAMES.
-            SINT requiredFrames = pState->m_pRubberBand->getSamplesRequired();
-            SINT toProcessFrames = math_min(blockFrames - processedFrames, requiredFrames);
+    while (remainingFrames > 0 && !inputDataMiss) {
+        pState->m_offset[0] += retrievedFrames;
+        pState->m_offset[1] += retrievedFrames;
 
-            for (int c = 0; c < channelCount; ++c) {
-                pState->m_inputSamples[c] =
-                        pState->m_retrieveBuffer[c] +
-                        offsetFrames + processedFrames;
-            }
+        SINT requiredFrames = static_cast<SINT>(pState->m_pRubberBand->getSamplesRequired());
+
+        SINT readFrames = pState->m_inputBuffer->read(
+                                  pState->m_interleavedBuffer,
+                                  requiredFrames * engineParameters.channelCount()) /
+                engineParameters.channelCount();
+
+        if (readFrames >= requiredFrames) {
+            lastReadFailed = false;
+
+            SampleUtil::deinterleaveBuffer(
+                    pState->m_offset[0],
+                    pState->m_offset[1],
+                    pState->m_interleavedBuffer,
+                    requiredFrames);
 
             pState->m_pRubberBand->process(
-                    pState->m_inputSamples,
-                    toProcessFrames,
+                    pState->m_offset,
+                    requiredFrames,
                     false);
+        } else {
+            if (lastReadFailed) {
+                // Flush and break out after the next retrieval. If we are
+                // at EOF this serves to get the last samples out of
+                // RubberBand.
+                pState->m_pRubberBand->process(
+                        pState->m_offset,
+                        0,
+                        true);
 
-            processedFrames += toProcessFrames;
-
-            SINT availableFrames = pState->m_pRubberBand->available();
-            SINT writableFrames = pState->m_outputBuffer->getWriteSpace() / channelCount;
-
-            if (availableFrames > writableFrames) {
-                availableFrames = writableFrames;
+                inputDataMiss = true;
             }
 
-            SINT retrievedFrames = pState->m_pRubberBand->retrieve(
-                    pState->m_retrieveBuffer, availableFrames);
-            SampleUtil::interleaveBuffer(pState->m_interleavedBuffer,
-                    pState->m_retrieveBuffer[0],
-                    pState->m_retrieveBuffer[1],
-                    retrievedFrames);
-
-            pState->m_outputBuffer->write(pState->m_interleavedBuffer,
-                    retrievedFrames * channelCount);
+            lastReadFailed = true;
         }
 
-        SINT toReadFrames = pState->m_outputBuffer->getReadSpace() / channelCount;
-        SINT missingFrames = 0;
+        SINT availableFrames = pState->m_pRubberBand->available();
+        SINT toReadFrames = math_min(availableFrames, remainingFrames);
 
-        if (toReadFrames < blockFrames) {
-            missingFrames = blockFrames - toReadFrames;
-            SampleUtil::fill(pOutput + offsetFrames * channelCount,
-                    0.0f,
-                    missingFrames * channelCount);
+        retrievedFrames = static_cast<SINT>(pState->m_pRubberBand->retrieve(
+                pState->m_offset, toReadFrames));
 
-            m_groupDelayFrames += missingFrames;
-        }
+        remainingFrames -= retrievedFrames;
+    }
 
-        SINT outputFrames = math_min(toReadFrames, blockFrames);
-        pState->m_outputBuffer->read(
-                pOutput + (offsetFrames + missingFrames) * channelCount,
-                outputFrames * channelCount);
+    if (inputDataMiss) {
+        const SINT writtenFrames = engineParameters.framesPerBuffer() - remainingFrames;
 
-        offsetFrames += blockFrames;
+        SampleUtil::interleaveBuffer(pOutput,
+                pState->m_retrieveBuffer[0],
+                pState->m_retrieveBuffer[1],
+                writtenFrames);
+
+        SampleUtil::fill(
+                pOutput + writtenFrames * engineParameters.channelCount(),
+                0.0f,
+                remainingFrames);
+
+        pState->m_pRubberBand->reset();
+
+        Counter counter("PitchShiftEffect::processChannel underflow");
+        counter.increment();
+    } else {
+        SampleUtil::interleaveBuffer(pOutput,
+                pState->m_retrieveBuffer[0],
+                pState->m_retrieveBuffer[1],
+                engineParameters.framesPerBuffer());
     }
 }
