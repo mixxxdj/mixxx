@@ -78,7 +78,7 @@ class RingDelayBuffer final {
     RingDelayBuffer(SINT bufferSize);
 
     void clear() {
-        m_firstInputBuffer = true;
+        m_firstInputChunk = true;
         m_writePos = 0;
 
         m_buffer.fill(0);
@@ -96,7 +96,7 @@ class RingDelayBuffer final {
     // into the clear ring delay buffer. It is done to avoid
     // a crackling sound when the input samples are read after reading
     // the previous zero samples.
-    bool m_firstInputBuffer;
+    bool m_firstInputChunk;
     // Position of next writable element.
     SINT m_writePos;
     // Ring delay buffer.

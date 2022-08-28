@@ -100,7 +100,7 @@ SINT copyRing(const std::span<const CSAMPLE> sourceBuffer,
 } // anonymous namespace
 
 RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
-        : m_firstInputBuffer(true),
+        : m_firstInputChunk(true),
           m_writePos(0),
           m_buffer(bufferSize) {
     // Set the ring delay buffer items to 0.
@@ -133,12 +133,12 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
     }
 
     const SINT numItems = [&]() {
-        if (m_firstInputBuffer) {
+        if (m_firstInputChunk) {
             // If the first input buffer is written, the first sample is on the index 0.
             // Based on the checking of an available number of samples, the situation,
             // that the writing will be non-contiguous cannot occur.
             SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
-            m_firstInputBuffer = false;
+            m_firstInputChunk = false;
             return itemsToWrite;
         } else {
             return copyRing(mixxx::spanutil::spanFromPtrLen(pBuffer, itemsToWrite),
