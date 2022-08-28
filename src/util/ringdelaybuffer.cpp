@@ -51,6 +51,13 @@
 #include "util/sample.h"
 
 namespace {
+// The helper function for copying data by using one ring buffer
+// and one contiguous buffer or using two contiguous buffers.
+// The situation working with two ring buffers is not allowed
+// due to this situation is not possible with delay handling
+// and for this situation, there is a need for three copies.
+// If the copying will come across the upper bound of the ring buffer,
+// the next items are copied from/to the start of the ring buffer.
 SINT copyRing(const std::span<const CSAMPLE> sourceBuffer,
         SINT sourcePos,
         const std::span<CSAMPLE> destBuffer,
@@ -62,6 +69,11 @@ SINT copyRing(const std::span<const CSAMPLE> sourceBuffer,
     SINT sourceRemainingItems = sourceBuffer.size() - sourcePos;
     SINT destRemainingItems = destBuffer.size() - destPos;
 
+    // Do not allow the new positions will both cross the upper bound
+    // of their buffers. Based on that, the three copies will be needed,
+    // but for the delay handling use case of the ring buffer,
+    // this situation is not possible and is not allowed
+    // in this helper function.
     VERIFY_OR_DEBUG_ASSERT(newSourcePos <= sourceBuffer.size() ||
             newDestPos <= destBuffer.size()) {
         return 0;
@@ -73,17 +85,23 @@ SINT copyRing(const std::span<const CSAMPLE> sourceBuffer,
         // Copy is not contiguous.
         SINT firstDataBlockSize = math_min(sourceRemainingItems, destRemainingItems);
 
+        // Copy the first data part until the end of the destination
+        // or the source buffer.
         SampleUtil::copy(destBuffer.last(destRemainingItems).data(),
                 sourceBuffer.last(sourceRemainingItems).data(),
                 firstDataBlockSize);
 
+        // Calculate new source and destination position.
         sourcePos = (sourcePos + firstDataBlockSize) % sourceBuffer.size();
         destPos = (destPos + firstDataBlockSize) % destBuffer.size();
 
+        // Based on the new source and destination positions recalculate
+        // the remaining items from the new positions.
         sourceRemainingItems = sourceBuffer.size() - sourcePos;
         destRemainingItems = destBuffer.size() - destPos;
 
-        // The second data part is the start of the ring buffer.
+        // The second data part is the start of the source
+        // or destination buffer.
         SampleUtil::copy(destBuffer.last(destRemainingItems).data(),
                 sourceBuffer.last(sourceRemainingItems).data(),
                 numItems - firstDataBlockSize);
@@ -103,19 +121,24 @@ RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
         : m_firstInputChunk(true),
           m_writePos(0),
           m_buffer(bufferSize) {
-    // Set the ring delay buffer items to 0.
+    // Set the ring buffer items to 0.
     m_buffer.fill(0);
 }
 
 SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT delayItems) {
     const SINT shift = itemsToRead + delayItems;
 
+    // The reading position shift against the write position
+    // has to be smaller or equal to the ring buffer size.
     VERIFY_OR_DEBUG_ASSERT(shift <= m_buffer.size()) {
         return 0;
     }
 
     SINT readPos = m_writePos - shift;
 
+    // The reading position crossed the left bound of the ring buffer.
+    // Add the size of the ring buffer to move the position around and keep it
+    // in the valid index range.
     if (readPos < 0) {
         readPos = readPos + m_buffer.size();
     }
@@ -134,7 +157,7 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
 
     const SINT numItems = [&]() {
         if (m_firstInputChunk) {
-            // If the first input buffer is written, the first sample is on the index 0.
+            // If the first input chunk is written, the first sample is on the index 0.
             // Based on the checking of an available number of samples, the situation,
             // that the writing will be non-contiguous cannot occur.
             SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
@@ -150,8 +173,8 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
     }();
 
     // Calculate the new write position. If the new write position
-    // is after the ring delay buffer end, move it around from the start
-    // of the ring delay buffer.
+    // is after the ring buffer end, move it around from the start
+    // of the ring buffer.
     m_writePos = (m_writePos + numItems);
 
     if (m_writePos >= m_buffer.size()) {
