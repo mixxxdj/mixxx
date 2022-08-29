@@ -77,13 +77,12 @@ bool mergeReplayGainMetadataProperty(
     }
     return modified;
 }
-#endif // __EXTRA_METADATA__
 
 // This conditional copy operation only works for nullable properties
 // like QString or QUuid.
 template<typename T>
 bool copyIfNotNull(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isNull() &&
             *pMergedProperty != importedProperty) {
@@ -97,7 +96,7 @@ bool copyIfNotNull(
 // empty = missing.
 template<typename T>
 bool copyIfNotEmpty(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isEmpty() &&
             *pMergedProperty != importedProperty) {
@@ -106,6 +105,7 @@ bool copyIfNotEmpty(
     }
     return false;
 }
+#endif // __EXTRA_METADATA__
 
 } // anonymous namespace
 

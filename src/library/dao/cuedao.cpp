@@ -74,10 +74,11 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
             query.isPrepared() &&
             !query.hasError());
     query.bindValue(":id", trackId.toVariant());
-    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+    if (!query.execPrepared()) {
         kLogger.warning()
                 << "Failed to load cues of track"
                 << trackId;
+        DEBUG_ASSERT(!"failed query");
         return cues;
     }
     QMap<int, CuePointer> hotCuesByNumber;
@@ -233,10 +234,11 @@ void CueDAO::saveTrackCues(
             query.isPrepared() &&
             !query.hasError());
     query.bindValue(":track_id", trackId.toVariant());
-    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+    if (!query.execPrepared()) {
         kLogger.warning()
                 << "Failed to delete orphaned cues of track"
                 << trackId;
+        DEBUG_ASSERT(!"failed query");
         return;
     }
     if (query.numRowsAffected() > 0) {

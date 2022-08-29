@@ -55,7 +55,7 @@ class SampleBuffer final {
         return *this;
     }
 
-    SINT size() const {
+    constexpr SINT size() const {
         return m_size;
     }
 

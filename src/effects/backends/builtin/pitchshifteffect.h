@@ -9,8 +9,6 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util/circularbuffer.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
 #include "util/types.h"
 
 namespace RubberBand {
@@ -60,9 +58,13 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
         return getId();
     }
 
+    bool m_currentFormant;
     bool m_fullRingBuffer;
     SINT m_groupDelayFrames;
     EngineEffectParameterPointer m_pPitchParameter;
+    EngineEffectParameterPointer m_pRangeParameter;
+    EngineEffectParameterPointer m_pSemitonesModeParameter;
+    EngineEffectParameterPointer m_pFormantPreservingParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PitchShiftEffect);
 };

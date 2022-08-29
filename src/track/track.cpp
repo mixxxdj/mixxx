@@ -23,7 +23,7 @@ constexpr bool kLogStats = false;
 std::atomic<int> s_numberOfInstances;
 
 template<typename T>
-inline bool compareAndSet(T* pField, const T& value) {
+inline bool compareAndSet(gsl::not_null<T*> pField, const T& value) {
     if (*pField != value) {
         // Copy the value into its final location
         *pField = value;
@@ -37,7 +37,7 @@ inline bool compareAndSet(T* pField, const T& value) {
 // Overload with a forwarding reference argument for efficiently
 // passing large, movable values.
 template<typename T>
-inline bool compareAndSet(T* pField, T&& value) {
+inline bool compareAndSet(gsl::not_null<T*> pField, T&& value) {
     if (*pField != value) {
         // Forward the value into its final location
         *pField = std::forward<T>(value);
@@ -1426,30 +1426,6 @@ void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
         markDirtyAndUnlock(&locked);
         emit coverArtUpdated();
     }
-}
-
-bool Track::refreshCoverImageDigest(
-        const QImage& loadedImage) {
-    auto locked = lockMutex(&m_qMutex);
-    auto coverInfo = CoverInfo(
-            m_record.getCoverInfo(),
-            m_fileAccess.info().location());
-    if (!coverInfo.refreshImageDigest(
-                loadedImage,
-                m_fileAccess.token())) {
-        return false;
-    }
-    if (!compareAndSet(
-                m_record.ptrCoverInfo(),
-                static_cast<const CoverInfoRelative&>(coverInfo))) {
-        return false;
-    }
-    kLogger.info()
-            << "Refreshed cover image digest"
-            << m_fileAccess.info().location();
-    markDirtyAndUnlock(&locked);
-    emit coverArtUpdated();
-    return true;
 }
 
 CoverInfoRelative Track::getCoverInfo() const {
