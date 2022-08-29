@@ -1,6 +1,21 @@
 #include "effects/backends/builtin/pitchshifteffect.h"
 
+#include <QString>
+
 #include "util/sample.h"
+
+namespace {
+static constexpr SINT kSemitonesPerOctave = 12;
+
+static const QString kPitchParameterId = QStringLiteral("pitch");
+static const QString kRangeParameterId = QStringLiteral("range");
+static const QString kSemitonesModeParameterId = QStringLiteral("semitonesMode");
+static const QString kFormantPreservingParameterId = QStringLiteral("formantPreserving");
+} // anonymous namespace
+
+PitchShiftEffect::PitchShiftEffect()
+        : m_currentFormant(false) {
+}
 
 PitchShiftGroupState::PitchShiftGroupState(
         const mixxx::EngineParameters& engineParameters)
@@ -46,12 +61,12 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pManifest->setName(QObject::tr("Pitch Shift"));
     pManifest->setShortName(QObject::tr("Pitch Shift"));
     pManifest->setAuthor("The Mixxx Team");
-    pManifest->setVersion("1.0");
+    pManifest->setVersion("2.0");
     pManifest->setDescription(QObject::tr(
             "Raises or lowers the original pitch of a sound."));
 
     EffectManifestParameterPointer pitch = pManifest->addParameter();
-    pitch->setId("pitch");
+    pitch->setId(kPitchParameterId);
     pitch->setName(QObject::tr("Pitch"));
     pitch->setShortName(QObject::tr("Pitch"));
     pitch->setDescription(QObject::tr(
@@ -61,12 +76,48 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pitch->setNeutralPointOnScale(0.0);
     pitch->setRange(-1.0, 0.0, 1.0);
 
+    EffectManifestParameterPointer range = pManifest->addParameter();
+    range->setId(kRangeParameterId);
+    range->setName(QObject::tr("Range"));
+    range->setShortName(QObject::tr("Range"));
+    range->setDescription(QObject::tr(
+            "The range of the Pitch knob (0 - 2 octaves).\n"));
+    range->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    range->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    range->setNeutralPointOnScale(1.0);
+    range->setRange(0.0, 1.0, 2.0);
+
+    EffectManifestParameterPointer semitonesMode = pManifest->addParameter();
+    semitonesMode->setId(kSemitonesModeParameterId);
+    semitonesMode->setName(QObject::tr("Semitones"));
+    semitonesMode->setShortName(QObject::tr("Semitones"));
+    semitonesMode->setDescription(QObject::tr(
+            "Change the pitch in semitone steps instead of continuously."));
+    semitonesMode->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    semitonesMode->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    semitonesMode->setRange(0, 1, 1);
+
+    EffectManifestParameterPointer formantPreserving = pManifest->addParameter();
+    formantPreserving->setId(kFormantPreservingParameterId);
+    formantPreserving->setName(QObject::tr("Formant"));
+    formantPreserving->setShortName(QObject::tr("Formant"));
+    formantPreserving->setDescription(QObject::tr(
+            "Preserve the resonant frequencies (formants) of the human vocal tract "
+            "and other instruments.\n"
+            "Hint: compensates \"chipmunk\" or \"growling\" voices"));
+    formantPreserving->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    formantPreserving->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    formantPreserving->setRange(0, 0, 1);
+
     return pManifest;
 }
 
 void PitchShiftEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
-    m_pPitchParameter = parameters.value("pitch");
+    m_pPitchParameter = parameters.value(kPitchParameterId);
+    m_pRangeParameter = parameters.value(kRangeParameterId);
+    m_pSemitonesModeParameter = parameters.value(kSemitonesModeParameterId);
+    m_pFormantPreservingParameter = parameters.value(kFormantPreservingParameterId);
 }
 
 void PitchShiftEffect::processChannel(
@@ -79,15 +130,24 @@ void PitchShiftEffect::processChannel(
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
 
-    const double pitchParameter = m_pPitchParameter->value();
+    if (const bool formantPreserving = m_pFormantPreservingParameter->toBool();
+            m_currentFormant != formantPreserving) {
+        m_currentFormant = formantPreserving;
 
-    const double pitch = 1.0 + [=] {
-        if (pitchParameter < 0.0) {
-            return pitchParameter / 2.0;
-        } else {
-            return pitchParameter;
-        }
-    }();
+        pState->m_pRubberBand->setFormantOption(m_currentFormant
+                        ? RubberBand::RubberBandStretcher::
+                                  OptionFormantPreserved
+                        : RubberBand::RubberBandStretcher::
+                                  OptionFormantShifted);
+    }
+
+    double pitchParameter = m_pPitchParameter->value() * m_pRangeParameter->value();
+
+    if (m_pSemitonesModeParameter->toBool()) {
+        pitchParameter = roundToFraction(pitchParameter, kSemitonesPerOctave);
+    }
+
+    const double pitch = std::pow(2.0, pitchParameter);
 
     pState->m_pRubberBand->setPitchScale(pitch);
 
