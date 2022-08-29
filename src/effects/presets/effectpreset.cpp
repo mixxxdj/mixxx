@@ -99,5 +99,22 @@ const QDomElement EffectPreset::toXml(QDomDocument* doc) const {
     return effectElement;
 }
 
-EffectPreset::~EffectPreset() {
+void EffectPreset::updateParametersFrom(const EffectPreset& other) {
+    DEBUG_ASSERT(backendType() == other.backendType());
+
+    // technically algorithmically inefficient solution O(n²). May be
+    // optimizable by sorting first, gains depend on parameter count
+    for (const auto& parameterToCopy : other.m_effectParameterPresets) {
+        auto currentParameterIt =
+                std::find_if(m_effectParameterPresets.begin(),
+                        m_effectParameterPresets.end(),
+                        [&](const auto& ourParameter) {
+                            return ourParameter.id() == parameterToCopy.id();
+                        });
+        if (currentParameterIt == m_effectParameterPresets.end()) {
+            continue;
+        }
+        // overwrite our parameter by taking a copy of the same parameter from `other`
+        *currentParameterIt = parameterToCopy;
+    }
 }
