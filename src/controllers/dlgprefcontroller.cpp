@@ -496,7 +496,11 @@ void DlgPrefController::slotApply() {
         bEnabled = m_ui.chkEnabledDevice->isChecked();
 
         if (m_pPreset->isDirty()) {
-            savePreset();
+            if (savePreset()) {
+                // We might have saved the previous preset with a new name,
+                // so update the preset combobox.
+                enumeratePresets(m_pPreset->filePath());
+            }
         }
     }
     m_ui.chkEnabledDevice->setChecked(bEnabled);
@@ -562,12 +566,13 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
     }
 
     applyPresetChanges();
+    bool previousPresetSaved = false;
     if (m_pPreset && m_pPreset->isDirty()) {
         if (QMessageBox::question(this,
                     tr("Mapping has been edited"),
                     tr("Do you want to save the changes?")) ==
                 QMessageBox::Yes) {
-            savePreset();
+            previousPresetSaved = savePreset();
         }
     }
 
@@ -578,17 +583,23 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
         DEBUG_ASSERT(!pPreset->isDirty());
     }
 
-    slotShowPreset(pPreset);
+    if (previousPresetSaved) {
+        // We might have saved the previous preset with a new name, so update
+        // the preset combobox.
+        enumeratePresets(presetPath);
+    } else {
+        slotShowPreset(pPreset);
+    }
 }
 
-void DlgPrefController::savePreset() {
+bool DlgPrefController::savePreset() {
     VERIFY_OR_DEBUG_ASSERT(m_pPreset) {
-        return;
+        return false;
     }
 
     if (!m_pPreset->isDirty()) {
         qDebug() << "Mapping is not dirty, no need to save it.";
-        return;
+        return false;
     }
 
     QString oldFilePath = m_pPreset->filePath();
@@ -634,7 +645,7 @@ void DlgPrefController::savePreset() {
                 m_pOverwritePresets.insert(m_pPreset->filePath(), true);
             }
         } else if (overwriteMsgBox.close()) {
-            return;
+            return false;
         }
     }
 
@@ -649,7 +660,7 @@ void DlgPrefController::savePreset() {
         if (presetName.isEmpty()) {
             // QInputDialog was closed
             qDebug() << "Mapping not saved, new name is empty";
-            return;
+            return false;
         }
         newFilePath = presetNameToPath(m_pUserDir, presetName);
         m_pPreset->setName(presetName);
@@ -658,14 +669,14 @@ void DlgPrefController::savePreset() {
 
     if (!m_pPreset->savePreset(newFilePath)) {
         qDebug() << "Failed to save mapping as" << newFilePath;
-        return;
+        return false;
     }
     qDebug() << "Mapping saved as" << newFilePath;
 
     m_pPreset->setFilePath(newFilePath);
     m_pPreset->setDirty(false);
 
-    enumeratePresets(m_pPreset->filePath());
+    return true;
 }
 
 QString DlgPrefController::askForPresetName(const QString& prefilledName) const {
