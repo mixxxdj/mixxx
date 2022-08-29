@@ -53,7 +53,7 @@ TEST_F(RingDelayBufferTest, ReadWriteNoDelayTest) {
                       mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples)),
             numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(
-                      mixxx::spanutil::spanFromPtrLen(output.data(), numSamples), 0),
+                      output.span(), 0),
             numSamples);
 
     AssertIdenticalBufferEquals(output.span(),
@@ -63,7 +63,7 @@ TEST_F(RingDelayBufferTest, ReadWriteNoDelayTest) {
                       mixxx::spanutil::spanFromPtrLen(inputBufferHalf, numSamplesHalf)),
             numSamplesHalf);
     EXPECT_EQ(m_pRingDelayBuffer->read(
-                      mixxx::spanutil::spanFromPtrLen(output.data(), numSamples), 0),
+                      output.span(), 0),
             numSamples);
 
     AssertIdenticalBufferEquals(output.span(),
@@ -74,7 +74,7 @@ TEST_F(RingDelayBufferTest, ReadWriteNoDelayTest) {
                       mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples)),
             numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(
-                      mixxx::spanutil::spanFromPtrLen(output.data(), numSamples), 0),
+                      output.span(), 0),
             numSamples);
 
     AssertIdenticalBufferEquals(output.span(),
@@ -97,7 +97,7 @@ TEST_F(RingDelayBufferTest, ReadWriteDelayTest) {
                       mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples)),
             numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(
-                      mixxx::spanutil::spanFromPtrLen(output.data(), numSamples), 0),
+                      output.span(), 0),
             numSamples);
 
     AssertIdenticalBufferEquals(output.span(),
@@ -105,7 +105,7 @@ TEST_F(RingDelayBufferTest, ReadWriteDelayTest) {
 
     // Read with delay.
     EXPECT_EQ(m_pRingDelayBuffer->read(
-                      mixxx::spanutil::spanFromPtrLen(output.data(), numSamples), firstDelaySize),
+                      output.span(), firstDelaySize),
             numSamples);
 
     AssertIdenticalBufferEquals(output.span(),
@@ -118,7 +118,7 @@ TEST_F(RingDelayBufferTest, ReadWriteDelayTest) {
 
     // Read with delay (not circle around).
     EXPECT_EQ(m_pRingDelayBuffer->read(
-                      mixxx::spanutil::spanFromPtrLen(output.data(), numSamples), secondDelaySize),
+                      output.span(), secondDelaySize),
             numSamples);
 
     AssertIdenticalBufferEquals(output.span(),
@@ -134,17 +134,17 @@ static void BM_WriteReadWholeBufferNoDelay(benchmark::State& state) {
     mixxx::SampleBuffer input(numSamples);
     mixxx::SampleBuffer output(numSamples);
 
-    SampleUtil::fill(input.data(), 0.0f, numSamples);
+    input.fill(0.0f);
 
     for (auto _ : state) {
         state.PauseTiming();
         m_ringDelayBuffer.clear();
         state.ResumeTiming();
 
-        m_ringDelayBuffer.write(mixxx::spanutil::spanFromPtrLen(input.data(), numSamples));
-        m_ringDelayBuffer.read(mixxx::spanutil::spanFromPtrLen(output.data(), numSamples), 0);
-        m_ringDelayBuffer.write(mixxx::spanutil::spanFromPtrLen(input.data(), numSamples));
-        m_ringDelayBuffer.read(mixxx::spanutil::spanFromPtrLen(output.data(), numSamples), 0);
+        m_ringDelayBuffer.write(input.span());
+        m_ringDelayBuffer.read(output.span(), 0);
+        m_ringDelayBuffer.write(input.span());
+        m_ringDelayBuffer.read(output.span(), 0);
     }
 }
 BENCHMARK(BM_WriteReadWholeBufferNoDelay)->Range(64, 4 << 10);
@@ -159,23 +159,17 @@ static void BM_WriteReadWholeBufferDelay(benchmark::State& state) {
     mixxx::SampleBuffer input(numSamples);
     mixxx::SampleBuffer output(numSamples);
 
-    SampleUtil::fill(input.data(), 0.0f, numSamples);
+    input.fill(0.0f);
 
     for (auto _ : state) {
         state.PauseTiming();
         m_ringDelayBuffer.clear();
         state.ResumeTiming();
 
-        m_ringDelayBuffer.write(
-                mixxx::spanutil::spanFromPtrLen(input.data(), numSamples));
-        m_ringDelayBuffer.read(
-                mixxx::spanutil::spanFromPtrLen(output.data(), numSamples),
-                delaySize);
-        m_ringDelayBuffer.write(
-                mixxx::spanutil::spanFromPtrLen(input.data(), numSamples));
-        m_ringDelayBuffer.read(
-                mixxx::spanutil::spanFromPtrLen(output.data(), numSamples),
-                delaySize);
+        m_ringDelayBuffer.write(input.span());
+        m_ringDelayBuffer.read(output.span(), delaySize);
+        m_ringDelayBuffer.write(input.span());
+        m_ringDelayBuffer.read(output.span(), delaySize);
     }
 }
 BENCHMARK(BM_WriteReadWholeBufferDelay)->Range(64, 4 << 10);
