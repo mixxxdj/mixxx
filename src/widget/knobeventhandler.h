@@ -53,6 +53,9 @@ class KnobEventHandler {
     void mousePressEvent(T* pWidget, QMouseEvent* e) {
         switch (e->button()) {
             case Qt::RightButton:
+                qDebug() << "   .";
+                qDebug() << "   . knob: right mouse button pressed > reset";
+                qDebug() << "   .";
                 pWidget->resetControlParameter();
                 m_bRightButtonPressed = true;
                 break;
@@ -81,6 +84,9 @@ class KnobEventHandler {
                 pWidget->inputActivity();
                 break;
             case Qt::RightButton:
+                qDebug() << "   .";
+                qDebug() << "   . knob: right mouse button released";
+                qDebug() << "   .";
                 m_bRightButtonPressed = false;
                 break;
             default:

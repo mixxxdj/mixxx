@@ -77,6 +77,9 @@ class SliderEventHandler {
             m_bDrag = true;
         } else {
             if (e->button() == Qt::RightButton) {
+                qDebug() << "   .";
+                qDebug() << "   . slider: right mouse button pressed > reset";
+                qDebug() << "   .";
                 pWidget->resetControlParameter();
                 m_bRightButtonPressed = true;
             } else {
@@ -96,6 +99,9 @@ class SliderEventHandler {
             m_bDrag = false;
         }
         if (e->button() == Qt::RightButton) {
+            qDebug() << "   .";
+            qDebug() << "   . slider: right mouse button released";
+            qDebug() << "   .";
             m_bRightButtonPressed = false;
         } else {
             pWidget->setControlParameter(m_dOldParameter);
