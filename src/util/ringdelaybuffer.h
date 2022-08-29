@@ -118,7 +118,7 @@ class RingDelayBuffer final {
     /// against the write position. The sum of items to read and the delay items
     /// has to be smaller or equal to the ring buffer size. Otherwise, the items
     /// are not read and the method returns the zero value.
-    SINT read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT delayItems);
+    SINT read(std::span<CSAMPLE> destinationBuffer, const SINT delayItems);
 
     /// The method writes items from the pBuffer into the ring buffer.
     /// The number of items that will be written is passed through
@@ -127,7 +127,7 @@ class RingDelayBuffer final {
     /// and the method returns the zero value. The first chunk of items
     /// after creating of ring delay buffer or after clean-up is ramped
     /// by using fading-in.
-    SINT write(const CSAMPLE* pBuffer, const SINT itemsToWrite);
+    SINT write(std::span<const CSAMPLE> sourceBuffer);
 
   private:
     // This flag ensures the "fading in" for the first input chunk

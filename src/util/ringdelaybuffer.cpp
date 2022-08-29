@@ -125,7 +125,8 @@ RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
     m_buffer.fill(0);
 }
 
-SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT delayItems) {
+SINT RingDelayBuffer::read(std::span<CSAMPLE> destinationBuffer, const SINT delayItems) {
+    const SINT itemsToRead = destinationBuffer.size();
     const SINT shift = itemsToRead + delayItems;
 
     // The reading position shift against the write position
@@ -145,12 +146,14 @@ SINT RingDelayBuffer::read(CSAMPLE* pBuffer, const SINT itemsToRead, const SINT 
 
     return copyRing(mixxx::spanutil::spanFromPtrLen(m_buffer.data(), m_buffer.size()),
             readPos,
-            mixxx::spanutil::spanFromPtrLen(pBuffer, itemsToRead),
+            destinationBuffer,
             0,
             itemsToRead);
 }
 
-SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
+SINT RingDelayBuffer::write(std::span<const CSAMPLE> sourceBuffer) {
+    const SINT itemsToWrite = sourceBuffer.size();
+
     VERIFY_OR_DEBUG_ASSERT(itemsToWrite <= m_buffer.size()) {
         return 0;
     }
@@ -160,11 +163,15 @@ SINT RingDelayBuffer::write(const CSAMPLE* pBuffer, const SINT itemsToWrite) {
             // If the first input chunk is written, the first sample is on the index 0.
             // Based on the checking of an available number of samples, the situation,
             // that the writing will be non-contiguous cannot occur.
-            SampleUtil::copyWithRampingGain(m_buffer.data(), pBuffer, 0.0f, 1.0f, itemsToWrite);
+            SampleUtil::copyWithRampingGain(m_buffer.data(),
+                    sourceBuffer.data(),
+                    0.0f,
+                    1.0f,
+                    itemsToWrite);
             m_firstInputChunk = false;
             return itemsToWrite;
         } else {
-            return copyRing(mixxx::spanutil::spanFromPtrLen(pBuffer, itemsToWrite),
+            return copyRing(sourceBuffer,
                     0,
                     mixxx::spanutil::spanFromPtrLen(m_buffer.data(), m_buffer.size()),
                     m_writePos,
