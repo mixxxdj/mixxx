@@ -26,6 +26,9 @@ const QString kRequestPath = QStringLiteral("/ws/2/recording/");
 
 const QByteArray kUserAgentRawHeaderKey = "User-Agent";
 
+// MusicBrainz allows only a single request per second
+constexpr int kRateLimitMillis = 1000;
+
 QString userAgentRawHeaderValue() {
     return VersionStore::applicationName() +
             QStringLiteral("/") +
@@ -167,7 +170,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
 
     // Continue with next recording id
     DEBUG_ASSERT(!m_queuedRecordingIds.isEmpty());
-    slotStart(m_parentTimeoutMillis);
+    slotStart(m_parentTimeoutMillis, kRateLimitMillis);
 }
 
 void MusicBrainzRecordingsTask::emitSucceeded(
