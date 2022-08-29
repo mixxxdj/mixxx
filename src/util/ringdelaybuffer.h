@@ -106,7 +106,7 @@ class RingDelayBuffer final {
     }
 
     /// The method returns the size of the ring buffer.
-    SINT size() const {
+    constexpr SINT size() const {
         return m_buffer.size();
     }
 
