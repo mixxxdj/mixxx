@@ -35,15 +35,15 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
         // TODO(davidchocholaty) check the returned number of read samples
         // Read the samples using the previous group delay samples.
         m_delayBuffer.read(inOutSpan, m_prevDelaySamples);
+
         // Read the samples using the current group delay samples.
-        m_delayBuffer.read(
-                m_currentDelayBuffer.span().subspan(0, iBufferSize),
-                m_currentDelaySamples);
+        auto tmpBufferView = m_currentDelayBuffer.span().first(inOutSpan.size());
+        m_delayBuffer.read(tmpBufferView, m_currentDelaySamples);
 
         SampleUtil::linearCrossfadeBuffersOut(
                 pInOut,
-                m_currentDelayBuffer.data(),
-                iBufferSize);
+                tmpBufferView.data(),
+                tmpBufferView.size());
 
         m_prevDelaySamples = m_currentDelaySamples;
     }
