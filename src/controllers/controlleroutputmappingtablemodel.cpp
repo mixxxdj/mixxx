@@ -49,6 +49,12 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
             m_midiOutputMappings = m_pMidiPreset->getOutputMappings().values();
             endInsertRows();
         }
+        connect(this,
+                &QAbstractTableModel::dataChanged,
+                this,
+                [this]() {
+                    m_pMidiPreset->setDirty(true);
+                });
     }
 }
 

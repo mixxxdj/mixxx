@@ -73,7 +73,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetPathFromIndex(int index) const;
     QString askForPresetName(const QString& prefilledName = QString()) const;
     void applyPresetChanges();
-    void savePreset();
+    bool savePreset();
     void initTableView(QTableView* pTable);
 
     /// Set dirty state (i.e. changes have been made).
