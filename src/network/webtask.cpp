@@ -128,12 +128,8 @@ void WebTask::onNetworkError(
 
     DEBUG_ASSERT(errorCode != QNetworkReply::NoError);
     switch (errorCode) {
-    case QNetworkReply::OperationCanceledError:
-        // Client-side abort or timeout
-        m_state = State::Aborted;
-        break;
-    case QNetworkReply::TimeoutError:
-        // Network or server-side timeout
+    case QNetworkReply::OperationCanceledError: // Client-side timeout
+    case QNetworkReply::TimeoutError:           // Network or server-side timeout
         m_state = State::TimedOut;
         break;
     default:
@@ -141,14 +137,10 @@ void WebTask::onNetworkError(
     }
     DEBUG_ASSERT(hasTerminated());
 
-    if (m_state == State::Aborted) {
-        emitAborted(responseWithContent.requestUrl());
-    } else {
-        emitNetworkError(
-                errorCode,
-                errorString,
-                responseWithContent);
-    }
+    emitNetworkError(
+            errorCode,
+            errorString,
+            responseWithContent);
 }
 
 void WebTask::emitNetworkError(
