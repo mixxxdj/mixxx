@@ -14,14 +14,16 @@ class SliderEventHandler {
     SliderEventHandler()
             : m_dStartHandlePos(0),
               m_dStartMousePos(0),
-              m_bRightButtonPressed(false),
+              m_bLeftButtonPressed(false),
+              m_bMiddleButtonPressed(false),
               m_dOldParameter(-1.0), // virgin
               m_dPos(0.0),
               m_dHandleLength(0),
               m_dSliderLength(0),
               m_bHorizontal(false),
               m_bDrag(false),
-              m_bEventWhileDrag(true) { }
+              m_bEventWhileDrag(true) {
+    }
 
     void setHorizontal(bool horiz) {
         m_bHorizontal = horiz;
@@ -40,7 +42,7 @@ class SliderEventHandler {
     }
 
     void mouseMoveEvent(T* pWidget, QMouseEvent* e) {
-        if (!m_bRightButtonPressed) {
+        if (m_bLeftButtonPressed || m_bMiddleButtonPressed) {
             if (m_bHorizontal) {
                 m_dPos = e->x() - m_dHandleLength / 2;
             } else {
@@ -76,17 +78,25 @@ class SliderEventHandler {
             pWidget->mouseMoveEvent(e);
             m_bDrag = true;
         } else {
-            if (e->button() == Qt::RightButton) {
+            switch (e->button()) {
+            case Qt::RightButton:
                 pWidget->resetControlParameter();
-                m_bRightButtonPressed = true;
-            } else {
-                if (m_bHorizontal) {
-                    m_dStartMousePos = e->x() - m_dHandleLength / 2;
-                } else {
-                    m_dStartMousePos = e->y() - m_dHandleLength / 2;
-                }
-                m_dStartHandlePos = m_dPos;
+                return;
+            case Qt::LeftButton:
+                m_bLeftButtonPressed = true;
+                break;
+            case Qt::MiddleButton:
+                m_bMiddleButtonPressed = true;
+                break;
+            default:
+                return;
             }
+            if (m_bHorizontal) {
+                m_dStartMousePos = e->x() - m_dHandleLength / 2;
+            } else {
+                m_dStartMousePos = e->y() - m_dHandleLength / 2;
+            }
+            m_dStartHandlePos = m_dPos;
         }
     }
 
@@ -95,11 +105,17 @@ class SliderEventHandler {
             pWidget->mouseMoveEvent(e);
             m_bDrag = false;
         }
-        if (e->button() == Qt::RightButton) {
-            m_bRightButtonPressed = false;
-        } else {
-            pWidget->setControlParameter(m_dOldParameter);
+        switch (e->button()) {
+        case Qt::LeftButton:
+            m_bLeftButtonPressed = false;
+            break;
+        case Qt::MiddleButton:
+            m_bMiddleButtonPressed = false;
+            break;
+        default:
+            return;
         }
+        pWidget->setControlParameter(m_dOldParameter);
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
@@ -185,8 +201,10 @@ class SliderEventHandler {
     // We record where the mouse was when the user started clicking so they
     // don't need to perfectly grab the slider handle.
     double m_dStartMousePos;
-    // True while right mouse button is pressed.
-    bool m_bRightButtonPressed;
+    // True while left mouse button is pressed
+    bool m_bLeftButtonPressed;
+    // True while middle mouse button is pressed
+    bool m_bMiddleButtonPressed;
     // Previous parameter value of the control object, 0 to 1
     double m_dOldParameter;
     // Internal storage of slider position in pixels

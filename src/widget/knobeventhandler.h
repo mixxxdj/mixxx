@@ -13,10 +13,11 @@ template <class T>
 class KnobEventHandler {
   public:
     KnobEventHandler()
-            : m_bRightButtonPressed(false) {
-            QPixmap blankPixmap(32, 32);
-            blankPixmap.fill(QColor(0, 0, 0, 0));
-            m_blankCursor = QCursor(blankPixmap);
+            : m_bLeftButtonPressed(false),
+              m_bMiddleButtonPressed(false) {
+        QPixmap blankPixmap(32, 32);
+        blankPixmap.fill(QColor(0, 0, 0, 0));
+        m_blankCursor = QCursor(blankPixmap);
     }
 
     double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
@@ -43,7 +44,7 @@ class KnobEventHandler {
     }
 
     void mouseMoveEvent(T* pWidget, QMouseEvent* e) {
-        if (!m_bRightButtonPressed) {
+        if (m_bLeftButtonPressed || m_bMiddleButtonPressed) {
             double value = valueFromMouseEvent(pWidget, e);
             pWidget->setControlParameterDown(value);
             pWidget->inputActivity();
@@ -54,38 +55,41 @@ class KnobEventHandler {
         switch (e->button()) {
             case Qt::RightButton:
                 pWidget->resetControlParameter();
-                m_bRightButtonPressed = true;
-                break;
+                return;
             case Qt::LeftButton:
+                m_bLeftButtonPressed = true;
+                break;
             case Qt::MiddleButton:
-                m_startPos = e->globalPos();
-                m_prevPos = m_startPos;
-                // Somehow using Qt::BlankCursor does not work on Windows
-                // https://mixxx.org/forums/viewtopic.php?p=40298#p40298
-                pWidget->setCursor(m_blankCursor);
+                m_bMiddleButtonPressed = true;
                 break;
             default:
-                break;
+                return;
         }
+
+        m_startPos = e->globalPos();
+        m_prevPos = m_startPos;
+        // Somehow using Qt::BlankCursor does not work on Windows
+        // https://mixxx.org/forums/viewtopic.php?p=40298#p40298
+        pWidget->setCursor(m_blankCursor);
     }
 
     void mouseReleaseEvent(T* pWidget, QMouseEvent* e) {
         double value = 0.0;
         switch (e->button()) {
             case Qt::LeftButton:
-            case Qt::MiddleButton:
-                QCursor::setPos(m_startPos);
-                pWidget->unsetCursor();
-                value = valueFromMouseEvent(pWidget, e);
-                pWidget->setControlParameterUp(value);
-                pWidget->inputActivity();
+                m_bLeftButtonPressed = false;
                 break;
-            case Qt::RightButton:
-                m_bRightButtonPressed = false;
+            case Qt::MiddleButton:
+                m_bMiddleButtonPressed = false;
                 break;
             default:
-                break;
+                return;
         }
+        QCursor::setPos(m_startPos);
+        pWidget->unsetCursor();
+        value = valueFromMouseEvent(pWidget, e);
+        pWidget->setControlParameterUp(value);
+        pWidget->inputActivity();
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
@@ -102,8 +106,10 @@ class KnobEventHandler {
     }
 
   private:
-    // True if right mouse button is pressed.
-    bool m_bRightButtonPressed;
+    // True while left mouse button is pressed
+    bool m_bLeftButtonPressed;
+    // True while middle mouse button is pressed
+    bool m_bMiddleButtonPressed;
 
     // Starting point when left mouse button is pressed
     QPoint m_startPos;
