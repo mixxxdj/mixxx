@@ -1,78 +1,47 @@
 #include "engine/effects/engineeffectsdelay.h"
 
-#include "util/rampingvalue.h"
+#include <span>
+
 #include "util/sample.h"
+#include "util/span.h"
 
 EngineEffectsDelay::EngineEffectsDelay()
         : m_currentDelaySamples(0),
           m_prevDelaySamples(0),
-          m_delayBufferWritePos(0) {
-    m_pDelayBuffer = SampleUtil::alloc(kDelayBufferSize);
-    SampleUtil::clear(m_pDelayBuffer, kDelayBufferSize);
+          m_currentDelayBuffer(kDelayBufferSize) {
+    m_pDelayBuffer = std::make_unique<RingDelayBuffer>(kDelayBufferSize);
 }
 
 void EngineEffectsDelay::process(CSAMPLE* pInOut,
         const int iBufferSize) {
+    std::span<CSAMPLE> inOutSpan = mixxx::spanutil::spanFromPtrLen(pInOut, iBufferSize);
+
     if (m_prevDelaySamples == 0 && m_currentDelaySamples == 0) {
-        for (int i = 0; i < iBufferSize; ++i) {
-            // Put samples into delay buffer.
-            m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
-            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
-        }
+        // TODO(davidchocholaty) check the returned number of written samples
+        m_pDelayBuffer->write(inOutSpan);
 
         return;
     }
 
-    // The "+ kDelayBufferSize" addition ensures positive values for the modulo calculation.
-    // From a mathematical point of view, this addition can be removed. Anyway,
-    // from the cpp point of view, the modulo operator for negative values
-    // (for example, x % y, where x is a negative value) produces negative results
-    // (but in math the result value is positive).
-    int delaySourcePos =
-            (m_delayBufferWritePos + kDelayBufferSize - m_currentDelaySamples) %
-            kDelayBufferSize;
-
     if (m_prevDelaySamples == m_currentDelaySamples) {
-        for (int i = 0; i < iBufferSize; ++i) {
-            // Put samples into delay buffer.
-            m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
-            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
-
-            // Take a delayed sample from the delay buffer
-            // and copy it to the destination buffer.
-            pInOut[i] = m_pDelayBuffer[delaySourcePos];
-            delaySourcePos = (delaySourcePos + 1) % kDelayBufferSize;
-        }
-
+        // TODO(davidchocholaty) check the returned number of written samples
+        m_pDelayBuffer->write(inOutSpan);
+        // TODO(davidchocholaty) check the returned number of read samples
+        m_pDelayBuffer->read(inOutSpan, m_currentDelaySamples);
     } else {
-        // The "+ kDelayBufferSize" addition ensures positive values for the modulo calculation.
-        // From a mathematical point of view, this addition can be removed. Anyway,
-        // from the cpp point of view, the modulo operator for negative values
-        // (for example, x % y, where x is a negative value) produces negative results
-        // (but in math the result value is positive).
-        int oldDelaySourcePos =
-                (m_delayBufferWritePos + kDelayBufferSize - m_prevDelaySamples) %
-                kDelayBufferSize;
+        // TODO(davidchocholaty) check the returned number of written samples
+        m_pDelayBuffer->write(inOutSpan);
 
-        const RampingValue<CSAMPLE_GAIN> delayChangeRamped(0.0f, 1.0f, iBufferSize);
+        // TODO(davidchocholaty) check the returned number of read samples
+        // Read the samples using the previous group delay samples.
+        m_pDelayBuffer->read(inOutSpan, m_prevDelaySamples);
+        // Read the samples using the current group delay samples.
+        m_pDelayBuffer->read(m_currentDelayBuffer.subspan(0, iBufferSize), m_currentDelaySamples);
 
-        for (int i = 0; i < iBufferSize; ++i) {
-            // Put samples into delay buffer.
-            m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
-            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
-
-            // Take delayed samples from the delay buffer
-            // and with the use of ramping (cross-fading),
-            // calculate the result sample value
-            // and put it into the dest buffer.
-            CSAMPLE_GAIN crossMix = delayChangeRamped.getNth(i);
-
-            pInOut[i] = m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix);
-            pInOut[i] += m_pDelayBuffer[delaySourcePos] * crossMix;
-
-            oldDelaySourcePos = (oldDelaySourcePos + 1) % kDelayBufferSize;
-            delaySourcePos = (delaySourcePos + 1) % kDelayBufferSize;
-        }
+        SampleUtil::linearCrossfadeBuffersOut(
+                pInOut,
+                m_currentDelayBuffer.data(),
+                iBufferSize);
 
         m_prevDelaySamples = m_currentDelaySamples;
     }

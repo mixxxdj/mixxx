@@ -86,7 +86,7 @@ TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
     m_effectsDelay.setDelayFrames(numDelayFrames);
 
     const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
-    const CSAMPLE expectedResult[] = {-100.0, 75.0, -49.5, 24.75};
+    const CSAMPLE expectedResult[] = {-50.0, 50.0, -49.5, 49.5};
 
     mixxx::SampleBuffer pInOut(numSamples);
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
@@ -105,9 +105,9 @@ TEST_F(EngineEffectsDelayTest, WholeBufferDelay) {
 
     const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
     const CSAMPLE zeroBuffer[] = {0.0, 0.0, 0.0, 0.0};
-    const CSAMPLE firstExpectedResult[] = {-100.0, 75.0, -49.5, 24.75};
+    const CSAMPLE firstExpectedResult[] = {-50.0, 50.0, -49.5, 49.5};
 
-    const CSAMPLE secondExpectedResult[] = {-100.0, 100.0, -99.0, 99.0};
+    const CSAMPLE secondExpectedResult[] = {-50.0, 50.0, -99.0, 99.0};
     const CSAMPLE thirdExpectedResult[] = {0.0, 0.0, 0.0, 0.0};
 
     mixxx::SampleBuffer pInOut(numSamples);
@@ -134,7 +134,7 @@ TEST_F(EngineEffectsDelayTest, HalfBufferDelay) {
 
     const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
     const CSAMPLE zeroBuffer[] = {0.0, 0.0, 0.0, 0.0};
-    const CSAMPLE firstExpectedResult[] = {-100.0, 75.0, -99.5, 99.75};
+    const CSAMPLE firstExpectedResult[] = {-50.0, 50.0, -74.5, 74.5};
     const CSAMPLE secondExpectedResult[] = {-99.0, 99.0, -100.0, 100.0};
     const CSAMPLE thirdExpectedResult[] = {-99.0, 99.0, 0.0, 0.0};
 
@@ -166,9 +166,9 @@ TEST_F(EngineEffectsDelayTest, MisalignedDelayAccordingToBuffer) {
     const CSAMPLE zeroBuffer[] = {
             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     const CSAMPLE firstExpectedResult[] = {
-            -100.0, 87.5, -74.25, 61.875, -49.0, 36.75, -99.25, 99.625};
+            -25.0, 25.0, -37.125, 37.125, -36.75, 36.75, -43.0, 43.0};
     const CSAMPLE secondExpectedResult[] = {
-            -99.0, 99.0, -98.0, 98.0, -97.0, 97.0, -100.0, 100.0};
+            -49.5, 49.5, -73.5, 73.5, -97.0, 97.0, -100.0, 100.0};
     const CSAMPLE thirdExpectedResult[] = {
             -99.0, 99.0, -98.0, 98.0, -97.0, 97.0, 0.0, 0.0};
 
@@ -198,11 +198,11 @@ TEST_F(EngineEffectsDelayTest, CrossfadeBetweenTwoNonZeroDelays) {
             -100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
 
     const CSAMPLE firstExpectedResult[] = {
-            -100.0, 87.5, -74.25, 61.875, -99.0, 99.25, -98.5, 98.75};
+            -25.0, 25.0, -37.125, 37.125, -49.25, 49.25, -61.375, 61.375};
     const CSAMPLE secondExpectedResult[] = {
-            -98.0, 98.0, -97.0, 97.0, -100.0, 100.0, -99.0, 99.0};
+            -73.5, 73.5, -97.0, 97.0, -100.0, 100.0, -99.0, 99.0};
     const CSAMPLE thirdExpectedResult[] = {
-            -98.0, 98.25, -97.5, 97.75, -99.0, 98.75, -97.5, 97.25};
+            -98.0, 98.0, -97.5, 97.5, -99.0, 99.0, -97.5, 97.5};
     const CSAMPLE fourthExpectedResult[] = {
             -100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
 
@@ -239,11 +239,11 @@ TEST_F(EngineEffectsDelayTest, CrossfadeSecondDelayGreaterThanInputBufferSize) {
             -100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
 
     const CSAMPLE firstExpectedResult[] = {
-            -100.0, 87.5, -74.25, 61.875, -99.0, 99.25, -98.5, 98.75};
+            -25.0, 25.0, -37.125, 37.125, -49.25, 49.25, -61.375, 61.375};
     const CSAMPLE secondExpectedResult[] = {
-            -98.0, 98.0, -97.0, 97.0, -100.0, 100.0, -99.0, 99.0};
+            -73.5, 73.5, -97.0, 97.0, -100.0, 100.0, -99.0, 99.0};
     const CSAMPLE thirdExpectedResult[] = {
-            -98.0, 98.125, -97.25, 97.375, -98.5, 98.125, -99.75, 99.875};
+            -98.0, 98.0, -91.125, 91.125, -98.5, 98.5, -99.75, 99.75};
     const CSAMPLE fourthExpectedResult[] = {
             -99.0, 99.0, -98.0, 98.0, -97.0, 97.0, -100.0, 100.0};
 
@@ -280,15 +280,15 @@ TEST_F(EngineEffectsDelayTest, CrossfadeBetweenThreeNonZeroDelays) {
             -100.0, 100.0, -99.0, 99.0, -98.0, 98.0, -97.0, 97.0};
 
     const CSAMPLE firstExpectedResult[] = {
-            -100.0, 87.5, -74.25, 61.875, -49.0, 36.75, -99.25, 99.625};
+            -25.0, 25.0, -37.125, 37.125, -36.75, 36.75, -43.0, 43.0};
     const CSAMPLE secondExpectedResult[] = {
-            -99.0, 99.0, -98.0, 98.0, -97.0, 97.0, -100.0, 100.0};
+            -49.5, 49.5, -73.5, 73.5, -97.0, 97.0, -100.0, 100.0};
     const CSAMPLE thirdExpectedResult[] = {
-            -99.0, 98.75, -98.5, 98.75, -98.0, 98.25, -98.5, 98.25};
+            -99.0, 99.0, -98.5, 98.5, -98.0, 98.0, -98.5, 98.5};
     const CSAMPLE fourthExpectedResult[] = {
             -97.0, 97.0, -100.0, 100.0, -99.0, 99.0, -98.0, 98.0};
     const CSAMPLE fifthExpectedResult[] = {
-            -97.0, 97.25, -99.5, 99.25, -98.0, 97.75, -99.5, 99.75};
+            -97.0, 97.0, -99.5, 99.5, -98.0, 98.0, -99.5, 99.5};
     const CSAMPLE sixthExpectedResult[] = {
             -99.0, 99.0, -98.0, 98.0, -97.0, 97.0, -100.0, 100.0};
 

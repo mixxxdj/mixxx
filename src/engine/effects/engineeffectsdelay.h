@@ -3,7 +3,9 @@
 #include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/assert.h"
+#include "util/ringdelaybuffer.h"
 #include "util/sample.h"
+#include "util/samplebuffer.h"
 #include "util/types.h"
 
 namespace {
@@ -76,6 +78,6 @@ class EngineEffectsDelay final : public EngineObject {
   private:
     SINT m_currentDelaySamples;
     SINT m_prevDelaySamples;
-    SINT m_delayBufferWritePos;
-    CSAMPLE* m_pDelayBuffer;
+    mixxx::SampleBuffer m_currentDelayBuffer;
+    std::unique_ptr<RingDelayBuffer> m_pDelayBuffer;
 };
