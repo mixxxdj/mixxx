@@ -36,7 +36,9 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
         // Read the samples using the previous group delay samples.
         m_pDelayBuffer->read(inOutSpan, m_prevDelaySamples);
         // Read the samples using the current group delay samples.
-        m_pDelayBuffer->read(m_currentDelayBuffer.subspan(0, iBufferSize), m_currentDelaySamples);
+        m_pDelayBuffer->read(
+                m_currentDelayBuffer.span().subspan(0, iBufferSize),
+                m_currentDelaySamples);
 
         SampleUtil::linearCrossfadeBuffersOut(
                 pInOut,
