@@ -8,8 +8,8 @@
 EngineEffectsDelay::EngineEffectsDelay()
         : m_currentDelaySamples(0),
           m_prevDelaySamples(0),
-          m_currentDelayBuffer(kDelayBufferSize) {
-    m_pDelayBuffer = std::make_unique<RingDelayBuffer>(kDelayBufferSize);
+          m_currentDelayBuffer(kDelayBufferSize),
+          m_delayBuffer(kDelayBufferSize) {
 }
 
 void EngineEffectsDelay::process(CSAMPLE* pInOut,
@@ -18,25 +18,25 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
 
     if (m_prevDelaySamples == 0 && m_currentDelaySamples == 0) {
         // TODO(davidchocholaty) check the returned number of written samples
-        m_pDelayBuffer->write(inOutSpan);
+        m_delayBuffer.write(inOutSpan);
 
         return;
     }
 
     if (m_prevDelaySamples == m_currentDelaySamples) {
         // TODO(davidchocholaty) check the returned number of written samples
-        m_pDelayBuffer->write(inOutSpan);
+        m_delayBuffer.write(inOutSpan);
         // TODO(davidchocholaty) check the returned number of read samples
-        m_pDelayBuffer->read(inOutSpan, m_currentDelaySamples);
+        m_delayBuffer.read(inOutSpan, m_currentDelaySamples);
     } else {
         // TODO(davidchocholaty) check the returned number of written samples
-        m_pDelayBuffer->write(inOutSpan);
+        m_delayBuffer.write(inOutSpan);
 
         // TODO(davidchocholaty) check the returned number of read samples
         // Read the samples using the previous group delay samples.
-        m_pDelayBuffer->read(inOutSpan, m_prevDelaySamples);
+        m_delayBuffer.read(inOutSpan, m_prevDelaySamples);
         // Read the samples using the current group delay samples.
-        m_pDelayBuffer->read(
+        m_delayBuffer.read(
                 m_currentDelayBuffer.span().subspan(0, iBufferSize),
                 m_currentDelaySamples);
 

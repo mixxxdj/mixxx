@@ -79,5 +79,5 @@ class EngineEffectsDelay final : public EngineObject {
     SINT m_currentDelaySamples;
     SINT m_prevDelaySamples;
     mixxx::SampleBuffer m_currentDelayBuffer;
-    std::unique_ptr<RingDelayBuffer> m_pDelayBuffer;
+    RingDelayBuffer m_delayBuffer;
 };
