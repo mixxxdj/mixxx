@@ -86,24 +86,26 @@ def main(argv=None):
     # involve updating the metainfo.xml during every single commit. The same
     # goes for using the latest commit date.
     #
-    # As a compromise, we're using the date of the commit that last updated the
-    # changelog here. The only feasible alternative is to remove development
-    # releases completely, or remove the appstream metadata from the repository
-    # and only generate it on demand when an actual package is built.
+    # As a compromise, we're using the date of the parent commit before the
+    # changelog was updated. The only feasible alternative is to remove
+    # development releases completely, or remove the appstream metadata
+    # from the repository and only generate it on demand when an actual
+    # package is built.
     #
     # We need to exclude merge commits here, because the CI checks the latest
     # commit for pushes, but actually performs a merge when checking pull
     # requests. Therefore, the date would differ depending on the CI job reason
     # and cause issues when merging a stable release branch into the dev
     # branch.
-    last_changelog_change_date = datetime.datetime.fromisoformat(
+
+    last_changelog_commit = (
         subprocess.check_output(
             (
                 "git",
                 "log",
                 "-1",
                 "--no-merges",
-                "--format=%cI",
+                "--format=%H",
                 "--",
                 changelog_path,
             )
@@ -112,9 +114,24 @@ def main(argv=None):
         .strip()
     )
 
+    parent_changelog_change_date = datetime.datetime.fromisoformat(
+        subprocess.check_output(
+            (
+                "git",
+                "log",
+                "-1",
+                "--no-merges",
+                "--format=%cI",
+                last_changelog_commit + "~1",
+            )
+        )
+        .decode()
+        .strip()
+    )
+
     with open(changelog_path, mode="r") as fp:
         for release in parse_changelog(
-            fp.read(), development_release_date=last_changelog_change_date
+            fp.read(), development_release_date=parent_changelog_change_date
         ):
             releases.append(release)
     tree.write(

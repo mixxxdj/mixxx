@@ -816,6 +816,9 @@
 * Waveform: Avoid visual glitch with ranges < 1 px [#4804](https://github.com/mixxxdj/mixxx/pull/4804)
 * Traktor S3: Fix issues with sampler and hotcue buttons [#4676](https://github.com/mixxxdj/mixxx/pull/4676)
 * Build Mixxx on MacOS 11, replacing deprecated MacOS 10.15 [#4863](https://github.com/mixxxdj/mixxx/pull/4863)
+* EQ preferences: properly restore 'One EQ for all decks' setting [#4886](https://github.com/mixxxdj/mixxx/pull/4886)
+* MC7000: Fix off-by-one indexing in the controller script [#4902](https://github.com/mixxxdj/mixxx/pull/4902)
+* Cover Art: Fix picking wrong cover file, when track file name contains extra dots [#4909](https://github.com/mixxxdj/mixxx/pull/4909)
 
 ## [2.3.3](https://launchpad.net/mixxx/+milestone/2.3.3) (2022-06-21)
 

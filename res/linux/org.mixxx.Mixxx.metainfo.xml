@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2022-08-05" timestamp="1659681268">
+    <release version="2.4.0" type="development" date="2022-08-23" timestamp="1661288542">
       <description>
  <p>
   Cover Art
@@ -1474,7 +1474,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.4" type="development" date="2022-08-05" timestamp="1659681268">
+    <release version="2.3.4" type="development" date="2022-08-23" timestamp="1661288542">
       <description>
  <ul>
   <li>
@@ -1511,6 +1511,18 @@
   <li>
    Build Mixxx on MacOS 11, replacing deprecated MacOS 10.15
    #4863
+  </li>
+  <li>
+   EQ preferences: properly restore 'One EQ for all decks' setting
+   #4886
+  </li>
+  <li>
+   MC7000: Fix off-by-one indexing in the controller script
+   #4902
+  </li>
+  <li>
+   Cover Art: Fix picking wrong cover file, when track file name contains extra dots
+   #4909
   </li>
  </ul>
 </description>
