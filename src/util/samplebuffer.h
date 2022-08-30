@@ -81,6 +81,23 @@ class SampleBuffer final {
         return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
     }
 
+    std::span<CSAMPLE> subspan(const SINT offset, const SINT count) {
+        DEBUG_ASSERT((m_data != nullptr) || ((offset == 0) && (count == 0)));
+        DEBUG_ASSERT(0 <= offset);
+        DEBUG_ASSERT(0 <= count);
+        DEBUG_ASSERT(m_size > offset + count);
+
+        return mixxx::spanutil::spanFromPtrLen(m_data + offset, count);
+    }
+    std::span<const CSAMPLE> subspan(const SINT offset, const SINT count) const {
+        DEBUG_ASSERT((m_data != nullptr) || ((offset == 0) && (count == 0)));
+        DEBUG_ASSERT(0 <= offset);
+        DEBUG_ASSERT(0 <= count);
+        DEBUG_ASSERT(m_size > offset + count);
+
+        return mixxx::spanutil::spanFromPtrLen(m_data + offset, count);
+    }
+
     CSAMPLE& operator[](SINT index) {
         return *data(index);
     }
