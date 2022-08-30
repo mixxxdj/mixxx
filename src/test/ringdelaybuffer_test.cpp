@@ -47,10 +47,12 @@ TEST_F(RingDelayBufferTest, ReadWriteNoDelayTest) {
     const CSAMPLE thirdExpectedResult[] = {-100.0, 100.0, -99.0, 99.0};
 
     mixxx::SampleBuffer output(numSamples);
+
     std::span<CSAMPLE> outputSpan = output.span();
+    auto inputBufferSpan = mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples);
 
     EXPECT_EQ(m_pRingDelayBuffer->write(
-                      mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples)),
+                      inputBufferSpan),
             numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(
                       outputSpan, 0),
@@ -71,7 +73,7 @@ TEST_F(RingDelayBufferTest, ReadWriteNoDelayTest) {
 
     // Write and read over one ring.
     EXPECT_EQ(m_pRingDelayBuffer->write(
-                      mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples)),
+                      inputBufferSpan),
             numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(
                       outputSpan, 0),
@@ -91,11 +93,13 @@ TEST_F(RingDelayBufferTest, ReadWriteDelayTest) {
     const CSAMPLE thirdExpectedResult[] = {-50.0, 50.0, -99.0, 99.0};
 
     mixxx::SampleBuffer output(numSamples);
+
     std::span<CSAMPLE> outputSpan = output.span();
+    auto inputBufferSpan = mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples);
 
     // Read without delay.
     EXPECT_EQ(m_pRingDelayBuffer->write(
-                      mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples)),
+                      inputBufferSpan),
             numSamples);
     EXPECT_EQ(m_pRingDelayBuffer->read(
                       outputSpan, 0),
@@ -114,7 +118,7 @@ TEST_F(RingDelayBufferTest, ReadWriteDelayTest) {
 
     // Fill the second half of the delay buffer with the first input data.
     EXPECT_EQ(m_pRingDelayBuffer->write(
-                      mixxx::spanutil::spanFromPtrLen(inputBuffer, numSamples)),
+                      inputBufferSpan),
             numSamples);
 
     // Read with delay (not circle around).
