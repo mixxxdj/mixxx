@@ -18,8 +18,8 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
     onKnobEvent: function(rotateValue) {
         if (rotateValue !== 0) {
             if (this.previewSeekEnabled  && engine.getValue("[PreviewDeck1]", "play")) {
-                var oldPos = engine.getValue("[PreviewDeck1]", "playposition");
-                var newPos = Math.max(0, oldPos + (0.05 * rotateValue));
+                const oldPos = engine.getValue("[PreviewDeck1]", "playposition");
+                const newPos = Math.max(0, oldPos + (0.05 * rotateValue));
                 engine.setValue("[PreviewDeck1]", "playposition", newPos);
             } else if (!this.previewSeekEnabled) {
                 engine.setValue("[Playlist]", "SelectTrackKnob", rotateValue);
@@ -100,20 +100,20 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
     this.hotcueButtons = [];
     this.samplerButtons = [];
     this.beatloopButtons = [];
-    for (var i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 4; i++) {
         this.hotcueButtons[i] = new components.HotcueButton({
             group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
             midi: [0x94 + midiChannel, 0x00 + i],
             number: i,
             input: function(channel, control, value, status, _group) {
-              if (control <= 8) {
-                engine.setValue(this.group, "hotcue_" + this.number + "_activate", value);
-              } else {
-                engine.setValue(this.group, "hotcue_" + this.number + "_clear", value);
-              }
+                if (control <= 8) {
+                    engine.setValue(this.group, "hotcue_" + this.number + "_activate", value);
+                } else {
+                    engine.setValue(this.group, "hotcue_" + this.number + "_clear", value);
+                }
             },
-         });
-        var sampler = i + (midiChannel * DJ2GO2Touch.padsPerDeck);
+        });
+        const sampler = i + (midiChannel * DJ2GO2Touch.padsPerDeck);
         this.samplerButtons[i] = new components.SamplerButton({
             group: "[Sampler" + sampler + "]",
             midi: [0x94 + midiChannel, 0x30 + i],
@@ -146,8 +146,8 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
 
     this.wheelTouch = function(channel, control, value, status, _group) {
         if ((status & 0xF0) === 0x90) {
-            var alpha = 1.0/8;
-            var beta = alpha/32;
+            const alpha = 1.0/8;
+            const beta = alpha/32;
             engine.scratchEnable(script.deckFromGroup(this.currentDeck), 236, 33+1/3, alpha, beta);
         } else {
             engine.scratchDisable(script.deckFromGroup(this.currentDeck));
@@ -158,8 +158,8 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
         // When the jog wheel is turned in counter-clockwise direction, value is
         // greater than 64 (= 0x40). If it's turned in clockwise
         // direction, the value is smaller than 64.
-        var newValue = value > 64 ? (value - 128) : value;
-        var deck = script.deckFromGroup(this.currentDeck);
+        const newValue = value > 64 ? (value - 128) : value;
+        const deck = script.deckFromGroup(this.currentDeck);
         if (engine.isScratching(deck)) {
             engine.scratchTick(deck, newValue); // Scratch!
         } else {
