@@ -292,6 +292,7 @@
   [#4771](https://github.com/mixxxdj/mixxx/pull/4771)
   [#4589](https://github.com/mixxxdj/mixxx/pull/4589)
   [#1717](https://github.com/mixxxdj/mixxx/pull/1717)
+  [#4852](https://github.com/mixxxdj/mixxx/pull/4852)
 
 ### Controllers
 
@@ -436,6 +437,7 @@
   [#4775](https://github.com/mixxxdj/mixxx/pull/4775)
   [lp:1299035](https://bugs.launchpad.net/mixxx/+bug/1299035)
   [#4810](https://github.com/mixxxdj/mixxx/pull/4810)
+  [#4901](https://github.com/mixxxdj/mixxx/pull/4901)
 * Use '---' instead of 'None' for empty slots to spot them easier [#4469](https://github.com/mixxxdj/mixxx/pull/4469)
 * EngineFilterDelay: clamp wrong delay values [#4869](https://github.com/mixxxdj/mixxx/pull/4869)
 * Effect refactoring: Effect chain saving/loading, parameter hiding/rearrangement, effect preferences overhaul
@@ -492,6 +494,7 @@
   [#4497](https://github.com/mixxxdj/mixxx/pull/4497)
   [#4514](https://github.com/mixxxdj/mixxx/pull/4514)
   [#3550](https://github.com/mixxxdj/mixxx/pull/3550)
+  [#4861](https://github.com/mixxxdj/mixxx/pull/4861)
 * Improve GitHub workflow continuous integration
   [#2937](https://github.com/mixxxdj/mixxx/pull/2937)
   [#3041](https://github.com/mixxxdj/mixxx/pull/3041)

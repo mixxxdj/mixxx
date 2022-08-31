@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2022-08-26" timestamp="1661470202">
+    <release version="2.4.0" type="development" date="2022-08-31" timestamp="1661978283">
       <description>
  <p>
   Cover Art
@@ -651,6 +651,7 @@
    #4771
    #4589
    #1717
+   #4852
   </li>
  </ul>
  <p>
@@ -976,6 +977,7 @@
    #4775
    lp:1299035
    #4810
+   #4901
   </li>
   <li>
    Use '---' instead of 'None' for empty slots to spot them easier
@@ -1047,6 +1049,7 @@
    #4497
    #4514
    #3550
+   #4861
   </li>
   <li>
    Improve GitHub workflow continuous integration
@@ -1512,7 +1515,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.4" type="development" date="2022-08-26" timestamp="1661470202">
+    <release version="2.3.4" type="development" date="2022-08-31" timestamp="1661978283">
       <description>
  <ul>
   <li>
