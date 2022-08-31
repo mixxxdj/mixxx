@@ -105,7 +105,7 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
             group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
             midi: [0x94 + midiChannel, 0x00 + i],
             number: i,
-            input: function(channel, control, value, status, _group) {
+            input: function(channel, control, value, _status, _group) {
                 if (control <= 8) {
                     engine.setValue(this.group, "hotcue_" + this.number + "_activate", value);
                 } else {
