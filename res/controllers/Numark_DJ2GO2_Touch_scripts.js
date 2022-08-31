@@ -104,8 +104,15 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
         this.hotcueButtons[i] = new components.HotcueButton({
             group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
             midi: [0x94 + midiChannel, 0x00 + i],
-            number: i
-        });
+            number: i,
+            input: function(channel, control, value, status, _group) {
+              if (control <= 8) {
+                engine.setValue(this.group, "hotcue_" + this.number + "_activate", value);
+              } else {
+                engine.setValue(this.group, "hotcue_" + this.number + "_clear", value);
+              }
+            },
+         });
         var sampler = i + (midiChannel * DJ2GO2Touch.padsPerDeck);
         this.samplerButtons[i] = new components.SamplerButton({
             group: "[Sampler" + sampler + "]",
