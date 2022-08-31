@@ -4,7 +4,7 @@
 
 ### Cover Art
 
-* Prevent wrong cover art display due to hash conflicts [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
+* Prevent wrong cover art display due to hash conflicts [#2524](https://github.com/mixxxdj/mixxx/pull/2524) [#4904](https://github.com/mixxxdj/mixxx/pull/4904)
 * Add background color for quick cover art preview [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
 
 ### Music Library
@@ -75,6 +75,7 @@
   [#4628](https://github.com/mixxxdj/mixxx/pull/4628)
   [#4631](https://github.com/mixxxdj/mixxx/pull/4631)
   [#4847](https://github.com/mixxxdj/mixxx/pull/4847) [lp:1981106](https://bugs.launchpad.net/bugs/1981106)
+* Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1"). [#4873](https://github.com/mixxxdj/mixxx/pull/4873)
 * Logging: Suppress expected and harmless schema migration errors [#4248](https://github.com/mixxxdj/mixxx/pull/4248)
 * Only show the date in Date Added / Last Played columns. Move the time of day to tooltips [#3945](https://github.com/mixxxdj/mixxx/pull/3945)
 * Fix handling of undefined BPM values
@@ -142,6 +143,8 @@
   [#4480](https://github.com/mixxxdj/mixxx/pull/4480)
   [#4633](https://github.com/mixxxdj/mixxx/pull/4633)
   [#4837](https://github.com/mixxxdj/mixxx/pull/4837)
+  [#4864](https://github.com/mixxxdj/mixxx/pull/4864)
+  [#4893](https://github.com/mixxxdj/mixxx/pull/4893)
 
 ### Sync
 
@@ -206,6 +209,10 @@
 * Fix/Improve snapping to beats in various situations [#4366](https://github.com/mixxxdj/mixxx/pull/4366) [lp:1945238](https://bugs.launchpad.net/mixxx/+bug/1945238)
 * Allow to cancel active loops via beatloop_activate [#4328](https://github.com/mixxxdj/mixxx/pull/4328) [lp:1876003](https://bugs.launchpad.net/mixxx/+bug/1876003)
 * Don't wipe inapplicable sound config immediately [#4544](https://github.com/mixxxdj/mixxx/pull/4544)
+* Rubberband: Support Version 3 "finer" (near-hi-fi quality) setting, on Windows and MacOs and when available on Linux
+  [#4853](https://github.com/mixxxdj/mixxx/pull/4853)
+  [#4855](https://github.com/mixxxdj/mixxx/pull/4855)
+  [#4855](https://github.com/mixxxdj/mixxx/pull/4855)
 * Refactoring of beatgrid/beatmap code
   [#4044](https://github.com/mixxxdj/mixxx/pull/4044)
   [#4048](https://github.com/mixxxdj/mixxx/pull/4048)
@@ -284,6 +291,8 @@
   [#4770](https://github.com/mixxxdj/mixxx/pull/4770)
   [#4771](https://github.com/mixxxdj/mixxx/pull/4771)
   [#4589](https://github.com/mixxxdj/mixxx/pull/4589)
+  [#1717](https://github.com/mixxxdj/mixxx/pull/1717)
+  [#4852](https://github.com/mixxxdj/mixxx/pull/4852)
 
 ### Controllers
 
@@ -411,19 +420,24 @@
 * Fix switching from Shade to other skins [#4421](https://github.com/mixxxdj/mixxx/pull/4421) [lp:1946812](https://bugs.launchpad.net/mixxx/+bug/1946812)
 * Use double click to reset knobs and sliders [#4509](https://github.com/mixxxdj/mixxx/pull/4509) [lp:1875999](https://bugs.launchpad.net/mixxx/+bug/1875999)
 * Use info not warning for skin COs [#4525](https://github.com/mixxxdj/mixxx/pull/4525)
-* LateNight: Move logo to the right [#4677](https://github.com/mixxxdj/mixxx/pull/4677)
 * Spinny: Allow to toggle cover art at runtime [#4565](https://github.com/mixxxdj/mixxx/pull/4565) [lp:1883362](https://bugs.launchpad.net/mixxx/+bug/1883362)
 * Add new searchbox styles [#4505](https://github.com/mixxxdj/mixxx/pull/4505)
 * Add new Quick Effect selector and effect chain buttons [#4501](https://github.com/mixxxdj/mixxx/pull/4501) [#4502](https://github.com/mixxxdj/mixxx/pull/4502) [#4503](https://github.com/mixxxdj/mixxx/pull/4503) [#4590](https://github.com/mixxxdj/mixxx/pull/4590)  [#4593](https://github.com/mixxxdj/mixxx/pull/4593)
 * Fix crash when starting without a valid skin directory [#4575](https://github.com/mixxxdj/mixxx/pull/4575) [lp:1934560](https://bugs.launchpad.net/mixxx/+bug/1934560)
+* LateNight: Move logo to the right [#4677](https://github.com/mixxxdj/mixxx/pull/4677)
 * LateNight: Use correct tooltip for key control toggle [#4696](https://github.com/mixxxdj/mixxx/pull/4696)
 * LateNight: Add toggles to show loop and beatjump controls [#4713](https://github.com/mixxxdj/mixxx/pull/[#4713](https://github.com/mixxxdj/mixxx/pull/4713))
 * LateNight: Remove blinking play indicator from mini samplers [#4807](https://github.com/mixxxdj/mixxx/pull/4807)
+* LateNight: add buffer underflow indicator [#4906](https://github.com/mixxxdj/mixxx/pull/4906)
 
 ### Effects
 
 * Add a Noise effect [#2921](https://github.com/mixxxdj/mixxx/pull/2921)
-* Add a pitch shift effect [#4775](https://github.com/mixxxdj/mixxx/pull/4775) [lp:1299035](https://bugs.launchpad.net/mixxx/+bug/1299035)
+* Add a pitch shift effect
+  [#4775](https://github.com/mixxxdj/mixxx/pull/4775)
+  [lp:1299035](https://bugs.launchpad.net/mixxx/+bug/1299035)
+  [#4810](https://github.com/mixxxdj/mixxx/pull/4810)
+  [#4901](https://github.com/mixxxdj/mixxx/pull/4901)
 * Use '---' instead of 'None' for empty slots to spot them easier [#4469](https://github.com/mixxxdj/mixxx/pull/4469)
 * EngineFilterDelay: clamp wrong delay values [#4869](https://github.com/mixxxdj/mixxx/pull/4869)
 * Effect refactoring: Effect chain saving/loading, parameter hiding/rearrangement, effect preferences overhaul
@@ -455,6 +469,9 @@
   [#4704](https://github.com/mixxxdj/mixxx/pull/4704)
   [#4748](https://github.com/mixxxdj/mixxx/pull/4748)
   [#4833](https://github.com/mixxxdj/mixxx/pull/4833) [lp:1980078](https://bugs.launchpad.net/mixxx/+bug/1980078)
+  [#4884](https://github.com/mixxxdj/mixxx/pull/4884) [lp:1983789](https://bugs.launchpad.net/mixxx/+bug/1983789) [lp1983764](https://bugs.launchpad.net/mixxx/+bug/1983764)
+  [#4899](https://github.com/mixxxdj/mixxx/pull/4899)
+  [#8817](https://github.com/mixxxdj/mixxx/pull/8817)
 
 ### Other
 
@@ -477,6 +494,7 @@
   [#4497](https://github.com/mixxxdj/mixxx/pull/4497)
   [#4514](https://github.com/mixxxdj/mixxx/pull/4514)
   [#3550](https://github.com/mixxxdj/mixxx/pull/3550)
+  [#4861](https://github.com/mixxxdj/mixxx/pull/4861)
 * Improve GitHub workflow continuous integration
   [#2937](https://github.com/mixxxdj/mixxx/pull/2937)
   [#3041](https://github.com/mixxxdj/mixxx/pull/3041)
@@ -526,6 +544,9 @@
   [#3735](https://github.com/mixxxdj/mixxx/pull/3735)
   [#3736](https://github.com/mixxxdj/mixxx/pull/3736)
   [#3985](https://github.com/mixxxdj/mixxx/pull/3985)
+* Drop Ubuntu Focal support, require C++20
+  [#4889](https://github.com/mixxxdj/mixxx/pull/4889)
+  [#4895](https://github.com/mixxxdj/mixxx/pull/4895)
 * Drop Ubuntu Groovy and Impish support because of EOL
   [#4283](https://github.com/mixxxdj/mixxx/pull/4283) [#4849](https://github.com/mixxxdj/mixxx/pull/4849)
 * Support Ubuntu Kinetic Kudo [#4780](https://github.com/mixxxdj/mixxx/pull/4780)
@@ -661,6 +682,7 @@
   [#4057](https://github.com/mixxxdj/mixxx/pull/4057)
 * Improve message when dealing with macOS sandbox [#4018](https://github.com/mixxxdj/mixxx/pull/4018) [lp:1921541](https://bugs.launchpad.net/mixxx/+bug/1921541)
 * Moved contribution guidelines into our git repository [#2699](https://github.com/mixxxdj/mixxx/pull/2699)
+* Make windows_buildenv.bat work with spaces in path [#4896](https://github.com/mixxxdj/mixxx/pull/4896)
 * Automate deployment of CHANGELOG to the manual
   [#4180](https://github.com/mixxxdj/mixxx/pull/4180)
   [#4256](https://github.com/mixxxdj/mixxx/pull/4256)
@@ -805,6 +827,11 @@
   [#4848](https://github.com/mixxxdj/mixxx/pull/4848)
   [#4856](https://github.com/mixxxdj/mixxx/pull/4856)
   [#4860](https://github.com/mixxxdj/mixxx/pull/4860)
+  [#4867](https://github.com/mixxxdj/mixxx/pull/4867)
+  [#4888](https://github.com/mixxxdj/mixxx/pull/4888)
+  [#4908](https://github.com/mixxxdj/mixxx/pull/4908)
+  [#4903](https://github.com/mixxxdj/mixxx/pull/4903)
+  [#8818](https://github.com/mixxxdj/mixxx/pull/8818)
 
 ## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (unreleased)
 
