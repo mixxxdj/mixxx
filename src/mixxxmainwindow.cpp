@@ -254,12 +254,12 @@ void MixxxMainWindow::initialize() {
     do {
         retryClicked = false;
         SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
-        if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT ||
-                result == SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL) {
+        if (result == SoundDeviceStatus::ErrorDeviceCount ||
+                result == SoundDeviceStatus::ErrorExcessiveOutputChannel) {
             if (soundDeviceBusyDlg(&retryClicked) != QDialog::Accepted) {
                 exit(0);
             }
-        } else if (result != SOUNDDEVICE_OK) {
+        } else if (result != SoundDeviceStatus::Ok) {
             if (soundDeviceErrorMsgDlg(result, &retryClicked) !=
                     QDialog::Accepted) {
                 exit(0);

@@ -23,11 +23,11 @@ class SoundDeviceNotFound : public SoundDevice {
     SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override {
         Q_UNUSED(isClkRefDevice);
         Q_UNUSED(syncBuffers);
-        return SOUNDDEVICE_ERROR;
+        return SoundDeviceStatus::Error;
     };
     bool isOpen() const  override { return false; };
     SoundDeviceStatus close() override {
-        return SOUNDDEVICE_ERROR;
+        return SoundDeviceStatus::Error;
     };
     void readProcess() override { };
     void writeProcess() override { };

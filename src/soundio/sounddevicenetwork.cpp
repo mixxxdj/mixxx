@@ -101,7 +101,7 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
         m_pThread->start(QThread::TimeCriticalPriority);
     }
 
-    return SOUNDDEVICE_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 bool SoundDeviceNetwork::isOpen() const {
@@ -120,7 +120,7 @@ SoundDeviceStatus SoundDeviceNetwork::close() {
     m_outputFifo.reset();
     m_inputFifo.reset();
 
-    return SOUNDDEVICE_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 QString SoundDeviceNetwork::getError() const {

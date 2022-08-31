@@ -322,7 +322,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
     qDebug() << "SoundManager::setupDevices()";
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
-    SoundDeviceStatus status = SOUNDDEVICE_OK;
+    SoundDeviceStatus status = SoundDeviceStatus::Ok;
     // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
     // SoundDevice that is the clock reference, then it is safe to leave it as
     // it was. Clearing it causes the engine to stop being processed which
@@ -372,7 +372,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             // buffer value from SMConfig
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
             status = pDevice->addInput(aib);
-            if (status != SOUNDDEVICE_OK) {
+            if (status != SoundDeviceStatus::Ok) {
                 SampleUtil::free(aib.getBuffer());
                 goto closeAndError;
             }
@@ -415,7 +415,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
             AudioOutputBuffer aob(out, pBuffer);
             status = pDevice->addOutput(aob);
-            if (status != SOUNDDEVICE_OK) {
+            if (status != SoundDeviceStatus::Ok) {
                 goto closeAndError;
             }
 
@@ -465,7 +465,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             syncBuffers = 2;
         }
         status = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
-        if (status != SOUNDDEVICE_OK) {
+        if (status != SoundDeviceStatus::Ok) {
             goto closeAndError;
         }
         devicesNotFound.remove(pDevice->getDeviceId());
@@ -497,11 +497,11 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // returns OK if we were able to open all the devices the user wanted
     if (devicesNotFound.isEmpty()) {
         emit devicesSetup();
-        return SOUNDDEVICE_OK;
+        return SoundDeviceStatus::Ok;
     }
     m_pErrorDevice = SoundDevicePointer(
             new SoundDeviceNotFound(devicesNotFound.constBegin()->name));
-    return SOUNDDEVICE_ERROR_DEVICE_COUNT;
+    return SoundDeviceStatus::ErrorDeviceCount;
 
 closeAndError:
     const bool sleepAfterClosing = false;
@@ -531,7 +531,7 @@ QString SoundManager::getLastErrorMessage(SoundDeviceStatus status) const {
         detailedError = pDevice->getError();
     }
     switch (status) {
-    case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
+    case SoundDeviceStatus::ErrorDuplicateOutputChannel:
         error = tr("Two outputs cannot share channels on \"%1\"").arg(deviceName);
         break;
     default:
@@ -546,7 +546,7 @@ SoundManagerConfig SoundManager::getConfig() const {
 }
 
 SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
-    SoundDeviceStatus status = SOUNDDEVICE_OK;
+    SoundDeviceStatus status = SoundDeviceStatus::Ok;
     m_config = config;
     checkConfig();
 
@@ -563,7 +563,7 @@ SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
                    ConfigValue(static_cast<int>(m_config.getSampleRate())));
 
     status = setupDevices();
-    if (status == SOUNDDEVICE_OK) {
+    if (status == SoundDeviceStatus::Ok) {
         m_config.writeToDisk();
     }
     return status;

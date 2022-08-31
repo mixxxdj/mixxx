@@ -51,15 +51,15 @@ SoundDeviceStatus SoundDevice::addOutput(const AudioOutputBuffer& out) {
     // Check if the output channels are already used
     foreach (AudioOutputBuffer myOut, m_audioOutputs) {
         if (out.channelsClash(myOut)) {
-            return SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL;
+            return SoundDeviceStatus::ErrorDuplicateOutputChannel;
         }
     }
     if (out.getChannelGroup().getChannelBase()
             + out.getChannelGroup().getChannelCount() > getNumOutputChannels()) {
-        return SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL;
+        return SoundDeviceStatus::ErrorExcessiveOutputChannel;
     }
     m_audioOutputs.append(out);
-    return SOUNDDEVICE_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 void SoundDevice::clearOutputs() {
@@ -72,10 +72,10 @@ SoundDeviceStatus SoundDevice::addInput(const AudioInputBuffer& in) {
     // -- bkgood 20101108
     if (in.getChannelGroup().getChannelBase()
             + in.getChannelGroup().getChannelCount() > getNumInputChannels()) {
-        return SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL;
+        return SoundDeviceStatus::ErrorExcessiveInputChannel;
     }
     m_audioInputs.append(in);
-    return SOUNDDEVICE_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 void SoundDevice::clearInputs() {

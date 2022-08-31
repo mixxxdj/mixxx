@@ -309,7 +309,7 @@ void DlgPrefSound::slotApply() {
     m_config.clearOutputs();
     emit writePaths(&m_config);
 
-    SoundDeviceStatus status = SOUNDDEVICE_OK;
+    SoundDeviceStatus status = SoundDeviceStatus::Ok;
     {
         ScopedWaitCursor cursor;
         m_pKeylockEngine->set(keylockComboBox->currentData().toDouble());
@@ -318,7 +318,7 @@ void DlgPrefSound::slotApply() {
 
         status = m_pSoundManager->setConfig(m_config);
     }
-    if (status != SOUNDDEVICE_OK) {
+    if (status != SoundDeviceStatus::Ok) {
         QString error = m_pSoundManager->getLastErrorMessage(status);
         QMessageBox::warning(nullptr, tr("Configuration error"), error);
     } else {
