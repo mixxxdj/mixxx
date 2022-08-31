@@ -43,7 +43,7 @@ class RingDelayBuffer final {
         m_firstInputChunk = true;
         m_writePos = 0;
 
-        m_buffer.fill(0);
+        m_buffer.fill(0.0f);
     }
 
     /// The method returns the size of the ring buffer.

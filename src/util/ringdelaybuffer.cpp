@@ -76,8 +76,8 @@ RingDelayBuffer::RingDelayBuffer(SINT bufferSize)
         : m_firstInputChunk(true),
           m_writePos(0),
           m_buffer(bufferSize) {
-    // Set the ring buffer items to 0.
-    m_buffer.fill(0);
+    // Set the ring buffer items to zero.
+    m_buffer.fill(0.0f);
 }
 
 SINT RingDelayBuffer::read(std::span<CSAMPLE> destinationBuffer, const SINT delayItems) {
