@@ -174,8 +174,13 @@ class SoundSourceFFmpeg : public SoundSource {
     };
     SwrContextPtr m_pSwrContext;
 
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+    AVChannelLayout m_avStreamChannelLayout;
+    AVChannelLayout m_avResampledChannelLayout;
+#else
     uint64_t m_avStreamChannelLayout;
     uint64_t m_avResampledChannelLayout;
+#endif
 
     AVPacket* m_pavPacket;
 
