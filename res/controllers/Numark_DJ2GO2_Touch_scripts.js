@@ -94,7 +94,8 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
     this.tempoFader = new components.Pot({
         group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
         midi: [0xB0 + midiChannel, 0x09],
-        key: "rate"
+        key: "rate",
+        invert: true
     });
 
     this.hotcueButtons = [];
