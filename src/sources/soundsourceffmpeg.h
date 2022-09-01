@@ -174,8 +174,8 @@ class SoundSourceFFmpeg : public SoundSource {
     };
     SwrContextPtr m_pSwrContext;
 
-    uint64_t m_avStreamChannelLayout;
-    uint64_t m_avResampledChannelLayout;
+    AVChannelLayout m_avStreamChannelLayout;
+    AVChannelLayout m_avResampledChannelLayout;
 
     AVPacket* m_pavPacket;
 
