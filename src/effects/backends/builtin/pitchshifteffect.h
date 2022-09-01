@@ -7,10 +7,8 @@
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "util/circularbuffer.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/math.h"
-#include "util/sample.h"
 #include "util/types.h"
 
 namespace RubberBand {
@@ -23,10 +21,13 @@ class PitchShiftGroupState : public EffectState {
 
     ~PitchShiftGroupState() override;
     void initializeBuffer(const mixxx::EngineParameters& engineParameters);
-    void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
+    //void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
 
     std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;
+    std::unique_ptr<CircularBuffer<CSAMPLE>> m_inputBuffer;
     CSAMPLE* m_retrieveBuffer[2];
+    CSAMPLE* m_offset[2];
+    CSAMPLE* m_interleavedBuffer;
 };
 
 class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> {
@@ -47,12 +48,19 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
+    // Returns RubberBand process latency.
+    SINT getGroupDelayFrames() override {
+        return m_groupDelayFrames;
+    }
+
   private:
     QString debugString() const {
         return getId();
     }
 
     bool m_currentFormant;
+    bool m_fullRingBuffer;
+    SINT m_groupDelayFrames;
     EngineEffectParameterPointer m_pPitchParameter;
     EngineEffectParameterPointer m_pRangeParameter;
     EngineEffectParameterPointer m_pSemitonesModeParameter;
