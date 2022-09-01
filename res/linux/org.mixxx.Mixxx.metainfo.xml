@@ -98,9 +98,13 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2022-08-23" timestamp="1661288542">
+    <release version="2.3.4" type="development" date="2022-08-29" timestamp="1661804811">
       <description>
  <ul>
+  <li>
+   Controller Preferences: Fix some usability issues
+   #10821
+  </li>
   <li>
    Track Properties: show 'date added' as local time
    #4838

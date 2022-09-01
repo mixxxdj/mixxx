@@ -2,6 +2,7 @@
 
 ## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (unreleased)
 
+* Controller Preferences: Fix some usability issues [#10821](https://github.com/mixxxdj/mixxx/pull/10821)
 * Track Properties: show 'date added' as local time [#4838](https://github.com/mixxxdj/mixxx/pull/4838) [lp:1980658](https://bugs.launchpad.net/mixxx/+bug/1980658)
 * Numark DJ2GO2 Touch: Fix  sliders and knobs [#4835](https://github.com/mixxxdj/mixxx/pull/4835) [lp:1948596](https://bugs.launchpad.net/mixxx/+bug/1948596)
 * Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts [#4495](https://github.com/mixxxdj/mixxx/pull/4495)
