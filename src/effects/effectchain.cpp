@@ -218,7 +218,12 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
         //  after loading an effect. Thus, if this is not a Quick Effetc chain, we
         //  just clear the preset name which in turn clears the chain's preset
         //  selector and chain name label.
-        m_presetName = m_isQuickEffectChain ? kNoEffectString : QString();
+
+        // Check if this is a QuickEffectChain
+        m_presetName = m_pEffectsManager->chainIsQuickEffectChain(this)
+                ? kNoEffectString
+                : QString();
+
         emit chainPresetChanged(m_presetName);
         setControlLoadedPresetIndex(std::nullopt);
         return;

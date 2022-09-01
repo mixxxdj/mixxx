@@ -91,7 +91,6 @@ class EffectChain : public QObject {
 
   protected:
     EffectSlotPointer addEffectSlot(const QString& group);
-    bool m_isQuickEffectChain = false;
 
     virtual int numPresets() const;
 

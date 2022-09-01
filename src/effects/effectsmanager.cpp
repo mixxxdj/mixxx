@@ -163,6 +163,10 @@ EffectChainPointer EffectsManager::getEffectChain(
     return m_effectChainSlotsByGroup.value(group);
 }
 
+bool EffectsManager::chainIsQuickEffectChain(const EffectChain* pEffectChain) const {
+    return dynamic_cast<const QuickEffectChain*>(pEffectChain) != nullptr;
+}
+
 bool EffectsManager::isAdoptMetaknobSettingEnabled() const {
     return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
 }

@@ -36,6 +36,8 @@ class EffectsManager {
     EffectChainPointer getStandardEffectChain(int unitNumber) const;
     EffectChainPointer getOutputEffectChain() const;
 
+    bool chainIsQuickEffectChain(const EffectChain* pEffectChain) const;
+
     EngineEffectsManager* getEngineEffectsManager() const {
         return m_pEngineEffectsManager;
     }
