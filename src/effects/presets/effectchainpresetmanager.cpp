@@ -606,7 +606,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         quickEffectPresets.insert(deckString, defaultQuickEffectChainPreset);
     }
 
-    // Reload state of standard chains
+    // Read state of standard chains
     QDomElement root = doc.documentElement();
     QDomElement rackElement = XmlParse::selectElement(root, EffectXml::kRack);
     QDomElement chainsElement =
@@ -686,7 +686,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     emit effectChainPresetListUpdated();
     emit quickEffectChainPresetListUpdated();
 
-    // Reload presets that were loaded into QuickEffects on last shutdown
+    // Read names of presets that were loaded into QuickEffects on last shutdown
     QDomElement quickEffectPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectChainPresets);
     QDomNodeList quickEffectNodeList =
@@ -698,16 +698,17 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
             QString deckGroup = presetNameElement.attribute(QStringLiteral("group"));
             QString presetName = presetNameElement.text();
             if (presetName == kNoEffectString) {
-                // kNoEffectString is not allowed as preset name (import,
-                // export, save as new), it can only be set by selecting
-                // kNoEffectString in the Quick Effect slot preset selector
-                // (skin & EQ preferences).
-                // Thus, it's safe to use kNoEffectString to explicitly load
-                // an empty preset.
+                // Explicitly load an empty preset.
+                // It's safe to use kNoEffectString for that because it's not
+                // allowed to used as preset name (import, export, save as new),
+                // it can only be set by selecting kNoEffectString in the Quick Effect
+                // chain preset selector in skin and EQ preferences.
                 quickEffectPresets.insert(deckGroup, nullptr);
             } else { // any name incl. empty string
                 auto pPreset = m_effectChainPresets.value(presetName);
                 if (pPreset != nullptr) {
+                    // Replace defaultQuickEffectChainPreset with pPreset
+                    // for this deck group
                     quickEffectPresets.insert(deckGroup, pPreset);
                 }
             }

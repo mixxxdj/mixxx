@@ -206,7 +206,8 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
         // This may happen when a chain is cleared by selecting the empty '---'
         // item in WEffectChainPresetSelector or in deck Quick Effect selectors
         // in DlgPrefEq.
-        // Quick Effect chains and other chains need to be treated differently:
+        // Quick Effect chains and other chains need to be treated differently
+        // because saving their preset/state to effects.xml is done differently:
         // * storing Quick Effect chain presets requires a preset name, otherwise
         //  (empty name) will cause the default preset being loaded on next start.
         //  Thus, we name the empty preset kNoEffectString so that the respective
