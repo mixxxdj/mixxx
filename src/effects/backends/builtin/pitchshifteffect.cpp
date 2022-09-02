@@ -136,7 +136,6 @@ void PitchShiftEffect::processChannel(
             m_currentFormant != formantPreserving) {
         m_currentFormant = formantPreserving;
 
-        // Set the RubberBand option for the formant preserving.
         pState->m_pRubberBand->setFormantOption(m_currentFormant
                         ? RubberBand::RubberBandStretcher::
                                   OptionFormantPreserved
