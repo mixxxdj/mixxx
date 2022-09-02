@@ -44,6 +44,8 @@ void PitchShiftGroupState::audioParametersChanged(
             engineParameters.channelCount(),
             RubberBand::RubberBandStretcher::OptionProcessRealTime);
 
+    // Set the maximum number of frames that will be ever passing into a single
+    // RubberBand::RubberBandStretcher::process call.
     m_pRubberBand->setMaxProcessSize(engineParameters.framesPerBuffer());
     m_pRubberBand->setTimeRatio(1.0);
 };
@@ -134,6 +136,7 @@ void PitchShiftEffect::processChannel(
             m_currentFormant != formantPreserving) {
         m_currentFormant = formantPreserving;
 
+        // Set the RubberBand option for the formant preserving.
         pState->m_pRubberBand->setFormantOption(m_currentFormant
                         ? RubberBand::RubberBandStretcher::
                                   OptionFormantPreserved
@@ -141,12 +144,22 @@ void PitchShiftEffect::processChannel(
                                   OptionFormantShifted);
     }
 
+    // Get the parameter value of the Pitch knob
+    // based on the current setting of the Range knob.
     double pitchParameter = m_pPitchParameter->value() * m_pRangeParameter->value();
 
+    // Choose the scale of the Pitch knob, and based on that, recalculate the pitch value.
+    // There are 2 possible scales:
+    // 1. Semitones mode (true) - The Pitch knob parameter value is recalculated
+    //    to proceed on the semitone chromatic scale. By default,
+    //    this mode is used.
+    // 2. Continuous mode (false) - The Pitch knob changes values continuously,
+    //    the same as the RubberBand classic approach.
     if (m_pSemitonesModeParameter->toBool()) {
         pitchParameter = roundToFraction(pitchParameter, kSemitonesPerOctave);
     }
 
+    // Calculate the result pitch setting for the RubberBand.
     const double pitch = std::pow(2.0, pitchParameter);
 
     pState->m_pRubberBand->setPitchScale(pitch);
@@ -161,10 +174,14 @@ void PitchShiftEffect::processChannel(
             engineParameters.framesPerBuffer(),
             false);
 
+    // Get the available number of frames
+    // that can be obtained from the RubberBand.
     SINT framesAvailable = pState->m_pRubberBand->available();
     SINT framesToRead = math_min(
             framesAvailable,
             engineParameters.framesPerBuffer());
+
+    // Retrieve frames from RubberBand.
     SINT receivedFrames = pState->m_pRubberBand->retrieve(
             pState->m_retrieveBuffer,
             framesToRead);
