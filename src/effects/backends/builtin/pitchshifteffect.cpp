@@ -158,7 +158,15 @@ void PitchShiftEffect::processChannel(
         pitchParameter = roundToFraction(pitchParameter, kSemitonesPerOctave);
     }
 
-    // Calculate the result pitch setting for the RubberBand.
+    // In equal temperament, all the semitones have the same size (100 cents),
+    // and there are twelve semitones in an octave (1200 cents). As a result,
+    // the notes of an equal-tempered chromatic scale are equally-spaced.
+    // The pitch scaling ratio corresponds to a shift of S equal-tempered
+    // semitones (where S is positive for an upwards shift and negative
+    // for downwards) is pow(2.0, S / 12.0). The pitch scaling ratio
+    // is the ratio of target frequency to source frequency. For example,
+    // a ratio of 2.0 would shift up by one octave, 0.5 down by one octave,
+    // or 1.0 leaving the pitch unaffected.
     const double pitch = std::pow(2.0, pitchParameter);
 
     pState->m_pRubberBand->setPitchScale(pitch);
