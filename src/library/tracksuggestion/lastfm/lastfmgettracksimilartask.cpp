@@ -64,14 +64,12 @@ QUrlQuery lookupUrlQuery(
     return urlQuery;
 }
 
-QNetworkRequest createNetworkRequest(QUrlQuery urlQuery) {
+QNetworkRequest createNetworkRequest(const QUrlQuery& urlQuery) {
     DEBUG_ASSERT(kBaseUrl.isValid());
     QUrl url = kBaseUrl;
     url.setPath(kRequestPath);
     url.setQuery(urlQuery);
     DEBUG_ASSERT(url.isValid());
-    qDebug() << url;
-    url = url;
     QNetworkRequest networkRequest(url);
     return networkRequest;
 }

@@ -13,8 +13,6 @@
 
 namespace {
 
-const QString TSDB_PATH_KEY = "mixxx.suggestionfeature.tsdbpath";
-
 const QString composeTreeItemLabel(const QString& track,
         const QString& artist) {
     return track + QStringLiteral(" | ") + artist;
@@ -223,8 +221,6 @@ void TrackSuggestionFeature::activateChild(const QModelIndex& index) {
         m_suggestionFile = suggestionFileLocation;
 
         emit showTrackModel(m_pSuggestionTrackModel);
-        SettingsDAO settings(m_pTrackCollection->database());
-        QString dbSetting(settings.getValue(TSDB_PATH_KEY));
 
         qDebug() << "Suggestion file location is " << suggestionFileLocation;
 
@@ -260,7 +256,6 @@ void TrackSuggestionFeature::parseSuggestionFile() {
     int playcount = 0;
     float match = 0;
     float duration = 0;
-    QString location;
 
     ScopedTransaction transaction(m_database);
     clearTable("suggestion_library");
