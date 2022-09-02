@@ -88,6 +88,7 @@ class EffectsManager {
 
     QList<StandardEffectChainPointer> m_standardEffectChains;
     OutputEffectChainPointer m_outputEffectChain;
+    // These two store <deck group, effect chain pointer>
     QHash<QString, EqualizerEffectChainPointer> m_equalizerEffectChains;
     QHash<QString, QuickEffectChainPointer> m_quickEffectChains;
 

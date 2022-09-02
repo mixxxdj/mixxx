@@ -591,7 +591,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         quickEffectPresets.insert(deckString, defaultQuickEffectChainPreset);
     }
 
-    // Reload state of standard chains
+    // Read state of standard chains
     QDomElement root = doc.documentElement();
     QDomElement rackElement = XmlParse::selectElement(root, EffectXml::kRack);
     QDomElement chainsElement =
@@ -671,7 +671,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     emit effectChainPresetListUpdated();
     emit quickEffectChainPresetListUpdated();
 
-    // Reload presets that were loaded into QuickEffects on last shutdown
+    // Read names of presets that were loaded into QuickEffects on last shutdown
     QDomElement quickEffectPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectChainPresets);
     QDomNodeList quickEffectNodeList =
@@ -683,6 +683,8 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
             QString deckGroup = presetNameElement.attribute(QStringLiteral("group"));
             auto pPreset = m_effectChainPresets.value(presetNameElement.text());
             if (pPreset != nullptr) {
+                // Replace defaultQuickEffectChainPreset with pPreset
+                // for this deck group
                 quickEffectPresets.insert(deckGroup, pPreset);
             }
         }
