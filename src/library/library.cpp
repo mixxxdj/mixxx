@@ -33,6 +33,7 @@
 #include "library/trackset/crate/cratefeature.h"
 #include "library/trackset/playlistfeature.h"
 #include "library/trackset/setlogfeature.h"
+#include "library/tracksuggestion/tracksuggestionfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
 #include "moc_library.cpp"
@@ -206,6 +207,12 @@ Library::Library(
     if (m_pConfig->getValue(
                 ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
         addFeature(new SeratoFeature(this, m_pConfig));
+    }
+
+    if (TrackSuggestionFeature::isSupported() &&
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowTrackSuggestionLibrary"), true)) {
+        addFeature(new TrackSuggestionFeature(this, m_pConfig));
     }
 
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {

@@ -731,6 +731,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/locationdelegate.cpp
   src/library/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/tracksuggestion/tracksuggestionfeature.cpp
+  src/library/tracksuggestion/lastfm/lastfmgettracksimilartask.cpp
+  src/library/tracksuggestion/dlgtracksuggestion.cpp
+  src/library/tracksuggestion/suggestionfetcher.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
