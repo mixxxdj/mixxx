@@ -228,14 +228,11 @@ void PitchShiftEffect::processChannel(
             engineParameters.framesPerBuffer(),
             false);
 
-    // Get the available number of frames
-    // that can be obtained from the RubberBand.
     SINT framesAvailable = pState->m_pRubberBand->available();
     SINT framesToRead = math_min(
             framesAvailable,
             engineParameters.framesPerBuffer());
 
-    // Retrieve frames from RubberBand.
     SINT receivedFrames = pState->m_pRubberBand->retrieve(
             pState->m_retrieveBuffer,
             framesToRead);
