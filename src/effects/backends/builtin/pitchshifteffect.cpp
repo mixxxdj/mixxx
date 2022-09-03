@@ -143,8 +143,51 @@ void PitchShiftEffect::processChannel(
                                   OptionFormantShifted);
     }
 
-    // Get the parameter value of the Pitch knob
-    // based on the current setting of the Range knob.
+    // The range of the scale of the Pitch parameter is <-1.0, 1.0>
+    // with the middle position 0.0. On the other hand, the range
+    // of the scale of the Range parameter is <0.0, 2.0> with the middle
+    // position 1.0. With that, the resulting pitch is obtained using the Pitch
+    // and Range settings with the following implications for some examples:
+    //
+    // With the default range set to 1.0, the resulting pitch value stored
+    // in the pitchParameter is in the range <0.5, 2.0>, so the pitch
+    // can be changed from one octave down to one octave up.
+    //
+    // 1. Range (default): 1.0
+    //    - Pitch (default):  0.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Pitch:           -1.0 => pow(2.0, -1.0) = 0.5  => one octave down
+    //    - Pitch:            1.0 => pow(2.0,  1.0) = 2.0  => one octave up
+    //
+    // With the default range set to 2.0, the resulting pitch value stored
+    // in the pitchParameter is in range <0.25, 4.0>, so the pitch
+    // can be changed from two octaves down to two octaves up.
+    //
+    // 2. Range: 2.0
+    //    - Pitch (default):  0.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Pitch:           -1.0 => pow(2.0, -2.0) = 0.25 => two octaves down
+    //    - Pitch:            1.0 => pow(2.0,  2.0) = 4.0  => two octaves up
+    //
+    // When the range is set to 0.0, the resulting pitch value that is stored
+    // in the pitchParameter is exactly 1.0 only, so the pitch does not change.
+    //
+    // 3. Range: 0.0
+    //    - Pitch (default):  0.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Pitch:           -1.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Pitch:            1.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //
+    // The reason for keeping this range value is that if the pitch value is fixed
+    // by changing the range value, the resulting pitch can only change in one way (up or down)
+    // and with a specific scale range based on the pitch fixed setting.
+    //
+    // 1. Pitch: 1.0
+    //    - Range: 0.0 => pow(2.0, 0.0) = 1.0 => pitch is unchanged
+    //    - Range: 1.0 => pow(2.0, 1.0) = 2.0 => one octave up
+    //    - Range: 2.0 => pow(2.0, 2.0) = 4.0 => two octaves up
+    //
+    // 2. Pitch: -1.0
+    //    - Range: 0.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Range: 1.0 => pow(2.0, -1.0) = 0.5  => one octave down
+    //    - Range: 2.0 => pow(2.0, -2.0) = 0.25 => two octaves down
     double pitchParameter = m_pPitchParameter->value() * m_pRangeParameter->value();
 
     // Choose the scale of the Pitch knob, and based on that, recalculate the pitch value.
@@ -155,6 +198,8 @@ void PitchShiftEffect::processChannel(
     // 2. Continuous mode (false) - The Pitch knob changes values continuously,
     //    the same as the RubberBand classic approach.
     if (m_pSemitonesModeParameter->toBool()) {
+        // TODO(davidchocholaty) describe how the rounding to fraction works to
+        //  keep the resulted values in the semitones chromatic scale.
         pitchParameter = roundToFraction(pitchParameter, kSemitonesPerOctave);
     }
 
