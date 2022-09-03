@@ -214,11 +214,11 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
             pNetworkAccessManager,
             timeoutMillis);
     if (!m_pendingNetworkReplyWeakPtr) {
-        kLogger.debug()
-                << this
-                << "Network request has not been started";
-        m_state = State::Aborted;
-        emitAborted(/*request URL is unknown*/);
+        m_state = State::Failed;
+        onNetworkError(
+                QNetworkReply::NetworkSessionFailedError,
+                tr("Request URL issue, network request has not been started"),
+                WebResponseWithContent{});
         return;
     }
 
