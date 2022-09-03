@@ -196,7 +196,7 @@ class SoundSourceProviderFFmpeg : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
 
-    SoundSourceProviderFFmpeg();
+    ~SoundSourceProviderFFmpeg() override = default;
 
     QString getDisplayName() const override {
         return kDisplayName;

@@ -4,8 +4,6 @@
 #include <libavutil/channel_layout.h>
 #endif
 
-#include <mutex>
-
 #include "util/logger.h"
 #include "util/sample.h"
 
@@ -68,20 +66,8 @@ constexpr SINT kMaxSamplesPerMP3Frame = 1152;
 
 const Logger kLogger("SoundSourceFFmpeg");
 
-std::once_flag initFFmpegLibFlag;
-
 // FFmpeg API Changes:
 // https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
-
-// This function must be called once during startup.
-void initFFmpegLib() {
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
-    av_register_all();
-#endif
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 10, 100)
-    avcodec_register_all();
-#endif
-}
 
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
 inline void getStreamChannelLayout(AVChannelLayout* pChannelLayout, const AVStream& avStream) {
@@ -367,23 +353,14 @@ void SoundSourceFFmpeg::SwrContextPtr::close() {
 
 const QString SoundSourceProviderFFmpeg::kDisplayName = QStringLiteral("FFmpeg");
 
-SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
-    std::call_once(initFFmpegLibFlag, initFFmpegLib);
-}
-
 QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
     QStringList disabledInputFormats;
 
     // Collect all supported formats (whitelist)
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
-    AVInputFormat* pavInputFormat = nullptr;
-    while ((pavInputFormat = av_iformat_next(pavInputFormat))) {
-#else
     const AVInputFormat* pavInputFormat = nullptr;
     void* pOpaqueInputFormatIterator = nullptr;
     while ((pavInputFormat = av_demuxer_iterate(&pOpaqueInputFormatIterator))) {
-#endif
         if (pavInputFormat->flags | AVFMT_SEEK_TO_PTS) {
             ///////////////////////////////////////////////////////////
             // Whitelist of tested codecs (including variants)
@@ -553,11 +530,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
 
     // Find the best stream
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(59, 0, 100)
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(59, 0, 100) // FFmpeg 5.0
+    const AVCodec* pDecoder = nullptr;
+#else
     // https://github.com/FFmpeg/FFmpeg/blob/dd17c86aa11feae2b86de054dd0679cc5f88ebab/doc/APIchanges#L175
     AVCodec* pDecoder = nullptr;
-#else
-    const AVCodec* pDecoder = nullptr;
 #endif
     const int av_find_best_stream_result = av_find_best_stream(
             m_pavInputFormatContext,
@@ -606,11 +583,6 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 << formatErrorString(avcodec_parameters_to_context_result);
         return SoundSource::OpenResult::Aborted;
     }
-
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 18, 100)
-    // Align the time base of the context with that of the selected stream
-    av_codec_set_pkt_timebase(pavCodecContext, pavStream->time_base);
-#endif
 
     // Request output format
     pavCodecContext->request_sample_fmt = kavSampleFormat;
