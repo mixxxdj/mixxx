@@ -198,8 +198,10 @@ void PitchShiftEffect::processChannel(
     // 2. Continuous mode (false) - The Pitch knob changes values continuously,
     //    the same as the RubberBand classic approach.
     if (m_pSemitonesModeParameter->toBool()) {
-        // TODO(davidchocholaty) describe how the rounding to fraction works to
-        //  keep the resulted values in the semitones chromatic scale.
+        // To keep the values in the semitone chromatic scale, the pitch value
+        // must be rounded to a fraction of the scale in one octave. So,
+        // the value has to be rounded to the fraction of the number
+        // of semitones in octave.
         pitchParameter = roundToFraction(pitchParameter, kSemitonesPerOctave);
     }
 
