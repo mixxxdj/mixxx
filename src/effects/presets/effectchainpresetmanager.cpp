@@ -233,8 +233,14 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
     VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(oldName)) {
         return;
     }
-    // Don't allow renaming the internal empty '---' preset
-    VERIFY_OR_DEBUG_ASSERT(oldName != kNoEffectString) {
+    if (m_effectChainPresets.value(oldName)->isReadOnly()) {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Effect chain preset can not be renamed"));
+        msgBox.setInformativeText(
+                tr("Effect chain preset \"%1\" is read-only and can not be renamed.")
+                        .arg(oldName));
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
         return;
     }
 
@@ -313,6 +319,16 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
 
 bool EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
+        return false;
+    }
+    if (m_effectChainPresets.value(chainPresetName)->isReadOnly()) {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Effect chain preset can not be deleted"));
+        msgBox.setInformativeText(
+                tr("Effect chain preset \"%1\" is read-only and can not be deleted.")
+                        .arg(chainPresetName));
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
         return false;
     }
     auto pressedButton = QMessageBox::question(nullptr,
@@ -707,11 +723,11 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // It will not be visible in the effects preferences.
     EffectManifestPointer pEmptyChainManifest(new EffectManifest());
     pEmptyChainManifest->setName(kNoEffectString);
+    // Required for the QuickEffect selector in DlgPrefEQ
     pEmptyChainManifest->setShortName(kNoEffectString);
-
     auto pEmptyChainPreset =
             EffectChainPresetPointer(new EffectChainPreset(pEmptyChainManifest));
-    pEmptyChainPreset->setName(pEmptyChainManifest->name());
+    pEmptyChainPreset->setReadOnly();
 
     m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
     m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);

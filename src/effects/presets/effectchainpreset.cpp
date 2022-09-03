@@ -28,6 +28,8 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
 
     m_dSuper = XmlParse::selectNodeDouble(chainElement, EffectXml::kChainSuperParameter);
 
+    m_readOnly = false;
+
     QDomElement effectsElement = XmlParse::selectElement(chainElement, EffectXml::kEffectsRoot);
     QDomNodeList effectList = effectsElement.childNodes();
 

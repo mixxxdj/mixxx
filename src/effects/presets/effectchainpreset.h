@@ -40,6 +40,12 @@ class EffectChainPreset {
     double superKnob() const {
         return m_dSuper;
     }
+    void setReadOnly() {
+        m_readOnly = true;
+    }
+    bool isReadOnly() const {
+        return m_readOnly;
+    }
 
     const QList<EffectPresetPointer>& effectPresets() const {
         return m_effectPresets;
@@ -50,4 +56,5 @@ class EffectChainPreset {
     EffectChainMixMode::Type m_mixMode;
     double m_dSuper;
     QList<EffectPresetPointer> m_effectPresets;
+    bool m_readOnly = false;
 };
