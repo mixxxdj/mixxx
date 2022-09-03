@@ -1,0 +1,16 @@
+name: 🚀 Feature Request
+description: |
+  Describe the requested feature here.
+labels: [feature]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature!
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: What feature would you like to see added to Mixxx?
+    validations:
+      required: true
