@@ -44,6 +44,8 @@ void PitchShiftGroupState::audioParametersChanged(
             engineParameters.channelCount(),
             RubberBand::RubberBandStretcher::OptionProcessRealTime);
 
+    // Set the maximum number of frames that will be ever passing into a single
+    // RubberBand::RubberBandStretcher::process call.
     m_pRubberBand->setMaxProcessSize(engineParameters.framesPerBuffer());
     m_pRubberBand->setTimeRatio(1.0);
 };
@@ -141,12 +143,77 @@ void PitchShiftEffect::processChannel(
                                   OptionFormantShifted);
     }
 
+    // The range of the scale of the Pitch parameter is <-1.0, 1.0>
+    // with the middle position 0.0. On the other hand, the range
+    // of the scale of the Range parameter is <0.0, 2.0> with the middle
+    // position 1.0. With that, the resulting pitch is obtained using the Pitch
+    // and Range settings with the following implications for some examples:
+    //
+    // With the default range set to 1.0, the resulting pitch value stored
+    // in the pitchParameter is in the range <0.5, 2.0>, so the pitch
+    // can be changed from one octave down to one octave up.
+    //
+    // 1. Range (default): 1.0
+    //    - Pitch (default):  0.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Pitch:           -1.0 => pow(2.0, -1.0) = 0.5  => one octave down
+    //    - Pitch:            1.0 => pow(2.0,  1.0) = 2.0  => one octave up
+    //
+    // With the default range set to 2.0, the resulting pitch value stored
+    // in the pitchParameter is in range <0.25, 4.0>, so the pitch
+    // can be changed from two octaves down to two octaves up.
+    //
+    // 2. Range: 2.0
+    //    - Pitch (default):  0.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Pitch:           -1.0 => pow(2.0, -2.0) = 0.25 => two octaves down
+    //    - Pitch:            1.0 => pow(2.0,  2.0) = 4.0  => two octaves up
+    //
+    // When the range is set to 0.0, the resulting pitch value that is stored
+    // in the pitchParameter is exactly 1.0 only, so the pitch does not change.
+    //
+    // 3. Range: 0.0
+    //    - Pitch (default):  0.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Pitch:           -1.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Pitch:            1.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //
+    // The reason for keeping this range value is that if the pitch value is fixed
+    // by changing the range value, the resulting pitch can only change in one way (up or down)
+    // and with a specific scale range based on the pitch fixed setting.
+    //
+    // 1. Pitch: 1.0
+    //    - Range: 0.0 => pow(2.0, 0.0) = 1.0 => pitch is unchanged
+    //    - Range: 1.0 => pow(2.0, 1.0) = 2.0 => one octave up
+    //    - Range: 2.0 => pow(2.0, 2.0) = 4.0 => two octaves up
+    //
+    // 2. Pitch: -1.0
+    //    - Range: 0.0 => pow(2.0,  0.0) = 1.0  => pitch is unchanged
+    //    - Range: 1.0 => pow(2.0, -1.0) = 0.5  => one octave down
+    //    - Range: 2.0 => pow(2.0, -2.0) = 0.25 => two octaves down
     double pitchParameter = m_pPitchParameter->value() * m_pRangeParameter->value();
 
+    // Choose the scale of the Pitch knob, and based on that, recalculate the pitch value.
+    // There are 2 possible scales:
+    // 1. Semitones mode (true) - The Pitch knob parameter value is recalculated
+    //    to proceed on the semitone chromatic scale. By default,
+    //    this mode is used.
+    // 2. Continuous mode (false) - The Pitch knob changes values continuously,
+    //    the same as the RubberBand classic approach.
     if (m_pSemitonesModeParameter->toBool()) {
+        // To keep the values in the semitone chromatic scale, the pitch value
+        // must be rounded to a fraction of the scale in one octave. So,
+        // the value has to be rounded to the fraction of the number
+        // of semitones in octave.
         pitchParameter = roundToFraction(pitchParameter, kSemitonesPerOctave);
     }
 
+    // In equal temperament, all the semitones have the same size (100 cents),
+    // and there are twelve semitones in an octave (1200 cents). As a result,
+    // the notes of an equal-tempered chromatic scale are equally-spaced.
+    // The pitch scaling ratio corresponds to a shift of S equal-tempered
+    // semitones (where S is positive for an upwards shift and negative
+    // for downwards) is pow(2.0, S / 12.0). The pitch scaling ratio
+    // is the ratio of target frequency to source frequency. For example,
+    // a ratio of 2.0 would shift up by one octave, 0.5 down by one octave,
+    // or 1.0 leaving the pitch unaffected.
     const double pitch = std::pow(2.0, pitchParameter);
 
     pState->m_pRubberBand->setPitchScale(pitch);
@@ -165,6 +232,7 @@ void PitchShiftEffect::processChannel(
     SINT framesToRead = math_min(
             framesAvailable,
             engineParameters.framesPerBuffer());
+
     SINT receivedFrames = pState->m_pRubberBand->retrieve(
             pState->m_retrieveBuffer,
             framesToRead);
