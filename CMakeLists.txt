@@ -25,6 +25,13 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
+# Set the timestamp of extracted files to the time of the extraction instead of
+# the archived timestamp to make sure that dependent files are rebuilt if the
+# URL changes.
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
 # Check if any relevant env vars were set from the build env scripts
 if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED X_VCPKG_APPLOCAL_DEPS_INSTALL)
   set(X_VCPKG_APPLOCAL_DEPS_INSTALL "$ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL}" CACHE BOOL "")
