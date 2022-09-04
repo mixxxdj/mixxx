@@ -11,8 +11,7 @@ body:
     id: description
     attributes:
       label: Bug Description
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
+      description: Tell us what happens and what should happen instead.
     validations:
       required: true
   - type: input
@@ -20,12 +19,9 @@ body:
     attributes:
       label: Version
       description: What version of Mixxx are you running?
-  - type: dropdown
+  - type: input
     id: os
     attributes:
       label: OS
-      description: What operating system are you running?
-      options:
-        - MacOS
-        - Windows
-        - Linux
+      description: What operating system (and distribution if you're on Linux) are you running?
+      placeholder: Windows 11, macOS Big Sur, Ubuntu 22.04, ...

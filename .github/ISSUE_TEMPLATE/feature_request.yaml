@@ -1,6 +1,6 @@
 name: 🚀 Feature Request
 description: |
-  Describe the requested feature here.
+  Describe describe your use-case, not yet supported and a possible solution.
 labels: [feature]
 body:
   - type: markdown
