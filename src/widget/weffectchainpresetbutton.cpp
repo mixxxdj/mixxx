@@ -9,7 +9,6 @@
 WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManager* pEffectsManager)
         : QPushButton(parent),
           WBaseWidget(this),
-          m_iChainNumber(0),
           m_pEffectsManager(pEffectsManager),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pMenu(make_parented<QMenu>(new QMenu(this))) {
@@ -22,7 +21,6 @@ WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManag
 }
 
 void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& context) {
-    m_iChainNumber = EffectWidgetUtils::getEffectUnitNumberFromNode(node, context);
     m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     VERIFY_OR_DEBUG_ASSERT(m_pChain) {
