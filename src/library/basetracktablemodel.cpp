@@ -64,7 +64,8 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_TITLE,
         LIBRARYTABLE_TRACKNUMBER,
         LIBRARYTABLE_YEAR,
-};
+        LIBRARYTABLE_MATCH,
+        LIBRARYTABLE_PLAYCOUNT};
 
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
@@ -233,6 +234,14 @@ void BaseTrackTableModel::initHeaderProperties() {
             ColumnCache::COLUMN_LIBRARYTABLE_YEAR,
             tr("Year"),
             defaultColumnWidth());
+    setHeaderProperties(
+            ColumnCache::COLUMN_LIBRARYTABLE_PLAYCOUNT,
+            tr("Playcount"),
+            defaultColumnWidth());
+    setHeaderProperties(
+            ColumnCache::COLUMN_LIBRARYTABLE_MATCH,
+            tr("Match"),
+            defaultColumnWidth());
 }
 
 void BaseTrackTableModel::setHeaderProperties(
@@ -362,7 +371,9 @@ bool BaseTrackTableModel::isColumnHiddenByDefault(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYCOUNT) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MATCH);
 }
 
 QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(

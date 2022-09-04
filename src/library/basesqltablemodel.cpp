@@ -142,6 +142,12 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Match)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MATCH);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Playcount)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYCOUNT);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
