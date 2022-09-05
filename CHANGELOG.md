@@ -822,7 +822,7 @@
   [#4767](https://github.com/mixxxdj/mixxx/pull/4767)
   [#4797](https://github.com/mixxxdj/mixxx/pull/4797)
   [#4782](https://github.com/mixxxdj/mixxx/pull/4782)
-  [#4780](https://github.com/mixxxdj/mixxx/pull/4800)
+  [#4800](https://github.com/mixxxdj/mixxx/pull/4800)
   [#4791](https://github.com/mixxxdj/mixxx/pull/4791)
   [#4848](https://github.com/mixxxdj/mixxx/pull/4848)
   [#4856](https://github.com/mixxxdj/mixxx/pull/4856)
