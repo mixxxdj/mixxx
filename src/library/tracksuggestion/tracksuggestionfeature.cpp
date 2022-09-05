@@ -50,6 +50,14 @@ TrackSuggestionFeature::TrackSuggestionFeature(
             this,
             &TrackSuggestionFeature::slotTrackChanged);
 
+    connect(pLibrary,
+            &Library::trackSelected,
+            this,
+            [this](const TrackPointer& pTrack) {
+                const auto trackId = pTrack ? pTrack->getId() : TrackId{};
+                slotTrackSelected(trackId);
+            });
+
     QString tableName = "suggestion_library";
     QString idColumn = "id";
     QStringList columns;
@@ -89,6 +97,7 @@ TrackSuggestionFeature::TrackSuggestionFeature(
     }
 
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
+    treeItemSelectedTrack = pRootItem->appendChild(tr("Selected Track"));
     treeItemDeckOne = pRootItem->appendChild(tr("Deck 1"));
     treeItemDeckTwo = pRootItem->appendChild(tr("Deck 2"));
     treeItemDeckThree = pRootItem->appendChild(tr("Deck 3"));
@@ -414,3 +423,18 @@ void TrackSuggestionFeature::slotUpdateTrackModelAfterSuccess(const QString& fil
 #endif
     m_future_watcher.setFuture(m_future);
 };
+
+void TrackSuggestionFeature::slotTrackSelected(TrackId trackId) {
+    m_selectedTrackId = trackId;
+    if (m_selectedTrackId.isValid()) {
+        TrackPointer trackPointer =
+                m_pLibrary->trackCollectionManager()->getTrackById(
+                        m_selectedTrackId);
+        emitTrackPropertiesToDialog(trackPointer);
+        QString artist = trackPointer->getArtist();
+        QString title = trackPointer->getTitle();
+        QString trackLocation = trackPointer->getLocation();
+        treeItemSelectedTrack->setLabel(composeTreeItemLabel(artist, title));
+        treeItemSelectedTrack->setData(trackLocation);
+    }
+}

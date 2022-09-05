@@ -42,6 +42,7 @@ class TrackSuggestionFeature : public BaseExternalLibraryFeature {
     void onSuggestionFileParsed();
     void slotStartFetchingViaButton();
     void slotUpdateTrackModelAfterSuccess(const QString& filePath);
+    void slotTrackSelected(TrackId trackId);
 
   private:
     void parseSuggestionFile();
@@ -64,7 +65,9 @@ class TrackSuggestionFeature : public BaseExternalLibraryFeature {
     TreeItem* treeItemDeckTwo;
     TreeItem* treeItemDeckThree;
     TreeItem* treeItemDeckFour;
+    TreeItem* treeItemSelectedTrack;
 
+    TrackId m_selectedTrackId;
     TrackPointer m_pTrack;
 
     QString m_suggestionFile;
