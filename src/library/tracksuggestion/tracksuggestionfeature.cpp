@@ -214,9 +214,16 @@ void TrackSuggestionFeature::activateChild(const QModelIndex& index) {
         return;
     }
     qDebug() << "TrackSuggestionFeature item" << item->getLabel()
-             << "selected. The track located at: " << item->getData();
-
-    QString selectedDeckItemTrackLocation = item->getData().toString();
+             << "selected. The track ID is: " << item->getData();
+    TrackId trackId = TrackId(item->getData());
+    if (!trackId.isValid()) {
+        qDebug() << "Track ID is not valid";
+        return;
+    }
+    TrackPointer trackPointer = m_pLibrary->trackCollectionManager()->getTrackById(trackId);
+    emitTrackPropertiesToDialog(trackPointer);
+    m_pTrack = trackPointer;
+    QString selectedDeckItemTrackLocation = trackPointer->getLocation();
 
     if (selectedDeckItemTrackLocation.isNull()) {
         qDebug() << "Selected track suggestion item is null.";
@@ -365,22 +372,25 @@ void TrackSuggestionFeature::slotTrackChanged(const QString& group,
 
 void TrackSuggestionFeature::playerInfoTrackLoaded(const QString& group, TrackPointer pNewTrack) {
     m_pTrack = pNewTrack;
-    emitTrackPropertiesToDialog(pNewTrack);
     QString artist = pNewTrack->getArtist();
     QString title = pNewTrack->getTitle();
-    QString trackLocation = pNewTrack->getLocation();
+    TrackId trackId = pNewTrack->getId();
+    if (!trackId.isValid()) {
+        qDebug() << "Track ID is not valid!";
+        return;
+    }
     if (group == "[Channel1]") {
         treeItemDeckOne->setLabel(composeTreeItemLabel(artist, title));
-        treeItemDeckOne->setData(trackLocation);
+        treeItemDeckOne->setData(trackId.toVariant());
     } else if (group == "[Channel2]") {
         treeItemDeckTwo->setLabel(composeTreeItemLabel(artist, title));
-        treeItemDeckTwo->setData(trackLocation);
+        treeItemDeckTwo->setData(trackId.toVariant());
     } else if (group == "[Channel3]") {
         treeItemDeckThree->setLabel(composeTreeItemLabel(artist, title));
-        treeItemDeckThree->setData(trackLocation);
+        treeItemDeckThree->setData(trackId.toVariant());
     } else {
         treeItemDeckFour->setLabel(composeTreeItemLabel(artist, title));
-        treeItemDeckFour->setData(trackLocation);
+        treeItemDeckFour->setData(trackId.toVariant());
     }
 }
 
@@ -435,6 +445,6 @@ void TrackSuggestionFeature::slotTrackSelected(TrackId trackId) {
         QString title = trackPointer->getTitle();
         QString trackLocation = trackPointer->getLocation();
         treeItemSelectedTrack->setLabel(composeTreeItemLabel(artist, title));
-        treeItemSelectedTrack->setData(trackLocation);
+        treeItemSelectedTrack->setData(m_selectedTrackId.toVariant());
     }
 }
