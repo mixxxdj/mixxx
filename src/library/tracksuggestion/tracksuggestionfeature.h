@@ -16,6 +16,8 @@
 #include "util/parented_ptr.h"
 
 class Track;
+class DlgTagFetcher;
+class DlgTrackInfo;
 
 class TrackSuggestionFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -46,13 +48,19 @@ class TrackSuggestionFeature : public BaseExternalLibraryFeature {
 
   private:
     void parseSuggestionFile();
+    void showImportMetadataDlg();
+    void showTrackPropertiesDlg();
     void clearTable(const QString& table_name);
     void emitTrackPropertiesToDialog(TrackPointer pTrack);
     QString formatRootViewHtml() const;
+    QString formatNoSuggestionAvailableHtml() const;
 
     bool m_cancelImport;
+    bool m_isFetchingSuccess;
     parented_ptr<TreeItemModel> m_pSidebarModel;
     parented_ptr<SuggestionFetcher> m_pSuggestionFetcher;
+    std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
+    std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     BaseExternalTrackModel* m_pSuggestionTrackModel;
     BaseExternalPlaylistModel* m_pSuggestionPlaylistModel;

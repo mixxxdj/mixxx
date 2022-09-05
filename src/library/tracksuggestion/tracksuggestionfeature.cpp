@@ -1,6 +1,8 @@
 #include "library/tracksuggestion/tracksuggestionfeature.h"
 
 #include "library/dao/trackschema.h"
+#include "library/dlgtagfetcher.h"
+#include "library/dlgtrackinfo.h"
 #include "library/library.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
@@ -8,8 +10,11 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
+#include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
+#include "widget/wstarrating.h"
 
 namespace {
 
@@ -19,6 +24,8 @@ const QString composeTreeItemLabel(const QString& track,
 }
 
 const QString kSuggestionTitle("SuggestionView");
+
+const QString kNoSuggestionAvailable("NoSuggestionAvailable");
 
 // This can be replaced with the XML parse.
 const QString kTrack = "track";
@@ -147,11 +154,24 @@ void TrackSuggestionFeature::bindLibraryWidget(WLibrary* libraryWidget,
             &DlgTrackSuggestion::suggestionFileWrittenSuccessfully,
             this,
             &TrackSuggestionFeature::slotUpdateTrackModelAfterSuccess);
+
+    WLibraryTextBrowser* suggestionNotFound = new WLibraryTextBrowser(libraryWidget);
+    suggestionNotFound->setHtml(formatNoSuggestionAvailableHtml());
+    suggestionNotFound->setOpenLinks(false);
+    connect(suggestionNotFound,
+            &WLibraryTextBrowser::anchorClicked,
+            this,
+            &TrackSuggestionFeature::htmlLinkClicked);
+    libraryWidget->registerView(kNoSuggestionAvailable, suggestionNotFound);
 }
 
 void TrackSuggestionFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "refresh") {
         activate();
+    } else if (QString(link.path()) == "metadata") {
+        showImportMetadataDlg();
+    } else if (QString(link.path()) == "properties") {
+        showTrackPropertiesDlg();
     } else {
         qDebug() << "Unknown link clicked" << link;
     }
@@ -198,6 +218,32 @@ QString TrackSuggestionFeature::formatRootViewHtml() const {
     // https://www.last.fm/api/tos
 
     // QUESTION: Inform user about the laws (also mentioned on TOS) before using this service?
+    return html;
+}
+
+QString TrackSuggestionFeature::formatNoSuggestionAvailableHtml() const {
+    QString title = tr("Track Suggestions Not Found");
+    QString summary =
+            tr("There is no suggested tracks found on last.fm. "
+               "We suggest to update the metadata of the track from Musicbrainz. "
+               "Or adjust the title and artist if they are misspelled. ");
+
+    QStringList items;
+
+    items << tr("Look for metadata in MusicBrainz")
+          << tr("Change the track properties");
+
+    QString html;
+    QString importMetadata = tr("Import Metadata from Musicbrainz");
+    QString trackProperties = tr("Edit Track Properties");
+    html.append(QString("<h2>%1</h2>").arg(title));
+    html.append(QString("<p>%1</p>").arg(summary));
+
+    html.append(QString("<li> <a style=\"color:#0496FF;\" href=\"metadata\">%1</a> </li>")
+                        .arg(importMetadata));
+
+    html.append(QString("<li> <a style=\"color:#0496FF;\" href=\"properties\">%1</a> </li>")
+                        .arg(trackProperties));
     return html;
 }
 
@@ -337,7 +383,7 @@ void TrackSuggestionFeature::parseSuggestionFile() {
             query.bindValue(":location", kLocation);
 
             bool success = query.exec();
-
+            m_isFetchingSuccess = true;
             if (!success) {
                 LOG_FAILED_QUERY(query);
                 return;
@@ -348,17 +394,10 @@ void TrackSuggestionFeature::parseSuggestionFile() {
     //In this circumstances, this is block is added for initial PR.
     //Later on this can be handled on task.
     if (suggestionId < 1) {
-        query.bindValue(":id", suggestionId);
-        query.bindValue(":artist", "No Suggestion");
-        query.bindValue(":title", "Found for this track.");
-        query.bindValue(":location", kLocation);
-
-        bool success = query.exec();
-
-        if (!success) {
-            LOG_FAILED_QUERY(query);
-            return;
-        }
+        suggestion_file.remove();
+        emit switchToView(kNoSuggestionAvailable);
+        m_isFetchingSuccess = false;
+        return;
     }
 }
 
@@ -371,7 +410,6 @@ void TrackSuggestionFeature::slotTrackChanged(const QString& group,
 }
 
 void TrackSuggestionFeature::playerInfoTrackLoaded(const QString& group, TrackPointer pNewTrack) {
-    m_pTrack = pNewTrack;
     QString artist = pNewTrack->getArtist();
     QString title = pNewTrack->getTitle();
     TrackId trackId = pNewTrack->getId();
@@ -409,9 +447,13 @@ void TrackSuggestionFeature::clearTable(const QString& table_name) {
 }
 
 void TrackSuggestionFeature::onSuggestionFileParsed() {
-    m_trackSource->buildIndex();
-    emit showTrackModel(m_pSuggestionTrackModel);
-    qDebug() << "Suggestion library loaded successfully.";
+    if (m_isFetchingSuccess) {
+        m_trackSource->buildIndex();
+        emit showTrackModel(m_pSuggestionTrackModel);
+        qDebug() << "Suggestion library loaded successfully.";
+    } else {
+        emit switchToView(kNoSuggestionAvailable);
+    }
 }
 
 void TrackSuggestionFeature::slotStartFetchingViaButton() {
@@ -446,4 +488,38 @@ void TrackSuggestionFeature::slotTrackSelected(TrackId trackId) {
         treeItemSelectedTrack->setLabel(composeTreeItemLabel(artist, title));
         treeItemSelectedTrack->setData(m_selectedTrackId.toVariant());
     }
+}
+
+void TrackSuggestionFeature::showImportMetadataDlg() {
+    m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
+            m_pSuggestionTrackModel);
+    connect(m_pDlgTagFetcher.get(),
+            &QDialog::finished,
+            this,
+            [this]() {
+                if (m_pDlgTagFetcher.get() == sender()) {
+                    m_pDlgTagFetcher.release()->deleteLater();
+                }
+            });
+
+    m_pDlgTagFetcher->loadTrack(m_pTrack);
+
+    m_pDlgTagFetcher->show();
+}
+
+void TrackSuggestionFeature::showTrackPropertiesDlg() {
+    m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+            m_pConfig,
+            m_pSuggestionTrackModel);
+
+    connect(m_pDlgTrackInfo.get(),
+            &QDialog::finished,
+            this,
+            [this]() {
+                if (m_pDlgTrackInfo.get() == sender()) {
+                    m_pDlgTrackInfo.release()->deleteLater();
+                }
+            });
+    m_pDlgTrackInfo->loadTrack(m_pTrack);
+    m_pDlgTrackInfo->show();
 }

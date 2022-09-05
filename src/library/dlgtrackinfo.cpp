@@ -428,9 +428,10 @@ void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
-    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
-        return;
-    }
+    //This block commented just for tryout.
+    //VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
+    //    return;
+    //}
     loadTrackInternal(pTrack);
     if (m_pDlgTagFetcher && m_pLoadedTrack) {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
