@@ -127,8 +127,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
             // assigned to the event's mouseState for simulated rightbutton press events
             // (using ctrl+leftbotton), which results in a missing release event for that
             // press event.
-            QMouseEventEditable* editEvent = static_cast<QMouseEventEditable*>(event);
-            editEvent->setButtons(Qt::RightButton);
+            mouseEvent->setButtons(Qt::RightButton);
         }
         break;
     }
