@@ -47,6 +47,11 @@ class QMouseEventEditable : public QMouseEvent {
     void setButton(Qt::MouseButton button) {
         b = button;
     }
+    // We also use this class to modify erroneous mouseState. See
+    // MixxxApplication::notify(...) for details.
+    void setButtons(Qt::MouseButtons mouseState) {
+        this->mouseState = mouseState;
+    }
 };
 
 } // anonymous namespace
@@ -116,6 +121,14 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
             }
             mouseEvent->setButton(Qt::RightButton);
             m_rightPressedButtons++;
+        }
+        if (mouseEvent->button() == Qt::RightButton && mouseEvent->buttons() == Qt::LeftButton) {
+            // Workaround for a bug in Qt 5.12 qnsview_mouse.mm, where the wrong value is
+            // assigned to the event's mouseState for simulated rightbutton press events
+            // (using ctrl+leftbotton), which results in a missing release event for that
+            // press event.
+            QMouseEventEditable* editEvent = static_cast<QMouseEventEditable*>(event);
+            editEvent->setButtons(Qt::RightButton);
         }
         break;
     }
