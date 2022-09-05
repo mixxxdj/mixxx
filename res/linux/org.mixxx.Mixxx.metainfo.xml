@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2022-08-29" timestamp="1661804811">
+    <release version="2.4.0" type="development" date="2022-09-08" timestamp="1662670306">
       <description>
  <p>
   Cover Art
@@ -414,6 +414,8 @@
    #4837
    #4864
    #4893
+   #10861
+   #10871
   </li>
  </ul>
  <p>
@@ -652,6 +654,8 @@
    #4589
    #1717
    #4852
+   #10835
+   #10843
   </li>
  </ul>
  <p>
@@ -978,6 +982,7 @@
    lp:1299035
    #4810
    #4901
+   #10858
   </li>
   <li>
    Use '---' instead of 'None' for empty slots to spot them easier
@@ -1023,6 +1028,7 @@
    lp1983764
    #4899
    #8817
+   #10868
   </li>
  </ul>
  <p>
@@ -1050,6 +1056,7 @@
    #4514
    #3550
    #4861
+   #10855
   </li>
   <li>
    Improve GitHub workflow continuous integration
@@ -1145,6 +1152,7 @@
    #4338
    #4709
    #4717
+   #10872
   </li>
   <li>
    Devendor libraries from the mixxx lib directory
@@ -1386,6 +1394,11 @@
    #4825
   </li>
   <li>
+   Replace Launchpad bugs by GitHub issues
+   #10850
+   #10865
+  </li>
+  <li>
    Misc. refactorings
    #3154
    #2870
@@ -1511,11 +1524,12 @@
    #4908
    #4903
    #8818
+   #4907
   </li>
  </ul>
 </description>
     </release>
-    <release version="2.3.4" type="development" date="2022-08-29" timestamp="1661804811">
+    <release version="2.3.4" type="development" date="2022-09-08" timestamp="1662670306">
       <description>
  <ul>
   <li>
