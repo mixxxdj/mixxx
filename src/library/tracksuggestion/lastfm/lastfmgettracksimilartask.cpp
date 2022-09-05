@@ -24,6 +24,13 @@ const Logger kLogger("LastfmGetTrackSimilarTask");
 // Registered to: 	fatihemreyildiz
 // Created:             Saturday 11 Jun 2022, 11:29am
 
+// About this method
+// This method is called track.Getsimilar.
+// Based on all the users listening data
+// this method gets the similar tracks for a track on Last.fm.
+// It doesn't require any authentication for to use.
+// More info can be found: https://www.last.fm/api/show/track.getSimilar
+
 const QString kApiKey = QStringLiteral("7830e11363f1a74c9cdb126aae9d84af");
 
 const QString kSharedSecretKey = QStringLiteral("51671e36013c555ed91e8bb5080f50f3");
