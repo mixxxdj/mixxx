@@ -69,6 +69,16 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         }
     }
 
+    // This call here assumes that the caching reader will read the first sound cue at
+    // one of the first chunks. The check serves as a sanity check to ensure that the
+    // sample data has not changed since it has ben analyzed. This could happen because
+    // of a change in actual audio data or because the file was decoded using a different
+    // decoder
+    // This is part of a first prove of concept and needs to be replaces with a different
+    // solution which is still under discussion. This might be also extended
+    // to further checks whether a automatic offset adjustment is possible or a the
+    // sample position metadata shall be treated as outdated.
+    // Failures of the sanity check only result in an entry into the log at the moment.
     verifyFirstSound(pChunk);
 
     ReaderStatusUpdate result;
