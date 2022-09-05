@@ -443,7 +443,6 @@ void TrackSuggestionFeature::slotTrackSelected(TrackId trackId) {
         emitTrackPropertiesToDialog(trackPointer);
         QString artist = trackPointer->getArtist();
         QString title = trackPointer->getTitle();
-        QString trackLocation = trackPointer->getLocation();
         treeItemSelectedTrack->setLabel(composeTreeItemLabel(artist, title));
         treeItemSelectedTrack->setData(m_selectedTrackId.toVariant());
     }
