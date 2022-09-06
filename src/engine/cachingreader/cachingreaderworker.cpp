@@ -17,6 +17,9 @@ namespace {
 
 mixxx::Logger kLogger("CachingReaderWorker");
 
+// we need the last silence frame and the first sound frame
+constexpr SINT kNumSoundFrameToVerify = 2;
+
 } // anonymous namespace
 
 CachingReaderWorker::CachingReaderWorker(
@@ -266,10 +269,13 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
                     m_firstSoundFrameToVerify.toLowerFrameBoundary()
                             .value()));
     if (pChunk->getIndex() == firstSoundIndex) {
-        CSAMPLE sampleBuffer[4];
+        CSAMPLE sampleBuffer[kNumSoundFrameToVerify * mixxx::kEngineChannelCount];
         SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
-        pChunk->readBufferedSampleFrames(sampleBuffer, mixxx::IndexRange::forward(end - 1, 2));
-        if (AnalyzerSilence::verifyFirstSound(sampleBuffer, 4, mixxx::audio::FramePos(1))) {
+        pChunk->readBufferedSampleFrames(sampleBuffer,
+                mixxx::IndexRange::forward(end - 1, kNumSoundFrameToVerify));
+        if (AnalyzerSilence::verifyFirstSound(sampleBuffer,
+                    std::size(sampleBuffer),
+                    mixxx::audio::FramePos(1))) {
             qDebug() << "First sound found at the previously stored position";
         } else {
             // This can happen in case of track edits or replacements, changed encoders or encoding issues.
