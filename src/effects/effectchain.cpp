@@ -356,13 +356,13 @@ void EffectChain::setControlLoadedPresetIndex(uint index) {
 
 void EffectChain::slotControlNextChainPreset(double value) {
     if (value > 0) {
-        loadChainPreset(presetAtIndex(presetIndex() + 1));
+        slotControlChainPresetSelector(1);
     }
 }
 
 void EffectChain::slotControlPrevChainPreset(double value) {
     if (value > 0) {
-        loadChainPreset(presetAtIndex(presetIndex() - 1));
+        slotControlChainPresetSelector(-1);
     }
 }
 
