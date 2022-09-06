@@ -19,6 +19,7 @@ body:
     attributes:
       label: Version
       description: What version of Mixxx are you running?
+      placeholder: 2.3.4, 2.4.0, ...
   - type: input
     id: os
     attributes:
