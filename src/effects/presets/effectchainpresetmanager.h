@@ -60,6 +60,7 @@ class EffectChainPresetManager : public QObject {
 
     void setPresetOrder(const QStringList& chainPresetList);
     void setQuickEffectPresetOrder(const QStringList& chainPresetList);
+    void prependEmptyPreset(QList<EffectChainPresetPointer>& pPresetList) const;
 
     EffectChainPresetPointer getPreset(const QString& name) const {
         return m_effectChainPresets.value(name);

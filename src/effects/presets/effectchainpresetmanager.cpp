@@ -389,8 +389,24 @@ void EffectChainPresetManager::setQuickEffectPresetOrder(
         m_quickEffectChainPresetsSorted.append(
                 m_effectChainPresets.value(chainPresetName));
     }
+    prependEmptyPreset(m_quickEffectChainPresetsSorted);
 
     emit quickEffectChainPresetListUpdated();
+}
+
+void EffectChainPresetManager::prependEmptyPreset(
+        QList<EffectChainPresetPointer>& pPresetList) const {
+    // Ensure empty '---' preset is the first list item
+    const auto& pEmptyPreset = m_effectChainPresets.value(kNoEffectString);
+    VERIFY_OR_DEBUG_ASSERT(pEmptyPreset) {
+        return;
+    }
+    int index = pPresetList.indexOf(pEmptyPreset);
+    if (index == -1) { // not in list, re-add it
+        pPresetList.prepend(pEmptyPreset);
+    } else if (index != 0) { // not first item, move to top
+        pPresetList.move(index, 0);
+    }
 }
 
 void EffectChainPresetManager::savePresetAndReload(EffectChainPointer pChainSlot) {
