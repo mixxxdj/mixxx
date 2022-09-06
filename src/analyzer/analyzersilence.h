@@ -3,6 +3,7 @@
 #include "analyzer/analyzer.h"
 #include "audio/frame.h"
 #include "preferences/usersettings.h"
+#include "util/span.h"
 
 class CuePointer;
 
@@ -20,17 +21,16 @@ class AnalyzerSilence : public Analyzer {
 
     /// returns the index of the first sample in the buffer that is above -60 dB
     /// or iLen if no sample is found
-    static SINT findFirstSoundInChunk(const CSAMPLE* pIn, SINT iLen);
+    static SINT findFirstSoundInChunk(std::span<const CSAMPLE> samples);
 
     /// returns the index of the last sample in the buffer that is above -60 dB
     /// or -1 if no sample is found.
-    static SINT findLastSoundInChunk(const CSAMPLE* pIn, SINT iLen);
+    static SINT findLastSoundInChunk(std::span<const CSAMPLE> samples);
 
     /// Returns true if the first sound if found at the given frame and logs a warning message if not.
     /// This can be uses to detect changes since the last analysis run and is an indicator for
     /// file edits or decoder changes/issues
-    static bool verifyFirstSound(const CSAMPLE* pIn,
-            SINT iLen,
+    static bool verifyFirstSound(std::span<const CSAMPLE> samples,
             mixxx::audio::FramePos firstSoundFrame);
 
   private:

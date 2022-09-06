@@ -23,6 +23,13 @@ bool shouldAnalyze(TrackPointer pTrack) {
     return false;
 }
 
+template<typename Iterator>
+Iterator first_sound(Iterator begin, Iterator end) {
+    return std::find_if(begin, end, [](const auto elem) {
+        return fabs(elem) >= kSilenceThreshold;
+    });
+}
+
 } // anonymous namespace
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
@@ -50,47 +57,38 @@ bool AnalyzerSilence::initialize(TrackPointer pTrack,
 }
 
 // static
-SINT AnalyzerSilence::findFirstSoundInChunk(const CSAMPLE* pIn, SINT iLen) {
-    SINT i = 0;
-    for (; i < iLen; ++i) {
-        if (fabs(pIn[i]) >= kSilenceThreshold) {
-            break;
-        }
-    }
-    return i;
+SINT AnalyzerSilence::findFirstSoundInChunk(std::span<const CSAMPLE> samples) {
+    return std::distance(samples.begin(), first_sound(samples.begin(), samples.end()));
 }
 
 // static
-SINT AnalyzerSilence::findLastSoundInChunk(const CSAMPLE* pIn, SINT iLen) {
-    SINT i = iLen - 1;
-    for (; i >= 0; --i) {
-        if (fabs(pIn[i]) >= kSilenceThreshold) {
-            break;
-        }
-    }
-    return i;
+/// returns a std::reverse_iterator
+SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
+    // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
+    return std::distance(first_sound(samples.rbegin(), samples.rend()), samples.rend()) - 1;
 }
 
 // static
 bool AnalyzerSilence::verifyFirstSound(
-        const CSAMPLE* pIn, SINT iLen, mixxx::audio::FramePos firstSoundFrame) {
-    const SINT firstSoundSample = findFirstSoundInChunk(pIn, iLen);
-    if (firstSoundSample < iLen) {
-        return (mixxx::audio::FramePos(findFirstSoundInChunk(pIn, iLen) /
-                        mixxx::kAnalysisChannels) == firstSoundFrame);
+        std::span<const CSAMPLE> samples,
+        mixxx::audio::FramePos firstSoundFrame) {
+    const SINT firstSoundSample = findFirstSoundInChunk(samples);
+    if (firstSoundSample < static_cast<SINT>(samples.size())) {
+        return mixxx::audio::FramePos::fromEngineSamplePos(firstSoundSample) == firstSoundFrame;
     }
     return false;
 }
 
 bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
+    std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pIn, iLen);
     if (m_iSignalStart < 0) {
-        const SINT firstSoundSample = findFirstSoundInChunk(pIn, iLen);
-        if (firstSoundSample < iLen) {
+        const SINT firstSoundSample = findFirstSoundInChunk(samples);
+        if (firstSoundSample < static_cast<SINT>(samples.size())) {
             m_iSignalStart = m_iFramesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
         }
     }
     if (m_iSignalStart >= 0) {
-        const SINT lastSoundSample = findLastSoundInChunk(pIn, iLen);
+        const SINT lastSoundSample = findLastSoundInChunk(samples);
         if (lastSoundSample > -1 &&           // only silence
                 lastSoundSample < iLen - 1) { // only sound
             m_iSignalEnd = m_iFramesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;

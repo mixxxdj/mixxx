@@ -12,6 +12,7 @@
 #include "util/compatibility/qmutex.h"
 #include "util/event.h"
 #include "util/logger.h"
+#include "util/span.h"
 
 namespace {
 
@@ -273,8 +274,7 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
         SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
         pChunk->readBufferedSampleFrames(sampleBuffer,
                 mixxx::IndexRange::forward(end - 1, kNumSoundFrameToVerify));
-        if (AnalyzerSilence::verifyFirstSound(sampleBuffer,
-                    std::size(sampleBuffer),
+        if (AnalyzerSilence::verifyFirstSound(std::span<const CSAMPLE>(sampleBuffer),
                     mixxx::audio::FramePos(1))) {
             qDebug() << "First sound found at the previously stored position";
         } else {
