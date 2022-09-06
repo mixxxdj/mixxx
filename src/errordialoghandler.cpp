@@ -1,7 +1,9 @@
 #include "errordialoghandler.h"
 
 #include <QCoreApplication>
+#include <QGuiApplication>
 #include <QScopedPointer>
+#include <QScreen>
 #include <QThread>
 #include <QtDebug>
 
@@ -9,6 +11,17 @@
 #include "util/assert.h"
 #include "util/compatibility/qmutex.h"
 #include "util/versionstore.h"
+#include "util/widgethelper.h"
+
+namespace {
+// Gross estimated dimensions for the size of the error dialog,
+// with Show Details expanded.
+constexpr int kEstimatedShowDetailedDialogWidth = 1000; // px
+constexpr int kEstimatedShowDetailedDialogHeight = 500; // px
+constexpr int kEstimatedDialogPadding = 50;             // px
+// used to push the dialog away from screen borders to not cover taskbars
+constexpr int kMinimumDialogMargin = 40; // px
+} // namespace
 
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title(VersionStore::applicationName()),
@@ -149,7 +162,36 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     if (!props->m_details.isEmpty()) {
         pMsgBox->setDetailedText(props->m_details);
         if (props->m_detailsUseMonospaceFont) {
-            pMsgBox->setStyleSheet("QTextEdit { font-family: monospace; }");
+            // There is no event to respond on the Show Details button of QMessagBox.
+            // Therefore we must consider the expanded size for positioning the dialog initially.
+            auto* pScreen =
+                    mixxx::widgethelper::getScreen(*pMsgBox);
+            if (!pScreen) {
+                // Fallback to obtain the primary screen when mixxx::widgethelper::getScreen can't
+                // determine the screen. This happens always with Qt <5.14
+                pScreen = qGuiApp->primaryScreen();
+            }
+            DEBUG_ASSERT(pScreen);
+            int dialogWidth = kEstimatedShowDetailedDialogWidth;
+            int dialogHeight = kEstimatedShowDetailedDialogHeight;
+
+            // Limit dialog size to screen size, for the case of devices with very small display - like Raspberry Pi.
+            if (dialogWidth > pScreen->geometry().width() - 2 * kMinimumDialogMargin) {
+                dialogWidth = pScreen->geometry().width() - 2 * kMinimumDialogMargin;
+            }
+            if (dialogHeight > pScreen->geometry().height() - 2 * kMinimumDialogMargin) {
+                dialogHeight = pScreen->geometry().height() - 2 * kMinimumDialogMargin;
+            }
+            pMsgBox->setGeometry(QStyle::alignedRect(
+                    Qt::LeftToRight,
+                    Qt::AlignCenter,
+                    QSize(dialogWidth, dialogHeight),
+                    pScreen->geometry()));
+            pMsgBox->setStyleSheet(
+                    QString("QTextEdit { min-width: %1px ; max-height: %2px; "
+                            "font-family: monospace;}")
+                            .arg(dialogWidth - kEstimatedDialogPadding)
+                            .arg(dialogHeight));
         }
     }
 

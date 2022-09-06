@@ -48,6 +48,8 @@
       <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
@@ -63,7 +65,8 @@
       <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
       <!-- Compact deck -->
       <attribute persist="true" config_key="[Skin],show_rate_controls_compact">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_loopjump_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_beatjump_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_sync_button_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_key_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_key_controls_compact">1</attribute>

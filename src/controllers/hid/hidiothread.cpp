@@ -148,8 +148,6 @@ QByteArray HidIoThread::getInputReport(quint8 reportID) {
     auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
-    // FIXME: implement upstream for hidraw backend on Linux
-    // https://github.com/libusb/hidapi/issues/259
     int bytesRead = hid_get_input_report(
             m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
     if (bytesRead <= kReportIdSize) {
@@ -215,11 +213,15 @@ bool HidIoThread::sendNextCachedOutputReport() {
     // i is just a counter to prevent infinite loop execution.
     // If the map size increases, this loop will execute one iteration more,
     // which only has the effect, that one additional lookup operation for unsent data will be executed.
-    for (unsigned char i = 0; i < m_outputReports.size(); i++) {
+    for (std::size_t i = 0; i < m_outputReports.size(); i++) {
         auto mapLock = lockMutex(&m_outputReportMapMutex);
-        m_outputReportIterator++;
         if (m_outputReportIterator == m_outputReports.end()) {
             m_outputReportIterator = m_outputReports.begin();
+        } else {
+            m_outputReportIterator++;
+            if (m_outputReportIterator == m_outputReports.end()) {
+                m_outputReportIterator = m_outputReports.begin();
+            }
         }
         mapLock.unlock();
 

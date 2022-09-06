@@ -114,13 +114,24 @@
                   <BindProperty>highlight</BindProperty>
                 </Connection> -->
               </BeatSpinBox>
+            </Children>
+              <Connection>
+                <ConfigKey persist="true">[Skin],show_loop_controls_compact</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+          </WidgetGroup>
 
-              <WidgetGroup>
-                <SizePolicy>me,min</SizePolicy>
-                <MinimumSize>2,</MinimumSize>
-                <MaximumSize>20,</MaximumSize>
-              </WidgetGroup>
+          <WidgetGroup>
+            <SizePolicy>me,min</SizePolicy>
+            <MinimumSize>2,</MinimumSize>
+            <MaximumSize>40,</MaximumSize>
+          </WidgetGroup>
 
+          <WidgetGroup>
+            <ObjectName>BeatjumpControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
               <BeatSpinBox>
                 <TooltipId>beatjump_size</TooltipId>
                 <ObjectName>Spinbox_<Variable name="BtnType"/></ObjectName>
@@ -138,7 +149,7 @@
               </BeatSpinBox>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[LateNight],show_loopjump_controls_compact</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_beatjump_controls_compact</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

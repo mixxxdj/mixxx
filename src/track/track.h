@@ -391,12 +391,6 @@ class Track : public QObject {
     void setCoverInfo(const CoverInfoRelative& coverInfo);
     CoverInfoRelative getCoverInfo() const;
     CoverInfo getCoverInfoWithLocation() const;
-    // Verify the cover image hash and update it if necessary.
-    // If the corresponding image has already been loaded it
-    // could be provided as a parameter to avoid reloading
-    // if actually needed.
-    bool refreshCoverImageDigest(
-            const QImage& loadedImage = QImage());
 
     /// Set track metadata after importing from the source.
     ///
@@ -466,6 +460,7 @@ class Track : public QObject {
     void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
+    void loopRemove();
     void analyzed();
 
     void changed(TrackId trackId);

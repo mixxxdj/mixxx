@@ -328,7 +328,8 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             Capability::LoadToDeck |
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
-            Capability::ResetPlayed;
+            Capability::ResetPlayed |
+            Capability::Analyze;
 
     if (m_iPlaylistId !=
             m_pTrackCollectionManager->internalCollection()

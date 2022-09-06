@@ -25,11 +25,11 @@ class DeckAttributes : public QObject {
     virtual ~DeckAttributes();
 
     bool isLeft() const {
-        return m_orientation.get() == EngineChannel::LEFT;
+        return m_orientation.get() == static_cast<double>(EngineChannel::LEFT);
     }
 
     bool isRight() const {
-        return m_orientation.get() == EngineChannel::RIGHT;
+        return m_orientation.get() == static_cast<double>(EngineChannel::RIGHT);
     }
 
     bool isPlaying() const {
@@ -278,7 +278,6 @@ class AutoDJProcessor : public QObject {
     bool removeTrackFromTopOfQueue(TrackPointer pTrack);
     void maybeFillRandomTracks();
     UserSettingsPointer m_pConfig;
-    PlayerManagerInterface* m_pPlayerManager;
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;

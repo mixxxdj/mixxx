@@ -167,7 +167,7 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
             // This might also fail, but
             pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
         }
-        DEBUG_ASSERT(pLoadedSkin != nullptr);
+        DEBUG_ASSERT(pLoadedSkin);
     }
 
     VERIFY_OR_DEBUG_ASSERT(pLoadedSkin != nullptr) {

@@ -38,6 +38,12 @@ struct RuntimeLoggingCategory {
     /// Implicit converter for passing a RuntimeLoggingCategory to the
     /// qCInfo/qCDebug/qCWarning/qCCritical macros as if it was a
     /// QLoggingCategory.
+    operator const QLoggingCategory&() const {
+        return m_logger;
+    }
+
+    /// Converter for accessing QLoggingCategory members such as the
+    /// `isDebugEnabled()` method.
     const QLoggingCategory& operator()() const {
         return m_logger;
     }

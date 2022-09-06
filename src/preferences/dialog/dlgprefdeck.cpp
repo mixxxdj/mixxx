@@ -15,7 +15,6 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "mixxxmainwindow.h"
 #include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
 #include "util/duration.h"
@@ -52,10 +51,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     // Create text color for the cue mode link "?" to the manual
     createLinkColor();
 
-    m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
+    m_pNumDecks->connectValueChanged(this, [=, this](double value) { slotNumDecksChanged(value); });
     slotNumDecksChanged(m_pNumDecks->get(), true);
 
-    m_pNumSamplers->connectValueChanged(this, [=](double value){slotNumSamplersChanged(value);});
+    m_pNumSamplers->connectValueChanged(
+            this, [=, this](double value) { slotNumSamplersChanged(value); });
     slotNumSamplersChanged(m_pNumSamplers->get(), true);
 
     // Set default value in config file and control objects, if not present

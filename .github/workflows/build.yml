@@ -12,8 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 20.04 (gcc)
-            os: ubuntu-20.04
+          - name: Ubuntu 22.04 (gcc)
+            os: ubuntu-22.04
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DBULK=ON
@@ -29,15 +29,15 @@ jobs:
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 20.04 DEB
+            artifacts_name: Ubuntu 22.04 DEB
             artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-focal
+            artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: Arch Linux (Qt6, gcc)
-            os: ubuntu-20.04
+          - name: Arch Linux (Qt 6.3, gcc)
+            os: ubuntu-22.04
             # The Dockerfile for this container can be found at:
             # https://github.com/Holzhaus/mixxx-ci-docker
-            container: holzhaus/mixxx-ci:20220128-qt6
+            container: holzhaus/mixxx-ci:20220612-qt6
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DQT6=ON
@@ -52,8 +52,8 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
             qt_qpa_platform: offscreen
-          - name: macOS 10.15
-            os: macos-10.15
+          - name: macOS 11
+            os: macos-11
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -137,6 +137,11 @@ jobs:
         # This is necessary for making `git describe` work.
         fetch-depth: 0
 
+    - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
+      if: matrix.container != null
+      # See https://github.com/actions/checkout/issues/760 for details
+      run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
     - name: "Ensure that all tags are fetched"
       # Works around an issue where not the latest tag is not fetched when the
       # workflow is triggered by a tag push event.
@@ -144,18 +149,18 @@ jobs:
       run: git fetch origin --force --tags
 
     - name: "[macOS] Set up cmake"
-      uses: jwlawson/actions-setup-cmake@v1.9
-      # Ubuntu 20.04 should use the CMake version from the repos, and Visual
+      uses: jwlawson/actions-setup-cmake@v1.12
+      # Ubuntu 22.04 should use the CMake version from the repos, and Visual
       # Studio on Windows comes with its own CMake version anyway.
       if: runner.os == 'macOS'
       with:
         # This should always match the minimum required version in
         # our CMakeLists.txt
-        cmake-version: '3.16.x'
+        cmake-version: '3.19.x'
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
-      uses: seanmiddleditch/gha-setup-vsdevenv@v3
+      uses: seanmiddleditch/gha-setup-vsdevenv@v4
 
     - name: "[macOS] install ccache and make"
       if: runner.os == 'macOS'
@@ -314,7 +319,7 @@ jobs:
 
     - name: "Package for PPA"
       # No need to do the PPA build for both Ubuntu versions
-      if: matrix.os == 'ubuntu-20.04' && matrix.container == null
+      if: matrix.os == 'ubuntu-22.04' && matrix.container == null
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
@@ -338,7 +343,7 @@ jobs:
 
     - name: "[Windows] Sign Package"
       if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
+      run: signtool sign /tr http://timestamp.sectigo.com /td sha256 /fd sha256 /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
       working-directory: build
 
     - name: "Prepare for deployment"
@@ -428,7 +433,7 @@ jobs:
 
     - name: "Upload GitHub Actions artifacts"
       if: matrix.artifacts_path != null
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.artifacts_name }}
         path: ${{ matrix.artifacts_path }}

@@ -40,6 +40,8 @@ void Tooltips::addStandardTooltips() {
     QString loopActive = "(" + tr("loop active") + ")";
     QString loopInactive = "(" + tr("loop inactive") + ")";
     QString effectsWithinUnit = tr("Effects within the chain must be enabled to hear them.");
+    QString resetWithRightAndDoubleClick =
+            QString("%1 / %2: %3").arg(rightClick, doubleClick, resetToDefault);
 
     add("waveform_overview")
             << tr("Waveform Overview")
@@ -83,7 +85,7 @@ void Tooltips::addStandardTooltips() {
     add("pregain")
             << tr("Gain")
             << tr("Adjusts the pre-fader gain of the track (to avoid clipping).")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     QString clippingHelp = tr("(too loud for the hardware and is being distorted).");
     add("channel_PeakIndicator")
@@ -175,50 +177,50 @@ void Tooltips::addStandardTooltips() {
     add("channel_volume")
             << tr("Volume Control")
             << tr("Adjusts the volume of the selected channel.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     // Legacy control.
     add("master_volume")
             << tr("Main Output Gain")
             << tr("Adjusts the main output gain.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("master_gain")
             << tr("Main Output Gain")
             << tr("Adjusts the main output gain.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("booth_gain")
             << tr("Booth Gain")
             << tr("Adjusts the booth output gain.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("crossfader")
             << tr("Crossfader")
             << tr("Determines the main output by fading between the left and right channels.")
-            << QString("%1: %2").arg(rightClick, resetToDefault)
+            << resetWithRightAndDoubleClick
             << tr("Change the crossfader curve in Preferences -> Crossfader");
 
     add("balance")
             << tr("Balance")
             << tr("Adjusts the left/right channel balance on the main output.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     // Legacy control.
     add("headphone_volume")
             << tr("Headphone Volume")
             << tr("Adjusts the headphone output volume.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("headphone_gain")
             << tr("Headphone Gain")
             << tr("Adjusts the headphone output gain.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("headMix")
             << tr("Headphone Mix")
             << tr("Crossfades the headphone output between the main mix and cueing (PFL or Pre-Fader Listening) signal.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("headSplit")
             << tr("Headphone Split Cue")
@@ -289,17 +291,17 @@ void Tooltips::addStandardTooltips() {
     add("microphone_volume")
             << tr("Microphone Volume")
             << tr("Adjusts the microphone volume.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("microphone_pregain")
             << tr("Microphone Gain")
             << tr("Adjusts the pre-fader microphone gain.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("auxiliary_pregain")
             << tr("Auxiliary Gain")
             << tr("Adjusts the pre-fader auxiliary gain.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("microphone_talkover")
             << tr("Microphone Talk-Over")
@@ -349,17 +351,17 @@ void Tooltips::addStandardTooltips() {
     add("filterLow")
             << tr("Low EQ")
             << tr("Adjusts the gain of the low EQ filter.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("filterMid")
             << tr("Mid EQ")
             << tr("Adjusts the gain of the mid EQ filter.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("filterHigh")
             << tr("High EQ")
             << tr("Adjusts the gain of the high EQ filter.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     QString eqKillLatch = tr("Hold-to-kill or short click for latching.");
     add("filterHighKill")
@@ -445,6 +447,14 @@ void Tooltips::addStandardTooltips() {
 
     add("hotcue_toggle")
             << tr("Changes the number of hotcue buttons displayed in the deck");
+
+    // Show Loop Controls
+    add("show_loop_controls")
+            << tr("Toggle visibility of Loop Controls");
+
+    // Show Beatjump Controls
+    add("show_beatjump_controls")
+            << tr("Toggle visibility of Beatjump Controls");
 
     // Show Rate Control
     add("rate_toggle")
@@ -573,12 +583,12 @@ void Tooltips::addStandardTooltips() {
     add("rate")
             << tr("Speed Control")
             << tr("Changes the track playback speed (affects both the tempo and the pitch). If keylock is enabled, only the tempo is affected.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("pitch")
             << tr("Pitch Control")
             << tr("Changes the track pitch independent of the tempo.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("pitch_up")
             << tr("Pitch Control")
@@ -595,8 +605,7 @@ void Tooltips::addStandardTooltips() {
     add("pitch_adjust")
             << tr("Pitch Adjust")
             << tr("Adjust the pitch in addition to the speed slider pitch.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
+            << resetWithRightAndDoubleClick;
 
     add("rate_display")
             << tr("Pitch Rate")
@@ -891,7 +900,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit")
             << tr("D/W mode: Crossfade between dry and wet")
             << tr("D+W mode: Add wet to dry")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("EffectUnit_mix_mode")
             << tr("Mix Mode")
@@ -904,7 +913,7 @@ void Tooltips::addStandardTooltips() {
     add("EffectUnit_super1")
             << tr("Super Knob")
             << tr("Controls the Meta Knob of all effects in this unit together.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("EffectUnit_chain_preset_menu")
             << tr("Effect Chain Preset Settings")
@@ -991,7 +1000,7 @@ void Tooltips::addStandardTooltips() {
     add("EffectSlot_metaknob")
             << tr("Meta Knob")
             << tr("Controls linked parameters of this effect")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("EffectSlot_focus")
             << tr("Effect Focus Button")
@@ -1002,7 +1011,7 @@ void Tooltips::addStandardTooltips() {
     add("EffectSlot_parameter")
             << tr("Effect Parameter")
             << tr("Adjusts a parameter of the effect.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+            << resetWithRightAndDoubleClick;
 
     add("EffectSlot_parameter_link_type")
             << tr("Meta Knob Link")
@@ -1026,7 +1035,7 @@ void Tooltips::addStandardTooltips() {
     add("QuickEffectRack_super1")
             << tr("Quick Effect Super Knob")
             << tr("Quick Effect Super Knob (control linked effect parameters).")
-            << QString("%1: %2").arg(rightClick, resetToDefault)
+            << resetWithRightAndDoubleClick
             << tr("Hint: Change the default Quick Effect mode in Preferences -> Equalizers.");
 
     add("QuickEffectRack_enabled")
@@ -1038,7 +1047,7 @@ void Tooltips::addStandardTooltips() {
     add("EqualizerRack_effect_parameter")
             << tr("Equalizer Parameter")
             << tr("Adjusts the gain of the EQ filter.")
-            << QString("%1: %2").arg(rightClick, resetToDefault)
+            << resetWithRightAndDoubleClick
             << tr("Hint: Change the default EQ mode in Preferences -> Equalizers.");
 
     add("EqualizerRack_effect_button_parameter")

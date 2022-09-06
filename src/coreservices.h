@@ -6,7 +6,7 @@
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
 #include "preferences/settingsmanager.h"
-#include "soundio/sounddeviceerror.h"
+#include "soundio/sounddevicestatus.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 

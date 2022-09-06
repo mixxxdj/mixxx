@@ -509,7 +509,11 @@ void DlgPrefController::slotApply() {
         bEnabled = m_ui.chkEnabledDevice->isChecked();
 
         if (m_pMapping->isDirty()) {
-            saveMapping();
+            if (saveMapping()) {
+                // We might have saved the previous mapping with a new name,
+                // so update the mapping combobox.
+                enumerateMappings(m_pMapping->filePath());
+            }
         }
     }
     m_ui.chkEnabledDevice->setChecked(bEnabled);
@@ -575,12 +579,13 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     }
 
     applyMappingChanges();
+    bool previousMappingSaved = false;
     if (m_pMapping && m_pMapping->isDirty()) {
         if (QMessageBox::question(this,
                     tr("Mapping has been edited"),
                     tr("Do you want to save the changes?")) ==
                 QMessageBox::Yes) {
-            saveMapping();
+            previousMappingSaved = saveMapping();
         }
     }
 
@@ -592,17 +597,23 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         DEBUG_ASSERT(!pMapping->isDirty());
     }
 
-    slotShowMapping(pMapping);
+    if (previousMappingSaved) {
+        // We might have saved the previous preset with a new name, so update
+        // the preset combobox.
+        enumerateMappings(mappingPath);
+    } else {
+        slotShowMapping(pMapping);
+    }
 }
 
-void DlgPrefController::saveMapping() {
+bool DlgPrefController::saveMapping() {
     VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
-        return;
+        return false;
     }
 
     if (!m_pMapping->isDirty()) {
         qDebug() << "Mapping is not dirty, no need to save it.";
-        return;
+        return false;
     }
 
     QString oldFilePath = m_pMapping->filePath();
@@ -648,7 +659,7 @@ void DlgPrefController::saveMapping() {
                 m_pOverwriteMappings.insert(m_pMapping->filePath(), true);
             }
         } else if (overwriteMsgBox.close()) {
-            return;
+            return false;
         }
     }
 
@@ -661,20 +672,25 @@ void DlgPrefController::saveMapping() {
     } else {
         mappingName = askForMappingName(mappingName);
         newFilePath = mappingNameToPath(m_pUserDir, mappingName);
+        if (mappingName.isEmpty()) {
+            // QInputDialog was closed
+            qDebug() << "Mapping not saved, new name is empty";
+            return false;
+        }
         m_pMapping->setName(mappingName);
         qDebug() << "Mapping renamed to" << m_pMapping->name();
     }
 
     if (!m_pMapping->saveMapping(newFilePath)) {
         qDebug() << "Failed to save mapping as" << newFilePath;
-        return;
+        return false;
     }
     qDebug() << "Mapping saved as" << newFilePath;
 
     m_pMapping->setFilePath(newFilePath);
     m_pMapping->setDirty(false);
 
-    enumerateMappings(m_pMapping->filePath());
+    return true;
 }
 
 QString DlgPrefController::askForMappingName(const QString& prefilledName) const {
@@ -704,7 +720,8 @@ QString DlgPrefController::askForMappingName(const QString& prefilledName) const
                               .remove(rxRemove)
                               .trimmed();
         if (!ok) {
-            continue;
+            // Return empty string if the dialog was canceled. Callers will deal with this.
+            return QString();
         }
         if (mappingName.isEmpty()) {
             QMessageBox::warning(nullptr,

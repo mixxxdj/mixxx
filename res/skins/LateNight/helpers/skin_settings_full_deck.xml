@@ -64,7 +64,21 @@ Description:
         <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
       </Template>
 
-      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+      <!-- Loop Controls -->
+      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+        <SetVariable name="TooltipId">show_loop_controls</SetVariable>
+        <SetVariable name="Text">Loop Controls</SetVariable>
+        <SetVariable name="Setting">[Skin],show_loop_controls</SetVariable>
+      </Template>
+
+      <!-- Beatjump Controls -->
+      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+        <SetVariable name="TooltipId">show_beatjump_controls</SetVariable>
+        <SetVariable name="Text">Beatjump Controls</SetVariable>
+        <SetVariable name="Setting">[Skin],show_beatjump_controls</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
 
       <!-- Rate Controls -->
       <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -105,7 +119,7 @@ Description:
         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
       </Template>
 
-      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
 
       <!-- Spinny -->
       <Template src="skin:/helpers/skin_settings_button_2state.xml">

@@ -182,9 +182,12 @@ WSearchLineEdit,
 #VuMeterBox,
 #VuMeterBoxMaster,
 #VuMeterBoxMasterSingle,
-#LatencyMeterBox {
+#LatencyMeterBox[highlight="0"] {
   background-color: #040404;
-}
+  }
+  #LatencyMeterBox[highlight="1"] {
+    background-color: red;
+  }
 
 #VuMasterCover {
   background-color: rgba(21, 21, 21, 150);
@@ -254,7 +257,7 @@ WSearchLineEdit,
     max-height: 2px;
   }
   #SkinSettingsSeparator {
-    margin: 3px 4px 7px 4px;
+    margin: 1px 4px 3px 4px;
   }
 
 WBeatSpinBox,

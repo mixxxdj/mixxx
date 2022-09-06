@@ -4,6 +4,7 @@
 
 #include <QList>
 #include <QObject>
+#include <gsl/pointers>
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
@@ -53,7 +54,7 @@ class EngineControl : public QObject {
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek
     // target.
-    virtual void hintReader(HintVector* pHintList);
+    virtual void hintReader(gsl::not_null<HintVector*> pHintList);
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);

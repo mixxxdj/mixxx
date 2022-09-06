@@ -23,6 +23,7 @@
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 #include "effects/backends/builtin/metronomeeffect.h"
 #include "effects/backends/builtin/phasereffect.h"
+#include "effects/backends/builtin/pitchshifteffect.h"
 #include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
 
@@ -54,6 +55,7 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
     registerEffect<TremoloEffect>();
+    registerEffect<PitchShiftEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(

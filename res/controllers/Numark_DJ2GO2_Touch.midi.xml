@@ -313,16 +313,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.tempoFader.inputMSB</key>
-        <status>0xB0</status>
-        <midino>0x09</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.tempoFader.inputLSB</key>
+        <key>DJ2GO2Touch.leftDeck.tempoFader.input</key>
         <status>0xB0</status>
         <midino>0x09</midino>
         <options>
@@ -664,16 +655,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.tempoFader.inputMSB</key>
-        <status>0xB1</status>
-        <midino>0x09</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.tempoFader.inputLSB</key>
+        <key>DJ2GO2Touch.rightDeck.tempoFader.input</key>
         <status>0xB1</status>
         <midino>0x09</midino>
         <options>
@@ -757,7 +739,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.crossfader.inputMSB</key>
+        <key>DJ2GO2Touch.crossfader.input</key>
         <status>0xBF</status>
         <midino>0x08</midino>
         <options>
@@ -766,16 +748,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.crossfader.inputLSB</key>
-        <status>0xBF</status>
-        <midino>0x08</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>DJ2GO2Touch.masterGain.inputMSB</key>
+        <key>DJ2GO2Touch.masterGain.input</key>
         <status>0xBF</status>
         <midino>0x0A</midino>
         <options>
@@ -784,25 +757,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.masterGain.inputLSB</key>
-        <status>0xBF</status>
-        <midino>0x0A</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>DJ2GO2Touch.cueGain.inputMSB</key>
-        <status>0xBF</status>
-        <midino>0x0C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>DJ2GO2Touch.cueGain.inputLSB</key>
+        <key>DJ2GO2Touch.cueGain.input</key>
         <status>0xBF</status>
         <midino>0x0C</midino>
         <options>

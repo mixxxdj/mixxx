@@ -103,10 +103,11 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     }
 
     for (const auto& oldDir : obsoleteChildDirs) {
-        VERIFY_OR_DEBUG_ASSERT(RemoveResult::Ok == removeDirectory(oldDir)) {
+        if (RemoveResult::Ok != removeDirectory(oldDir)) {
             kLogger.warning()
                     << "Failed to remove obsolete child directory"
                     << oldDir;
+            DEBUG_ASSERT(!"removeDirectory failed");
             continue;
         }
     }

@@ -9,6 +9,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
+#include "library/library_prefs.h"
 #include "library/trackmodel.h"
 #include "moc_dlgtrackinfo.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -22,6 +23,7 @@
 #include "util/desktophelper.h"
 #include "util/duration.h"
 #include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
 
 namespace {
@@ -36,13 +38,16 @@ const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
 } // namespace
 
 DlgTrackInfo::DlgTrackInfo(
+        UserSettingsPointer pUserSettings,
         const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
+          m_pUserSettings(std::move(pUserSettings)),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
-          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
+          m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
+          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
           m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
     init();
 }
@@ -230,12 +235,14 @@ void DlgTrackInfo::init() {
                 this,
                 &DlgTrackInfo::slotCoverFound);
     }
-    connect(m_pWCoverArtLabel.get(),
-            &WCoverArtLabel::coverInfoSelected,
+
+    connect(m_pWCoverArtMenu,
+            &WCoverArtMenu::coverInfoSelected,
             this,
             &DlgTrackInfo::slotCoverInfoSelected);
-    connect(m_pWCoverArtLabel.get(),
-            &WCoverArtLabel::reloadCoverArt,
+
+    connect(m_pWCoverArtMenu,
+            &WCoverArtMenu::reloadCoverArt,
             this,
             &DlgTrackInfo::slotReloadCoverArt);
 }
@@ -299,11 +306,11 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 
     setWindowTitle(track.getInfo());
 
+    // Cover art, file type and 'date added'
     replaceTrackRecord(
             track.getRecord(),
             track.getLocation());
 
-    // Non-editable track fields
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
 
     reloadTrackBeats(track);
@@ -329,7 +336,8 @@ void DlgTrackInfo::replaceTrackRecord(
             m_trackRecord.getFileType());
     txtDateAdded->setText(
             mixxx::displayLocalDateTime(
-                    m_trackRecord.getDateAdded()));
+                    mixxx::localDateTimeFromUtc(
+                            m_trackRecord.getDateAdded())));
 
     updateTrackMetadataFields();
 }
@@ -662,10 +670,12 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
     QImage coverImage;
+    const auto resetMissingTagMetadata = m_pUserSettings->getValue<bool>(
+            mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
     const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
-                            &trackMetadata, &coverImage);
+                            &trackMetadata, &coverImage, resetMissingTagMetadata);
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }

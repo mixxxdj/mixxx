@@ -8,10 +8,11 @@
 #include <pthread.h>
 #endif
 
-#include "util/performancetimer.h"
-#include "util/memory.h"
-#include "soundio/sounddevice.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/networkoutputstreamworker.h"
+#include "soundio/sounddevice.h"
+#include "util/memory.h"
+#include "util/performancetimer.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 #define CPU_OVERLOAD_DURATION 500 // in ms
@@ -29,9 +30,9 @@ class SoundDeviceNetwork : public SoundDevice {
                        QSharedPointer<EngineNetworkStream> pNetworkStream);
     ~SoundDeviceNetwork() override;
 
-    SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
+    SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override;
     bool isOpen() const override;
-    SoundDeviceError close() override;
+    SoundDeviceStatus close() override;
     void readProcess() override;
     void writeProcess() override;
     QString getError() const override;
@@ -59,7 +60,7 @@ class SoundDeviceNetwork : public SoundDevice {
     std::unique_ptr<FIFO<CSAMPLE>> m_inputFifo;
     bool m_inputDrift;
 
-    std::unique_ptr<ControlProxy> m_pMasterAudioLatencyUsage;
+    PollingControlProxy m_masterAudioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     mixxx::Duration m_audioBufferTime;
     int m_framesSinceAudioLatencyUsageUpdate;

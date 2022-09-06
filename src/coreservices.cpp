@@ -23,6 +23,9 @@
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
 #include "preferences/settingsmanager.h"
+#ifdef __MODPLUG__
+#include "preferences/dialog/dlgprefmodplug.h"
+#endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
@@ -311,6 +314,13 @@ void CoreServices::initialize(QApplication* pApp) {
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
+#endif
+
+#ifdef __MODPLUG__
+    // Restore the configuration for the modplug library before trying to load a module.
+    DlgPrefModplug modplugPrefs{nullptr, pConfig};
+    modplugPrefs.loadSettings();
+    modplugPrefs.applySettings();
 #endif
 
     // Inhibit Screensaver

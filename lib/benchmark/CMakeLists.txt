@@ -160,9 +160,12 @@ else()
   add_cxx_compiler_flag(-Wall)
   add_cxx_compiler_flag(-Wextra)
   add_cxx_compiler_flag(-Wshadow)
-  add_cxx_compiler_flag(-Werror RELEASE)
-  add_cxx_compiler_flag(-Werror RELWITHDEBINFO)
-  add_cxx_compiler_flag(-Werror MINSIZEREL)
+  # Disable -Werror because of gcc bug
+  # https://github.com/google/benchmark/issues/1398
+  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105329
+  # add_cxx_compiler_flag(-Werror RELEASE)
+  # add_cxx_compiler_flag(-Werror RELWITHDEBINFO)
+  # add_cxx_compiler_flag(-Werror MINSIZEREL)
   if (NOT BENCHMARK_ENABLE_TESTING)
     # Disable warning when compiling tests as gtest does not use 'override'.
     add_cxx_compiler_flag(-Wsuggest-override)
