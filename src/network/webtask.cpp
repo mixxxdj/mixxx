@@ -113,8 +113,9 @@ WebTask::WebTask(
         QNetworkAccessManager* networkAccessManager,
         QObject* parent)
         : NetworkTask(networkAccessManager, parent),
-          m_state(State::Idle),
-          m_timeoutTimerId(kInvalidTimerId) {
+          m_state(State::Initial),
+          m_timeoutTimerId(kInvalidTimerId),
+          m_timeoutMillis(kNoTimeout) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
 }
 
@@ -171,9 +172,9 @@ void WebTask::emitNetworkError(
             responseWithContent);
 }
 
-void WebTask::slotStart(int timeoutMillis) {
+void WebTask::slotStart(int timeoutMillis, int delayMillis) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    if (m_state == State::Pending) {
+    if (isBusy()) {
         kLogger.warning()
                 << "Task is still busy and cannot be started again";
         return;
@@ -182,7 +183,25 @@ void WebTask::slotStart(int timeoutMillis) {
     // Reset state
     DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-    m_state = State::Idle;
+    m_state = State::Initial;
+    m_timeoutMillis = kNoTimeout;
+
+    if (delayMillis > 0) {
+        m_state = State::Starting;
+        kLogger.debug()
+                << this
+                << "Scheduling next request after" << delayMillis << "ms";
+        DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
+        // When the task is is starting/delayed, the timeoutTimer
+        // is used for scheduling the request that should happen
+        // after the delay. Afterwards, the timemoutTimer is used for
+        // the actual request timeout.
+        m_timeoutTimerId = startTimer(delayMillis);
+        DEBUG_ASSERT(m_timeoutTimerId != kInvalidTimerId);
+        // Store timeout for later
+        m_timeoutMillis = timeoutMillis;
+        return;
+    }
 
     auto* const pNetworkAccessManager = m_networkAccessManagerWeakPtr.data();
     VERIFY_OR_DEBUG_ASSERT(pNetworkAccessManager) {
@@ -208,7 +227,7 @@ void WebTask::slotStart(int timeoutMillis) {
     // during the callback before it has beeen started
     // successfully. Instead it should return nullptr
     // to abort the task immediately.
-    DEBUG_ASSERT(m_state == State::Idle);
+    DEBUG_ASSERT(m_state == State::Initial);
     if (!m_pendingNetworkReplyWeakPtr) {
         kLogger.debug()
                 << this
@@ -225,6 +244,7 @@ void WebTask::slotStart(int timeoutMillis) {
         DEBUG_ASSERT(timeoutMillis > 0);
         m_timeoutTimerId = startTimer(timeoutMillis);
         DEBUG_ASSERT(m_timeoutTimerId != kInvalidTimerId);
+        m_timeoutMillis = timeoutMillis;
     }
 
     // It is not necessary to connect the QNetworkReply::errorOccurred signal.
@@ -238,9 +258,9 @@ void WebTask::slotStart(int timeoutMillis) {
 
 void WebTask::slotAbort() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    if (m_state != State::Pending) {
+    if (!isBusy()) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-        if (m_state == State::Idle) {
+        if (m_state == State::Initial) {
             kLogger.debug()
                     << this
                     << "Cannot abort idle task";
@@ -260,11 +280,13 @@ void WebTask::slotAbort() {
     if (m_timeoutTimerId != kInvalidTimerId) {
         killTimer(m_timeoutTimerId);
         m_timeoutTimerId = kInvalidTimerId;
+        m_timeoutMillis = kNoTimeout;
     }
 
-    auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
     QUrl requestUrl;
+    auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
     if (pPendingNetworkReply) {
+        DEBUG_ASSERT(m_state == State::Pending);
         if (pPendingNetworkReply->isRunning()) {
             kLogger.debug()
                     << this
@@ -307,6 +329,13 @@ void WebTask::timerEvent(QTimerEvent* event) {
 
     killTimer(m_timeoutTimerId);
     m_timeoutTimerId = kInvalidTimerId;
+
+    if (m_state == State::Starting) {
+        DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
+        m_state = State::Initial;
+        slotStart(m_timeoutMillis);
+        return;
+    }
 
     if (hasTerminated()) {
         DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
