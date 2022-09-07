@@ -149,20 +149,22 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
         m_finishedRecordingIds.insert(trackRelease.recordingId);
         m_trackReleases.insert(trackRelease.trackReleaseId, trackRelease);
     }
-    if (!recordingsResult.second) {
-        kLogger.warning()
-                << "Failed to parse XML response";
-        emitFailed(
-                network::WebResponse(
-                        finishedNetworkReply->url(),
-                        finishedNetworkReply->request().url(),
-                        statusCode),
-                -1,
-                QStringLiteral("Failed to parse XML response"));
-        return;
-    }
 
     if (m_queuedRecordingIds.isEmpty()) {
+        if (!recordingsResult.second && m_trackReleases.isEmpty()) {
+            // this error is only fatal if we have no tracks at all
+            kLogger.warning()
+                    << "Failed to parse XML response";
+            emitFailed(
+                    network::WebResponse(
+                            finishedNetworkReply->url(),
+                            finishedNetworkReply->request().url(),
+                            statusCode),
+                    -1,
+                    QStringLiteral("Failed to parse XML response"));
+            return;
+        }
+
         // Finished all recording ids
         m_finishedRecordingIds.clear();
         auto trackReleases = m_trackReleases.values();
