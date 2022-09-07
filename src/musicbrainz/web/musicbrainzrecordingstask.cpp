@@ -140,8 +140,8 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
         return;
     }
 
-    auto recordingsResult = musicbrainz::parseRecordings(reader);
-    for (auto&& trackRelease : recordingsResult.first) {
+    const auto [trackReleases, success] = musicbrainz::parseRecordings(reader);
+    for (auto&& trackRelease : trackReleases) {
         // In case of a response with status 301 (Moved Permanently)
         // the actual recording id might differ from the requested id.
         // To avoid requesting recording ids twice we need to remember
@@ -151,7 +151,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
     }
 
     if (m_queuedRecordingIds.isEmpty()) {
-        if (!recordingsResult.second && m_trackReleases.isEmpty()) {
+        if (!success && m_trackReleases.isEmpty()) {
             // this error is only fatal if we have no tracks at all
             kLogger.warning()
                     << "Failed to parse XML response";
