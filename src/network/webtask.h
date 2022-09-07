@@ -199,8 +199,12 @@ class WebTask : public NetworkTask {
 
     /// Handle network response.
     virtual void doNetworkReplyFinished(
-            QNetworkReply* finishedNetworkReply,
+            QNetworkReply* pFinishedNetworkReply,
             HttpStatusCode statusCode) = 0;
+
+    virtual void doNetworkError(
+            QNetworkReply* pFinishedNetworkReply,
+            HttpStatusCode statusCode);
 
     /// Handle the abort and ensure that the task eventually
     /// gets deleted. The default implementation logs a warning

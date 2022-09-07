@@ -35,6 +35,9 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
     void doNetworkReplyFinished(
+            QNetworkReply* pFinishedNetworkReply,
+            network::HttpStatusCode statusCode) override;
+    void doNetworkError(
             QNetworkReply* finishedNetworkReply,
             network::HttpStatusCode statusCode) override;
 

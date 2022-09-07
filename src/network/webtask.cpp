@@ -388,25 +388,33 @@ void WebTask::slotNetworkReplyFinished() {
         m_timeoutTimerId = kInvalidTimerId;
     }
 
-    const auto statusCode = readStatusCode(*pFinishedNetworkReply);
+    const HttpStatusCode statusCode = readStatusCode(*pFinishedNetworkReply);
     if (pFinishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
-        onNetworkError(
-                pFinishedNetworkReply->error(),
-                pFinishedNetworkReply->errorString(),
-                WebResponseWithContent{
-                        WebResponse{
-                                pFinishedNetworkReply->url(),
-                                pFinishedNetworkReply->request().url(),
-                                statusCode},
-                        readContentType(*pFinishedNetworkReply),
-                        readContentData(pFinishedNetworkReply).value_or(QByteArray{}),
-                });
-        DEBUG_ASSERT(hasTerminated());
+        m_state = State::Failed;
+        doNetworkError(pFinishedNetworkReply, statusCode);
         return;
     }
 
     m_state = State::Finished;
     doNetworkReplyFinished(pFinishedNetworkReply, statusCode);
+}
+
+void WebTask::doNetworkError(
+        QNetworkReply* pFinishedNetworkReply,
+        HttpStatusCode statusCode) {
+    onNetworkError(
+            pFinishedNetworkReply->error(),
+            pFinishedNetworkReply->errorString(),
+            WebResponseWithContent{
+                    WebResponse{
+                            pFinishedNetworkReply->url(),
+                            pFinishedNetworkReply->request().url(),
+                            statusCode},
+                    readContentType(*pFinishedNetworkReply),
+                    readContentData(pFinishedNetworkReply).value_or(QByteArray{}),
+            });
+    DEBUG_ASSERT(hasTerminated());
+    return;
 }
 
 } // namespace network

@@ -111,11 +111,11 @@ QNetworkReply* MusicBrainzRecordingsTask::doStartNetworkRequest(
 }
 
 void MusicBrainzRecordingsTask::doNetworkReplyFinished(
-        QNetworkReply* finishedNetworkReply,
+        QNetworkReply* pFinishedNetworkReply,
         network::HttpStatusCode statusCode) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    const QByteArray body = finishedNetworkReply->readAll();
+    const QByteArray body = pFinishedNetworkReply->readAll();
     QXmlStreamReader reader(body);
 
     // HTTP status of successful results:
@@ -132,8 +132,8 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
         auto error = musicbrainz::Error(reader);
         emitFailed(
                 network::WebResponse(
-                        finishedNetworkReply->url(),
-                        finishedNetworkReply->request().url(),
+                        pFinishedNetworkReply->url(),
+                        pFinishedNetworkReply->request().url(),
                         statusCode),
                 error.code,
                 error.message);
@@ -157,8 +157,8 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
                     << "Failed to parse XML response";
             emitFailed(
                     network::WebResponse(
-                            finishedNetworkReply->url(),
-                            finishedNetworkReply->request().url(),
+                            pFinishedNetworkReply->url(),
+                            pFinishedNetworkReply->request().url(),
                             statusCode),
                     -1,
                     QStringLiteral("Failed to parse XML response"));
@@ -184,6 +184,12 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
             kMinDurationBetweenRequests -
             std::min(kMinDurationBetweenRequests, elapsedSinceLastRequestSent);
     slotStart(m_parentTimeoutMillis, delayBeforeNextRequest.toIntegerMillis());
+}
+
+void MusicBrainzRecordingsTask::doNetworkError(
+        QNetworkReply* pFinishedNetworkReply,
+        network::HttpStatusCode statusCode) {
+    doNetworkReplyFinished(pFinishedNetworkReply, statusCode);
 }
 
 void MusicBrainzRecordingsTask::emitSucceeded(
