@@ -24,7 +24,7 @@ class Analyzer {
     //  3. If the initialization failed log the internal error and return false.
     virtual bool initialize(TrackPointer tio,
             mixxx::audio::SampleRate sampleRate,
-            int totalSamples) = 0;
+            SINT totalSamples) = 0;
 
     /////////////////////////////////////////////////////////////////////////
     // All following methods will only be invoked after initialize()

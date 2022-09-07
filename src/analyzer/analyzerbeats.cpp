@@ -43,7 +43,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
 
 bool AnalyzerBeats::initialize(TrackPointer pTrack,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
+        SINT totalSamples) {
     if (totalSamples == 0) {
         return false;
     }

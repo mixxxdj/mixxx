@@ -14,7 +14,7 @@ class AnalyzerSilence : public Analyzer {
 
     bool initialize(TrackPointer pTrack,
             mixxx::audio::SampleRate sampleRate,
-            int totalSamples) override;
+            SINT totalSamples) override;
     bool processSamples(const CSAMPLE* pIn, SINT iLen) override;
     void storeResults(TrackPointer pTrack) override;
     void cleanup() override;
@@ -35,7 +35,7 @@ class AnalyzerSilence : public Analyzer {
 
   private:
     UserSettingsPointer m_pConfig;
-    int m_iFramesProcessed;
-    int m_iSignalStart;
-    int m_iSignalEnd;
+    SINT m_iFramesProcessed;
+    SINT m_iSignalStart;
+    SINT m_iSignalEnd;
 };

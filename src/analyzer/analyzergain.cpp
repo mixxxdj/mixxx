@@ -18,7 +18,7 @@ AnalyzerGain::~AnalyzerGain() {
 
 bool AnalyzerGain::initialize(TrackPointer tio,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
+        SINT totalSamples) {
     if (m_rgSettings.isAnalyzerDisabled(1, tio) || totalSamples == 0) {
         qDebug() << "Skipping AnalyzerGain";
         return false;

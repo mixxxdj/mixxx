@@ -35,7 +35,7 @@ AnalyzerWaveform::~AnalyzerWaveform() {
 
 bool AnalyzerWaveform::initialize(TrackPointer tio,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
+        SINT totalSamples) {
     if (totalSamples == 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
