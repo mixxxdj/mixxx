@@ -192,7 +192,6 @@ void TagFetcher::slotAcoustIdTaskNetworkError(
         QNetworkReply::NetworkError errorCode,
         const QString& errorString,
         const mixxx::network::WebResponseWithContent& responseWithContent) {
-    Q_UNUSED(responseWithContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!onAcoustIdTaskTerminated()) {
         return;
@@ -201,7 +200,7 @@ void TagFetcher::slotAcoustIdTaskNetworkError(
     cancel();
 
     emit networkError(
-            mixxx::network::kHttpStatusCodeInvalid,
+            responseWithContent.statusCode(),
             QStringLiteral("AcoustID"),
             errorString,
             errorCode);
@@ -234,7 +233,6 @@ void TagFetcher::slotMusicBrainzTaskNetworkError(
         QNetworkReply::NetworkError errorCode,
         const QString& errorString,
         const mixxx::network::WebResponseWithContent& responseWithContent) {
-    Q_UNUSED(responseWithContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!onMusicBrainzTaskTerminated()) {
         return;
@@ -243,7 +241,7 @@ void TagFetcher::slotMusicBrainzTaskNetworkError(
     cancel();
 
     emit networkError(
-            mixxx::network::kHttpStatusCodeInvalid,
+            responseWithContent.statusCode(),
             QStringLiteral("MusicBrainz"),
             errorString,
             errorCode);
