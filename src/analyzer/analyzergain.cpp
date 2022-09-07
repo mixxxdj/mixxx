@@ -8,8 +8,7 @@
 #include "util/timer.h"
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
-        : m_rgSettings(pConfig),
-          m_iBufferSize(0) {
+        : m_rgSettings(pConfig) {
     m_pReplayGain = new ReplayGain();
 }
 
@@ -35,7 +34,7 @@ bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT iLen) {
     ScopedTimer t("AnalyzerGain::process()");
 
     int halfLength = static_cast<int>(iLen / 2);
-    if (halfLength > m_iBufferSize) {
+    if (halfLength > 0) {
         m_pLeftTempBuffer.resize(halfLength);
         m_pRightTempBuffer.resize(halfLength);
     }

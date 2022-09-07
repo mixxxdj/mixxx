@@ -35,5 +35,4 @@ class AnalyzerGain : public Analyzer {
     std::vector<CSAMPLE> m_pLeftTempBuffer;
     std::vector<CSAMPLE> m_pRightTempBuffer;
     ReplayGain* m_pReplayGain;
-    int m_iBufferSize;
 };
