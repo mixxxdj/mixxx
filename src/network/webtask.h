@@ -182,6 +182,11 @@ class WebTask : public NetworkTask {
             const QString& errorString,
             const WebResponseWithContent& responseWithContent);
 
+  protected:
+    virtual void doNetworkError(
+            QNetworkReply* pFinishedNetworkReply,
+            HttpStatusCode statusCode);
+
   private:
     QUrl abortPendingNetworkReply();
 
@@ -201,10 +206,6 @@ class WebTask : public NetworkTask {
     virtual void doNetworkReplyFinished(
             QNetworkReply* pFinishedNetworkReply,
             HttpStatusCode statusCode) = 0;
-
-    virtual void doNetworkError(
-            QNetworkReply* pFinishedNetworkReply,
-            HttpStatusCode statusCode);
 
     /// Handle the abort and ensure that the task eventually
     /// gets deleted. The default implementation logs a warning

@@ -30,15 +30,17 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             int errorCode,
             const QString& errorMessage);
 
+  protected:
+    void doNetworkError(
+            QNetworkReply* finishedNetworkReply,
+            network::HttpStatusCode statusCode) override;
+
   private:
     QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
     void doNetworkReplyFinished(
             QNetworkReply* pFinishedNetworkReply,
-            network::HttpStatusCode statusCode) override;
-    void doNetworkError(
-            QNetworkReply* finishedNetworkReply,
             network::HttpStatusCode statusCode) override;
 
     void emitSucceeded(

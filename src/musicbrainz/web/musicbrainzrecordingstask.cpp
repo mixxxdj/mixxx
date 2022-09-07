@@ -130,13 +130,17 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
                 << "statusCode:" << statusCode
                 << "body:" << body;
         auto error = musicbrainz::Error(reader);
-        emitFailed(
-                network::WebResponse(
-                        pFinishedNetworkReply->url(),
-                        pFinishedNetworkReply->request().url(),
-                        statusCode),
-                error.code,
-                error.message);
+        if (error.code) {
+            emitFailed(
+                    network::WebResponse(
+                            pFinishedNetworkReply->url(),
+                            pFinishedNetworkReply->request().url(),
+                            statusCode),
+                    error.code,
+                    error.message);
+            return;
+        }
+        WebTask::doNetworkError(pFinishedNetworkReply, statusCode);
         return;
     }
 
