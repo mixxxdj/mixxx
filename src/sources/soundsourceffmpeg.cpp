@@ -374,11 +374,9 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
             } else if (!strcmp(pavInputFormat->name, "mp3")) {
                 list.append("mp3");
                 continue;
-            } else if (!strcmp(pavInputFormat->name, "mp4")) {
+            } else if (!strcmp(pavInputFormat->name, "mp4") ||
+                    !strcmp(pavInputFormat->name, "m4v")) {
                 list.append("mp4");
-                continue;
-            } else if (!strcmp(pavInputFormat->name, "m4v")) {
-                list.append("m4v");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mov,mp4,m4a,3gp,3g2,mj2")) {
                 list.append("mov");
