@@ -96,7 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2022-10-19" timestamp="1666164578">
+    <release version="2.5.0" type="development" date="2022-08-27" timestamp="1661590229">
+      <description>
+</description>
+    </release>
+    <release version="2.4.0" type="development" date="2022-08-27" timestamp="1661590229">
       <description>
  <p>
   Cover Art
@@ -1529,7 +1533,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.4" type="development" date="2022-10-19" timestamp="1666164578">
+    <release version="2.3.4" type="development" date="2022-08-27" timestamp="1661590229">
       <description>
  <ul>
   <li>
