@@ -217,7 +217,7 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
         m_state = State::Failed;
         onNetworkError(
                 QNetworkReply::NetworkSessionFailedError,
-                tr("Request URL issue, network request has not been started"),
+                tr("The Network request has not been started"),
                 WebResponseWithContent{});
         return;
     }
