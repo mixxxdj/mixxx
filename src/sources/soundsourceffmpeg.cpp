@@ -353,7 +353,7 @@ void SoundSourceFFmpeg::SwrContextPtr::close() {
 
 const QString SoundSourceProviderFFmpeg::kDisplayName = QStringLiteral("FFmpeg");
 
-QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
+QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
     QStringList list;
     QStringList disabledInputFormats;
 
@@ -369,7 +369,6 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
                 list.append("aac");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "aiff")) {
-                list.append("aif");
                 list.append("aiff");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mp3")) {
