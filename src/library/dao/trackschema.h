@@ -46,8 +46,6 @@ const QString LIBRARYTABLE_COVERART_LOCATION = QStringLiteral("coverart_location
 const QString LIBRARYTABLE_COVERART_COLOR = QStringLiteral("coverart_color");
 const QString LIBRARYTABLE_COVERART_DIGEST = QStringLiteral("coverart_digest");
 const QString LIBRARYTABLE_COVERART_HASH = QStringLiteral("coverart_hash");
-const QString LIBRARYTABLE_MATCH = QStringLiteral("match");
-const QString LIBRARYTABLE_PLAYCOUNT = QStringLiteral("playcount");
 
 const QString TRACKLOCATIONSTABLE_ID = QStringLiteral("id");
 const QString TRACKLOCATIONSTABLE_LOCATION = QStringLiteral("location");
@@ -56,6 +54,9 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = QStringLiteral("directory");
 const QString TRACKLOCATIONSTABLE_FILESIZE = QStringLiteral("filesize");
 const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
+
+const QString SUGGESTIONTABLE_MATCH = QStringLiteral("match");
+const QString SUGGESTIONTABLE_PLAYCOUNT = QStringLiteral("playcount");
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 
