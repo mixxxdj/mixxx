@@ -1519,6 +1519,10 @@
       <description>
  <ul>
   <li>
+   Controller Preferences: Fix some usability issues
+   #10821
+  </li>
+  <li>
    Track Properties: show 'date added' as local time
    #4838
    lp:1980658

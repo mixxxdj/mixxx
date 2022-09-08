@@ -40,6 +40,18 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+# Check if any relevant env vars were set from the build env scripts
+if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED X_VCPKG_APPLOCAL_DEPS_INSTALL)
+  set(X_VCPKG_APPLOCAL_DEPS_INSTALL "$ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL}" CACHE BOOL "")
+endif()
+
+# Set the timestamp of extracted files to the time of the extraction instead of
+# the archived timestamp to make sure that dependent files are rebuilt if the
+# URL changes.
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
 # Set up vcpkg
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
     set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
@@ -2627,29 +2639,30 @@ elseif(WIN32)
   endif()
 endif()
 
-# FFmpeg 4.x support
+# FFmpeg support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-default_option(FFMPEG "FFmpeg 4.x support" "FFMPEG_FOUND")
+default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
 if(FFMPEG)
   if(NOT FFMPEG_FOUND)
     message(FATAL_ERROR "FFMPEG was not found")
   endif()
 
   # Check minimum required versions
+  # Minimum library versions according to <https://ffmpeg.org/download.html>
   # Windows: Version numbers are not available!?
   # macOS: Untested
-  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
+  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
   endif()
-  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
+  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
   endif()
-  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
-    message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
+  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
   endif()
-  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
-    message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
+  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
   endif()
 
   target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
