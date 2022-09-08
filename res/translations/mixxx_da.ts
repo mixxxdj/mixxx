@@ -707,7 +707,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="84"/>
         <source>Assign to Hotcue Number</source>
-        <translation type="unfinished"/>
+        <translation>Tilføj til Hotcue nummer</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
@@ -838,7 +838,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="93"/>
         <source>Toggle headphone split cueing</source>
-        <translation type="unfinished"/>
+        <translation>Slå hovedtelefon split cueing til/fra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="98"/>
@@ -895,7 +895,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1027"/>
         <source>Headphone listen button</source>
-        <translation type="unfinished"/>
+        <translation>Lytteknap til hovedtelefoner</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="157"/>
@@ -917,30 +917,30 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="42"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1034"/>
         <source>Mix orientation (e.g. left, right, center)</source>
-        <translation type="unfinished"/>
+        <translation>Mixretning(f.eks. venstre, højre, midterste)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="46"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1038"/>
         <source>Set mix orientation to left</source>
-        <translation type="unfinished"/>
+        <translation>Indstil mixretning til venstre</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="50"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1043"/>
         <source>Set mix orientation to center</source>
-        <translation type="unfinished"/>
+        <translation>Indstil mixretning til midt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="54"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1047"/>
         <source>Set mix orientation to right</source>
-        <translation type="unfinished"/>
+        <translation>Indstil mixretning til højre</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="186"/>
         <source>Toggle slip mode</source>
-        <translation type="unfinished"/>
+        <translation>Skift slip-tilstand</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="190"/>
@@ -1201,12 +1201,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="559"/>
         <source>Move loop forward by %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>Flyt loop fremad med %1 slag</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="560"/>
         <source>Move loop backward by %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>Flyt loop tilbage med %1 slag</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="465"/>
@@ -1237,7 +1237,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="86"/>
         <source>Headphone Mix</source>
-        <translation type="unfinished"/>
+        <translation>Hovedtelefon mix</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="92"/>
@@ -1332,26 +1332,26 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="143"/>
         <source>Volume</source>
-        <translation type="unfinished"/>
+        <translation>Lyd</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="143"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1010"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1011"/>
         <source>Volume Fader</source>
-        <translation type="unfinished"/>
+        <translation>Lyd fader</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="145"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1014"/>
         <source>Full Volume</source>
-        <translation type="unfinished"/>
+        <translation>Lyd max</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="149"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1018"/>
         <source>Zero Volume</source>
-        <translation type="unfinished"/>
+        <translation>Lyd minimum</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="153"/>
@@ -3391,12 +3391,12 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="359"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="361"/>
         <source>Official Website</source>
         <translation>Officiel hjemmeside</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="369"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="371"/>
         <source>Donate</source>
         <translation>Donér</translation>
     </message>
@@ -4575,47 +4575,47 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="567"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="572"/>
         <source>Mapping has been edited</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="613"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="624"/>
         <source>Always overwrite during this session</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="625"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="636"/>
         <source>Save As</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="627"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="638"/>
         <source>Overwrite</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="667"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="683"/>
         <source>Save user mapping</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="668"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="684"/>
         <source>Enter the name for saving the mapping to the user folder.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="669"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="685"/>
         <source>Saving mapping failed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="671"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="687"/>
         <source>A mapping cannot have a blank name and may not contain special characters.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="673"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="689"/>
         <source>A mapping file with that name already exists.</source>
         <translation type="unfinished"/>
     </message>
@@ -4630,17 +4630,17 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="568"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="573"/>
         <source>Do you want to save the changes?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="609"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="620"/>
         <source>Mapping already exists.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="610"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="621"/>
         <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
         <translation type="unfinished"/>
     </message>
@@ -4650,22 +4650,22 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="820"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="837"/>
         <source>Clear Input Mappings</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="821"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="838"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="858"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="875"/>
         <source>Clear Output Mappings</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="859"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="876"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation type="unfinished"/>
     </message>
@@ -9745,7 +9745,7 @@ a higher Q affects a narrower band of frequencies.</source>
     <message>
         <location filename="../../src/effects/builtin/tremoloeffect.cpp" line="29"/>
         <source>How much the effect changes the volume</source>
-        <translation type="unfinished"/>
+        <translation>Hvor meget effekten ændrer lyden</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/tremoloeffect.cpp" line="41"/>
@@ -10654,7 +10654,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="132"/>
         <source>Microphone Volume Meter</source>
-        <translation type="unfinished"/>
+        <translation>Mikrofon lydmåler</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="133"/>
@@ -10774,7 +10774,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="219"/>
         <source>Headphone Mix</source>
-        <translation type="unfinished"/>
+        <translation>Hovedtelefon mix</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="224"/>
@@ -14101,7 +14101,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>mixxx::network::WebTask</name>
     <message>
-        <location filename="../../src/network/webtask.cpp" line="192"/>
+        <location filename="../../src/network/webtask.cpp" line="211"/>
         <source>No network access</source>
         <translation type="unfinished"/>
     </message>
