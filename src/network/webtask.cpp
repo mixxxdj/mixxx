@@ -260,7 +260,7 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
             Qt::UniqueConnection);
 }
 
-void WebTask::slotAbort() {
+void WebTask::slotAbort(bool timedOut) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!isBusy()) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
@@ -316,7 +316,7 @@ void WebTask::slotAbort() {
         // this scope.
         const auto pendingNetworkReplyDeleter = ScopedDeleteLater(pPendingNetworkReply);
         m_pendingNetworkReplyWeakPtr.clear();
-        doNetworkReplyAborted(pPendingNetworkReply);
+        doNetworkReplyAborted(pPendingNetworkReply, timedOut);
     }
 
     m_state = State::Aborted;
@@ -352,7 +352,7 @@ void WebTask::timerEvent(QTimerEvent* event) {
             << "Aborting after timed out";
     // Trigger the regular abort workflow after a client-side
     // timeout occurred
-    slotAbort();
+    slotAbort(true);
 }
 
 void WebTask::slotNetworkReplyFinished() {

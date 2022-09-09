@@ -85,7 +85,11 @@ class NetworkTask : public QObject {
             int timeoutMillis = kNoTimeout,
             int delayMillis = kNoStartDelay) = 0;
     /// See also: invokeAbort()
-    virtual void slotAbort() = 0;
+    ///
+    /// timedOut = false: The abort has been triggered explicitly.
+    /// timedOut = true: The abort has been triggered implicitly
+    /// after a client-side timeout expired.
+    virtual void slotAbort(bool timedOut) = 0;
 
   signals:
     /// The receiver is responsible for deleting the task in the

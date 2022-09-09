@@ -138,7 +138,7 @@ class WebTask : public NetworkTask {
     void slotStart(
             int timeoutMillis = kNoTimeout,
             int delayMillis = kNoStartDelay) override;
-    void slotAbort() override;
+    void slotAbort(bool timedOut) override;
 
   private slots:
     void slotNetworkReplyFinished();
@@ -192,8 +192,14 @@ class WebTask : public NetworkTask {
             int parentTimeoutMillis) = 0;
 
     /// Optional: Do something after aborted.
+    ///
+    /// The parameter `timedOut` is set to `true` if the abort has
+    /// been triggered implicitly by a client-side timeout.
+    ///
+    /// See also: `NetworkTask::slotAbort()`
     virtual void doNetworkReplyAborted(
-            QNetworkReply* abortedNetworkReply) {
+            QNetworkReply* abortedNetworkReply,
+            bool timedOut) {
         Q_UNUSED(abortedNetworkReply);
     }
 

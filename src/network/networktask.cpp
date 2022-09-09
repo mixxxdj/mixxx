@@ -51,10 +51,11 @@ void NetworkTask::invokeAbort() {
     QMetaObject::invokeMethod(
             this,
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-            "slotAbort"
+            "slotAbort",
+            Q_ARG(bool, false)
 #else
             [this] {
-                this->slotAbort();
+                this->slotAbort(false);
             }
 #endif
     );
@@ -62,7 +63,7 @@ void NetworkTask::invokeAbort() {
 
 void NetworkTask::abort() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    slotAbort();
+    slotAbort(false);
 }
 
 void NetworkTask::emitAborted(
