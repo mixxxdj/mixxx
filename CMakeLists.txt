@@ -33,6 +33,24 @@ if(POLICY CMP0099)
   cmake_policy(SET CMP0099 NEW)
 endif()
 
+# Set the timestamp of extracted files to the time of the extraction instead of
+# the archived timestamp to make sure that dependent files are rebuilt if the
+# URL changes.
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
+# Check if any relevant env vars were set from the build env scripts
+if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED X_VCPKG_APPLOCAL_DEPS_INSTALL)
+  set(X_VCPKG_APPLOCAL_DEPS_INSTALL "$ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL}" CACHE BOOL "")
+endif()
+
+# Set the timestamp of extracted files to the time of the extraction instead of
+# the archived timestamp to make sure that dependent files are rebuilt if the
+# URL changes.
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
 
 # Set up vcpkg
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
@@ -97,7 +115,7 @@ if(APPLE)
     # Minimum macOS version supported by Qt 5.12
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
     if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.12")
+      set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
     endif()
     # Needed for deployment target < 10.14
     add_compile_options(-fno-aligned-allocation)
@@ -938,6 +956,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/performancetimer.cpp
   src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
+  src/util/ringdelaybuffer.cpp
   src/util/rotary.cpp
   src/util/runtimeloggingcategory.cpp
   src/util/sample.cpp
@@ -1172,6 +1191,19 @@ else()
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
+endif()
+
+option(INFO_VECTORIZE "Let the compiler show vectorized loops" OFF)
+if (INFO_VECTORIZE)
+    if(MSVC)
+        target_compile_options(mixxx-lib PUBLIC /Qvec-report:1)
+    elseif(GNU_GCC)
+        target_compile_options(mixxx-lib PUBLIC -fopt-info-vec-optimized)
+    elseif(LLVM_CLANG)
+        target_compile_options(mixxx-lib PUBLIC -Rpass=loop-vectorize)
+    else()
+        message(STATUS "INFO_VECTORIZE not implemented for this compliler.")
+    endif()
 endif()
 
 option(WARNINGS_FATAL "Fail if compiler generates a warning" OFF)
@@ -1688,6 +1720,7 @@ add_executable(mixxx-test
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
   src/test/rgbcolor_test.cpp
+  src/test/ringdelaybuffer_test.cpp
   src/test/samplebuffertest.cpp
   src/test/sampleutiltest.cpp
   src/test/schemamanager_test.cpp
@@ -2606,29 +2639,30 @@ elseif(WIN32)
   endif()
 endif()
 
-# FFmpeg 4.x support
+# FFmpeg support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-default_option(FFMPEG "FFmpeg 4.x support" "FFMPEG_FOUND")
+default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
 if(FFMPEG)
   if(NOT FFMPEG_FOUND)
     message(FATAL_ERROR "FFMPEG was not found")
   endif()
 
   # Check minimum required versions
+  # Minimum library versions according to <https://ffmpeg.org/download.html>
   # Windows: Version numbers are not available!?
   # macOS: Untested
-  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
+  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
   endif()
-  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
+  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
   endif()
-  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
-    message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
+  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
   endif()
-  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
-    message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
+  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
   endif()
 
   target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)

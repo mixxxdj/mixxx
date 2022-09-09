@@ -7,7 +7,6 @@
 #include "control/controlobject.h"
 #include "engine/readaheadmanager.h"
 #include "moc_enginebufferscalerubberband.cpp"
-#include "track/keyutils.h"
 #include "util/counter.h"
 #include "util/defs.h"
 #include "util/math.h"
