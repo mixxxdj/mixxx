@@ -1542,9 +1542,18 @@
    lp:1980658
   </li>
   <li>
-   Numark DJ2GO2 Touch: Fix  sliders and knobs
+   Numark DJ2GO2: Fix  sliders and knobs
    #4835
    lp:1948596
+  </li>
+  <li>
+   Numark DJ2Go2: support HotCue clear with pad
+   #10841
+  </li>
+  <li>
+   Numark DJ2Go2: Fix inverted tempo fader
+   #10852
+   #10586
   </li>
   <li>
    Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
@@ -1582,6 +1591,29 @@
   <li>
    Cover Art: Fix picking wrong cover file, when track file name contains extra dots
    #4909
+  </li>
+  <li>
+   Respect MusicBrainz rate limits
+   #10874
+   #10795
+  </li>
+ </ul>
+ <p>
+  Packaging
+ </p>
+ <ul>
+  <li>
+   Fix compatibility with FFmpeg 5.1 and require FFmpeg v4.1.9
+   #10862
+   #10866
+  </li>
+  <li>
+   Fix GCC 12.2.0 compatibility
+   #10863
+  </li>
+  <li>
+   Improve CMake 3.24 compatibility
+   #10864
   </li>
  </ul>
 </description>
