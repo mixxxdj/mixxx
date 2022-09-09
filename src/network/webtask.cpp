@@ -205,11 +205,15 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
 
     auto* const pNetworkAccessManager = m_networkAccessManagerWeakPtr.data();
     VERIFY_OR_DEBUG_ASSERT(pNetworkAccessManager) {
+        // Internally switch the state to pending as a prerequisite before
+        // invoking onNetworkError(). This is only required for technical
+        // reasons and the intermediate state will never become visible.
         m_state = State::Pending;
         onNetworkError(
                 QNetworkReply::NetworkSessionFailedError,
                 tr("No network access"),
                 WebResponseWithContent{});
+        DEBUG_ASSERT(m_state == State::Failed);
         return;
     }
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(pNetworkAccessManager);
