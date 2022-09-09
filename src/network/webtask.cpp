@@ -391,7 +391,7 @@ void WebTask::slotNetworkReplyFinished() {
     const HttpStatusCode statusCode = readStatusCode(*pFinishedNetworkReply);
     if (pFinishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
         m_state = State::Failed;
-        doNetworkError(pFinishedNetworkReply, statusCode);
+        onNetworkError(pFinishedNetworkReply, statusCode);
         return;
     }
 
@@ -399,7 +399,7 @@ void WebTask::slotNetworkReplyFinished() {
     doNetworkReplyFinished(pFinishedNetworkReply, statusCode);
 }
 
-void WebTask::doNetworkError(
+void WebTask::onNetworkError(
         QNetworkReply* pFinishedNetworkReply,
         HttpStatusCode statusCode) {
     onNetworkError(

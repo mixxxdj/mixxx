@@ -31,7 +31,7 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             const QString& errorMessage);
 
   protected:
-    void doNetworkError(
+    void onNetworkError(
             QNetworkReply* finishedNetworkReply,
             network::HttpStatusCode statusCode) override;
 

@@ -183,7 +183,7 @@ class WebTask : public NetworkTask {
             const WebResponseWithContent& responseWithContent);
 
   protected:
-    virtual void doNetworkError(
+    virtual void onNetworkError(
             QNetworkReply* pFinishedNetworkReply,
             HttpStatusCode statusCode);
 

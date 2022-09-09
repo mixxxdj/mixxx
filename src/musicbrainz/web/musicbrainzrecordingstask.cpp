@@ -140,7 +140,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
                     error.message);
             return;
         }
-        WebTask::doNetworkError(pFinishedNetworkReply, statusCode);
+        WebTask::onNetworkError(pFinishedNetworkReply, statusCode);
         return;
     }
 
@@ -190,7 +190,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
     slotStart(m_parentTimeoutMillis, delayBeforeNextRequest.toIntegerMillis());
 }
 
-void MusicBrainzRecordingsTask::doNetworkError(
+void MusicBrainzRecordingsTask::onNetworkError(
         QNetworkReply* pFinishedNetworkReply,
         network::HttpStatusCode statusCode) {
     doNetworkReplyFinished(pFinishedNetworkReply, statusCode);
