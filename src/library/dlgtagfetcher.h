@@ -42,6 +42,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotTrackChanged(TrackId trackId);
     void apply();
     void quit();
+    void reject() override;
     void slotNext();
     void slotPrev();
 
