@@ -21,8 +21,7 @@ class CoverArtCopyWizard : public QObject {
               m_coverArtImage(coverArtImage),
               m_coverArtCopyPath(coverArtCopyPath) {
     }
-    virtual ~CoverArtCopyWizard() {
-    }
+    virtual ~CoverArtCopyWizard() = default;
 
     void copyCoverArt();
 
