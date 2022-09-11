@@ -10,6 +10,15 @@
 
 namespace {
 
+// Percent of QProgressBar when dialog populated, "fingerprinting".
+int kPercentOfPopulation = 10;
+
+// Percent of "identifying" and "retrieving" metadata.
+int kPercentOfConstantTask = 15;
+
+// Percent left for Recording ID's found, "Fetching track data from Musicbrainz".
+int kPercentOfRecordingsFound = 60;
+
 QStringList trackColumnValues(
         const Track& track) {
     const mixxx::TrackMetadata trackMetadata = track.getMetadata();
@@ -270,7 +279,7 @@ void DlgTagFetcher::reject() {
 void DlgTagFetcher::fetchTagProgress(const QString& text) {
     QString status = tr("Status: %1");
     loadingProgressBar->setFormat(status.arg(text));
-    m_progressBarValue += 15;
+    m_progressBarValue += kPercentOfConstantTask;
     loadingProgressBar->setValue(m_progressBarValue);
 }
 
@@ -283,7 +292,7 @@ void DlgTagFetcher::progressBarSetCurrentStep() {
 
 // TODO(fatihemreyildiz): display the task results one by one.
 void DlgTagFetcher::progressBarSetTotalSteps(int totalRecordingsFound) {
-    m_incrementBarValueBy = 60 / totalRecordingsFound;
+    m_incrementBarValueBy = kPercentOfRecordingsFound / totalRecordingsFound;
 }
 
 void DlgTagFetcher::fetchTagFinished(
@@ -319,7 +328,7 @@ void DlgTagFetcher::slotNetworkResult(
 }
 
 void DlgTagFetcher::updateStack() {
-    m_progressBarValue = 10;
+    m_progressBarValue = kPercentOfPopulation;
     loadingProgressBar->setValue(m_progressBarValue);
 
     btnApply->setDisabled(true);
