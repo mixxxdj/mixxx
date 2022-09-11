@@ -122,8 +122,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void destroyWidgets();
 
-    void addTimerListener(WVuMeter* pWidget);
-
     void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);
     int getVSyncType();
@@ -140,6 +138,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void waveformMeasured(float frameRate, int droppedFrames);
     void renderSpinnies(VSyncThread*);
     void swapSpinnies();
+    void renderVuMeters(VSyncThread*);
+    void swapVuMeters();
 
   public slots:
     void slotSkinLoaded();

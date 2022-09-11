@@ -1,18 +1,20 @@
 #pragma once
 
+#include <QDomNode>
+#include <QGLWidget>
+#include <QPaintEvent>
 #include <QPixmap>
 #include <QString>
-#include <QPaintEvent>
-#include <QWidget>
-#include <QDomNode>
 
-#include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
-class WVuMeter : public WWidget  {
-   Q_OBJECT
+class VSyncThread;
+
+class WVuMeter : public QGLWidget, public WBaseWidget {
+    Q_OBJECT
   public:
     explicit WVuMeter(QWidget *parent=nullptr);
 
@@ -29,15 +31,19 @@ class WVuMeter : public WWidget  {
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
   public slots:
-    void maybeUpdate();
+    void render(VSyncThread* vSyncThread);
+    void swap();
 
   protected slots:
     void updateState(mixxx::Duration elapsed);
 
   private:
     void paintEvent(QPaintEvent * /*unused*/) override;
+
     void setPeak(double parameter);
 
+    // To indicate that we rendered so we need to swap
+    bool m_bSwapNeeded{};
     // Current parameter and peak parameter.
     double m_dParameter;
     double m_dPeakParameter;

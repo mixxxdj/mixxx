@@ -528,7 +528,15 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
         WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
-        WaveformWidgetFactory::instance()->addTimerListener(pVuMeterWidget);
+        auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
+        connect(waveformWidgetFactory,
+                &WaveformWidgetFactory::renderVuMeters,
+                pVuMeterWidget,
+                &WVuMeter::render);
+        connect(waveformWidgetFactory,
+                &WaveformWidgetFactory::swapVuMeters,
+                pVuMeterWidget,
+                &WVuMeter::swap);
         result = wrapWidget(pVuMeterWidget);
     } else if (nodeName == "StatusLight") {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
@@ -1255,7 +1263,6 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     }
 
     auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
-
     if (!waveformWidgetFactory->isOpenGlAvailable() &&
             !waveformWidgetFactory->isOpenGlesAvailable()) {
         WLabel* dummy = new WLabel(m_pParent);
