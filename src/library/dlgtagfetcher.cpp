@@ -10,16 +10,28 @@
 
 namespace {
 
-// Percent of QProgressBar when dialog populated, "fingerprinting".
-int kPercentOfPopulation = 10;
+// Constant percentages for QProgressBar.
+// There are 3 constant steps while fetching metadata from musicbrainz.
+// 1. -> "Fingerprinting track"
+// 2. -> "Identifying track through Acoustid"
+// 3. -> "Retrieving metadata from MusicBrainz
+// These three steps never change.
+// After these states passed, last step remains.
+// 4. -> "Fetching track data from the Musicbrainz database"
+// These step can be changed according to recording(s) fetched from Acoust ID
 
-// Percent of "identifying" and "retrieving" metadata.
-int kPercentOfConstantTask = 15;
+// In order to have a better scaling, constant steps set to a percentage and never changes.
+// Last step is set to a constant percentage and it is divided to recording(s) found from Acoust ID.
 
-// Percent left for Recording ID's found, "Fetching track data from Musicbrainz".
-int kPercentOfRecordingsFound = 60;
+// The dialog populates with the 15% and after each step value increases by 15%.
+// Before we get recording(s), the QProgressBar will be 45%.
+// Last step set to 55% and it is going to be divided to recording(s) received from Acoust ID.
 
-// Original Index of the track tag, listed all the time below 'Orginal Tags'.
+constexpr int kPercentOfConstantTask = 15;
+
+constexpr int kPercentLeftForRecordingsFound = 55;
+
+// Original Index of the track tag, listed all the time below 'Original Tags'.
 constexpr int kOriginalTrackIndex = 1;
 
 QStringList trackColumnValues(
@@ -280,7 +292,7 @@ void DlgTagFetcher::progressBarSetCurrentStep() {
 
 // TODO(fatihemreyildiz): display the task results one by one.
 void DlgTagFetcher::progressBarSetTotalSteps(int totalRecordingsFound) {
-    m_incrementBarValueBy = kPercentOfRecordingsFound / totalRecordingsFound;
+    m_incrementBarValueBy = kPercentLeftForRecordingsFound / totalRecordingsFound;
 }
 
 void DlgTagFetcher::fetchTagFinished(
@@ -316,7 +328,7 @@ void DlgTagFetcher::slotNetworkResult(
 }
 
 void DlgTagFetcher::updateStack() {
-    m_progressBarValue = kPercentOfPopulation;
+    m_progressBarValue = kPercentOfConstantTask;
     loadingProgressBar->setValue(m_progressBarValue);
 
     btnApply->setDisabled(true);
