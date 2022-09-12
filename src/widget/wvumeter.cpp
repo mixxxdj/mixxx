@@ -34,12 +34,12 @@ WVuMeter::WVuMeter(QWidget* parent)
           m_iPeakHoldTime(0),
           m_iPeakFallTime(0),
           m_dPeakHoldCountdownMs(0) {
-    m_timer.start();
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     setAutoFillBackground(false);
     setAutoBufferSwap(false);
+    m_timer.start();
 }
 
 void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
@@ -94,7 +94,6 @@ void WVuMeter::setPixmapBackground(
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
-
     if (m_pPixmapBack.isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
