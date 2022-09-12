@@ -38,12 +38,15 @@ class WVuMeter : public QGLWidget, public WBaseWidget {
     void updateState(mixxx::Duration elapsed);
 
   private:
+    void initializeGL() override;
     void paintEvent(QPaintEvent * /*unused*/) override;
 
     void setPeak(double parameter);
 
+    // To make sure we render at least once even when we have no signal
+    bool m_bHasRendered;
     // To indicate that we rendered so we need to swap
-    bool m_bSwapNeeded{};
+    bool m_bSwapNeeded;
     // Current parameter and peak parameter.
     double m_dParameter;
     double m_dPeakParameter;
