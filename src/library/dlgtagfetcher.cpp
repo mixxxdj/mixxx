@@ -277,7 +277,7 @@ void DlgTagFetcher::reject() {
 }
 
 void DlgTagFetcher::fetchTagProgress(const QString& text) {
-    QString status = tr("Status: %1");
+    QString status = tr("%1");
     loadingProgressBar->setFormat(status.arg(text));
     m_progressBarValue += kPercentOfConstantTask;
     loadingProgressBar->setValue(m_progressBarValue);
