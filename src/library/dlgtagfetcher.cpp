@@ -19,6 +19,9 @@ int kPercentOfConstantTask = 15;
 // Percent left for Recording ID's found, "Fetching track data from Musicbrainz".
 int kPercentOfRecordingsFound = 60;
 
+// Original Index of the track tag, listed all the time below 'Orginal Tags'.
+constexpr int kOriginalTrackIndex = 1;
+
 QStringList trackColumnValues(
         const Track& track) {
     const mixxx::TrackMetadata trackMetadata = track.getMetadata();
@@ -323,7 +326,7 @@ void DlgTagFetcher::updateStack() {
 
     results->clear();
     addDivider(tr("Original tags"), results);
-    addTrack(trackColumnValues(*m_track), -1, results);
+    addTrack(trackColumnValues(*m_track), kOriginalTrackIndex, results);
 
     if (m_data.m_pending) {
         return;
@@ -399,7 +402,7 @@ void DlgTagFetcher::resultSelected() {
         return;
     }
 
-    if (results->currentItem()->data(0, Qt::UserRole).toInt() == -1) {
+    if (results->currentItem()->data(0, Qt::UserRole).toInt() == kOriginalTrackIndex) {
         results->currentItem()->setFlags(Qt::ItemIsEnabled);
         return;
     }
