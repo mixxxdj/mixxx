@@ -527,17 +527,7 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "StarRating") {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
-        WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
-        auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
-        connect(waveformWidgetFactory,
-                &WaveformWidgetFactory::renderVuMeters,
-                pVuMeterWidget,
-                &WVuMeter::render);
-        connect(waveformWidgetFactory,
-                &WaveformWidgetFactory::swapVuMeters,
-                pVuMeterWidget,
-                &WVuMeter::swap);
-        result = wrapWidget(pVuMeterWidget);
+        result = wrapWidget(parseVuMeter(node));
     } else if (nodeName == "StatusLight") {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
@@ -1253,7 +1243,6 @@ QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     return p;
 }
-
 QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
@@ -1293,6 +1282,43 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     spinny->Init();
     return spinny;
+}
+
+QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Mixxx is running in safe mode.
+        dummy->setText(tr("Safe Mode Enabled"));
+        return dummy;
+    }
+
+    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
+    if (!waveformWidgetFactory->isOpenGlAvailable() &&
+            !waveformWidgetFactory->isOpenGlesAvailable()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Spinny can not be displayed. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
+    WVuMeter* vuMeter = new WVuMeter(m_pParent);
+    commonWidgetSetup(node, vuMeter);
+
+    connect(waveformWidgetFactory,
+            &WaveformWidgetFactory::renderVuMeters,
+            vuMeter,
+            &WVuMeter::render);
+    connect(waveformWidgetFactory,
+            &WaveformWidgetFactory::swapVuMeters,
+            vuMeter,
+            &WVuMeter::swap);
+
+    vuMeter->setup(node, *m_pContext);
+    vuMeter->installEventFilter(m_pKeyboard);
+    vuMeter->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    vuMeter->Init();
+
+    return vuMeter;
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
