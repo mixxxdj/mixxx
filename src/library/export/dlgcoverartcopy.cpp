@@ -79,7 +79,6 @@ void DlgCoverArtCopy::btnCancelClicked() {
 void DlgCoverArtCopy::showEvent(QShowEvent* event) {
     QDialog::showEvent(event);
     VERIFY_OR_DEBUG_ASSERT(m_worker) {
-        qDebug() << "m_worker did not initialized, about to crash";
         return;
     }
     m_worker->start();
