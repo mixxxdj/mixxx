@@ -506,13 +506,11 @@
 
               <WidgetGroup>
                 <Pos>113,28</Pos>
+                <Size>26f,1f</Size>
                 <Children>
                   <VuMeter>
-                    <Pos>113,28</Pos>
                     <Style>WVuMeter { background-color: #626f87; }</Style>
                     <TooltipId>audio_latency_usage</TooltipId>
-                    <MinimumSize>26,1</MinimumSize>
-                    <MaximumSize>26,1</MaximumSize>
                     <PathVu>audio_latency/audio_latency_usage.png</PathVu>
                     <PeakHoldSize>26</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
@@ -799,6 +797,7 @@
               -->
               <WidgetGroup>
                 <Pos>107,76</Pos>
+                <Size>5f,81f</Size>
                 <Children>
                   <VuMeter>
                     <TooltipId>channel_VuMeter</TooltipId>
@@ -817,6 +816,7 @@
               </WidgetGroup>
               <WidgetGroup>
                 <Pos>143,76</Pos>
+                <Size>5f,81f</Size>
                 <Children>
                   <VuMeter>
                     <TooltipId>channel_VuMeter</TooltipId>
@@ -835,6 +835,7 @@
               </WidgetGroup>
               <WidgetGroup>
                 <Pos>122,76</Pos>
+                <Size>5f,81f</Size>
                 <Children>
                   <VuMeter>
                     <TooltipId>master_VuMeterL</TooltipId>
@@ -852,6 +853,7 @@
               </WidgetGroup>
               <WidgetGroup>
                 <Pos>128,76</Pos>
+                <Size>5f,81f</Size>
                 <Children>
                   <VuMeter>
                     <TooltipId>master_VuMeterR</TooltipId>
