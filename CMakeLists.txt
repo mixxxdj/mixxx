@@ -714,6 +714,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/trackexportdlg.cpp
   src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
+  src/library/export/coverartsaver.cpp
   src/library/export/coverartcopywizard.cpp
   src/library/export/coverartcopyworker.cpp
   src/library/export/dlgcoverartcopy.ui
@@ -932,6 +933,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/file.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
+  src/util/safelywritablefile.cpp
   src/util/filename.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp

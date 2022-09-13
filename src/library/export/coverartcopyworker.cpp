@@ -5,6 +5,9 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
+#include "library/export/coverartsaver.h"
+#include "util/safelywritablefile.h"
+
 void CoverArtCopyWorker::run() {
     copyFile(m_coverArtImage, m_coverArtCopyPath);
 
@@ -29,39 +32,36 @@ void CoverArtCopyWorker::copyFile(
             break;
         }
 
-        QFile dest_file(m_coverArtCopyPath);
-        qDebug() << "Removing existing cover art" << m_coverArtCopyPath;
-        if (!dest_file.remove()) {
-            const QString error_message =
-                    tr("Error removing cover art %1: %2. Stopping.")
-                            .arg(m_coverArtCopyPath, dest_file.errorString());
-            qWarning() << error_message;
-            m_errorMessage = error_message;
-            stop();
+        mixxx::SafelyWritableFile safelyWritableFile(m_coverArtCopyPath, true);
+        if (!safelyWritableFile.isReady()) {
+            // Change the Feedback because Temp file might exists.
+            qDebug()
+                    << "Unable to copy cover art into file"
+                    << m_coverArtCopyPath
+                    << "- Please check file permissions and storage space";
             return;
         }
-    }
+        qDebug() << "SafelyWritableFile called, there should be temp file in the folder.";
+        QThread::msleep(5000);
 
-    QByteArray coverArtByteArray;
-    QBuffer bufferCoverArt(&coverArtByteArray);
-    bufferCoverArt.open(QIODevice::WriteOnly);
-    m_coverArtImage.save(&bufferCoverArt, "JPG");
-    qDebug() << "Copying cover art to" << m_coverArtCopyPath;
-    QFile coverArtFile(m_coverArtCopyPath);
-    coverArtFile.open(QIODevice::WriteOnly);
-    if (!coverArtFile.write(coverArtByteArray)) {
-        const QString error_message = tr(
-                "Error copying cover art to %1: Stopping.")
-                                              .arg(m_coverArtCopyPath);
-        qWarning() << error_message;
-        m_errorMessage = error_message;
+        CoverArtSaver coverArtSaver(safelyWritableFile.fileName(), m_coverArtImage);
+        if (coverArtSaver.saveCoverArt()) {
+            qDebug() << "coverArtSaver saved the cover art successfully.";
+        } else {
+            qDebug() << "Error";
+        }
         stop();
     }
+    // No overwriting.
+    CoverArtSaver coverArtSaver(m_coverArtCopyPath, m_coverArtImage);
+    if (coverArtSaver.saveCoverArt()) {
+        qDebug() << "coverArtSaver saved the cover art successfully.";
+    } else {
+        qDebug() << "Error";
+    }
 
-    bufferCoverArt.close();
-    coverArtFile.close();
+    qDebug() << "Worker stopped, there should be only the new cover on the folder";
     stop();
-    return;
 }
 
 CoverArtCopyWorker::OverwriteAnswer CoverArtCopyWorker::makeOverwriteRequest(
