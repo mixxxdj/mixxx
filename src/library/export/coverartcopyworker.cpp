@@ -51,13 +51,13 @@ void CoverArtCopyWorker::copyFile(
             qDebug() << "Error";
         }
         stop();
-    }
-    // No overwriting.
-    CoverArtSaver coverArtSaver(m_coverArtCopyPath, m_coverArtImage);
-    if (coverArtSaver.saveCoverArt()) {
-        qDebug() << "coverArtSaver saved the cover art successfully.";
     } else {
-        qDebug() << "Error";
+        CoverArtSaver coverArtSaver(m_coverArtCopyPath, m_coverArtImage);
+        if (coverArtSaver.saveCoverArt()) {
+            qDebug() << "coverArtSaver saved the cover art successfully.";
+        } else {
+            qDebug() << "Error";
+        }
     }
 
     qDebug() << "Worker stopped, there should be only the new cover on the folder";
