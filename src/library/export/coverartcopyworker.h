@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QImage>
 #include <QObject>
 #include <QScopedPointer>
 #include <QString>
@@ -32,6 +33,14 @@ class CoverArtCopyWorker : public QThread {
     }
 
     void stop();
+
+    QString getOldCoverArtLocation() {
+        return m_coverArtCopyPath;
+    };
+
+    QImage getNewCoverArtImage() {
+        return m_coverArtImage;
+    }
 
   signals:
     void askOverwrite(
