@@ -15,7 +15,6 @@ class CoverArtCopyWorker : public QThread {
     Q_OBJECT
   public:
     enum class OverwriteAnswer {
-        UPDATE,
         OVERWRITE,
         CANCEL = -1,
     };

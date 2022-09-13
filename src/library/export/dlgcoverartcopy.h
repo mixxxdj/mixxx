@@ -24,6 +24,10 @@ class DlgCoverArtCopy : public QDialog, public Ui::CoverArtCopyDlg {
     virtual ~DlgCoverArtCopy() {
     }
 
+    bool isCoverUpdated() {
+        return m_isCoverArtUpdated;
+    }
+
   signals:
     void clicked();
 
@@ -39,7 +43,8 @@ class DlgCoverArtCopy : public QDialog, public Ui::CoverArtCopyDlg {
   private:
     void finish();
 
-    bool m_coverOverwritten;
+    bool m_isCoverArtUpdated;
+
     QString m_coverOverwrittenPath;
 
     UserSettingsPointer m_pConfig;

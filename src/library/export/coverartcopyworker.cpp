@@ -24,7 +24,6 @@ void CoverArtCopyWorker::copyFile(
 
     if (dest_fileinfo.exists()) {
         switch (makeOverwriteRequest(m_coverArtCopyPath)) {
-        case OverwriteAnswer::UPDATE:
         case OverwriteAnswer::CANCEL:
             stop();
             return;
@@ -88,7 +87,7 @@ CoverArtCopyWorker::OverwriteAnswer CoverArtCopyWorker::makeOverwriteRequest(
     OverwriteAnswer answer = mode_future.get();
     switch (answer) {
     case OverwriteAnswer::CANCEL:
-        m_errorMessage = tr("Copying process was canceled");
+        m_errorMessage = tr("Updating cover art is canceled.");
         stop();
         break;
     default:;

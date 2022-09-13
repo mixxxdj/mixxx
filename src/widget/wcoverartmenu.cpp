@@ -89,11 +89,11 @@ void WCoverArtMenu::slotChange() {
         QString coverArtCopyFilePath = fileInfo.absoluteDir().path() + "/" +
                 fileInfo.completeBaseName() + ".jpg";
         CoverArtCopyWizard coverArt_copy(nullptr, m_pConfig, image, coverArtCopyFilePath);
-        coverArt_copy.copyCoverArt();
+        if (coverArt_copy.copyCoverArt()) {
+            qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
+            emit coverInfoSelected(coverInfo);
+        }
     }
-
-    qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
-    emit coverInfoSelected(coverInfo);
 }
 
 void WCoverArtMenu::slotUnset() {

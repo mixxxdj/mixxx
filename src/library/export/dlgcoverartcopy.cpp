@@ -17,7 +17,7 @@ DlgCoverArtCopy::DlgCoverArtCopy(QWidget* parent,
           m_pWSelectedCoverArtLabel(make_parented<WCoverArtLabel>(this)),
           m_worker(worker) {
     setupUi(this);
-    m_coverOverwritten = false;
+    m_isCoverArtUpdated = true;
 
     setModal(true);
 
@@ -103,10 +103,10 @@ void DlgCoverArtCopy::slotAskOverwrite(
 
     switch (overwrite_box.exec()) {
     case QMessageBox::No:
-        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::UPDATE);
+        m_isCoverArtUpdated = false;
+        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::CANCEL);
         return;
     case QMessageBox::Yes:
-        m_coverOverwritten = true;
         m_coverOverwrittenPath = coverArtCopyPath;
         promise->set_value(CoverArtCopyWorker::OverwriteAnswer::OVERWRITE);
         return;
@@ -125,7 +125,7 @@ void DlgCoverArtCopy::finish() {
                 QMessageBox::Ok);
     }
 
-    if (m_coverOverwritten &&
+    if (m_isCoverArtUpdated &&
             m_pConfig->getValue<bool>(
                     mixxx::library::prefs::kInformCoverArtLocationConfigKey)) {
         QMessageBox::information(nullptr,

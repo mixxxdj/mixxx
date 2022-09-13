@@ -23,7 +23,7 @@ class CoverArtCopyWizard : public QObject {
     }
     virtual ~CoverArtCopyWizard() = default;
 
-    void copyCoverArt();
+    bool copyCoverArt();
 
   private:
     QWidget* m_parent;
