@@ -204,7 +204,6 @@ void WVuMeter::render(VSyncThread* /* UNUSED vSyncThread */) {
     QPainter p(this);
     // fill the background, in case the image contains transparency
     p.fillRect(rect(), m_qBgColor);
-    QColor oc = m_qBgColor;
 
     if (!m_pPixmapBack.isNull()) {
         // Draw background.
