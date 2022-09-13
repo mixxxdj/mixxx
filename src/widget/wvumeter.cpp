@@ -18,6 +18,21 @@
 #define DEFAULT_HOLDTIME 400
 #define DEFAULT_HOLDSIZE 5
 
+namespace {
+QColor findBaseColor(QWidget* pWidget) {
+    int i = 0;
+
+    while (pWidget) {
+        if (pWidget->palette().isBrushSet(QPalette::Normal, QPalette::Base)) {
+            return pWidget->palette().color(QPalette::Base);
+        }
+        i++;
+        pWidget = qobject_cast<QWidget*>(pWidget->parent());
+    }
+    return QColor(0, 0, 0);
+}
+} // namespace
+
 WVuMeter::WVuMeter(QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
@@ -159,12 +174,14 @@ void WVuMeter::updateState(mixxx::Duration elapsed) {
     m_dPeakParameter = math_clamp(m_dPeakParameter, 0.0, 1.0);
 }
 
-void WVuMeter::initializeGL() {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-}
-
 void WVuMeter::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
+}
+
+void WVuMeter::showEvent(QShowEvent* e) {
+    Q_UNUSED(e);
+    // find the base color recursively in parent widget
+    m_qBgColor = findBaseColor(this);
 }
 
 void WVuMeter::render(VSyncThread* /* UNUSED vSyncThread */) {
@@ -185,9 +202,9 @@ void WVuMeter::render(VSyncThread* /* UNUSED vSyncThread */) {
     }
 
     QPainter p(this);
-
-    // draw a black background, in case the image contains transparency
-    p.fillRect(rect(), QColor(0, 0, 0));
+    // fill the background, in case the image contains transparency
+    p.fillRect(rect(), m_qBgColor);
+    QColor oc = m_qBgColor;
 
     if (!m_pPixmapBack.isNull()) {
         // Draw background.

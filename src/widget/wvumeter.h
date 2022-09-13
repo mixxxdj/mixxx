@@ -38,8 +38,8 @@ class WVuMeter : public QGLWidget, public WBaseWidget {
     void updateState(mixxx::Duration elapsed);
 
   private:
-    void initializeGL() override;
     void paintEvent(QPaintEvent * /*unused*/) override;
+    void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
 
     // To make sure we render at least once even when we have no signal
@@ -75,4 +75,6 @@ class WVuMeter : public QGLWidget, public WBaseWidget {
     double m_dPeakHoldCountdownMs;
 
     PerformanceTimer m_timer;
+
+    QColor m_qBgColor;
 };
