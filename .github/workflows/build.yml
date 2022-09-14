@@ -152,11 +152,11 @@ jobs:
       uses: jwlawson/actions-setup-cmake@v1.12
       # Ubuntu 22.04 should use the CMake version from the repos, and Visual
       # Studio on Windows comes with its own CMake version anyway.
-      if: runner.os == 'macOS'
+      if: runner.os == 'macOS' || runner.os == 'Linux' 
       with:
         # This should always match the minimum required version in
         # our CMakeLists.txt
-        cmake-version: '3.19.x'
+        cmake-version: '3.22.1'
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'

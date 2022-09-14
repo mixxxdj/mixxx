@@ -37,7 +37,7 @@ case "$1" in
 
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
-            cmake=3.22.1-1ubuntu1 \
+            cmake \
             clazy \
             clang-tidy \
             debhelper \
