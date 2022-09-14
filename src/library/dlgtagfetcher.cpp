@@ -316,13 +316,17 @@ void DlgTagFetcher::slotNetworkResult(
     m_data.m_pending = false;
 
     if (m_networkResult == NetworkResult::UnknownError) {
-        QString unknownError = tr("Can't connect to %1 for an unknown reason.");
-        loadingProgressBar->setFormat(unknownError.arg(app));
+        QString unknownError = tr("Can't connect to %1 for an unknown reason: %2");
+        loadingProgressBar->setFormat(unknownError.arg(app, message));
     } else {
-        QString cantConnect = tr("Can't connect to %1.");
-        loadingProgressBar->setFormat(cantConnect.arg(app));
+        QString cantConnect = tr("Can't connect to %1: %2");
+        loadingProgressBar->setFormat(cantConnect.arg(app, message));
     }
-
+    qWarning() << "Error while getting track metadata!"
+               << "Service:" << app
+               << "HTTP Status:" << httpError
+               << "Code:" << code
+               << "Server message:" << message;
     btnRetry->setEnabled(true);
     updateStack();
 }
