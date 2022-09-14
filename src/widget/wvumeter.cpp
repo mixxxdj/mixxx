@@ -176,11 +176,15 @@ void WVuMeter::updateState(mixxx::Duration elapsed) {
 
 void WVuMeter::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
+    // Force a rerender when render is called from the vsync thread, e.g. to
+    // git rid artifacts after hiding and showing the mixer or incomplete
+    // initial drawing.
+    m_bHasRendered = false;
 }
 
 void WVuMeter::showEvent(QShowEvent* e) {
     Q_UNUSED(e);
-    // find the base color recursively in parent widget
+    // Find the base color recursively in parent widget.
     m_qBgColor = findBaseColor(this);
 }
 
