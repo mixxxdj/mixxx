@@ -9,6 +9,7 @@
 #include "moc_wvumeter.cpp"
 #include "util/math.h"
 #include "util/timer.h"
+#include "util/widgethelper.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/vsyncthread.h"
 #include "widget/wpixmapstore.h"
@@ -17,18 +18,6 @@
 #define DEFAULT_FALLSTEP 1
 #define DEFAULT_HOLDTIME 400
 #define DEFAULT_HOLDSIZE 5
-
-namespace {
-QColor findBaseColor(QWidget* pWidget) {
-    while (pWidget) {
-        if (pWidget->palette().isBrushSet(QPalette::Normal, QPalette::Base)) {
-            return pWidget->palette().color(QPalette::Base);
-        }
-        pWidget = qobject_cast<QWidget*>(pWidget->parent());
-    }
-    return QColor(0, 0, 0);
-}
-} // namespace
 
 WVuMeter::WVuMeter(QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -182,7 +171,7 @@ void WVuMeter::paintEvent(QPaintEvent* e) {
 void WVuMeter::showEvent(QShowEvent* e) {
     Q_UNUSED(e);
     // Find the base color recursively in parent widget.
-    m_qBgColor = findBaseColor(this);
+    m_qBgColor = mixxx::widgethelper::findBaseColor(this);
 }
 
 void WVuMeter::render(VSyncThread* /* UNUSED vSyncThread */) {
