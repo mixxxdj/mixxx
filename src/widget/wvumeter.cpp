@@ -189,6 +189,9 @@ void WVuMeter::showEvent(QShowEvent* e) {
 }
 
 void WVuMeter::render(VSyncThread* /* UNUSED vSyncThread */) {
+    // TODO (@m0dB) consider using timing information from the vSyncThread,
+    // instead of having an m_timer in each WVuMeter instance.
+
     ScopedTimer t("WVuMeter::render");
 
     if (m_bHasRendered && m_dParameter == m_dLastParameter &&
