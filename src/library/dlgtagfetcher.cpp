@@ -32,7 +32,7 @@ constexpr int kPercentOfConstantTask = 15;
 constexpr int kPercentLeftForRecordingsFound = 55;
 
 // Original Index of the track tag, listed all the time below 'Original Tags'.
-constexpr int kOriginalTrackIndex = 1;
+constexpr int kOriginalTrackIndex = -1;
 
 QStringList trackColumnValues(
         const Track& track) {
