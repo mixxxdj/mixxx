@@ -229,6 +229,11 @@ void DlgTagFetcher::quit() {
     accept();
 }
 
+void DlgTagFetcher::reject() {
+    m_tagFetcher.cancel();
+    accept();
+}
+
 void DlgTagFetcher::fetchTagProgress(const QString& text) {
     QString status = tr("Status: %1");
     loadingStatus->setText(status.arg(text));

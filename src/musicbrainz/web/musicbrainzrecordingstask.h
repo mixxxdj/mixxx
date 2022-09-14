@@ -8,6 +8,7 @@
 
 #include "musicbrainz/musicbrainz.h"
 #include "network/webtask.h"
+#include "util/performancetimer.h"
 
 namespace mixxx {
 
@@ -44,14 +45,14 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             int errorCode,
             const QString& errorMessage);
 
-    void continueWithNextRequest();
-
     const QUrlQuery m_urlQuery;
 
     QList<QUuid> m_queuedRecordingIds;
     QSet<QUuid> m_finishedRecordingIds;
 
     QMap<QUuid, musicbrainz::TrackRelease> m_trackReleases;
+
+    PerformanceTimer m_lastRequestSentAt;
 
     int m_parentTimeoutMillis;
 };
