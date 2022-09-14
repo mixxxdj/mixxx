@@ -156,7 +156,11 @@ jobs:
       with:
         # This should always match the minimum required version in
         # our CMakeLists.txt
-        cmake-version: '3.22.1'
+        cmake-version: '3.19.x'
+
+    - name: "Verify cmake version"
+      run: |
+        cmake --version
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
