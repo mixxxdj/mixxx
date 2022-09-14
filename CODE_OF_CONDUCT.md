@@ -19,9 +19,9 @@ Treat everyone with respect. Build on each other's ideas. Each of us has the
 right to enjoy our experience and participate without fear of harassment,
 discrimination, or condescension, whether blatant or subtle. Remember that
 Mixxx is a geographically distributed team and that you may not be
-communicating with someone in their primary language. We all get frustrated
-when working on hard problems, but we cannot allow that frustration to turn
-into personal attacks.
+communicating with someone in their primary language or their primary dialect.
+We all get frustrated when working on hard problems, but we cannot allow that
+frustration to turn into personal attacks.
 
 ## Speak up if you see or hear something
 
