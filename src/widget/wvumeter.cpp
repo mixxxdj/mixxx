@@ -20,13 +20,10 @@
 
 namespace {
 QColor findBaseColor(QWidget* pWidget) {
-    int i = 0;
-
     while (pWidget) {
         if (pWidget->palette().isBrushSet(QPalette::Normal, QPalette::Base)) {
             return pWidget->palette().color(QPalette::Base);
         }
-        i++;
         pWidget = qobject_cast<QWidget*>(pWidget->parent());
     }
     return QColor(0, 0, 0);
