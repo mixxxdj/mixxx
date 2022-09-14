@@ -156,7 +156,7 @@ jobs:
       with:
         # This should always match the minimum required version in
         # our CMakeLists.txt
-        cmake-version: '3.19.x'
+        cmake-version: 'latest'
 
     - name: "Verify cmake version"
       run: |
