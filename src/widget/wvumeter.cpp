@@ -226,7 +226,8 @@ void WVuMeter::render(VSyncThread* /* UNUSED vSyncThread */) {
             }
         }
 
-        if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0) {
+        if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0 &&
+                m_dPeakParameter > m_dParameter) {
             const double widgetPeakPosition = math_clamp(
                     widgetWidth * m_dPeakParameter, 0.0, widgetWidth);
             const double pixmapPeakHoldSize = static_cast<double>(m_iPeakHoldSize);
