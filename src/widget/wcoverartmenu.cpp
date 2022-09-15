@@ -4,8 +4,11 @@
 #include <QFileInfo>
 
 #include "library/coverartutils.h"
+#include "library/export/coverartcopywizard.h"
 #include "moc_wcoverartmenu.cpp"
+#include "util/assert.h"
 #include "util/fileaccess.h"
+#include "util/imagefiledata.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
@@ -40,19 +43,22 @@ void WCoverArtMenu::setCoverArt(const CoverInfo& coverInfo) {
 }
 
 void WCoverArtMenu::slotChange() {
-    QFileInfo fileInfo;
-    if (!m_coverInfo.trackLocation.isEmpty()) {
-        fileInfo = QFileInfo(m_coverInfo.trackLocation);
+    QFileInfo trackFileInfo;
+
+    VERIFY_OR_DEBUG_ASSERT(!m_coverInfo.trackLocation.isEmpty()) {
+        return;
     }
+
+    trackFileInfo = QFileInfo(m_coverInfo.trackLocation);
 
     QString initialDir;
     if (m_coverInfo.type == CoverInfo::FILE) {
-        QFileInfo coverFile(fileInfo.dir(), m_coverInfo.coverLocation);
+        QFileInfo coverFile(trackFileInfo.dir(), m_coverInfo.coverLocation);
         initialDir = coverFile.absolutePath();
     } else {
         // Default to the track's directory if the cover is not
         // stored in a separate file.
-        initialDir = fileInfo.absolutePath();
+        initialDir = trackFileInfo.absolutePath();
     }
 
     QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();
@@ -68,12 +74,13 @@ void WCoverArtMenu::slotChange() {
         return;
     }
 
-    // TODO(rryan): Ask if user wants to copy the file.
+    QString selectedCoverExtension = QFileInfo(selectedCoverPath).suffix();
 
     CoverInfoRelative coverInfo;
     // Create a security token for the file.
     auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(selectedCoverPath));
-    QImage image(selectedCoverPath);
+    // TODO: this is file access in main thread. Move this to another thread.
+    ImageFileData image = ImageFileData::fromFilePath(selectedCoverPath);
     if (image.isNull()) {
         // TODO(rryan): feedback
         return;
@@ -82,8 +89,27 @@ void WCoverArtMenu::slotChange() {
     coverInfo.source = CoverInfo::USER_SELECTED;
     coverInfo.coverLocation = selectedCoverPath;
     coverInfo.setImage(image);
-    qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
-    emit coverInfoSelected(coverInfo);
+
+    QString coverArtCopyFilePath =
+            trackFileInfo.absoluteFilePath().left(
+                    trackFileInfo.absoluteFilePath().lastIndexOf('.') + 1) +
+            selectedCoverExtension;
+
+    if (QFileInfo(m_coverInfo.trackLocation).canonicalPath() ==
+            QFileInfo(selectedCoverPath).canonicalPath()) {
+        qDebug() << "Track and selected cover art are in the same path:"
+                 << QFileInfo(selectedCoverPath).canonicalPath()
+                 << "Cover art updated without copying";
+        emit coverInfoSelected(coverInfo);
+        qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
+        return;
+    }
+
+    CoverArtCopyWizard coverArt_copy(nullptr, image, coverArtCopyFilePath);
+    if (coverArt_copy.copyCoverArt()) {
+        qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
+        emit coverInfoSelected(coverInfo);
+    }
 }
 
 void WCoverArtMenu::slotUnset() {
