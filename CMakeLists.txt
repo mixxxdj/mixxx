@@ -63,8 +63,9 @@ if(DEFINED ENV{VCPKG_ROOT})
   # it will map those configuration to the first valid configuration in the targets
   # IMPORTED_CONFIGURATIONS. In most cases this is the Debug configuration which is wrong.
   if(NOT DEFINED CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO)
-    set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO "RelWithDebInfo;Release;")
+    #set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO "RelWithDebInfo;Release;")
   endif()
+  message(STATUS "CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO = ${CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO}")
 endif()
 
 # Set a default build type if none was specified
@@ -2626,9 +2627,11 @@ endif()
 option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
 if(QTKEYCHAIN)
   find_package(Qt5Keychain REQUIRED)
-  target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
-  target_link_libraries(mixxx-lib PRIVATE ${QTKEYCHAIN_LIBRARIES})
-  target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
+  if(DEFINED ENV{VCPKG_ROOT})
+    get_property(CONFIGS TARGET qt5keychain PROPERTY MAP_IMPORTED_CONFIG_RELWITHDEBINFO)
+    message(STATUS "qt5keychain: MAP_IMPORTED_CONFIG_RELWITHDEBINFO = ${MAP_IMPORTED_CONFIG_RELWITHDEBINFO}")
+  endif()
+  target_link_libraries(mixxx-lib PRIVATE qt5keychain)
 endif()
 
 # USB HID or/and Bulk controller support
