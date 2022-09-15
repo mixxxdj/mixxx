@@ -68,7 +68,7 @@ TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
 
 //Test's purpose is to test clamping of the delay value in setter (upper bound).
 TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
-    const SINT numDelayFrames = mixxx::audio::SampleRate::kValueMax + 2;
+    const SINT numDelayFrames = mixxx::audio::SampleRate::kValueMax + 1;
 
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     // Set thread safe for EXPECT_DEATH.
@@ -82,16 +82,33 @@ TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
 #else
     const SINT numSamples = 4;
 
+    // The number of iterations to fill the whole delay buffer and then
+    // write one another buffer to test the structure more strictly.
+    const SINT numIter =
+            (mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount) / numSamples + 1;
+
+    CSAMPLE inputBuffer[numSamples];
+    mixxx::SampleBuffer inOutBuffer(numSamples);
+
     // Set delay greater than the size of the delay buffer.
     m_effectsDelay.setDelayFrames(numDelayFrames);
 
-    const CSAMPLE inputBuffer[] = {-100.0, 100.0, -99.0, 99.0};
-    const CSAMPLE expectedResult[] = {-50.0, 50.0, -49.5, 49.5};
+    for (int bufferNum = 0; bufferNum < numIter; ++bufferNum) {
+        // Set input samples to keep the data in linearly increasing series.
+        for (int i = 0; i < numSamples; ++i) {
+            inputBuffer[i] = numSamples * bufferNum + i;
+        }
 
-    mixxx::SampleBuffer inOutBuffer(numSamples);
-    SampleUtil::copy(inOutBuffer.data(), inputBuffer, numSamples);
+        SampleUtil::copy(inOutBuffer.data(), inputBuffer, numSamples);
+        m_effectsDelay.process(inOutBuffer.data(), numSamples);
+    }
 
-    m_effectsDelay.process(inOutBuffer.data(), numSamples);
+    // The whole delay buffer was filled up and then one another input buffer
+    // was written into the delay buffer too. So, when it will be read
+    // with the maximum possible delay, the result is the buffer, which was
+    // filled into the delay buffer as the second.
+    const CSAMPLE expectedResult[] = {4, 5, 6, 7};
+
     AssertIdenticalBufferEquals(inOutBuffer.span(), expectedResult);
 #endif
 }
