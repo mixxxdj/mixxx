@@ -52,7 +52,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
 SoundDeviceNetwork::~SoundDeviceNetwork() {
 }
 
-SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
+SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     Q_UNUSED(syncBuffers);
     kLogger.debug() << "open:" << m_deviceId.name;
 
@@ -101,14 +101,14 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
         m_pThread->start(QThread::TimeCriticalPriority);
     }
 
-    return SOUNDDEVICE_ERROR_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 bool SoundDeviceNetwork::isOpen() const {
     return (m_inputFifo != nullptr || m_outputFifo != nullptr);
 }
 
-SoundDeviceError SoundDeviceNetwork::close() {
+SoundDeviceStatus SoundDeviceNetwork::close() {
     //kLogger.debug() << "close:" << getInternalName();
     m_pNetworkStream->stopStream();
     if (m_pThread) {
@@ -120,7 +120,7 @@ SoundDeviceError SoundDeviceNetwork::close() {
     m_outputFifo.reset();
     m_inputFifo.reset();
 
-    return SOUNDDEVICE_ERROR_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 QString SoundDeviceNetwork::getError() const {

@@ -41,29 +41,28 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
 
         QList<QList<QString>> tokens = tokenize(bytes, ',');
 
-        // detect Location column
-        int locationColumnIndex = -1;
+        const auto detect_location_column =
+                [&](const auto& tokens_list,
+                        auto predicate) -> std::optional<std::size_t> {
+            const auto it = std::find_if(std::begin(tokens_list), std::end(tokens_list), predicate);
+            return (it != std::end(tokens_list))
+                    ? std::distance(std::begin(tokens_list), it)
+                    : std::optional<std::size_t>{};
+        };
         if (tokens.size()) {
-            for (int i = 0; i < tokens[0].size(); ++i) {
-                if (tokens[0][i] == QObject::tr("Location")) {
-                    locationColumnIndex = i;
-                    break;
-                }
-            }
-            if (locationColumnIndex < 0 && tokens.size() > 1) {
+            std::optional<std::size_t> locationColumnIndex = detect_location_column(
+                    tokens[0],
+                    [&](auto i) { return i == QObject::tr("Location"); });
+            if ((!locationColumnIndex.has_value()) && tokens.size() > 1) {
                 // Last resort, find column with path separators
                 // This happens in case of csv files in a different language
-                for (int i = 0; i < tokens[1].size(); ++i) {
-                    if (tokens[1][i].contains(QDir::separator())) {
-                        locationColumnIndex = i;
-                        break;
-                    }
-                }
+                locationColumnIndex = detect_location_column(tokens[1],
+                        [&](auto i) { return i.contains(QDir::separator()); });
             }
-            if (locationColumnIndex >= 0) {
+            if (locationColumnIndex.has_value()) {
                 for (int row = 1; row < tokens.size(); ++row) {
                     if (locationColumnIndex < tokens[row].size()) {
-                        locations.append(tokens[row][locationColumnIndex]);
+                        locations.append(tokens[row][static_cast<int>(*locationColumnIndex)]);
                     }
                 }
             } else {

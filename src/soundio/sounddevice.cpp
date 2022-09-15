@@ -47,35 +47,35 @@ void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
     m_framesPerBuffer = framesPerBuffer;
 }
 
-SoundDeviceError SoundDevice::addOutput(const AudioOutputBuffer &out) {
+SoundDeviceStatus SoundDevice::addOutput(const AudioOutputBuffer& out) {
     // Check if the output channels are already used
     foreach (AudioOutputBuffer myOut, m_audioOutputs) {
         if (out.channelsClash(myOut)) {
-            return SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL;
+            return SoundDeviceStatus::ErrorDuplicateOutputChannel;
         }
     }
     if (out.getChannelGroup().getChannelBase()
             + out.getChannelGroup().getChannelCount() > getNumOutputChannels()) {
-        return SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL;
+        return SoundDeviceStatus::ErrorExcessiveOutputChannel;
     }
     m_audioOutputs.append(out);
-    return SOUNDDEVICE_ERROR_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 void SoundDevice::clearOutputs() {
     m_audioOutputs.clear();
 }
 
-SoundDeviceError SoundDevice::addInput(const AudioInputBuffer &in) {
+SoundDeviceStatus SoundDevice::addInput(const AudioInputBuffer& in) {
     // DON'T check if the input channels are already used, there's no reason
     // we can't send the same inputted samples to different places in mixxx.
     // -- bkgood 20101108
     if (in.getChannelGroup().getChannelBase()
             + in.getChannelGroup().getChannelCount() > getNumInputChannels()) {
-        return SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL;
+        return SoundDeviceStatus::ErrorExcessiveInputChannel;
     }
     m_audioInputs.append(in);
-    return SOUNDDEVICE_ERROR_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 void SoundDevice::clearInputs() {

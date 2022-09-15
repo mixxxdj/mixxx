@@ -253,13 +253,13 @@ void MixxxMainWindow::initialize() {
     bool retryClicked;
     do {
         retryClicked = false;
-        SoundDeviceError result = m_pCoreServices->getSoundManager()->setupDevices();
-        if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT ||
-                result == SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL) {
+        SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
+        if (result == SoundDeviceStatus::ErrorDeviceCount ||
+                result == SoundDeviceStatus::ErrorExcessiveOutputChannel) {
             if (soundDeviceBusyDlg(&retryClicked) != QDialog::Accepted) {
                 exit(0);
             }
-        } else if (result != SOUNDDEVICE_ERROR_OK) {
+        } else if (result != SoundDeviceStatus::Ok) {
             if (soundDeviceErrorMsgDlg(result, &retryClicked) !=
                     QDialog::Accepted) {
                 exit(0);
@@ -509,16 +509,15 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
     return soundDeviceErrorDlg(title, text, retryClicked);
 }
 
-
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
-        SoundDeviceError err, bool* retryClicked) {
+        SoundDeviceStatus status, bool* retryClicked) {
     QString title(tr("Sound Device Error"));
     QString text("<html> <p>" %
                     tr("Mixxx was unable to open all the configured sound "
                        "devices.") +
             "</p> <p>" %
                     m_pCoreServices->getSoundManager()
-                            ->getLastErrorMessage(err)
+                            ->getLastErrorMessage(status)
                             .replace("\n", "<br/>") %
                     "</p><ul>"
                     "<li>" %
