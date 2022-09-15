@@ -33,8 +33,8 @@ class TagFetcher : public QObject {
             const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
     void fetchProgress(
             const QString& message);
-    void numberOfRecordingsToFetch(int totalNumberOfRecordings);
-    void currentRecordingFetched();
+    void numberOfRecordingsFoundFromAcoustId(int totalNumberOfRecordings);
+    void currentRecordingFetchedFromMusicBrainz();
     void networkError(
             int httpStatus,
             const QString& app,

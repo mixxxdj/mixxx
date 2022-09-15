@@ -180,7 +180,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
     const Duration delayBeforeNextRequest =
             kMinDurationBetweenRequests -
             std::min(kMinDurationBetweenRequests, elapsedSinceLastRequestSent);
-    emit currentRecordingFetched();
+    emit currentRecordingFetchedFromMusicBrainz();
     slotStart(m_parentTimeoutMillis, delayBeforeNextRequest.toIntegerMillis());
 }
 

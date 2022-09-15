@@ -124,7 +124,7 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
     }
 
     emit fetchProgress(tr("Retrieving metadata from MusicBrainz"));
-    emit numberOfRecordingsToFetch(recordingIds.size());
+    emit numberOfRecordingsFoundFromAcoustId(recordingIds.size());
 
     DEBUG_ASSERT(!m_pMusicBrainzTask);
     m_pMusicBrainzTask = make_parented<mixxx::MusicBrainzRecordingsTask>(
@@ -148,9 +148,9 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
             this,
             &TagFetcher::slotMusicBrainzTaskNetworkError);
     connect(m_pMusicBrainzTask,
-            &mixxx::MusicBrainzRecordingsTask::currentRecordingFetched,
+            &mixxx::MusicBrainzRecordingsTask::currentRecordingFetchedFromMusicBrainz,
             this,
-            &TagFetcher::currentRecordingFetched);
+            &TagFetcher::currentRecordingFetchedFromMusicBrainz);
     m_pMusicBrainzTask->invokeStart(
             kMusicBrainzTimeoutMillis);
 }
