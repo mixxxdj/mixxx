@@ -47,7 +47,11 @@ endif()
 
 # Set up vcpkg
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
+  if(WIN32)
+    # We only set the ENV{VCPKG_ROOT} on windows
+    # Do not use the default VCPKG_ROOT on other targets
     set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
+  endif()
 endif()
 
 if(DEFINED VCPKG_ROOT)
