@@ -45,17 +45,34 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-# Check if any relevant env vars were set from the build env scripts
-if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED X_VCPKG_APPLOCAL_DEPS_INSTALL)
-  set(X_VCPKG_APPLOCAL_DEPS_INSTALL "$ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL}" CACHE BOOL "")
+# Set up vcpkg
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
+    set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
 endif()
 
-if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
-  set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}" CACHE STRING "")
-endif()
+if(DEFINED VCPKG_ROOT)
+  set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
 
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+  if(NOT DEFINED VCPKG_OVERLAY_PORTS)
+    set(VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/ports")
+    if(APPLE)
+        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/osx")
+    elseif(WIN32)
+        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/windows")
+    endif()
+  endif()
+
+  if(NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
+    set(VCPKG_OVERLAY_TRIPLETS "${VCPKG_ROOT}/overlay/triplets")
+  endif()
+
+  if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET})
+    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
+  endif()
+
+  if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+  endif()
 endif()
 
 # Set a default build type if none was specified
