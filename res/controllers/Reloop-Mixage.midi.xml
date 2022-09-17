@@ -703,6 +703,42 @@
           <normal />
         </options>
       </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x90</status>
+        <midino>0x56</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x90</status>
+        <midino>0x57</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x90</status>
+        <midino>0x58</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x90</status>
+        <midino>0x59</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
     </controls>
     <outputs />
   </controller>
