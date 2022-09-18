@@ -126,7 +126,7 @@ CueControl::CueControl(const QString& group,
 
     m_pCueMode = new ControlObject(ConfigKey(group, "cue_mode"));
 
-    m_pPassthrough = make_parented<ControlProxy>(group, "passthrough");
+    m_pPassthrough = make_parented<ControlProxy>(group, "passthrough", this);
     m_pPassthrough->connectValueChanged(this,
             &CueControl::passthroughChanged,
             Qt::DirectConnection);

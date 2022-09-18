@@ -41,7 +41,7 @@ WWaveformViewer::WWaveformViewer(
     m_pWheel = new ControlProxy(
             group, "wheel", this, ControlFlag::NoAssertIfMissing);
     m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
-    m_pPassthroughEnabled = make_parented<ControlProxy>(group, "passthrough");
+    m_pPassthroughEnabled = make_parented<ControlProxy>(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(this,
             &WWaveformViewer::passthroughChanged,
             Qt::DirectConnection);
