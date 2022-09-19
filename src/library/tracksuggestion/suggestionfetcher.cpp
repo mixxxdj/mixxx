@@ -69,20 +69,14 @@ void SuggestionFetcher::cancel() {
     }
 }
 
-void SuggestionFetcher::slotLastfmGetTrackSimilarTaskSucceeded(const QByteArray& response) {
+void SuggestionFetcher::slotLastfmGetTrackSimilarTaskSucceeded(
+        const QList<QMap<QString, QString>>& suggestions) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!onLastfmGetTrackSimilarTaskTerminated()) {
         return;
     }
 
-    qDebug() << "Fetching is success, writing the file.";
-    QString suggestionFileLocation = m_pTrack->getLocation() + ".xml";
-    QFile suggestionFile(suggestionFileLocation);
-    suggestionFile.open(QIODevice::WriteOnly);
-    suggestionFile.write(response);
-    suggestionFile.close();
-    emit suggestionFileWrittenSuccessfully(suggestionFileLocation);
-    qDebug() << "Writing the file success.";
+    emit suggestionResults(suggestions);
     auto pTrack = std::move(m_pTrack);
     cancel();
 }
@@ -102,9 +96,7 @@ bool SuggestionFetcher::onLastfmGetTrackSimilarTaskTerminated() {
 }
 
 void SuggestionFetcher::slotLastfmGetTrackSimilarTaskFailed(
-        const mixxx::network::WebResponse& response,
-        int errorCode,
-        const QString& errorMessage) {
+        const mixxx::network::JsonWebResponse& response) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!onLastfmGetTrackSimilarTaskTerminated()) {
         return;
@@ -114,9 +106,9 @@ void SuggestionFetcher::slotLastfmGetTrackSimilarTaskFailed(
 
     emit networkError(
             response.statusCode(),
-            "Last fm",
-            errorMessage,
-            errorCode);
+            "Last Fm",
+            response.content().toJson(),
+            -1);
 }
 
 void SuggestionFetcher::slotLastfmGetTrackSimilarTaskAborted() {

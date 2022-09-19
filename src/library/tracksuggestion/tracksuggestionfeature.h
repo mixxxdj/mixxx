@@ -9,15 +9,10 @@
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/baseexternaltrackmodel.h"
-#include "library/serato/seratoplaylistmodel.h"
 #include "library/tracksuggestion/dlgtracksuggestion.h"
 #include "library/treeitemmodel.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
-
-class Track;
-class DlgTagFetcher;
-class DlgTrackInfo;
 
 class TrackSuggestionFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -41,33 +36,26 @@ class TrackSuggestionFeature : public BaseExternalLibraryFeature {
     void htmlLinkClicked(const QUrl& link);
     void slotTrackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerInfoTrackLoaded(const QString& group, TrackPointer pNewTrack);
-    void onSuggestionFileParsed();
     void slotStartFetchingViaButton();
-    void slotUpdateTrackModelAfterSuccess(const QString& filePath);
+    void slotUpdateTrackModelAfterSuccess(const QList<QMap<QString, QString>>& suggestions);
     void slotTrackSelected(TrackId trackId);
 
   private:
-    void parseSuggestionFile();
-    void showImportMetadataDlg();
-    void showTrackPropertiesDlg();
-    void clearTable(const QString& table_name);
+    BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
     void emitTrackPropertiesToDialog(TrackPointer pTrack);
+    bool lookTrackHasSuggestions(TrackId trackId);
     QString formatRootViewHtml() const;
     QString formatNoSuggestionAvailableHtml() const;
 
-    bool m_cancelImport;
     bool m_isFetchingSuccess;
     parented_ptr<TreeItemModel> m_pSidebarModel;
     parented_ptr<SuggestionFetcher> m_pSuggestionFetcher;
-    std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
-    std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     BaseExternalTrackModel* m_pSuggestionTrackModel;
     BaseExternalPlaylistModel* m_pSuggestionPlaylistModel;
+    BaseExternalPlaylistModel* m_DummyModel;
     QSqlDatabase m_database;
     QSharedPointer<BaseTrackCache> m_trackSource;
-    QFutureWatcher<void> m_future_watcher;
-    QFuture<void> m_future;
 
     TreeItem* treeItemDeckOne;
     TreeItem* treeItemDeckTwo;
@@ -80,4 +68,5 @@ class TrackSuggestionFeature : public BaseExternalLibraryFeature {
 
     QString m_suggestionFile;
     QString m_title;
+    QList<QMap<QString, QString>> m_suggestions;
 };

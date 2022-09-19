@@ -14,7 +14,7 @@ DlgTrackSuggestion::DlgTrackSuggestion(WLibrary* parent,
         KeyboardEventFilter* pKeyboard,
         SuggestionFetcher* pSuggestionFetcher,
         BaseExternalPlaylistModel*
-                pSuggestionTableModel) // This is temporaraly added for to not have seg fault.
+                pSuggestionTableModel) // This is temporaraly added for to have better dlg.
         : QWidget(parent),
           m_pConfig(pConfig),
           m_pTrackTableView(new WTrackTableView(this,
@@ -44,9 +44,9 @@ DlgTrackSuggestion::DlgTrackSuggestion(WLibrary* parent,
             &DlgTrackSuggestion::slotShowFetchingProgress);
 
     connect(pSuggestionFetcher,
-            &SuggestionFetcher::suggestionFileWrittenSuccessfully,
+            &SuggestionFetcher::suggestionResults,
             this,
-            &DlgTrackSuggestion::suggestionFileWrittenSuccessfully);
+            &DlgTrackSuggestion::suggestionResults);
 
     connect(pSuggestionFetcher,
             &SuggestionFetcher::networkError,

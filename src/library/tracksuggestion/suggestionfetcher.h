@@ -31,7 +31,7 @@ class SuggestionFetcher : public QObject {
   signals:
     void fetchSuggestionProgress(
             const QString& message);
-    void suggestionFileWrittenSuccessfully(const QString& filePath);
+    void suggestionResults(const QList<QMap<QString, QString>>& suggestions);
     void networkError(
             int httpStatus,
             const QString& app,
@@ -40,11 +40,8 @@ class SuggestionFetcher : public QObject {
     void changeButtonLabel(const QString& buttonLabel);
 
   private slots:
-    void slotLastfmGetTrackSimilarTaskSucceeded(const QByteArray& response);
-    void slotLastfmGetTrackSimilarTaskFailed(
-            const mixxx::network::WebResponse& response,
-            int errorCode,
-            const QString& errorMessage);
+    void slotLastfmGetTrackSimilarTaskSucceeded(const QList<QMap<QString, QString>>& suggestions);
+    void slotLastfmGetTrackSimilarTaskFailed(const mixxx::network::JsonWebResponse& response);
     void slotLastfmGetTrackSimilarTaskAborted();
     void slotLastfmGetTrackSimilarTaskNetworkError(
             QNetworkReply::NetworkError errorCode,

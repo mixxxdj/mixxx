@@ -1,13 +1,12 @@
 #include "library/tracksuggestion/lastfm/lastfmgettracksimilartask.h"
 
-#include <QDebug>
-#include <QMetaMethod>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QList>
 #include <QString>
-#include <QXmlStreamReader>
 
 #include "util/assert.h"
 #include "util/logger.h"
-#include "util/thread_affinity.h"
 
 namespace mixxx {
 
@@ -58,11 +57,9 @@ QUrlQuery lookupUrlQuery(
     urlQuery.addQueryItem(
             QString("api_key"),
             kApiKey);
-    //For now we will get the response as an XML file...
-    //Later on json can be used if needed.
-    //urlQuery.addQueryItem(
-    //        QStringLiteral("format"),
-    //        QStringLiteral("json"));
+    urlQuery.addQueryItem(
+            QStringLiteral("format"),
+            QStringLiteral("json"));
     //QUESTION: Should limit changed via preference?
     //urlQuery.addQueryItem(
     //        QStringLiteral("limit"),
@@ -81,6 +78,15 @@ QNetworkRequest createNetworkRequest(const QUrlQuery& urlQuery) {
     return networkRequest;
 }
 
+network::JsonWebRequest lookupRequest() {
+    return network::JsonWebRequest{
+            network::HttpRequestMethod::Get,
+            kRequestPath,
+            QUrlQuery(),
+            QJsonDocument(),
+    };
+}
+
 } // anonymous namespace
 
 LastfmGetTrackSimilarTask::LastfmGetTrackSimilarTask(
@@ -88,57 +94,115 @@ LastfmGetTrackSimilarTask::LastfmGetTrackSimilarTask(
         const QString& artist,
         const QString& track,
         QObject* parent)
-        : network::WebTask(
+        : network::JsonWebTask(
                   networkAccessManager,
+                  kBaseUrl,
+                  lookupRequest(),
                   parent),
           m_urlQuery(lookupUrlQuery(artist, track)) {
 }
 
-QNetworkReply* LastfmGetTrackSimilarTask::doStartNetworkRequest(
+QNetworkReply* LastfmGetTrackSimilarTask::sendNetworkRequest(
         QNetworkAccessManager* networkAccessManager,
-        int parentTimeoutMillis) {
-    Q_UNUSED(parentTimeoutMillis)
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    DEBUG_ASSERT(networkAccessManager);
+        network::HttpRequestMethod method,
+        const QUrl& url,
+        const QJsonDocument& content) {
+    Q_UNUSED(method);
+    DEBUG_ASSERT(method == network::HttpRequestMethod::Get);
+    Q_UNUSED(content);
+    DEBUG_ASSERT(content.isEmpty());
+    DEBUG_ASSERT(url.isValid());
+    DEBUG_ASSERT(!m_urlQuery.isEmpty());
 
     const QNetworkRequest networkRequest = createNetworkRequest(m_urlQuery);
 
     if (kLogger.traceEnabled()) {
         kLogger.trace()
                 << "GET"
-                << networkRequest.url();
+                << url;
     }
+
+    DEBUG_ASSERT(networkAccessManager);
     return networkAccessManager->get(networkRequest);
 }
 
-void LastfmGetTrackSimilarTask::doNetworkReplyFinished(
-        QNetworkReply* finishedNetworkReply,
-        network::HttpStatusCode statusCode) {
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-
-    const QByteArray body = finishedNetworkReply->readAll();
-
-    if (statusCode != 200 &&
-            statusCode != 301 &&
-            statusCode != 404) {
-        kLogger.info()
-                << "GET reply"
-                << "statusCode:" << statusCode
-                << "body:" << body;
-        emitFailed(
-                network::WebResponse(
-                        finishedNetworkReply->url(),
-                        finishedNetworkReply->request().url(),
-                        statusCode),
-                statusCode,
-                body);
+void LastfmGetTrackSimilarTask::onFinished(
+        const network::JsonWebResponse& response) {
+    if (!response.isStatusCodeSuccess()) {
+        kLogger.warning()
+                << "Request failed with HTTP status code"
+                << response.statusCode();
+        emitFailed(response);
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(response.statusCode() == network::kHttpStatusCodeOk) {
+        kLogger.warning()
+                << "Unexpected HTTP status code"
+                << response.statusCode();
+        emitFailed(response);
         return;
     }
 
-    emitSucceeded(body);
+    VERIFY_OR_DEBUG_ASSERT(response.content().isObject()) {
+        kLogger.warning()
+                << "Invalid JSON content"
+                << response.content();
+        emitFailed(response);
+        return;
+    }
+    const auto jsonObject = response.content().object();
+
+    if (jsonObject.value(QStringLiteral("similartracks")).isNull()) {
+        kLogger.warning()
+                << "Similar tracks not found";
+        emitFailed(response);
+        return;
+    }
+
+    //DEBUG_ASSERT(jsonObject.value(QLatin1String("similartracks")).isObject());
+
+    const auto similarTracksObject = jsonObject.value(QLatin1String("similartracks")).toObject();
+
+    const QJsonArray tracks = similarTracksObject.value(QLatin1String("track")).toArray();
+
+    QList<QMap<QString, QString>> results;
+
+    for (const auto& track : tracks) {
+        results.append(QMap<QString, QString>{});
+        DEBUG_ASSERT(track.isObject());
+        const auto trackObject = track.toObject();
+        const auto trackName = trackObject.value(QLatin1String("name")).toString();
+        const auto trackPlaycount = trackObject.value(QLatin1String("playcount")).toInt();
+        const auto trackMBID = trackObject.value(QLatin1String("mbid")).toString();
+        const auto trackMatch = trackObject.value(QLatin1String("match")).toDouble();
+        const auto trackUrl = trackObject.value(QLatin1String("url")).toString();
+        const auto trackDuration = trackObject.value(QLatin1String("duration")).toInt();
+        const QString resultPlaycount = QString::number(trackPlaycount);
+        const QString resultMatch = QString::number(trackMatch);
+        const QString resultDuration = QString::number(trackDuration);
+        const auto artistObject = trackObject.value(QLatin1String("artist")).toObject();
+        if (artistObject.isEmpty()) {
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "No artist available for track"
+                        << trackName;
+            }
+            continue;
+        }
+        const auto artistName = artistObject.value(QLatin1String("name")).toString();
+        const auto artistUrl = artistObject.value(QLatin1String("url")).toString();
+        const auto artistMbid = artistObject.value(QLatin1String("mbid")).toString();
+        results.last().insert(QLatin1String("title"), trackName);
+        results.last().insert(QLatin1String("artist"), artistName);
+        results.last().insert(QLatin1String("playcount"), resultPlaycount);
+        results.last().insert(QLatin1String("match"), resultMatch);
+        results.last().insert(QLatin1String("duration"), resultDuration);
+    }
+
+    emitSucceeded(results);
 }
 
-void LastfmGetTrackSimilarTask::emitSucceeded(const QByteArray& response) {
+void LastfmGetTrackSimilarTask::emitSucceeded(const QList<QMap<QString, QString>>& suggestions) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&LastfmGetTrackSimilarTask::succeeded)) {
         kLogger.warning()
@@ -146,27 +210,7 @@ void LastfmGetTrackSimilarTask::emitSucceeded(const QByteArray& response) {
         deleteLater();
         return;
     }
-    emit succeeded(response);
-}
-
-void LastfmGetTrackSimilarTask::emitFailed(
-        const network::WebResponse& response,
-        int errorCode,
-        const QString& errorMessage) {
-    VERIFY_OR_DEBUG_ASSERT(
-            isSignalFuncConnected(&LastfmGetTrackSimilarTask::failed)) {
-        kLogger.warning()
-                << "Unhandled failed signal"
-                << response
-                << errorCode
-                << errorMessage;
-        deleteLater();
-        return;
-    }
-    emit failed(
-            response,
-            errorCode,
-            errorMessage);
+    emit succeeded(suggestions);
 }
 
 } // namespace mixxx

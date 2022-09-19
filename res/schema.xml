@@ -588,13 +588,25 @@ reapplying those migrations.
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS suggestion_library (
-        id INTEGER,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         artist varchar(48),
         title varchar(48),
         playcount INTEGER,
         match FLOAT,
         duration FLOAT,
         location varchar(512));
+
+       CREATE TABLE IF NOT EXISTS suggestion_playlists (
+        id INTEGER PRIMARY KEY,
+        name varchar(100) UNIQUE
+        );
+
+      CREATE TABLE IF NOT EXISTS suggestion_playlist_tracks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        playlist_id INTEGER REFERENCES suggestion_playlist(id),
+        track_id INTEGER REFERENCES suggestion_library(id),
+        position INTEGER);
+
     </sql>
   </revision>
 </schema>

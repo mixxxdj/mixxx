@@ -47,7 +47,7 @@ class DlgTrackSuggestion : public QWidget,
 
   signals:
     void buttonPressed();
-    void suggestionFileWrittenSuccessfully(const QString& filePath);
+    void suggestionResults(const QList<QMap<QString, QString>>& suggestions);
 
   private:
     UserSettingsPointer m_pConfig;

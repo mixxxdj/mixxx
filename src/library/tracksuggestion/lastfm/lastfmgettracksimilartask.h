@@ -5,11 +5,11 @@
 #include <QUrlQuery>
 #include <QUuid>
 
-#include "network/webtask.h"
+#include "network/jsonwebtask.h"
 
 namespace mixxx {
 
-class LastfmGetTrackSimilarTask : public network::WebTask {
+class LastfmGetTrackSimilarTask : public network::JsonWebTask {
     Q_OBJECT
 
   public:
@@ -21,27 +21,20 @@ class LastfmGetTrackSimilarTask : public network::WebTask {
     ~LastfmGetTrackSimilarTask() override = default;
 
   signals:
-    void succeeded(const QByteArray& response);
+    void succeeded(const QList<QMap<QString, QString>>& suggestions);
 
-    void failed(
-            const network::WebResponse& response,
-            int errorCode,
-            const QString& errorMessage);
+  protected:
+    QNetworkReply* sendNetworkRequest(
+            QNetworkAccessManager* networkAccessManager,
+            network::HttpRequestMethod method,
+            const QUrl& url,
+            const QJsonDocument& content) override;
 
   private:
-    QNetworkReply* doStartNetworkRequest(
-            QNetworkAccessManager* networkAccessManager,
-            int parentTimeoutMillis) override;
-    void doNetworkReplyFinished(
-            QNetworkReply* finishedNetworkReply,
-            network::HttpStatusCode statusCode) override;
+    void onFinished(
+            const network::JsonWebResponse& response) override;
 
-    void emitSucceeded(
-            const QByteArray& response);
-    void emitFailed(
-            const network::WebResponse& response,
-            int errorCode,
-            const QString& errorMessage);
+    void emitSucceeded(const QList<QMap<QString, QString>>& suggestions);
 
     const QUrlQuery m_urlQuery;
 };
