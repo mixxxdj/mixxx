@@ -11,25 +11,21 @@
 namespace {
 
 // Constant percentages for QProgressBar.
+
 // There are 3 constant steps while fetching metadata from musicbrainz.
 // 1. -> "Fingerprinting track"
 // 2. -> "Identifying track through Acoustid"
-// 3. -> "Retrieving metadata from MusicBrainz
-// These steps never change and they are called "ConstantTask(s)" on here.
-// After these steps are passed, last step remains.
-// 4. -> "Fetching track data from the Musicbrainz database"
-// These step can be changed according to recording(s) fetched from Acoust ID
-
-// In order to have a better scaling, constant steps set to a percentage and never changes.
-// Last step is set to a constant percentage and it is divided to recording(s) found from Acoust ID.
-
-// Due to various recording(s) can be fetched from Acoust ID
-// The dialog populates with the 0%.
-// After each constant step progress bar value increases by 15%.
-// Before we get recording(s) from AcoustID, the QProgressBar will be 45%.
-// Last step set to 55% and it is going to be divided to recording(s) received from Acoust ID.
+// 3. -> "Retrieving metadata from MusicBrainz"
+// These three steps never change. They are triggered once at all times.
+// After each step progress bar value increases by 15%.
 
 constexpr int kPercentOfConstantTask = 15;
+
+// After these steps are passed, last step remains.
+// 4. -> "Fetching track data from the Musicbrainz database"
+// Due to various recordings fetched from AcoustID, the number of triggers for this step may vary.
+// This can cause different scaling.
+// In order to have a better scaling, the remaining 55% are divided by the number of recordings found.
 
 constexpr int kPercentLeftForRecordingsFound = 55;
 
@@ -77,10 +73,10 @@ QStringList trackReleaseColumnValues(
 
 void addTrack(
         const QStringList& trackRow,
-        int resultIndex,
+        int tagIndex,
         QTreeWidget* parent) {
     QTreeWidgetItem* item = new QTreeWidgetItem(parent, trackRow);
-    item->setData(0, Qt::UserRole, resultIndex);
+    item->setData(0, Qt::UserRole, tagIndex);
     item->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
 }
 
@@ -110,14 +106,17 @@ void DlgTagFetcher::init() {
     connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
     connect(btnRetry, &QPushButton::clicked, this, &DlgTagFetcher::retry);
-    connect(results, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::resultSelected);
+    connect(tags, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::tagSelected);
 
     connect(&m_tagFetcher, &TagFetcher::resultAvailable, this, &DlgTagFetcher::fetchTagFinished);
-    connect(&m_tagFetcher, &TagFetcher::fetchProgress, this, &DlgTagFetcher::fetchTagProgress);
+    connect(&m_tagFetcher,
+            &TagFetcher::fetchProgress,
+            this,
+            &DlgTagFetcher::showProgressOfConstantTask);
     connect(&m_tagFetcher,
             &TagFetcher::currentRecordingFetchedFromMusicBrainz,
             this,
-            &DlgTagFetcher::increaseValueOfProgressBar);
+            &DlgTagFetcher::showProgressOfRecordingTask);
     connect(&m_tagFetcher,
             &TagFetcher::numberOfRecordingsFoundFromAcoustId,
             this,
@@ -149,7 +148,7 @@ void DlgTagFetcher::loadTrackInternal(const TrackPointer& track) {
     if (!track) {
         return;
     }
-    results->clear();
+    tags->clear();
     disconnect(m_track.get(),
             &Track::changed,
             this,
@@ -163,9 +162,9 @@ void DlgTagFetcher::loadTrackInternal(const TrackPointer& track) {
     successMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
-    results->clear();
-    addDivider(tr("Original tags"), results);
-    addTrack(trackColumnValues(*m_track), kOriginalTrackIndex, results);
+    tags->clear();
+    addDivider(tr("Original tags"), tags);
+    addTrack(trackColumnValues(*m_track), kOriginalTrackIndex, tags);
 
     connect(m_track.get(),
             &Track::changed,
@@ -193,37 +192,33 @@ void DlgTagFetcher::loadTrack(const QModelIndex& index) {
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
     if (m_track && m_track->getId() == trackId) {
-        // We clear the results to update the Original Tag.
-        // It is listed with the guessedTrackReleases
-        // Without resetting the Data()
-        // Clearing the results and adding them will only update the original tag.
-        // If the track metadata listed in somewhere else such as QLabel.
-        // We wouldn't need to clear the results, only updating the label would be enough.
-        results->clear();
-        addDivider(tr("Original tags"), results);
-        addTrack(trackColumnValues(*m_track), kOriginalTrackIndex, results);
+        // Track has just updated with the suggested tag.
+        // Original tag needs to be updated as well.
+        tags->clear();
+        addDivider(tr("Original tags"), tags);
+        addTrack(trackColumnValues(*m_track), kOriginalTrackIndex, tags);
 
-        addDivider(tr("Suggested tags"), results);
+        addDivider(tr("Suggested tags"), tags);
         {
             int trackIndex = 0;
             QSet<QStringList> allColumnValues; // deduplication
-            for (const auto& trackRelease : qAsConst(m_data.m_results)) {
+            for (const auto& trackRelease : qAsConst(m_data.m_tags)) {
                 const auto columnValues = trackReleaseColumnValues(trackRelease);
-                // Ignore duplicate results
+                // Ignore duplicate tags
                 if (!allColumnValues.contains(columnValues)) {
                     allColumnValues.insert(columnValues);
-                    addTrack(columnValues, trackIndex, results);
+                    addTrack(columnValues, trackIndex, tags);
                 }
                 ++trackIndex;
             }
         }
 
         // Find the item that was selected last time
-        for (int i = 0; i < results->model()->rowCount(); ++i) {
-            const QModelIndex index = results->model()->index(i, 0);
+        for (int i = 0; i < tags->model()->rowCount(); ++i) {
+            const QModelIndex index = tags->model()->index(i, 0);
             const QVariant id = index.data(Qt::UserRole);
-            if (!id.isNull() && id.toInt() == m_data.m_selectedResult) {
-                results->setCurrentIndex(index);
+            if (!id.isNull() && id.toInt() == m_data.m_selectedTag) {
+                tags->setCurrentIndex(index);
                 break;
             }
         }
@@ -231,13 +226,13 @@ void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
 }
 
 void DlgTagFetcher::apply() {
-    int resultIndex = m_data.m_selectedResult;
-    if (resultIndex < 0) {
+    int tagIndex = m_data.m_selectedTag;
+    if (tagIndex < 0) {
         return;
     }
-    DEBUG_ASSERT(resultIndex < m_data.m_results.size());
+    DEBUG_ASSERT(tagIndex < m_data.m_tags.size());
     const mixxx::musicbrainz::TrackRelease& trackRelease =
-            m_data.m_results[resultIndex];
+            m_data.m_tags[tagIndex];
     mixxx::TrackMetadata trackMetadata = m_track->getMetadata();
     if (!trackRelease.artist.isEmpty()) {
         trackMetadata.refTrackInfo().setArtist(
@@ -318,21 +313,21 @@ void DlgTagFetcher::reject() {
     accept();
 }
 
-void DlgTagFetcher::fetchTagProgress(const QString& text) {
+void DlgTagFetcher::showProgressOfConstantTask(const QString& text) {
     QString status = tr("%1");
     loadingProgressBar->setFormat(status.arg(text));
     loadingProgressBar->setValue(loadingProgressBar->value() + kPercentOfConstantTask);
 }
 
-void DlgTagFetcher::increaseValueOfProgressBar() {
+void DlgTagFetcher::showProgressOfRecordingTask() {
     QString status = tr("Fetching track data from the MusicBrainz database");
     loadingProgressBar->setFormat(status);
-    loadingProgressBar->setValue(loadingProgressBar->value() + m_incrementBarValueBy);
+    loadingProgressBar->setValue(loadingProgressBar->value() + m_percentForOneRecording);
 }
 
-// TODO(fatihemreyildiz): display the task results one by one.
+// TODO(fatihemreyildiz): display the task tags one by one.
 void DlgTagFetcher::setPercentOfEachRecordings(int totalRecordingsFound) {
-    m_incrementBarValueBy = kPercentLeftForRecordingsFound / totalRecordingsFound;
+    m_percentForOneRecording = kPercentLeftForRecordingsFound / totalRecordingsFound;
 }
 
 void DlgTagFetcher::fetchTagFinished(
@@ -341,7 +336,7 @@ void DlgTagFetcher::fetchTagFinished(
     VERIFY_OR_DEBUG_ASSERT(pTrack == m_track) {
         return;
     }
-    m_data.m_results = guessedTrackReleases;
+    m_data.m_tags = guessedTrackReleases;
     if (guessedTrackReleases.size() == 0) {
         loadingProgressBar->setValue(kMaximumValueOfQProgressBar);
         QString emptyMessage = tr("Could not find this track in the MusicBrainz database.");
@@ -359,29 +354,29 @@ void DlgTagFetcher::fetchTagFinished(
             return;
         }
 
-        addDivider(tr("Suggested tags"), results);
+        addDivider(tr("Suggested tags"), tags);
         {
             int trackIndex = 0;
             QSet<QStringList> allColumnValues; // deduplication
-            for (const auto& trackRelease : qAsConst(m_data.m_results)) {
+            for (const auto& trackRelease : qAsConst(m_data.m_tags)) {
                 const auto columnValues = trackReleaseColumnValues(trackRelease);
-                // Ignore duplicate results
+                // Ignore duplicate tags
                 if (!allColumnValues.contains(columnValues)) {
                     allColumnValues.insert(columnValues);
-                    addTrack(columnValues, trackIndex, results);
+                    addTrack(columnValues, trackIndex, tags);
                 }
                 ++trackIndex;
             }
         }
 
-        for (int i = 0; i < results->model()->columnCount(); i++) {
-            results->resizeColumnToContents(i);
-            int sectionSize = (results->columnWidth(i) + 10);
-            results->header()->resizeSection(i, sectionSize);
+        for (int i = 0; i < tags->model()->columnCount(); i++) {
+            tags->resizeColumnToContents(i);
+            int sectionSize = (tags->columnWidth(i) + 10);
+            tags->header()->resizeSection(i, sectionSize);
         }
     }
 
-    // qDebug() << "number of results = " << guessedTrackReleases.size();
+    // qDebug() << "number of tags = " << guessedTrackReleases.size();
 }
 
 void DlgTagFetcher::slotNetworkResult(
@@ -413,15 +408,15 @@ void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
     item->setFont(0, bold_font);
 }
 
-void DlgTagFetcher::resultSelected() {
-    if (!results->currentItem()) {
+void DlgTagFetcher::tagSelected() {
+    if (!tags->currentItem()) {
         return;
     }
 
-    if (results->currentItem()->data(0, Qt::UserRole).toInt() == kOriginalTrackIndex) {
-        results->currentItem()->setFlags(Qt::ItemIsEnabled);
+    if (tags->currentItem()->data(0, Qt::UserRole).toInt() == kOriginalTrackIndex) {
+        tags->currentItem()->setFlags(Qt::ItemIsEnabled);
         return;
     }
-    const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
-    m_data.m_selectedResult = resultIndex;
+    const int tagIndex = tags->currentItem()->data(0, Qt::UserRole).toInt();
+    m_data.m_selectedTag = tagIndex;
 }

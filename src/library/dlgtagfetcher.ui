@@ -133,7 +133,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QTreeWidget" name="results">
+        <widget class="QTreeWidget" name="tags">
          <property name="editTriggers">
           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
          </property>
@@ -271,7 +271,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>results</tabstop>
+  <tabstop>tags</tabstop>
   <tabstop>apikey</tabstop>
   <tabstop>btnApikey</tabstop>
   <tabstop>btnSubmit</tabstop>
