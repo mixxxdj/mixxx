@@ -86,9 +86,6 @@ void WEffectChainPresetSelector::populate() {
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
-    // TODO(ronso0) Clean up. This is set again in slotChainPresetChanged
-    // after the new preset was actually loaded.
-    setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
     // After selecting an effect move focus to the tracks table in order
     // to immediately allow keyboard shortcuts again.
     // TODO(ronso0) switch to previously focused (library?) widget instead
