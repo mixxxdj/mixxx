@@ -45,19 +45,17 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-# Set up vcpkg
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
   if(WIN32)
-    # We only set the ENV{VCPKG_ROOT} on windows
-    # Do not use the default VCPKG_ROOT on other targets
+    # We assume ENV{VCPKG_ROOT} points to our vcpkg environment on windows
+    # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
     set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
   endif()
 endif()
 
 if(DEFINED VCPKG_ROOT)
-  set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
-
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
+    # required for manifest mode
     set(VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/ports")
     if(APPLE)
         list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/osx")
@@ -67,17 +65,20 @@ if(DEFINED VCPKG_ROOT)
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
+    # required for manifest mode
     set(VCPKG_OVERLAY_TRIPLETS "${VCPKG_ROOT}/overlay/triplets")
-  endif()
-
-  if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET})
-    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
   endif()
 
   if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
   endif()
 endif()
+
+if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
+  set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
+endif()
+set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
+
 
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
