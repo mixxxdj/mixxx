@@ -2,10 +2,11 @@
 
 #include <QAction>
 #include <QMenu>
-#include <QWidget>
 #include <QPixmap>
+#include <QWidget>
 
 #include "library/coverart.h"
+#include "library/export/coverartcopyworker.h"
 
 // This class implements a context-menu with all CoverArt user actions. Callers
 // must call setCoverArt before calling exec or popup. This class does
@@ -36,4 +37,6 @@ class WCoverArtMenu : public QMenu {
     QAction* m_pUnset;
 
     CoverInfo m_coverInfo;
+
+    QScopedPointer<CoverArtCopyWorker> m_worker;
 };

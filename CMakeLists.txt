@@ -733,7 +733,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dlgtrackinfo.cpp
   src/library/dlgtrackinfo.ui
   src/library/dlgtrackmetadataexport.cpp
-  src/library/export/coverartcopywizard.cpp
   src/library/export/coverartcopyworker.cpp
   src/library/export/dlgtrackexport.ui
   src/library/export/trackexportdlg.cpp

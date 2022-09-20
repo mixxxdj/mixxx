@@ -4,7 +4,6 @@
 #include <QFileInfo>
 
 #include "library/coverartutils.h"
-#include "library/export/coverartcopywizard.h"
 #include "moc_wcoverartmenu.cpp"
 #include "util/assert.h"
 #include "util/fileaccess.h"
@@ -105,8 +104,9 @@ void WCoverArtMenu::slotChange() {
         return;
     }
 
-    CoverArtCopyWizard coverArt_copy(nullptr, image, coverArtCopyFilePath);
-    if (coverArt_copy.copyCoverArt()) {
+    m_worker.reset(new CoverArtCopyWorker(image, coverArtCopyFilePath));
+    m_worker->run();
+    if (m_worker->isCoverUpdated()) {
         qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
         emit coverInfoSelected(coverInfo);
     }
