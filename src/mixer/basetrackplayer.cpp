@@ -418,8 +418,10 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
     m_pChannelToCloneFrom = nullptr;
 
     // Alert user.
-    // Show only one message for this track at a time in case this slot is called
-    // repeatedly for the same track while any prior message is still shown.
+    // The QMessageBox blocks the event loop (and the GUI since it's modal dialog),
+    // though if a controller's Load button was pressed repeatedly we may get
+    // multiple identical messages for the same track.
+    // Avoid this and show only one message per track track at a time.
     if (pTrack && m_pPrevFailedTrackId == pTrack->getId()) {
         return;
     } else if (pTrack) {
