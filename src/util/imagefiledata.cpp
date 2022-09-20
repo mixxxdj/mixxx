@@ -3,6 +3,7 @@
 #include <QBuffer>
 #include <QByteArray>
 #include <QFile>
+#include <QFileInfo>
 #include <QImage>
 #include <QImageReader>
 
@@ -45,6 +46,15 @@ QByteArray ImageFileData::readFormatFrom(const QByteArray& coverArtBytes) {
 
 bool ImageFileData::saveFile(const QString& coverArtAbsoluteFilePath) const {
     if (m_coverArtBytes.isEmpty()) {
+        return save(coverArtAbsoluteFilePath);
+    }
+
+    if (QFileInfo(coverArtAbsoluteFilePath).suffix() != m_coverArtFormat) {
+        qWarning() << "Cover Art format and extension does not match"
+                   << "format"
+                   << m_coverArtFormat
+                   << "extension"
+                   << QFileInfo(coverArtAbsoluteFilePath).suffix();
         return save(coverArtAbsoluteFilePath);
     }
 
