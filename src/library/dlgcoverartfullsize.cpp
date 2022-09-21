@@ -14,7 +14,8 @@
 DlgCoverArtFullSize::DlgCoverArtFullSize(
         QWidget* parent,
         BaseTrackPlayer* pPlayer,
-        WCoverArtMenu* pCoverMenu)
+        WCoverArtMenu* pCoverMenu,
+        UserSettingsPointer pConfig)
         : QDialog(parent),
           m_pPlayer(pPlayer),
           m_pCoverMenu(pCoverMenu) {

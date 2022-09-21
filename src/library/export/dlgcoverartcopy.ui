@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CoverArtCopyDlg</class>
+ <widget class="QDialog" name="CoverArtCopyDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Compare Cover Arts</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <widget class="QStackedWidget" name="stack">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="coverArtCompare_page">
+      <layout class="QGridLayout" name="gridLayout1">
+       <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_11">
+             <item alignment="Qt::AlignCenter">
+              <widget class="QLabel" name="label_7">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>429</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QLabel { font-weight: bold; }</string>
+               </property>
+               <property name="text">
+                <string>Old Cover Art</string>
+               </property>
+              </widget>
+             </item>
+             <item alignment="Qt::AlignCenter">
+              <widget class="QWidget" name="currentCoverArt" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>250</horstretch>
+                 <verstretch>250</verstretch>
+                </sizepolicy>
+               </property>
+               <layout class="QVBoxLayout" name="currentCoverArtLayout">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetDefaultConstraint</enum>
+                </property>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item alignment="Qt::AlignCenter">
+              <widget class="QLabel" name="label_6">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QLabel { font-weight: bold; }</string>
+               </property>
+               <property name="text">
+                <string>New Cover Art</string>
+               </property>
+              </widget>
+             </item>
+             <item alignment="Qt::AlignCenter">
+              <widget class="QWidget" name="selectedCoverArt" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>250</horstretch>
+                 <verstretch>250</verstretch>
+                </sizepolicy>
+               </property>
+               <layout class="QVBoxLayout" name="selectedCoverArtLayout">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetDefaultConstraint</enum>
+                </property>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_10">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="2" column="1" alignment="Qt::AlignLeft">
+            <widget class="QLabel" name="labelNewFileSize">
+             <property name="font">
+              <font>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>File size: %1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" alignment="Qt::AlignLeft">
+            <widget class="QLabel" name="labelOldFileSize">
+             <property name="font">
+              <font>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>File size: %1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="labelOldCoverArtSize">
+             <property name="text">
+              <string>Cover art size: %1x%2</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="labelNewCoverArtSize">
+             <property name="text">
+              <string>Cover art size: %1x%2</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

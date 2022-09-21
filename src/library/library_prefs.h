@@ -40,6 +40,10 @@ extern const ConfigKey kSyncSeratoMetadataConfigKey;
 
 extern const ConfigKey kUseRelativePathOnExportConfigKey;
 
+extern const ConfigKey kCreateCopyOfTheCoverArtConfigKey;
+
+extern const ConfigKey kInformCoverArtLocationConfigKey;
+
 } // namespace prefs
 
 } // namespace library

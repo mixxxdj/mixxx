@@ -202,6 +202,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
+    checkBox_create_copy_cover_art->setChecked(false);
+    checkBox_inform_cover_art_location->setChecked(false);
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_bottom->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
@@ -243,6 +245,12 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowRekordboxLibrary"), true));
     checkBox_show_serato->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowSeratoLibrary"), true));
+
+    checkBox_create_copy_cover_art->setChecked(m_pConfig->getValue(
+            kCreateCopyOfTheCoverArtConfigKey, false));
+
+    checkBox_inform_cover_art_location->setChecked(m_pConfig->getValue(
+            kInformCoverArtLocationConfigKey, false));
 
     switch (m_pConfig->getValue<int>(
             kTrackDoubleClickActionConfigKey,
@@ -425,6 +433,12 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
+
+    m_pConfig->set(kCreateCopyOfTheCoverArtConfigKey,
+            ConfigValue((int)checkBox_create_copy_cover_art->isChecked()));
+
+    m_pConfig->set(kInformCoverArtLocationConfigKey,
+            ConfigValue((int)checkBox_inform_cover_art_location->isChecked()));
 
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {

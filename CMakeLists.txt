@@ -737,6 +737,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/trackexportdlg.cpp
   src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
+  src/library/export/coverartsaver.cpp
+  src/library/export/coverartcopywizard.cpp
+  src/library/export/coverartcopyworker.cpp
+  src/library/export/dlgcoverartcopy.ui
+  src/library/export/dlgcoverartcopy.cpp
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesfeature.cpp
@@ -952,6 +957,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/file.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
+  src/util/safelywritablefile.cpp
   src/util/filename.cpp
   src/util/imagefiledata.cpp
   src/util/imageutils.cpp

@@ -30,10 +30,12 @@ QPixmap createDefaultCover(QWidget* parent) {
 
 } // anonymous namespace
 
-WCoverArtLabel::WCoverArtLabel(QWidget* parent, WCoverArtMenu* pCoverMenu)
+WCoverArtLabel::WCoverArtLabel(
+        QWidget* parent, WCoverArtMenu* pCoverMenu, UserSettingsPointer pConfig)
         : QLabel(parent),
           m_pCoverMenu(pCoverMenu),
-          m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this, nullptr, pCoverMenu)),
+          m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(
+                  this, nullptr, pCoverMenu, pConfig)),
           m_defaultCover(createDefaultCover(this)) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);

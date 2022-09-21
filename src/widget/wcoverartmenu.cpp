@@ -1,14 +1,18 @@
 #include "widget/wcoverartmenu.h"
 
+#include <QBuffer>
 #include <QFileDialog>
 #include <QFileInfo>
 
 #include "library/coverartutils.h"
+#include "library/export/coverartcopywizard.h"
+#include "library/library_prefs.h"
 #include "moc_wcoverartmenu.cpp"
 #include "util/fileaccess.h"
 
-WCoverArtMenu::WCoverArtMenu(QWidget *parent)
-        : QMenu(parent) {
+WCoverArtMenu::WCoverArtMenu(QWidget* parent, UserSettingsPointer pConfig)
+        : QMenu(parent),
+          m_pConfig(pConfig) {
     createActions();
 }
 
@@ -68,8 +72,6 @@ void WCoverArtMenu::slotChange() {
         return;
     }
 
-    // TODO(rryan): Ask if user wants to copy the file.
-
     CoverInfoRelative coverInfo;
     // Create a security token for the file.
     auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(selectedCoverPath));
@@ -82,8 +84,16 @@ void WCoverArtMenu::slotChange() {
     coverInfo.source = CoverInfo::USER_SELECTED;
     coverInfo.coverLocation = selectedCoverPath;
     coverInfo.setImage(image);
-    qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
-    emit coverInfoSelected(coverInfo);
+
+    if (m_pConfig->getValue<bool>(mixxx::library::prefs::kCreateCopyOfTheCoverArtConfigKey)) {
+        QString coverArtCopyFilePath = fileInfo.absoluteDir().path() + "/" +
+                fileInfo.completeBaseName() + ".jpg";
+        CoverArtCopyWizard coverArt_copy(nullptr, m_pConfig, image, coverArtCopyFilePath);
+        if (coverArt_copy.copyCoverArt()) {
+            qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
+            emit coverInfoSelected(coverInfo);
+        }
+    }
 }
 
 void WCoverArtMenu::slotUnset() {

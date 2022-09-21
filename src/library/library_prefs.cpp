@@ -48,6 +48,16 @@ const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SearchDebouncingTimeoutMillis")};
 
+const ConfigKey mixxx::library::prefs::kCreateCopyOfTheCoverArtConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("checkBox_create_copy_cover_art")};
+
+const ConfigKey mixxx::library::prefs::kInformCoverArtLocationConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("checkBox_inform_cover_art_location")};
+
 // The "Export" suffix in the key is kept for backward compatibility
 const ConfigKey mixxx::library::prefs::kSyncTrackMetadataConfigKey =
         ConfigKey{

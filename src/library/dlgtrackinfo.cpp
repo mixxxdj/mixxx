@@ -46,8 +46,8 @@ DlgTrackInfo::DlgTrackInfo(
           m_pUserSettings(std::move(pUserSettings)),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
-          m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
-          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
+          m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this, m_pUserSettings)),
+          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu, m_pUserSettings)),
           m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
     init();
 }
