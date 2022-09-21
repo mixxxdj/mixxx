@@ -46,10 +46,16 @@ if(POLICY CMP0135)
 endif()
 
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
-  if(WIN32)
-    # We assume ENV{VCPKG_ROOT} points to our vcpkg environment on windows
+  if(EXISTS "$ENV{VCPKG_ROOT}/overlay/ports" OR NOT EXISTS "$ENV{VCPKG_ROOT}/ports")
+    # We assume ENV{VCPKG_ROOT} points to our vcpkg environment
     # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
+    message(STATUS "Setting VCKG_ROOT from environment: $ENV{VCPKG_ROOT}")
     set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
+  else()
+    # The official GitHub Actions runner images sometimes set these
+    # variables, but we don't want to use vcpkg from the runner. If we use
+    # vcpkg, we use our own prebuilt environment, not the one from the image.
+    message(STATUS "Ignoring env VCKG_ROOT (missing $ENV{VCPKG_ROOT}/overlay/ports)")
   endif()
 endif()
 
