@@ -19,6 +19,14 @@ const Logger kLogger("SafelyWritableFile");
 // Appended to the original file name of the temporary file used for writing
 const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 
+// SafelyWritableFile is also used to write cover arts.
+// Cover art worker is suffix sensetive.
+// In order to have a successful writing we need a correct suffix.
+// So instead of suffix, we need a temp file prefix.
+// There is a bug related with the image format reported
+// See: https://bugreports.qt.io/browse/QTBUG-89022
+const QString kSafelyWritableTempFilePrefix = QStringLiteral("temp_");
+
 // Appended to the original file name for renaming and before deleting this
 // file. Should not be longer than kSafelyWritableTempFileSuffix to avoid
 // potential failures caused by exceeded path length.
@@ -260,6 +268,52 @@ bool SafelyWritableFile::commit() {
     // Prevent any further interaction and file access
     m_origFileName = QString();
     m_tempFileName = QString();
+    return true;
+}
+
+bool SafelyWritableFile::useTempFileWithPrefix(const QString& coverArtSuffix) {
+    DEBUG_ASSERT(m_tempFileName.isNull());
+    if (!QFileInfo(m_origFileName).isWritable()) {
+        kLogger.warning()
+                << "Failed to prepare file for writing:"
+                << m_origFileName
+                << "is not writable.";
+        return false;
+    }
+
+    QString origFilePath = QFileInfo(m_origFileName).canonicalPath();
+    QString origFileCompleteBasename = QFileInfo(m_origFileName).completeBaseName();
+    QString tempFileCompleteBasename = kSafelyWritableTempFilePrefix +
+            origFileCompleteBasename + '.' + coverArtSuffix;
+    QString tempFileName = origFilePath + '/' + tempFileCompleteBasename;
+
+    QFile origFile(m_origFileName);
+    if (!origFile.copy(tempFileName)) {
+        kLogger.warning()
+                << origFile.errorString()
+                << "- Failed to clone original into temporary file before writing:"
+                << m_origFileName
+                << "->"
+                << tempFileName;
+        return false;
+    }
+    QFile tempFile(tempFileName);
+    DEBUG_ASSERT(tempFile.exists());
+    VERIFY_OR_DEBUG_ASSERT(origFile.size() == tempFile.size()) {
+        kLogger.warning() << "Failed to verify size after cloning original "
+                             "into temporary file before writing:"
+                          << origFile.size() << "<>" << tempFile.size();
+        // Cleanup
+        if (tempFile.exists() && !tempFile.remove()) {
+            kLogger.warning()
+                    << tempFile.errorString()
+                    << "- Failed to remove temporary file:"
+                    << tempFileName;
+        }
+        return false;
+    }
+
+    m_tempFileName = std::move(tempFileName);
     return true;
 }
 

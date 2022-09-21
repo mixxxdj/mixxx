@@ -31,6 +31,8 @@ class SafelyWritableFile final {
 
     bool commit();
 
+    bool useTempFileWithPrefix(const QString& coverArtSuffix);
+
     void cancel();
 
   private:

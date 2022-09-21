@@ -25,9 +25,8 @@ void CoverArtCopyWorker::copyFile(
             break;
         }
 
-        mixxx::SafelyWritableFile safelyWritableFile(m_coverArtAbsolutePath, true);
+        mixxx::SafelyWritableFile safelyWritableFile(m_coverArtAbsolutePath, false);
         if (!safelyWritableFile.isReady()) {
-            //Temp file might remained.
             qWarning()
                     << "Unable to copy cover art into file"
                     << m_coverArtAbsolutePath
@@ -35,10 +34,16 @@ void CoverArtCopyWorker::copyFile(
             return;
         }
 
-        QString coverArtAbsoluteFilePathWithoutSuffix = m_coverArtAbsolutePath.mid(
-                0, m_coverArtAbsolutePath.indexOf("."));
+        QString coverArtExtension = ImageFileData::readFormatFrom(
+                m_coverArtImage.getCoverArtBytes());
 
-        if (m_coverArtImage.saveFileAddSuffix(coverArtAbsoluteFilePathWithoutSuffix)) {
+        if (!safelyWritableFile.useTempFileWithPrefix(coverArtExtension)) {
+            qWarning()
+                    << "Unable to use Temp file with prefix";
+            return;
+        }
+
+        if (m_coverArtImage.saveFile(m_coverArtAbsolutePath)) {
             m_isCoverArtUpdated = true;
             qDebug() << "Cover art"
                      << m_coverArtAbsolutePath
