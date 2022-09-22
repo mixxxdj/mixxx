@@ -46,13 +46,13 @@ void WEffectChainPresetButton::populateMenu() {
     m_pMenu->clear();
 
     // Chain preset items
-    bool allowUpdatingPreset = false;
+    bool presetIsReadOnly = true;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         QString title = pChainPreset->name();
         if (title == m_pChain->presetName()) {
             title = QChar(0x2713) + // CHECK MARK
                     QChar(' ') + title;
-            allowUpdatingPreset = !pChainPreset->isReadOnly();
+            presetIsReadOnly = pChainPreset->isReadOnly();
         }
         m_pMenu->addAction(title, this, [this, pChainPreset]() {
             m_pChain->loadChainPreset(pChainPreset);
@@ -62,7 +62,7 @@ void WEffectChainPresetButton::populateMenu() {
     // This prevents showing the Update button for the empty '---' preset, in case
     // WEffectChainPresetButton and effect slot controls of a QuickEffect chain are
     // exposed in a custom skin.
-    if (allowUpdatingPreset) {
+    if (!presetIsReadOnly) {
         m_pMenu->addAction(tr("Update Preset"), this, [this]() {
             m_pChainPresetManager->updatePreset(m_pChain);
         });
