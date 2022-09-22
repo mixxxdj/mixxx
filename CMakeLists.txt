@@ -45,6 +45,9 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+# Note: ENV{VCPKG_ROOT} is the default location for the vcpkg cli tool which is
+# later adjusted by CMAKE_TOOLCHAIN_FILE. We use it here as a workaround to find the
+# overlay folders in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
   if(EXISTS "$ENV{VCPKG_ROOT}/overlay/ports" OR NOT EXISTS "$ENV{VCPKG_ROOT}/ports")
     # We assume ENV{VCPKG_ROOT} points to our vcpkg environment
