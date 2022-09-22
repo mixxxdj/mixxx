@@ -7,6 +7,14 @@
 #include "util/imagefiledata.h"
 #include "util/safelywritablefile.h"
 
+namespace {
+
+const bool kUseTemporaryCoverArt = true;
+
+const bool kUseTemporaryFileWithPrefix = false;
+
+} // namespace
+
 void CoverArtCopyWorker::run() {
     m_isCoverArtUpdated = false;
     copyFile(m_coverArtImage, m_coverArtAbsolutePath);
@@ -25,29 +33,17 @@ void CoverArtCopyWorker::copyFile(
             break;
         }
 
-        mixxx::SafelyWritableFile safelyWritableFile(m_coverArtAbsolutePath, false);
-        if (!safelyWritableFile.isReady()) {
-            qWarning()
-                    << "Unable to copy cover art into file"
-                    << m_coverArtAbsolutePath
-                    << "- Please check file permissions and storage space";
-            return;
-        }
+        mixxx::SafelyWritableFile safelyWritableFile(m_coverArtAbsolutePath,
+                kUseTemporaryCoverArt,
+                kUseTemporaryFileWithPrefix);
 
-        QString coverArtExtension = ImageFileData::readFormatFrom(
-                m_coverArtImage.getCoverArtBytes());
-
-        if (!safelyWritableFile.useTempFileWithPrefix(coverArtExtension)) {
-            qWarning()
-                    << "Unable to use Temp file with prefix";
-            return;
-        }
-
-        if (m_coverArtImage.saveFile(m_coverArtAbsolutePath)) {
+        DEBUG_ASSERT(!safelyWritableFile.fileName().isEmpty());
+        if (m_coverArtImage.saveFile(safelyWritableFile.fileName())) {
             m_isCoverArtUpdated = true;
             qDebug() << "Cover art"
                      << m_coverArtAbsolutePath
                      << "copied successfully";
+            safelyWritableFile.commit();
         } else {
             qWarning() << "Error while copying the cover art to" << safelyWritableFile.fileName();
         }

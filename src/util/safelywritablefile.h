@@ -22,7 +22,9 @@ namespace mixxx {
 
 class SafelyWritableFile final {
   public:
-    SafelyWritableFile(QString origFileName, bool useTemporaryFile);
+    SafelyWritableFile(QString origFileName,
+            bool createTemporaryFileCopy,
+            bool useSuffixIfNotPrefix);
     ~SafelyWritableFile();
 
     const QString& fileName() const;
@@ -31,7 +33,8 @@ class SafelyWritableFile final {
 
     bool commit();
 
-    bool useTempFileWithPrefix(const QString& coverArtSuffix);
+    bool useTempFileWithPrefix();
+    bool useTempFileWithSuffix();
 
     void cancel();
 
