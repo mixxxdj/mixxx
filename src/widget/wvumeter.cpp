@@ -12,6 +12,7 @@
 #include "util/widgethelper.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/vsyncthread.h"
+#include "widget/vumeterpool.h"
 #include "widget/wpixmapstore.h"
 
 #define DEFAULT_FALLTIME 20
@@ -41,6 +42,12 @@ WVuMeter::WVuMeter(QWidget* parent)
     setAutoFillBackground(false);
     setAutoBufferSwap(false);
     m_timer.start();
+
+    VuMeterPool::instance()->add(this);
+}
+
+WVuMeter::~WVuMeter() {
+    VuMeterPool::instance()->remove(this);
 }
 
 void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
@@ -185,7 +192,7 @@ void WVuMeter::render(VSyncThread* /* UNUSED vSyncThread */) {
         return;
     }
 
-    if (!isValid() || !isVisible()) {
+    if (!isValid() || !isVisible() || QWidget::window()->windowState() == Qt::WindowMinimized) {
         return;
     }
 
@@ -306,7 +313,8 @@ void WVuMeter::render(VSyncThread* /* UNUSED vSyncThread */) {
 }
 
 void WVuMeter::swap() {
-    if (!isValid() || !isVisible() || !m_bSwapNeeded) {
+    if (!m_bSwapNeeded || !isValid() || !isVisible() ||
+            QWidget::window()->windowState() == Qt::WindowMinimized) {
         return;
     }
     auto* window = windowHandle();

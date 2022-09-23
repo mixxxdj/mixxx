@@ -82,6 +82,7 @@
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/vumeterpool.h"
 #include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
@@ -491,6 +492,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     WaveformWidgetFactory::instance()->setConfig(pConfig);
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
 
+    VuMeterPool::createInstance();
+
     launchProgress(52);
 
     connect(this,
@@ -753,6 +756,18 @@ void MixxxMainWindow::finalize() {
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+
+    // We are about to destroy all widgets, but we want to keep the WVuMeters
+    // alive; we would expect that after their destruction no more signal/slot
+    // connections would be activated for them, but for some reason (Qt bug?)
+    // this still happens when we delete the pTrackCollectionManager below.
+    // (Note: does not occur on macOS nor with recent Qt. It does occur with Qt
+    // 5.12.8 on linux). The following call changes the parent of all WVuMeters
+    // to the pool, so when their original parent is destroyed (indirectly when
+    // pSkin is destroyed), they aren't. They will eventually be destroyed when
+    // we destroy the VuMeterPool below.
+    VuMeterPool::instance()->adopt();
+
     m_pWidgetParent = nullptr;
     QPointer<QWidget> pSkin(centralWidget());
     setCentralWidget(nullptr);
@@ -859,6 +874,10 @@ void MixxxMainWindow::finalize() {
     // beforehand!
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "detaching all track collections";
     delete m_pTrackCollectionManager;
+
+    // We can now safely destroy the WVuMeters, by destroying the VuMeterPool that adopted
+    // them.
+    VuMeterPool::destroy();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();
@@ -1546,6 +1565,9 @@ void MixxxMainWindow::rebootMixxxView() {
     // supports since the controls from the previous skin will be left over.
     m_pMenuBar->onNewSkinAboutToLoad();
 
+    // postpone deletion of vumeters, see MixxxMainWindow::finalize() for detail
+    VuMeterPool::instance()->adopt();
+
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
@@ -1605,6 +1627,11 @@ void MixxxMainWindow::rebootMixxxView() {
 
     qDebug() << "rebootMixxxView DONE";
     emit skinLoaded();
+
+    // TODO @m0dB
+    // if we destroy the vu meters now, they will still be called after their destruction, resulting in a
+    // crash....
+    // VuMeterPool::instance()->destroyAdopted();
 }
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {

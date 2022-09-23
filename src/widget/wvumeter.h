@@ -17,6 +17,7 @@ class WVuMeter : public QGLWidget, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WVuMeter(QWidget *parent=nullptr);
+    ~WVuMeter();
 
     void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
