@@ -13,10 +13,10 @@
 
 class VSyncThread;
 
-class WVuMeter : public QGLWidget, public WBaseWidget {
+class WVuMeterGL : public QGLWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    explicit WVuMeter(QWidget *parent=nullptr);
+    explicit WVuMeterGL(QWidget* parent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(

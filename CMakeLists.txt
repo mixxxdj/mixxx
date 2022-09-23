@@ -1001,7 +1001,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wtracktableviewheader.cpp
   src/widget/wtracktext.cpp
   src/widget/wtrackwidgetgroup.cpp
-  src/widget/wvumeter.cpp
+  src/widget/wvumetergl.cpp
   src/widget/wwaveformviewer.cpp
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp

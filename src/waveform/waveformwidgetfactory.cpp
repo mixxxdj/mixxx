@@ -35,7 +35,7 @@
 #include "waveform/widgets/rgbwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
-#include "widget/wvumeter.h"
+#include "widget/wvumetergl.h"
 #include "widget/wwaveformviewer.h"
 
 namespace {

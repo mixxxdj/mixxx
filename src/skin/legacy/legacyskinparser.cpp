@@ -78,7 +78,7 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
-#include "widget/wvumeter.h"
+#include "widget/wvumetergl.h"
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wwidgetgroup.h"
@@ -1300,17 +1300,17 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
-    WVuMeter* vuMeter = new WVuMeter(m_pParent);
+    WVuMeterGL* vuMeter = new WVuMeterGL(m_pParent);
     commonWidgetSetup(node, vuMeter);
 
     connect(waveformWidgetFactory,
             &WaveformWidgetFactory::renderVuMeters,
             vuMeter,
-            &WVuMeter::render);
+            &WVuMeterGL::render);
     connect(waveformWidgetFactory,
             &WaveformWidgetFactory::swapVuMeters,
             vuMeter,
-            &WVuMeter::swap);
+            &WVuMeterGL::swap);
 
     vuMeter->setup(node, *m_pContext);
     vuMeter->installEventFilter(m_pKeyboard);
