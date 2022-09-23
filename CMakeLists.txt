@@ -928,7 +928,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/controlwidgetconnection.cpp
   src/widget/hexspinbox.cpp
   src/widget/paintable.cpp
-  src/widget/vumeterpool.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
