@@ -9,11 +9,27 @@
 #include "sources/soundsourceproxy.h"
 #include "util/versionstore.h"
 
+namespace {
+bool useVuMeterGLDefault() {
+    // The QGLWidget derived WVuMeterGL provided better performance,
+    // particularly on macOS, but on linux with older Qt versions
+    // (tested with 5.12.3) we have segfaults as Qt seems to still
+    // be accessing the QGLWidget after deletion, when switching
+    // skins or on exit.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 3) || defined(__APPLE__)
+    return true;
+#else
+    return false;
+#endif
+}
+} // namespace
+
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_midiDebug(false),
           m_developer(false),
           m_safeMode(false),
+          m_useVuMeterGL(useVuMeterGLDefault()),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
           m_logLevel(mixxx::kLogLevelDefault),
@@ -97,14 +113,28 @@ warnings and errors to the console unless this is set properly.\n", stdout);
 when a critical error occurs unless this is set properly.\n", stdout);
             }
             i++;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||
-                   QString::fromLocal8Bit(argv[i]).contains("--controllerDebug", Qt::CaseInsensitive)) {
+        } else if (argv[i] == QString("--useVuMeterGL")) {
+            if (i + 1 == argc) {
+                throw std::runtime_error("Missing argument after --useVuMeterGL");
+            }
+            QString qs(argv[i + 1]);
+            if (qs != "yes" && qs != "no") {
+                throw std::runtime_error("Expected yes or no after --useVuMeterGL");
+            }
+            m_useVuMeterGL = (qs == "yes");
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--midiDebug", Qt::CaseInsensitive) ||
+                QString::fromLocal8Bit(argv[i]).contains(
+                        "--controllerDebug", Qt::CaseInsensitive)) {
             m_midiDebug = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--developer", Qt::CaseInsensitive)) {
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--developer", Qt::CaseInsensitive)) {
             m_developer = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--safeMode", Qt::CaseInsensitive)) {
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--safeMode", Qt::CaseInsensitive)) {
             m_safeMode = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
         } else if (i > 0) {
             // Don't try to load the program name to a deck
@@ -151,6 +181,14 @@ void CmdlineArgs::printUsage() {
 --safeMode              Enables safe-mode. Disables OpenGL waveforms,\n\
                         and spinning vinyl widgets. Try this option if\n\
                         Mixxx is crashing on startup.\n\
+\n",
+            stdout);
+    fprintf(stdout,
+            "\
+--useVuMeterGL yes|no   Use OpenGL VuMeter instead of standard.\n\
+                        Default is: %s\n",
+            (m_useVuMeterGL ? "yes" : "no"));
+    fputs("\
 \n\
 --locale LOCALE         Use a custom locale for loading translations\n\
                         (e.g 'fr')\n\
@@ -169,14 +207,15 @@ void CmdlineArgs::printUsage() {
                         defined at --logLevel above.\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
-"\
+          "\
 --debugAssertBreak      Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT\n\
                         evaluates to false. Under a debugger you can\n\
                         continue afterwards.\
 \n"
 #endif
-"\
--h, --help              Display this help message and exit", stdout);
+          "\
+-h, --help              Display this help message and exit",
+            stdout);
 
     fputs("\n\n(For more information, see " MIXXX_MANUAL_COMMANDLINEOPTIONS_URL ")\n", stdout);
 }

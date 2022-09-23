@@ -5,6 +5,8 @@
 #include <QTextCodec>
 #include <QThread>
 #include <QtDebug>
+#include <cstdio>
+#include <stdexcept>
 
 #include "errordialoghandler.h"
 #include "mixxx.h"
@@ -67,9 +69,14 @@ int main(int argc, char * argv[]) {
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
-    if (!args.Parse(argc, argv)) {
-        args.printUsage();
-        return kParseCmdlineArgsErrorExitCode;
+    try {
+        if (!args.Parse(argc, argv)) {
+            args.printUsage();
+            return kParseCmdlineArgsErrorExitCode;
+        }
+    } catch (const std::exception& e) {
+        fprintf(stdout, "Error parsing arguments: %s\n", e.what());
+        return -1;
     }
 
     // If you change this here, you also need to change it in

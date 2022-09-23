@@ -354,17 +354,28 @@ void WaveformWidgetFactory::destroyWidgets() {
     m_waveformWidgetHolders.clear();
 }
 
-void WaveformWidgetFactory::addTimerListener(WVuMeter* pWidget) {
-    // Note that we are either using WVuMeter or WVuMeterGL. WVuMeterGLs are connected to renderVuMeters and swapVuMeters instead.
-
+void WaveformWidgetFactory::addVuMeter(WVuMeter* pVuMeter) {
     // Do not hold the pointer to of timer listeners since they may be deleted.
     // We don't activate update() or repaint() directly so listener widgets
     // can decide whether to paint or not.
     connect(this,
             &WaveformWidgetFactory::waveformUpdateTick,
-            pWidget,
+            pVuMeter,
             &WVuMeter::maybeUpdate,
             Qt::DirectConnection);
+}
+
+void WaveformWidgetFactory::addVuMeter(WVuMeterGL* pVuMeter) {
+    // WVuMeterGLs to be rendered and swapped from the vsync thread
+
+    connect(this,
+            &WaveformWidgetFactory::renderVuMeters,
+            pVuMeter,
+            &WVuMeterGL::render);
+    connect(this,
+            &WaveformWidgetFactory::swapVuMeters,
+            pVuMeter,
+            &WVuMeterGL::swap);
 }
 
 void WaveformWidgetFactory::slotSkinLoaded() {
