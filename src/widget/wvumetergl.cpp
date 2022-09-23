@@ -41,6 +41,9 @@ WVuMeterGL::WVuMeterGL(QWidget* parent)
     setAutoFillBackground(false);
     setAutoBufferSwap(false);
 
+    // Not interested in repaint or update calls, as we draw from the vsync thread
+    setUpdatesEnabled(false);
+
     m_timer.start();
 }
 
