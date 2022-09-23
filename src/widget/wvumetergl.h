@@ -38,7 +38,7 @@ class WVuMeterGL : public QGLWidget, public WBaseWidget {
     void updateState(mixxx::Duration elapsed);
 
   private:
-    void paintEvent(QPaintEvent * /*unused*/) override;
+    void paintEvent(QPaintEvent* /*unused*/) override;
     void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
 
