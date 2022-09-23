@@ -25,6 +25,19 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
+# Propagate interface link properties
+if(POLICY CMP0099)
+  # This avoids a warning when qt deals with different behaviours controlled by this policy
+  # in its cmake functions. See
+  # https://github.com/qt/qtbase/commit/e3e1007f9778d8fc629a06f7d3d216bb7f81351b
+  cmake_policy(SET CMP0099 NEW)
+endif()
+
+# An imported target missing its location property fails during generation.
+if(POLICY CMP0111)
+  cmake_policy(SET CMP0111 NEW)
+endif()
+
 # Set the timestamp of extracted files to the time of the extraction instead of
 # the archived timestamp to make sure that dependent files are rebuilt if the
 # URL changes.
