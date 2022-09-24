@@ -4,7 +4,9 @@
 #include <QStringList>
 #include <QTextCodec>
 #include <QThread>
+#include <QWindow>
 #include <QtDebug>
+#include <cstring>
 
 #include "errordialoghandler.h"
 #include "mixxx.h"
@@ -33,6 +35,25 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
 
         qDebug() << "Running Mixxx";
         return app->exec();
+    }
+}
+
+// This method for fixing transparency of the on-screen keyboard copied from:
+// https://stackoverflow.com/a/63963718
+void handleInputMethodVisibleChanged() {
+    if (!QGuiApplication::inputMethod()->isVisible()) {
+        return;
+    }
+    const auto windowList = QGuiApplication::allWindows();
+    for (QWindow* w : windowList) {
+        if (std::strcmp(w->metaObject()->className(), "QtVirtualKeyboard::InputView") == 0) {
+            if (QObject* keyboard = w->findChild<QObject*>("keyboard")) {
+                QRect r = w->geometry();
+                r.moveTop(keyboard->property("y").toInt());
+                w->setMask(r);
+                return;
+            }
+        }
     }
 }
 
@@ -106,6 +127,9 @@ int main(int argc, char * argv[]) {
 
     // When the last window is closed, terminate the Qt event loop.
     QObject::connect(&app, &MixxxApplication::lastWindowClosed, &app, &MixxxApplication::quit);
+    QObject::connect(QGuiApplication::inputMethod(),
+            &QInputMethod::visibleChanged,
+            &handleInputMethodVisibleChanged);
 
     int exitCode = runMixxx(&app, args);
 
