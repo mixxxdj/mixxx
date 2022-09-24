@@ -9,9 +9,9 @@
 
 namespace {
 
-const bool kUseTemporaryCoverArt = true;
+const bool kUseTemporaryCoverArt = false;
 
-const bool kUseTemporaryFileWithPrefix = false;
+const bool kUseTempNameWithPrefix = true;
 
 } // namespace
 
@@ -35,7 +35,7 @@ void CoverArtCopyWorker::copyFile(
 
         mixxx::SafelyWritableFile safelyWritableFile(m_coverArtAbsolutePath,
                 kUseTemporaryCoverArt,
-                kUseTemporaryFileWithPrefix);
+                kUseTempNameWithPrefix);
 
         DEBUG_ASSERT(!safelyWritableFile.fileName().isEmpty());
         if (m_coverArtImage.saveFile(safelyWritableFile.fileName())) {

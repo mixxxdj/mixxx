@@ -24,7 +24,7 @@ class SafelyWritableFile final {
   public:
     SafelyWritableFile(QString origFileName,
             bool createTemporaryFileCopy,
-            bool useSuffixIfNotPrefix);
+            bool usePrefixForTempName);
     ~SafelyWritableFile();
 
     const QString& fileName() const;
@@ -33,8 +33,8 @@ class SafelyWritableFile final {
 
     bool commit();
 
-    bool useTempFileWithPrefix();
-    bool useTempFileWithSuffix();
+    void useTempFileWithPrefix();
+    void useTempFileWithSuffix();
 
     void cancel();
 

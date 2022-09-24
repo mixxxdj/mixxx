@@ -41,7 +41,7 @@ const int kWindowsSharingViolationSleepBeforeNextRetryMillis = 100;
 
 SafelyWritableFile::SafelyWritableFile(QString origFileName,
         bool createTemporaryFileCopy,
-        bool useSuffixIfNotPrefix) {
+        bool usePrefixForTempName) {
     // Both file names remain uninitialized until all prerequisite operations
     // in the constructor have been completed successfully. Otherwise failure
     // to create the temporary file will not be handled correctly!
@@ -57,13 +57,11 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
         return;
     }
     m_origFileName = std::move(origFileName);
-    if (createTemporaryFileCopy) {
-        useSuffixIfNotPrefix ? useTempFileWithSuffix()
-                             : useTempFileWithPrefix();
+    if (!createTemporaryFileCopy) {
+        if (usePrefixForTempName)
+            useTempFileWithPrefix();
     } else {
-        // Directly write into original file - finish initialization
-        m_origFileName = std::move(origFileName);
-        DEBUG_ASSERT(m_tempFileName.isNull());
+        useTempFileWithSuffix();
     }
 }
 
@@ -243,39 +241,17 @@ bool SafelyWritableFile::commit() {
     return true;
 }
 
-bool SafelyWritableFile::useTempFileWithPrefix() {
-    if (!QFileInfo(m_origFileName).isWritable()) {
-        kLogger.warning()
-                << "Failed to prepare file for writing:"
-                << m_origFileName
-                << "is not writable.";
-        return false;
-    }
-
+void SafelyWritableFile::useTempFileWithPrefix() {
     QString origFilePath = QFileInfo(m_origFileName).canonicalPath();
     QString origFileCompleteBasename = QFileInfo(m_origFileName).completeBaseName();
     QString origFileSuffix = QFileInfo(m_origFileName).suffix();
     QString tempFileCompleteBasename = kSafelyWritableTempFilePrefix +
             origFileCompleteBasename + '.' + origFileSuffix;
     QString tempFileName = origFilePath + '/' + tempFileCompleteBasename;
-    m_tempFileName = tempFileName;
-
-    QFile origFile(m_origFileName);
-    QFile tempFile(m_tempFileName);
-
-    if (tempFile.exists() && !tempFile.remove()) {
-        kLogger.warning()
-                << tempFile.errorString()
-                << "- Failed to remove temporary file:"
-                << tempFileName;
-        return false;
-    }
-
     m_tempFileName = std::move(tempFileName);
-    return true;
 }
 
-bool SafelyWritableFile::useTempFileWithSuffix() {
+void SafelyWritableFile::useTempFileWithSuffix() {
     QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
     QFile origFile(m_origFileName);
     if (!origFile.copy(tempFileName)) {
@@ -286,7 +262,7 @@ bool SafelyWritableFile::useTempFileWithSuffix() {
                 << "->"
                 << tempFileName;
         // Abort
-        return false;
+        return;
     }
     QFile tempFile(tempFileName);
     DEBUG_ASSERT(tempFile.exists());
@@ -304,12 +280,10 @@ bool SafelyWritableFile::useTempFileWithSuffix() {
                     << tempFileName;
         }
         // Abort
-        return false;
+        return;
     }
     // Successfully cloned original into temporary file for writing - finish initialization
-
     m_tempFileName = std::move(tempFileName);
-    return true;
 }
 
 void SafelyWritableFile::cancel() {
