@@ -1,11 +1,5 @@
 #include "widget/wvumetergl.h"
 
-#include <QPaintEvent>
-#include <QPixmap>
-#include <QStyleOption>
-#include <QStylePainter>
-#include <QtDebug>
-
 #include "moc_wvumetergl.cpp"
 #include "util/math.h"
 #include "util/timer.h"

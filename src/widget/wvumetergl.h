@@ -1,10 +1,6 @@
 #pragma once
 
-#include <QDomNode>
 #include <QGLWidget>
-#include <QPaintEvent>
-#include <QPixmap>
-#include <QString>
 
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"

@@ -1,10 +1,7 @@
 #include "widget/wvumeter.h"
 
-#include <QPaintEvent>
-#include <QPixmap>
 #include <QStyleOption>
 #include <QStylePainter>
-#include <QtDebug>
 
 #include "moc_wvumeter.cpp"
 #include "util/math.h"
