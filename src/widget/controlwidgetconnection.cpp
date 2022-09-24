@@ -38,6 +38,7 @@ ControlWidgetConnection::ControlWidgetConnection(
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
     m_pControl = new ControlProxy(key, this, ControlFlag::NoAssertIfMissing);
+    m_pControl->setValueChangesAreQuickActionsRecordable(true);
     m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 

@@ -29,6 +29,7 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
             &LoadToGroupController::slotLoadToGroup);
 
     m_pLoadAndPlayControl = std::make_unique<ControlPushButton>(ConfigKey(group, "LoadSelectedTrackAndPlay"));
+    m_pLoadAndPlayControl->setQuickActionsRecordable(true);
     connect(m_pLoadAndPlayControl.get(),
             &ControlObject::valueChanged,
             this,

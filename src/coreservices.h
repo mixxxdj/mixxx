@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "control/controlpushbutton.h"
+#include "control/quickactionsmanager.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
 #include "preferences/settingsmanager.h"
@@ -125,6 +126,7 @@ class CoreServices : public QObject {
     /// Tear down CoreServices that were previously initialized by `initialize()`.
     void finalize();
 
+    std::shared_ptr<QuickActionsManager> m_pQuickActionsManager;
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;

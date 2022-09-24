@@ -8,6 +8,7 @@ ControlObjectScript::ControlObjectScript(
           m_logger(logger),
           m_proxy(key, logger, this),
           m_skipSuperseded(false) {
+    setValueChangesAreQuickActionsRecordable(true);
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {

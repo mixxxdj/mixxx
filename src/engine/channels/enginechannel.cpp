@@ -19,8 +19,10 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
           m_channelIndex(-1) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
+    m_pPFL->setQuickActionsRecordable(true);
     m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));
     m_pMaster->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pMaster->setQuickActionsRecordable(true);
     m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);

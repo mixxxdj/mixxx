@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "control/control.h"
+#include "control/quickactionsmanager.h"
 #include "preferences/usersettings.h"
 #include "util/platform.h"
 
@@ -28,6 +29,17 @@ class ControlProxy : public QObject {
     ~ControlProxy() override;
 
     const ConfigKey& getKey() const;
+
+    /// Sets whether the value changes set through this ControlProxy can be
+    /// recorded by QuickActions or not.
+    ///
+    /// Changes to a QuickActions recordable ControlObject shouldn't always be recorded.
+    /// e.g. Value changes made by the AutoDj should not be recorded, while changes made
+    /// by the user through the UI or a controller should.
+    void setValueChangesAreQuickActionsRecordable(bool bValueChangesAreQuickActionsRecordable) {
+        m_bValueChangesAreQuickActionsRecordable = bValueChangesAreQuickActionsRecordable;
+    }
+
 
     template<typename Receiver, typename Slot>
     bool connectValueChanged(Receiver receiver,
@@ -137,14 +149,39 @@ class ControlProxy : public QObject {
   public slots:
     /// Sets the control value to v. Thread safe, non-blocking.
     void set(double v) {
+        if (m_bValueChangesAreQuickActionsRecordable &&
+                m_pControl->quickActionsRecordable() &&
+                QuickActionsManager::globalInstance() &&
+                QuickActionsManager::globalInstance()->recordCOValue(
+                        m_pControl->getKey(), v)) {
+            return;
+        }
         m_pControl->set(v, this);
     }
     /// Sets the control parameterized value to v. Thread safe, non-blocking.
     void setParameter(double v) {
-        m_pControl->setParameter(v, this);
+            if (m_bValueChangesAreQuickActionsRecordable &&
+                    m_pControl->quickActionsRecordable() &&
+                    QuickActionsManager::globalInstance()) {
+                QSharedPointer<ControlNumericBehavior> pBehavior = m_pControl->getBehavior();
+                if (pBehavior) {
+                    v = pBehavior->parameterToValue(v);
+                }
+                if (QuickActionsManager::globalInstance()->recordCOValue(m_pControl->getKey(), v)) {
+                    return;
+                }
+            }
+            m_pControl->setParameter(v, this);
     }
     /// Resets the control to its default value. Thread safe, non-blocking.
     void reset() {
+        if (m_bValueChangesAreQuickActionsRecordable &&
+                m_pControl->quickActionsRecordable() &&
+                QuickActionsManager::globalInstance() &&
+                QuickActionsManager::globalInstance()->recordCOValue(
+                        m_pControl->getKey(), m_pControl->defaultValue())) {
+            return;
+        }
         // NOTE(rryan): This is important. The originator of this action does
         // not know the resulting value so it makes sense that we should emit a
         // general valueChanged() signal even though the change originated from
@@ -185,5 +222,6 @@ class ControlProxy : public QObject {
 
   protected:
     /// Pointer to connected control.
+    bool m_bValueChangesAreQuickActionsRecordable;
     QSharedPointer<ControlDoublePrivate> m_pControl;
 };

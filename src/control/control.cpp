@@ -55,7 +55,8 @@ ControlDoublePrivate::ControlDoublePrivate(
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_confirmRequired(false) {
+          m_confirmRequired(false),
+          m_bQuickActionsRecordable(false) {
     initialize(defaultValue);
 }
 
@@ -289,6 +290,10 @@ void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
     // This marks the old mpBehavior for deletion. It is deleted once it is not
     // used in any other function
     m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
+}
+
+QSharedPointer<ControlNumericBehavior> ControlDoublePrivate::getBehavior() const {
+    return m_pBehavior;
 }
 
 void ControlDoublePrivate::setParameter(double dParam, QObject* pSender) {

@@ -19,6 +19,7 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
     m_pControlValue = new ControlPushButton(
             ConfigKey(m_group, itemPrefix));
     m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pControlValue->setQuickActionsRecordable(true);
     m_pControlType = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_type")));
 

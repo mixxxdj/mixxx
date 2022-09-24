@@ -823,6 +823,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pMuteControl = new ControlPushButton(
             ConfigKey(group, "mute"));
     pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
+    pChannelInfo->m_pMuteControl->setQuickActionsRecordable(true);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
     m_channels.append(pChannelInfo);

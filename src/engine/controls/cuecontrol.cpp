@@ -143,18 +143,21 @@ CueControl::CueControl(const QString& group,
 
     m_pCueGotoAndPlay =
             new ControlPushButton(ConfigKey(group, "cue_gotoandplay"));
+    m_pCueGotoAndPlay->setQuickActionsRecordable(true);
     connect(m_pCueGotoAndPlay, &ControlObject::valueChanged,
             this, &CueControl::cueGotoAndPlay,
             Qt::DirectConnection);
 
     m_pCuePlay =
             new ControlPushButton(ConfigKey(group, "cue_play"));
+    m_pCuePlay->setQuickActionsRecordable(true);
     connect(m_pCuePlay, &ControlObject::valueChanged,
             this, &CueControl::cuePlay,
             Qt::DirectConnection);
 
     m_pCueGotoAndStop =
             new ControlPushButton(ConfigKey(group, "cue_gotoandstop"));
+    m_pCueGotoAndStop->setQuickActionsRecordable(true);
     connect(m_pCueGotoAndStop, &ControlObject::valueChanged,
             this, &CueControl::cueGotoAndStop,
             Qt::DirectConnection);
@@ -165,11 +168,13 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pCueCDJ = new ControlPushButton(ConfigKey(group, "cue_cdj"));
+    m_pCueCDJ->setQuickActionsRecordable(true);
     connect(m_pCueCDJ, &ControlObject::valueChanged,
             this, &CueControl::cueCDJ,
             Qt::DirectConnection);
 
     m_pCueDefault = new ControlPushButton(ConfigKey(group, "cue_default"));
+    m_pCueDefault->setQuickActionsRecordable(true);
     connect(m_pCueDefault, &ControlObject::valueChanged,
             this, &CueControl::cueDefault,
             Qt::DirectConnection);
@@ -202,6 +207,7 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pIntroStartActivate = new ControlPushButton(ConfigKey(group, "intro_start_activate"));
+    m_pIntroStartActivate->setQuickActionsRecordable(true);
     connect(m_pIntroStartActivate, &ControlObject::valueChanged,
             this, &CueControl::introStartActivate,
             Qt::DirectConnection);
@@ -223,6 +229,7 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pIntroEndActivate = new ControlPushButton(ConfigKey(group, "intro_end_activate"));
+    m_pIntroEndActivate->setQuickActionsRecordable(true);
     connect(m_pIntroEndActivate, &ControlObject::valueChanged,
             this, &CueControl::introEndActivate,
             Qt::DirectConnection);
@@ -244,6 +251,7 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pOutroStartActivate = new ControlPushButton(ConfigKey(group, "outro_start_activate"));
+    m_pOutroStartActivate->setQuickActionsRecordable(true);
     connect(m_pOutroStartActivate, &ControlObject::valueChanged,
             this, &CueControl::outroStartActivate,
             Qt::DirectConnection);
@@ -265,6 +273,7 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pOutroEndActivate = new ControlPushButton(ConfigKey(group, "outro_end_activate"));
+    m_pOutroEndActivate->setQuickActionsRecordable(true);
     connect(m_pOutroEndActivate, &ControlObject::valueChanged,
             this, &CueControl::outroEndActivate,
             Qt::DirectConnection);
@@ -2430,6 +2439,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             Qt::DirectConnection);
 
     m_hotcueGoto = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("goto")));
+    m_hotcueGoto->setQuickActionsRecordable(true);
     connect(m_hotcueGoto.get(),
             &ControlObject::valueChanged,
             this,
@@ -2438,6 +2448,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
 
     m_hotcueGotoAndPlay = std::make_unique<ControlPushButton>(
             keyForControl(QStringLiteral("gotoandplay")));
+    m_hotcueGotoAndPlay->setQuickActionsRecordable(true);
     connect(m_hotcueGotoAndPlay.get(),
             &ControlObject::valueChanged,
             this,
@@ -2446,6 +2457,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
 
     m_hotcueGotoAndStop = std::make_unique<ControlPushButton>(
             keyForControl(QStringLiteral("gotoandstop")));
+    m_hotcueGotoAndStop->setQuickActionsRecordable(true);
     connect(m_hotcueGotoAndStop.get(),
             &ControlObject::valueChanged,
             this,
@@ -2454,6 +2466,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
 
     m_hotcueGotoAndLoop = std::make_unique<ControlPushButton>(
             keyForControl(QStringLiteral("gotoandloop")));
+    m_hotcueGotoAndLoop->setQuickActionsRecordable(true);
     connect(m_hotcueGotoAndLoop.get(),
             &ControlObject::valueChanged,
             this,
@@ -2463,6 +2476,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
     // Enable/disable the loop associated with this hotcue (either a saved loop
     // or a beatloop from the hotcue position if this is a regular hotcue).
     m_hotcueCueLoop = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("cueloop")));
+    m_hotcueCueLoop->setQuickActionsRecordable(true);
     connect(m_hotcueCueLoop.get(),
             &ControlObject::valueChanged,
             this,
@@ -2471,6 +2485,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
 
     m_hotcueActivate = std::make_unique<ControlPushButton>(
             keyForControl(QStringLiteral("activate")));
+    m_hotcueActivate->setQuickActionsRecordable(true);
     connect(m_hotcueActivate.get(),
             &ControlObject::valueChanged,
             this,
@@ -2487,6 +2502,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
 
     m_hotcueActivateLoop = std::make_unique<ControlPushButton>(
             keyForControl(QStringLiteral("activateloop")));
+    m_hotcueActivateLoop->setQuickActionsRecordable(true);
     connect(m_hotcueActivateLoop.get(),
             &ControlObject::valueChanged,
             this,

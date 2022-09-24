@@ -10,7 +10,8 @@ ControlProxy::ControlProxy(const QString& g, const QString& i, QObject* pParent,
 }
 
 ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags flags)
-        : QObject(pParent) {
+        : QObject(pParent),
+          m_bValueChangesAreQuickActionsRecordable(false) {
     m_pControl = ControlDoublePrivate::getControl(key, flags);
     if (!m_pControl) {
         DEBUG_ASSERT(flags & ControlFlag::AllowMissingOrInvalid);

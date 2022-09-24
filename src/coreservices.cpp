@@ -253,6 +253,9 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(this);
 
+    m_pQuickActionsManager = std::make_shared<QuickActionsManager>();
+    QuickActionsManager::setGlobalInstance(m_pQuickActionsManager);
+
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
 
     emit initializationProgressUpdate(20, tr("effects"));
@@ -623,6 +626,10 @@ void CoreServices::finalize() {
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";
     CLEAR_AND_CHECK_DELETED(m_pEffectsManager);
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting QuickActionsManager";
+    QuickActionsManager::setGlobalInstance(nullptr);
+    CLEAR_AND_CHECK_DELETED(m_pQuickActionsManager);
 
     // Delete the track collections after all internal track pointers
     // in other components have been released by deleting those components

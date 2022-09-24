@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <memory>
 
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
@@ -82,13 +83,16 @@ class ControlDoublePrivate : public QObject {
 
     // Sets the control value.
     void set(double value, QObject* pSender);
-    // directly sets the control value. Must be used from and only from the
-    // ValueChangeRequest slot.
+
+    // Directly sets the control value. Must be used from and only from the
+    // ValueChangeRequest slot.ct.
     void setAndConfirm(double value, QObject* pSender);
+
     // Gets the control value.
     double get() const {
         return m_value.getValue();
     }
+
     // Resets the control value to its default.
     void reset();
 
@@ -99,6 +103,7 @@ class ControlDoublePrivate : public QObject {
     // TODO: Pass a std::unique_ptr instead of a plain pointer to ensure this
     // transfer of ownership.
     void setBehavior(ControlNumericBehavior* pBehavior);
+    QSharedPointer<ControlNumericBehavior> getBehavior() const;
 
     void setParameter(double dParam, QObject* pSender);
     double getParameter() const;
@@ -148,6 +153,18 @@ class ControlDoublePrivate : public QObject {
         return m_confirmRequired;
     }
 
+    /// Sets whether this control can be recorded by QuickActions.
+    ///
+    /// Not all controls should be recorded by QuickActions, e.g. "[Channel1], play"
+    /// should, while "[Master], maximize_library" should not.
+    void setQuickActionsRecordable(bool bQuickActionsRecordable) {
+        m_bQuickActionsRecordable = bQuickActionsRecordable;
+    }
+
+    bool quickActionsRecordable() {
+        return m_bQuickActionsRecordable;
+    }
+
   signals:
     // Emitted when the ControlDoublePrivate value changes. pSender is a
     // pointer to the setter of the value (potentially NULL).
@@ -191,6 +208,7 @@ class ControlDoublePrivate : public QObject {
     int m_trackType;
     int m_trackFlags;
     bool m_confirmRequired;
+    bool m_bQuickActionsRecordable;
 
     // User-visible, i18n name for what the control is.
     QString m_name;

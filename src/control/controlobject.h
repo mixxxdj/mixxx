@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QObject>
 #include <QEvent>
+#include <QObject>
 
-#include "preferences/usersettings.h"
-#include "controllers/midi/midimessage.h"
 #include "control/control.h"
+#include "controllers/midi/midimessage.h"
+#include "preferences/usersettings.h"
 
 class ControlObject : public QObject {
     Q_OBJECT
@@ -50,6 +50,16 @@ class ControlObject : public QObject {
     void setDescription(const QString& description) {
         if (m_pControl) {
             m_pControl->setDescription(description);
+        }
+    }
+
+    /// Sets whether this ControlObject can be recorded by QuickActions.
+    ///
+    /// Not all controls should be recorded by QuickActions, e.g. "[Channel1], play"
+    /// should, while "[Master], maximize_library" should not.
+    void setQuickActionsRecordable(bool quickActionsRecordable) {
+        if (m_pControl) {
+            m_pControl->setQuickActionsRecordable(quickActionsRecordable);
         }
     }
 
