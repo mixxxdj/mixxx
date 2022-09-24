@@ -402,20 +402,6 @@
               </VuMeter>
             </Children>
           </WidgetGroup>
-          <VuMeter>
-            <TooltipId>sampler_VuMeter</TooltipId>
-            <PathVu>skin:/style/volume_display_sampler_over.png</PathVu>
-            <PathBack>skin:/style/volume_display_sampler.png</PathBack>
-            <Pos>3,24</Pos>
-            <Horizontal>false</Horizontal>
-            <PeakHoldSize>5</PeakHoldSize>
-            <PeakHoldTime>500</PeakHoldTime>
-            <PeakFallTime>50</PeakFallTime>
-            <PeakFallStep>2</PeakFallStep>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-            </Connection>
-          </VuMeter>
         </Children>
       </WidgetGroup><!-- SamplerVUMeter -->
       <WidgetGroup>
