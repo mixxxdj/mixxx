@@ -37,8 +37,6 @@ WVuMeterGL::WVuMeterGL(QWidget* parent)
 
     // Not interested in repaint or update calls, as we draw from the vsync thread
     setUpdatesEnabled(false);
-
-    m_timer.start();
 }
 
 void WVuMeterGL::setup(const QDomNode& node, const SkinContext& context) {
@@ -128,8 +126,6 @@ void WVuMeterGL::onConnectedControlChanged(double dParameter, double dValue) {
         // A 0.0 value is very unlikely except when the VU Meter is disabled
         m_dPeakParameter = 0;
     }
-
-    updateState(m_timer.restart());
 }
 
 void WVuMeterGL::setPeak(double parameter) {
@@ -172,11 +168,10 @@ void WVuMeterGL::showEvent(QShowEvent* e) {
     m_qBgColor = mixxx::widgethelper::findBaseColor(this);
 }
 
-void WVuMeterGL::render(VSyncThread* /* UNUSED vSyncThread */) {
-    // TODO (@m0dB) consider using timing information from the vSyncThread,
-    // instead of having an m_timer in each WVuMeterGL instance.
-
+void WVuMeterGL::render(VSyncThread* vSyncThread) {
     ScopedTimer t("WVuMeterGL::render");
+
+    updateState(vSyncThread->sinceLastSwap());
 
     if (m_bHasRendered && m_dParameter == m_dLastParameter &&
             m_dPeakParameter == m_dLastPeakParameter) {
