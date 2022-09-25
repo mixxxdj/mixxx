@@ -367,7 +367,6 @@ void WaveformWidgetFactory::addVuMeter(WVuMeter* pVuMeter) {
 
 void WaveformWidgetFactory::addVuMeter(WVuMeterGL* pVuMeter) {
     // WVuMeterGLs to be rendered and swapped from the vsync thread
-
     connect(this,
             &WaveformWidgetFactory::renderVuMeters,
             pVuMeter,
