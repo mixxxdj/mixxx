@@ -56,12 +56,53 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
         // Abort constructor
         return;
     }
-    m_origFileName = std::move(origFileName);
-    if (!createTemporaryFileCopy) {
-        if (usePrefixForTempName)
-            useTempFileWithPrefix();
+    if (createTemporaryFileCopy) {
+        QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
+        QFile origFile(origFileName);
+        if (!origFile.copy(tempFileName)) {
+            kLogger.warning()
+                    << origFile.errorString()
+                    << "- Failed to clone original into temporary file before writing:"
+                    << origFileName
+                    << "->"
+                    << tempFileName;
+            // Abort constructor
+            return;
+        }
+        QFile tempFile(tempFileName);
+        DEBUG_ASSERT(tempFile.exists());
+        // Both file sizes are expected to be equal after successfully
+        // copying the file contents.
+        VERIFY_OR_DEBUG_ASSERT(origFile.size() == tempFile.size()) {
+            kLogger.warning() << "Failed to verify size after cloning original "
+                                 "into temporary file before writing:"
+                              << origFile.size() << "<>" << tempFile.size();
+            // Cleanup
+            if (tempFile.exists() && !tempFile.remove()) {
+                kLogger.warning()
+                        << tempFile.errorString()
+                        << "- Failed to remove temporary file:"
+                        << tempFileName;
+            }
+            // Abort constructor
+            return;
+        }
+        // Successfully cloned original into temporary file for writing - finish initialization
+        m_origFileName = std::move(origFileName);
+        m_tempFileName = std::move(tempFileName);
     } else {
-        useTempFileWithSuffix();
+        DEBUG_ASSERT(m_tempFileName.isNull());
+        if (usePrefixForTempName) {
+            QString origFilePath = QFileInfo(origFileName).canonicalPath();
+            QString origFileCompleteBasename = QFileInfo(origFileName).completeBaseName();
+            QString origFileSuffix = QFileInfo(origFileName).suffix();
+            QString tempFileCompleteBasename = kSafelyWritableTempFilePrefix +
+                    origFileCompleteBasename + '.' + origFileSuffix;
+            QString tempFileName = origFilePath + '/' + tempFileCompleteBasename;
+            m_tempFileName = std::move(tempFileName);
+        }
+        // Directly write into original file - finish initialization
+        m_origFileName = std::move(origFileName);
     }
 }
 
@@ -239,51 +280,6 @@ bool SafelyWritableFile::commit() {
     m_origFileName = QString();
     m_tempFileName = QString();
     return true;
-}
-
-void SafelyWritableFile::useTempFileWithPrefix() {
-    QString origFilePath = QFileInfo(m_origFileName).canonicalPath();
-    QString origFileCompleteBasename = QFileInfo(m_origFileName).completeBaseName();
-    QString origFileSuffix = QFileInfo(m_origFileName).suffix();
-    QString tempFileCompleteBasename = kSafelyWritableTempFilePrefix +
-            origFileCompleteBasename + '.' + origFileSuffix;
-    QString tempFileName = origFilePath + '/' + tempFileCompleteBasename;
-    m_tempFileName = std::move(tempFileName);
-}
-
-void SafelyWritableFile::useTempFileWithSuffix() {
-    QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
-    QFile origFile(m_origFileName);
-    if (!origFile.copy(tempFileName)) {
-        kLogger.warning()
-                << origFile.errorString()
-                << "- Failed to clone original into temporary file before writing:"
-                << m_origFileName
-                << "->"
-                << tempFileName;
-        // Abort
-        return;
-    }
-    QFile tempFile(tempFileName);
-    DEBUG_ASSERT(tempFile.exists());
-    // Both file sizes are expected to be equal after successfully
-    // copying the file contents.
-    VERIFY_OR_DEBUG_ASSERT(origFile.size() == tempFile.size()) {
-        kLogger.warning() << "Failed to verify size after cloning original "
-                             "into temporary file before writing:"
-                          << origFile.size() << "<>" << tempFile.size();
-        // Cleanup
-        if (tempFile.exists() && !tempFile.remove()) {
-            kLogger.warning()
-                    << tempFile.errorString()
-                    << "- Failed to remove temporary file:"
-                    << tempFileName;
-        }
-        // Abort
-        return;
-    }
-    // Successfully cloned original into temporary file for writing - finish initialization
-    m_tempFileName = std::move(tempFileName);
 }
 
 void SafelyWritableFile::cancel() {

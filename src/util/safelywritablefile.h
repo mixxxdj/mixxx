@@ -33,9 +33,6 @@ class SafelyWritableFile final {
 
     bool commit();
 
-    void useTempFileWithPrefix();
-    void useTempFileWithSuffix();
-
     void cancel();
 
   private:
