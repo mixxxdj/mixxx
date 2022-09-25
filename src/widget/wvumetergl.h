@@ -3,7 +3,7 @@
 #include <QGLWidget>
 
 #include "skin/legacy/skincontext.h"
-#include "util/performancetimer.h"
+#include "util/duration.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
@@ -69,8 +69,6 @@ class WVuMeterGL : public QGLWidget, public WBaseWidget {
 
     // The peak hold time remaining in milliseconds.
     double m_dPeakHoldCountdownMs;
-
-    PerformanceTimer m_timer;
 
     QColor m_qBgColor;
 };
