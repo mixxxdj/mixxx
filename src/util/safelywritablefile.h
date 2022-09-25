@@ -39,7 +39,6 @@ class SafelyWritableFile final {
     void cancel();
 
   private:
-    bool m_UseTemporaryFile;
     QString m_origFileName;
     QString m_tempFileName;
 };
