@@ -1295,7 +1295,7 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
         return pVuMeterWidget;
     }
 
-    // QGLWidger derived WVuMeterGL
+    // QGLWidget derived WVuMeterGL
 
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
