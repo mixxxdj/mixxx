@@ -591,9 +591,10 @@ reapplying those migrations.
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         artist varchar(48),
         title varchar(48),
-        playcount INTEGER,
-        match FLOAT,
+        lastfm_playcount INTEGER,
+        lastfm_match FLOAT,
         duration FLOAT,
+        lastfm_trackurl varchar(512),
         location varchar(512));
 
        CREATE TABLE IF NOT EXISTS suggestion_playlists (

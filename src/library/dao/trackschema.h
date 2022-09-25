@@ -55,8 +55,8 @@ const QString TRACKLOCATIONSTABLE_FILESIZE = QStringLiteral("filesize");
 const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
 
-const QString SUGGESTIONTABLE_MATCH = QStringLiteral("match");
-const QString SUGGESTIONTABLE_PLAYCOUNT = QStringLiteral("playcount");
+const QString SUGGESTIONTABLE_MATCH = QStringLiteral("lastfm_match");
+const QString SUGGESTIONTABLE_PLAYCOUNT = QStringLiteral("lastfm_playcount");
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 

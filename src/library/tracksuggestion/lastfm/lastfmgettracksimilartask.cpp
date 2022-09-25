@@ -173,7 +173,6 @@ void LastfmGetTrackSimilarTask::onFinished(
         const auto trackObject = track.toObject();
         const auto trackName = trackObject.value(QLatin1String("name")).toString();
         const auto trackPlaycount = trackObject.value(QLatin1String("playcount")).toInt();
-        const auto trackMBID = trackObject.value(QLatin1String("mbid")).toString();
         const auto trackMatch = trackObject.value(QLatin1String("match")).toDouble();
         const auto trackUrl = trackObject.value(QLatin1String("url")).toString();
         const auto trackDuration = trackObject.value(QLatin1String("duration")).toInt();
@@ -190,11 +189,10 @@ void LastfmGetTrackSimilarTask::onFinished(
             continue;
         }
         const auto artistName = artistObject.value(QLatin1String("name")).toString();
-        const auto artistUrl = artistObject.value(QLatin1String("url")).toString();
-        const auto artistMbid = artistObject.value(QLatin1String("mbid")).toString();
         results.last().insert(QLatin1String("title"), trackName);
         results.last().insert(QLatin1String("artist"), artistName);
         results.last().insert(QLatin1String("playcount"), resultPlaycount);
+        results.last().insert(QLatin1String("trackUrl"), trackUrl);
         results.last().insert(QLatin1String("match"), resultMatch);
         results.last().insert(QLatin1String("duration"), resultDuration);
     }

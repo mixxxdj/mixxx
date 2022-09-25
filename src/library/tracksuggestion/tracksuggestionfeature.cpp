@@ -21,8 +21,6 @@ const QString kSuggestionTitle("SuggestionView");
 
 const QString kNoSuggestionAvailable("NoSuggestionAvailable");
 
-
-// Dummy location added: If there is no location for a suggestion, seg fault occurs after pressing on the suggestion.
 const QString kLocation =
         "/localhost/Users/A/Music/Suggestion/Suggestion-Library/Tracks/";
 
@@ -55,8 +53,8 @@ TrackSuggestionFeature::TrackSuggestionFeature(
     columns << "id"
             << "artist"
             << "title"
-            << "playcount"
-            << "match"
+            << "lastfm_playcount"
+            << "lastfm_match"
             << "duration"
             << "location";
 
@@ -313,8 +311,10 @@ void TrackSuggestionFeature::slotUpdateTrackModelAfterSuccess(
     m_suggestions = suggestions;
     QSqlQuery query(m_database);
     query.prepare(
-            "INSERT INTO suggestion_library(artist, title, location, match, duration, playcount) "
-            "VALUES (:artist, :title, :location, :match, :duration, :playcount)");
+            "INSERT INTO suggestion_library(artist, title, location, "
+            "lastfm_match, duration, lastfm_trackurl, lastfm_playcount) "
+            "VALUES (:artist, :title, :location, :lastfm_match, :duration, "
+            ":lastfm_trackurl, :lastfm_playcount)");
 
     QSqlQuery queryInsertToPlaylist(m_database);
     queryInsertToPlaylist.prepare(
@@ -333,23 +333,24 @@ void TrackSuggestionFeature::slotUpdateTrackModelAfterSuccess(
     QString playcount;
     QString match;
     QString duration;
+    QString trackUrl;
     QString trackId = m_pTrack->getId().toString();
     int position = 0;
 
-    QString playlistName = composeTreeItemLabel(m_pTrack->getTitle(), m_pTrack->getArtist());
-
-    for (const auto& resultTrack : m_suggestions) {
+    for (const auto& resultTrack : qAsConst(m_suggestions)) {
         artist = resultTrack.value("artist");
         title = resultTrack.value("title");
         playcount = resultTrack.value("playcount");
         match = resultTrack.value("match");
+        trackUrl = resultTrack.value("trackUrl");
         duration = resultTrack.value("duration");
 
         query.bindValue(":artist", artist);
         query.bindValue(":title", title);
-        query.bindValue(":match", match);
+        query.bindValue(":lastfm_match", match);
         query.bindValue(":duration", duration);
-        query.bindValue(":playcount", playcount);
+        query.bindValue(":lastfm_playcount", playcount);
+        query.bindValue(":lastfm_trackUrl", trackUrl);
         query.bindValue(":location", kLocation);
 
         bool success = query.exec();
