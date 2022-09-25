@@ -114,12 +114,9 @@ when a critical error occurs unless this is set properly.\n", stdout);
             }
             i++;
         } else if (argv[i] == QString("--useVuMeterGL")) {
-            if (i + 1 == argc) {
-                throw std::runtime_error("Missing argument after --useVuMeterGL");
-            }
-            QString qs(argv[i + 1]);
+            QString qs(i + 1 < argc ? argv[i + 1] : "");
             if (qs != "yes" && qs != "no") {
-                throw std::runtime_error("Expected yes or no after --useVuMeterGL");
+                fputs("\nExpected yes or no after --useVuMeterGL\n", stdout);
             }
             m_useVuMeterGL = (qs == "yes");
         } else if (QString::fromLocal8Bit(argv[i]).contains(
@@ -186,7 +183,7 @@ void CmdlineArgs::printUsage() {
     fprintf(stdout,
             "\
 --useVuMeterGL yes|no   Use OpenGL VuMeter instead of standard.\n\
-                        Default is: %s\n",
+                        Default for your configuration is: %s\n",
             (m_useVuMeterGL ? "yes" : "no"));
     fputs("\
 \n\
