@@ -641,7 +641,7 @@ NumarkN4.Deck = function(channel) {
         midi: [0xB0+channel, 0x01, 0xB0+channel, 0x37], //only specifying input MSB
         inKey: "rate",
         group: theDeck.group,
-        invert: false,
+        invert: true,
     });
     this.pitchLedHandler = engine.makeConnection(this.group, "rate", function(value) {
     // Turns on when rate slider is centered
