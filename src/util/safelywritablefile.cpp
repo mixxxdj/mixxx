@@ -56,7 +56,7 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
         return;
     }
     switch (safetyMode) {
-    case SafetyMode::EDIT: {
+    case SafetyMode::Edit: {
         QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
         QFile origFile(origFileName);
         if (!origFile.copy(tempFileName)) {
@@ -92,7 +92,7 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
         m_tempFileName = std::move(tempFileName);
         break;
     }
-    case SafetyMode::REPLACE: {
+    case SafetyMode::Replace: {
         QString origFilePath = QFileInfo(origFileName).canonicalPath();
         QString origFileCompleteBasename = QFileInfo(origFileName).completeBaseName();
         QString origFileSuffix = QFileInfo(origFileName).suffix();
@@ -103,7 +103,7 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
         m_tempFileName = std::move(tempFileName);
         break;
     }
-    case SafetyMode::DIRECT: {
+    case SafetyMode::Direct: {
         // Directly write into original file - finish initialization
         DEBUG_ASSERT(m_tempFileName.isNull());
         m_origFileName = std::move(origFileName);

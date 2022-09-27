@@ -611,7 +611,7 @@ MetadataSourceTagLib::exportTrackMetadata(
                     << "with type" << m_fileType;
 
     SafelyWritableFile safelyWritableFile(m_fileName,
-            SafelyWritableFile::SafetyMode::EDIT);
+            SafelyWritableFile::SafetyMode::Edit);
     if (!safelyWritableFile.isReady()) {
         kLogger.warning()
                 << "Unable to export track metadata into file"

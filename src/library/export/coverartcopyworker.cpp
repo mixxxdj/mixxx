@@ -26,7 +26,7 @@ void CoverArtCopyWorker::copyFile(
         }
 
         mixxx::SafelyWritableFile safelyWritableFile(m_coverArtAbsolutePath,
-                mixxx::SafelyWritableFile::SafetyMode::REPLACE);
+                mixxx::SafelyWritableFile::SafetyMode::Replace);
 
         DEBUG_ASSERT(!safelyWritableFile.fileName().isEmpty());
         if (m_coverArtImage.saveFile(safelyWritableFile.fileName())) {

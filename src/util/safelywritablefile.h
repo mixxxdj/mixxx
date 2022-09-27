@@ -22,13 +22,13 @@ namespace mixxx {
 
 class SafelyWritableFile final {
   public:
-    enum SafetyMode {
+    enum class SafetyMode {
         // Bypass
-        DIRECT,
+        Direct,
         // Create a temp file with suffix
-        EDIT,
+        Edit,
         // Use temp file name with prefix
-        REPLACE,
+        Replace,
     };
     SafelyWritableFile(QString origFileName,
             SafelyWritableFile::SafetyMode safetyMode);
