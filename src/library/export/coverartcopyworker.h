@@ -15,8 +15,8 @@ class CoverArtCopyWorker : public QThread {
     Q_OBJECT
   public:
     enum class OverwriteAnswer {
-        OVERWRITE,
-        CANCEL = -1,
+        Overwrite,
+        Cancel = -1,
     };
 
     CoverArtCopyWorker(const ImageFileData& coverArtImage, const QString& coverArtAbsolutePath)

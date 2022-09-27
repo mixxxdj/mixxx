@@ -19,9 +19,9 @@ void CoverArtCopyWorker::copyFile(
 
     if (coverArtPathFileInfo.exists()) {
         switch (makeOverwriteRequest(m_coverArtAbsolutePath)) {
-        case OverwriteAnswer::CANCEL:
+        case OverwriteAnswer::Cancel:
             return;
-        case OverwriteAnswer::OVERWRITE:
+        case OverwriteAnswer::Overwrite:
             break;
         }
 
@@ -62,12 +62,12 @@ CoverArtCopyWorker::OverwriteAnswer CoverArtCopyWorker::makeOverwriteRequest(
 
     if (!mode_future.valid()) {
         qWarning() << "CoverArtCopyWorker::askOverWrite invalid answer from future";
-        return OverwriteAnswer::CANCEL;
+        return OverwriteAnswer::Cancel;
     }
 
     OverwriteAnswer answer = mode_future.get();
     switch (answer) {
-    case OverwriteAnswer::CANCEL:
+    case OverwriteAnswer::Cancel:
         qDebug() << "Cover art overwrite declined";
         break;
     default:;
@@ -95,10 +95,10 @@ void CoverArtCopyWorker::askOverWrite(const QString& coverArtAbsolutePath,
     switch (overwrite_box.exec()) {
     case QMessageBox::No:
         m_isCoverArtUpdated = false;
-        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::CANCEL);
+        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::Cancel);
         return;
     case QMessageBox::Yes:
-        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::OVERWRITE);
+        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::Overwrite);
         return;
     }
 }
