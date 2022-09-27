@@ -22,9 +22,16 @@ namespace mixxx {
 
 class SafelyWritableFile final {
   public:
+    enum SafetyMode {
+        // Bypass
+        DIRECT,
+        // Create a temp file with suffix
+        EDIT,
+        // Use temp file name with prefix
+        REPLACE,
+    };
     SafelyWritableFile(QString origFileName,
-            bool createTemporaryFileCopy,
-            bool usePrefixForTempName);
+            SafelyWritableFile::SafetyMode safetyMode);
     ~SafelyWritableFile();
 
     const QString& fileName() const;

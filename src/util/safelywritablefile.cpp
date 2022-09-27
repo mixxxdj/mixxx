@@ -40,8 +40,7 @@ const int kWindowsSharingViolationSleepBeforeNextRetryMillis = 100;
 } // namespace
 
 SafelyWritableFile::SafelyWritableFile(QString origFileName,
-        bool createTemporaryFileCopy,
-        bool usePrefixForTempName) {
+        SafelyWritableFile::SafetyMode safetyMode) {
     // Both file names remain uninitialized until all prerequisite operations
     // in the constructor have been completed successfully. Otherwise failure
     // to create the temporary file will not be handled correctly!
@@ -56,7 +55,8 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
         // Abort constructor
         return;
     }
-    if (createTemporaryFileCopy) {
+    switch (safetyMode) {
+    case SafetyMode::EDIT: {
         QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
         QFile origFile(origFileName);
         if (!origFile.copy(tempFileName)) {
@@ -90,19 +90,24 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
         // Successfully cloned original into temporary file for writing - finish initialization
         m_origFileName = std::move(origFileName);
         m_tempFileName = std::move(tempFileName);
-    } else {
-        DEBUG_ASSERT(m_tempFileName.isNull());
-        if (usePrefixForTempName) {
-            QString origFilePath = QFileInfo(origFileName).canonicalPath();
-            QString origFileCompleteBasename = QFileInfo(origFileName).completeBaseName();
-            QString origFileSuffix = QFileInfo(origFileName).suffix();
-            QString tempFileCompleteBasename = kSafelyWritableTempFilePrefix +
-                    origFileCompleteBasename + '.' + origFileSuffix;
-            QString tempFileName = origFilePath + '/' + tempFileCompleteBasename;
-            m_tempFileName = std::move(tempFileName);
-        }
-        // Directly write into original file - finish initialization
+        break;
+    }
+    case SafetyMode::REPLACE: {
+        QString origFilePath = QFileInfo(origFileName).canonicalPath();
+        QString origFileCompleteBasename = QFileInfo(origFileName).completeBaseName();
+        QString origFileSuffix = QFileInfo(origFileName).suffix();
+        QString tempFileCompleteBasename = kSafelyWritableTempFilePrefix +
+                origFileCompleteBasename + '.' + origFileSuffix;
+        QString tempFileName = origFilePath + '/' + tempFileCompleteBasename;
         m_origFileName = std::move(origFileName);
+        m_tempFileName = std::move(tempFileName);
+        break;
+    }
+    case SafetyMode::DIRECT: {
+        // Directly write into original file - finish initialization
+        DEBUG_ASSERT(m_tempFileName.isNull());
+        m_origFileName = std::move(origFileName);
+    } break;
     }
 }
 

@@ -7,14 +7,6 @@
 #include "util/imagefiledata.h"
 #include "util/safelywritablefile.h"
 
-namespace {
-
-const bool kUseTemporaryCoverArt = false;
-
-const bool kUseTempNameWithPrefix = true;
-
-} // namespace
-
 void CoverArtCopyWorker::run() {
     m_isCoverArtUpdated = false;
     copyFile(m_coverArtImage, m_coverArtAbsolutePath);
@@ -34,8 +26,7 @@ void CoverArtCopyWorker::copyFile(
         }
 
         mixxx::SafelyWritableFile safelyWritableFile(m_coverArtAbsolutePath,
-                kUseTemporaryCoverArt,
-                kUseTempNameWithPrefix);
+                mixxx::SafelyWritableFile::SafetyMode::REPLACE);
 
         DEBUG_ASSERT(!safelyWritableFile.fileName().isEmpty());
         if (m_coverArtImage.saveFile(safelyWritableFile.fileName())) {
