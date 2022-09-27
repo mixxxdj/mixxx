@@ -107,7 +107,7 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
         // Directly write into original file - finish initialization
         DEBUG_ASSERT(m_tempFileName.isNull());
         m_origFileName = std::move(origFileName);
-    } break;
+    }
     }
 }
 
