@@ -1,6 +1,6 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
-REM this í is just to force some editors to recognize this file as ANSI, not UTF8.
+REM this ï¿½ is just to force some editors to recognize this file as ANSI, not UTF8.
 
 CALL :REALPATH "%~dp0\.."
 SET MIXXX_ROOT=%RETVAL%
@@ -34,7 +34,7 @@ IF "%~1"=="" (
 )
 
 REM Make These permanent, not local to the batch script.
-ENDLOCAL & SET "VCPKG_ROOT=%VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLET=%VCPKG_DEFAULT_TRIPLET%" & SET "X_VCPKG_APPLOCAL_DEPS_INSTALL=%X_VCPKG_APPLOCAL_DEPS_INSTALL%" & SET "CMAKE_GENERATOR=%CMAKE_GENERATOR%"
+ENDLOCAL & SET "MIXXX_VCPKG_ROOT=%MIXXX_VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLET=%VCPKG_DEFAULT_TRIPLET%" & SET "X_VCPKG_APPLOCAL_DEPS_INSTALL=%X_VCPKG_APPLOCAL_DEPS_INSTALL%" & SET "CMAKE_GENERATOR=%CMAKE_GENERATOR%"
 
 EXIT /B 0
 
@@ -86,16 +86,16 @@ EXIT /B 0
 
     ECHO ^Build environment path: !BUILDENV_PATH!
 
-    SET "VCPKG_ROOT=!BUILDENV_PATH!"
+    SET "MIXXX_VCPKG_ROOT=!BUILDENV_PATH!"
     SET "CMAKE_GENERATOR=Ninja"
     SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\x64-windows"
 
     ECHO ^Environment Variables:
-    ECHO ^- VCPKG_ROOT='!VCPKG_ROOT!'
+    ECHO ^- MIXXX_VCPKG_ROOT='!MIXXX_VCPKG_ROOT!'
     ECHO ^- CMAKE_GENERATOR='!CMAKE_GENERATOR!'
 
     IF DEFINED GITHUB_ENV (
-        ECHO VCPKG_ROOT=!VCPKG_ROOT!>>!GITHUB_ENV!
+        ECHO MIXXX_VCPKG_ROOT=!MIXXX_VCPKG_ROOT!>>!GITHUB_ENV!
         ECHO CMAKE_GENERATOR=!CMAKE_GENERATOR!>>!GITHUB_ENV!
     ) ELSE (
         ECHO ^Generating "CMakeSettings.json"...
@@ -200,7 +200,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
-    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_ROOT"                         "STRING"   "!VCPKG_ROOT:\=\\!"
+    CALL :AddCMakeVar2CMakeSettings_JSON "MIXXX_VCPKG_ROOT"                   "STRING"   "!MIXXX_VCPKG_ROOT:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "False"
@@ -225,7 +225,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     SET variableElementTermination=
     CALL :AddCMakeVar2CMakeSettings_JSON "WAVPACK"                            "BOOL"   "True"
     >>"%CMakeSettings%" echo       ],
-    >>"%CMakeSettings%" echo       "cmakeToolchain": "!VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake"
+    >>"%CMakeSettings%" echo       "cmakeToolchain": "!MIXXX_VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake"
     >>"%CMakeSettings%" echo     }!configElementTermination!
   GOTO :EOF
 
