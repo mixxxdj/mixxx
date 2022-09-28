@@ -169,10 +169,12 @@ ApplicationWindow {
         }
 
         Mixxx2.RenderTest {
-            // TODO @m0dB how do we make qmllint understand that this is a QQuickItem with width and height?
+            // TODO @m0dB how do we make qmllint understand that this is a QQuickItem with width and height,
+            // so it doesn't complain that it doesn't have these properties?
+
             // qmllint disable
-            width: parent.width // qmllint disable unqualified
-            height: parent.height - y // qmllint disable unqualified
+            width: parent.width
+            height: parent.height - y
             // qmllint enable
         }
     }
