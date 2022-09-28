@@ -40,7 +40,7 @@ CmdlineArgs::CmdlineArgs()
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
           m_settingsPath(
-                  QStandardPaths::writableLocation(QStandardPaths::DataLocation)
+                  QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
                           .append("/")) {
 #endif
 }
