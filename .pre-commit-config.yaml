@@ -147,7 +147,7 @@ repos:
         files: ^.*\.qml$
       - id: qmllint
         name: qmllint
-        entry: qmllint
+        entry: qmllint --import disable
         pass_filenames: true
         require_serial: true
         language: system

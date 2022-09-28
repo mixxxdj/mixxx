@@ -85,6 +85,13 @@ QmlApplication::QmlApplication(
     QmlConfigProxy::s_pInstance = new QmlConfigProxy(pCoreServices->getSettings(), this);
     QmlLibraryProxy::s_pInstance = new QmlLibraryProxy(pCoreServices->getLibrary(), this);
 
+    qmlRegisterSingletonType<mixxx::qml::QmlDlgPreferencesProxy>(
+            "org.mixxx.qmlcpp",
+            0,
+            1,
+            "PreferencesDialog",
+            mixxx::qml::QmlDlgPreferencesProxy::create);
+
     loadQml(m_mainFilePath);
 
     connect(&m_fileWatcher,

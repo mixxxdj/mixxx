@@ -3,6 +3,7 @@ import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "Theme"
+import org.mixxx.qmlcpp 0.1 as Mixxx2
 
 ApplicationWindow {
     id: root
@@ -70,7 +71,7 @@ ApplicationWindow {
                     text: "Prefs"
                     activeColor: Theme.white
                     onClicked: {
-                        Mixxx.PreferencesDialog.show();
+                        Mixxx2.PreferencesDialog.show(); // qmllint disable unqualified
                     }
                 }
 
@@ -94,11 +95,8 @@ ApplicationWindow {
                         width: 640
                         height: 480
                     }
-
                 }
-
             }
-
         }
 
         Skin.DeckRow {
@@ -117,10 +115,9 @@ ApplicationWindow {
             width: parent.width
             visible: !root.maximizeLibrary
 
-            Skin.FadeBehavior on visible {
+            Skin.FadeBehavior on visible  {
                 fadeTarget: crossfader
             }
-
         }
 
         Skin.DeckRow {
@@ -132,10 +129,9 @@ ApplicationWindow {
             minimized: root.maximizeLibrary
             visible: root.show4decks
 
-            Skin.FadeBehavior on visible {
+            Skin.FadeBehavior on visible  {
                 fadeTarget: decks34
             }
-
         }
 
         Skin.SamplerRow {
@@ -144,10 +140,9 @@ ApplicationWindow {
             width: parent.width
             visible: root.showSamplers
 
-            Skin.FadeBehavior on visible {
+            Skin.FadeBehavior on visible  {
                 fadeTarget: samplers
             }
-
         }
 
         Skin.EffectRow {
@@ -156,10 +151,9 @@ ApplicationWindow {
             width: parent.width
             visible: root.showEffects
 
-            Skin.FadeBehavior on visible {
+            Skin.FadeBehavior on visible  {
                 fadeTarget: effects
             }
-
         }
 
         Skin.Library {
@@ -172,9 +166,6 @@ ApplicationWindow {
                 properties: "x,y"
                 duration: 150
             }
-
         }
-
     }
-
 }
