@@ -8,7 +8,7 @@
 using namespace mixxx::qml;
 
 QmlRenderTest::QmlRenderTest(QQuickItem* parent)
-        : QQuickItem(parent) {
+        : QQuickItem(parent), m_phase((std::rand() & 16) * 100) {
     setFlag(QQuickItem::ItemHasContents, true);
 }
 
@@ -56,9 +56,7 @@ QSGNode* QmlRenderTest::updatePaintNode(QSGNode* old, QQuickItem::UpdatePaintNod
         vertices[j++].set(x, std::cos(f / 5.f) * h * 0.25 + h * 0.25, r, g, b, 255);
     }
 
-    std::cerr << width() << std::endl;
-
-    m_phase += 4;
+    m_phase += 5;
 
     bgNode->markDirty(QSGNode::DirtyGeometry);
     geometryNode->markDirty(QSGNode::DirtyGeometry);

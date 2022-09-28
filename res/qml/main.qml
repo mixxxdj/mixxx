@@ -158,7 +158,7 @@ ApplicationWindow {
 
         Skin.Library {
             width: parent.width
-            height: 100 // parent.height - y
+            height: parent.height - 400 - y
         }
 
         move: Transition {
@@ -174,7 +174,16 @@ ApplicationWindow {
 
             // qmllint disable
             width: parent.width
-            height: parent.height - y
+            height: 200
+            // qmllint enable
+        }
+        Mixxx2.RenderTest {
+            // TODO @m0dB how do we make qmllint understand that this is a QQuickItem with width and height,
+            // so it doesn't complain that it doesn't have these properties?
+
+            // qmllint disable
+            width: parent.width
+            height: 200
             // qmllint enable
         }
     }
