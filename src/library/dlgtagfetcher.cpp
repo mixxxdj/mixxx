@@ -80,6 +80,20 @@ void addTrack(
     item->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
 }
 
+void updateOriginalTag(const Track& track, QTreeWidget* parent) {
+    const mixxx::TrackMetadata trackMetadata = (track).getMetadata();
+    const QString trackNumberAndTotal = TrackNumbers::joinAsString(
+            trackMetadata.getTrackInfo().getTrackNumber(),
+            trackMetadata.getTrackInfo().getTrackTotal());
+
+    parent->topLevelItem(1)->setText(0, trackMetadata.getTrackInfo().getTitle());
+    parent->topLevelItem(1)->setText(1, trackMetadata.getTrackInfo().getArtist());
+    parent->topLevelItem(1)->setText(2, trackMetadata.getAlbumInfo().getTitle());
+    parent->topLevelItem(1)->setText(3, trackMetadata.getTrackInfo().getYear());
+    parent->topLevelItem(1)->setText(4, trackNumberAndTotal);
+    parent->topLevelItem(1)->setText(5, trackMetadata.getAlbumInfo().getArtist());
+}
+
 } // anonymous namespace
 
 DlgTagFetcher::DlgTagFetcher(
@@ -192,36 +206,7 @@ void DlgTagFetcher::loadTrack(const QModelIndex& index) {
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
     if (m_track && m_track->getId() == trackId) {
-        // Track has just updated with the suggested tag.
-        // Original tag needs to be updated as well.
-        tags->clear();
-        addDivider(tr("Original tags"), tags);
-        addTrack(trackColumnValues(*m_track), kOriginalTrackIndex, tags);
-
-        addDivider(tr("Suggested tags"), tags);
-        {
-            int trackIndex = 0;
-            QSet<QStringList> allColumnValues; // deduplication
-            for (const auto& trackRelease : qAsConst(m_data.m_tags)) {
-                const auto columnValues = trackReleaseColumnValues(trackRelease);
-                // Ignore duplicate tags
-                if (!allColumnValues.contains(columnValues)) {
-                    allColumnValues.insert(columnValues);
-                    addTrack(columnValues, trackIndex, tags);
-                }
-                ++trackIndex;
-            }
-        }
-
-        // Find the item that was selected last time
-        for (int i = 0; i < tags->model()->rowCount(); ++i) {
-            const QModelIndex index = tags->model()->index(i, 0);
-            const QVariant id = index.data(Qt::UserRole);
-            if (!id.isNull() && id.toInt() == m_data.m_selectedTag) {
-                tags->setCurrentIndex(index);
-                break;
-            }
-        }
+        updateOriginalTag(*m_track, tags);
     }
 }
 
