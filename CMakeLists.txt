@@ -45,41 +45,40 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-# Note: ENV{VCPKG_ROOT} is the default location for the vcpkg cli tool which is
-# later adjusted by CMAKE_TOOLCHAIN_FILE. We use it here as a workaround to find the
-# overlay folders in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
-  if(EXISTS "$ENV{VCPKG_ROOT}/overlay/ports" OR NOT EXISTS "$ENV{VCPKG_ROOT}/ports")
-    # We assume ENV{VCPKG_ROOT} points to our vcpkg environment
-    # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
-    message(STATUS "Setting VCKG_ROOT from environment: $ENV{VCPKG_ROOT}")
-    set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
-  else()
-    # The official GitHub Actions runner images sometimes set these
-    # variables, but we don't want to use vcpkg from the runner. If we use
-    # vcpkg, we use our own prebuilt environment, not the one from the image.
-    message(STATUS "Ignoring env VCKG_ROOT (missing $ENV{VCPKG_ROOT}/overlay/ports)")
-  endif()
+# We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
+# in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
+# Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
+# adjusted by CMAKE_TOOLCHAIN_FILE.
+if(DEFINED ENV{MIXXX_VCPKG_ROOT} AND NOT DEFINED MIXXX_VCPKG_ROOT)
+    set(MIXXX_VCPKG_ROOT "$ENV{MIXXX_VCPKG_ROOT}")
 endif()
 
-if(DEFINED VCPKG_ROOT)
+if(DEFINED MIXXX_VCPKG_ROOT)
+  if(EXISTS "$ENV{MIXXX_VCPKG_ROOT}/overlay/ports" OR NOT EXISTS "$ENV{MIXXX_VCPKG_ROOT}/ports")
+    # MIXXX_VCPKG_ROOT points to our vcpkg environment
+    # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
+    message(STATUS "Using MIXXX_VCPKG_ROOT: $ENV{MIXXX_VCPKG_ROOT}")
+  else()
+    message(FATAL_ERROR "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+  endif()
+
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
     # required for manifest mode
-    set(VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/ports")
+    set(VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/ports")
     if(APPLE)
-        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/osx")
+        list(APPEND VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/osx")
     elseif(WIN32)
-        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/windows")
+        list(APPEND VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/windows")
     endif()
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
     # required for manifest mode
-    set(VCPKG_OVERLAY_TRIPLETS "${VCPKG_ROOT}/overlay/triplets")
+    set(VCPKG_OVERLAY_TRIPLETS "${MIXXX_VCPKG_ROOT}/overlay/triplets")
   endif()
 
   if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+    set(CMAKE_TOOLCHAIN_FILE "${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
   endif()
 endif()
 
