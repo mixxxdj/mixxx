@@ -291,7 +291,7 @@ void TrackSuggestionFeature::playerInfoTrackLoaded(const QString& group, TrackPo
     } else if (group == "[Channel3]") {
         treeItemDeckThree->setLabel(composeTreeItemLabel(artist, title));
         treeItemDeckThree->setData(trackId.toVariant());
-    } else {
+    } else if (group == "[Channel4]") {
         treeItemDeckFour->setLabel(composeTreeItemLabel(artist, title));
         treeItemDeckFour->setData(trackId.toVariant());
     }
