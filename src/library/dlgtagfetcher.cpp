@@ -345,7 +345,7 @@ void DlgTagFetcher::fetchTagFinished(
             QSet<QStringList> allColumnValues; // deduplication
             for (const auto& trackRelease : qAsConst(m_data.m_tags)) {
                 const auto columnValues = trackReleaseColumnValues(trackRelease);
-                // Ignore duplicate tags
+                // Add fetched tag into TreeItemWidget, if it is not added before
                 if (!allColumnValues.contains(columnValues)) {
                     allColumnValues.insert(columnValues);
                     addTrack(columnValues, trackIndex, tags);
@@ -371,7 +371,7 @@ void DlgTagFetcher::slotNetworkResult(
         int code) {
     QString cantConnect = tr("Can't connect to %1: %2");
     loadingProgressBar->setFormat(cantConnect.arg(app, message));
-    qWarning() << "Error while getting track metadata!"
+    qWarning() << "Error while fetching track metadata!"
                << "Service:" << app
                << "HTTP Status:" << httpError
                << "Code:" << code

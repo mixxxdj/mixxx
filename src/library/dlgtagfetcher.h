@@ -41,6 +41,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void setPercentOfEachRecordings(int totalRecordingsFound);
     void showProgressOfRecordingTask();
     void slotNetworkResult(int httpStatus, const QString& app, const QString& message, int code);
+    // Called when apply is pressed.
     void slotTrackChanged(TrackId trackId);
     void apply();
     void retry();
@@ -50,6 +51,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotPrev();
 
   private:
+    // Called on population or changed via buttons Next&Prev.
     void loadTrackInternal(const TrackPointer& track);
     void resetStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
