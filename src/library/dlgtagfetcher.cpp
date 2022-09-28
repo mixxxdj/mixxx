@@ -330,8 +330,6 @@ void DlgTagFetcher::fetchTagFinished(
     } else {
         btnApply->setEnabled(true);
         btnRetry->setEnabled(false);
-
-        loadingProgressBar->setValue(kMaximumValueOfQProgressBar);
         loadingProgressBar->setVisible(false);
         successMessage->setVisible(true);
 

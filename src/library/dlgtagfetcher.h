@@ -53,7 +53,6 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   private:
     // Called on population or changed via buttons Next&Prev.
     void loadTrackInternal(const TrackPointer& track);
-    void resetStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
 
     const TrackModel* const m_pTrackModel;
