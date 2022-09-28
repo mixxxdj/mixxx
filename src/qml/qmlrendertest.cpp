@@ -1,5 +1,6 @@
 #include "qml/qmlrendertest.h"
 
+#include <QQuickWindow>
 #include <QSGSimpleRectNode>
 #include <QSGVertexColorMaterial>
 #include <cmath>
@@ -35,10 +36,16 @@ QSGNode* QmlRenderTest::updatePaintNode(QSGNode* old, QQuickItem::UpdatePaintNod
         material = dynamic_cast<QSGVertexColorMaterial*>(geometryNode->material());
         geometry = geometryNode->geometry();
     }
-    bgNode->setRect(QRect(0, 0, width(), height()));
+    bgNode->setRect(QRect(0, 0, static_cast<int>(width()), static_cast<int>(height())));
     bgNode->setColor(QColor(0, 0, 0));
 
-    geometry->allocate(width() * 2);
+    float ratio = window()->devicePixelRatio();
+    float invRatio = 1.f / ratio;
+
+    int n = static_cast<int>(width() * ratio);
+
+    geometry->allocate(n * 2);
+
     QSGGeometry::ColoredPoint2D* vertices = geometry->vertexDataAsColoredPoint2D();
 
     constexpr float twopi = M_PI * 2.f;
@@ -46,8 +53,8 @@ QSGNode* QmlRenderTest::updatePaintNode(QSGNode* old, QQuickItem::UpdatePaintNod
 
     const float h = height();
 
-    for (int i = 0; i < width(); i++) {
-        float x = static_cast<float>(i);
+    for (int i = 0; i < n; i++) {
+        float x = static_cast<float>(i) * invRatio;
         float f = twopi * 3.f * 4.f * 5.f * 7.f * ((m_phase + i) & 4095) / 4096.f;
         uchar r = static_cast<uchar>(std::cos(f / 3.0) * 127.f + 127.f);
         uchar g = static_cast<uchar>(std::cos(f / 4.0) * 127.f + 127.f);
