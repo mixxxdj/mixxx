@@ -74,24 +74,24 @@ QStringList trackReleaseColumnValues(
 void addTrack(
         const QStringList& trackRow,
         int tagIndex,
-        QTreeWidget* parent) {
-    QTreeWidgetItem* item = new QTreeWidgetItem(parent, trackRow);
+        QTreeWidget* pParent) {
+    QTreeWidgetItem* item = new QTreeWidgetItem(pParent, trackRow);
     item->setData(0, Qt::UserRole, tagIndex);
     item->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
 }
 
-void updateOriginalTag(const Track& track, QTreeWidget* parent) {
-    const mixxx::TrackMetadata trackMetadata = (track).getMetadata();
+void updateOriginalTag(const Track& track, QTreeWidget* pParent) {
+    const mixxx::TrackMetadata trackMetadata = track.getMetadata();
     const QString trackNumberAndTotal = TrackNumbers::joinAsString(
             trackMetadata.getTrackInfo().getTrackNumber(),
             trackMetadata.getTrackInfo().getTrackTotal());
 
-    parent->topLevelItem(1)->setText(0, trackMetadata.getTrackInfo().getTitle());
-    parent->topLevelItem(1)->setText(1, trackMetadata.getTrackInfo().getArtist());
-    parent->topLevelItem(1)->setText(2, trackMetadata.getAlbumInfo().getTitle());
-    parent->topLevelItem(1)->setText(3, trackMetadata.getTrackInfo().getYear());
-    parent->topLevelItem(1)->setText(4, trackNumberAndTotal);
-    parent->topLevelItem(1)->setText(5, trackMetadata.getAlbumInfo().getArtist());
+    pParent->topLevelItem(1)->setText(0, trackMetadata.getTrackInfo().getTitle());
+    pParent->topLevelItem(1)->setText(1, trackMetadata.getTrackInfo().getArtist());
+    pParent->topLevelItem(1)->setText(2, trackMetadata.getAlbumInfo().getTitle());
+    pParent->topLevelItem(1)->setText(3, trackMetadata.getTrackInfo().getYear());
+    pParent->topLevelItem(1)->setText(4, trackNumberAndTotal);
+    pParent->topLevelItem(1)->setText(5, trackMetadata.getAlbumInfo().getArtist());
 }
 
 } // anonymous namespace
@@ -379,8 +379,8 @@ void DlgTagFetcher::slotNetworkResult(
     return;
 }
 
-void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
-    QTreeWidgetItem* item = new QTreeWidgetItem(parent);
+void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* pParent) const {
+    QTreeWidgetItem* item = new QTreeWidgetItem(pParent);
     item->setFirstColumnSpanned(true);
     item->setText(0, text);
     item->setFlags(Qt::NoItemFlags);
