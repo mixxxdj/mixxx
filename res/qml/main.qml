@@ -158,7 +158,7 @@ ApplicationWindow {
 
         Skin.Library {
             width: parent.width
-            height: parent.height - y
+            height: 100 // parent.height - y
         }
 
         move: Transition {
@@ -166,6 +166,14 @@ ApplicationWindow {
                 properties: "x,y"
                 duration: 150
             }
+        }
+
+        Mixxx2.RenderTest {
+            // TODO @m0dB how do we make qmllint understand that this is a QQuickItem with width and height?
+            // qmllint disable
+            width: parent.width // qmllint disable unqualified
+            height: parent.height - y // qmllint disable unqualified
+            // qmllint enable
         }
     }
 }

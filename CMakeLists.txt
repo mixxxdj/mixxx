@@ -1077,6 +1077,7 @@ if(QT6)
     src/qml/qmllibrarytracklistmodel.cpp
     src/qml/qmlplayermanagerproxy.cpp
     src/qml/qmlplayerproxy.cpp
+    src/qml/qmlrendertest.cpp
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlwaveformoverview.cpp
   )
@@ -2222,12 +2223,12 @@ if(QT6)
   qt_add_qml_module(mixxx-lib
     URI Mixxx
     VERSION 0.1
-    RESOURCE_PREFIX /mixxx.org/imports
-    IMPORTS QtQuick
+    #RESOURCE_PREFIX /mixxx.org/imports
+    #IMPORTS QtQuick
     QML_FILES
-      res/qml/Mixxx/MathUtils.mjs
+      # res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
-    NO_GENERATE_QMLDIR
+    #NO_GENERATE_QMLDIR
   )
 
   # Generation of the `qmldir` file has been disabled (via `NO_GENERATE_QMLDIR`
@@ -2235,13 +2236,13 @@ if(QT6)
   # https://bugreports.qt.io/browse/QTBUG-100326
   # Instead, a handwritten `qmldir` file that works around the issue needs to
   # be added to the resources here.
-  set_source_files_properties("res/qml/Mixxx/qmldir" PROPERTIES QT_RESOURCE_ALIAS "qmldir")
-  qt_add_resources(mixxx-libplugin qmldir
-    FILES "res/qml/Mixxx/qmldir"
-    PREFIX "/mixxx.org/imports/Mixxx"
-  )
+  #set_source_files_properties("res/qml/Mixxx/qmldir" PROPERTIES QT_RESOURCE_ALIAS "qmldir")
+  #qt_add_resources(mixxx-libplugin qmldir
+  #  FILES "res/qml/Mixxx/qmldir"
+  #  PREFIX "/mixxx.org/imports/Mixxx"
+  #)
   # to make also qmllint happy
-  configure_file(res/qml/Mixxx/qmldir qml/Mixxx/qmldir COPYONLY)
+  #configure_file(res/qml/Mixxx/qmldir qml/Mixxx/qmldir COPYONLY)
 
   # FIXME: Currently we need to add these include directories due to
   # QTBUG-87221. We should figure out a better way to fix this.

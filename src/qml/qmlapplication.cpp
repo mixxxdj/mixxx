@@ -15,6 +15,7 @@
 #include "qml/qmllibrarytracklistmodel.h"
 #include "qml/qmlplayermanagerproxy.h"
 #include "qml/qmlplayerproxy.h"
+#include "qml/qmlrendertest.h"
 #include "qml/qmlvisibleeffectsmodel.h"
 #include "qml/qmlwaveformoverview.h"
 #include "soundio/soundmanager.h"
@@ -84,6 +85,8 @@ QmlApplication::QmlApplication(
             new QmlPlayerManagerProxy(pCoreServices->getPlayerManager(), this);
     QmlConfigProxy::s_pInstance = new QmlConfigProxy(pCoreServices->getSettings(), this);
     QmlLibraryProxy::s_pInstance = new QmlLibraryProxy(pCoreServices->getLibrary(), this);
+
+    qmlRegisterType<mixxx::qml::QmlRenderTest>("org.mixxx.qmlcpp", 0, 1, "RenderTest");
 
     qmlRegisterSingletonType<mixxx::qml::QmlDlgPreferencesProxy>(
             "org.mixxx.qmlcpp",
