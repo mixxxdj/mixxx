@@ -4,50 +4,72 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
+#include "util/fileaccess.h"
 #include "util/imagefiledata.h"
 #include "util/safelywritablefile.h"
 
 void CoverArtCopyWorker::run() {
-    m_isCoverArtUpdated = false;
-    copyFile(m_coverArtImage, m_coverArtAbsolutePath);
+    auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(m_selectedCoverArtFilePath));
+    ImageFileData imageFileData = ImageFileData::fromFilePath(m_selectedCoverArtFilePath);
+    if (imageFileData.isNull()) {
+        // TODO(rryan): feedback
+        return;
+    }
+
+    m_coverInfo.type = CoverInfo::FILE;
+    m_coverInfo.source = CoverInfo::USER_SELECTED;
+    m_coverInfo.coverLocation = m_selectedCoverArtFilePath;
+    m_coverInfo.setImage(imageFileData);
+
+    if (QFileInfo(m_oldCoverArtFilePath).canonicalPath() ==
+            QFileInfo(m_selectedCoverArtFilePath).canonicalPath()) {
+        qDebug() << "Track and selected cover art are in the same path:"
+                 << QFileInfo(m_selectedCoverArtFilePath).canonicalPath()
+                 << "Cover art updated without copying";
+        emit updateCoverArt(m_coverInfo);
+        return;
+    }
+
+    copyFile(m_selectedCoverArtFilePath, m_oldCoverArtFilePath);
 }
 
 void CoverArtCopyWorker::copyFile(
-        const ImageFileData& m_coverArtImage,
-        const QString& m_coverArtAbsolutePath) {
-    QFileInfo coverArtPathFileInfo(m_coverArtAbsolutePath);
+        const QString& m_selectedCoverArtFilePath,
+        const QString& m_oldCoverArtFilePath) {
+    QFileInfo coverArtPathFileInfo(m_oldCoverArtFilePath);
+    ImageFileData imageFileData = ImageFileData::fromFilePath(m_selectedCoverArtFilePath);
 
     if (coverArtPathFileInfo.exists()) {
-        switch (makeOverwriteRequest(m_coverArtAbsolutePath)) {
+        switch (makeOverwriteRequest(m_oldCoverArtFilePath)) {
         case OverwriteAnswer::Cancel:
             return;
         case OverwriteAnswer::Overwrite:
             break;
         }
 
-        mixxx::SafelyWritableFile safelyWritableFile(m_coverArtAbsolutePath,
+        mixxx::SafelyWritableFile safelyWritableFile(m_oldCoverArtFilePath,
                 mixxx::SafelyWritableFile::SafetyMode::Replace);
 
         DEBUG_ASSERT(!safelyWritableFile.fileName().isEmpty());
-        if (m_coverArtImage.saveFile(safelyWritableFile.fileName())) {
-            m_isCoverArtUpdated = true;
+        if (imageFileData.saveFile(safelyWritableFile.fileName())) {
             qDebug() << "Cover art"
-                     << m_coverArtAbsolutePath
+                     << m_oldCoverArtFilePath
                      << "copied successfully";
             safelyWritableFile.commit();
         } else {
             qWarning() << "Error while copying the cover art to" << safelyWritableFile.fileName();
         }
     } else {
-        if (m_coverArtImage.saveFile(m_coverArtAbsolutePath)) {
-            m_isCoverArtUpdated = true;
+        if (imageFileData.saveFile(m_oldCoverArtFilePath)) {
             qDebug() << "Cover art"
-                     << m_coverArtAbsolutePath
+                     << m_oldCoverArtFilePath
                      << "copied successfully";
         } else {
-            qWarning() << "Error while copying the cover art to" << m_coverArtAbsolutePath;
+            qWarning() << "Error while copying the cover art to" << m_oldCoverArtFilePath;
         }
     }
+    emit updateCoverArt(m_coverInfo);
+    quit();
 }
 
 CoverArtCopyWorker::OverwriteAnswer CoverArtCopyWorker::makeOverwriteRequest(
@@ -55,13 +77,12 @@ CoverArtCopyWorker::OverwriteAnswer CoverArtCopyWorker::makeOverwriteRequest(
     QScopedPointer<std::promise<OverwriteAnswer>> mode_promise(
             new std::promise<OverwriteAnswer>());
     std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
-
-    askOverWrite(filename, mode_promise.data());
+    emit askOverwrite(filename, mode_promise.data());
 
     mode_future.wait();
 
     if (!mode_future.valid()) {
-        qWarning() << "CoverArtCopyWorker::askOverWrite invalid answer from future";
+        qWarning() << "CoverArtCopyWorker::askOverwrite invalid answer from future";
         return OverwriteAnswer::Cancel;
     }
 
@@ -74,31 +95,4 @@ CoverArtCopyWorker::OverwriteAnswer CoverArtCopyWorker::makeOverwriteRequest(
     }
 
     return answer;
-}
-
-void CoverArtCopyWorker::askOverWrite(const QString& coverArtAbsolutePath,
-        std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise) {
-    QFileInfo coverArtInfo(coverArtAbsolutePath);
-    QString coverArtName = coverArtInfo.completeBaseName();
-    QString coverArtFolder = coverArtInfo.absolutePath();
-    QMessageBox overwrite_box(
-            QMessageBox::Warning,
-            tr("Cover Art File Already Exists"),
-            tr("File: %1\n"
-               "Folder: %2\n"
-               "Override existing file?\n"
-               "This can not be undone!")
-                    .arg(coverArtName, coverArtFolder));
-    overwrite_box.addButton(QMessageBox::Yes);
-    overwrite_box.addButton(QMessageBox::No);
-
-    switch (overwrite_box.exec()) {
-    case QMessageBox::No:
-        m_isCoverArtUpdated = false;
-        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::Cancel);
-        return;
-    case QMessageBox::Yes:
-        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::Overwrite);
-        return;
-    }
 }

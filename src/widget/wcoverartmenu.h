@@ -28,6 +28,11 @@ class WCoverArtMenu : public QMenu {
   private slots:
     void slotChange();
     void slotUnset();
+    void slotCoverArtUpdated(const CoverInfoRelative& coverInfo);
+    void slotAskOverwrite(const QString& coverArtAbsolutePath,
+            std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise);
+    void slotFinished();
+    void slotStarted();
 
   private:
     void createActions();
@@ -39,4 +44,5 @@ class WCoverArtMenu : public QMenu {
     CoverInfo m_coverInfo;
 
     QScopedPointer<CoverArtCopyWorker> m_worker;
+    bool m_isWorkerRunning;
 };

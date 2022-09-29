@@ -6,6 +6,8 @@
 #include <QThread>
 #include <future>
 
+#include "library/coverart.h"
+#include "library/coverartutils.h"
 #include "util/fileinfo.h"
 #include "util/imagefiledata.h"
 
@@ -19,28 +21,29 @@ class CoverArtCopyWorker : public QThread {
         Cancel = -1,
     };
 
-    CoverArtCopyWorker(const ImageFileData& coverArtImage, const QString& coverArtAbsolutePath)
-            : m_coverArtImage(coverArtImage), m_coverArtAbsolutePath(coverArtAbsolutePath) {
+    CoverArtCopyWorker(const QString& selectedCoverArtFilePath,
+            const QString& oldCoverArtFilePath)
+            : m_selectedCoverArtFilePath(selectedCoverArtFilePath),
+              m_oldCoverArtFilePath(oldCoverArtFilePath) {
+        qRegisterMetaType<CoverInfoRelative>("CoverInfoRelative");
     }
 
     virtual ~CoverArtCopyWorker(){};
 
     void run() override;
 
-    bool isCoverUpdated() const {
-        return m_isCoverArtUpdated;
-    }
+  signals:
+    void askOverwrite(const QString& filename,
+            std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise);
+    void updateCoverArt(const CoverInfoRelative& coverInfo);
 
   private:
-    void copyFile(const ImageFileData& m_coverArtImage,
-            const QString& m_coverArtAbsolutePath);
-
-    void askOverWrite(const QString& filename,
-            std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise);
+    void copyFile(const QString& m_selectedCoverArtFilePath,
+            const QString& m_oldCoverArtFilePath);
 
     OverwriteAnswer makeOverwriteRequest(const QString& filename);
 
-    const ImageFileData& m_coverArtImage;
-    const QString m_coverArtAbsolutePath;
-    bool m_isCoverArtUpdated;
+    CoverInfoRelative m_coverInfo;
+    const QString m_selectedCoverArtFilePath;
+    const QString m_oldCoverArtFilePath;
 };
