@@ -116,6 +116,10 @@ repos:
     hooks:
       - id: prettier
         types: [yaml]
+  - repo: https://github.com/qarmin/qml_formatter.git
+    rev: 0.2.0
+    hooks:
+      - id: qml_formatter
   - repo: local
     hooks:
       - id: qsscheck
@@ -139,13 +143,6 @@ repos:
         language: python
         types: [text]
         files: ^CHANGELOG.md$
-      - id: qmlformat
-        name: qmlformat
-        entry: python tools/qmlformat.py
-        pass_filenames: true
-        language: python
-        types: [text]
-        files: ^.*\.qml$
       - id: qmllint
         name: qmllint
         entry: qmllint
