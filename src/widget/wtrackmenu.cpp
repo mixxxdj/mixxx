@@ -9,6 +9,8 @@
 #include <QModelIndex>
 #include <QVBoxLayout>
 
+#include "analyzer/analyzerscheduledtrack.h"
+#include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartutils.h"
@@ -1360,7 +1362,7 @@ void WTrackMenu::addSelectionToNewCrate() {
     }
 }
 
-void WTrackMenu::addToAnalysis() {
+void WTrackMenu::addToAnalysis(AnalyzerTrack::Options options) {
     const TrackIdList trackIds = getTrackIds();
     if (trackIds.empty()) {
         qWarning() << "No tracks selected for analysis";
@@ -1369,7 +1371,8 @@ void WTrackMenu::addToAnalysis() {
 
     QList<AnalyzerScheduledTrack> tracks;
     for (auto trackId : trackIds) {
-        tracks.append(trackId);
+        AnalyzerScheduledTrack track(trackId, options);
+        tracks.append(track);
     }
 
     emit m_pLibrary->analyzeTracks(tracks);
