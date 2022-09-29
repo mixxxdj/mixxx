@@ -1,5 +1,5 @@
-import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
+import Mixxx 1.0 as Mixxx
+import Mixxx.Controls 1.0 as MixxxControls
 import QtQuick 2.12
 
 Mixxx.WaveformOverview {
