@@ -36,19 +36,23 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void fetchTagFinished(
             TrackPointer pTrack,
             const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
-    void resultSelected();
-    void fetchTagProgress(const QString&);
+    void tagSelected();
+    void showProgressOfConstantTask(const QString&);
+    void setPercentOfEachRecordings(int totalRecordingsFound);
+    void showProgressOfRecordingTask();
     void slotNetworkResult(int httpStatus, const QString& app, const QString& message, int code);
+    // Called when apply is pressed.
     void slotTrackChanged(TrackId trackId);
     void apply();
+    void retry();
     void quit();
     void reject() override;
     void slotNext();
     void slotPrev();
 
   private:
+    // Called on population or changed via buttons Next&Prev.
     void loadTrackInternal(const TrackPointer& track);
-    void updateStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
 
     const TrackModel* const m_pTrackModel;
@@ -59,22 +63,14 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
 
     QModelIndex m_currentTrackIndex;
 
+    int m_percentForOneRecording;
+
     struct Data {
         Data()
-                : m_pending(true),
-                  m_selectedResult(-1) {
+                : m_selectedTag(-1) {
         }
-
-        bool m_pending;
-        int m_selectedResult;
-        QList<mixxx::musicbrainz::TrackRelease> m_results;
+        int m_selectedTag;
+        QList<mixxx::musicbrainz::TrackRelease> m_tags;
     };
     Data m_data;
-
-    enum class NetworkResult {
-        Ok,
-        HttpError,
-        UnknownError,
-    };
-    NetworkResult m_networkResult;
 };
