@@ -14,7 +14,7 @@ QmlPlayerManagerProxy::QmlPlayerManagerProxy(
         : QObject(parent), m_pPlayerManager(pPlayerManager) {
 }
 
-QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
+QmlPlayerProxy* QmlPlayerManagerProxy::getPlayer(const QString& group) {
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
         qWarning() << "PlayerManagerProxy failed to find player for group" << group;
