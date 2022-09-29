@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "analyzer/analyzer.h"
+#include "analyzer/analyzertrack.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
@@ -19,7 +20,7 @@ class AnalyzerKey : public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
     static mixxx::AnalyzerPluginInfo defaultPlugin();
 
-    bool initialize(TrackPointer tio,
+    bool initialize(AnalyzerTrack tio,
             mixxx::audio::SampleRate sampleRate,
             int totalSamples) override;
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;

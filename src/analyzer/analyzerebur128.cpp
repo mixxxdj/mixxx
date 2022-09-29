@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "analyzer/analyzertrack.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -20,10 +21,10 @@ AnalyzerEbur128::~AnalyzerEbur128() {
     cleanup(); // ...to prevent memory leaks
 }
 
-bool AnalyzerEbur128::initialize(TrackPointer tio,
+bool AnalyzerEbur128::initialize(AnalyzerTrack tio,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
-    if (m_rgSettings.isAnalyzerDisabled(2, tio) || totalSamples == 0) {
+    if (m_rgSettings.isAnalyzerDisabled(2, tio.getTrack()) || totalSamples == 0) {
         qDebug() << "Skipping AnalyzerEbur128";
         return false;
     }

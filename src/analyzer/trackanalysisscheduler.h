@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "analyzer/analyzerthread.h"
+#include "analyzer/analyzertrack.h"
 #include "util/db/dbconnectionpool.h"
 
 /// Callbacks for triggering side-effects in the outer context of
@@ -99,8 +100,7 @@ class TrackAnalysisScheduler : public QObject {
             return m_analyzerProgress;
         }
 
-        bool submitNextTrack(TrackPointer track) {
-            DEBUG_ASSERT(track);
+        bool submitNextTrack(AnalyzerTrack track) {
             DEBUG_ASSERT(m_thread);
             return m_thread->submitNextTrack(std::move(track));
         }

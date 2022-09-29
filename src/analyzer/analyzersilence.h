@@ -1,6 +1,7 @@
 #pragma once
 
 #include "analyzer/analyzer.h"
+#include "analyzer/analyzertrack.h"
 #include "preferences/usersettings.h"
 
 class CuePointer;
@@ -10,7 +11,7 @@ class AnalyzerSilence : public Analyzer {
     explicit AnalyzerSilence(UserSettingsPointer pConfig);
     ~AnalyzerSilence() override = default;
 
-    bool initialize(TrackPointer pTrack,
+    bool initialize(AnalyzerTrack track,
             mixxx::audio::SampleRate sampleRate,
             int totalSamples) override;
     bool processSamples(const CSAMPLE* pIn, const int iLen) override;

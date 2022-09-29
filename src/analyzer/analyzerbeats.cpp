@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QtDebug>
 
+#include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
@@ -41,7 +42,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_iCurrentSample(0) {
 }
 
-bool AnalyzerBeats::initialize(TrackPointer pTrack,
+bool AnalyzerBeats::initialize(AnalyzerTrack track,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     if (totalSamples == 0) {
@@ -55,7 +56,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
         return false;
     }
 
-    bool bpmLock = pTrack->isBpmLocked();
+    bool bpmLock = track.getTrack()->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         return false;
@@ -98,7 +99,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
     m_iCurrentSample = 0;
 
     // if we can load a stored track don't reanalyze it
-    bool bShouldAnalyze = shouldAnalyze(pTrack);
+    bool bShouldAnalyze = shouldAnalyze(track.getTrack());
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {

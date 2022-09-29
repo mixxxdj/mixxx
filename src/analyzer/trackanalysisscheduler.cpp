@@ -1,5 +1,6 @@
 #include "analyzer/trackanalysisscheduler.h"
 
+#include "analyzer/analyzertrack.h"
 #include "moc_trackanalysisscheduler.cpp"
 #include "track/track.h"
 #include "util/logger.h"
@@ -279,9 +280,10 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
         TrackId nextTrackId = m_queuedTrackIds.front();
         DEBUG_ASSERT(nextTrackId.isValid());
         if (nextTrackId.isValid()) {
-            TrackPointer nextTrack =
+            TrackPointer nextTrackPtr =
                     m_pEnvironment->loadTrackById(nextTrackId);
-            if (nextTrack) {
+            if (nextTrackPtr) {
+                AnalyzerTrack nextTrack(nextTrackPtr, AnalyzerTrack::Options());
                 if (m_pendingTrackIds.insert(nextTrackId).second) {
                     if (worker->submitNextTrack(std::move(nextTrack))) {
                         m_queuedTrackIds.pop_front();

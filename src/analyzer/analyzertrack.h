@@ -12,7 +12,7 @@ class AnalyzerTrack {
         std::optional<bool> useFixedTempo;
     };
 
-    AnalyzerTrack(TrackPointer track, Options options);
+    AnalyzerTrack(TrackPointer track, Options options = Options());
 
     /// Fetches the track to be analyzed.
     const TrackPointer getTrack() const;
@@ -22,7 +22,7 @@ class AnalyzerTrack {
 
   private:
     /// The track to be analyzed.
-    const TrackPointer track;
+    TrackPointer track;
     /// The additional options.
-    const Options options;
+    Options options;
 };
