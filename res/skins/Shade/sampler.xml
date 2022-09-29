@@ -386,6 +386,7 @@
           </StatusLight>
           <WidgetGroup>
             <Pos>3,24</Pos>
+            <Layout>horizontal</Layout>
             <Children>
               <VuMeter>
                 <TooltipId>sampler_VuMeter</TooltipId>

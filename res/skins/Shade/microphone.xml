@@ -28,6 +28,7 @@
       <WidgetGroup>
         <Pos>82,14</Pos>
         <Size>5f,35f</Size>
+        <Layout>horizontal</Layout>
         <Children>
           <VuMeter>
             <TooltipId>microphone_VuMeter</TooltipId>
