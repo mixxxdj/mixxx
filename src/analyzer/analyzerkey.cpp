@@ -42,7 +42,7 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-bool AnalyzerKey::initialize(AnalyzerTrack tio,
+bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     if (totalSamples == 0) {

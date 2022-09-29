@@ -141,7 +141,7 @@ class AnalyzerWaveform : public Analyzer {
             const QSqlDatabase& dbConnection);
     ~AnalyzerWaveform() override;
 
-    bool initialize(AnalyzerTrack tio,
+    bool initialize(const AnalyzerTrack& tio,
             mixxx::audio::SampleRate sampleRate,
             int totalSamples) override;
     bool processSamples(const CSAMPLE* buffer, const int bufferLength) override;

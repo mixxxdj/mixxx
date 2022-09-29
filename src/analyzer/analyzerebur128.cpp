@@ -21,7 +21,7 @@ AnalyzerEbur128::~AnalyzerEbur128() {
     cleanup(); // ...to prevent memory leaks
 }
 
-bool AnalyzerEbur128::initialize(AnalyzerTrack tio,
+bool AnalyzerEbur128::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     if (m_rgSettings.isAnalyzerDisabled(2, tio.getTrack()) || totalSamples == 0) {

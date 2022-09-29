@@ -23,7 +23,7 @@ class Analyzer {
     //  1. Check if the track needs to be analyzed, otherwise return false.
     //  2. Perform the initialization and return true on success.
     //  3. If the initialization failed log the internal error and return false.
-    virtual bool initialize(AnalyzerTrack tio,
+    virtual bool initialize(const AnalyzerTrack& tio,
             mixxx::audio::SampleRate sampleRate,
             int totalSamples) = 0;
 
@@ -70,7 +70,9 @@ class AnalyzerWithState final {
         return m_active;
     }
 
-    bool initialize(AnalyzerTrack tio, mixxx::audio::SampleRate sampleRate, int totalSamples) {
+    bool initialize(const AnalyzerTrack& tio,
+            mixxx::audio::SampleRate sampleRate,
+            int totalSamples) {
         DEBUG_ASSERT(!m_active);
         return m_active = m_analyzer->initialize(tio, sampleRate, totalSamples);
     }
@@ -86,7 +88,7 @@ class AnalyzerWithState final {
         }
     }
 
-    void finish(AnalyzerTrack tio) {
+    void finish(const AnalyzerTrack& tio) {
         if (m_active) {
             m_analyzer->storeResults(tio.getTrack());
             m_analyzer->cleanup();

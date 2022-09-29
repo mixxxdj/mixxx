@@ -20,7 +20,7 @@ AnalyzerGain::~AnalyzerGain() {
     delete m_pReplayGain;
 }
 
-bool AnalyzerGain::initialize(AnalyzerTrack tio,
+bool AnalyzerGain::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     if (m_rgSettings.isAnalyzerDisabled(1, tio.getTrack()) || totalSamples == 0) {

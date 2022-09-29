@@ -34,7 +34,7 @@ AnalyzerWaveform::~AnalyzerWaveform() {
     destroyFilters();
 }
 
-bool AnalyzerWaveform::initialize(AnalyzerTrack tio,
+bool AnalyzerWaveform::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     if (totalSamples == 0) {

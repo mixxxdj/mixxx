@@ -77,7 +77,7 @@ class AnalyzerThread : public WorkerThread {
     // with state Idle has been received to avoid overwriting
     // a previously sent track that has not been received by the
     // worker thread, yet.
-    bool submitNextTrack(AnalyzerTrack nextTrack);
+    bool submitNextTrack(const AnalyzerTrack& nextTrack);
 
   signals:
     // Use a single signal for progress updates to ensure that all signals

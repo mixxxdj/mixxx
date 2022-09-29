@@ -101,7 +101,7 @@ class TrackAnalysisScheduler : public QObject {
             return m_analyzerProgress;
         }
 
-        bool submitNextTrack(AnalyzerTrack track) {
+        bool submitNextTrack(const AnalyzerTrack& track) {
             DEBUG_ASSERT(m_thread);
             return m_thread->submitNextTrack(std::move(track));
         }

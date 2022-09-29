@@ -187,7 +187,7 @@ void AnalyzerThread::doRun() {
     emitProgress(AnalyzerThreadState::Exit);
 }
 
-bool AnalyzerThread::submitNextTrack(AnalyzerTrack nextTrack) {
+bool AnalyzerThread::submitNextTrack(const AnalyzerTrack& nextTrack) {
     DEBUG_ASSERT(nextTrack.getTrack());
     kLogger.debug()
             << "Enqueueing next track"
