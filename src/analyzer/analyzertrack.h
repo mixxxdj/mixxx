@@ -4,7 +4,7 @@
 
 #include "track/track_decl.h"
 
-/// A schedulable track with additional options for analysis.
+/// A scheduled track with additional options for analysis.
 class AnalyzerTrack {
   public:
     struct Options {

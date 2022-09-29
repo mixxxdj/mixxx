@@ -491,6 +491,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
+  src/analyzer/analyzerscheduledtrack.cpp
   src/analyzer/analyzersilence.cpp
   src/analyzer/analyzerthread.cpp
   src/analyzer/analyzertrack.cpp
