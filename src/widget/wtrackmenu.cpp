@@ -1,5 +1,7 @@
 #include "widget/wtrackmenu.h"
 
+#include <qlist.h>
+
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QInputDialog>
@@ -1365,7 +1367,12 @@ void WTrackMenu::addToAnalysis() {
         return;
     }
 
-    emit m_pLibrary->analyzeTracks(trackIds);
+    QList<AnalyzerScheduledTrack> tracks;
+    for (auto trackId : trackIds) {
+        tracks.append(trackId);
+    }
+
+    emit m_pLibrary->analyzeTracks(tracks);
 }
 
 void WTrackMenu::slotAnalyze() {
