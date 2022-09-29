@@ -62,7 +62,8 @@ bool AnalyzerBeats::initialize(AnalyzerTrack track,
         return false;
     }
 
-    m_bPreferencesFixedTempo = m_bpmSettings.getFixedTempoAssumption();
+    m_bPreferencesFixedTempo = track.getOptions().useFixedTempo.value_or(
+            m_bpmSettings.getFixedTempoAssumption());
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
