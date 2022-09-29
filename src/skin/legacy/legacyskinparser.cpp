@@ -1269,22 +1269,29 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
         return nullptr;
     }
-    WSpinny* spinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-    commonWidgetSetup(node, spinny);
+    // Note: For some reasons we need to create the widget without a parent to avoid to
+    // create two platform windows in QWidget::create() for this widget.
+    // This happens, because the QWidget::create() of a parent() will populate all children
+    // with platform windows q_createNativeChildrenAndSetParent() while another window is already
+    // under construction. The ID for the first window is not cleared and leads to a segfault
+    // during on shutdown
+    WSpinny* pSpinny = new WSpinny(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
+    pSpinny->setParent(m_pParent);
+    commonWidgetSetup(node, pSpinny);
 
     connect(waveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
-            spinny,
+            pSpinny,
             &WSpinny::render);
-    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
-    connect(spinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
-    connect(spinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, pSpinny, &WSpinny::swap);
+    connect(pSpinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
+    connect(pSpinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
-    spinny->setup(node, *m_pContext);
-    spinny->installEventFilter(m_pKeyboard);
-    spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    spinny->Init();
-    return spinny;
+    pSpinny->setup(node, *m_pContext);
+    pSpinny->installEventFilter(m_pKeyboard);
+    pSpinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    pSpinny->Init();
+    return pSpinny;
 }
 
 QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
@@ -1312,7 +1319,14 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
-    WVuMeterGL* pVuMeterWidget = new WVuMeterGL(m_pParent);
+    // Note: For some reasons we need to create the widget without a parent to avoid to
+    // create two platform windows in QWidget::create() for this widget.
+    // This happens, because the QWidget::create() of a parent() will populate all children
+    // with platform windows q_createNativeChildrenAndSetParent() while another window is already
+    // under construction. The ID for the first window is not cleared and leads to a segfault
+    // during on shutdown
+    WVuMeterGL* pVuMeterWidget = new WVuMeterGL();
+    pVuMeterWidget->setParent(m_pParent);
     commonWidgetSetup(node, pVuMeterWidget);
 
     waveformWidgetFactory->addVuMeter(pVuMeterWidget);

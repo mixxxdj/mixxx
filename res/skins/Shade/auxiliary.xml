@@ -27,6 +27,7 @@
       <WidgetGroup>
         <Pos>99,14</Pos>
         <Size>5f,35f</Size>
+        <Layout>horizontal</Layout>
         <Children>
           <VuMeter>
             <TooltipId>auxiliary_VuMeter</TooltipId>

@@ -218,6 +218,7 @@
                   <WidgetGroup>
                     <Pos>2,11</Pos>
                     <Size>5f,41f</Size>
+                    <Layout>horizontal</Layout>
                     <Children>
                       <VuMeter>
                         <TooltipId>sampler_VuMeter</TooltipId>
