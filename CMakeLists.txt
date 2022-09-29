@@ -2047,6 +2047,11 @@ if(KEYFINDER)
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
+    # CMake does not pass lists of paths properly to external projects.
+    # This is worked around by changing the list separator.
+    string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+
     # For offline builds download the archive file from the URL and
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
@@ -2056,12 +2061,13 @@ if(KEYFINDER)
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libkeyfinder-${LIBKEYFINDER_VERSION}.zip"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
+      LIST_SEPARATOR "|"
       CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-        -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+        -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
