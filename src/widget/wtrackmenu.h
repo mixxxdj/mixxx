@@ -117,6 +117,8 @@ class WTrackMenu : public QMenu {
     // Analysis
     void slotAnalyze();
     void slotReanalyze();
+    void slotReanalyzeWithFixedTempo();
+    void slotReanalyzeWithVariableTempo();
 
     // BPM
     void slotLockBpm();
@@ -288,6 +290,8 @@ class WTrackMenu : public QMenu {
     // Analysis actions
     QAction* m_pAnalyzeAction{};
     QAction* m_pReanalyzeAction{};
+    QAction* m_pReanalyzeConstBpmAction{};
+    QAction* m_pReanalyzeVarBpmAction{};
 
     // Clear track metadata actions
     QAction* m_pClearBeatsAction{};

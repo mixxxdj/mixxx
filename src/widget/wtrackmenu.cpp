@@ -433,6 +433,18 @@ void WTrackMenu::createActions() {
 
         m_pReanalyzeAction = new QAction(tr("Reanalyze"), this);
         connect(m_pReanalyzeAction, &QAction::triggered, this, &WTrackMenu::slotReanalyze);
+
+        m_pReanalyzeConstBpmAction = new QAction(tr("Reanalyze (constant BPM)"), this);
+        connect(m_pReanalyzeConstBpmAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotReanalyzeWithFixedTempo);
+
+        m_pReanalyzeVarBpmAction = new QAction(tr("Reanalyze (variable BPM)"), this);
+        connect(m_pReanalyzeVarBpmAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotReanalyzeWithVariableTempo);
     }
 
     // This action is only usable when m_deckGroup is set. That is true only
@@ -595,6 +607,9 @@ void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeMenu->addAction(m_pAnalyzeAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
+        m_pAnalyzeMenu->addSeparator();
+        m_pAnalyzeMenu->addAction(m_pReanalyzeConstBpmAction);
+        m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
         addMenu(m_pAnalyzeMenu);
     }
 
@@ -1385,6 +1400,20 @@ void WTrackMenu::slotAnalyze() {
 void WTrackMenu::slotReanalyze() {
     clearBeats();
     addToAnalysis();
+}
+
+void WTrackMenu::slotReanalyzeWithFixedTempo() {
+    clearBeats();
+    AnalyzerTrack::Options options;
+    options.useFixedTempo = true;
+    addToAnalysis(options);
+}
+
+void WTrackMenu::slotReanalyzeWithVariableTempo() {
+    clearBeats();
+    AnalyzerTrack::Options options;
+    options.useFixedTempo = false;
+    addToAnalysis(options);
 }
 
 void WTrackMenu::slotLockBpm() {
