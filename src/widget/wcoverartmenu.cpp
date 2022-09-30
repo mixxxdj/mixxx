@@ -95,7 +95,7 @@ void WCoverArtMenu::slotChange() {
             &WCoverArtMenu::slotAskOverwrite);
 
     connect(m_worker.data(),
-            &CoverArtCopyWorker::updateCoverArt,
+            &CoverArtCopyWorker::coverArtUpdated,
             this,
             &WCoverArtMenu::slotCoverArtUpdated);
 

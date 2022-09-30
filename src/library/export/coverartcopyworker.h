@@ -28,14 +28,15 @@ class CoverArtCopyWorker : public QThread {
         qRegisterMetaType<CoverInfoRelative>("CoverInfoRelative");
     }
 
-    virtual ~CoverArtCopyWorker(){};
-
-    void run() override;
+    ~CoverArtCopyWorker() override = default;
 
   signals:
     void askOverwrite(const QString& filename,
             std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise);
-    void updateCoverArt(const CoverInfoRelative& coverInfo);
+    void coverArtUpdated(const CoverInfoRelative& coverInfo);
+
+  protected:
+    void run() override;
 
   private:
     void copyFile(const QString& m_selectedCoverArtFilePath,

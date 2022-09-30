@@ -26,7 +26,7 @@ void CoverArtCopyWorker::run() {
         qDebug() << "Track and selected cover art are in the same path:"
                  << QFileInfo(m_selectedCoverArtFilePath).canonicalPath()
                  << "Cover art updated without copying";
-        emit updateCoverArt(m_coverInfo);
+        emit coverArtUpdated(m_coverInfo);
         return;
     }
 
@@ -68,7 +68,7 @@ void CoverArtCopyWorker::copyFile(
             qWarning() << "Error while copying the cover art to" << m_oldCoverArtFilePath;
         }
     }
-    emit updateCoverArt(m_coverInfo);
+    emit coverArtUpdated(m_coverInfo);
     quit();
 }
 
