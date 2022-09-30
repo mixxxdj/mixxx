@@ -34,6 +34,7 @@ class CoverArtCopyWorker : public QThread {
     void askOverwrite(const QString& filename,
             std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise);
     void coverArtUpdated(const CoverInfoRelative& coverInfo);
+    void coverArtCopyFailed(const QString& errorMessage);
 
   protected:
     void run() override;

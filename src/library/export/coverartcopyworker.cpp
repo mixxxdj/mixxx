@@ -47,7 +47,8 @@ void CoverArtCopyWorker::copyFile(
         const QString& m_oldCoverArtFilePath) {
     QFileInfo coverArtPathFileInfo(m_oldCoverArtFilePath);
     ImageFileData imageFileData = ImageFileData::fromFilePath(m_selectedCoverArtFilePath);
-
+    QString errorMessage = tr("Error while copying the cover art to: %1")
+                                   .arg(m_oldCoverArtFilePath);
     if (coverArtPathFileInfo.exists()) {
         switch (makeOverwriteRequest(m_oldCoverArtFilePath)) {
         case OverwriteAnswer::Cancel:
@@ -66,7 +67,8 @@ void CoverArtCopyWorker::copyFile(
                      << "copied successfully";
             safelyWritableFile.commit();
         } else {
-            qWarning() << "Error while copying the cover art to" << safelyWritableFile.fileName();
+            emit coverArtCopyFailed(errorMessage);
+            return;
         }
     } else {
         if (imageFileData.saveFile(m_oldCoverArtFilePath)) {
@@ -74,11 +76,11 @@ void CoverArtCopyWorker::copyFile(
                      << m_oldCoverArtFilePath
                      << "copied successfully";
         } else {
-            qWarning() << "Error while copying the cover art to" << m_oldCoverArtFilePath;
+            emit coverArtCopyFailed(errorMessage);
+            return;
         }
     }
     emit coverArtUpdated(m_coverInfo);
-    quit();
 }
 
 CoverArtCopyWorker::OverwriteAnswer CoverArtCopyWorker::makeOverwriteRequest(

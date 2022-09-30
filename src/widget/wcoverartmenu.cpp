@@ -85,9 +85,9 @@ void WCoverArtMenu::slotChange() {
     m_worker.reset(new CoverArtCopyWorker(selectedCoverPath, coverArtCopyFilePath));
 
     connect(m_worker.data(),
-            &CoverArtCopyWorker::finished,
+            &CoverArtCopyWorker::started,
             this,
-            &WCoverArtMenu::slotFinished);
+            &WCoverArtMenu::slotStarted);
 
     connect(m_worker.data(),
             &CoverArtCopyWorker::askOverwrite,
@@ -95,14 +95,19 @@ void WCoverArtMenu::slotChange() {
             &WCoverArtMenu::slotAskOverwrite);
 
     connect(m_worker.data(),
+            &CoverArtCopyWorker::coverArtCopyFailed,
+            this,
+            &WCoverArtMenu::slotCoverArtCopyFailed);
+
+    connect(m_worker.data(),
             &CoverArtCopyWorker::coverArtUpdated,
             this,
             &WCoverArtMenu::slotCoverArtUpdated);
 
     connect(m_worker.data(),
-            &CoverArtCopyWorker::started,
+            &CoverArtCopyWorker::finished,
             this,
-            &WCoverArtMenu::slotStarted);
+            &WCoverArtMenu::slotFinished);
 
     m_worker->start();
 }
@@ -114,6 +119,10 @@ void WCoverArtMenu::slotUnset() {
     coverInfo.setImage();
     qDebug() << "WCoverArtMenu::slotUnset emit" << coverInfo;
     emit coverInfoSelected(coverInfo);
+}
+
+void WCoverArtMenu::slotStarted() {
+    m_isWorkerRunning = true;
 }
 
 void WCoverArtMenu::slotCoverArtUpdated(const CoverInfoRelative& coverInfo) {
@@ -147,10 +156,12 @@ void WCoverArtMenu::slotAskOverwrite(const QString& coverArtAbsolutePath,
     }
 }
 
-void WCoverArtMenu::slotFinished() {
-    m_isWorkerRunning = false;
+void WCoverArtMenu::slotCoverArtCopyFailed(const QString& errorMessage) {
+    QMessageBox copyFailBox;
+    copyFailBox.setText(errorMessage);
+    copyFailBox.exec();
 }
 
-void WCoverArtMenu::slotStarted() {
-    m_isWorkerRunning = true;
+void WCoverArtMenu::slotFinished() {
+    m_isWorkerRunning = false;
 }
