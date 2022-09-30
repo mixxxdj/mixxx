@@ -69,20 +69,22 @@ bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
+    const QString eqGroup = QString("[EqualizerRack1_%1_Effect1]")
+                                    .arg(m_waveformRenderer->getGroup());
     m_pEQEnabled = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterWaveformEnable");
     m_pLowFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterLow");
+            eqGroup, "parameter1");
     m_pMidFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterMid");
+            eqGroup, "parameter2");
     m_pHighFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterHigh");
+            eqGroup, "parameter3");
     m_pLowButtonControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterLowKill");
+            eqGroup, "button_parameter1");
     m_pMidButtonControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterMidKill");
+            eqGroup, "button_parameter2");
     m_pHighButtonControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterHighKill");
+            eqGroup, "button_parameter3");
     m_pEQButtonMode = new ControlProxy(
             "[Mixer Profile]", "EQButtonMode");
 
