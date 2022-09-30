@@ -9,15 +9,8 @@
 #include "util/safelywritablefile.h"
 
 void CoverArtCopyWorker::run() {
-    auto coverArtFileInfo = mixxx::FileInfo(m_selectedCoverArtFilePath);
-    auto selectedCoverFileAccess = mixxx::FileAccess(coverArtFileInfo);
-    if (!selectedCoverFileAccess.isReadable()) {
-        if (Sandbox::askForAccess(&coverArtFileInfo)) {
-            selectedCoverFileAccess = mixxx::FileAccess(coverArtFileInfo);
-        } else {
-            return;
-        }
-    }
+    // Create a security token for the file.
+    auto selectedCoverFileAccess = mixxx::FileAccess(mixxx::FileInfo(m_selectedCoverArtFilePath));
 
     ImageFileData imageFileData = ImageFileData::fromFilePath(m_selectedCoverArtFilePath);
     if (imageFileData.isNull()) {
@@ -31,9 +24,9 @@ void CoverArtCopyWorker::run() {
     m_coverInfo.setImage(imageFileData);
 
     if (QFileInfo(m_oldCoverArtFilePath).canonicalPath() ==
-            QFileInfo(m_selectedCoverArtFilePath).canonicalPath()) {
+            selectedCoverFileAccess.info().canonicalLocationPath()) {
         qDebug() << "Track and selected cover art are in the same path:"
-                 << QFileInfo(m_selectedCoverArtFilePath).canonicalPath()
+                 << selectedCoverFileAccess.info().canonicalLocationPath()
                  << "Cover art updated without copying";
         emit coverArtUpdated(m_coverInfo);
         return;
