@@ -22,7 +22,6 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
     bool event(QEvent* pEvent) override;
 
   private:
-    int m_iEffectSlotIndex;
     EffectsManager* m_pEffectsManager;
     VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectSlotPointer m_pEffectSlot;

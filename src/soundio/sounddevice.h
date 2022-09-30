@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QString>
 #include <QList>
+#include <QString>
 
-#include "util/types.h"
 #include "preferences/usersettings.h"
-#include "soundio/sounddeviceerror.h"
+#include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/types.h"
 
 class SoundDevice;
 class SoundManager;
@@ -33,17 +33,17 @@ class SoundDevice {
     }
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers) = 0;
+    virtual SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) = 0;
     virtual bool isOpen() const = 0;
-    virtual SoundDeviceError close() = 0;
+    virtual SoundDeviceStatus close() = 0;
     virtual void readProcess() = 0;
     virtual void writeProcess() = 0;
     virtual QString getError() const = 0;
     virtual unsigned int getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;
     int getNumInputChannels() const;
-    SoundDeviceError addOutput(const AudioOutputBuffer& out);
-    SoundDeviceError addInput(const AudioInputBuffer& in);
+    SoundDeviceStatus addOutput(const AudioOutputBuffer& out);
+    SoundDeviceStatus addInput(const AudioInputBuffer& in);
     const QList<AudioInputBuffer>& inputs() const {
         return m_audioInputs;
     }

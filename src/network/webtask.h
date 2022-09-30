@@ -136,7 +136,8 @@ class WebTask : public NetworkTask {
 
   public slots:
     void slotStart(
-            int timeoutMillis) override;
+            int timeoutMillis = kNoTimeout,
+            int delayMillis = kNoStartDelay) override;
     void slotAbort() override;
 
   private slots:
@@ -147,7 +148,9 @@ class WebTask : public NetworkTask {
 
     enum class State {
         // Initial state
-        Idle,
+        Initial,
+        // Timed start
+        Starting,
         // Pending state
         Pending,
         // Terminal states
@@ -159,6 +162,11 @@ class WebTask : public NetworkTask {
 
     State state() const {
         return m_state;
+    }
+
+    bool isBusy() const {
+        return state() == State::Starting ||
+                state() == State::Pending;
     }
 
     bool hasTerminated() const {
@@ -210,6 +218,7 @@ class WebTask : public NetworkTask {
     PerformanceTimer m_timer;
 
     int m_timeoutTimerId;
+    int m_timeoutMillis;
 
     SafeQPointer<QNetworkReply> m_pendingNetworkReplyWeakPtr;
 };

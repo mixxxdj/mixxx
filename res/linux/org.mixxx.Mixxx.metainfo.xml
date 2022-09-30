@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2022-08-05" timestamp="1659681268">
+    <release version="2.4.0" type="development" date="2022-09-14" timestamp="1663109823">
       <description>
  <p>
   Cover Art
@@ -105,6 +105,7 @@
   <li>
    Prevent wrong cover art display due to hash conflicts
    #2524
+   #4904
   </li>
   <li>
    Add background color for quick cover art preview
@@ -234,6 +235,10 @@
    #4631
    #4847
    lp:1981106
+  </li>
+  <li>
+   Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1").
+   #4873
   </li>
   <li>
    Logging: Suppress expected and harmless schema migration errors
@@ -407,6 +412,10 @@
    #4480
    #4633
    #4837
+   #4864
+   #4893
+   #10861
+   #10871
   </li>
  </ul>
  <p>
@@ -557,6 +566,12 @@
    #4544
   </li>
   <li>
+   Rubberband: Support Version 3 "finer" (near-hi-fi quality) setting, on Windows and MacOs and when available on Linux
+   #4853
+   #4855
+   #4855
+  </li>
+  <li>
    Refactoring of beatgrid/beatmap code
    #4044
    #4048
@@ -637,6 +652,10 @@
    #4770
    #4771
    #4589
+   #1717
+   #4852
+   #10835
+   #10843
   </li>
  </ul>
  <p>
@@ -907,10 +926,6 @@
    #4525
   </li>
   <li>
-   LateNight: Move logo to the right
-   #4677
-  </li>
-  <li>
    Spinny: Allow to toggle cover art at runtime
    #4565
    lp:1883362
@@ -933,6 +948,10 @@
    lp:1934560
   </li>
   <li>
+   LateNight: Move logo to the right
+   #4677
+  </li>
+  <li>
    LateNight: Use correct tooltip for key control toggle
    #4696
   </li>
@@ -943,6 +962,10 @@
   <li>
    LateNight: Remove blinking play indicator from mini samplers
    #4807
+  </li>
+  <li>
+   LateNight: add buffer underflow indicator
+   #4906
   </li>
  </ul>
  <p>
@@ -957,6 +980,9 @@
    Add a pitch shift effect
    #4775
    lp:1299035
+   #4810
+   #4901
+   #10858
   </li>
   <li>
    Use '---' instead of 'None' for empty slots to spot them easier
@@ -997,6 +1023,12 @@
    #4748
    #4833
    lp:1980078
+   #4884
+   lp:1983789
+   lp1983764
+   #4899
+   #8817
+   #10868
   </li>
  </ul>
  <p>
@@ -1023,6 +1055,8 @@
    #4497
    #4514
    #3550
+   #4861
+   #10855
   </li>
   <li>
    Improve GitHub workflow continuous integration
@@ -1082,6 +1116,11 @@
    #3985
   </li>
   <li>
+   Drop Ubuntu Focal support, require C++20
+   #4889
+   #4895
+  </li>
+  <li>
    Drop Ubuntu Groovy and Impish support because of EOL
    #4283
    #4849
@@ -1113,6 +1152,7 @@
    #4338
    #4709
    #4717
+   #10872
   </li>
   <li>
    Devendor libraries from the mixxx lib directory
@@ -1268,6 +1308,10 @@
    #2699
   </li>
   <li>
+   Make windows_buildenv.bat work with spaces in path
+   #4896
+  </li>
+  <li>
    Automate deployment of CHANGELOG to the manual
    #4180
    #4256
@@ -1348,6 +1392,11 @@
    Windows builds: Sign binary and installer with timestamp and sha256
    #4824
    #4825
+  </li>
+  <li>
+   Replace Launchpad bugs by GitHub issues
+   #10850
+   #10865
   </li>
   <li>
    Misc. refactorings
@@ -1465,27 +1514,46 @@
    #4767
    #4797
    #4782
-   #4780
+   #4800
    #4791
    #4848
    #4856
    #4860
+   #4867
+   #4888
+   #4908
+   #4903
+   #8818
+   #4907
   </li>
  </ul>
 </description>
     </release>
-    <release version="2.3.4" type="development" date="2022-08-05" timestamp="1659681268">
+    <release version="2.3.4" type="development" date="2022-09-14" timestamp="1663109823">
       <description>
  <ul>
+  <li>
+   Controller Preferences: Fix some usability issues
+   #10821
+  </li>
   <li>
    Track Properties: show 'date added' as local time
    #4838
    lp:1980658
   </li>
   <li>
-   Numark DJ2GO2 Touch: Fix  sliders and knobs
+   Numark DJ2GO2: Fix  sliders and knobs
    #4835
    lp:1948596
+  </li>
+  <li>
+   Numark DJ2Go2: support HotCue clear with pad
+   #10841
+  </li>
+  <li>
+   Numark DJ2Go2: Fix inverted tempo fader
+   #10852
+   #10586
   </li>
   <li>
    Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
@@ -1511,6 +1579,41 @@
   <li>
    Build Mixxx on MacOS 11, replacing deprecated MacOS 10.15
    #4863
+  </li>
+  <li>
+   EQ preferences: properly restore 'One EQ for all decks' setting
+   #4886
+  </li>
+  <li>
+   MC7000: Fix off-by-one indexing in the controller script
+   #4902
+  </li>
+  <li>
+   Cover Art: Fix picking wrong cover file, when track file name contains extra dots
+   #4909
+  </li>
+  <li>
+   Respect MusicBrainz rate limits
+   #10874
+   #10795
+  </li>
+ </ul>
+ <p>
+  Packaging
+ </p>
+ <ul>
+  <li>
+   Fix compatibility with FFmpeg 5.1 and require FFmpeg v4.1.9
+   #10862
+   #10866
+  </li>
+  <li>
+   Fix GCC 12.2.0 compatibility
+   #10863
+  </li>
+  <li>
+   Improve CMake 3.24 compatibility
+   #10864
   </li>
  </ul>
 </description>

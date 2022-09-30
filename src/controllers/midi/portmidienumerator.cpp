@@ -83,6 +83,11 @@ bool namesMatchAllowableEdgeCases(const QString& input_name,
     if (input_name == "KAOSS DJ CONTROL" && output_name == "KAOSS DJ SOUND") {
         return true;
     }
+    // Ableton Push on Windows
+    // Shows 2 different devices for MIDI input and output.
+    if (input_name == "MIDIIN2 (Ableton Push)" && output_name == "MIDIOUT2 (Ableton Push)") {
+        return true;
+    }
     return false;
 }
 

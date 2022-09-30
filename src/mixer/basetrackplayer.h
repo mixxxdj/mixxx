@@ -10,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/replaygain.h"
 #include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/color/rgbcolor.h"
 #include "util/memory.h"
 #include "util/parented_ptr.h"
@@ -117,6 +118,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     UserSettingsPointer m_pConfig;
     EngineMaster* m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
+    TrackId m_pPrevFailedTrackId;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;

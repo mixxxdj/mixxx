@@ -84,3 +84,15 @@ requires std::is_floating_point_v<T>
 }
 
 #undef CMATH_CONSTEXPR
+
+/// https://en.wikipedia.org/wiki/Sign_function
+template<typename T>
+requires std::is_arithmetic_v<T>
+constexpr T sgn(const T a) {
+    // silence -Wtype-limits
+    if constexpr (std::is_unsigned_v<T>) {
+        return static_cast<T>(a > T(0));
+    } else {
+        return static_cast<T>(a > T(0)) - static_cast<T>(a < T(0));
+    }
+}
