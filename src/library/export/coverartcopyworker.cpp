@@ -9,7 +9,16 @@
 #include "util/safelywritablefile.h"
 
 void CoverArtCopyWorker::run() {
-    auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(m_selectedCoverArtFilePath));
+    auto coverArtFileInfo = mixxx::FileInfo(m_selectedCoverArtFilePath);
+    auto selectedCoverFileAccess = mixxx::FileAccess(coverArtFileInfo);
+    if (!selectedCoverFileAccess.isReadable()) {
+        if (Sandbox::askForAccess(&coverArtFileInfo)) {
+            selectedCoverFileAccess = mixxx::FileAccess(coverArtFileInfo);
+        } else {
+            return;
+        }
+    }
+
     ImageFileData imageFileData = ImageFileData::fromFilePath(m_selectedCoverArtFilePath);
     if (imageFileData.isNull()) {
         // TODO(rryan): feedback
