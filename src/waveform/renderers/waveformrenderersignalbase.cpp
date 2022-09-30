@@ -195,15 +195,15 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
                     factory->getVisualGain(WaveformWidgetFactory::High));
 
             if (m_pLowButtonControlObject && m_pLowButtonControlObject->get() > 0.0) {
-                lowGain = m_pEQButtonMode->get();
+                lowGain = static_cast<CSAMPLE_GAIN>(m_pEQButtonMode->get());
             }
 
             if (m_pMidButtonControlObject && m_pMidButtonControlObject->get() > 0.0) {
-                midGain = m_pEQButtonMode->get();
+                midGain = static_cast<CSAMPLE_GAIN>(m_pEQButtonMode->get());
             }
 
             if (m_pHighButtonControlObject && m_pHighButtonControlObject->get() > 0.0) {
-                highGain = m_pEQButtonMode->get();
+                highGain = static_cast<CSAMPLE_GAIN>(m_pEQButtonMode->get());
             }
         }
 
