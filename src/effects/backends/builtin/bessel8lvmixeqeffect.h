@@ -24,7 +24,6 @@ class Bessel8LVMixEQEffectGroupState : public LVMixEQEffectGroupState<EngineFilt
 class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGroupState> {
   public:
     Bessel8LVMixEQEffect();
-    virtual ~Bessel8LVMixEQEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -53,8 +52,9 @@ class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGrou
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
-    ControlProxy* m_pLoFreqCorner;
-    ControlProxy* m_pHiFreqCorner;
+    std::unique_ptr<ControlProxy> m_pLoFreqCorner;
+    std::unique_ptr<ControlProxy> m_pHiFreqCorner;
+    std::unique_ptr<ControlProxy> m_pEQButtonMode;
 
     DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
 };

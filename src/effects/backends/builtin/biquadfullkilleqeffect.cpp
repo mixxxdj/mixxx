@@ -145,6 +145,7 @@ void BiquadFullKillEQEffectGroupState::setFilters(
 BiquadFullKillEQEffect::BiquadFullKillEQEffect() {
     m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
+    m_pEQButtonMode = std::make_unique<ControlProxy>("[Mixer Profile]", "EQButtonMode");
 }
 
 void BiquadFullKillEQEffect::loadEngineEffectParameters(
@@ -156,9 +157,6 @@ void BiquadFullKillEQEffect::loadEngineEffectParameters(
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
 }
-
-// BiquadFullKillEQEffect::~BiquadFullKillEQEffect() {
-// }
 
 void BiquadFullKillEQEffect::processChannel(
         BiquadFullKillEQEffectGroupState* pState,
@@ -185,12 +183,21 @@ void BiquadFullKillEQEffect::processChannel(
     double bqGainMid = 0;
     double bqGainHigh = 0;
     if (enableState != EffectEnableState::Disabling) {
-        bqGainLow = knobValueToBiquadGainDb(
-                m_pPotLow->value(), m_pKillLow->toBool());
-        bqGainMid = knobValueToBiquadGainDb(
-                m_pPotMid->value(), m_pKillMid->toBool());
-        bqGainHigh = knobValueToBiquadGainDb(
-                m_pPotHigh->value(), m_pKillHigh->toBool());
+        if (m_pEQButtonMode->get() == 0) {
+            bqGainLow = knobValueToBiquadGainDb(
+                    m_pPotLow->value(), m_pKillLow->toBool());
+            bqGainMid = knobValueToBiquadGainDb(
+                    m_pPotMid->value(), m_pKillMid->toBool());
+            bqGainHigh = knobValueToBiquadGainDb(
+                    m_pPotHigh->value(), m_pKillHigh->toBool());
+        } else {
+            bqGainLow = knobValueToBiquadGainDb(
+                    m_pKillLow->toBool() ? 1 : m_pPotLow->value(), false);
+            bqGainMid = knobValueToBiquadGainDb(
+                    m_pKillMid->toBool() ? 1 : m_pPotMid->value(), false);
+            bqGainHigh = knobValueToBiquadGainDb(
+                    m_pKillHigh->toBool() ? 1 : m_pPotHigh->value(), false);
+        }
     }
 
     int activeFilters = 0;
@@ -394,12 +401,23 @@ void BiquadFullKillEQEffect::processChannel(
         pState->m_lvMixIso->processChannelAndPause(
                 pOutput, pOutput, engineParameters.samplesPerBuffer());
     } else {
-        double fLow = knobValueToBesselRatio(
-                m_pPotLow->value(), m_pKillLow->toBool());
-        double fMid = knobValueToBesselRatio(
-                m_pPotMid->value(), m_pKillMid->toBool());
-        double fHigh = knobValueToBesselRatio(
-                m_pPotHigh->value(), m_pKillHigh->toBool());
+        double fLow, fMid, fHigh;
+        if (m_pEQButtonMode->get() == 0) {
+            fLow = knobValueToBesselRatio(
+                    m_pPotLow->value(), m_pKillLow->toBool());
+            fMid = knobValueToBesselRatio(
+                    m_pPotMid->value(), m_pKillMid->toBool());
+            fHigh = knobValueToBesselRatio(
+                    m_pPotHigh->value(), m_pKillHigh->toBool());
+        } else {
+            fLow = knobValueToBesselRatio(
+                    m_pKillLow->toBool() ? 1 : m_pPotLow->value(), false);
+            fMid = knobValueToBesselRatio(
+                    m_pKillMid->toBool() ? 1 : m_pPotMid->value(), false);
+            fHigh = knobValueToBesselRatio(
+                    m_pKillHigh->toBool() ? 1 : m_pPotHigh->value(), false);
+        }
+
         pState->m_lvMixIso->processChannel(pOutput,
                 pOutput,
                 engineParameters.samplesPerBuffer(),

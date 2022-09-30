@@ -68,8 +68,9 @@ void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq, i
 }
 
 LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect() {
-    m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+    m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
+    m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
+    m_pEQButtonMode = std::make_unique<ControlProxy>("[Mixer Profile]", "EQButtonMode");
 }
 
 void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
@@ -82,11 +83,6 @@ void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
     m_pKillHigh = parameters.value("killHigh");
 }
 
-LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
-    delete m_pLoFreqCorner;
-    delete m_pHiFreqCorner;
-}
-
 void LinkwitzRiley8EQEffect::processChannel(
         LinkwitzRiley8EQEffectGroupState* pState,
         const CSAMPLE* pInput,
@@ -96,7 +92,8 @@ void LinkwitzRiley8EQEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
-    float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
+    float fButtonOnValue = static_cast<float>(m_pEQButtonMode->get());
+    float fLow = fButtonOnValue, fMid = fButtonOnValue, fHigh = fButtonOnValue;
     if (!m_pKillLow->toBool()) {
         fLow = static_cast<float>(m_pPotLow->value());
     }

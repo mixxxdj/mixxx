@@ -5,6 +5,7 @@
 #include <QSet>
 
 #include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
 #include "engine/channelhandle.h"
@@ -104,6 +105,9 @@ class EffectsManager {
     // TODO: replace these with effect parameters that are hidden by default
     ControlPotmeter m_loEqFreq;
     ControlPotmeter m_hiEqFreq;
+
+    // 0 is kill, 1 bypass
+    ControlPushButton m_eqButtonMode;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

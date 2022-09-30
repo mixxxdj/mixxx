@@ -96,9 +96,6 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
             engineParameters.sampleRate(), kStartupHiFreq / 2, kQKillShelve);
 }
 
-ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
-}
-
 void ThreeBandBiquadEQEffectGroupState::setFilters(
         int sampleRate, double lowFreqCorner, double highFreqCorner) {
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
@@ -122,6 +119,7 @@ void ThreeBandBiquadEQEffectGroupState::setFilters(
 ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect() {
     m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
+    m_pEQButtonMode = std::make_unique<ControlProxy>("[Mixer Profile]", "EQButtonMode");
 }
 
 void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
@@ -132,9 +130,6 @@ void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
     m_pKillLow = parameters.value("killLow");
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
-}
-
-ThreeBandBiquadEQEffect::~ThreeBandBiquadEQEffect() {
 }
 
 void ThreeBandBiquadEQEffect::processChannel(
@@ -162,12 +157,21 @@ void ThreeBandBiquadEQEffect::processChannel(
     double bqGainMid = 0;
     double bqGainHigh = 0;
     if (enableState != EffectEnableState::Disabling) {
-        bqGainLow = knobValueToBiquadGainDb(
-                m_pPotLow->value(), m_pKillLow->toBool());
-        bqGainMid = knobValueToBiquadGainDb(
-                m_pPotMid->value(), m_pKillMid->toBool());
-        bqGainHigh = knobValueToBiquadGainDb(
-                m_pPotHigh->value(), m_pKillHigh->toBool());
+        if (m_pEQButtonMode->get() == 0) {
+            bqGainLow = knobValueToBiquadGainDb(
+                    m_pPotLow->value(), m_pKillLow->toBool());
+            bqGainMid = knobValueToBiquadGainDb(
+                    m_pPotMid->value(), m_pKillMid->toBool());
+            bqGainHigh = knobValueToBiquadGainDb(
+                    m_pPotHigh->value(), m_pKillHigh->toBool());
+        } else {
+            bqGainLow = knobValueToBiquadGainDb(
+                    m_pKillLow->toBool() ? 1 : m_pPotLow->value(), false);
+            bqGainMid = knobValueToBiquadGainDb(
+                    m_pKillMid->toBool() ? 1 : m_pPotMid->value(), false);
+            bqGainHigh = knobValueToBiquadGainDb(
+                    m_pKillHigh->toBool() ? 1 : m_pPotHigh->value(), false);
+        }
     }
 
     int activeFilters = 0;

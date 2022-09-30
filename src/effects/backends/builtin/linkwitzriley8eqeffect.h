@@ -40,7 +40,6 @@ class LinkwitzRiley8EQEffectGroupState : public EffectState {
 class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffectGroupState> {
   public:
     LinkwitzRiley8EQEffect();
-    virtual ~LinkwitzRiley8EQEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -69,8 +68,9 @@ class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffect
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
-    ControlProxy* m_pLoFreqCorner;
-    ControlProxy* m_pHiFreqCorner;
+    std::unique_ptr<ControlProxy> m_pLoFreqCorner;
+    std::unique_ptr<ControlProxy> m_pHiFreqCorner;
+    std::unique_ptr<ControlProxy> m_pEQButtonMode;
 
     DISALLOW_COPY_AND_ASSIGN(LinkwitzRiley8EQEffect);
 };
