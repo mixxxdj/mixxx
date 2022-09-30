@@ -2228,7 +2228,7 @@ if(QT6)
   set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-lib
     URI Mixxx
-    VERSION 0.1
+    VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
     IMPORTS QtQuick
     QML_FILES
@@ -2260,7 +2260,7 @@ if(QT6)
   set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-qml-mixxxcontrols
     URI Mixxx.Controls
-    VERSION 0.1
+    VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
     OPTIONAL_IMPORTS Mixxx
     QML_FILES
