@@ -134,6 +134,7 @@ void DistortionEffect::processChannel(
 
     if (driveParam < 0.01) {
         SampleUtil::copy(pOutput, pInput, numSamples);
+        return;
     }
 
     switch (m_pMode->toInt()) {
