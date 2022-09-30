@@ -139,19 +139,23 @@ void DistortionEffect::processChannel(
 
     switch (m_pMode->toInt()) {
     case SoftClipping:
-        process<SoftClippingParameters>(driveParam, pState, pOutput, pInput, engineParameters);
+        processDistortion<SoftClippingParameters>(
+                driveParam, pState, pOutput, pInput, engineParameters);
         break;
 
     case HardClipping:
-        process<HardClippingParameters>(driveParam, pState, pOutput, pInput, engineParameters);
+        processDistortion<HardClippingParameters>(
+                driveParam, pState, pOutput, pInput, engineParameters);
         break;
 
     case SoftFolding:
-        process<SoftFoldingParameters>(driveParam, pState, pOutput, pInput, engineParameters);
+        processDistortion<SoftFoldingParameters>(
+                driveParam, pState, pOutput, pInput, engineParameters);
         break;
 
     case HardFolding:
-        process<HardFoldingParameters>(driveParam, pState, pOutput, pInput, engineParameters);
+        processDistortion<HardFoldingParameters>(
+                driveParam, pState, pOutput, pInput, engineParameters);
         break;
 
     default:

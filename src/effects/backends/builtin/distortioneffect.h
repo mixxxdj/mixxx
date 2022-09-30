@@ -52,7 +52,7 @@ class DistortionEffect : public EffectProcessorImpl<DistortionGroupState> {
     struct HardFoldingParameters;
 
     template<typename ModeParams>
-    void process(CSAMPLE driveParam,
+    void processDistortion(CSAMPLE driveParam,
             DistortionGroupState* pState,
             CSAMPLE* pOutput,
             const CSAMPLE* pInput,

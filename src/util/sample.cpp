@@ -455,7 +455,7 @@ CSAMPLE SampleUtil::sumSquared(const CSAMPLE* pBuffer, SINT numSamples) {
 
 // static
 CSAMPLE SampleUtil::rms(const CSAMPLE* pBuffer, SINT numSamples) {
-    return sqrt(sumSquared(pBuffer, numSamples) / numSamples);
+    return sqrtf(sumSquared(pBuffer, numSamples) / numSamples);
 }
 
 CSAMPLE SampleUtil::maxAbsAmplitude(const CSAMPLE* pBuffer, SINT numSamples) {
