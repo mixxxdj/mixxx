@@ -110,9 +110,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         // Since 3-band is by far the most common, stick with that.
         const int kMaxEqs = 3;
         QList<QString> eqNames;
-        eqNames.append(tr("Low EQ"));
-        eqNames.append(tr("Mid EQ"));
-        eqNames.append(tr("High EQ"));
+        eqNames.append(tr("EQ Low"));
+        eqNames.append(tr("EQ Mid"));
+        eqNames.append(tr("EQ High"));
         for (int deck = 1; deck <= iNumDecks; ++deck) {
             QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
             for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
@@ -131,8 +131,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 control = "button_parameter%1";
                 addControl(group,
                         control.arg(effect + 1),
-                        tr("Kill %1").arg(eqNames[effect]),
-                        tr("Kill %1").arg(eqNames[effect]),
+                        tr("%1 Button").arg(eqNames[effect]),
+                        tr("%1 Button").arg(eqNames[effect]),
                         bandMenu,
                         false,
                         tr("Deck %1").arg(deck));
