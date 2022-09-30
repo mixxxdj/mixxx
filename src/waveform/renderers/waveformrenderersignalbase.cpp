@@ -16,9 +16,10 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_pLowFilterControlObject(nullptr),
           m_pMidFilterControlObject(nullptr),
           m_pHighFilterControlObject(nullptr),
-          m_pLowKillControlObject(nullptr),
-          m_pMidKillControlObject(nullptr),
-          m_pHighKillControlObject(nullptr),
+          m_pLowButtonControlObject(nullptr),
+          m_pMidButtonControlObject(nullptr),
+          m_pHighButtonControlObject(nullptr),
+          m_pEQButtonMode(nullptr),
           m_alignment(Qt::AlignCenter),
           m_orientation(Qt::Horizontal),
           m_pColors(nullptr),
@@ -54,27 +55,14 @@ WaveformRendererSignalBase::~WaveformRendererSignalBase() {
 }
 
 void WaveformRendererSignalBase::deleteControls() {
-    if (m_pEQEnabled) {
-        delete m_pEQEnabled;
-    }
-    if (m_pLowFilterControlObject) {
-        delete m_pLowFilterControlObject;
-    }
-    if (m_pMidFilterControlObject) {
-        delete m_pMidFilterControlObject;
-    }
-    if (m_pHighFilterControlObject) {
-        delete m_pHighFilterControlObject;
-    }
-    if (m_pLowKillControlObject) {
-        delete m_pLowKillControlObject;
-    }
-    if (m_pMidKillControlObject) {
-        delete m_pMidKillControlObject;
-    }
-    if (m_pHighKillControlObject) {
-        delete m_pHighKillControlObject;
-    }
+    delete m_pEQEnabled;
+    delete m_pLowFilterControlObject;
+    delete m_pMidFilterControlObject;
+    delete m_pHighFilterControlObject;
+    delete m_pLowButtonControlObject;
+    delete m_pMidButtonControlObject;
+    delete m_pHighButtonControlObject;
+    delete m_pEQButtonMode;
 }
 
 bool WaveformRendererSignalBase::init() {
@@ -89,12 +77,14 @@ bool WaveformRendererSignalBase::init() {
             m_waveformRenderer->getGroup(), "filterMid");
     m_pHighFilterControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterHigh");
-    m_pLowKillControlObject = new ControlProxy(
+    m_pLowButtonControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterLowKill");
-    m_pMidKillControlObject = new ControlProxy(
+    m_pMidButtonControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterMidKill");
-    m_pHighKillControlObject = new ControlProxy(
+    m_pHighButtonControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterHighKill");
+    m_pEQButtonMode = new ControlProxy(
+            "[Mixer Profile]", "EQButtonMode");
 
     return onInit();
 }
@@ -202,16 +192,16 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
             highGain *= static_cast<CSAMPLE_GAIN>(
                     factory->getVisualGain(WaveformWidgetFactory::High));
 
-            if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
-                lowGain = 0;
+            if (m_pLowButtonControlObject && m_pLowButtonControlObject->get() > 0.0) {
+                lowGain = m_pEQButtonMode->get();
             }
 
-            if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
-                midGain = 0;
+            if (m_pMidButtonControlObject && m_pMidButtonControlObject->get() > 0.0) {
+                midGain = m_pEQButtonMode->get();
             }
 
-            if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
-                highGain = 0;
+            if (m_pHighButtonControlObject && m_pHighButtonControlObject->get() > 0.0) {
+                highGain = m_pEQButtonMode->get();
             }
         }
 
