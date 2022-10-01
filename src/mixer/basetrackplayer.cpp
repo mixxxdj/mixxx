@@ -708,10 +708,11 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 }
 
 void BaseTrackPlayerImpl::setupEqControls() {
-    const QString group = getGroup();
-    m_pLowFilter = make_parented<ControlProxy>(group, "filterLow", this);
-    m_pMidFilter = make_parented<ControlProxy>(group, "filterMid", this);
-    m_pHighFilter = make_parented<ControlProxy>(group, "filterHigh", this);
+    const QString group = QString("[EqualizerRack1_%1_Effect1]").arg(getGroup());
+
+    m_pLowFilter = make_parented<ControlProxy>(group, "parameter1", this);
+    m_pMidFilter = make_parented<ControlProxy>(group, "parameter2", this);
+    m_pHighFilter = make_parented<ControlProxy>(group, "parameter3", this);
     m_pLowFilterKill = make_parented<ControlProxy>(group, "button_parameter1", this);
     m_pMidFilterKill = make_parented<ControlProxy>(group, "button_parameter2", this);
     m_pHighFilterKill = make_parented<ControlProxy>(group, "button_parameter3", this);
