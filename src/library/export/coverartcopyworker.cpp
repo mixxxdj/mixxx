@@ -8,6 +8,10 @@
 #include "util/imagefiledata.h"
 #include "util/safelywritablefile.h"
 
+CoverArtCopyWorker::~CoverArtCopyWorker() {
+    wait();
+}
+
 void CoverArtCopyWorker::run() {
     // Create a security token for the file.
     auto selectedCoverFileAccess = mixxx::FileAccess(mixxx::FileInfo(m_selectedCoverArtFilePath));

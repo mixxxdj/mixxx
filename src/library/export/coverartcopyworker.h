@@ -28,7 +28,7 @@ class CoverArtCopyWorker : public QThread {
         qRegisterMetaType<CoverInfoRelative>("CoverInfoRelative");
     }
 
-    ~CoverArtCopyWorker() override = default;
+    ~CoverArtCopyWorker() override;
 
   signals:
     void askOverwrite(const QString& filename,
