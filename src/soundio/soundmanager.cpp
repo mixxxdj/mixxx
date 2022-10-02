@@ -3,6 +3,7 @@
 #include <portaudio.h>
 
 #include <QLibrary>
+#include <QRegularExpression>
 #include <QThread>
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
@@ -41,14 +42,27 @@ struct DeviceMode {
 #ifdef __LINUX__
 constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
+
+// Match soundconfig_[a-z0-9_].xml and legacy soundconfig.xml
+const QRegularExpression kSoundConfigFileNameRegExp(
+        QStringLiteral("^") +
+        SOUNDMANAGERCONFIG_DEFAULT_NAME +
+        QStringLiteral("((?:_\\w+)?)\\") +
+        SOUNDMANAGERCONFIG_EXTENSION +
+        QStringLiteral("$"));
+
+//: Filler for the nameless legacy soundconfig.xml profile
+const QString kDefaultProfileName(QObject::tr("(no name)"));
+
+const ConfigKey kSoundProfileConfigKey("[Master]", "sound_profile");
 } // anonymous namespace
 
-SoundManager::SoundManager(UserSettingsPointer pConfig,
+SoundManager::SoundManager(UserSettingsPointer pSettings,
         EngineMaster* pMaster)
         : m_pMaster(pMaster),
-          m_pConfig(pConfig),
+          m_pSettings(pSettings),
           m_paInitialized(false),
-          m_config(this),
+          m_soundConfig(this),
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0),
@@ -74,9 +88,69 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
 
     queryDevices();
 
-    if (!m_config.readFromDisk()) {
-        m_config.loadDefaults(this, SoundManagerConfig::ALL);
+    CmdlineArgs& cla = CmdlineArgs::Instance();
+    m_settingsDir = QDir(cla.getSettingsPath());
+    // Set the default config file path
+    m_soundConfigFile = QFileInfo(m_settingsDir.filePath(
+            SOUNDMANAGERCONFIG_DEFAULT_FILE));
+    m_soundConfig.setFilePath(m_soundConfigFile);
+
+    // Collect sound profiles in settings dir
+    collectSoundProfiles();
+
+    // Check if a sound config was set by command line argument and try to load it
+    QString claProfileName = cla.getSoundConfig();
+    bool claProfileLoaded = false;
+    if (!claProfileName.isEmpty()) {
+        claProfileName.replace("_", " ");
+        QFileInfo claProfileInfo = m_configProfiles.value(claProfileName);
+        SoundManagerConfig claConfig(this);
+        claConfig.setFilePath(claProfileInfo);
+        if (claConfig.readFromDisk()) {
+            m_soundConfigFile = claProfileInfo;
+            m_soundConfig = claConfig;
+            claProfileLoaded = true;
+            qDebug() << "Loaded sound config '" << claProfileName << "'";
+        }
+        qWarning() << "Failed loading sound config '" << claProfileName << "'";
     }
+
+    // If loading the command line profile failed, try to load the previously
+    // configured profile.
+    bool savedProfileLoaded = false;
+    if (!claProfileLoaded) {
+        QString savedProfileName = getConfiguredSoundProfileName();
+        if (!savedProfileName.isEmpty()) {
+            QFileInfo savedProfileInfo(m_configProfiles.value(savedProfileName));
+            SoundManagerConfig savedConfig(this);
+            savedConfig.setFilePath(savedProfileInfo);
+            // readFromDisk() fails if the file does not exist or is corrupted
+            if (savedConfig.readFromDisk()) {
+                m_soundConfigFile = savedProfileInfo;
+                m_soundConfig = savedConfig;
+                savedProfileLoaded = true;
+                qDebug() << "Loaded configured sound config '" << savedProfileName << "'";
+            }
+            qWarning() << "Failed loading configured sound config" << savedProfileName << "'";
+        }
+    }
+
+    // If that failed as well, try to load the default profile.
+    if (!claProfileLoaded && !savedProfileLoaded) {
+        m_soundConfigFile =
+                QFileInfo(m_settingsDir.filePath(SOUNDMANAGERCONFIG_DEFAULT_FILE));
+        m_soundConfig.setFilePath(m_soundConfigFile);
+        // Add or overwrite default config to profile list
+        m_configProfiles.insert(kDefaultProfileName, m_soundConfigFile);
+        m_pSettings->setValue(kSoundProfileConfigKey, kDefaultProfileName);
+        if (!m_soundConfig.readFromDisk()) {
+            m_soundConfig.loadDefaults(this, SoundManagerConfig::ALL);
+        }
+        qDebug() << "Loaded default sound config";
+    }
+
+    // TODO(ronso0) rename to reflect what it's actually doing:
+    // checkAndMaybeResetApiAndSampleRate ? meeh...
     checkConfig();
     // Don't write config to disk, yet -- it may be reset to defaults in case
     // previously configured devices were not found.
@@ -98,6 +172,114 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
+}
+
+void SoundManager::collectSoundProfiles() {
+    qDebug() << "   .";
+    qDebug() << "   .";
+    qDebug() << "   collectSoundProfiles:";
+    m_configProfiles.clear();
+    // Collect only soundconfig_[a-z0-9_].xml and legacy soundconfig.xml
+    QFileInfoList xmlFiles = m_settingsDir.entryInfoList(
+            QStringList() << "*" << SOUNDMANAGERCONFIG_EXTENSION, // pre-filter
+            QDir::Files | QDir::Readable | QDir::Writable,        // required attributes
+            QDir::Name);                                          // sort by name
+    for (const QFileInfo& file : xmlFiles) {
+        QString fileName = file.fileName();
+        QRegularExpressionMatch profileMatch =
+                kSoundConfigFileNameRegExp.match(fileName);
+        if (profileMatch.hasMatch()) {
+            QString name = profileMatch.captured(1);
+            QString displayName;
+            if (name.isEmpty()) { // catch soundconfig.xml
+                displayName = kDefaultProfileName;
+            } else {
+                displayName = name.remove(0, 1); // remove first _
+                displayName.replace("_", " ");   // replace all _ with space
+                // TODO(ronso0) This way we may end up with multiple profile names
+                // consisting of whitespaces. Prohibit this?
+                // Such names can easily be avoided when creating profiles in
+                // DlgPrefSound, thus whitespace names can occur only when profile files
+                // are renamed manually.
+            }
+            // TODO(ronso0) Even though there can't be multiple identical files,
+            // should we avoid inserting duplicates?
+            m_configProfiles.insert(displayName, file);
+            qDebug() << "     " << displayName << "\t" << file.fileName();
+        }
+    }
+    qDebug() << "   .";
+    qDebug() << "   .";
+}
+
+QStringList SoundManager::getSoundProfileNames() const {
+    qDebug() << "       getSoundProfNames:";
+    QStringList profileNames;
+    QMapIterator<QString, QFileInfo> it(m_configProfiles);
+    while (it.hasNext()) {
+        it.next();
+        const QString name = it.key();
+        qDebug() << "        " << name;
+        profileNames << name;
+    }
+    return profileNames;
+}
+
+QString SoundManager::getConfiguredSoundProfileName() const {
+    return m_pSettings->getValue(kSoundProfileConfigKey);
+}
+
+QString SoundManager::getDefaultSoundProfileName() const {
+    return kDefaultProfileName;
+}
+
+SoundDeviceStatus SoundManager::setSoundProfile(const QString& profileName) {
+    qInfo() << "     +";
+    qInfo() << "     + SM::setSoundProfile:" << profileName;
+
+    SoundDeviceStatus status = SoundDeviceStatus::Error;
+    if (profileName.isEmpty()) {
+        qInfo() << "     + err: profile name empty";
+        qInfo() << "     + ";
+        return status;
+    }
+    if (!m_configProfiles.contains(profileName)) {
+        qInfo() << "     + profile name not in list";
+        qInfo() << "     + ";
+        return status;
+    }
+
+    SoundManagerConfig newConfig(this);
+    QFileInfo newProfileFileInfo(m_configProfiles.value(profileName));
+    newConfig.setFilePath(newProfileFileInfo);
+    if (!newConfig.readFromDisk()) {
+        qInfo() << "     + readFromDisk() failed";
+        qInfo() << "     + ";
+        return status;
+    }
+    qInfo() << "     + " << newProfileFileInfo.fileName() << "is valid";
+
+    // set file path to be used in setConfig()
+    qInfo() << "     + m_soundConfigFile =" << newProfileFileInfo.fileName();
+    m_soundConfigFile = newProfileFileInfo;
+
+    status = setConfig(newConfig);
+    // => m_soundConfig = newConfig
+    if (status == SoundDeviceStatus::Ok) {
+        qInfo() << "     + success";
+        qInfo() << "     + save" << profileName << "to config";
+        //m_soundConfig = newConfig; // is set in setConfig()
+        m_pSettings->setValue(kSoundProfileConfigKey, profileName);
+    } else {
+        qInfo() << "     + fail";
+    }
+    qInfo() << "     +";
+
+    return status;
+}
+
+QString SoundManager::getCurrentSoundProfileName() const {
+    return m_configProfiles.key(m_soundConfigFile);
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(
@@ -300,7 +482,7 @@ void SoundManager::queryDevicesPortaudio() {
          */
         const auto deviceTypeId = paApiIndexToTypeId.value(deviceInfo->hostApi);
         auto currentDevice = SoundDevicePointer(new SoundDevicePortAudio(
-                m_pConfig, this, deviceInfo, deviceTypeId, i));
+                m_pSettings, this, deviceInfo, deviceTypeId, i));
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
@@ -312,7 +494,7 @@ void SoundManager::queryDevicesPortaudio() {
 
 void SoundManager::queryDevicesMixxx() {
     auto currentDevice = SoundDevicePointer(new SoundDeviceNetwork(
-            m_pConfig, this, m_pNetworkStream));
+            m_pSettings, this, m_pNetworkStream));
     m_devices.append(currentDevice);
 }
 
@@ -320,7 +502,8 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // NOTE(rryan): Big warning: This function is concurrent with calls to
     // pushBuffer and onDeviceOutputCallback until closeDevices() below.
 
-    qDebug() << "SoundManager::setupDevices()";
+    qDebug() << "   ~~ ";
+    qDebug() << "   ~~ SoundManager::setupDevices()";
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
@@ -354,7 +537,11 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
     // load with all configured devices.
     // all found devices are removed below
-    QSet<SoundDeviceId> devicesNotFound = m_config.getDevices();
+    // FIXME This is wrong: SoundManagerConfig::readFromDisk() already
+    // removes configured devices that are currently unavailable. Thus, the
+    // devicesNotFound.isEmpty() check below is kinda pointless and users will
+    // not notice missing devices unless there is is no output configured at all.
+    QSet<SoundDeviceId> devicesNotFound = m_soundConfig.getDevices();
 
     // pair is isInput, isOutput
     QVector<DeviceMode> toOpen;
@@ -365,7 +552,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
         pDevice->clearInputs();
         pDevice->clearOutputs();
         m_pErrorDevice = pDevice;
-        const auto inputs = m_config.getInputs().values(pDevice->getDeviceId());
+        const auto inputs = m_soundConfig.getInputs().values(pDevice->getDeviceId());
         for (const auto& in : inputs) {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
@@ -389,13 +576,13 @@ SoundDeviceStatus SoundManager::setupDevices() {
             }
         }
         QList<AudioOutput> outputs =
-                m_config.getOutputs().values(pDevice->getDeviceId());
+                m_soundConfig.getOutputs().values(pDevice->getDeviceId());
 
         // Statically connect the Network Device to the Sidechain
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
             AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
             outputs.append(out);
-            if (m_config.getForceNetworkClock()) {
+            if (m_soundConfig.getForceNetworkClock()) {
                 pNewMasterClockRef = pDevice;
             }
         }
@@ -415,11 +602,14 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
             AudioOutputBuffer aob(out, pBuffer);
             status = pDevice->addOutput(aob);
+            qDebug() << "   ~~ out dev" << pDevice->getDisplayName() << " > add output";
+            qDebug() << "      status:" << static_cast<int>(status);
             if (status != SoundDeviceStatus::Ok) {
+                qDebug() << "      > closeAndError";
                 goto closeAndError;
             }
 
-            if (!m_config.getForceNetworkClock()) {
+            if (!m_soundConfig.getForceNetworkClock()) {
                 if (out.getType() == AudioOutput::MASTER) {
                     pNewMasterClockRef = pDevice;
                 } else if ((out.getType() == AudioOutput::DECK ||
@@ -439,8 +629,8 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
 
         if (mode.isInput || mode.isOutput) {
-            pDevice->setSampleRate(m_config.getSampleRate());
-            pDevice->setFramesPerBuffer(m_config.getFramesPerBuffer());
+            pDevice->setSampleRate(m_soundConfig.getSampleRate());
+            pDevice->setFramesPerBuffer(m_soundConfig.getFramesPerBuffer());
             toOpen.append(mode);
         }
     }
@@ -458,7 +648,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
                        << pDevice->getDisplayName();
         }
 
-        int syncBuffers = m_config.getSyncBuffers();
+        int syncBuffers = m_soundConfig.getSyncBuffers();
         // If we are in safe mode and using experimental polling support, use
         // the default of 2 sync buffers instead.
         if (CmdlineArgs::Instance().getSafeMode() && syncBuffers == 0) {
@@ -542,12 +732,13 @@ QString SoundManager::getLastErrorMessage(SoundDeviceStatus status) const {
 }
 
 SoundManagerConfig SoundManager::getConfig() const {
-    return m_config;
+    return m_soundConfig;
 }
 
-SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
+SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& soundConfig) {
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
-    m_config = config;
+    m_soundConfig = soundConfig;
+    m_soundConfig.setFilePath(m_soundConfigFile);
     checkConfig();
 
     // Close open devices. After this call we will not get any more
@@ -559,29 +750,29 @@ SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),
-                   ConfigValue(static_cast<int>(m_config.getSampleRate())));
+    m_pSettings->set(ConfigKey("[Soundcard]", "Samplerate"),
+            ConfigValue(static_cast<int>(m_soundConfig.getSampleRate())));
 
     status = setupDevices();
     if (status == SoundDeviceStatus::Ok) {
-        m_config.writeToDisk();
+        m_soundConfig.writeToDisk();
     }
     return status;
 }
 
 void SoundManager::checkConfig() {
-    if (!m_config.checkAPI()) {
-        m_config.setAPI(SoundManagerConfig::kDefaultAPI);
-        m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
+    if (!m_soundConfig.checkAPI()) {
+        m_soundConfig.setAPI(SoundManagerConfig::kDefaultAPI);
+        m_soundConfig.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
-    if (!m_config.checkSampleRate(*this)) {
-        m_config.setSampleRate(SoundManagerConfig::kFallbackSampleRate);
-        m_config.loadDefaults(this, SoundManagerConfig::OTHER);
+    if (!m_soundConfig.checkSampleRate(*this)) {
+        m_soundConfig.setSampleRate(SoundManagerConfig::kFallbackSampleRate);
+        m_soundConfig.loadDefaults(this, SoundManagerConfig::OTHER);
     }
 
     // Even if we have a two-deck skin, if someone has configured a deck > 2
     // then the configuration needs to know about that extra deck.
-    m_config.setCorrectDeckCount(getConfiguredDeckCount());
+    m_soundConfig.setCorrectDeckCount(getConfiguredDeckCount());
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
@@ -675,13 +866,13 @@ void SoundManager::setConfiguredDeckCount(int count) {
         // Unchanged
         return;
     }
-    m_config.setDeckCount(count);
+    m_soundConfig.setDeckCount(count);
     checkConfig();
-    m_config.writeToDisk();
+    m_soundConfig.writeToDisk();
 }
 
 int SoundManager::getConfiguredDeckCount() const {
-    return m_config.getDeckCount();
+    return m_soundConfig.getDeckCount();
 }
 
 void SoundManager::processUnderflowHappened() {
@@ -690,8 +881,9 @@ void SoundManager::processUnderflowHappened() {
             m_masterAudioLatencyOverload.set(1.0);
             m_masterAudioLatencyOverloadCount.set(
                     m_masterAudioLatencyOverloadCount.get() + 1);
-            m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
-                    / m_config.getFramesPerBuffer() / 1000;
+            m_underflowUpdateCount = CPU_OVERLOAD_DURATION *
+                    m_soundConfig.getSampleRate() /
+                    m_soundConfig.getFramesPerBuffer() / 1000;
 
             m_underflowHappened = 0; // resetting here is not thread safe,
                                      // but that is OK, because we count only

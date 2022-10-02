@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QtDebug>
 
@@ -13,21 +14,22 @@
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 
-/**
- * Construct a new sound preferences pane. Initializes and populates all the
- * all the controls to the values obtained from SoundManager.
- */
+/// Construct a new sound preferences pane. Initializes and populates all the
+/// all the controls to the values obtained from SoundManager.
 DlgPrefSound::DlgPrefSound(QWidget* pParent,
         std::shared_ptr<SoundManager> pSoundManager,
         UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
           m_pSettings(pSettings),
-          m_config(pSoundManager.get()),
+          m_soundConfig(pSoundManager.get()),
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
           m_loading(false) {
+    qDebug() << "  **";
+    qDebug() << "  **";
+    qDebug() << "  ** Dlg init";
     setupUi(this);
     // Create text color for the wiki links
     createLinkColor();
@@ -36,6 +38,39 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &SoundManager::devicesUpdated,
             this,
             &DlgPrefSound::refreshDevices);
+
+    connect(profileComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefSound::soundProfileSelected);
+
+    connect(newProfileButton,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefSound::createNewProfile);
+    connect(renameProfileButton,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefSound::renameProfile);
+    connect(dupProfileButton,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefSound::duplicateProfile);
+    connect(delProfileButton,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefSound::deleteProfile);
+
+    //connect(m_pSoundManager.get(),
+    //        &SoundManager::soundProfileChanged,
+    //        this,
+    //        //&DlgPrefSound::slotUpdate);
+    //        [this]() {
+    //            // load settings, update GUI
+    //            slotUpdate();
+    //            //m_settingsModified = true;
+    //            //slotApply();
+    //        });
 
     apiComboBox->clear();
     apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
@@ -105,6 +140,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     boothDelaySpinBox->setValue(m_pBoothDelay->get());
 
+    // TODO Don't apply these settings instantly, instead connect to
+    // &DlgPrefSound::settingChanged
     connect(latencyCompensationSpinBox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
@@ -260,6 +297,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             m_pLinkColor,
                             tr("Mixxx DJ Hardware Guide"),
                             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
+    qDebug() << "  **";
+    qDebug() << "  **";
 }
 
 DlgPrefSound::~DlgPrefSound() {
@@ -281,11 +320,9 @@ bool DlgPrefSound::eventFilter(QObject* obj, QEvent* e) {
     return QObject::eventFilter(obj, e);
 }
 
-/**
- * Slot called when the preferences dialog is opened or this pane is
- * selected.
- */
 void DlgPrefSound::slotUpdate() {
+    qDebug() << "   #";
+    qDebug() << "   # slotUpdate";
     // this is unfortunate, because slotUpdate is called every time
     // we change to this pane, we lose changed and unapplied settings
     // every time. There's no real way around this, just another argument
@@ -293,21 +330,23 @@ void DlgPrefSound::slotUpdate() {
     m_bSkipConfigClear = true;
     loadSettings();
     checkLatencyCompensation();
+    //updateProfileDeleteButton();
     m_bSkipConfigClear = false;
     m_settingsModified = false;
+    qDebug() << "   #";
 }
 
-/**
- * Slot called when the Apply or OK button is pressed.
- */
 void DlgPrefSound::slotApply() {
+    qDebug() << "   #";
+    qDebug() << "   # slotApply";
     if (!m_settingsModified) {
+        qDebug() << "   # !m_settingsModified, return";
         return;
     }
 
-    m_config.clearInputs();
-    m_config.clearOutputs();
-    emit writePaths(&m_config);
+    m_soundConfig.clearInputs();
+    m_soundConfig.clearOutputs();
+    emit writePaths(&m_soundConfig);
 
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     {
@@ -316,12 +355,14 @@ void DlgPrefSound::slotApply() {
         m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
                 ConfigValue(keylockComboBox->currentData().toInt()));
 
-        status = m_pSoundManager->setConfig(m_config);
+        status = m_pSoundManager->setConfig(m_soundConfig);
     }
     if (status != SoundDeviceStatus::Ok) {
         QString error = m_pSoundManager->getLastErrorMessage(status);
         QMessageBox::warning(nullptr, tr("Configuration error"), error);
     } else {
+        qDebug() << "   # config loaded";
+        // SoundManager has now saved the profile name in mixxx.cfg
         m_settingsModified = false;
         m_bLatencyChanged = false;
     }
@@ -329,19 +370,18 @@ void DlgPrefSound::slotApply() {
     loadSettings(); // in case SM decided to change anything it didn't like
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
+    qDebug() << "   #";
 }
 
 QUrl DlgPrefSound::helpUrl() const {
     return QUrl(MIXXX_MANUAL_SOUND_URL);
 }
 
-/**
- * Initializes (and creates) all the path items. Each path item widget allows
- * the user to input a sound device name and channel number given a description
- * of what will be done with that info. Inputs and outputs are grouped by tab,
- * and each path item has an identifier (Master, Headphones, ...) and an index,
- * if necessary.
- */
+/// Initializes (and creates) all the path items. Each path item widget allows
+/// the user to input a sound device name and channel number given a description
+/// of what will be done with that info. Inputs and outputs are grouped by tab,
+/// and each path item has an identifier (Master, Headphones, ...) and an index,
+/// if necessary.
 void DlgPrefSound::initializePaths() {
     foreach (AudioOutput out, m_pSoundManager->registeredOutputs()) {
         if (!out.isHidden()) {
@@ -441,25 +481,47 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     pLayout->insertWidget(pos, pItem);
 }
 
-/**
- * Convenience overload to load settings from the SoundManagerConfig owned by
- * SoundManager.
- */
+/// Convenience overload to load settings from the SoundManagerConfig owned by
+/// SoundManager.
 void DlgPrefSound::loadSettings() {
+    qDebug() << " ....";
+    qDebug() << "  ....";
+    qDebug() << "   .... Dlg loadSettings:";
     loadSettings(m_pSoundManager->getConfig());
+    qDebug() << "  ....";
+    qDebug() << " ....";
 }
 
-/**
- * Loads the settings in the given SoundManagerConfig into the dialog.
- */
+/// Loads the settings in the given SoundManagerConfig into the dialog.
 void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
+    qDebug() << "     .";
+    qDebug() << "     Dlg loadSettings:";
     m_loading = true; // so settingsChanged ignores all our modifications here
-    m_config = config;
-    int apiIndex = apiComboBox->findData(m_config.getAPI());
+    m_soundConfig = config;
+
+    profileComboBox->clear();
+    profileComboBox->addItems(m_pSoundManager->getSoundProfileNames());
+    QString currProfile = m_pSoundManager->getCurrentSoundProfileName();
+    qDebug() << "       curr profile:" << currProfile;
+    if (!currProfile.isEmpty() && profileComboBox->findText(currProfile) != -1) {
+        qDebug() << "       select" << currProfile;
+        profileComboBox->setCurrentText(currProfile);
+    } else {
+        qDebug() << "       ! profile" << currProfile << "is not in list";
+    }
+    qDebug() << "     .";
+
+    //updateProfileDeleteButton();
+    //refreshDevices();
+
+    int apiIndex = apiComboBox->findData(m_soundConfig.getAPI());
     if (apiIndex != -1) {
         apiComboBox->setCurrentIndex(apiIndex);
+        refreshDevices();
+        maybeAdjustGuiToJackAPI();
     }
-    int sampleRateIndex = sampleRateComboBox->findData(m_config.getSampleRate());
+
+    int sampleRateIndex = sampleRateComboBox->findData(m_soundConfig.getSampleRate());
     if (sampleRateIndex != -1) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
         if (audioBufferComboBox->count() <= 0) {
@@ -469,7 +531,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
             // the updateLatencies slot won't run -- bkgood lp bug 689373
         }
     }
-    int sizeIndex = audioBufferComboBox->findData(m_config.getAudioBufferSizeIndex());
+
+    int sizeIndex = audioBufferComboBox->findData(m_soundConfig.getAudioBufferSizeIndex());
     if (sizeIndex != -1) {
         audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
@@ -479,7 +542,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     // buffer size or sample rate.
     m_bLatencyChanged = false;
 
-    int syncBuffers = m_config.getSyncBuffers();
+    int syncBuffers = m_soundConfig.getSyncBuffers();
     if (syncBuffers == 0) {
         // "Experimental (no delay)"))
         deviceSyncComboBox->setCurrentIndex(1);
@@ -491,7 +554,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         deviceSyncComboBox->setCurrentIndex(0);
     }
 
-    if (m_config.getForceNetworkClock()) {
+    if (m_soundConfig.getForceNetworkClock()) {
         engineClockComboBox->setCurrentIndex(1);
     } else {
         engineClockComboBox->setCurrentIndex(0);
@@ -513,22 +576,175 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
 
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
-    emit loadPaths(m_config);
+    emit loadPaths(m_soundConfig);
 }
 
-/**
- * Slot called when the user selects a different API, or the
- * software changes it programmatically (for instance, when it
- * loads a value from SoundManager). Refreshes the device lists
- * for the new API and pushes those to the path items.
- */
+void DlgPrefSound::soundProfileSelected(int index) {
+    Q_UNUSED(index);
+    if (m_loading) {
+        return;
+    }
+    QString currentProfile = m_pSoundManager->getCurrentSoundProfileName();
+    QString newProfile = profileComboBox->currentText();
+    qDebug() << "   .";
+    qDebug() << "   .";
+    qDebug() << "   profile selected";
+    qDebug() << "     curr:" << currentProfile;
+    qDebug() << "     new :" << newProfile;
+
+    // ignore no-op
+    if (newProfile == currentProfile) {
+        qDebug() << "     ! ignore no-op";
+        return;
+    }
+
+    // check for pending changes of current profile
+    if (m_settingsModified) {
+        qDebug() << "     (sett modified)";
+        QString changeProfileTitle =
+                tr("Pending changes")
+                        .arg(currentProfile);
+        QString changeProfileLabel =
+                tr("Discard changes and load <b>%1</b>?")
+                        .arg(newProfile);
+        QMessageBox changeProfileMsgBox;
+        changeProfileMsgBox.setIcon(QMessageBox::Question);
+        changeProfileMsgBox.setWindowTitle(changeProfileTitle);
+        changeProfileMsgBox.setText(changeProfileLabel);
+        changeProfileMsgBox.setStandardButtons(
+                // Third option might be "Save pending changes", though slotApply() may
+                // also open error dialogs which would complicate the workflow unnecessarily.
+                /* QMessageBox::Save | */ QMessageBox::Discard | QMessageBox::Cancel);
+        int choice = changeProfileMsgBox.exec();
+
+        switch (choice) {
+        //case QMessageBox::Save:
+        //    qDebug() << "     Save";
+        //    qDebug() << "     .";
+        //    slotApply();
+        //    break;
+        case QMessageBox::Discard:
+            qDebug() << "     Discard";
+            qDebug() << "     .";
+            // Ignore pending changes, load new profile
+            m_settingsModified = false;
+            break;
+        case QMessageBox::Cancel:
+        default:
+            qDebug() << "     Cancel";
+            qDebug() << "     .";
+            // restore previous profile selection
+            profileComboBox->blockSignals(true);
+            profileComboBox->setCurrentText(currentProfile);
+            profileComboBox->blockSignals(false);
+            return;
+        }
+    }
+
+    // select and read new profile
+    SoundDeviceStatus status = SoundDeviceStatus::Ok;
+    {
+        ScopedWaitCursor cursor;
+        status = m_pSoundManager->setSoundProfile(newProfile);
+        if (status == SoundDeviceStatus::Ok) {
+            // clear device comboboxes
+            m_outputDevices.clear();
+            m_inputDevices.clear();
+            emit refreshOutputDevices(m_outputDevices);
+            emit refreshInputDevices(m_inputDevices);
+            // get new config, load settings, update GUI
+            qDebug() << "   //profile selected";
+            qDebug() << "   .";
+            slotUpdate();
+            return;
+        }
+    }
+
+    // notify
+    QString errMsg = m_pSoundManager->getLastErrorMessage(status);
+    // "Sound profile could not be loaded"
+    // "Loading saved profile"
+    QMessageBox::warning(nullptr, tr("Configuration error"), errMsg);
+    // TODO(ronso0) Adopt MixxxMainWindow::soundDeviceErrorDlg to let uers choose
+    // 'Reconfigure', 'Load previous profile' (Cancel?) or 'Load default profile'
+
+    // Restore saved profile
+    QString configuredProfile = m_pSoundManager->getConfiguredSoundProfileName();
+    // This is safe (will never be empty) since since SoundManager loads (or creates)
+    // a default config with default name during construction
+    qDebug() << "   //profile selected";
+    qDebug() << "   .";
+    emit profileComboBox->currentTextChanged(configuredProfile);
+}
+
+void DlgPrefSound::createNewProfile() {
+}
+
+void DlgPrefSound::duplicateProfile() {
+}
+
+void DlgPrefSound::renameProfile() {
+    if (m_settingsModified) {
+        QMessageBox::information(this,
+                tr("Pending changes"),
+                tr("Please apply pending changes before renaming this "
+                   "profile."),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
+        return;
+    }
+
+    const QString oldName = profileComboBox->currentText();
+    QString newName;
+    QString errorText;
+    while (newName.isEmpty() || profileComboBox->findText(newName) != -1) {
+        bool okay = false;
+        newName = QInputDialog::getText(nullptr,
+                tr("Rename sound profile"),
+                errorText + "\n" + tr("New name for sound profile") +
+                        QStringLiteral(" \"") + oldName + QStringLiteral("\""),
+                QLineEdit::Normal,
+                oldName,
+                &okay)
+                          .trimmed();
+        if (!okay) {
+            return;
+        }
+
+        if (newName.isEmpty()) {
+            errorText = tr("Sound profile name must not be empty.") + QStringLiteral("\n");
+        } else if (profileComboBox->findText(newName) != -1) {
+            errorText =
+                    tr("A sound profile named \"%1\" already exists.")
+                            .arg(newName) +
+                    QStringLiteral("\n");
+        } else {
+            errorText = QString();
+        }
+    }
+
+    // soundmanager > newName
+}
+
+void DlgPrefSound::deleteProfile() {
+    // prohibit deleting default profile
+}
+
+/// Slot called when the user selects a different API, or the
+/// software changes it programmatically (for instance, when it
+/// loads a value from SoundManager). Refreshes the device lists
+/// for the new API and pushes those to the path items.
 void DlgPrefSound::apiChanged(int index) {
-    m_config.setAPI(apiComboBox->itemData(index).toString());
+    m_soundConfig.setAPI(apiComboBox->itemData(index).toString());
     refreshDevices();
+    maybeAdjustGuiToJackAPI();
+}
+
+void DlgPrefSound::maybeAdjustGuiToJackAPI() {
     // JACK sets its own buffer size and sample rate that Mixxx cannot change.
     // TODO(Be): Get the buffer size from JACK and update audioBufferComboBox.
     // PortAudio does not have a way to get the buffer size from JACK as of July 2017.
-    if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
+    if (m_soundConfig.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
         sampleRateComboBox->setEnabled(false);
         latencyLabel->setEnabled(false);
         audioBufferComboBox->setEnabled(false);
@@ -539,10 +755,8 @@ void DlgPrefSound::apiChanged(int index) {
     }
 }
 
-/**
- * Updates the list of APIs, trying to keep the API and device selections
- * constant if possible.
- */
+/// Updates the list of APIs, trying to keep the API and device selections
+/// constant if possible.
 void DlgPrefSound::updateAPIs() {
     QString currentAPI(apiComboBox->itemData(apiComboBox->currentIndex()).toString());
     emit updatingAPI();
@@ -559,23 +773,19 @@ void DlgPrefSound::updateAPIs() {
     emit updatedAPI();
 }
 
-/**
- * Slot called when the sample rate combo box changes to update the
- * sample rate in the config.
- */
+/// Slot called when the sample rate combo box changes to update the
+/// sample rate in the config.
 void DlgPrefSound::sampleRateChanged(int index) {
-    m_config.setSampleRate(
+    m_soundConfig.setSampleRate(
             sampleRateComboBox->itemData(index).toUInt());
     m_bLatencyChanged = true;
     checkLatencyCompensation();
 }
 
-/**
- * Slot called when the latency combo box is changed to update the
- * latency in the config.
- */
+/// Slot called when the latency combo box is changed to update the
+/// latency in the config.
 void DlgPrefSound::audioBufferChanged(int index) {
-    m_config.setAudioBufferSizeIndex(
+    m_soundConfig.setAudioBufferSizeIndex(
             audioBufferComboBox->itemData(index).toUInt());
     m_bLatencyChanged = true;
     checkLatencyCompensation();
@@ -584,23 +794,23 @@ void DlgPrefSound::audioBufferChanged(int index) {
 void DlgPrefSound::syncBuffersChanged(int index) {
     if (index == 0) {
         // "Default (long delay)" = 2 buffer
-        m_config.setSyncBuffers(2);
+        m_soundConfig.setSyncBuffers(2);
     } else if (index == 1) {
         // "Experimental (no delay)")) = 0 buffer
-        m_config.setSyncBuffers(0);
+        m_soundConfig.setSyncBuffers(0);
     } else {
         // "Disabled (short delay)")) = 1 buffer
-        m_config.setSyncBuffers(1);
+        m_soundConfig.setSyncBuffers(1);
     }
 }
 
 void DlgPrefSound::engineClockChanged(int index) {
     if (index == 0) {
         // "Soundcard Clock"
-        m_config.setForceNetworkClock(false);
+        m_soundConfig.setForceNetworkClock(false);
     } else {
         // "Network Clock"
-        m_config.setForceNetworkClock(true);
+        m_soundConfig.setForceNetworkClock(true);
     }
 }
 
@@ -637,29 +847,30 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     }
 }
 
-/**
- * Slot called when device lists go bad to refresh them, or the API
- * just changes and we need to display new devices.
- */
+/// Slot called when device lists go bad to refresh them, or the API
+/// just changes and we need to display new devices.
 void DlgPrefSound::refreshDevices() {
-    if (m_config.getAPI() == SoundManagerConfig::kDefaultAPI) {
+    if (m_soundConfig.getAPI() == SoundManagerConfig::kDefaultAPI) {
         m_outputDevices.clear();
         m_inputDevices.clear();
     } else {
         m_outputDevices =
-            m_pSoundManager->getDeviceList(m_config.getAPI(), true, false);
+                m_pSoundManager->getDeviceList(m_soundConfig.getAPI(), true, false);
         m_inputDevices =
-            m_pSoundManager->getDeviceList(m_config.getAPI(), false, true);
+                m_pSoundManager->getDeviceList(m_soundConfig.getAPI(), false, true);
     }
     emit refreshOutputDevices(m_outputDevices);
     emit refreshInputDevices(m_inputDevices);
 }
 
-/**
- * Called when any of the combo boxes in this dialog are changed. Enables the
- * apply button and marks that settings have been changed so that
- * DlgPrefSound::slotApply knows to apply them.
- */
+void DlgPrefSound::updateProfileDeleteButton() {
+    // prohibit deleting the last remaining profile
+    delProfileButton->setEnabled(profileComboBox->count() > 1);
+}
+
+/// Called when any of the combo boxes in this dialog are changed. Enables the
+/// apply button and marks that settings have been changed so that
+/// DlgPrefSound::slotApply knows to apply them.
 void DlgPrefSound::settingChanged() {
     if (m_loading) {
         return; // doesn't count if we're just loading prefs
@@ -675,19 +886,18 @@ void DlgPrefSound::deviceSettingChanged() {
     m_settingsModified = true;
 }
 
-/**
- * Slot called when the "Query Devices" button is clicked.
- */
+/// Slot called when the "Query Devices" button is clicked.
 void DlgPrefSound::queryClicked() {
     ScopedWaitCursor cursor;
     m_pSoundManager->clearAndQueryDevices();
     updateAPIs();
 }
 
-/**
- * Slot called when the "Reset to Defaults" button is clicked.
- */
 void DlgPrefSound::slotResetToDefaults() {
+    qDebug() << "     .";
+    qDebug() << "     Dlg defaults:";
+    //m_soundConfig.loadDefaults(SoundManagerConfig::ALL);
+    //loadSettings(m_soundConfig);
     SoundManagerConfig newConfig(m_pSoundManager.get());
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
@@ -722,7 +932,10 @@ void DlgPrefSound::slotResetToDefaults() {
 
     latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
+    //updateProfileDeleteButton();
+
     settingChanged(); // force the apply button to enable
+    qDebug() << "     .";
 }
 
 void DlgPrefSound::bufferUnderflow(double count) {
@@ -787,13 +1000,13 @@ void DlgPrefSound::checkLatencyCompensation() {
 
     // Do not clear the SoundManagerConfig on startup, from slotApply, or from slotUpdate
     if (!m_bSkipConfigClear) {
-        m_config.clearInputs();
-        m_config.clearOutputs();
+        m_soundConfig.clearInputs();
+        m_soundConfig.clearOutputs();
     }
 
-    emit writePaths(&m_config);
+    emit writePaths(&m_soundConfig);
 
-    if (m_config.hasMicInputs() && !m_config.hasExternalRecordBroadcast()) {
+    if (m_soundConfig.hasMicInputs() && !m_soundConfig.hasExternalRecordBroadcast()) {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
             latencyCompensationSpinBox->setEnabled(true);

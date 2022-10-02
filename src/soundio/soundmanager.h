@@ -2,6 +2,7 @@
 
 #include <QHash>
 #include <QList>
+#include <QMap>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
@@ -36,6 +37,9 @@ class SoundDeviceNotFound;
 #define SOUNDMANAGER_CONNECTING 1
 #define SOUNDMANAGER_CONNECTED 2
 
+#define SOUNDMANAGERCONFIG_DEFAULT_NAME "soundconfig"
+#define SOUNDMANAGERCONFIG_EXTENSION ".xml"
+#define SOUNDMANAGERCONFIG_DEFAULT_FILE "soundconfig.xml"
 
 class SoundManager : public QObject {
     Q_OBJECT
@@ -79,13 +83,27 @@ class SoundManager : public QObject {
     SoundDeviceStatus setConfig(const SoundManagerConfig& config);
     void checkConfig();
 
+    // Get all sound config files in the settings dir
+    void collectSoundProfiles();
+    // Provide names of found profiles
+    QStringList getSoundProfileNames() const;
+    //QString getDefaultSoundProfileName() const {
+    //    return kDefaultProfileName;
+    //}
+    QString getDefaultSoundProfileName() const;
+    // Provide name of currently loaded profile
+    QString getCurrentSoundProfileName() const;
+    // Read sound profile name from user settings
+    QString getConfiguredSoundProfileName() const;
+    //void setConfiguredSoundProfileName(const QString& profileName);
+    SoundDeviceStatus setSoundProfile(const QString& profileName);
+
     void onDeviceOutputCallback(const SINT iFramesPerBuffer);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
     void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                           const SINT iFramesPerBuffer);
-
 
     void writeProcess() const;
     void readProcess() const;
@@ -110,6 +128,9 @@ class SoundManager : public QObject {
 
     void processUnderflowHappened();
 
+  public slots:
+    //void setSoundProfile(const QString& profileName);
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
@@ -129,14 +150,18 @@ class SoundManager : public QObject {
     void setJACKName() const;
 
     EngineMaster *m_pMaster;
-    UserSettingsPointer m_pConfig;
+    UserSettingsPointer m_pSettings;
     bool m_paInitialized;
     mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
-    SoundManagerConfig m_config;
+    SoundManagerConfig m_soundConfig;
+    QFileInfo m_soundConfigFile;
+    QDir m_settingsDir;
+    QMap<QString, QFileInfo> m_configProfiles;
+
     SoundDevicePointer m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
     QMultiHash<AudioInput, AudioDestination*> m_registeredDestinations;

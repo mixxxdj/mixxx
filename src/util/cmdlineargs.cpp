@@ -111,6 +111,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                 MIXXX_MANUAL_COMMANDLINEOPTIONS_URL);
     }
     // add options
+    // full-screen
     const QCommandLineOption fullScreen(
             QStringList({QStringLiteral("f"), QStringLiteral("full-screen")}),
             forUserFeedback ? QCoreApplication::translate(
@@ -121,6 +122,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(fullScreen);
     parser.addOption(fullScreenDeprecated);
 
+    // locale
     const QCommandLineOption locale(QStringLiteral("locale"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Use a custom locale for loading translations. (e.g "
@@ -129,7 +131,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
             QStringLiteral("locale"));
     parser.addOption(locale);
 
-    // An option with a value
+    // settings path
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Top-level directory where Mixxx should look for settings. "
@@ -144,6 +146,17 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(settingsPath);
     parser.addOption(settingsPathDeprecated);
 
+    // sound configuration file
+    const QCommandLineOption soundConfig(QStringLiteral("sound-config"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Sound config file in specified settings path"
+                                      "Mixxx should use. "
+                                      "Default is: soundconfig.xml")
+                            : QString(),
+            QStringLiteral("path"));
+    parser.addOption(soundConfig);
+
+    // resource path
     QCommandLineOption resourcePath(QStringLiteral("resource-path"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Top-level directory where Mixxx should look for its "
@@ -158,6 +171,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(resourcePath);
     parser.addOption(resourcePathDeprecated);
 
+    // timeline path
     const QCommandLineOption timelinePath(QStringLiteral("timeline-path"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Path the debug statistics time line is written to")
@@ -170,6 +184,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(timelinePath);
     parser.addOption(timelinePathDeprecated);
 
+    // controller debug
     const QCommandLineOption controllerDebug(QStringLiteral("controller-debug"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Causes Mixxx to display/log all of the controller data it "
@@ -182,6 +197,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(controllerDebug);
     parser.addOption(controllerDebugDeprecated);
 
+    // developer mode
     const QCommandLineOption developer(QStringLiteral("developer"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Enables developer-mode. Includes extra log info, stats on "
@@ -189,6 +205,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                             : QString());
     parser.addOption(developer);
 
+    // safe mode
     const QCommandLineOption safeMode(QStringLiteral("safe-mode"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Enables safe-mode. Disables OpenGL waveforms, and "
@@ -200,6 +217,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(safeMode);
     parser.addOption(safeModeDeprecated);
 
+    // console colors
     const QCommandLineOption color(QStringLiteral("color"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "[auto|always|never] Use colors on the console output.")
@@ -208,6 +226,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
             QStringLiteral("auto"));
     parser.addOption(color);
 
+    // log level
     const QCommandLineOption logLevel(QStringLiteral("log-level"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Sets the verbosity of command line logging.\n"
@@ -224,6 +243,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(logLevel);
     parser.addOption(logLevelDeprecated);
 
+    // log flush level
     const QCommandLineOption logFlushLevel(QStringLiteral("log-flush-level"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Sets the the logging level at which the log buffer is "
@@ -238,6 +258,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(logFlushLevel);
     parser.addOption(logFlushLevelDeprecated);
 
+    // debug asserts
     QCommandLineOption debugAssertBreak(QStringLiteral("debug-assert-break"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to "
@@ -252,6 +273,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     const QCommandLineOption helpOption = parser.addHelpOption();
     const QCommandLineOption versionOption = parser.addVersionOption();
 
+    // load music files
     parser.addPositionalArgument(QStringLiteral("file"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Load the specified music file(s) at start-up. Each file "
@@ -305,6 +327,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
             m_settingsPath.append("/");
         }
         m_settingsPathSet = true;
+    }
+
+    if (parser.isSet(soundConfig)) {
+        m_soundConfig = parser.value(soundConfig);
     }
 
     if (parser.isSet(resourcePath)) {

@@ -46,6 +46,9 @@ class CmdlineArgs final {
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
+    const QString& getSoundConfig() const {
+        return m_soundConfig;
+    }
     void setSettingsPath(const QString& newSettingsPath) {
         m_settingsPath = newSettingsPath;
     }
@@ -81,6 +84,7 @@ class CmdlineArgs final {
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     QString m_locale;
     QString m_settingsPath;
+    QString m_soundConfig;
     QString m_resourcePath;
     QString m_timelinePath;
 };

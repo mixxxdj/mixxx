@@ -51,15 +51,18 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
       m_iNumMicInputs(0),
       m_bExternalRecordBroadcastConnected(false),
       m_pSoundManager(pSoundManager) {
-    m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
-/**
- * Read the SoundManagerConfig xml serialization at the predetermined
- * path
- * @returns false if the file can't be read or is invalid XML, true otherwise
- */
+void SoundManagerConfig::setFilePath(const QFileInfo& configFile) {
+    m_configFile = configFile;
+}
+
+/// Read the SoundManagerConfig xml serialization at the predetermined
+/// path
+/// @returns false if the file can't be read or is invalid XML, true otherwise
 bool SoundManagerConfig::readFromDisk() {
+    qDebug() << "   ***";
+    qDebug() << "   *** soundconfig::readFromDisk";
     QFile file(m_configFile.absoluteFilePath());
     QDomDocument doc;
     QDomElement rootElement;
@@ -86,6 +89,7 @@ bool SoundManagerConfig::readFromDisk() {
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
 
+    // FIXME Why assert that late? Without SoundManager we're screwed anyway.
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
@@ -101,6 +105,7 @@ bool SoundManagerConfig::readFromDisk() {
         if (deviceIdFromFile.name.isEmpty()) {
             continue;
         }
+        qDebug() << "   *** dev:" << deviceIdFromFile.name;
 
         // TODO: remove this ugly hack after Mixxx 2.2.3 is released
         QRegularExpressionMatch match = kLegacyFormatRegex.match(deviceIdFromFile.name);
@@ -114,9 +119,11 @@ bool SoundManagerConfig::readFromDisk() {
         }
 
         int devicesMatchingByName = 0;
+        qDebug() << "       trying to find dev amongst available devices";
         for (const auto& soundDevice : soundDevices) {
             SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
             if (hardwareDeviceId.name == deviceIdFromFile.name) {
+                qDebug() << "       found" << deviceIdFromFile.name;
                 devicesMatchingByName++;
             }
         }
@@ -125,6 +132,9 @@ bool SoundManagerConfig::readFromDisk() {
         QDomNodeList inElements(devElement.elementsByTagName(xmlElementInput));
 
         if (devicesMatchingByName == 0) {
+            qDebug() << "       ! didn't find" << deviceIdFromFile.name;
+            // TODO(ronso0) Store dvice name and somehow submit to SoundManager
+            // when it's trying to setupDevices()
             continue;
         } else if (devicesMatchingByName == 1) {
             // There is only one device with this name, so it is unambiguous
@@ -175,6 +185,7 @@ bool SoundManagerConfig::readFromDisk() {
             }
         }
 
+        // add device outputs
         for (int j = 0; j < outElements.count(); ++j) {
             QDomElement outElement(outElements.at(j).toElement());
             if (outElement.isNull()) {
@@ -198,6 +209,7 @@ bool SoundManagerConfig::readFromDisk() {
 
             addOutput(deviceIdFromFile, out);
         }
+        // add device inputs
         for (int j = 0; j < inElements.count(); ++j) {
             QDomElement inElement(inElements.at(j).toElement());
             if (inElement.isNull()) {
@@ -281,12 +293,10 @@ void SoundManagerConfig::setAPI(const QString &api) {
     m_api = api;
 }
 
-/**
- * Checks that the API in the object is valid according to the list of APIs
- * given by SoundManager.
- * @returns false if the API is not found in SoundManager's list, otherwise
- *          true
- */
+/// Checks that the API in the object is valid according to the list of APIs
+/// given by SoundManager.
+/// @returns false if the API is not found in SoundManager's list, otherwise
+///          true
 bool SoundManagerConfig::checkAPI() {
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
@@ -306,7 +316,6 @@ void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
     m_sampleRate = sampleRate != 0 ? sampleRate : kFallbackSampleRate;
 }
 
-
 unsigned int SoundManagerConfig::getSyncBuffers() const {
     return m_syncBuffers;
 }
@@ -324,12 +333,12 @@ void SoundManagerConfig::setForceNetworkClock(bool force) {
     m_forceNetworkClock = force;
 }
 
-/**
- * Checks that the sample rate in the object is valid according to the list of
- * sample rates given by SoundManager.
- * @returns false if the sample rate is not found in SoundManager's list,
- *          otherwise true
- */
+/// Checks that the sample rate in the object is valid according to the list of
+/// sample rates given by SoundManager.
+/// @returns false if the sample rate is not found in SoundManager's list,
+///          otherwise true
+// TODO(xxx) Why require SoundManager here? SoundManagerConfig can only be constructed
+// with SoundManager anyway, and SoundManager doesn't change
 bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
     if (!soundManager.getSampleRates(m_api).contains(m_sampleRate)) {
         return false;
@@ -412,13 +421,12 @@ double SoundManagerConfig::getProcessingLatency() const {
     return static_cast<double>(getFramesPerBuffer()) / m_sampleRate * 1000.0;
 }
 
-
-// Set the audio buffer size
-// @warning This IS NOT a value in milliseconds, or a number of frames per
-// buffer. It is an index, where 1 is the first power-of-two buffer size (in
-// frames) which corresponds to a latency greater than or equal to 1 ms, 2 is
-// the second, etc. This is so that latency values are roughly equivalent
-// between different sample rates.
+/// Set the audio buffer size
+/// @warning This IS NOT a value in milliseconds, or a number of frames per
+/// buffer. It is an index, where 1 is the first power-of-two buffer size (in
+/// frames) which corresponds to a latency greater than or equal to 1 ms, 2 is
+/// the second, etc. This is so that latency values are roughly equivalent
+/// between different sample rates.
 void SoundManagerConfig::setAudioBufferSizeIndex(unsigned int sizeIndex) {
     // latency should be either the min of kMaxAudioBufferSizeIndex and the passed value
     // if it's 0, pretend it was 1 -- bkgood
@@ -464,13 +472,13 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
     return m_bExternalRecordBroadcastConnected;
 }
 
-/**
- * Loads default values for API, master output, sample rate and/or latency.
- * @param soundManager pointer to SoundManager instance to load data from
- * @param flags Bitfield to determine which defaults to load, use something
- *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
- *              load default API and master device.
- */
+/// Loads default values for API, master output, sample rate and/or latency.
+/// @param soundManager pointer to SoundManager instance to load data from
+/// @param flags Bitfield to determine which defaults to load, use something
+///              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
+///              load default API and master device.
+// TODO(xxx) Why require SoundManager here? SoundManagerConfig can only be constructed
+// with SoundManager anyway, and SoundManager doesn't change
 void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
         QList<QString> apiList = soundManager->getHostAPIList();
