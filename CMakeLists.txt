@@ -1027,6 +1027,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectpushbutton.cpp
   src/widget/weffectselector.cpp
   src/widget/wfindonwebmenu.cpp
+  src/widget/wglwidget.cpp
   src/widget/whotcuebutton.cpp
   src/widget/wimagestore.cpp
   src/widget/wkey.cpp
