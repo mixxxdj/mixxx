@@ -31,6 +31,7 @@
 #include "mixer/playermanager.h"
 #include "moc_wtrackmenu.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/defs.h"
@@ -607,7 +608,6 @@ void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeMenu->addAction(m_pAnalyzeAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
-        m_pAnalyzeMenu->addSeparator();
         m_pAnalyzeMenu->addAction(m_pReanalyzeConstBpmAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
         addMenu(m_pAnalyzeMenu);
@@ -832,6 +832,16 @@ void WTrackMenu::updateMenus() {
         // consistent with selectionChanged above.
         m_pCoverMenu->setCoverArt(getCoverInfoOfLastTrack());
         m_pMetadataMenu->addMenu(m_pCoverMenu);
+    }
+
+    if (featureIsEnabled(Feature::Analyze)) {
+        bool useFixedTempo = m_pConfig->getValue<bool>(
+                ConfigKey("[BPM]", "BeatDetectionFixedTempoAssumption"));
+        // Since we already have a 'Reanalyze' action that uses the configured
+        // default, we hide the redundant menu as per suggestion:
+        // https://github.com/mixxxdj/mixxx/pull/10931#issuecomment-1262559750
+        m_pReanalyzeConstBpmAction->setVisible(!useFixedTempo);
+        m_pReanalyzeVarBpmAction->setVisible(useFixedTempo);
     }
 
     if (featureIsEnabled(Feature::Reset) ||
