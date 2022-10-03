@@ -2,6 +2,7 @@
 
 #include <QObject>
 
+#include "control/pollingcontrolproxy.h"
 #include "effects/backends/effectmanifest.h"
 
 class EqualizerUtil {
@@ -16,6 +17,8 @@ class EqualizerUtil {
             maximum = 2.0;
         }
 
+        PollingControlProxy eqButtonMode(ConfigKey("[Mixer Profile]", "EQButtonMode"));
+
         EffectManifestParameterPointer low = pManifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
@@ -28,7 +31,11 @@ class EqualizerUtil {
         EffectManifestParameterPointer killLow = pManifest->addParameter();
         killLow->setId("killLow");
         killLow->setName(QObject::tr("Kill Low"));
-        killLow->setDescription(QObject::tr("Kill the Low Filter"));
+        killLow->setDescription([eqButtonMode]() {
+            return eqButtonMode.get() == 0
+                    ? QObject::tr("Kill the Low Filter")
+                    : QObject::tr("Bypass the Low Filter");
+        });
         killLow->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
         killLow->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killLow->setRange(0, 0, 1);
@@ -45,7 +52,11 @@ class EqualizerUtil {
         EffectManifestParameterPointer killMid = pManifest->addParameter();
         killMid->setId("killMid");
         killMid->setName(QObject::tr("Kill Mid"));
-        killMid->setDescription(QObject::tr("Kill the Mid Filter"));
+        killLow->setDescription([eqButtonMode]() {
+            return eqButtonMode.get() == 0
+                    ? QObject::tr("Kill the Mid Filter")
+                    : QObject::tr("Bypass the Mid Filter");
+        });
         killMid->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
         killMid->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killMid->setRange(0, 0, 1);
@@ -62,7 +73,11 @@ class EqualizerUtil {
         EffectManifestParameterPointer killHigh = pManifest->addParameter();
         killHigh->setId("killHigh");
         killHigh->setName(QObject::tr("Kill High"));
-        killHigh->setDescription(QObject::tr("Kill the High Filter"));
+        killLow->setDescription([eqButtonMode]() {
+            return eqButtonMode.get() == 0
+                    ? QObject::tr("Kill the High Filter")
+                    : QObject::tr("Bypass the High Filter");
+        });
         killHigh->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
         killHigh->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killHigh->setRange(0, 0, 1);

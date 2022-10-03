@@ -322,7 +322,7 @@
               Button- Frequency Kill
               **********************************************
               -->
-              <EffectPushButton>
+              <EqualizerPushButton>
                 <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
                 <Effect>1</Effect>
                 <EffectButtonParameter>3</EffectButtonParameter>
@@ -347,8 +347,8 @@
                   <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter3_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </EffectPushButton>
-              <EffectPushButton>
+              </EqualizerPushButton>
+              <EqualizerPushButton>
                 <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
                 <Effect>1</Effect>
                 <EffectButtonParameter>2</EffectButtonParameter>
@@ -373,8 +373,8 @@
                   <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter2_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </EffectPushButton>
-              <EffectPushButton>
+              </EqualizerPushButton>
+              <EqualizerPushButton>
                 <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
                 <Effect>1</Effect>
                 <EffectButtonParameter>1</EffectButtonParameter>
@@ -399,9 +399,9 @@
                   <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter1_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </EffectPushButton>
+              </EqualizerPushButton>
 
-              <EffectPushButton>
+              <EqualizerPushButton>
                 <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
                 <Effect>1</Effect>
                 <EffectButtonParameter>3</EffectButtonParameter>
@@ -426,8 +426,8 @@
                   <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter3_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </EffectPushButton>
-              <EffectPushButton>
+              </EqualizerPushButton>
+              <EqualizerPushButton>
                 <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
                 <Effect>1</Effect>
                 <EffectButtonParameter>2</EffectButtonParameter>
@@ -452,8 +452,8 @@
                   <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter2_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </EffectPushButton>
-              <EffectPushButton>
+              </EqualizerPushButton>
+              <EqualizerPushButton>
                 <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
                 <Effect>1</Effect>
                 <EffectButtonParameter>1</EffectButtonParameter>
@@ -478,7 +478,7 @@
                   <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter1_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </EffectPushButton>
+              </EqualizerPushButton>
 
               <Battery>
                 <ObjectName>Battery</ObjectName>

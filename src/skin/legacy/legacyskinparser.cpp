@@ -28,6 +28,7 @@
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
+#include "widget/wequalizerpushbutton.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/vsyncthread.h"
 #endif
@@ -516,6 +517,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
+    } else if (nodeName == "EqualizerPushButton") {
+        result = wrapWidget(parseEqualizerPushButton(node));
     } else if (nodeName == "HotcueButton") {
         result = wrapWidget(parseHotcueButton(node));
     } else if (nodeName == "ComboBox") {
@@ -1763,6 +1766,17 @@ QWidget* LegacySkinParser::parseEffectParameterKnobComposed(const QDomElement& n
 
 QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
     WEffectPushButton* pWidget = new WEffectPushButton(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
+}
+
+QWidget* LegacySkinParser::parseEqualizerPushButton(const QDomElement& element) {
+    WEffectPushButton* pWidget = new WEqualizerPushButton(m_pParent, m_pEffectsManager);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);

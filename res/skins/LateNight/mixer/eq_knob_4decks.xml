@@ -27,7 +27,7 @@
 
                   <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
 
-                  <EffectPushButton>
+                  <EqualizerPushButton>
                     <TooltipId>filter<Variable name="EqRange"/>Kill</TooltipId>
                     <ObjectName>EQKillButton_<Variable name="EqRange"/></ObjectName>
                     <Size>18f,18f</Size>
@@ -53,7 +53,7 @@
                       <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </EffectPushButton>
+                  </EqualizerPushButton>
 
                   <!-- Placeholder when Kill buttons are hidden -->
                   <WidgetGroup>
