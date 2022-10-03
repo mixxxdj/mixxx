@@ -1,23 +1,23 @@
 #pragma once
 
-#include <QGLWidget>
 #include <QString>
 
 #include "waveform/renderers/glwaveformrenderer.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
+#include "widget/wglwidget.h"
 
 QT_FORWARD_DECLARE_CLASS(QString)
 
-/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & QGLWidget that has
+/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & WGLWidget that has
 /// a GLWaveformRenderer member which requires initialization that must be
-/// deferred until Qt calls QGLWidget::initializeGL and cannot be done in the
+/// deferred until Qt calls WGLWidget::initializeGL and cannot be done in the
 /// constructor.
-class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget {
+class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget {
   public:
     GLWaveformWidgetAbstract(const QString& group, QWidget* parent)
             : WaveformWidgetAbstract(group),
-              QGLWidget(parent, SharedGLContext::getWidget())
+              WGLWidget(parent, SharedGLContext::getWidget())
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
               ,
               m_pGlRenderer(nullptr)

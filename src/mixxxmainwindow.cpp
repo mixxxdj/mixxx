@@ -52,6 +52,7 @@
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/wglwidget.h"
 #include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
@@ -152,8 +153,8 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
-    // Before creating the first skin we need to create a QGLWidget so that all
-    // the QGLWidget's we create can use it as a shared QGLContext.
+    // Before creating the first skin we need to create a WGLWidget so that all
+    // the WGLWidget's we create can use it as a shared QGLContext.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
         QGLFormat glFormat;
         glFormat.setDirectRendering(true);
@@ -176,7 +177,7 @@ void MixxxMainWindow::initialize() {
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        QGLWidget* pContextWidget = new QGLWidget(this);
+        WGLWidget* pContextWidget = new WGLWidget(this);
         pContextWidget->setGeometry(QRect(0, 0, 3, 3));
         pContextWidget->hide();
         SharedGLContext::setWidget(pContextWidget);

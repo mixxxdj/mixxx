@@ -38,12 +38,12 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         QWidget* parent,
         GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created QGLWidget. Context"
+    qDebug() << "Created WGLWidget. Context"
              << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
+             << "Sharing:" << (context()->shareContext() != nullptr);
+    //if (QGLContext::currentContext() != context()) {
+    makeCurrent();
+    //}
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();

@@ -1,10 +1,9 @@
 #pragma once
 
-#include <QGLWidget>
-
 #include "waveformwidgetabstract.h"
+#include "widget/wglwidget.h"
 
-class QtRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class QtRGBWaveformWidget : public WGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
     virtual ~QtRGBWaveformWidget();

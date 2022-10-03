@@ -48,9 +48,9 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
         return false;
     }
 
-    auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
+    auto* glw = qobject_cast<WGLWidget*>(pWaveformWidget->getWidget());
     if (glw == nullptr) {
-        // Not a QGLWidget. We can simply use QWidget::isVisible.
+        // Not a WGLWidget. We can simply use QWidget::isVisible.
         auto* qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
@@ -125,7 +125,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
-    QGLWidget* pGlWidget = SharedGLContext::getWidget();
+    WGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {
         // will be false if SafeMode is enabled
 
@@ -683,7 +683,7 @@ void WaveformWidgetFactory::render() {
             }
         }
 
-        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
+        // WSpinnys are also double-buffered WGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
         emit renderSpinnies(m_vsyncThread);
         // Same for WVuMeterGL. Note that we are either using WVuMeter or WVuMeterGL.
@@ -732,7 +732,7 @@ void WaveformWidgetFactory::swap() {
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                QGLWidget* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
+                WGLWidget* glw = qobject_cast<WGLWidget*>(pWaveformWidget->getWidget());
                 if (glw != nullptr) {
                     if (glw->context() != QGLContext::currentContext()) {
                         glw->makeCurrent();
@@ -742,7 +742,7 @@ void WaveformWidgetFactory::swap() {
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
         }
-        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
+        // WSpinnys are also double-buffered WGLWidgets, like all the waveform
         // renderers. Swap all the WSpinny widgets now.
         emit swapSpinnies();
         // Same for WVuMeterGL. Note that we are either using WVuMeter or WVuMeterGL

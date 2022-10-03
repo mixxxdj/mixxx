@@ -1,8 +1,7 @@
 #pragma once
 
-#include <QGLWidget>
-
 #include "waveform/widgets/glwaveformwidgetabstract.h"
+#include "widget/wglwidget.h"
 
 class GLWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT

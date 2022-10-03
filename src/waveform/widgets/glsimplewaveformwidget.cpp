@@ -17,9 +17,9 @@
 
 GLSimpleWaveformWidget::GLSimpleWaveformWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created QGLWidget. Context"
+    qDebug() << "Created WGLWidget. Context"
              << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
+             << "Sharing:" << (context()->shareContext() != nullptr);
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();

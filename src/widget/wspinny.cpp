@@ -29,7 +29,7 @@ WSpinny::WSpinny(
         UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : WGLWidget(parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -72,9 +72,9 @@ WSpinny::WSpinny(
 #endif // __VINYLCONTROL__
     //Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinny(): Created QGLWidget, Context"
+    qDebug() << "WSpinny(): Created WGLWidget, Context"
              << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
+             << "Sharing:" << context()->(context()->shareContext() != nullptr);
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
@@ -716,7 +716,7 @@ bool WSpinny::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QGLWidget::event(pEvent);
+    return WGLWidget::event(pEvent);
 }
 
 void WSpinny::dragEnterEvent(QDragEnterEvent* event) {
