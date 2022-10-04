@@ -40,7 +40,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (alpha == 0) {
         return;
     }
-    m_beatColor.setAlphaF(alpha/100.0);
+    // TODO m0dB results in big semi-transparent blocks
+    // m_beatColor.setAlphaF(alpha/100.0);
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {

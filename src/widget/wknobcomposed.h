@@ -63,7 +63,6 @@ class WKnobComposed : public WWidget {
     bool m_arcUnipolar;
     bool m_arcReversed;
     Qt::PenCapStyle m_arcPenCap;
-    WidgetRenderTimer m_renderTimer;
 
     friend class KnobEventHandler<WKnobComposed>;
 };

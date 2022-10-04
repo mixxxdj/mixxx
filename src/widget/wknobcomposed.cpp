@@ -20,13 +20,7 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dArcBgThickness(0),
           m_arcUnipolar(true),
           m_arcReversed(false),
-          m_arcPenCap(Qt::FlatCap),
-          m_renderTimer(mixxx::Duration::fromMillis(20),
-                        mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer,
-            &WidgetRenderTimer::update,
-            this,
-            QOverload<>::of(&QWidget::update));
+          m_arcPenCap(Qt::FlatCap) {
 }
 
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
@@ -228,9 +222,5 @@ void WKnobComposed::wheelEvent(QWheelEvent* e) {
 }
 
 void WKnobComposed::inputActivity() {
-#ifdef __APPLE__
-    m_renderTimer.activity();
-#else
     update();
-#endif
 }

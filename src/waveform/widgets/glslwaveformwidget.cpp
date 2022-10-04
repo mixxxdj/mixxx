@@ -38,12 +38,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         QWidget* parent,
         GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << (context()->shareContext() != nullptr);
-    //if (QGLContext::currentContext() != context()) {
-    makeCurrent();
-    //}
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -65,8 +59,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoBufferSwap(false);
 
     m_initSuccess = init();
 }

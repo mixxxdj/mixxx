@@ -8,11 +8,7 @@
 #include "control/controlvalue.h"
 
 class ControlProxy;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-typedef void VSyncThread;
-#else
-class VSyncThread;
-#endif
+class PerformanceTimer;
 
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
 // graphic device, using the CPU time
@@ -50,8 +46,11 @@ class VisualPlayPosition : public QObject {
     // engine thread.
     void set(double playPos, double rate, double positionStep,
             double slipPosition, double tempoTrackSeconds);
-    double getAtNextVSync(VSyncThread* vsyncThread);
-    void getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double* playPosition, double* slipPosition);
+    double getAtNextVSync(const PerformanceTimer& frameTimer, int waitToSwapMicros);
+    void getPlaySlipAtNextVSync(const PerformanceTimer& frameTimer,
+            int waitToSwapMicros,
+            double* playPosition,
+            double* slipPosition);
     double getEnginePlayPos();
     void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 

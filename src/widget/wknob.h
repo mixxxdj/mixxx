@@ -28,8 +28,6 @@ class WKnob : public WDisplay {
     void inputActivity();
 
   private:
-    WidgetRenderTimer m_renderTimer;
-
     KnobEventHandler<WKnob> m_handler;
     friend class KnobEventHandler<WKnob>;
 };

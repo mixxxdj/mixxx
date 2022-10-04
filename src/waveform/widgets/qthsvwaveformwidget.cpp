@@ -17,9 +17,7 @@
 QtHSVWaveformWidget::QtHSVWaveformWidget(const QString& group, QWidget* parent)
         : WGLWidget(parent),
           WaveformWidgetAbstract(group) {
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
+    makeCurrent();
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

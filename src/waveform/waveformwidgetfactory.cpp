@@ -39,6 +39,7 @@
 #include "widget/wvumetergl.h"
 #include "widget/wwaveformviewer.h"
 
+/*
 namespace {
 // Returns true if the given waveform should be rendered.
 bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
@@ -69,6 +70,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     return true;
 }
 }  // anonymous namespace
+*/
 
 ///////////////////////////////////////////
 
@@ -125,6 +127,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
+    /*
     WGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {
         // will be false if SafeMode is enabled
@@ -265,6 +268,10 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
         pGlWidget->hide();
     }
+    */
+    // TODO m0dB implement the above using QOpenGL classes. for now just assume:
+    m_openGlAvailable = true;
+    m_openGLShaderAvailable = true;
 
     evaluateWidgets();
     m_time.start();
@@ -639,6 +646,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::render() {
+    /*
     ScopedTimer t("WaveformWidgetFactory::render() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -711,9 +719,11 @@ void WaveformWidgetFactory::render() {
 
     //qDebug() << "refresh end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
+    */
 }
 
 void WaveformWidgetFactory::swap() {
+    /*
     ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -751,6 +761,7 @@ void WaveformWidgetFactory::swap() {
     }
     //qDebug() << "swap end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
+    */
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {

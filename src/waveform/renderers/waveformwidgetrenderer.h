@@ -16,7 +16,7 @@
 
 class ControlProxy;
 class VisualPlayPosition;
-class VSyncThread;
+class PerformanceTimer;
 
 class WaveformWidgetRenderer {
   public:
@@ -33,7 +33,7 @@ class WaveformWidgetRenderer {
     virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node, const SkinContext& context);
-    void onPreRender(VSyncThread* vsyncThread);
+    void onPreRender(const PerformanceTimer& frameTimer, int waitToSwapMicros);
     void draw(QPainter* painter, QPaintEvent* event);
 
     const QString& getGroup() const {

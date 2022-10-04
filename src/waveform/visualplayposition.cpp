@@ -6,9 +6,7 @@
 #include "control/controlproxy.h"
 #include "moc_visualplayposition.cpp"
 #include "util/math.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include "waveform/vsyncthread.h"
-#endif
+#include "util/performancetimer.h"
 
 namespace {
 // The offset is limited to two callback intervals.
@@ -53,19 +51,18 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
     m_valid = true;
 }
 
-double VisualPlayPosition::getAtNextVSync(VSyncThread* vSyncThread) {
+double VisualPlayPosition::getAtNextVSync(
+        const PerformanceTimer& frameTimer, int waitToSwapMicros) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        Q_UNUSED(vSyncThread);
-        int refToVSync = 0;
-#else
-        int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-#endif
+        int refToVSync =
+                frameTimer.difference(data.m_referenceTime).toIntegerMicros() +
+                waitToSwapMicros;
+
         int offset = refToVSync - data.m_callbackEntrytoDac;
         offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
@@ -78,19 +75,20 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vSyncThread) {
     return -1;
 }
 
-void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double* pPlayPosition, double* pSlipPosition) {
+void VisualPlayPosition::getPlaySlipAtNextVSync(
+        const PerformanceTimer& frameTimer,
+        int waitToSwapMicros,
+        double* pPlayPosition,
+        double* pSlipPosition) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        Q_UNUSED(vSyncThread);
-        int refToVSync = 0;
-#else
-        int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-#endif
+        int refToVSync =
+                frameTimer.difference(data.m_referenceTime).toIntegerMicros() +
+                waitToSwapMicros;
         int offset = refToVSync - data.m_callbackEntrytoDac;
         offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer

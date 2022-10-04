@@ -1311,12 +1311,12 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     }
     commonWidgetSetup(node, pSpinny);
 
-    connect(waveformWidgetFactory,
-            &WaveformWidgetFactory::renderSpinnies,
-            pSpinny,
-            &WSpinny::render);
-    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, pSpinny, &WSpinny::swap);
-    connect(pSpinny,
+    //connect(waveformWidgetFactory,
+    //        &WaveformWidgetFactory::renderSpinnies,
+    //        spinny,
+    //        &WSpinny::render);
+    //connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
+    connect(spinny,
             &WSpinny::trackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerStopped);

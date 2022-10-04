@@ -20,6 +20,7 @@ class ConfigKey;
 class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
+class PerformanceTimer;
 class VSyncThread;
 
 class WSpinny : public WGLWidget,
@@ -42,6 +43,9 @@ class WSpinny : public WGLWidget,
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 
+    void preRenderGL(OpenGLWindow* w) override;
+    void renderGL(OpenGLWindow* w) override;
+
   public slots:
     void slotLoadTrack(TrackPointer);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -49,7 +53,6 @@ class WSpinny : public WGLWidget,
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
     void updateSlipEnabled(double enabled);
-    void render(VSyncThread* vSyncThread);
     void swap();
 
   protected slots:
@@ -85,6 +88,9 @@ class WSpinny : public WGLWidget,
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
+    void draw(QPainter* painter);
+    void render(const PerformanceTimer& frameTimer, int microsUntilSwap);
+
     const QString m_group;
     UserSettingsPointer m_pConfig;
     std::shared_ptr<QImage> m_pBgImage;

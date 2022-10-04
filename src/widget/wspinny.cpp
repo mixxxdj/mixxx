@@ -29,7 +29,7 @@ WSpinny::WSpinny(
         UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
-        : WGLWidget(parent, SharedGLContext::getWidget()),
+        : WGLWidget(parent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -72,12 +72,6 @@ WSpinny::WSpinny(
 #endif // __VINYLCONTROL__
     //Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinny(): Created WGLWidget, Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->(context()->shareContext() != nullptr);
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -101,7 +95,6 @@ WSpinny::WSpinny(
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     setAutoFillBackground(false);
-    setAutoBufferSwap(false);
 }
 
 WSpinny::~WSpinny() {
@@ -156,7 +149,7 @@ void WSpinny::setup(const QDomNode& node,
     Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
                                                          Paintable::FIXED);
     if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
-        setFixedSize(m_pBgImage->size());
+        WGLWidget::setFixedSize(m_pBgImage->size());
     } else {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     }
@@ -327,28 +320,22 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
 }
 
-void WSpinny::render(VSyncThread* vSyncThread) {
-    if (!isValid() || !isVisible()) {
-        return;
-    }
-
-    auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return;
-    }
-
-    if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
-        m_pVisualPlayPos->getPlaySlipAtNextVSync(
-                vSyncThread,
+void WSpinny::preRenderGL(OpenGLWindow* w) {
+    if (!m_pVisualPlayPos.isNull()) {
+        m_pVisualPlayPos->getPlaySlipAtNextVSync(w->getTimer(),
+                w->getMicrosUntilSwap(),
                 &m_dAngleCurrentPlaypos,
                 &m_dGhostAngleCurrentPlaypos);
     }
+}
 
-    double scaleFactor = devicePixelRatioF();
+void WSpinny::renderGL(OpenGLWindow* w) {
+    QPainter p(w);
 
-    QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
+
+    double scaleFactor = devicePixelRatioF();
 
     if (m_pBgImage) {
         p.drawImage(rect(), *m_pBgImage, m_pBgImage->rect());
@@ -422,10 +409,6 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
-    if (context() != QGLContext::currentContext()) {
-        makeCurrent();
-    }
-    swapBuffers();
 }
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
@@ -439,7 +422,7 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     return scaled;
 }
 
-void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
+void WSpinny::resizeEvent(QResizeEvent* event) {
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     if (m_pFgImage && !m_pFgImage->isNull()) {
         m_fgImageScaled = m_pFgImage->scaled(
@@ -449,6 +432,8 @@ void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
         m_ghostImageScaled = m_pGhostImage->scaled(
                 size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
+
+    WGLWidget::resizeEvent(event);
 }
 
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle

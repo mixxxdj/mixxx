@@ -7,7 +7,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveformwidgettype.h"
 
-class VSyncThread;
+class PerformanceTimer;
 
 // NOTE(vRince) This class represent objects the waveformwidgetfactory can
 // holds, IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!  we
@@ -28,7 +28,7 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     void hold();
     void release();
 
-    virtual void preRender(VSyncThread* vsyncThread);
+    virtual void preRender(const PerformanceTimer& frameTimer, int waitToSwapMicros);
     virtual mixxx::Duration render();
     virtual void resize(int width, int height);
 

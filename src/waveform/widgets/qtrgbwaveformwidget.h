@@ -21,6 +21,16 @@ class QtRGBWaveformWidget : public WGLWidget, public WaveformWidgetAbstract {
     virtual void paintEvent(QPaintEvent* event);
     virtual mixxx::Duration render();
 
+    // overrides for WGLWidget
+    virtual void renderGL(OpenGLWindow* w) {
+        QPainter painter(w);
+        draw(&painter, nullptr);
+    }
+
+    virtual void preRenderGL(OpenGLWindow* w) {
+        preRender(w->getTimer(), w->getMicrosUntilSwap());
+    }
+
   private:
     QtRGBWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;

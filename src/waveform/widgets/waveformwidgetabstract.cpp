@@ -26,8 +26,8 @@ void WaveformWidgetAbstract::release() {
     }
 }
 
-void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
-    WaveformWidgetRenderer::onPreRender(vsyncThread);
+void WaveformWidgetAbstract::preRender(const PerformanceTimer& frameTimer, int waitToSwapMicros) {
+    WaveformWidgetRenderer::onPreRender(frameTimer, waitToSwapMicros);
 }
 
 mixxx::Duration WaveformWidgetAbstract::render() {

@@ -17,9 +17,6 @@
 
 GLSimpleWaveformWidget::GLSimpleWaveformWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << (context()->shareContext() != nullptr);
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -33,8 +30,6 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget(const QString& group, QWidget* pa
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoBufferSwap(false);
 
     m_initSuccess = init();
 }

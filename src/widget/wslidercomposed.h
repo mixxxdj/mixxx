@@ -75,7 +75,6 @@ class WSliderComposed : public WWidget  {
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
     SliderEventHandler<WSliderComposed> m_handler;
-    WidgetRenderTimer m_renderTimer;
 
     friend class SliderEventHandler<WSliderComposed>;
 };
