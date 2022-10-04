@@ -17,6 +17,7 @@ class OpenGLWindow : public QOpenGLWindow {
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int w, int h) override;
+    bool event(QEvent* ev) override;
 
     const PerformanceTimer& getTimer() const;
     int getMicrosUntilSwap() const;
@@ -41,4 +42,5 @@ class WGLWidget : public QWidget {
     void resizeEvent(QResizeEvent* event);
     virtual void preRenderGL(OpenGLWindow* w);
     virtual void renderGL(OpenGLWindow* w);
+    void handleEventFromWindow(QEvent* ev);
 };
