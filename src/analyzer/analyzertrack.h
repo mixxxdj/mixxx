@@ -4,7 +4,7 @@
 
 #include "track/track_decl.h"
 
-/// A scheduled track with additional options for analysis.
+/// A scheduled not-null track with additional options for analysis.
 class AnalyzerTrack {
   public:
     struct Options {
@@ -14,14 +14,14 @@ class AnalyzerTrack {
 
     AnalyzerTrack(TrackPointer track, Options options = Options());
 
-    /// Fetches the track to be analyzed.
-    const TrackPointer getTrack() const;
+    /// Fetches the (not-null) track to be analyzed.
+    const TrackPointer& getTrack() const;
 
     /// Fetches the additional options.
     const Options getOptions() const;
 
   private:
-    /// The track to be analyzed.
+    /// The (not-null) track to be analyzed.
     TrackPointer track;
     /// The additional options.
     Options options;
