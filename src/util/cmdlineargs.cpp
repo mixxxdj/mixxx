@@ -14,6 +14,7 @@ CmdlineArgs::CmdlineArgs()
           m_midiDebug(false),
           m_developer(false),
           m_safeMode(false),
+          m_useVuMeterGL(true),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
           m_logLevel(mixxx::kLogLevelDefault),
@@ -97,14 +98,22 @@ warnings and errors to the console unless this is set properly.\n", stdout);
 when a critical error occurs unless this is set properly.\n", stdout);
             }
             i++;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||
-                   QString::fromLocal8Bit(argv[i]).contains("--controllerDebug", Qt::CaseInsensitive)) {
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--disableVuMeterGL", Qt::CaseInsensitive)) {
+            m_useVuMeterGL = false;
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--midiDebug", Qt::CaseInsensitive) ||
+                QString::fromLocal8Bit(argv[i]).contains(
+                        "--controllerDebug", Qt::CaseInsensitive)) {
             m_midiDebug = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--developer", Qt::CaseInsensitive)) {
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--developer", Qt::CaseInsensitive)) {
             m_developer = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--safeMode", Qt::CaseInsensitive)) {
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--safeMode", Qt::CaseInsensitive)) {
             m_safeMode = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
         } else if (i > 0) {
             // Don't try to load the program name to a deck
@@ -152,6 +161,8 @@ void CmdlineArgs::printUsage() {
                         and spinning vinyl widgets. Try this option if\n\
                         Mixxx is crashing on startup.\n\
 \n\
+--disableVuMeterGL      Do not use OpenGL vu meter.\n\
+\n\
 --locale LOCALE         Use a custom locale for loading translations\n\
                         (e.g 'fr')\n\
 \n\
@@ -169,14 +180,15 @@ void CmdlineArgs::printUsage() {
                         defined at --logLevel above.\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
-"\
+          "\
 --debugAssertBreak      Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT\n\
                         evaluates to false. Under a debugger you can\n\
                         continue afterwards.\
 \n"
 #endif
-"\
--h, --help              Display this help message and exit", stdout);
+          "\
+-h, --help              Display this help message and exit",
+            stdout);
 
     fputs("\n\n(For more information, see " MIXXX_MANUAL_COMMANDLINEOPTIONS_URL ")\n", stdout);
 }
