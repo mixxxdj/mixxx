@@ -188,7 +188,6 @@ void AnalyzerThread::doRun() {
 }
 
 bool AnalyzerThread::submitNextTrack(const AnalyzerTrack& nextTrack) {
-    DEBUG_ASSERT(nextTrack.getTrack());
     kLogger.debug()
             << "Enqueueing next track"
             << nextTrack.getTrack()->getId();

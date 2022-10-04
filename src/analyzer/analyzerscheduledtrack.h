@@ -13,14 +13,14 @@ class AnalyzerScheduledTrack {
             AnalyzerTrack::Options options = AnalyzerTrack::Options());
 
     /// Fetches the id of the track to be analyzed.
-    const TrackId getTrackId() const;
+    const TrackId& getTrackId() const;
 
     /// Fetches the additional options.
-    const AnalyzerTrack::Options getOptions() const;
+    const AnalyzerTrack::Options& getOptions() const;
 
   private:
     /// The id of the track to be analyzed.
-    TrackId trackId;
+    TrackId m_trackId;
     /// The additional options.
-    AnalyzerTrack::Options options;
+    AnalyzerTrack::Options m_options;
 };

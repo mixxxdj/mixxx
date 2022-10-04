@@ -18,11 +18,11 @@ class AnalyzerTrack {
     const TrackPointer& getTrack() const;
 
     /// Fetches the additional options.
-    const Options getOptions() const;
+    const Options& getOptions() const;
 
   private:
     /// The (not-null) track to be analyzed.
-    TrackPointer track;
+    TrackPointer m_track;
     /// The additional options.
-    Options options;
+    Options m_options;
 };
