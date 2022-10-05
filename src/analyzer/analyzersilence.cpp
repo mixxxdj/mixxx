@@ -1,5 +1,6 @@
 #include "analyzer/analyzersilence.h"
 
+#include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "engine/engine.h"
 #include "track/track.h"
@@ -32,13 +33,13 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
           m_iSignalEnd(-1) {
 }
 
-bool AnalyzerSilence::initialize(TrackPointer pTrack,
+bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     Q_UNUSED(sampleRate);
     Q_UNUSED(totalSamples);
 
-    if (!shouldAnalyze(pTrack)) {
+    if (!shouldAnalyze(track.getTrack())) {
         return false;
     }
 

@@ -1,7 +1,10 @@
+#include "analyzer/analyzergain.h"
+
 #include <replaygain.h>
+
 #include <QtDebug>
 
-#include "analyzer/analyzergain.h"
+#include "analyzer/analyzertrack.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -17,10 +20,10 @@ AnalyzerGain::~AnalyzerGain() {
     delete m_pReplayGain;
 }
 
-bool AnalyzerGain::initialize(TrackPointer tio,
+bool AnalyzerGain::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
-    if (m_rgSettings.isAnalyzerDisabled(1, tio) || totalSamples == 0) {
+    if (m_rgSettings.isAnalyzerDisabled(1, tio.getTrack()) || totalSamples == 0) {
         qDebug() << "Skipping AnalyzerGain";
         return false;
     }

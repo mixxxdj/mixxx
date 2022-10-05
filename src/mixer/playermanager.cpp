@@ -737,7 +737,7 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         return;
     }
     if (m_pTrackAnalysisScheduler) {
-        if (m_pTrackAnalysisScheduler->scheduleTrackById(track->getId())) {
+        if (m_pTrackAnalysisScheduler->scheduleTrack(track->getId())) {
             m_pTrackAnalysisScheduler->resume();
         }
         // The first progress signal will suspend a running batch analysis

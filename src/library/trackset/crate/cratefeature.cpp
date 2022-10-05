@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "analyzer/analyzerscheduledtrack.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -686,18 +687,18 @@ void CrateFeature::slotAnalyzeCrate() {
     if (m_lastRightClickedIndex.isValid()) {
         CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
         if (crateId.isValid()) {
-            QList<TrackId> trackIds;
-            trackIds.reserve(
+            QList<AnalyzerScheduledTrack> tracks;
+            tracks.reserve(
                     m_pTrackCollection->crates().countCrateTracks(crateId));
             {
                 CrateTrackSelectResult crateTracks(
                         m_pTrackCollection->crates().selectCrateTracksSorted(
                                 crateId));
                 while (crateTracks.next()) {
-                    trackIds.append(crateTracks.trackId());
+                    tracks.append(crateTracks.trackId());
                 }
             }
-            emit analyzeTracks(trackIds);
+            emit analyzeTracks(tracks);
         }
     }
 }
