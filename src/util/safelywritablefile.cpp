@@ -19,6 +19,14 @@ const Logger kLogger("SafelyWritableFile");
 // Appended to the original file name of the temporary file used for writing
 const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 
+// SafelyWritableFile is also used to write cover arts.
+// Cover art worker is suffix sensetive.
+// In order to have a successful writing we need a correct suffix.
+// So instead of suffix, we need a temp file prefix.
+// There is a bug related with the image format reported
+// See: https://bugreports.qt.io/browse/QTBUG-89022
+const QString kSafelyWritableTempFilePrefix = QStringLiteral("temp_");
+
 // Appended to the original file name for renaming and before deleting this
 // file. Should not be longer than kSafelyWritableTempFileSuffix to avoid
 // potential failures caused by exceeded path length.
@@ -31,7 +39,8 @@ const int kWindowsSharingViolationSleepBeforeNextRetryMillis = 100;
 
 } // namespace
 
-SafelyWritableFile::SafelyWritableFile(QString origFileName, bool useTemporaryFile) {
+SafelyWritableFile::SafelyWritableFile(QString origFileName,
+        SafelyWritableFile::SafetyMode safetyMode) {
     // Both file names remain uninitialized until all prerequisite operations
     // in the constructor have been completed successfully. Otherwise failure
     // to create the temporary file will not be handled correctly!
@@ -46,7 +55,8 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName, bool useTemporaryFi
         // Abort constructor
         return;
     }
-    if (useTemporaryFile) {
+    switch (safetyMode) {
+    case SafetyMode::Edit: {
         QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
         QFile origFile(origFileName);
         if (!origFile.copy(tempFileName)) {
@@ -80,10 +90,24 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName, bool useTemporaryFi
         // Successfully cloned original into temporary file for writing - finish initialization
         m_origFileName = std::move(origFileName);
         m_tempFileName = std::move(tempFileName);
-    } else {
-        // Directly write into original file - finish initialization
+        break;
+    }
+    case SafetyMode::Replace: {
+        QString origFilePath = QFileInfo(origFileName).canonicalPath();
+        QString origFileCompleteBasename = QFileInfo(origFileName).completeBaseName();
+        QString origFileSuffix = QFileInfo(origFileName).suffix();
+        QString tempFileCompleteBasename = kSafelyWritableTempFilePrefix +
+                origFileCompleteBasename + '.' + origFileSuffix;
+        QString tempFileName = origFilePath + '/' + tempFileCompleteBasename;
         m_origFileName = std::move(origFileName);
+        m_tempFileName = std::move(tempFileName);
+        break;
+    }
+    case SafetyMode::Direct: {
+        // Directly write into original file - finish initialization
         DEBUG_ASSERT(m_tempFileName.isNull());
+        m_origFileName = std::move(origFileName);
+    }
     }
 }
 
