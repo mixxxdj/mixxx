@@ -7,8 +7,9 @@
 #include "moc_wcoverartmenu.cpp"
 #include "util/assert.h"
 
-WCoverArtMenu::WCoverArtMenu(QWidget *parent)
-        : QMenu(parent) {
+WCoverArtMenu::WCoverArtMenu(QWidget* parent)
+        : QMenu(parent),
+          m_isWorkerRunning(false) {
     createActions();
 }
 
