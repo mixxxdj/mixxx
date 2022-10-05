@@ -19,10 +19,16 @@
 QtVSyncTestWidget::QtVSyncTestWidget(const QString& group, QWidget* parent)
         : WGLWidget(parent),
           WaveformWidgetAbstract(group) {
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << isContextValid()
+             << "Sharing:" << isContextSharing();
+
     addRenderer<QtVSyncTestRenderer>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
+
+    setAutoBufferSwap(false);
 
     m_initSuccess = init();
 }

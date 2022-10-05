@@ -27,8 +27,6 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget
 
   protected:
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    // overrides for WGLWidget
-
     void initializeGL() override {
         if (m_pGlRenderer) {
             m_pGlRenderer->onInitializeGL();

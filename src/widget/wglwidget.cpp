@@ -85,10 +85,23 @@ void WGLWidget::renderGL(OpenGLWindow* window) {
 void WGLWidget::preRenderGL(OpenGLWindow* window) {
 }
 
-QOpenGLContext* WGLWidget::context() const {
-    return m_pOpenGLWindow->context();
+bool WGLWidget::isContextValid() const {
+    return true;
 }
 
-void WGLWidget::makeCurrent() {
-    m_pOpenGLWindow->makeCurrent();
+bool WGLWidget::isContextSharing() const {
+    return true;
+}
+
+void WGLWidget::setAutoBufferSwap(bool) {
+}
+
+void WGLWidget::makeCurrentIfNeeded() {
+    if (m_pOpenGLWindow->context() != QOpenGLContext::currentContext()) {
+        m_pOpenGLWindow->makeCurrent();
+    }
+}
+
+void WGLWidget::initializeGL() {
+    // to be implemented in derived widgets if needed
 }

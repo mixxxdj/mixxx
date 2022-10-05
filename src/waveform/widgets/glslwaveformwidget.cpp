@@ -38,6 +38,11 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         QWidget* parent,
         GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << isContextValid()
+             << "Sharing:" << isContextSharing();
+
+    makeCurrentIfNeeded();
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -59,6 +64,8 @@ GLSLWaveformWidget::GLSLWaveformWidget(
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
+
+    setAutoBufferSwap(false);
 
     m_initSuccess = init();
 }
@@ -89,13 +96,13 @@ mixxx::Duration GLSLWaveformWidget::render() {
 void GLSLWaveformWidget::resize(int width, int height) {
     // NOTE: (vrince) this is needed since we allocation buffer on resize
     // and the Gl Context should be properly set
-    makeCurrent();
+    makeCurrentIfNeeded();
     WaveformWidgetAbstract::resize(width, height);
 }
 
 void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
-        makeCurrent();
+        makeCurrentIfNeeded();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
         if (m_signalRenderer) {
             m_signalRenderer->debugClick();

@@ -8,7 +8,7 @@
 /// GLWaveformRenderer is a WaveformRendererAbstract which directly calls OpenGL functions.
 ///
 /// Note that the Qt OpenGL WaveformRendererAbstracts are not GLWaveformRenderers because
-/// they do not call OpenGL functions directly. Instead, they inherit WGLWidget and use the
+/// they do not call OpenGL functions directly. Instead, they inherit QGLWidget and use the
 /// QPainter API which Qt translates to OpenGL under the hood.
 class GLWaveformRenderer : protected QOpenGLFunctions_2_1 {
   public:
@@ -17,7 +17,7 @@ class GLWaveformRenderer : protected QOpenGLFunctions_2_1 {
     }
 
   protected:
-    // Somehow WGLWidget does not call WGLWidget::initializeGL on macOS, so hack around that
+    // Somehow QGLWidget does not call QGLWidget::initializeGL on macOS, so hack around that
     // by calling this in `draw` when the QGLContext has been made current.
     // TODO: remove this when upgrading to QOpenGLWidget
     void maybeInitializeGL() {

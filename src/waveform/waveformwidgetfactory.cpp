@@ -39,7 +39,7 @@
 #include "widget/wvumetergl.h"
 #include "widget/wwaveformviewer.h"
 
-/*
+#ifdef MIXXX_USE_QGLWIDGET
 namespace {
 // Returns true if the given waveform should be rendered.
 bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
@@ -49,9 +49,9 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
         return false;
     }
 
-    auto* glw = qobject_cast<WGLWidget*>(pWaveformWidget->getWidget());
+    auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
     if (glw == nullptr) {
-        // Not a WGLWidget. We can simply use QWidget::isVisible.
+        // Not a QGLWidget. We can simply use QWidget::isVisible.
         auto* qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
@@ -70,7 +70,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     return true;
 }
 }  // anonymous namespace
-*/
+#endif
 
 ///////////////////////////////////////////
 
@@ -127,7 +127,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
-    /*
+#ifdef MIXXX_USE_QGLWIDGET
     WGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {
         // will be false if SafeMode is enabled
@@ -268,10 +268,11 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
         pGlWidget->hide();
     }
-    */
+#else
     // TODO m0dB implement the above using QOpenGL classes. for now just assume:
     m_openGlAvailable = true;
     m_openGLShaderAvailable = true;
+#endif
 
     evaluateWidgets();
     m_time.start();
@@ -646,7 +647,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::render() {
-    /*
+#ifdef MIXXX_USE_QGLWIDGET
     ScopedTimer t("WaveformWidgetFactory::render() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -691,7 +692,7 @@ void WaveformWidgetFactory::render() {
             }
         }
 
-        // WSpinnys are also double-buffered WGLWidgets, like all the waveform
+        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
         emit renderSpinnies(m_vsyncThread);
         // Same for WVuMeterGL. Note that we are either using WVuMeter or WVuMeterGL.
@@ -719,11 +720,11 @@ void WaveformWidgetFactory::render() {
 
     //qDebug() << "refresh end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
-    */
+#endif
 }
 
 void WaveformWidgetFactory::swap() {
-    /*
+#ifdef MIXXX_USE_QGLWIDGET
     ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -742,7 +743,7 @@ void WaveformWidgetFactory::swap() {
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                WGLWidget* glw = qobject_cast<WGLWidget*>(pWaveformWidget->getWidget());
+                QGLWidget* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
                 if (glw != nullptr) {
                     if (glw->context() != QGLContext::currentContext()) {
                         glw->makeCurrent();
@@ -752,7 +753,7 @@ void WaveformWidgetFactory::swap() {
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
         }
-        // WSpinnys are also double-buffered WGLWidgets, like all the waveform
+        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Swap all the WSpinny widgets now.
         emit swapSpinnies();
         // Same for WVuMeterGL. Note that we are either using WVuMeter or WVuMeterGL
@@ -761,7 +762,7 @@ void WaveformWidgetFactory::swap() {
     }
     //qDebug() << "swap end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
-    */
+#endif
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {

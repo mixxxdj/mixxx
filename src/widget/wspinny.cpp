@@ -72,6 +72,10 @@ WSpinny::WSpinny(
 #endif // __VINYLCONTROL__
     //Drag and drop
     setAcceptDrops(true);
+    qDebug() << "WSpinny(): Created QGLWidget, Context"
+             << "Valid:" << isContextValid()
+             << "Sharing:" << isContextSharing();
+    makeCurrentIfNeeded();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -95,6 +99,7 @@ WSpinny::WSpinny(
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     setAutoFillBackground(false);
+    setAutoBufferSwap(false);
 }
 
 WSpinny::~WSpinny() {
@@ -149,7 +154,7 @@ void WSpinny::setup(const QDomNode& node,
     Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
                                                          Paintable::FIXED);
     if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
-        WGLWidget::setFixedSize(m_pBgImage->size());
+        setFixedSize(m_pBgImage->size());
     } else {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     }

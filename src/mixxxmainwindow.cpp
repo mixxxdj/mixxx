@@ -153,36 +153,37 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
-    // Before creating the first skin we need to create a WGLWidget so that all
-    // the WGLWidget's we create can use it as a shared QGLContext.
-    if (!CmdlineArgs::Instance().getSafeMode()) { // && QGLFormat::hasOpenGL()) {
-
-        //QGLFormat glFormat;
-        //glFormat.setDirectRendering(true);
-        //glFormat.setDoubleBuffer(true);
-        //glFormat.setDepth(false);
-
+#ifdef MIXX_USE_QGLWIDGET
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+        QGLFormat glFormat;
+        glFormat.setDirectRendering(true);
+        glFormat.setDoubleBuffer(true);
+        glFormat.setDepth(false);
         // Disable waiting for vertical Sync
         // This can be enabled when using a single Threads for each QGLContext
         // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
 #if defined(__APPLE__)
         // On OS X, syncing to vsync has good performance FPS-wise and
         // eliminates tearing.
-        //glFormat.setSwapInterval(1);
+        glFormat.setSwapInterval(1);
 #else
         // Otherwise, turn VSync off because it could cause horrible FPS on
         // Linux.
         // TODO(XXX): Make this configurable.
         // TODO(XXX): What should we do on Windows?
-        //glFormat.setSwapInterval(0);
+        glFormat.setSwapInterval(0);
 #endif
-        //glFormat.setRgba(true);
-        //QGLFormat::setDefaultFormat(glFormat);
+        glFormat.setRgba(true);
+        QGLFormat::setDefaultFormat(glFormat);
 
-        //pContextWidget->setGeometry(QRect(0, 0, 3, 3));
-        //pContextWidget->hide();
-        //SharedGLContext::setWidget(pContextWidget);
+        QGLWidget* pContextWidget = new QGLWidget(this);
+        pContextWidget->setGeometry(QRect(0, 0, 3, 3));
+        pContextWidget->hide();
+        SharedGLContext::setWidget(pContextWidget);
     }
+#endif
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());

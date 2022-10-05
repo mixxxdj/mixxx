@@ -34,13 +34,14 @@ class WGLWidget : public QWidget {
 
   public:
     WGLWidget(QWidget* parent);
-    QOpenGLContext* context() const;
-    void makeCurrent();
-    virtual void initializeGL() {
-    }
+    bool isContextValid() const;
+    bool isContextSharing() const;
+    void setAutoBufferSwap(bool);
+    void makeCurrentIfNeeded();
     bool isValid() const;
     void resizeEvent(QResizeEvent* event);
     virtual void preRenderGL(OpenGLWindow* w);
     virtual void renderGL(OpenGLWindow* w);
     void handleEventFromWindow(QEvent* ev);
+    virtual void initializeGL();
 };
