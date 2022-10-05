@@ -33,6 +33,7 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget
         }
     }
 
+#ifndef MIXXX_USE_QGLWIDGET
     void renderGL(OpenGLWindow* w) override {
         QPainter painter(w);
         draw(&painter, nullptr);
@@ -41,6 +42,7 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget
     void preRenderGL(OpenGLWindow* w) override {
         preRender(w->getTimer(), w->getMicrosUntilSwap());
     }
+#endif
 
     GLWaveformRenderer* m_pGlRenderer;
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

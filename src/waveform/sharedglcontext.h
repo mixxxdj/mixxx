@@ -12,7 +12,6 @@ class SharedGLContext {
   public:
     static QGLWidget* getWidget();
     static void setWidget(QGLWidget* pWidget);
-
   private:
     SharedGLContext() {
     }

@@ -25,6 +25,14 @@ class VSyncThread : public QThread {
 
     void run();
 
+    int getMicrosUntilSwap() const {
+        return m_waitToSwapMicros;
+    }
+
+    const PerformanceTimer& getTimer() const {
+        return m_timer;
+    }
+
     bool waitForVideoSync(WGLWidget* glw);
     int elapsed();
     int toNextSyncMicros();

@@ -325,17 +325,45 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
 }
 
+void WSpinny::render(VSyncThread* vSyncThread) {
+    if (!isValid() || !isVisible()) {
+        return;
+    }
+
+    auto* window = windowHandle();
+    if (window == nullptr || !window->isExposed()) {
+        return;
+    }
+
+    if (vSyncThread != nullptr) {
+        preRender(vSyncThread->getTimer(), vSyncThread->getMicrosUntilSwap());
+    }
+
+    QPainter painter(this);
+    draw(&painter);
+}
+#ifndef MIXXX_USE_QGLWIDGET
 void WSpinny::preRenderGL(OpenGLWindow* w) {
+    preRender(w->getTimer(), w->getMicrosUntilSwap());
+}
+
+void WSpinny::renderGL(OpenGLWindow* w) {
+    QPainter painter(w);
+    draw(&painter);
+}
+#endif
+
+void WSpinny::preRender(const PerformanceTimer& frameTimer, int microsUntilSwap) {
     if (!m_pVisualPlayPos.isNull()) {
-        m_pVisualPlayPos->getPlaySlipAtNextVSync(w->getTimer(),
-                w->getMicrosUntilSwap(),
+        m_pVisualPlayPos->getPlaySlipAtNextVSync(frameTimer,
+                microsUntilSwap,
                 &m_dAngleCurrentPlaypos,
                 &m_dGhostAngleCurrentPlaypos);
     }
 }
 
-void WSpinny::renderGL(OpenGLWindow* w) {
-    QPainter p(w);
+void WSpinny::draw(QPainter* painter) {
+    QPainter& p = *painter;
 
     p.setRenderHint(QPainter::Antialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
@@ -414,6 +442,8 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
+    makeCurrentIfNeeded();
+    swapBuffers();
 }
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {

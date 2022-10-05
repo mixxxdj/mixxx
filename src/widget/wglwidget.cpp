@@ -1,5 +1,29 @@
 #include "widget/wglwidget.h"
 
+#ifdef MIXXX_USE_QGLWIDGET
+
+#include "waveform/sharedglcontext.h"
+
+WGLWidget::WGLWidget(QWidget* parent)
+        : QGLWidget(parent, SharedGLContext::getWidget()) {
+}
+
+bool WGLWidget::isContextValid() const {
+    return context()->isValid();
+}
+
+bool WGLWidget::isContextSharing() const {
+    return context()->isSharing();
+}
+
+void WGLWidget::makeCurrentIfNeeded() {
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
+}
+
+#else
+
 #include <QDebug>
 #include <QOpenGLWindow>
 #include <QResizeEvent>
@@ -105,3 +129,11 @@ void WGLWidget::makeCurrentIfNeeded() {
 void WGLWidget::initializeGL() {
     // to be implemented in derived widgets if needed
 }
+
+void WGLWidget::swapBuffers() {
+    // not used when driven by WOpenGLWindow::frameSwapped, but here to be able to compile the vsyncthread driver code that uses WGLWidget derived from QGLWidget
+    // and potentially to be used when driving this from the vsyncthread
+    m_pOpenGLWindow->context()->swapBuffers(m_pOpenGLWindow->context()->surface());
+}
+
+#endif

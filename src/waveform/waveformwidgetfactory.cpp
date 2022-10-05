@@ -128,7 +128,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_visualGain[High] = 1.0;
 
 #ifdef MIXXX_USE_QGLWIDGET
-    WGLWidget* pGlWidget = SharedGLContext::getWidget();
+    QGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {
         // will be false if SafeMode is enabled
 
@@ -673,7 +673,8 @@ void WaveformWidgetFactory::render() {
                     continue;
                 }
                 // Calculate play position for the new Frame in following run
-                pWaveformWidget->preRender(m_vsyncThread);
+                pWaveformWidget->preRender(m_vsyncThread->getTimer(),
+                        m_vsyncThread->getMicrosUntilSwap());
             }
             //qDebug() << "prerender" << m_vsyncThread->elapsed();
 

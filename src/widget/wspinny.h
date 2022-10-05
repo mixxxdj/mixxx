@@ -43,8 +43,10 @@ class WSpinny : public WGLWidget,
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 
+#ifndef MIXXX_USE_QGLWIDGET
     void preRenderGL(OpenGLWindow* w) override;
     void renderGL(OpenGLWindow* w) override;
+#endif
 
   public slots:
     void slotLoadTrack(TrackPointer);
@@ -53,6 +55,7 @@ class WSpinny : public WGLWidget,
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
     void updateSlipEnabled(double enabled);
+    void render(VSyncThread* vSyncThread);
     void swap();
 
   protected slots:
@@ -88,8 +91,8 @@ class WSpinny : public WGLWidget,
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
+    void preRender(const PerformanceTimer& frameTimer, int microsUntilSwap);
     void draw(QPainter* painter);
-    void render(const PerformanceTimer& frameTimer, int microsUntilSwap);
 
     const QString m_group;
     UserSettingsPointer m_pConfig;

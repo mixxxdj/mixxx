@@ -1,5 +1,21 @@
 #pragma once
 
+// #define MIXXX_USE_QGLWIDGET
+
+#ifdef MIXXX_USE_QGLWIDGET
+
+#include <QGLWidget>
+
+class WGLWidget : public QGLWidget {
+  public:
+    WGLWidget(QWidget* parent);
+    bool isContextValid() const;
+    bool isContextSharing() const;
+    void makeCurrentIfNeeded();
+};
+
+#else
+
 #include <util/performancetimer.h>
 
 #include <QOpenGLWindow>
@@ -42,6 +58,11 @@ class WGLWidget : public QWidget {
     void resizeEvent(QResizeEvent* event);
     virtual void preRenderGL(OpenGLWindow* w);
     virtual void renderGL(OpenGLWindow* w);
-    void handleEventFromWindow(QEvent* ev);
     virtual void initializeGL();
+
+    void handleEventFromWindow(QEvent* ev);
+
+    void swapBuffers();
 };
+
+#endif

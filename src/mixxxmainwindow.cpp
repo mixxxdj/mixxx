@@ -153,7 +153,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
-#ifdef MIXX_USE_QGLWIDGET
+#ifdef MIXXX_USE_QGLWIDGET
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
