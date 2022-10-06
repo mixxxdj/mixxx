@@ -37,6 +37,7 @@
 
 namespace {
 
+const int kInvalidPlaylistId = -1;
 const QString kRekordboxLibraryTable = QStringLiteral("rekordbox_library");
 const QString kRekordboxPlaylistsTable = QStringLiteral("rekordbox_playlists");
 const QString kRekordboxPlaylistTracksTable = QStringLiteral("rekordbox_playlist_tracks");
@@ -287,37 +288,28 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
 }
 
 int createDevicePlaylist(QSqlDatabase& database, const QString& devicePath) {
-    int playlistID = -1;
-
-    QSqlQuery queryInsertIntoDevicePlaylist(database);
-    queryInsertIntoDevicePlaylist.prepare(
+    QSqlQuery query(database);
+    query.prepare(
             "INSERT INTO " + kRekordboxPlaylistsTable +
             " (name) "
             "VALUES (:name)");
+    query.bindValue(":name", devicePath);
 
-    queryInsertIntoDevicePlaylist.bindValue(":name", devicePath);
-
-    if (!queryInsertIntoDevicePlaylist.exec()) {
-        LOG_FAILED_QUERY(queryInsertIntoDevicePlaylist)
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
                 << "devicePath: " << devicePath;
-        return playlistID;
+        return kInvalidPlaylistId;
     }
 
-    QSqlQuery idQuery(database);
-    idQuery.prepare("select id from " + kRekordboxPlaylistsTable + " where name=:path");
-    idQuery.bindValue(":path", devicePath);
-
-    if (!idQuery.exec()) {
-        LOG_FAILED_QUERY(idQuery)
-                << "devicePath: " << devicePath;
-        return playlistID;
+    DEBUG_ASSERT(query.driver()->hasFeature(QSqlDriver::LastInsertId));
+    bool ok = false;
+    const int playlistId = query.lastInsertId().toInt(&ok);
+    if (!ok) {
+        qWarning() << "Failed to retrieve database ID for playlist" << devicePath;
+        return kInvalidPlaylistId;
     }
 
-    while (idQuery.next()) {
-        playlistID = idQuery.value(idQuery.record().indexOf("id")).toInt();
-    }
-
-    return playlistID;
+    return playlistId;
 }
 
 mixxx::RgbColor colorFromID(int colorID) {
