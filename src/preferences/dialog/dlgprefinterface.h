@@ -77,6 +77,8 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     double m_minScaleFactor;
     double m_dDevicePixelRatio;
     bool m_bStartWithFullScreen;
+    bool m_bEnableSearchCompletions;
+    bool m_bEnableSearchHistory;
     mixxx::ScreenSaverPreference m_screensaverMode;
 
     bool m_bRebootMixxxView;
