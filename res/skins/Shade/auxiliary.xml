@@ -24,19 +24,25 @@
       Visual - Volume level display
       **********************************************
       -->
-      <VuMeter>
-        <TooltipId>auxiliary_VuMeter</TooltipId>
-        <PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
-        <PathBack>skin:/style/volume_display_microphone.png</PathBack>
+      <WidgetGroup>
         <Pos>99,14</Pos>
-        <PeakHoldSize>5</PeakHoldSize>
-        <PeakHoldTime>500</PeakHoldTime>
-        <PeakFallTime>50</PeakFallTime>
-        <PeakFallStep>2</PeakFallStep>
-        <Connection>
-          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
-        </Connection>
-      </VuMeter>
+        <Size>5f,35f</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <VuMeter>
+            <TooltipId>auxiliary_VuMeter</TooltipId>
+            <PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
+            <PathBack>skin:/style/volume_display_microphone.png</PathBack>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup>
 
       <Knob>
         <TooltipId>auxiliary_pregain</TooltipId>
