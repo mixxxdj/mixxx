@@ -645,35 +645,7 @@ void buildPlaylistTree(
 
         TreeItem* child = parent->appendChild(playlistItemName, QVariant(data));
 
-        // Create a playlist for this child
-        QSqlQuery queryInsertIntoPlaylist(database);
-        queryInsertIntoPlaylist.prepare(
-                "INSERT INTO " + kRekordboxPlaylistsTable +
-                " (name) "
-                "VALUES (:name)");
-
-        queryInsertIntoPlaylist.bindValue(":name", currentPath);
-
-        if (!queryInsertIntoPlaylist.exec()) {
-            LOG_FAILED_QUERY(queryInsertIntoPlaylist)
-                    << "currentPath" << currentPath;
-            return;
-        }
-
-        QSqlQuery idQuery(database);
-        idQuery.prepare("select id from " + kRekordboxPlaylistsTable + " where name=:path");
-        idQuery.bindValue(":path", currentPath);
-
-        if (!idQuery.exec()) {
-            LOG_FAILED_QUERY(idQuery)
-                    << "currentPath" << currentPath;
-            return;
-        }
-
-        int playlistID = -1;
-        while (idQuery.next()) {
-            playlistID = idQuery.value(idQuery.record().indexOf("id")).toInt();
-        }
+        int playlistID = createDevicePlaylist(database, currentPath);
 
         QSqlQuery queryInsertIntoPlaylistTracks(database);
         queryInsertIntoPlaylistTracks.prepare(
