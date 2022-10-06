@@ -657,7 +657,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>radioButtonElapsedAndRemaining</tabstop>
   <tabstop>comboBoxTimeFormat</tabstop>
   <tabstop>comboBoxLoadPoint</tabstop>
-  <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
+  <tabstop>comboBoxLoadWhenDeckPlaying</tabstop>
   <tabstop>checkBoxCloneDeckOnLoadDoubleTap</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>checkBoxInvertSpeedSlider</tabstop>
