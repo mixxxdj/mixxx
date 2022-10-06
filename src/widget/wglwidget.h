@@ -51,7 +51,6 @@ class WGLWidget : public QWidget {
   protected:
     OpenGLWindow* m_pOpenGLWindow{};
     QWidget* m_pContainerWidget{};
-
   public:
     WGLWidget(QWidget* parent);
     bool isContextValid() const;
@@ -64,7 +63,7 @@ class WGLWidget : public QWidget {
     virtual void renderGL(OpenGLWindow* w);
     virtual void initializeGL();
 
-    void handleEventFromWindow(QEvent* ev);
+    virtual void handleEventFromWindow(QEvent* ev);
 
     void swapBuffers();
     bool shouldRender();

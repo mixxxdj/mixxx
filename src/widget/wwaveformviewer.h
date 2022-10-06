@@ -40,6 +40,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
     void leaveEvent(QEvent* /*unused*/) override;
 
+    void handleEventFromWindow(QEvent* ev);
+
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;

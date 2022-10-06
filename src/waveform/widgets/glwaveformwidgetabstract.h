@@ -6,6 +6,7 @@
 #include "waveform/sharedglcontext.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wglwidget.h"
+#include "widget/wwaveformviewer.h"
 
 QT_FORWARD_DECLARE_CLASS(QString)
 
@@ -46,6 +47,15 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget
 
     void preRenderGL(OpenGLWindow* w) override {
         preRender(w->getTimer(), w->getMicrosUntilSwap());
+    }
+#endif
+
+#ifndef MIXXX_USE_QGLWIDGET
+    void handleEventFromWindow(QEvent* ev) override {
+        auto viewer = dynamic_cast<WWaveformViewer*>(parent());
+        if (viewer) {
+            viewer->handleEventFromWindow(ev);
+        }
     }
 #endif
 

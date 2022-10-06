@@ -292,3 +292,7 @@ void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
 bool WWaveformViewer::isPlaying() const {
     return m_pPlayEnabled->toBool();
 }
+
+void WWaveformViewer::handleEventFromWindow(QEvent* ev) {
+    event(ev);
+}
