@@ -31,6 +31,7 @@ const QString kDisabledText = QStringLiteral("- - -");
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
+const QString kEnableSearchCompletionsKey = QStringLiteral("EnableSearchCompletions");
 const QString kEnableSearchHistoryKey = QStringLiteral("EnableSearchHistory");
 
 // Border width, max. 2 px when focused (in official skins)
@@ -588,6 +589,10 @@ void WSearchLineEdit::refreshState() {
     } else {
         slotDisableSearch();
     }
+
+    bool isCompletionEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(kConfigGroup, kEnableSearchCompletionsKey));
+    setAutoCompletion(isCompletionEnabled);
 }
 
 void WSearchLineEdit::showPopup() {
