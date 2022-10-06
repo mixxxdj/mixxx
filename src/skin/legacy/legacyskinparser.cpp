@@ -1311,7 +1311,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     }
     commonWidgetSetup(node, pSpinny);
 
-#ifdef MIXXX_USE_QGLWIDGET
+#ifdef MIXXX_USE_VSYNCTHREAD
     connect(waveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
             spinny,

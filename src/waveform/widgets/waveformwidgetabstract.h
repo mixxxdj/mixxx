@@ -32,6 +32,9 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     virtual mixxx::Duration render();
     virtual void resize(int width, int height);
 
+    virtual void renderWithOpenGLWindow() {
+    }
+
   protected:
     QWidget* m_widget;
     bool m_initSuccess;

@@ -326,6 +326,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
 }
 
 void WSpinny::render(VSyncThread* vSyncThread) {
+#ifdef MIXXX_USE_QGLWIDGET
     if (!isValid() || !isVisible()) {
         return;
     }
@@ -341,6 +342,16 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 
     QPainter painter(this);
     draw(&painter);
+#else
+    if (shouldRender()) {
+        if (vSyncThread != nullptr) {
+            preRender(vSyncThread->getTimer(), vSyncThread->getMicrosUntilSwap());
+        }
+        makeCurrentIfNeeded();
+        QPainter painter(m_pOpenGLWindow);
+        draw(&painter);
+    }
+#endif
 }
 #ifndef MIXXX_USE_QGLWIDGET
 void WSpinny::preRenderGL(OpenGLWindow* w) {
@@ -435,6 +446,7 @@ void WSpinny::draw(QPainter* painter) {
 }
 
 void WSpinny::swap() {
+#ifdef MIXXX_USE_QGLWIDGET
     if (!isValid() || !isVisible()) {
         return;
     }
@@ -444,6 +456,13 @@ void WSpinny::swap() {
     }
     makeCurrentIfNeeded();
     swapBuffers();
+#else
+    // only used with vsycn thread
+    if (shouldRender()) {
+        makeCurrentIfNeeded();
+        swapBuffers();
+    }
+#endif
 }
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {

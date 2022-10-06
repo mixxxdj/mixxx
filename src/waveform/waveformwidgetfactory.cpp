@@ -39,7 +39,7 @@
 #include "widget/wvumetergl.h"
 #include "widget/wwaveformviewer.h"
 
-#ifdef MIXXX_USE_QGLWIDGET
+#ifdef MIXXX_USE_VSYNCTHREAD
 namespace {
 // Returns true if the given waveform should be rendered.
 bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
@@ -49,13 +49,20 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
         return false;
     }
 
+#ifdef MIXXX_USE_QGLWIDGET
     auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
+#else
+    // TODO m0dB add method getGLWidget to WaveformWidgetAbstract,
+    // overwritten in GLWaveformWidgetAbstract
+    auto* glw = dynamic_cast<WGLWidget*>(pWaveformWidget->getWidget());
+#endif
     if (glw == nullptr) {
         // Not a QGLWidget. We can simply use QWidget::isVisible.
         auto* qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
 
+#ifdef MIXXX_USE_QGLWIDGET
     if (glw == nullptr || !glw->isValid() || !glw->isVisible()) {
         return false;
     }
@@ -66,6 +73,9 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     if (window == nullptr || !window->isExposed()) {
         return false;
     }
+#else
+    return glw->shouldRender();
+#endif
 
     return true;
 }
@@ -363,6 +373,7 @@ void WaveformWidgetFactory::destroyWidgets() {
 }
 
 void WaveformWidgetFactory::addVuMeter(WVuMeter* pVuMeter) {
+#ifdef MIXXX_USE_QGLWIDGET
     // Do not hold the pointer to of timer listeners since they may be deleted.
     // We don't activate update() or repaint() directly so listener widgets
     // can decide whether to paint or not.
@@ -371,6 +382,7 @@ void WaveformWidgetFactory::addVuMeter(WVuMeter* pVuMeter) {
             pVuMeter,
             &WVuMeter::maybeUpdate,
             Qt::DirectConnection);
+#endif
 }
 
 void WaveformWidgetFactory::addVuMeter(WVuMeterGL* pVuMeter) {
@@ -647,7 +659,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::render() {
-#ifdef MIXXX_USE_QGLWIDGET
+#ifdef MIXXX_USE_VSYNCTHREAD
     ScopedTimer t("WaveformWidgetFactory::render() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -688,7 +700,11 @@ void WaveformWidgetFactory::render() {
                 if (!shouldRenderWaveforms[static_cast<int>(i)]) {
                     continue;
                 }
+#ifdef MIXXX_USE_QGLWIDGET
                 pWaveformWidget->render();
+#else
+                pWaveformWidget->renderWithOpenGLWindow();
+#endif
                 //qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
         }
@@ -725,7 +741,7 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swap() {
-#ifdef MIXXX_USE_QGLWIDGET
+#ifdef MIXXX_USE_VSYNCTHREAD
     ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -744,11 +760,9 @@ void WaveformWidgetFactory::swap() {
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                QGLWidget* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
+                WGLWidget* glw = dynamic_cast<WGLWidget*>(pWaveformWidget->getWidget());
                 if (glw != nullptr) {
-                    if (glw->context() != QGLContext::currentContext()) {
-                        glw->makeCurrent();
-                    }
+                    glw->makeCurrentIfNeeded();
                     glw->swapBuffers();
                 }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();

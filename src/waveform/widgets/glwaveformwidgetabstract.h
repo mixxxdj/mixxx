@@ -34,6 +34,11 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget
     }
 
 #ifndef MIXXX_USE_QGLWIDGET
+    void renderWithOpenGLWindow() override {
+        makeCurrentIfNeeded();
+        renderGL(m_pOpenGLWindow);
+    }
+
     void renderGL(OpenGLWindow* w) override {
         QPainter painter(w);
         draw(&painter, nullptr);

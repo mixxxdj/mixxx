@@ -30,7 +30,9 @@ void WGLWidget::makeCurrentIfNeeded() {
 
 OpenGLWindow::OpenGLWindow(WGLWidget* widget)
         : m_pWidget(widget) {
+#ifndef MIXXX_USE_VSYNCTHREAD
     connect(this, &QOpenGLWindow::frameSwapped, this, &OpenGLWindow::onFrameSwapped);
+#endif
 }
 
 void OpenGLWindow::initializeGL() {
@@ -132,8 +134,15 @@ void WGLWidget::initializeGL() {
 
 void WGLWidget::swapBuffers() {
     // not used when driven by WOpenGLWindow::frameSwapped, but here to be able to compile the vsyncthread driver code that uses WGLWidget derived from QGLWidget
-    // and potentially to be used when driving this from the vsyncthread
-    m_pOpenGLWindow->context()->swapBuffers(m_pOpenGLWindow->context()->surface());
+    // and when driving this from the vsyncthread
+    if (m_pOpenGLWindow->context()) {
+        m_pOpenGLWindow->context()->swapBuffers(m_pOpenGLWindow->context()->surface());
+    }
+}
+
+bool WGLWidget::shouldRender() {
+    // TODO m0dB more things to check here?
+    return isVisible() && m_pOpenGLWindow->isValid();
 }
 
 #endif

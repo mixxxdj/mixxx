@@ -1,6 +1,9 @@
 #pragma once
 
+//=====================================
 // #define MIXXX_USE_QGLWIDGET
+#define MIXXX_USE_VSYNCTHREAD
+//=====================================
 
 #ifdef MIXXX_USE_QGLWIDGET
 
@@ -45,6 +48,7 @@ class OpenGLWindow : public QOpenGLWindow {
 };
 
 class WGLWidget : public QWidget {
+  protected:
     OpenGLWindow* m_pOpenGLWindow{};
     QWidget* m_pContainerWidget{};
 
@@ -63,6 +67,7 @@ class WGLWidget : public QWidget {
     void handleEventFromWindow(QEvent* ev);
 
     void swapBuffers();
+    bool shouldRender();
 };
 
 #endif
