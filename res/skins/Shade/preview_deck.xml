@@ -215,21 +215,26 @@
                       <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
                     </Connection>
                   </StatusLight>
-                  <VuMeter>
-                    <TooltipId>sampler_VuMeter</TooltipId>
-                    <PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
+                  <WidgetGroup>
                     <Pos>2,11</Pos>
                     <Size>5f,41f</Size>
-                    <Horizontal>false</Horizontal>
-                    <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>500</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
-                    <PeakFallStep>2</PeakFallStep>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
-                    </Connection>
-                  </VuMeter>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <VuMeter>
+                        <TooltipId>sampler_VuMeter</TooltipId>
+                        <PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
+                        <PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
+                        <Horizontal>false</Horizontal>
+                        <PeakHoldSize>5</PeakHoldSize>
+                        <PeakHoldTime>500</PeakHoldTime>
+                        <PeakFallTime>50</PeakFallTime>
+                        <PeakFallStep>2</PeakFallStep>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
+                        </Connection>
+                      </VuMeter>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup>
 

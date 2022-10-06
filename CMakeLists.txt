@@ -1138,6 +1138,7 @@ else()
     src/widget/woverviewlmh.cpp
     src/widget/woverviewrgb.cpp
     src/widget/wspinny.cpp
+      src/widget/wvumetergl.cpp
     src/widget/wwaveformviewer.cpp
   )
 endif()
