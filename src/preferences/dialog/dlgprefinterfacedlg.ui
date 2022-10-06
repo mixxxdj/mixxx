@@ -256,13 +256,37 @@
        </layout>
       </item>
       <item row="13" column="0">
+       <widget class="QLabel" name="labelSearchBar">
+        <property name="enabled">
+          <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Search bar</string>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxEnableSearchCompletions">
+        <property name="text">
+         <string>Enable search completions</string>
+        </property>
+       </widget>
+      </item>
+      <item row="14" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxEnableSearchHistory">
+        <property name="text">
+         <string>Enable search history</string>
+        </property>
+       </widget>
+      </item>
+      <item row="15" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Screen saver</string>
         </property>
        </widget>
       </item>
-      <item row="13" column="1" colspan="2">
+      <item row="15" column="1" colspan="2">
        <widget class="QComboBox" name="comboBoxScreensaver"/>
       </item>
       <item row="8" column="2">
