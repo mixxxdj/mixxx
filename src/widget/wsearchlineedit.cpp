@@ -1,5 +1,7 @@
 #include "wsearchlineedit.h"
 
+#include <qstringliteral.h>
+
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QFont>
@@ -9,6 +11,7 @@
 #include <QStyle>
 
 #include "moc_wsearchlineedit.cpp"
+#include "preferences/configobject.h"
 #include "skin/legacy/skincontext.h"
 #include "util/assert.h"
 #include "util/logger.h"
@@ -25,7 +28,10 @@ const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
 const QString kDisabledText = QStringLiteral("- - -");
 
+const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
+
+const QString kEnableSearchHistoryKey = QStringLiteral("EnableSearchHistory");
 
 // Border width, max. 2 px when focused (in official skins)
 constexpr int kBorderWidth = 2;
@@ -313,6 +319,8 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
 
 void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     int currentTextIndex = 0;
+    bool isHistoryEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(kConfigGroup, kEnableSearchHistoryKey));
     switch (keyEvent->key()) {
     // Ctrl + F is handled in slotSetShortcutFocus()
     case Qt::Key_Backspace:
@@ -327,6 +335,9 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         // If we're at the top of the list the Up key clears the search bar,
         // no matter if it's a saved or unsaved query.
         // Otherwise Up is handled by the combobox itself.
+        if (!isHistoryEnabled) {
+            return;
+        }
         currentTextIndex = findCurrentTextIndex();
         if (currentTextIndex == 0 ||
                 (currentTextIndex == -1 && !currentText().isEmpty())) {
@@ -337,6 +348,9 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     case Qt::Key_Down:
         // After clearing the text field the Down key
         // is expected to show the latest query
+        if (!isHistoryEnabled) {
+            return;
+        }
         if (currentText().isEmpty()) {
             setCurrentIndex(0);
             return;
@@ -364,7 +378,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         return;
     case Qt::Key_Space:
         // Open/close popup with Ctrl + space
-        if (keyEvent->modifiers() == Qt::ControlModifier) {
+        if (isHistoryEnabled && keyEvent->modifiers() == Qt::ControlModifier) {
             if (view()->isVisible()) {
                 hidePopup();
             } else {
@@ -639,8 +653,12 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
     const int paddingPx = text.isEmpty() ? 0 : m_innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
 
-    // Hide the nonfunctional drop-down button (set width to 0) if the search is disabled.
-    const int dropDownWidth = isEnabled() ? static_cast<int>(m_innerHeight * 0.7) : 0;
+    // Hide the nonfunctional drop-down button (set width to 0) if the search or history is disabled.
+    const bool isHistoryEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(kConfigGroup, kEnableSearchHistoryKey));
+    const int dropDownWidth = isEnabled() && isHistoryEnabled
+            ? static_cast<int>(m_innerHeight * 0.7)
+            : 0;
 
     const QString styleSheet = QStringLiteral(
             "WSearchLineEdit { padding-%1: %2px; }"
