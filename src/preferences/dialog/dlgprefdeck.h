@@ -45,6 +45,17 @@ enum class KeyunlockMode {
     KeepLockedKey
 };
 
+enum class LoadWhenDeckPlaying {
+  Reject,
+  Allow,
+  AllowButStopDeck
+};
+
+namespace {
+const ConfigKey kConfigKeyLoadWhenDeckPlaying = ConfigKey("[Controls]", "LoadWhenDeckPlaying");
+constexpr LoadWhenDeckPlaying kDefaultLoadWhenDeckPlaying = LoadWhenDeckPlaying::Reject;
+}
+
 class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     Q_OBJECT
   public:
@@ -68,9 +79,9 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotRatePermFineSpinbox(double);
     void slotSetTrackTimeDisplay(QAbstractButton*);
     void slotSetTrackTimeDisplay(double);
-    void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
     void slotCueModeCombobox(int);
     void slotSetTrackLoadMode(int comboboxIndex);
+    void slotSetLoadWhenDeckPlaying(int comboboxIndex);
     void slotCloneDeckOnLoadDoubleTapCheckbox(bool);
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
@@ -116,7 +127,6 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     CueMode m_cueMode;
 
     bool m_bSetIntroStartAtMainCue;
-    bool m_bDisallowTrackLoadToPlayingDeck;
     bool m_bCloneDeckOnLoadDoubleTap;
 
     int m_iRateRangePercent;
@@ -127,6 +137,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     KeylockMode m_keylockMode;
     KeyunlockMode m_keyunlockMode;
     SeekOnLoadMode m_seekOnLoadMode;
+    LoadWhenDeckPlaying m_loadWhenDeckPlaying;
 
     RateControl::RampMode m_bRateRamping;
     int m_iRateRampSensitivity;

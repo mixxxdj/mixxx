@@ -153,16 +153,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     comboBoxTimeFormat->setCurrentIndex(
                 comboBoxTimeFormat->findData(time_format));
 
-    // Override Playing Track on Track Load
-    // The check box reflects the opposite of the config value
-    m_bDisallowTrackLoadToPlayingDeck = !m_pConfig->getValue(
-            ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false);
-    checkBoxDisallowLoadToPlayingDeck->setChecked(m_bDisallowTrackLoadToPlayingDeck);
-    connect(checkBoxDisallowLoadToPlayingDeck,
-            &QCheckBox::toggled,
-            this,
-            &DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox);
-
     comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
     comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
@@ -177,6 +167,27 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotSetTrackLoadMode);
+
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow"), static_cast<int>(LoadWhenDeckPlaying::Allow));
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, but stop deck"), static_cast<int>(LoadWhenDeckPlaying::AllowButStopDeck));
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Reject"), static_cast<int>(LoadWhenDeckPlaying::Reject));
+    int loadWhenDeckPlaying;
+    if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
+        loadWhenDeckPlaying = m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
+    } else {
+        // upgrade from older versions
+        if (m_pConfig->getValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false)) {
+            loadWhenDeckPlaying = static_cast<int>(LoadWhenDeckPlaying::Allow);
+        } else {
+            loadWhenDeckPlaying = static_cast<int>(kDefaultLoadWhenDeckPlaying);
+        }
+    }
+    comboBoxLoadWhenDeckPlaying->setCurrentIndex(comboBoxLoadWhenDeckPlaying->findData(loadWhenDeckPlaying));
+    m_loadWhenDeckPlaying = static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying);
+    connect(comboBoxLoadWhenDeckPlaying,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefDeck::slotSetLoadWhenDeckPlaying);
 
     // This option was introduced in Mixxx 2.3 with the intro & outro cues.
     // If the user has set main cue points with the intention of starting tracks
@@ -432,9 +443,6 @@ void DlgPrefDeck::slotUpdate() {
 
     slotSetTrackTimeDisplay(m_pControlTrackTimeDisplay->get());
 
-    checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
-            ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false));
-
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
@@ -511,13 +519,14 @@ void DlgPrefDeck::slotResetToDefaults() {
     // 8% Rate Range
     ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(kDefaultRateRangePercent));
 
-    // Don't load tracks into playing decks.
-    checkBoxDisallowLoadToPlayingDeck->setChecked(true);
-
     // Clone decks by double-tapping Load button.
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
+
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
+
+    // What to do if someone loads into a playing deck
+    comboBoxLoadWhenDeckPlaying->setCurrentIndex(static_cast<int>(kDefaultLoadWhenDeckPlaying));
 
     // Load at intro start
     comboBoxLoadPoint->setCurrentIndex(
@@ -594,10 +603,6 @@ void DlgPrefDeck::slotKeyUnlockModeSelected(QAbstractButton* pressedButton) {
     }
 }
 
-void DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox(bool checked) {
-    m_bDisallowTrackLoadToPlayingDeck = checked;
-}
-
 void DlgPrefDeck::slotCueModeCombobox(int index) {
     m_cueMode = static_cast<CueMode>(ComboBoxCueMode->itemData(index).toInt());
 }
@@ -668,6 +673,11 @@ void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
             comboBoxLoadPoint->itemData(comboboxIndex).toInt());
 }
 
+void DlgPrefDeck::slotSetLoadWhenDeckPlaying(int comboboxIndex) {
+    m_loadWhenDeckPlaying = static_cast<LoadWhenDeckPlaying>(
+        comboBoxLoadWhenDeckPlaying->itemData(comboboxIndex).toInt());
+}
+
 void DlgPrefDeck::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]", "SetIntroStartAtMainCue"),
             ConfigValue(m_bSetIntroStartAtMainCue));
@@ -687,8 +697,7 @@ void DlgPrefDeck::slotApply() {
     }
     m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
 
-    m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
-                        !m_bDisallowTrackLoadToPlayingDeck);
+    m_pConfig->setValue(kConfigKeyLoadWhenDeckPlaying, static_cast<int>(m_loadWhenDeckPlaying));
 
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),

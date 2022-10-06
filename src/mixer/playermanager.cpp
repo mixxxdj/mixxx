@@ -686,6 +686,26 @@ void PlayerManager::slotLoadLocationToPlayer(
     emit loadLocationToPlayer(location, group, play);
 }
 
+void PlayerManager::slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group) {
+    bool play = false;
+    LoadWhenDeckPlaying loadWhenDeckPlaying =
+            m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)
+        ? static_cast<LoadWhenDeckPlaying>(m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt())
+        : kDefaultLoadWhenDeckPlaying;
+    switch (loadWhenDeckPlaying) {
+        case LoadWhenDeckPlaying::AllowButStopDeck:
+        case LoadWhenDeckPlaying::Reject:
+            break;
+        case LoadWhenDeckPlaying::Allow:
+            if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+                // deck is currently playing, so immediately play new track
+                play = true;
+            }
+            break;
+    }
+    slotLoadLocationToPlayer(location, group, play);
+}
+
 void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
     slotLoadLocationToPlayer(location, groupForDeck(deck - 1));
 }
