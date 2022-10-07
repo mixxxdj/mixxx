@@ -26,7 +26,7 @@ using namespace mixxx::library::prefs;
 namespace {
 
 const QString kEnableSearchCompletionsKey = QStringLiteral("EnableSearchCompletions");
-const QString kEnableSearchHistoryKey = QStringLiteral("EnableSearchHistory");
+const QString kEnableSearchHistoryShortcutsKey = QStringLiteral("EnableSearchHistoryShortcuts");
 
 } // namespace
 
@@ -100,9 +100,9 @@ DlgPrefLibrary::DlgPrefLibrary(
     checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
             ConfigKey(kConfigGroup, kEnableSearchCompletionsKey),
             WSearchLineEdit::kEnableSearchCompletionsByDefault));
-    checkBoxEnableSearchHistory->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kEnableSearchHistoryKey),
-            WSearchLineEdit::kEnableSearchHistoryByDefault));
+    checkBoxEnableSearchHistoryShortcuts->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kEnableSearchHistoryShortcutsKey),
+            WSearchLineEdit::kEnableSearchHistoryShortcutsByDefault));
 
     connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
@@ -225,7 +225,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     searchDebouncingTimeoutSpinBox->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kEnableSearchCompletionsByDefault);
-    checkBoxEnableSearchHistory->setChecked(WSearchLineEdit::kEnableSearchHistoryByDefault);
+    checkBoxEnableSearchHistoryShortcuts->setChecked(
+            WSearchLineEdit::kEnableSearchHistoryShortcutsByDefault);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -431,8 +432,8 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchCompletionsKey),
             ConfigValue(checkBoxEnableSearchCompletions->isChecked()));
-    m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchHistoryKey),
-            ConfigValue(checkBoxEnableSearchHistory->isChecked()));
+    m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchHistoryShortcutsKey),
+            ConfigValue(checkBoxEnableSearchHistoryShortcuts->isChecked()));
 
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
