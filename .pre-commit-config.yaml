@@ -57,10 +57,15 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
-        # The wrapper script tools/codespell.py only checks changed lines instead of all files.
-        entry: tools/codespell.py --ignore-words .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
-        # Replace 'entry' with 'args' to run the checks on all files instead of only changed lines.
-        #args: [--ignore-words, .codespellignore, --ignore-regex, "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))"]
+        args:
+          [
+            --exclude-file,
+            .codespellignorelines,
+            --ignore-words,
+            .codespellignore,
+            --ignore-regex,
+            "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))",
+          ]
         exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.12.0
