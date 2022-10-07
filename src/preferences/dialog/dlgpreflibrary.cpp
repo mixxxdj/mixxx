@@ -23,6 +23,13 @@
 
 using namespace mixxx::library::prefs;
 
+namespace {
+
+const QString kEnableSearchCompletionsKey = QStringLiteral("EnableSearchCompletions");
+const QString kEnableSearchHistoryKey = QStringLiteral("EnableSearchHistory");
+
+} // namespace
+
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
         UserSettingsPointer pConfig,
@@ -89,6 +96,13 @@ DlgPrefLibrary::DlgPrefLibrary(
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
+
+    checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kEnableSearchCompletionsKey),
+            WSearchLineEdit::kEnableSearchCompletionsByDefault));
+    checkBoxEnableSearchHistory->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kEnableSearchHistoryKey),
+            WSearchLineEdit::kEnableSearchHistoryByDefault));
 
     connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
@@ -210,6 +224,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     setLibraryFont(QApplication::font());
     searchDebouncingTimeoutSpinBox->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
+    checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kEnableSearchCompletionsByDefault);
+    checkBoxEnableSearchHistory->setChecked(WSearchLineEdit::kEnableSearchHistoryByDefault);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -412,6 +428,11 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(kUseRelativePathOnExportConfigKey,
             ConfigValue((int)checkBox_use_relative_path->isChecked()));
+
+    m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchCompletionsKey),
+            ConfigValue(checkBoxEnableSearchCompletions->isChecked()));
+    m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchHistoryKey),
+            ConfigValue(checkBoxEnableSearchHistory->isChecked()));
 
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));

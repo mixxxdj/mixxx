@@ -28,7 +28,7 @@ const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
 const QString kDisabledText = QStringLiteral("- - -");
 
-const QString kConfigGroup = QStringLiteral("[Config]");
+const QString kLibraryConfigGroup = QStringLiteral("[Library]");
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
 const QString kEnableSearchCompletionsKey = QStringLiteral("EnableSearchCompletions");
@@ -321,7 +321,7 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
 void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     int currentTextIndex = 0;
     bool isHistoryEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(kConfigGroup, kEnableSearchHistoryKey));
+            ConfigKey(kLibraryConfigGroup, kEnableSearchHistoryKey));
     switch (keyEvent->key()) {
     // Ctrl + F is handled in slotSetShortcutFocus()
     case Qt::Key_Backspace:
@@ -591,7 +591,7 @@ void WSearchLineEdit::refreshState() {
     }
 
     bool isCompletionEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(kConfigGroup, kEnableSearchCompletionsKey));
+            ConfigKey(kLibraryConfigGroup, kEnableSearchCompletionsKey));
     setAutoCompletion(isCompletionEnabled);
 }
 
@@ -660,7 +660,7 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
 
     // Hide the nonfunctional drop-down button (set width to 0) if the search or history is disabled.
     const bool isHistoryEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(kConfigGroup, kEnableSearchHistoryKey));
+            ConfigKey(kLibraryConfigGroup, kEnableSearchHistoryKey));
     const int dropDownWidth = isEnabled() && isHistoryEnabled
             ? static_cast<int>(m_innerHeight * 0.7)
             : 0;

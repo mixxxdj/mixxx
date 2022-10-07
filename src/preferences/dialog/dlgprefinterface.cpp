@@ -35,8 +35,6 @@ const QString kSchemeKey = QStringLiteral("Scheme");
 const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 const QString kLocaleKey = QStringLiteral("Locale");
 const QString kTooltipsKey = QStringLiteral("Tooltips");
-const QString kEnableSearchCompletionsKey = QStringLiteral("EnableSearchCompletions");
-const QString kEnableSearchHistoryKey = QStringLiteral("EnableSearchHistory");
 
 } // namespace
 
@@ -54,8 +52,6 @@ DlgPrefInterface::DlgPrefInterface(
           m_minScaleFactor(1.0),
           m_dDevicePixelRatio(1.0),
           m_bStartWithFullScreen(false),
-          m_bEnableSearchCompletions(true),
-          m_bEnableSearchHistory(true),
           m_bRebootMixxxView(false) {
     setupUi(this);
 
@@ -293,13 +289,6 @@ void DlgPrefInterface::slotUpdate() {
 
     loadTooltipPreferenceFromConfig();
 
-    checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kEnableSearchCompletionsKey),
-            m_bEnableSearchCompletions));
-    checkBoxEnableSearchHistory->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kEnableSearchHistoryKey),
-            m_bEnableSearchHistory));
-
     int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 }
@@ -433,11 +422,6 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey(kControlsGroup, kTooltipsKey),
             ConfigValue(static_cast<int>(m_tooltipMode)));
     emit tooltipModeChanged(m_tooltipMode);
-
-    m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchCompletionsKey),
-            ConfigValue(checkBoxEnableSearchCompletions->isChecked()));
-    m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchHistoryKey),
-            ConfigValue(checkBoxEnableSearchHistory->isChecked()));
 
     // screensaver mode update
     int screensaverComboBoxState = comboBoxScreensaver->itemData(
