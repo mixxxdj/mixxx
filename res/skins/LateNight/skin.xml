@@ -142,7 +142,7 @@
 
       <!-- Waveform & Overview colors -->
       <!-- This is a hack to have a grey background in empty decks.
-          When a track is laoded the bg gets darker for better contrast -->
+          When a track is loaded the bg gets darker for better contrast -->
       <SetVariable name="BgColorOverview_12">#19191a</SetVariable>
       <SetVariable name="BgColorOverview_34">#001b23</SetVariable>
       <SetVariable name="BgColorOverview_SamPre">rgba(15, 15, 15, 20)</SetVariable>
@@ -249,7 +249,7 @@
       <SetVariable name="KnobColorFx34">blue</SetVariable>
       <SetVariable name="KnobColorFxParameter">white</SetVariable>
       <!-- EQ kill dots conflict with arcs in Classic knob backgrounds.
-        Leaving it blank could cause users to accidentially click it
+        Leaving it blank could cause users to accidentally click it
         without having a 'kill' indicator, so we 'remove' it. -->
       <SetVariable name="EqKillDotSize">0f,0f</SetVariable>
 
@@ -392,7 +392,7 @@
 
     <!-- Some helpers to show widgets and switch layouts
         depending on the skin configuration.
-        Appearantly putting those here keeps i.e. the spinny
+        Apparently putting those here keeps i.e. the spinny
         config when [Master],maximize_library is toggled. -->
         <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
         <Template src="skin:/helpers/skin_helper_spinny-cover.xml"/>

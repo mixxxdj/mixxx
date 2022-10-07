@@ -228,7 +228,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     //TODO: Move all these config object get*() calls to an "updatePrefs()" function,
     //        and make that get called when any options get changed in the preferences dialog, rather than
-    //        polling everytime we get a buffer.
+    //        polling every time we get a buffer.
 
 
     // Check if vinyl control is enabled...
@@ -611,7 +611,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         //POSITION: NO  PITCH: NO
         //if it's been a long time, we're stopped.
         //if it hasn't been long,
-        //let the track play a wee bit more before deciding we've stopped
+        //let the track play a bit more before deciding we've stopped
 
         m_pRateRatio->set(1.0);
 

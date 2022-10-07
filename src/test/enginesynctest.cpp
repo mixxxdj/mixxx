@@ -2410,7 +2410,7 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     pHotCue2Activate->set(1.0);
     ProcessBuffer();
 
-    // Beat_distance is the distance to the previous beat wich has already passed.
+    // Beat_distance is the distance to the previous beat which has already passed.
     // We compare here the distance to the next beat (1 - beat_distance) and
     // scale it by the different tempos.
     EXPECT_NEAR(

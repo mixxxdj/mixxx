@@ -386,7 +386,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     QString path = item->getData().toString();
 
-    // If the item is a build-in node, e.g., 'QuickLink' return
+    // If the item is a built-in node, e.g., 'QuickLink' return
     if (path.isEmpty() || path == QUICK_LINK_NODE) {
         return;
     }
@@ -402,13 +402,13 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         folders += getRemovableDevices();
     } else {
         // we assume that the path refers to a folder in the file system
-        // populate childs
+        // populate children
         MDir dir(path);
 
         QFileInfoList all = dir.dir().entryInfoList(
             QDir::Dirs | QDir::NoDotAndDotDot);
 
-        // loop through all the item and construct the childs
+        // loop through all the item and construct the children
         foreach (QFileInfo one, all) {
             // Skip folders that end with .app on OS X
 #if defined(__APPLE__)

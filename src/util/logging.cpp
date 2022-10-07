@@ -156,18 +156,18 @@ void MessageHandler(QtMsgType type,
     }
     baSize += input8Bit.size();
 
-    QByteArray ba;
-    ba.reserve(static_cast<int>(baSize));
+    QByteArray byteArray;
+    byteArray.reserve(static_cast<int>(baSize));
 
-    ba += tag;
-    ba += threadName;
-    ba += "]: ";
-    ba += input8Bit;
-    ba += '\n';
+    byteArray += tag;
+    byteArray += threadName;
+    byteArray += "]: ";
+    byteArray += input8Bit;
+    byteArray += '\n';
 
     if (isDebugAssert) {
         if (g_debugAssertBreak) {
-            writeToLog(ba, true, true);
+            writeToLog(byteArray, true, true);
             raise(SIGINT);
             // If the debugger returns, continue normally.
             return;
@@ -182,7 +182,7 @@ void MessageHandler(QtMsgType type,
 #endif // MIXXX_DEBUG_ASSERTIONS_FATAL
     }
 
-    writeToLog(ba, shouldPrint, shouldFlush);
+    writeToLog(byteArray, shouldPrint, shouldFlush);
 }
 
 }  // namespace

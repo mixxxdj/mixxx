@@ -7,7 +7,7 @@ IDI_ICON1               ICON    DISCARDABLE     "res/images/icons/ic_mixxx.ico"
 #define VER_PRODUCTNAME_STR         "Mixxx\0"
 #define VER_FILEDESCRIPTION_STR     "Mixxx digital DJ software"
 #define VER_COMPANYNAME_STR         "The Mixxx Development Team"
-// \xA9 for (c) symbol. The Microsoft Resource Compiler compiler asumes Latin-1 strings
+// \xA9 for (c) symbol. The Microsoft Resource Compiler compiler assumes Latin-1 strings
 #define VER_LEGALCOPYRIGHT_STR      "\xA9 2001-" CUR_YEAR " Mixxx Development Team\0"
 #define VER_ORIGINALFILENAME_STR    "Mixxx.exe"
 

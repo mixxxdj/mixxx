@@ -24,7 +24,7 @@ NumarkN4.cueReverseRoll=true; // enables the ability to do a reverse roll while 
 NumarkN4.hotcuePageIndexBehavior=true;
 
 // possible ranges (0.0..3.0 where 0.06=6%)
-NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modifify)
+NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modify)
     0.06, // one semitone
     0.24, // for maximum freedom
 ];
@@ -581,7 +581,7 @@ NumarkN4.Deck = function(channel) {
             theDeck.blinkTimer=0;
             return; // return early so no new timer gets created.
         }
-        // this previouslyLoaded guard is needed because everytime a new track gets
+        // this previouslyLoaded guard is needed because every time a new track gets
         // loaded into a deck without previously ejecting, a new timer would get
         // spawned which conflicted with the old (still running) timers.
         if (!this.previouslyLoaded) {

@@ -87,7 +87,7 @@ case "$1" in
         echo ""
         echo "options:"
         echo "   help       Displays this help."
-        echo "   name       Displays the name of the required build envirnment."
-        echo "   setup      Installes the build environment."
+        echo "   name       Displays the name of the required build environment."
+        echo "   setup      Installs the build environment."
         ;;
 esac

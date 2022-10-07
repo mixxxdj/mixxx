@@ -77,7 +77,7 @@ jobs:
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
-            # TODO: Reenable FFmpeg after licensing issues have been clarified
+            # TODO: Re-enable FFmpeg after licensing issues have been clarified
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat

@@ -553,8 +553,8 @@ TraktorS2MK2.shift = function(field) {
 };
 
 TraktorS2MK2.loadTrackButton = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS2MK2.shiftPressed[group]) {
         engine.setValue(field.group, "eject", field.value);
     } else {
@@ -565,8 +565,8 @@ TraktorS2MK2.loadTrackButton = function(field) {
 TraktorS2MK2.syncButton = function(field) {
     var now = Date.now();
 
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     // If shifted, just toggle.
     // TODO(later version): actually make this enable explicit master.
     if (TraktorS2MK2.shiftPressed[group]) {
@@ -596,8 +596,8 @@ TraktorS2MK2.syncButton = function(field) {
 };
 
 TraktorS2MK2.cueButton = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS2MK2.shiftPressed[group]) {
         if (ShiftCueButtonAction === "REWIND") {
             if (field.value === 0) {
@@ -616,8 +616,8 @@ TraktorS2MK2.playButton = function(field) {
     if (field.value === 0) {
         return;
     }
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS2MK2.shiftPressed[group]) {
         var locked = engine.getValue(field.group, "keylock");
         engine.setValue(field.group, "keylock", !locked);
@@ -1180,8 +1180,8 @@ TraktorS2MK2.topEncoderPress = function(field) {
 };
 
 TraktorS2MK2.leftEncoder = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     var delta = TraktorS2MK2.encoderDirection(field.value, TraktorS2MK2.previousLeftEncoder[group]);
     TraktorS2MK2.previousLeftEncoder[group] = field.value;
 
@@ -1211,8 +1211,8 @@ TraktorS2MK2.leftEncoder = function(field) {
 };
 
 TraktorS2MK2.leftEncoderPress = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     TraktorS2MK2.leftEncoderPressed[group] = (field.value > 0);
     if (TraktorS2MK2.shiftPressed[group] && field.value > 0) {
         script.triggerControl(group, "pitch_adjust_set_default");
@@ -1220,8 +1220,8 @@ TraktorS2MK2.leftEncoderPress = function(field) {
 };
 
 TraktorS2MK2.rightEncoder = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     var delta = TraktorS2MK2.encoderDirection(field.value, TraktorS2MK2.previousRightEncoder[group]);
     TraktorS2MK2.previousRightEncoder[group] = field.value;
 
@@ -1244,8 +1244,8 @@ TraktorS2MK2.rightEncoderPress = function(field) {
     if (field.value === 0) {
         return;
     }
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     var loopEnabled = engine.getValue(group, "loop_enabled");
     // The actions triggered below change the state of loop_enabled,
     // so to simplify the logic, use script.triggerControl to only act

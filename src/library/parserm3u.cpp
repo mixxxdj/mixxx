@@ -63,16 +63,16 @@ QList<QString> ParserM3u::parse(const QString& sFilename) {
     // Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
     // We replace any '\r' with '\n' if applicaple
     // This ensures that playlists from iTunes on OS X can be parsed
-    QByteArray ba = file.readAll();
+    QByteArray byteArray = file.readAll();
     //detect encoding
-    bool isCRLF_encoded = ba.contains("\r\n");
-    bool isCR_encoded = ba.contains("\r");
+    bool isCRLF_encoded = byteArray.contains("\r\n");
+    bool isCR_encoded = byteArray.contains("\r");
     if (isCR_encoded && !isCRLF_encoded) {
-        ba.replace('\r', '\n');
+        byteArray.replace('\r', '\n');
     }
 
-    QTextStream textstream(ba.constData());
-    if (isUtf8(ba.constData())) {
+    QTextStream textstream(byteArray.constData());
+    if (isUtf8(byteArray.constData())) {
         textstream.setCodec("UTF-8");
     } else {
         textstream.setCodec("windows-1252");

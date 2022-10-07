@@ -763,11 +763,11 @@ TraktorS4MK2.debugLights = function() {
 
     for (i = 0; i < 3; i++) {
         var ok = true;
-        var splitted = data_strings[i].split(/\s+/);
-        HIDDebug("i" + i + " " + splitted);
-        data[i].length = splitted.length;
-        for (j = 0; j < splitted.length; j++) {
-            var byte_str = splitted[j];
+        var split = data_strings[i].split(/\s+/);
+        HIDDebug("i" + i + " " + split);
+        data[i].length = split.length;
+        for (j = 0; j < split.length; j++) {
+            var byte_str = split[j];
             if (byte_str.length !== 2) {
                 ok = false;
                 HIDDebug("not two characters?? " + byte_str);
@@ -875,28 +875,28 @@ TraktorS4MK2.longMessageCallback = function(packet, data) {
 // on the state of the deck switches.
 TraktorS4MK2.getGroupFromButton = function(name) {
     //HIDDebug("deckswitch status " + this.controller.left_deck_C + " " + this.controller.right_deck_D);
-    splitted = name.split(".");
-    if (splitted.length !== 2) {
+    split = name.split(".");
+    if (split.length !== 2) {
         HIDDebug("Traktor S4MK2: Tried to set from simple packet but not exactly one period in name: " + name);
         return;
     }
 
-    if (splitted[0][0] === "[") {
-        return splitted[0];
-    } else if (splitted[0] === "deck1") {
+    if (split[0][0] === "[") {
+        return split[0];
+    } else if (split[0] === "deck1") {
         if (TraktorS4MK2.controller.left_deck_C) {
             return "[Channel3]";
         } else {
             return "[Channel1]";
         }
-    } else if (splitted[0] === "deck2") {
+    } else if (split[0] === "deck2") {
         if (TraktorS4MK2.controller.right_deck_D) {
             return "[Channel4]";
         } else {
             return "[Channel2]";
         }
     } else {
-        HIDDebug("Traktor S4MK2: Unrecognized packet group: " + splitted[0]);
+        HIDDebug("Traktor S4MK2: Unrecognized packet group: " + split[0]);
         return "";
     }
 };
@@ -935,8 +935,8 @@ TraktorS4MK2.deckSwitchHandler = function(field) {
 };
 
 TraktorS4MK2.loadTrackHandler = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         engine.setValue(field.group, "eject", field.value);
     } else {
@@ -947,8 +947,8 @@ TraktorS4MK2.loadTrackHandler = function(field) {
 TraktorS4MK2.syncEnabledHandler = function(field) {
     var now = Date.now();
 
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     // If shifted, just toggle.
     // TODO(later version): actually make this enable explicit master.
     if (TraktorS4MK2.controller.shift_pressed[group]) {
@@ -979,8 +979,8 @@ TraktorS4MK2.syncEnabledHandler = function(field) {
 };
 
 TraktorS4MK2.cueHandler = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         if (TraktorS4MK2.ShiftCueButtonAction === "REWIND") {
             if (field.value === 0) {
@@ -1002,8 +1002,8 @@ TraktorS4MK2.playHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         var locked = engine.getValue(field.group, "keylock");
         engine.setValue(field.group, "keylock", !locked);
@@ -1310,8 +1310,8 @@ TraktorS4MK2.callbackPregain = function(field) {
 
 TraktorS4MK2.callbackLoopMove = function(field) {
     // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     prev_loopmove = TraktorS4MK2.controller.prev_loopmove[group];
     TraktorS4MK2.controller.prev_loopmove[group] = field.value;
     var delta = 0;
@@ -1342,8 +1342,8 @@ TraktorS4MK2.callbackLoopMove = function(field) {
 };
 
 TraktorS4MK2.loopActivateHandler = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         engine.setValue(field.group, "reloop_andstop", field.value);
     } else {
@@ -1422,8 +1422,8 @@ TraktorS4MK2.displayCharLoopDot = function(deck, charPos, on) {
 };
 
 TraktorS4MK2.callbackLoopSize = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     prev_loopsize = TraktorS4MK2.controller.prev_loopsize[group];
     TraktorS4MK2.controller.prev_loopsize[group] = field.value;
     var delta = 0;
@@ -1453,8 +1453,8 @@ TraktorS4MK2.callbackLoopSize = function(field) {
 };
 
 TraktorS4MK2.loopSetHandler = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         engine.setValue(field.group, "pitch_adjust_set_default", field.value);
     } else {

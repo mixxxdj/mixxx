@@ -4,7 +4,7 @@ This XSLT stylesheet is taken from the jenkins-ctest-plugin by Version One,
 Inc. and Ryan Pavlik <abiryan@ryand.net> and is subject to the terms of the
 MIT License.
 
-It was taken from this GitHub repositiory:
+It was taken from this GitHub repository:
     https://github.com/rpavlik/jenkins-ctest-plugin
 
 Includes modifications by Jan Holthuis to add support for skipped/errored

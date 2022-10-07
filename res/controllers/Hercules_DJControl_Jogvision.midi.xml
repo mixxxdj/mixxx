@@ -1721,7 +1721,7 @@
       <output>
         <group>[Master]</group>
         <key>maximize_library</key>
-        <description>VIEW buton LED</description>
+        <description>VIEW button LED</description>
         <minimum>0.5</minimum>
         <maximum>1</maximum>
         <status>0x90</status>
