@@ -20,7 +20,7 @@ def run_codespell_on_lines(
     Returns 1 if any changes were made, else 0.
     """
     logger = logging.getLogger(__name__)
-    cmd = ["codespell", *codespell_args, "--", filename]
+    cmd = [sys.executable, "-m" "codespell", *codespell_args, "--", filename]
     logger.debug("Running command: %r", cmd)
 
     try:
