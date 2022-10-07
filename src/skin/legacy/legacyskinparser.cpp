@@ -84,7 +84,9 @@
 #include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
 #include "widget/wvumeter.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wvumetergl.h"
+#endif
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wwidgetgroup.h"
