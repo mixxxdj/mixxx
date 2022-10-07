@@ -1,5 +1,6 @@
 #include "wsearchlineedit.h"
 
+#include <qcompleter.h>
 #include <qstringliteral.h>
 
 #include <QAbstractItemView>
@@ -592,7 +593,7 @@ void WSearchLineEdit::refreshState() {
 
     bool isCompletionEnabled = m_pConfig->getValue<bool>(
             ConfigKey(kLibraryConfigGroup, kEnableSearchCompletionsKey));
-    setAutoCompletion(isCompletionEnabled);
+    lineEdit()->setCompleter(isCompletionEnabled ? completer() : nullptr);
 }
 
 void WSearchLineEdit::showPopup() {
