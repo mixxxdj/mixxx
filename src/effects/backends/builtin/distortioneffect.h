@@ -42,14 +42,10 @@ class DistortionEffect : public EffectProcessorImpl<DistortionGroupState> {
     enum Mode {
         SoftClipping = 0,
         HardClipping = 1,
-        SoftFolding = 2,
-        HardFolding = 3
     };
 
     struct SoftClippingParameters;
     struct HardClippingParameters;
-    struct SoftFoldingParameters;
-    struct HardFoldingParameters;
 
     template<typename ModeParams>
     void processDistortion(CSAMPLE driveParam,

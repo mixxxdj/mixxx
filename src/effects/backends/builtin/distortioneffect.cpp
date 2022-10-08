@@ -27,17 +27,14 @@ EffectManifestPointer DistortionEffect::getManifest() {
 
     EffectManifestParameterPointer mode = pManifest->addParameter();
     mode->setId("mode");
-    mode->setName(QObject::tr("Mode"));
-    mode->setShortName(QObject::tr("Mode"));
+    mode->setName(QObject::tr("Hard Clip"));
+    mode->setShortName(QObject::tr("Hard"));
     mode->setDescription(QObject::tr(
-            "The type of distortion to apply. Each type will sound different, "
-            "ranging from soft saturation to hard clipping."));
+            "Switches between soft saturation and hard clipping."));
     mode->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-    mode->setRange(0, 0, 4);
+    mode->setRange(0, 0, 2);
     mode->appendStep(qMakePair(QObject::tr("Soft Clipping"), Mode::SoftClipping));
     mode->appendStep(qMakePair(QObject::tr("Hard Clipping"), Mode::HardClipping));
-    mode->appendStep(qMakePair(QObject::tr("Soft Folding"), Mode::SoftFolding));
-    mode->appendStep(qMakePair(QObject::tr("Hard Folding"), Mode::HardFolding));
 
     EffectManifestParameterPointer drive = pManifest->addParameter();
     drive->setId("drive");
@@ -83,34 +80,6 @@ struct DistortionEffect::HardClippingParameters {
     }
 };
 
-struct DistortionEffect::SoftFoldingParameters {
-    static constexpr const CSAMPLE normalizationLevel = 0.3f;
-    static constexpr const CSAMPLE crossfadeEndParam = 0.2f;
-    static constexpr const CSAMPLE_GAIN maxDriveGain = 20.f;
-
-    static CSAMPLE process(CSAMPLE sample) {
-        return std::sin(sample);
-    }
-};
-
-struct DistortionEffect::HardFoldingParameters {
-    static constexpr const CSAMPLE normalizationLevel = 0.8f;
-    static constexpr const CSAMPLE crossfadeEndParam = 0.2f;
-    static constexpr const CSAMPLE_GAIN maxDriveGain = 15.f;
-
-    static CSAMPLE process(CSAMPLE sample) {
-        while (true) {
-            if (sample > 1.0) {
-                sample = 2.f - sample; // equivalent to 1 - (newSample - 1.0)
-            } else if (sample < -1.0) {
-                sample = -2.f - sample; // equivalent to -1 + (-newSample - 1.0)
-            } else {
-                return sample;
-            }
-        }
-    }
-};
-
 void DistortionEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pMode = parameters.value("mode");
@@ -145,16 +114,6 @@ void DistortionEffect::processChannel(
 
     case HardClipping:
         processDistortion<HardClippingParameters>(
-                driveParam, pState, pOutput, pInput, engineParameters);
-        break;
-
-    case SoftFolding:
-        processDistortion<SoftFoldingParameters>(
-                driveParam, pState, pOutput, pInput, engineParameters);
-        break;
-
-    case HardFolding:
-        processDistortion<HardFoldingParameters>(
                 driveParam, pState, pOutput, pInput, engineParameters);
         break;
 
