@@ -1,17 +1,17 @@
 #pragma once
 
-#include <QGLWidget>
-
 #include "skin/legacy/skincontext.h"
 #include "util/duration.h"
+#include "widget/wglwidget.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
 class VSyncThread;
 
-class WVuMeterGL : public QGLWidget, public WBaseWidget {
+class WVuMeterGL : public WGLWidget, public WBaseWidget {
     Q_OBJECT
   public:
+    int m_id;
     explicit WVuMeterGL(QWidget* parent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
@@ -26,6 +26,11 @@ class WVuMeterGL : public QGLWidget, public WBaseWidget {
             double scaleFactor);
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
+#ifndef MIXXX_USE_QGLWIDGET
+    void preRenderGL(OpenGLWindow* w) override;
+    void renderGL(OpenGLWindow* w) override;
+#endif
+
   public slots:
     void render(VSyncThread* vSyncThread);
     void swap();
@@ -34,6 +39,7 @@ class WVuMeterGL : public QGLWidget, public WBaseWidget {
     void updateState(mixxx::Duration elapsed);
 
   private:
+    void draw(QPainter* painter);
     void paintEvent(QPaintEvent* /*unused*/) override;
     void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);

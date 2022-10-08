@@ -14,7 +14,7 @@
 #define DEFAULT_HOLDSIZE 5
 
 WVuMeterGL::WVuMeterGL(QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : WGLWidget(parent),
           WBaseWidget(this),
           m_bHasRendered(false),
           m_bSwapNeeded(false),
@@ -168,6 +168,18 @@ void WVuMeterGL::showEvent(QShowEvent* e) {
     m_qBgColor = mixxx::widgethelper::findBaseColor(this);
 }
 
+#ifndef MIXXX_USE_QGLWIDGET
+void WVuMeterGL::preRenderGL(OpenGLWindow* w) {
+    // TODO m0dB should be w->sinceLastSwap(), but we dont have that yet
+    //updateState(mixxx::Duration::fromMicros(w->getMicrosUntilSwap()));
+}
+
+void WVuMeterGL::renderGL(OpenGLWindow* w) {
+    QPainter painter;
+    draw(&painter);
+}
+#endif
+
 void WVuMeterGL::render(VSyncThread* vSyncThread) {
     ScopedTimer t("WVuMeterGL::render");
 
@@ -178,6 +190,7 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
         return;
     }
 
+#ifdef MIXXX_USE_QGLWIDGET
     if (!isValid() || !isVisible()) {
         return;
     }
@@ -188,6 +201,20 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
     }
 
     QPainter p(this);
+    draw(&painter);
+#else
+    if (shouldRender()) {
+        makeCurrentIfNeeded();
+        QPainter painter;
+        painter.begin(m_pOpenGLWindow);
+        draw(&painter);
+        painter.end();
+    }
+#endif
+}
+
+void WVuMeterGL::draw(QPainter* painter) {
+    QPainter& p = *painter;
     // fill the background, in case the image contains transparency
     p.fillRect(rect(), m_qBgColor);
 
@@ -299,6 +326,7 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
 }
 
 void WVuMeterGL::swap() {
+#ifdef MIXXX_USE_QGLWIDGET
     if (!isValid() || !isVisible() || !m_bSwapNeeded) {
         return;
     }
@@ -306,9 +334,12 @@ void WVuMeterGL::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
-    if (context() != QGLContext::currentContext()) {
-        makeCurrent();
+#else
+    if (!shouldRender() || !m_bSwapNeeded) {
+        return;
     }
+#endif
+    makeCurrentIfNeeded();
     swapBuffers();
     m_bSwapNeeded = false;
 }
