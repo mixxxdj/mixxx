@@ -454,15 +454,13 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
-    makeCurrentIfNeeded();
-    swapBuffers();
 #else
-    // only used with vsycn thread
-    if (shouldRender()) {
-        makeCurrentIfNeeded();
-        swapBuffers();
+    if (!shouldRender()) {
+        return;
     }
 #endif
+    makeCurrentIfNeeded();
+    swapBuffers();
 }
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
