@@ -202,7 +202,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "generator": "Ninja",
     >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
     >>"%CMakeSettings%" echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
-    >>"%CMakeSettings%" echo       "cmakeToolchain": "!BUILDENV_PATH:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
+    >>"%CMakeSettings%" echo       "cmakeToolchain": "!MIXXX_VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
     >>"%CMakeSettings%" echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
@@ -213,7 +213,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "False"
     CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_EXPORT_COMPILE_COMMANDS"      "BOOL"   "True"
     REM Replace all \ by \\ in CMAKE_PREFIX_PATH
-    CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"
+    REM CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "DEBUG_ASSERTIONS_FATAL"             "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "FFMPEG"                             "BOOL"   "False"
     CALL :AddCMakeVar2CMakeSettings_JSON "HID"                                "BOOL"   "True"
