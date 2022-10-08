@@ -140,8 +140,8 @@ repos:
         pass_filenames: false
         language: python
         additional_dependencies:
-          - beautifulsoup4==4.9.3
-          - lxml==4.6.3
+          - beautifulsoup4==4.11.1
+          - lxml==4.9.1
           - Markdown==3.3.4
         types: [text]
         files: ^(CHANGELOG\.md|res/linux/org\.mixxx\.Mixxx\.metainfo.xml)$
