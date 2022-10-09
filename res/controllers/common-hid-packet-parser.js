@@ -1270,7 +1270,7 @@ class HIDController {
          * - By default undefined.
          * - If set, it's a value for timer executed every n ms to update Outputs with updateOutputs()
          *
-         * @todo This is unused and updateOutputs() doesn't exist - Remove?
+         * @deprecated This is unused and updateOutputs() doesn't exist - Remove?
          * @type {number}
          */
         this.OutputUpdateInterval = undefined;
