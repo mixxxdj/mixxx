@@ -205,10 +205,9 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
 #else
     if (shouldRender()) {
         makeCurrentIfNeeded();
-        QPainter painter;
-        painter.begin(m_pOpenGLWindow);
-        draw(&painter);
-        painter.end();
+        drawNativeGL();
+        //QPainter painter;
+        //draw(&painter);
     }
 #endif
 }
@@ -315,6 +314,142 @@ void WVuMeterGL::draw(QPainter* painter) {
             } else {
                 // fallback to green rectangle
                 p.fillRect(targetRect, QColor(0, 255, 0));
+            }
+        }
+    }
+
+    m_dLastParameter = m_dParameter;
+    m_dLastPeakParameter = m_dPeakParameter;
+    m_bHasRendered = true;
+    m_bSwapNeeded = true;
+}
+
+#include <iostream>
+
+void WVuMeterGL::fillRectNativeGL(const QRectF& rect, const QColor& color) {
+    float x1 = -1.f + 2.f * rect.x() / width();
+    float y1 = 1.f - 2.f * rect.y() / height();
+    float x2 = x1 + 2.f * rect.width() / width();
+    float y2 = y1 - 2.f * rect.height() / height();
+
+    std::cout << y1 << " " << y2 << std::endl;
+
+    glBegin(GL_TRIANGLE_STRIP);
+    glColor3f(color.redF(), color.greenF(), color.blueF());
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y1);
+    glVertex2f(x1, y2);
+    glVertex2f(x2, y2);
+    glEnd();
+}
+
+void WVuMeterGL::drawNativeGL() {
+    glClearColor(m_qBgColor.redF(), m_qBgColor.greenF(), m_qBgColor.blueF(), 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    /*
+    if (!m_pPixmapBack.isNull()) {
+        // Draw background.
+        QRectF sourceRect(0, 0, m_pPixmapBack->width(), m_pPixmapBack->height());
+        m_pPixmapBack->draw(rect(), &p, sourceRect);
+    }
+    */
+
+    const double widgetWidth = width();
+    const double widgetHeight = height();
+    const double pixmapWidth = m_pPixmapVu.isNull() ? 0 : m_pPixmapVu->width();
+    const double pixmapHeight = m_pPixmapVu.isNull() ? 0 : m_pPixmapVu->height();
+
+    // Draw (part of) vu
+    if (m_bHorizontal) {
+        {
+            const double widgetPosition = math_clamp(widgetWidth * m_dParameter, 0.0, widgetWidth);
+            QRectF targetRect(0, 0, widgetPosition, widgetHeight);
+
+            /*if (!m_pPixmapVu.isNull()) {
+                const double pixmapPosition = math_clamp(
+                        pixmapWidth * m_dParameter, 0.0, pixmapWidth);
+                QRectF sourceRect(0, 0, pixmapPosition, pixmapHeight);
+                m_pPixmapVu->draw(targetRect, &p, sourceRect);
+            } else*/
+            {
+                // fallback to green rectangle
+                fillRectNativeGL(targetRect, QColor(0, 255, 0));
+            }
+        }
+
+        if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0 &&
+                m_dPeakParameter > m_dParameter) {
+            const double widgetPeakPosition = math_clamp(
+                    widgetWidth * m_dPeakParameter, 0.0, widgetWidth);
+            const double pixmapPeakHoldSize = static_cast<double>(m_iPeakHoldSize);
+            const double widgetPeakHoldSize = widgetWidth * pixmapPeakHoldSize / pixmapWidth;
+
+            QRectF targetRect(widgetPeakPosition - widgetPeakHoldSize,
+                    0,
+                    widgetPeakHoldSize,
+                    widgetHeight);
+
+            /* if (!m_pPixmapVu.isNull()) {
+                const double pixmapPeakPosition = math_clamp(
+                        pixmapWidth * m_dPeakParameter, 0.0, pixmapWidth);
+
+                QRectF sourceRect =
+                        QRectF(pixmapPeakPosition - pixmapPeakHoldSize,
+                                0,
+                                pixmapPeakHoldSize,
+                                pixmapHeight);
+                m_pPixmapVu->draw(targetRect, &p, sourceRect);
+            } else */
+            {
+                // fallback to green rectangle
+                fillRectNativeGL(targetRect, QColor(0, 255, 0));
+            }
+        }
+    } else {
+        // vertical
+        {
+            const double widgetPosition =
+                    math_clamp(widgetHeight * m_dParameter, 0.0, widgetHeight);
+            QRectF targetRect(0, widgetHeight - widgetPosition, widgetWidth, widgetPosition);
+
+            /* if (!m_pPixmapVu.isNull()) {
+                const double pixmapPosition = math_clamp(
+                        pixmapHeight * m_dParameter, 0.0, pixmapHeight);
+                QRectF sourceRect(0, pixmapHeight - pixmapPosition, pixmapWidth, pixmapPosition);
+                m_pPixmapVu->draw(targetRect, &p, sourceRect);
+            } else */
+            {
+                // fallback to green rectangle
+                fillRectNativeGL(targetRect, QColor(0, 255, 0));
+            }
+        }
+
+        if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0 &&
+                m_dPeakParameter > m_dParameter) {
+            const double widgetPeakPosition = math_clamp(
+                    widgetHeight * m_dPeakParameter, 0.0, widgetHeight);
+            const double pixmapPeakHoldSize = static_cast<double>(m_iPeakHoldSize);
+            const double widgetPeakHoldSize = widgetHeight * pixmapPeakHoldSize / pixmapHeight;
+
+            QRectF targetRect(0,
+                    widgetHeight - widgetPeakPosition,
+                    widgetWidth,
+                    widgetPeakHoldSize);
+
+            /* if (!m_pPixmapVu.isNull()) {
+                const double pixmapPeakPosition = math_clamp(
+                        pixmapHeight * m_dPeakParameter, 0.0, pixmapHeight);
+
+                QRectF sourceRect = QRectF(0,
+                        pixmapHeight - pixmapPeakPosition,
+                        pixmapWidth,
+                        pixmapPeakHoldSize);
+                m_pPixmapVu->draw(targetRect, &p, sourceRect);
+            } else */
+            {
+                // fallback to green rectangle
+                fillRectNativeGL(targetRect, QColor(0, 255, 0));
             }
         }
     }

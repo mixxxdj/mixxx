@@ -40,6 +40,8 @@ class WVuMeterGL : public WGLWidget, public WBaseWidget {
 
   private:
     void draw(QPainter* painter);
+    void drawNativeGL();
+    void fillRectNativeGL(const QRectF& rect, const QColor& color);
     void paintEvent(QPaintEvent* /*unused*/) override;
     void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
