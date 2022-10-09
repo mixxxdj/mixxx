@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import datetime
 import os
+import sys
 import subprocess
 import re
 
@@ -24,6 +25,17 @@ def is_in_merge():
     return os.path.exists(
         os.path.join(git_dir, "MERGE_MSG")
     ) and os.path.exists(os.path.join(git_dir, "MERGE_HEAD"))
+
+
+def is_ammending():
+    ppid = os.getppid()
+    pppid = (
+        subprocess.check_output(("ps", "-p", str(ppid), "-oppid="))
+        .decode()
+        .strip()
+    )
+    git_command = subprocess.check_output(("ps", "-p", pppid, "-ocommand="))
+    return True if b"--amend" in git_command else False
 
 
 def parse_changelog(content, development_release_date):
@@ -144,7 +156,7 @@ def main(argv=None):
             .strip()
         )
         last_changelog_commit_first_parent = last_changelog_commit + "~1"
-    elif not changelog_changes_staged:
+    elif not changelog_changes_staged or is_ammending():
         last_changelog_commit = (
             subprocess.check_output(
                 (
@@ -190,4 +202,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
