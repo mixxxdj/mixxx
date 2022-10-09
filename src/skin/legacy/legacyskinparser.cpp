@@ -1314,11 +1314,11 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 #ifdef MIXXX_USE_VSYNCTHREAD
     connect(waveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
-            spinny,
+            pSpinny,
             &WSpinny::render);
-    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
+    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, pSpinny, &WSpinny::swap);
 #endif
-    connect(spinny,
+    connect(pSpinny,
             &WSpinny::trackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerStopped);
