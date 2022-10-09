@@ -18,7 +18,7 @@ this.HIDDebug = function(message) {
  *
  * @callback packetCallback
  * @param {HIDPacket} packet The packet that represents the InputReport
- * @param {Record.<string, packetField | bitObject>} changed_data The data received from the device
+ * @param {Object.<string, packetField | bitObject>} changed_data The data received from the device
  */
 /**
  * Callback function to call when, the value of a modifier control changed
@@ -70,23 +70,16 @@ this.HIDDebug = function(message) {
  */
 
 /**
- * A string of group and control name separated by a dot
- *
- * @typedef packetItemId
- * @type {string}
- */
-
-/**
  * @typedef packetField
- * @type {object}
+ * @type {Object}
  * @property {HIDPacket} packet
- * @property {packetItemId} id Group and control name separated by a dot
+ * @property {string} id Group and control name separated by a dot
  * @property {string} group
  * @property {string} name
  * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
  * @property {string} mapped_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
  * @property {controlCallback} mapped_callback
- * @property {object} pack Control packing format for unpack(), one of b/B, h/H, i/I
+ * @property {Object} pack Control packing format for unpack(), one of b/B, h/H, i/I
  * @property {number} offset
  * @property {number} end_offset
  * @property {number} bitmask
@@ -110,9 +103,9 @@ this.HIDDebug = function(message) {
 
 /**
  * @typedef bitObject
- * @type {object}
+ * @type {Object}
  * @property {HIDPacket} packet
- * @property {packetItemId} id Group and control name separated by a dot
+ * @property {string} id Group and control name separated by a dot
  * @property {string} group
  * @property {string} name
  * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
@@ -149,7 +142,7 @@ class HIDBitVector {
         /**
          * Object of bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<packetItemId, bitObject>}
+         * @type {Object.<string, bitObject>}
          */
         this.bits = {};
     }
@@ -241,14 +234,14 @@ class HIDModifierList {
         /**
          * Actual value of the modifier
          *
-         * @type {Record.<string, boolean>}
+         * @type {Object.<string, boolean>}
          */
         this.modifiers = Object();
 
         /**
          * Function to be called after modifier value changes
          *
-         * @type {Record.<string, modifierCallback>}
+         * @type {Object.<string, modifierCallback>}
          */
         this.callbacks = Object();
     }
@@ -497,7 +490,7 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {object} pack Is one of the field packing types:
+     * @param {Object} pack Is one of the field packing types:
      *              - b       signed byte
      *              - B       unsigned byte
      *              - h       signed short
@@ -632,7 +625,7 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {object} pack Is one of the field packing types:
+     * @param {Object} pack Is one of the field packing types:
      *              - b       signed byte
      *              - B       unsigned byte
      *              - h       signed short
@@ -774,7 +767,7 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {object} pack Is one of the field packing types:
+     * @param {Object} pack Is one of the field packing types:
      *              - b       signed byte
      *              - B       unsigned byte
      *              - h       signed short
@@ -942,13 +935,14 @@ class HIDPacket {
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      * @param {number} value Value must be a valid unsigned byte to parse, with enough bits.
-     * @returns {Record.<packetItemId, bitObject>} List of modified bits (delta)
+     * @returns {Object.<string, bitObject>} List of modified bits (delta),
+     *                                       referred by a string of group and control name separated by a dot
      */
     parseBitVector(field, value) {
         /**
          * Object of bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<packetItemId, bitObject>}
+         * @type {Object.<string, bitObject>}
          */
         const bits = {};
 
@@ -973,13 +967,13 @@ class HIDPacket {
      * BitVectors are returned as bits you can iterate separately.
      *
      * @param {Uint8Array} data Data received as InputReport from the device
-     * @returns {Record.<packetItemId, packetField | bitObject>} List of changed fields with new value.
+     * @returns {Object.<string, packetField | bitObject>} List of changed fields with new value.
      */
     parse(data) {
         /**
          * Object of packetField or bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<packetItemId, packetField | bitObject>}
+         * @type {Object.<string, packetField | bitObject>}
          */
         const field_changes = {};
 
@@ -1104,14 +1098,14 @@ class HIDController {
         /**
          * HIDPackets representing HID InputReports, by packet name
          *
-         * @type {Record.<string, HIDPacket>}
+         * @type {Object.<string, HIDPacket>}
          */
         this.InputPackets = {};
 
         /**
          * HIDPackets representing HID OutputReports, by packet name
          *
-         * @type {Record.<string, HIDPacket>}
+         * @type {Object.<string, HIDPacket>}
          */
         this.OutputPackets = {};
 
@@ -1291,14 +1285,14 @@ class HIDController {
         /**
          * Object of scaling function callbacks by name
          *
-         * @type {Record.<string, scalingCallback>}
+         * @type {Object.<string, scalingCallback>}
          */
         this.scalers = {};
 
         /**
          * Object of engine timer IDs, by hid-parser timer IDs
          *
-         * @type {Record.<number, number>}
+         * @type {Object.<number, number>}
          */
         this.timers = {};
 
@@ -1747,7 +1741,7 @@ class HIDController {
      *   fields in default mixxx groups. Not done if a callback was defined.
      *
      * @param {any} packet Unused
-     * @param {Record.<string, packetField | bitObject>} delta
+     * @param {Object.<string, packetField | bitObject>} delta
      */
     processIncomingPacket(packet, delta) {
         /** @type {packetField} */
