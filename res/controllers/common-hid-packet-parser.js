@@ -1305,9 +1305,8 @@ class HIDController {
         this.auto_repeat_interval = 100;
 
         /**
-         * Deprecated: Use postProcessDelta instead
+         * @deprecated Use {@link postProcessDelta} instead
          * (not used in any official mapping)
-         *
          * @type {packetCallback}
          */
         this.processDelta = undefined;
