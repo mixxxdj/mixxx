@@ -167,7 +167,7 @@ class HIDBitVector {
      * Add a control bitmask to the HIDBitVector
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      */
@@ -193,7 +193,7 @@ class HIDBitVector {
      * Add an output control bitmask to the HIDBitVector
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      */
@@ -536,7 +536,7 @@ class HIDPacket {
      * Returns undefined if field could not be found
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @returns {packetField} Field
      */
     getField(group, name) {
@@ -574,7 +574,7 @@ class HIDPacket {
      * Return reference to a bit in a bitvector field
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @returns {bitObject} Reference to a bit in a bitvector field
      */
     lookupBit(group, name) {
@@ -602,7 +602,7 @@ class HIDPacket {
      * Remove a control registered. Normally not needed
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      */
     removeControl(group, name) {
         const control_group = this.getGroup(group);
@@ -619,7 +619,7 @@ class HIDPacket {
      * the system attempts to attach it directly to the correct field.
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @param {number} offset The field's offset from the start of the packet in bytes:
      *                        - For HID devices which don't use ReportIDs, the data bytes starts at
      * position 0
@@ -863,7 +863,7 @@ class HIDPacket {
      * Does not make sense for Output fields but you can do that.
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @param {fieldChangeCallback} callback Callback function for the control
      */
     setCallback(group, name, callback) {
