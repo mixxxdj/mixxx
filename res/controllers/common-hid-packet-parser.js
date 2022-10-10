@@ -7,7 +7,7 @@
  * @param {any} message Message to be printed on controller debug console output
  */
 this.HIDDebug = function(message) {
-    console.log("HID " + message);
+    console.log(`HID ${message}`);
 };
 
 /**
@@ -18,7 +18,7 @@ this.HIDDebug = function(message) {
  *
  * @callback packetCallback
  * @param {HIDPacket} packet The packet that represents the InputReport
- * @param {Record.<string, packetField | bitObject>} changed_data The data received from the device
+ * @param {Object.<string, packetField | bitObject>} changed_data The data received from the device
  */
 /**
  * Callback function to call when, the value of a modifier control changed
@@ -70,23 +70,16 @@ this.HIDDebug = function(message) {
  */
 
 /**
- * A string of group and control name separated by a dot
- *
- * @typedef packetItemId
- * @type {string}
- */
-
-/**
  * @typedef packetField
- * @type {object}
+ * @type {Object}
  * @property {HIDPacket} packet
- * @property {packetItemId} id Group and control name separated by a dot
+ * @property {string} id Group and control name separated by a dot
  * @property {string} group
  * @property {string} name
  * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
  * @property {string} mapped_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
  * @property {controlCallback} mapped_callback
- * @property {object} pack Control packing format for unpack(), one of b/B, h/H, i/I
+ * @property {Object} pack Control packing format for unpack(), one of b/B, h/H, i/I
  * @property {number} offset
  * @property {number} end_offset
  * @property {number} bitmask
@@ -110,9 +103,9 @@ this.HIDDebug = function(message) {
 
 /**
  * @typedef bitObject
- * @type {object}
+ * @type {Object}
  * @property {HIDPacket} packet
- * @property {packetItemId} id Group and control name separated by a dot
+ * @property {string} id Group and control name separated by a dot
  * @property {string} group
  * @property {string} name
  * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
@@ -149,7 +142,7 @@ class HIDBitVector {
         /**
          * Object of bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<packetItemId, bitObject>}
+         * @type {Object.<string, bitObject>}
          */
         this.bits = {};
     }
@@ -174,7 +167,7 @@ class HIDBitVector {
      * Add a control bitmask to the HIDBitVector
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      */
@@ -183,7 +176,7 @@ class HIDBitVector {
         const bit = {};
         bit.type = "button";
         bit.packet = undefined;
-        bit.id = group + "." + name;
+        bit.id = `${group}.${name}`;
         bit.group = group;
         bit.name = name;
         bit.mapped_group = undefined;
@@ -200,7 +193,7 @@ class HIDBitVector {
      * Add an output control bitmask to the HIDBitVector
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      */
@@ -209,7 +202,7 @@ class HIDBitVector {
         const bit = {};
         bit.type = "output";
         bit.packet = undefined;
-        bit.id = group + "." + name;
+        bit.id = `${group}.${name}`;
         bit.group = group;
         bit.name = name;
         bit.mapped_group = undefined;
@@ -241,14 +234,14 @@ class HIDModifierList {
         /**
          * Actual value of the modifier
          *
-         * @type {Record.<string, boolean>}
+         * @type {Object.<string, boolean>}
          */
         this.modifiers = Object();
 
         /**
          * Function to be called after modifier value changes
          *
-         * @type {Record.<string, modifierCallback>}
+         * @type {Object.<string, modifierCallback>}
          */
         this.callbacks = Object();
     }
@@ -259,7 +252,7 @@ class HIDModifierList {
      */
     add(name) {
         if (name in this.modifiers) {
-            console.warn("HIDModifierList.add - Modifier already defined: " + name);
+            console.warn(`HIDModifierList.add - Modifier already defined: ${name}`);
             return;
         }
         this.modifiers[name] = undefined;
@@ -272,7 +265,7 @@ class HIDModifierList {
      */
     set(name, value) {
         if (!(name in this.modifiers)) {
-            console.error("HIDModifierList.set - Unknown modifier: " + name);
+            console.error(`HIDModifierList.set - Unknown modifier: ${name}`);
             return;
         }
         this.modifiers[name] = value;
@@ -289,7 +282,7 @@ class HIDModifierList {
      */
     get(name) {
         if (!(name in this.modifiers)) {
-            console.error("HIDModifierList.get - Unknown modifier: " + name);
+            console.error(`HIDModifierList.get - Unknown modifier: ${name}`);
             return undefined;
         }
         return this.modifiers[name];
@@ -302,7 +295,7 @@ class HIDModifierList {
      */
     setCallback(name, callback) {
         if (!(name in this.modifiers)) {
-            console.error("HIDModifierList.setCallback - Unknown modifier: " + name);
+            console.error(`HIDModifierList.setCallback - Unknown modifier: ${name}`);
             return;
         }
         this.callbacks[name] = callback;
@@ -388,7 +381,7 @@ class HIDPacket {
      */
     pack(data, field) {
         if (!(field.pack in this.packSizes)) {
-            console.error("HIDPacket.pack - Parsing packed value: invalid pack format " + field.pack);
+            console.error(`HIDPacket.pack - Parsing packed value: invalid pack format ${field.pack}`);
             return;
         }
         const bytes = this.packSizes[field.pack];
@@ -409,7 +402,7 @@ class HIDPacket {
         const value = Number((field.value !== undefined) ? field.value : 0);
 
         if (value < field.min || value > field.max) {
-            console.error("HIDPacket.pack - " + field.id + " packed value out of range: " + value);
+            console.error(`HIDPacket.pack - ${field.id} packed value out of range: ${value}`);
             return;
         }
 
@@ -444,7 +437,7 @@ class HIDPacket {
     unpack(data, field) {
 
         if (!(field.pack in this.packSizes)) {
-            console.error("HIDPacket.unpack - Parsing packed value: invalid pack format " + field.pack);
+            console.error(`HIDPacket.unpack - Parsing packed value: invalid pack format ${field.pack}`);
             return undefined;
         }
         const bytes = this.packSizes[field.pack];
@@ -497,7 +490,7 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {object} pack Is one of the field packing types:
+     * @param {Object} pack Is one of the field packing types:
      *              - b       signed byte
      *              - B       unsigned byte
      *              - h       signed short
@@ -508,7 +501,7 @@ class HIDPacket {
      */
     getFieldByOffset(offset, pack) {
         if (!(pack in this.packSizes)) {
-            console.error("HIDPacket.getFieldByOffset - Unknown pack string " + pack);
+            console.error(`HIDPacket.getFieldByOffset - Unknown pack string ${pack}`);
             return undefined;
         }
         const end_offset = offset + this.packSizes[pack];
@@ -543,13 +536,13 @@ class HIDPacket {
      * Returns undefined if field could not be found
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @returns {packetField} Field
      */
     getField(group, name) {
-        const field_id = group + "." + name;
+        const field_id = `${group}.${name}`;
         if (!(group in this.groups)) {
-            console.error("HIDPacket.getField - Packet " + this.name + " group not found " + group);
+            console.error(`HIDPacket.getField - Packet ${this.name} group not found ${group}`);
             return undefined;
         }
 
@@ -581,21 +574,21 @@ class HIDPacket {
      * Return reference to a bit in a bitvector field
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @returns {bitObject} Reference to a bit in a bitvector field
      */
     lookupBit(group, name) {
         const field = this.getField(group, name);
         if (field === undefined) {
-            console.error("HIDPacket.lookupBit - Bitvector match not found: " + group + "." + name);
+            console.error(`HIDPacket.lookupBit - Bitvector match not found: ${group}.${name}`);
             return undefined;
         }
         if (field.type !== "bitvector") {
-            console.error("HIDPacket.lookupBit - Control doesn't refer a field of type bitvector: " + group + "." + name);
+            console.error(`HIDPacket.lookupBit - Control doesn't refer a field of type bitvector: ${group}.${name}`);
             return undefined;
         }
         const bitVector = /** @type {HIDBitVector} */ (field.value);
-        const bit_id = group + "." + name;
+        const bit_id = `${group}.${name}`;
         for (const bit_name in bitVector.bits) {
             const bit = bitVector.bits[bit_name];
             if (bit.id === bit_id) {
@@ -609,12 +602,12 @@ class HIDPacket {
      * Remove a control registered. Normally not needed
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      */
     removeControl(group, name) {
         const control_group = this.getGroup(group);
         if (!(name in control_group)) {
-            console.warn("HIDPacket.removeControl - Field not in control group " + group + ": " + name);
+            console.warn(`HIDPacket.removeControl - Field not in control group ${group}: ${name}`);
             return;
         }
         delete control_group[name];
@@ -626,13 +619,13 @@ class HIDPacket {
      * the system attempts to attach it directly to the correct field.
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @param {number} offset The field's offset from the start of the packet in bytes:
      *                        - For HID devices which don't use ReportIDs, the data bytes starts at
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {object} pack Is one of the field packing types:
+     * @param {Object} pack Is one of the field packing types:
      *              - b       signed byte
      *              - B       unsigned byte
      *              - h       signed short
@@ -650,23 +643,23 @@ class HIDPacket {
     addControl(group, name, offset, pack, bitmask, isEncoder, callback) {
         const control_group = this.getGroup(group, true);
         if (control_group === undefined) {
-            console.error("HIDPacket.addControl - Creating HID packet group " + group);
+            console.error(`HIDPacket.addControl - Creating HID packet group ${group}`);
             return;
         }
         if (!(pack in this.packSizes)) {
-            console.error("HIDPacket.addControl - Unknown pack value " + pack);
+            console.error(`HIDPacket.addControl - Unknown pack value ${pack}`);
             return;
         }
 
         const fieldByOffset = this.getFieldByOffset(offset, pack);
         if (fieldByOffset !== undefined) {
             if (bitmask === undefined) {
-                console.error("HIDPacket.addControl - Registering offset " + offset + " pack " + pack);
-                console.error("HIDPacket.addControl - Trying to overwrite non-bitmask control " + group + " " + name);
+                console.error(`HIDPacket.addControl - Registering offset ${offset} pack ${pack}`);
+                console.error(`HIDPacket.addControl - Trying to overwrite non-bitmask control ${group} ${name}`);
                 return;
             }
             if (fieldByOffset.type !== "bitvector") {
-                console.error("HIDPacket.addControl - Field is not of type bitvector: " + group + "." + name);
+                console.error(`HIDPacket.addControl - Field is not of type bitvector: ${group}.${name}`);
                 return;
             } else {
                 const bitVector = /** @type {HIDBitVector} */ (fieldByOffset.value);
@@ -674,8 +667,7 @@ class HIDPacket {
                 if (callback !== undefined) {
                     if (typeof callback !== "function") {
                         console.error(
-                            "HIDPacket.addControl - Callback provided for " + group + "." + name +
-                            " is not a function.");
+                            `HIDPacket.addControl - Callback provided for ${group}.${name} is not a function.`);
                         return;
                     }
                     this.setCallback(group, name, callback);
@@ -687,7 +679,7 @@ class HIDPacket {
         /** @type {packetField} */
         const field = {};
         field.packet = undefined;
-        field.id = group + "." + name;
+        field.id = `${group}.${name}`;
         field.group = group;
         field.name = name;
         field.mapped_group = undefined;
@@ -731,10 +723,10 @@ class HIDPacket {
             }
             // Create a new bitvector field and add the bit to that
             // TODO - accept controls with bitmask < packet_max_value
-            const field_name = "bitvector_" + offset;
+            const field_name = `bitvector_${offset}`;
             field.type = "bitvector";
             field.name = field_name;
-            field.id = group + "." + field_name;
+            field.id = `${group}.${field_name}`;
             const bitvector = new HIDBitVector();
             bitvector.size = field.max;
             bitvector.addBitMask(group, name, bitmask);
@@ -750,8 +742,7 @@ class HIDPacket {
         if (callback !== undefined) {
             if (typeof callback !== "function") {
                 console.error(
-                    "HIDPacket.addControl - Callback provided for " + group + "." + name +
-                    " is not a function.");
+                    `HIDPacket.addControl - Callback provided for ${group}.${name} is not a function.`);
                 return;
             }
             this.setCallback(group, name, callback);
@@ -774,7 +765,7 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {object} pack Is one of the field packing types:
+     * @param {Object} pack Is one of the field packing types:
      *              - b       signed byte
      *              - B       unsigned byte
      *              - h       signed short
@@ -787,13 +778,13 @@ class HIDPacket {
      */
     addOutput(group, name, offset, pack, bitmask, callback) {
         const control_group = this.getGroup(group, true);
-        const field_id = group + "." + name;
+        const field_id = `${group}.${name}`;
 
         if (control_group === undefined) {
             return;
         }
         if (!(pack in this.packSizes)) {
-            console.error("HIDPacket.addOutput - Unknown Output control pack value " + pack);
+            console.error(`HIDPacket.addOutput - Unknown Output control pack value ${pack}`);
             return;
         }
 
@@ -805,11 +796,11 @@ class HIDPacket {
         const fieldByOffset = this.getFieldByOffset(offset, pack);
         if (fieldByOffset !== undefined) {
             if (bitmask === undefined) {
-                console.error("HIDPacket.addOutput - Overwrite non-bitmask control " + group + "." + name);
+                console.error(`HIDPacket.addOutput - Overwrite non-bitmask control ${group}.${name}`);
                 return;
             }
             if (fieldByOffset.type !== "bitvector") {
-                console.error("HIDPacket.addOutput - Field is not of type bitvector: " + group + "." + name);
+                console.error(`HIDPacket.addOutput - Field is not of type bitvector: ${group}.${name}`);
                 return;
             }
             const bitVector = /** @type {HIDBitVector} */ (fieldByOffset.value);
@@ -849,9 +840,9 @@ class HIDPacket {
         } else {
             // Create new Output bitvector control field, add bit to it
             // rewrite name to use bitvector instead
-            const field_name = "bitvector_" + offset;
+            const field_name = `bitvector_${offset}`;
             field.type = "bitvector";
-            field.id = group + "." + field_name;
+            field.id = `${group}.${field_name}`;
             field.name = field_name;
             const bitvector = new HIDBitVector();
             bitvector.size = field.max;
@@ -870,18 +861,18 @@ class HIDPacket {
      * Does not make sense for Output fields but you can do that.
      *
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "play"
+     * @param {string} name Control name e.g. "play"
      * @param {fieldChangeCallback} callback Callback function for the control
      */
     setCallback(group, name, callback) {
         const field = this.getField(group, name);
-        const field_id = group + "." + name;
+        const field_id = `${group}.${name}`;
         if (callback === undefined) {
-            console.error("HIDPacket.setCallback - Callback to add was undefined for " + field_id);
+            console.error(`HIDPacket.setCallback - Callback to add was undefined for ${field_id}`);
             return;
         }
         if (field === undefined) {
-            console.error("HIDPacket.setCallback - Field for " + field_id + " not found");
+            console.error(`HIDPacket.setCallback - Field for ${field_id} not found`);
             return;
         }
         if (field.type === "bitvector") {
@@ -894,7 +885,7 @@ class HIDPacket {
                 bit.callback = callback;
                 return;
             }
-            console.error("HIDPacket.setCallback - Bit not found " + field_id);
+            console.error(`HIDPacket.setCallback - Bit not found ${field_id}`);
         } else {
             field.callback = callback;
         }
@@ -911,7 +902,7 @@ class HIDPacket {
     setIgnored(group, name, ignored) {
         const field = this.getField(group, name);
         if (field === undefined) {
-            console.error("HIDPacket.setIgnored - Setting ignored flag for " + group + " " + name);
+            console.error(`HIDPacket.setIgnored - Setting ignored flag for ${group} ${name}`);
             return;
         }
         field.ignored = ignored;
@@ -927,7 +918,7 @@ class HIDPacket {
     setMinDelta(group, name, mindelta) {
         const field = this.getField(group, name);
         if (field === undefined) {
-            console.error("HIDPacket.setMinDelta - Adjusting mindelta for " + group + " " + name);
+            console.error(`HIDPacket.setMinDelta - Adjusting mindelta for ${group} ${name}`);
             return;
         }
         if (field.type === "bitvector") {
@@ -942,13 +933,14 @@ class HIDPacket {
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      * @param {number} value Value must be a valid unsigned byte to parse, with enough bits.
-     * @returns {Record.<packetItemId, bitObject>} List of modified bits (delta)
+     * @returns {Object.<string, bitObject>} List of modified bits (delta),
+     *                                       referred by a string of group and control name separated by a dot
      */
     parseBitVector(field, value) {
         /**
          * Object of bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<packetItemId, bitObject>}
+         * @type {Object.<string, bitObject>}
          */
         const bits = {};
 
@@ -973,13 +965,13 @@ class HIDPacket {
      * BitVectors are returned as bits you can iterate separately.
      *
      * @param {Uint8Array} data Data received as InputReport from the device
-     * @returns {Record.<packetItemId, packetField | bitObject>} List of changed fields with new value.
+     * @returns {Object.<string, packetField | bitObject>} List of changed fields with new value.
      */
     parse(data) {
         /**
          * Object of packetField or bitObjects, referred by a string of group and control name separated by a dot
          *
-         * @type {Record.<packetItemId, packetField | bitObject>}
+         * @type {Object.<string, packetField | bitObject>}
          */
         const field_changes = {};
 
@@ -993,7 +985,7 @@ class HIDPacket {
 
                 const value = this.unpack(data, field);
                 if (value === undefined) {
-                    console.error("HIDPacket.parse - Parsing packet field value for " + field_id);
+                    console.error(`HIDPacket.parse - Parsing packet field value for ${field_id}`);
                     return;
                 }
 
@@ -1071,7 +1063,7 @@ class HIDPacket {
                 }
                 packet_string += data[d].toString(16) + " ";
             }
-            console.log("Sending packet with Report ID " + this.reportId + ": " + packet_string);
+            console.log(`Sending packet with Report ID ${this.reportId}: ${packet_string}`);
         }
         controller.sendOutputReport(this.reportId, data.buffer);
     }
@@ -1104,14 +1096,14 @@ class HIDController {
         /**
          * HIDPackets representing HID InputReports, by packet name
          *
-         * @type {Record.<string, HIDPacket>}
+         * @type {Object.<string, HIDPacket>}
          */
         this.InputPackets = {};
 
         /**
          * HIDPackets representing HID OutputReports, by packet name
          *
-         * @type {Record.<string, HIDPacket>}
+         * @type {Object.<string, HIDPacket>}
          */
         this.OutputPackets = {};
 
@@ -1284,7 +1276,7 @@ class HIDController {
          * - By default undefined.
          * - If set, it's a value for timer executed every n ms to update Outputs with updateOutputs()
          *
-         * @todo This is unused and updateOutputs() doesn't exist - Remove?
+         * @deprecated This is unused and updateOutputs() doesn't exist - Remove?
          * @type {number}
          */
         this.OutputUpdateInterval = undefined;
@@ -1299,29 +1291,28 @@ class HIDController {
         /**
          * Object of scaling function callbacks by name
          *
-         * @type {Record.<string, scalingCallback>}
+         * @type {Object.<string, scalingCallback>}
          */
         this.scalers = {};
 
         /**
          * Object of engine timer IDs, by hid-parser timer IDs
          *
-         * @type {Record.<number, number>}
+         * @type {Object.<number, number>}
          */
         this.timers = {};
 
         /**
          * Auto repeat interval default for fields, where not specified individual (in milliseconds)
-         * - Default = 100
          *
+         * @default 100
          * @type {number}
          */
         this.auto_repeat_interval = 100;
 
         /**
-         * Deprecated: Use postProcessDelta instead
+         * @deprecated Use {@link postProcessDelta} instead
          * (not used in any official mapping)
-         *
          * @type {packetCallback}
          */
         this.processDelta = undefined;
@@ -1379,7 +1370,7 @@ class HIDController {
         if (deck === undefined) {
             return undefined;
         }
-        return "[Channel" + deck + "]";
+        return `[Channel${deck}]`;
     }
     /**
      * Map virtual deck names to real deck group. If group is already
@@ -1400,7 +1391,7 @@ class HIDController {
             if (this.activeDeck === undefined) {
                 return undefined;
             }
-            return "[Channel" + this.activeDeck + "]";
+            return `[Channel${this.activeDeck}]`;
         }
         if (this.activeDeck === 1 || this.activeDeck === 2) {
             if (group === "deck1") { return "[Channel1]"; }
@@ -1481,7 +1472,7 @@ class HIDController {
     setCallback(packet, group, name, callback) {
         const input_packet = this.getInputPacket(packet);
         if (input_packet === undefined) {
-            console.error("HIDController.setCallback - Input packet not found " + packet);
+            console.error(`HIDController.setCallback - Input packet not found ${packet}`);
             return;
         }
         input_packet.setCallback(group, name, callback);
@@ -1523,13 +1514,13 @@ class HIDController {
     linkModifier(group, name, modifier) {
         const packet = this.getInputPacket(this.defaultPacket);
         if (packet === undefined) {
-            console.error("HIDController.linkModifier - Creating modifier: input packet " + this.defaultPacket + " not found");
+            console.error(`HIDController.linkModifier - Creating modifier: input packet ${this.defaultPacket} not found`);
             return;
         }
-        const bit_id = group + "." + name;
+        const bit_id = `${group}.${name}`;
         const bitField = packet.lookupBit(group, name);
         if (bitField === undefined) {
-            console.error("HIDController.linkModifier - Bit field not found: " + bit_id);
+            console.error(`HIDController.linkModifier - Bit field not found: ${bit_id}`);
             return;
         }
         bitField.group = "modifiers";
@@ -1559,12 +1550,12 @@ class HIDController {
     linkControl(group, name, m_group, m_name, callback) {
         const packet = this.getInputPacket(this.defaultPacket);
         if (packet === undefined) {
-            console.error("HIDController.linkControl - Creating modifier: input packet " + this.defaultPacket + " not found");
+            console.error(`HIDController.linkControl - Creating modifier: input packet ${this.defaultPacket} not found`);
             return;
         }
         const field = packet.getField(group, name);
         if (field === undefined) {
-            console.error("HIDController.linkControl - Field not found: " + group + "." + name);
+            console.error(`HIDController.linkControl - Field not found: ${group}.${name}`);
             return;
         }
         if (field.type !== "bitvector") {
@@ -1576,7 +1567,7 @@ class HIDController {
         } else {
             const bitField = packet.lookupBit(group, name);
             if (field === undefined) {
-                console.error("HIDController.linkControl - Bit not found: " + group + "." + name);
+                console.error(`HIDController.linkControl - Bit not found: ${group}.${name}`);
                 return;
             }
             bitField.mapped_group = m_group;
@@ -1722,9 +1713,9 @@ class HIDController {
             }
             return;
         }
-        console.warn("HIDController.parsePacket - Received unknown packet of " + length + " bytes");
+        console.warn(`HIDController.parsePacket - Received unknown packet of ${length} bytes`);
         for (const i in data) {
-            console.log("BYTE " + data[i]);
+            console.log(`BYTE ${data[i]}`);
         }
     }
     /**
@@ -1747,7 +1738,7 @@ class HIDController {
      *   fields in default mixxx groups. Not done if a callback was defined.
      *
      * @param {any} packet Unused
-     * @param {Record.<string, packetField | bitObject>} delta
+     * @param {Object.<string, packetField | bitObject>} delta
      */
     processIncomingPacket(packet, delta) {
         /** @type {packetField} */
@@ -1767,7 +1758,7 @@ class HIDController {
                 // Numeric value field
                 this.processControl(field);
             } else {
-                console.warn("HIDController.processIncomingPacket - Unknown field " + field.name + " type " + field.type);
+                console.warn(`HIDController.processIncomingPacket - Unknown field ${field.name} type ${field.type}`);
             }
         }
     }
@@ -1785,11 +1776,11 @@ class HIDController {
         const group = field.group;
         if (group === undefined) {
             if (this.activeDeck !== undefined) {
-                return "[Channel" + this.activeDeck + "]";
+                return `[Channel${this.activeDeck}]`;
             }
         }
         if (this.valid_groups.indexOf(group) !== -1) {
-            // console.log("Resolving group " + group);
+            // console.log(`Resolving group ${group}`);
             return this.resolveGroup(group);
         }
         return group;
@@ -1820,9 +1811,7 @@ class HIDController {
 
         if (group === undefined) {
             console.warn(
-                "HIDController.processButton - Could not resolve group from "
-                + field.group + " " + field.mapped_group + " "
-                + field.name + " " + field.mapped_name);
+                `HIDController.processButton - Could not resolve group from ${field.group} ${field.mapped_group} ${field.name} ${field.mapped_name}`);
             return;
         }
 
@@ -1835,7 +1824,7 @@ class HIDController {
             return;
         }
         if (field.auto_repeat) {
-            const timer_id = "auto_repeat_" + field.id;
+            const timer_id = `auto_repeat_${field.id}`;
             if (field.value) {
                 // @ts-ignore startAutoRepeatTimer needs to be implemented in the users mapping
                 this.startAutoRepeatTimer(timer_id, field.auto_repeat_interval);
@@ -1873,7 +1862,7 @@ class HIDController {
             return;
         }
         if (field.auto_repeat && field.value === this.buttonStates.pressed) {
-            console.log("Callback for " + field.group);
+            console.log(`Callback for ${field.group}`);
             engine.setValue(group, control, field.auto_repeat(field));
         } else if (engine.getValue(group, control) === 0) {
             engine.setValue(group, control, true);
@@ -1893,13 +1882,11 @@ class HIDController {
 
         if (group === undefined) {
             console.error(
-                "HIDController.processControl - Could not resolve group from "
-                + field.group + " " + field.mapped_group + " "
-                + field.name + " " + field.mapped_name);
+                `HIDController.processControl - Could not resolve group from ${field.group} ${field.mapped_group} ${field.name} ${field.mapped_name}`);
             return;
         }
         if (field.type === "bitvector") {
-            console.error("HIDController.processControl  - Control refers a field of type bitvector: " + group + "." + control);
+            console.error(`HIDController.processControl  - Control refers a field of type bitvector: ${group}.${control}`);
             return;
         }
 
@@ -2075,7 +2062,7 @@ class HIDController {
             engine.stopTimer(this.timers[timer_id]);
             delete this.timers[timer_id];
         } else {
-            // console.warn("HIDController.stopAutoRepeatTimer - No such autorepeat timer: " + timer_id);
+            // console.warn(`HIDController.stopAutoRepeatTimer - No such autorepeat timer: ${timer_id}`);
         }
     }
     /**
@@ -2090,7 +2077,7 @@ class HIDController {
         const packet = this.getInputPacket(this.defaultPacket);
         const field = packet.getField(group, name);
         if (field === undefined) {
-            console.error("HIDController.setAutoRepeat - Field not found " + group + "." + name);
+            console.error(`HIDController.setAutoRepeat - Field not found ${group}.${name}`);
             return;
         }
         field.auto_repeat = callback;
@@ -2150,7 +2137,7 @@ class HIDController {
             }
         }
         const new_group = this.resolveDeckGroup(deck);
-        console.log("Switching to deck " + deck + " group " + new_group);
+        console.log(`Switching to deck ${deck} group ${new_group}`);
         if (this.disconnectDeck !== undefined) {
             this.disconnectDeck();
         }
@@ -2171,7 +2158,7 @@ class HIDController {
                                 bitControlGroup, bit.mapped_name, bit.mapped_callback, true);
                             engine.connectControl(new_group, bit.mapped_name, bit.mapped_callback);
                             const value = engine.getValue(new_group, bit.mapped_name);
-                            console.log("Bit " + bit.group + "." + bit.name + " value " + value);
+                            console.log(`Bit ${bit.group}.${bit.name} value ${value}`);
                             if (value) {
                                 this.setOutput(
                                     bit.group, bit.name,
@@ -2225,11 +2212,11 @@ class HIDController {
     linkOutput(group, name, m_group, m_name, callback) {
         const field = this.getOutputField(group, name);
         if (field === undefined) {
-            console.error("HIDController.linkOutput - Linked output not found: " + group + "." + name);
+            console.error(`HIDController.linkOutput - Linked output not found: ${group}.${name}`);
             return;
         }
         if (field.mapped_group !== undefined) {
-            console.warn("HIDController.linkOutput - Output already linked: " + field.mapped_group);
+            console.warn(`HIDController.linkOutput - Output already linked: ${field.mapped_group}`);
             return;
         }
         const controlgroup = this.resolveGroup(m_group);
@@ -2253,11 +2240,11 @@ class HIDController {
     unlinkOutput(group, name, callback) {
         const field = this.getOutputField(group, name);
         if (field === undefined) {
-            console.warn("HIDController.unlinkOutput - Output to be unlinked not found: " + group + "." + name);
+            console.warn(`HIDController.unlinkOutput - Output to be unlinked not found: ${group}.${name}`);
             return;
         }
         if (field.mapped_group === undefined || field.mapped_name === undefined) {
-            console.warn("HIDController.unlinkOutput - Output to be unlinked not mapped: " + group + "." + name);
+            console.warn(`HIDController.unlinkOutput - Output to be unlinked not mapped: ${group}.${name}`);
             return;
         }
         const controlgroup = this.resolveGroup(field.mapped_group);
@@ -2278,7 +2265,7 @@ class HIDController {
     setOutput(group, name, value, send_packet) {
         const field = this.getOutputField(group, name);
         if (field === undefined) {
-            console.error("HIDController.setOutput - Unknown field: " + group + "." + name);
+            console.error(`HIDController.setOutput - Unknown field: ${group}.${name}`);
             return;
         }
         field.value = Number(value) << field.bit_offset;
@@ -2297,7 +2284,7 @@ class HIDController {
     setOutputToggle(group, name, toggle_value) {
         const field = this.getOutputField(group, name);
         if (field === undefined) {
-            console.error("HIDController.setOutputToggle - Unknown field " + group + "." + name);
+            console.error(`HIDController.setOutputToggle - Unknown field ${group}.${name}`);
             return;
         }
         field.value = toggle_value << field.bit_offset;
