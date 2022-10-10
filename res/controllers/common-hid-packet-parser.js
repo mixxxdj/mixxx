@@ -384,11 +384,9 @@ class HIDPacket {
             console.error(`HIDPacket.pack - Parsing packed value: invalid pack format ${field.pack}`);
             return;
         }
-        const bytes = this.packSizes[field.pack];
-        const signed = this.signedPackFormats.includes(field.pack);
         if (field.type === "bitvector") {
             const bitVector = /** @type {HIDBitVector} */ (field.value);
-            if (bytes > 1) {
+            if (this.packSizes[field.pack] > 1) {
                 console.error("HIDPacket.pack - Packing multibyte bit vectors not yet supported");
                 return;
             }
@@ -406,17 +404,19 @@ class HIDPacket {
             return;
         }
 
-        for (let byte_index = 0; byte_index < bytes; byte_index++) {
-            const index = field.offset + byte_index;
-            if (signed) {
-                if (value >= 0) {
-                    data[index] = (value >> (byte_index * 8)) & 255;
-                } else {
-                    data[index] = 255 - ((-(value + 1) >> (byte_index * 8)) & 255);
-                }
-            } else {
-                data[index] = (value >> (byte_index * 8)) & 255;
-            }
+        const dataView = new DataView(data.buffer);
+        if (field.pack === "b") {
+            dataView.setInt8(field.offset, value);
+        } else if (field.pack === "B") {
+            dataView.setUint8(field.offset, value);
+        } else if (field.pack === "h") {
+            dataView.setInt16(field.offset, value, true);
+        } else if (field.pack === "H") {
+            dataView.setUint16(field.offset, value, true);
+        } else if (field.pack === "i") {
+            dataView.setInt32(field.offset, value, true);
+        } else if (field.pack === "I") {
+            dataView.setUint32(field.offset, value, true);
         }
     }
     /**
