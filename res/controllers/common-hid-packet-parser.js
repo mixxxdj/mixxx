@@ -1298,8 +1298,8 @@ class HIDController {
 
         /**
          * Auto repeat interval default for fields, where not specified individual (in milliseconds)
-         * - Default = 100
          *
+         * @default 100
          * @type {number}
          */
         this.auto_repeat_interval = 100;
