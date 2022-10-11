@@ -356,6 +356,11 @@ class HIDPacket {
          */
         this.header = header;
 
+        /**
+         * Object of groups, referred by the group string
+         *
+         * @type {Object.<string, Object.<string, any>>}
+         */
         this.groups = {};
 
         /**
