@@ -513,6 +513,7 @@ class HIDPacket {
         for (const group_name in this.groups) {
             const group = this.groups[group_name];
             for (const field_id in group) {
+                /** @type {packetField} */
                 const field = group[field_id];
                 // Same field offset
                 if (field.offset === offset) {
@@ -1858,10 +1859,10 @@ class HIDController {
                 if (control === "play") {
                     engine.setValue(group, "stop", 1);
                 } else {
-                    engine.setValue(group, control, false);
+                    engine.setValue(group, control, Number(false));
                 }
             } else {
-                engine.setValue(group, control, true);
+                engine.setValue(group, control, Number(true));
             }
             return;
         }
@@ -1869,9 +1870,9 @@ class HIDController {
             console.log(`Callback for ${field.group}`);
             engine.setValue(group, control, field.auto_repeat(field));
         } else if (engine.getValue(group, control) === 0) {
-            engine.setValue(group, control, true);
+            engine.setValue(group, control, Number(true));
         } else {
-            engine.setValue(group, control, false);
+            engine.setValue(group, control, Number(false));
         }
     }
     /**
@@ -1942,7 +1943,7 @@ class HIDController {
             return;
         }
         const status = Boolean(engine.getValue(group, control)) !== true;
-        engine.setValue(group, control, status);
+        engine.setValue(group, control, Number(status));
     }
     /**
      * Toggle play/pause state
@@ -1957,9 +1958,9 @@ class HIDController {
         }
         const status = !(engine.getValue(group, "play"));
         if (!status) {
-            engine.setValue(group, "stop", true);
+            engine.setValue(group, "stop", Number(true));
         } else {
-            engine.setValue(group, "play", true);
+            engine.setValue(group, "play", Number(true));
         }
     }
     /**
