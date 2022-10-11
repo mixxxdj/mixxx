@@ -79,9 +79,9 @@ this.HIDDebug = function(message) {
  * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
  * @property {string} mapped_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
  * @property {controlCallback} mapped_callback
- * @property {Object} pack Control packing format for unpack(), one of b/B, h/H, i/I
- * @property {number} offset
- * @property {number} end_offset
+ * @property {string} pack Control packing format for unpack(), one of b/B, h/H, i/I
+ * @property {number} offset Position of the first byte in the packet in bytes (first byte is 0)
+ * @property {number} end_offset Position of the last byte in the packet in bytes ({@link packetField.offset} + packet size)
  * @property {number} bitmask
  * @property {boolean} isEncoder
  * @property {fieldChangeCallback} callback
@@ -356,6 +356,11 @@ class HIDPacket {
          */
         this.header = header;
 
+        /**
+         * Object of groups, referred by the group string
+         *
+         * @type {Object.<string, Object.<string, any>>}
+         */
         this.groups = {};
 
         /**
@@ -365,7 +370,11 @@ class HIDPacket {
          */
         this.length = this.header.length;
 
-        // Size of various 'pack' values in bytes
+        /**
+         * Size of the 'pack' types in bytes
+         *
+         * @type {Object.<string, number>}
+         */
         this.packSizes = {b: 1, B: 1, h: 2, H: 2, i: 4, I: 4};
         this.signedPackFormats = ["b", "h", "i"];
     }
@@ -483,13 +492,13 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {Object} pack Is one of the field packing types:
-     *              - b       signed byte
-     *              - B       unsigned byte
-     *              - h       signed short
-     *              - H       unsigned short
-     *              - i       signed integer
-     *              - I       unsigned integer
+     * @param {string} pack Is one of the field packing types:
+     *              - b       signed byte       (Int8)
+     *              - B       unsigned byte     (Uint8)
+     *              - h       signed short      (Int16  Little-Endian)
+     *              - H       unsigned short    (Uint16 Little-Endian)
+     *              - i       signed integer    (Int32  Little-Endian)
+     *              - I       unsigned integer  (Uint32 Little-Endian)
      * @returns {packetField} Returns matching field or undefined if no matching field can be found.
      */
     getFieldByOffset(offset, pack) {
@@ -502,6 +511,7 @@ class HIDPacket {
         for (const group_name in this.groups) {
             const group = this.groups[group_name];
             for (const field_id in group) {
+                /** @type {packetField} */
                 const field = group[field_id];
                 // Same field offset
                 if (field.offset === offset) {
@@ -618,13 +628,13 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {Object} pack Is one of the field packing types:
-     *              - b       signed byte
-     *              - B       unsigned byte
-     *              - h       signed short
-     *              - H       unsigned short
-     *              - i       signed integer
-     *              - I       unsigned integer
+     * @param {string} pack Is one of the field packing types:
+     *              - b       signed byte       (Int8)
+     *              - B       unsigned byte     (Uint8)
+     *              - h       signed short      (Int16  Little-Endian)
+     *              - H       unsigned short    (Uint16 Little-Endian)
+     *              - i       signed integer    (Int32  Little-Endian)
+     *              - I       unsigned integer  (Uint32 Little-Endian)
      * @param {number} bitmask  A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      *           Note: For controls that use full bytes (8bit, 16bit, ...), you can set this to
@@ -758,13 +768,13 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {Object} pack Is one of the field packing types:
-     *              - b       signed byte
-     *              - B       unsigned byte
-     *              - h       signed short
-     *              - H       unsigned short
-     *              - i       signed integer
-     *              - I       unsigned integer
+     * @param {string} pack Is one of the field packing types:
+     *              - b       signed byte       (Int8)
+     *              - B       unsigned byte     (Uint8)
+     *              - h       signed short      (Int16  Little-Endian)
+     *              - H       unsigned short    (Uint16 Little-Endian)
+     *              - i       signed integer    (Int32  Little-Endian)
+     *              - I       unsigned integer  (Uint32 Little-Endian)
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      * @param {fieldChangeCallback} [callback=undefined] Callback function for the control
@@ -1289,7 +1299,9 @@ class HIDController {
         this.scalers = {};
 
         /**
-         * Object of engine timer IDs, by hid-parser timer IDs
+         * Object of engine timer IDs of running auto repeat timers
+         * Key is a user specified timer_id.
+         * Used only in the controller.startAutoRepeatTimer code stubs of Sony-SixxAxis.js and Nintendo-Wiimote.js.
          *
          * @type {Object.<number, number>}
          */
@@ -1330,11 +1342,6 @@ class HIDController {
             this.timers[name] = undefined;
         }
     }
-    /**
-     * Initialize our packet data and callbacks. This does not seem to
-     * work when executed from here, but we keep a stub just in case.
-     */
-    initializePacketData() {}
     /**
      * Return deck number from deck name. Deck name can't be virtual deck name
      * in this function call.
@@ -1847,10 +1854,10 @@ class HIDController {
                 if (control === "play") {
                     engine.setValue(group, "stop", 1);
                 } else {
-                    engine.setValue(group, control, false);
+                    engine.setValue(group, control, Number(false));
                 }
             } else {
-                engine.setValue(group, control, true);
+                engine.setValue(group, control, Number(true));
             }
             return;
         }
@@ -1858,9 +1865,9 @@ class HIDController {
             console.log(`Callback for ${field.group}`);
             engine.setValue(group, control, field.auto_repeat(field));
         } else if (engine.getValue(group, control) === 0) {
-            engine.setValue(group, control, true);
+            engine.setValue(group, control, Number(true));
         } else {
-            engine.setValue(group, control, false);
+            engine.setValue(group, control, Number(false));
         }
     }
     /**
@@ -1931,7 +1938,7 @@ class HIDController {
             return;
         }
         const status = Boolean(engine.getValue(group, control)) !== true;
-        engine.setValue(group, control, status);
+        engine.setValue(group, control, Number(status));
     }
     /**
      * Toggle play/pause state
@@ -1946,9 +1953,9 @@ class HIDController {
         }
         const status = !(engine.getValue(group, "play"));
         if (!status) {
-            engine.setValue(group, "stop", true);
+            engine.setValue(group, "stop", Number(true));
         } else {
-            engine.setValue(group, "play", true);
+            engine.setValue(group, "play", Number(true));
         }
     }
     /**
@@ -2052,7 +2059,7 @@ class HIDController {
      */
     stopAutoRepeatTimer(timer_id) {
         if (this.timers[timer_id]) {
-            engine.stopTimer(this.timers[timer_id]);
+            engine.stopTimer(this.autorepeat[timer_id]);
             delete this.timers[timer_id];
         } else {
             // console.warn(`HIDController.stopAutoRepeatTimer - No such autorepeat timer: ${timer_id}`);
