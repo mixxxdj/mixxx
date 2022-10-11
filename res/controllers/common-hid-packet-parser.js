@@ -435,30 +435,23 @@ class HIDPacket {
      * @returns {number} Value for the field in data, represented according the fields packing type
      */
     unpack(data, field) {
-
-        if (!(field.pack in this.packSizes)) {
+        const dataView = new DataView(data.buffer);
+        if (field.pack === "b") {
+            return dataView.getInt8(field.offset);
+        } else if (field.pack === "B") {
+            return dataView.getUint8(field.offset);
+        } else if (field.pack === "h") {
+            return dataView.getInt16(field.offset, true);
+        } else if (field.pack === "H") {
+            return dataView.getUint16(field.offset, true);
+        } else if (field.pack === "i") {
+            return dataView.getInt32(field.offset, true);
+        } else if (field.pack === "I") {
+            return dataView.getUint32(field.offset, true);
+        } else {
             console.error(`HIDPacket.unpack - Parsing packed value: invalid pack format ${field.pack}`);
             return undefined;
         }
-        const bytes = this.packSizes[field.pack];
-        const signed = this.signedPackFormats.includes(field.pack);
-
-        let value = 0;
-        for (let field_byte = 0; field_byte < bytes; field_byte++) {
-            if (data[field.offset + field_byte] === 255 && field_byte === 4) {
-                value += 0;
-            } else {
-                value += data[field.offset + field_byte] * Math.pow(2, (field_byte * 8));
-            }
-        }
-        if (signed) {
-            const max_value = Math.pow(2, bytes * 8);
-            const split = max_value / 2 - 1;
-            if (value > split) {
-                value = value - max_value;
-            }
-        }
-        return value;
     }
     /**
      * Find HID packet group matching name.
