@@ -79,9 +79,9 @@ this.HIDDebug = function(message) {
  * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
  * @property {string} mapped_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
  * @property {controlCallback} mapped_callback
- * @property {Object} pack Control packing format for unpack(), one of b/B, h/H, i/I
- * @property {number} offset
- * @property {number} end_offset
+ * @property {string} pack Control packing format for unpack(), one of b/B, h/H, i/I
+ * @property {number} offset Position of the first byte in the packet in bytes (first byte is 0)
+ * @property {number} end_offset Position of the last byte in the packet in bytes ({@link packetField.offset} + packet size)
  * @property {number} bitmask
  * @property {boolean} isEncoder
  * @property {fieldChangeCallback} callback
@@ -365,7 +365,11 @@ class HIDPacket {
          */
         this.length = this.header.length;
 
-        // Size of various 'pack' values in bytes
+        /**
+         * Size of the 'pack' types in bytes
+         *
+         * @type {Object.<string, number>}
+         */
         this.packSizes = {b: 1, B: 1, h: 2, H: 2, i: 4, I: 4};
         this.signedPackFormats = ["b", "h", "i"];
     }
@@ -490,13 +494,13 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {Object} pack Is one of the field packing types:
-     *              - b       signed byte
-     *              - B       unsigned byte
-     *              - h       signed short
-     *              - H       unsigned short
-     *              - i       signed integer
-     *              - I       unsigned integer
+     * @param {string} pack Is one of the field packing types:
+     *              - b       signed byte       (Int8)
+     *              - B       unsigned byte     (Uint8)
+     *              - h       signed short      (Int16  Little-Endian)
+     *              - H       unsigned short    (Uint16 Little-Endian)
+     *              - i       signed integer    (Int32  Little-Endian)
+     *              - I       unsigned integer  (Uint32 Little-Endian)
      * @returns {packetField} Returns matching field or undefined if no matching field can be found.
      */
     getFieldByOffset(offset, pack) {
@@ -625,13 +629,13 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {Object} pack Is one of the field packing types:
-     *              - b       signed byte
-     *              - B       unsigned byte
-     *              - h       signed short
-     *              - H       unsigned short
-     *              - i       signed integer
-     *              - I       unsigned integer
+     * @param {string} pack Is one of the field packing types:
+     *              - b       signed byte       (Int8)
+     *              - B       unsigned byte     (Uint8)
+     *              - h       signed short      (Int16  Little-Endian)
+     *              - H       unsigned short    (Uint16 Little-Endian)
+     *              - i       signed integer    (Int32  Little-Endian)
+     *              - I       unsigned integer  (Uint32 Little-Endian)
      * @param {number} bitmask  A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      *           Note: For controls that use full bytes (8bit, 16bit, ...), you can set this to
@@ -765,13 +769,13 @@ class HIDPacket {
      * position 0
      *                        - For HID devices which use ReportIDs to enumerate the reports, the
      * data bytes starts at position 1
-     * @param {Object} pack Is one of the field packing types:
-     *              - b       signed byte
-     *              - B       unsigned byte
-     *              - h       signed short
-     *              - H       unsigned short
-     *              - i       signed integer
-     *              - I       unsigned integer
+     * @param {string} pack Is one of the field packing types:
+     *              - b       signed byte       (Int8)
+     *              - B       unsigned byte     (Uint8)
+     *              - h       signed short      (Int16  Little-Endian)
+     *              - H       unsigned short    (Uint16 Little-Endian)
+     *              - i       signed integer    (Int32  Little-Endian)
+     *              - I       unsigned integer  (Uint32 Little-Endian)
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      * @param {fieldChangeCallback} [callback=undefined] Callback function for the control
