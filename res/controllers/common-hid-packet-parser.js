@@ -1298,7 +1298,9 @@ class HIDController {
         this.scalers = {};
 
         /**
-         * Object of engine timer IDs, by hid-parser timer IDs
+         * Object of engine timer IDs of running auto repeat timers
+         * Key is a user specified timer_id.
+         * Used only in the controller.startAutoRepeatTimer code stubs of Sony-SixxAxis.js and Nintendo-Wiimote.js.
          *
          * @type {Object.<number, number>}
          */
@@ -2064,7 +2066,7 @@ class HIDController {
      */
     stopAutoRepeatTimer(timer_id) {
         if (this.timers[timer_id]) {
-            engine.stopTimer(this.timers[timer_id]);
+            engine.stopTimer(this.autorepeat[timer_id]);
             delete this.timers[timer_id];
         } else {
             // console.warn(`HIDController.stopAutoRepeatTimer - No such autorepeat timer: ${timer_id}`);
