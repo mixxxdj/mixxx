@@ -1340,11 +1340,6 @@ class HIDController {
         }
     }
     /**
-     * Initialize our packet data and callbacks. This does not seem to
-     * work when executed from here, but we keep a stub just in case.
-     */
-    initializePacketData() {}
-    /**
      * Return deck number from deck name. Deck name can't be virtual deck name
      * in this function call.
      *
