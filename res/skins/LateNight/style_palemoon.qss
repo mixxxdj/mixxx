@@ -1379,11 +1379,6 @@ QPushButton#pushButtonRecording:checked {
   color: #444443;
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  color: #b24c12;
-}
-
 #SkinSettingsButton,
 #SkinSettingsNumToggle,
 #SkinSettingsText,

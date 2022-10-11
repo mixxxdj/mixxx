@@ -1354,17 +1354,10 @@ mixxx::audio::FramePos EngineBuffer::queuedSeekPosition() const {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    // Explicitly invalidate the visual playposition so waveformwidgetrenderer
-    // clears the visual when passthrough was activated while a track was loaded.
-    // TODO(ronso0) Check if postProcess() needs to be called at all when passthrough
-    // is active -- if no, remove this hack.
-    if (m_pPassthroughEnabled->toBool()) {
-        m_visualPlayPos->setInvalid();
-        return;
-    }
     if (!m_playPosition.isValid() ||
             !m_trackSampleRateOld.isValid() ||
-            m_tempo_ratio_old == 0) {
+            m_tempo_ratio_old == 0 ||
+            m_pPassthroughEnabled->toBool()) {
         // Skip indicator updates with invalid values to prevent undefined behavior,
         // e.g. in WaveformRenderBeat::draw().
         //

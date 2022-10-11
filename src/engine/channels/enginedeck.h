@@ -63,7 +63,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     void noPassthroughInputConfigured();
 
   public slots:
-    void slotPassingToggle(double v);
+    void slotPassthroughToggle(double v);
     void slotPassthroughChangeRequest(double v);
 
   private:

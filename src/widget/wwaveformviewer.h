@@ -45,6 +45,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
+    void passthroughChanged(double value);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -79,6 +80,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     ControlProxy* m_pScratchPosition;
     ControlProxy* m_pWheel;
     ControlProxy* m_pPlayEnabled;
+    parented_ptr<ControlProxy> m_pPassthroughEnabled;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;

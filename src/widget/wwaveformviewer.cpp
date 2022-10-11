@@ -41,6 +41,10 @@ WWaveformViewer::WWaveformViewer(
     m_pWheel = new ControlProxy(
             group, "wheel", this, ControlFlag::NoAssertIfMissing);
     m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
+    m_pPassthroughEnabled = make_parented<ControlProxy>(group, "passthrough", this);
+    m_pPassthroughEnabled->connectValueChanged(this,
+            &WWaveformViewer::passthroughChanged,
+            Qt::DirectConnection);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::NoFocus);
@@ -263,6 +267,19 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
         QWidget* pWidget = m_waveformWidget->getWidget();
         connect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
         m_waveformWidget->getWidget()->setMouseTracking(true);
+        // Make connection to show "Passthrough" label on the waveform, except for
+        // "Empty" waveform type
+        if (m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {
+            return;
+        }
+        connect(this,
+                &WWaveformViewer::passthroughChanged,
+                this,
+                [this](double value) {
+                    m_waveformWidget->setPassThroughEnabled(value > 0);
+                });
+        // Make sure the label is shown after the waveform type was changed
+        emit passthroughChanged(m_pPassthroughEnabled->toBool());
     }
 }
 
