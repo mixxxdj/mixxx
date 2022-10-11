@@ -81,7 +81,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotSetTrackTimeDisplay(double);
     void slotCueModeCombobox(int);
     void slotSetTrackLoadMode(int comboboxIndex);
-    void slotSetLoadWhenDeckPlaying(int comboboxIndex);
+    void slotLoadWhenDeckPlayingIndexChanged(int comboboxIndex);
     void slotCloneDeckOnLoadDoubleTapCheckbox(bool);
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);

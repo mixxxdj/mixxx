@@ -168,9 +168,9 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             this,
             &DlgPrefDeck::slotSetTrackLoadMode);
 
-    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow"), static_cast<int>(LoadWhenDeckPlaying::Allow));
-    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, but stop deck"), static_cast<int>(LoadWhenDeckPlaying::AllowButStopDeck));
     comboBoxLoadWhenDeckPlaying->addItem(tr("Reject"), static_cast<int>(LoadWhenDeckPlaying::Reject));
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, but stop deck"), static_cast<int>(LoadWhenDeckPlaying::AllowButStopDeck));
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, play from load point"), static_cast<int>(LoadWhenDeckPlaying::Allow));
     int loadWhenDeckPlaying;
     if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
         loadWhenDeckPlaying = m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
@@ -187,7 +187,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     connect(comboBoxLoadWhenDeckPlaying,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
-            &DlgPrefDeck::slotSetLoadWhenDeckPlaying);
+            &DlgPrefDeck::slotLoadWhenDeckPlayingIndexChanged);
 
     // This option was introduced in Mixxx 2.3 with the intro & outro cues.
     // If the user has set main cue points with the intention of starting tracks
@@ -673,7 +673,7 @@ void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
             comboBoxLoadPoint->itemData(comboboxIndex).toInt());
 }
 
-void DlgPrefDeck::slotSetLoadWhenDeckPlaying(int comboboxIndex) {
+void DlgPrefDeck::slotLoadWhenDeckPlayingIndexChanged(int comboboxIndex) {
     m_loadWhenDeckPlaying = static_cast<LoadWhenDeckPlaying>(
         comboBoxLoadWhenDeckPlaying->itemData(comboboxIndex).toInt());
 }
