@@ -58,13 +58,15 @@ class WGLWidget : public QWidget {
     void setAutoBufferSwap(bool);
     void makeCurrentIfNeeded();
     bool isValid() const;
+    QOpenGLContext* context() const;
+    QOpenGLWindow* window() const;
     void resizeEvent(QResizeEvent* event);
     virtual void preRenderGL(OpenGLWindow* w);
     virtual void renderGL(OpenGLWindow* w);
     virtual void initializeGL();
+    virtual void resetVisualState();
 
     virtual void handleEventFromWindow(QEvent* ev);
-
     void swapBuffers();
     bool shouldRender();
 };

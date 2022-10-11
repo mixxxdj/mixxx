@@ -50,6 +50,10 @@ bool OpenGLWindow::event(QEvent* ev) {
     bool result = QOpenGLWindow::event(ev);
     const auto t = ev->type();
 
+    if (t == QEvent::Expose) {
+        m_pWidget->resetVisualState();
+    }
+
     if (t == QEvent::MouseButtonDblClick || t == QEvent::MouseButtonPress ||
             t == QEvent::MouseButtonRelease || t == QEvent::MouseMove ||
             t == QEvent::DragEnter || t == QEvent::DragLeave ||
@@ -132,6 +136,10 @@ void WGLWidget::initializeGL() {
     // to be implemented in derived widgets if needed
 }
 
+void WGLWidget::resetVisualState() {
+    // rename this
+}
+
 void WGLWidget::swapBuffers() {
     // not used when driven by WOpenGLWindow::frameSwapped, but here to be able to compile the vsyncthread driver code that uses WGLWidget derived from QGLWidget
     // and when driving this from the vsyncthread
@@ -143,6 +151,14 @@ void WGLWidget::swapBuffers() {
 bool WGLWidget::shouldRender() {
     // TODO m0dB more things to check here?
     return isVisible() && m_pOpenGLWindow->isValid();
+}
+
+QOpenGLContext* WGLWidget::context() const {
+    return m_pOpenGLWindow->context();
+}
+
+QOpenGLWindow* WGLWidget::window() const {
+    return m_pOpenGLWindow;
 }
 
 #endif

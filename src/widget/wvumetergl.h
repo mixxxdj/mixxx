@@ -34,6 +34,7 @@ class WVuMeterGL : public WGLWidget, public WBaseWidget {
     void preRenderGL(OpenGLWindow* w) override;
     void renderGL(OpenGLWindow* w) override;
     void initializeGL() override;
+    void resetVisualState() override;
 #endif
 
   public slots:
@@ -84,6 +85,9 @@ class WVuMeterGL : public WGLWidget, public WBaseWidget {
     double m_dPeakHoldCountdownMs;
 
     QColor m_qBgColor;
+
+    bool m_initializeCalled{};
+    bool m_paintCalled{};
 
 #ifndef MIXXX_USE_QGLWIDGET
     void drawTexture(QOpenGLTexture* texture, float x, float y, float w, float h);

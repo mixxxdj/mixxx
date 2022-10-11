@@ -175,11 +175,14 @@ void WVuMeterGL::preRenderGL(OpenGLWindow* w) {
 }
 
 void WVuMeterGL::renderGL(OpenGLWindow* w) {
-    drawNativeGL();
+    //drawNativeGL();
+    m_paintCalled = true;
 }
 
 void WVuMeterGL::initializeGL() {
     m_bHasRendered = false;
+
+    m_initializeCalled = true;
 
     m_pTextureBack = new QOpenGLTexture(m_pPixmapBack->toImage());
     m_pTextureBack->setMinificationFilter(QOpenGLTexture::Linear);
@@ -540,4 +543,9 @@ void WVuMeterGL::drawTexture(QOpenGLTexture* texture, float x, float y, float w,
     texture->bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+void WVuMeterGL::resetVisualState() {
+    m_bHasRendered = false;
+    m_bSwapNeeded = true;
 }
