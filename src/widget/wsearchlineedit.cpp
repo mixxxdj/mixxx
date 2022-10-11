@@ -16,6 +16,7 @@
 #include "skin/legacy/skincontext.h"
 #include "util/assert.h"
 #include "util/logger.h"
+#include "util/parented_ptr.h"
 #include "wskincolor.h"
 #include "wwidget.h"
 
@@ -86,6 +87,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig),
+          m_completer(make_parented<QCompleter>(this)),
           m_clearButton(make_parented<QToolButton>(this)),
           m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
@@ -99,6 +101,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
 
     //: Shown in the library search bar when it is empty.
     lineEdit()->setPlaceholderText(tr("Search..."));
+
+    m_completer->setModel(model());
+    m_completer->setCompletionMode(QCompleter::CompletionMode::InlineCompletion);
+    updateCompleter();
 
     // The goal is to make Esc natively close the popup, while in the line edit it
     // should move the keyboard focus to the tracks table. Unfortunately, eventFilter()
@@ -689,7 +695,7 @@ void WSearchLineEdit::updateCompleter() {
             << text;
 #endif // ENABLE_TRACE_LOG
 
-    lineEdit()->setCompleter(s_searchCompletionsEnabled ? completer() : nullptr);
+    lineEdit()->setCompleter(s_searchCompletionsEnabled ? m_completer.toWeakRef() : nullptr);
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qcompleter.h>
+
 #include <QComboBox>
 #include <QDomNode>
 #include <QEvent>
@@ -103,6 +105,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void loadQueriesFromConfig();
     void saveQueriesInConfig();
 
+    parented_ptr<QCompleter> m_completer;
     parented_ptr<QToolButton> const m_clearButton;
 
     int m_innerHeight;
