@@ -285,3 +285,7 @@ QString Paintable::getAltFileName(const QString& fileName) {
         return fileName;
     }
 }
+
+QImage Paintable::toImage() const {
+    return m_pPixmap ? m_pPixmap->toImage() : QImage();
+}

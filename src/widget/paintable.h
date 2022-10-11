@@ -46,6 +46,8 @@ class Paintable {
                       const QRectF& sourceRect);
     bool isNull() const;
 
+    QImage toImage() const;
+
     static DrawMode DrawModeFromString(const QString& str);
     static QString DrawModeToString(DrawMode mode);
     static QString getAltFileName(const QString& fileName);

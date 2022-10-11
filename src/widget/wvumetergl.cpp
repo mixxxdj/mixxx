@@ -33,7 +33,7 @@ WVuMeterGL::WVuMeterGL(QWidget* parent)
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     setAutoFillBackground(false);
-    setAutoBufferSwap(false);
+    //setAutoBufferSwap(false);
 
     // Not interested in repaint or update calls, as we draw from the vsync thread
     setUpdatesEnabled(false);
@@ -175,8 +175,58 @@ void WVuMeterGL::preRenderGL(OpenGLWindow* w) {
 }
 
 void WVuMeterGL::renderGL(OpenGLWindow* w) {
-    QPainter painter;
-    draw(&painter);
+    drawNativeGL();
+}
+
+void WVuMeterGL::initializeGL() {
+    m_bHasRendered = false;
+
+    m_pTextureBack = new QOpenGLTexture(m_pPixmapBack->toImage());
+    m_pTextureBack->setMinificationFilter(QOpenGLTexture::Linear);
+    m_pTextureBack->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_pTextureBack->setWrapMode(QOpenGLTexture::ClampToBorder);
+
+    m_pTextureVu = new QOpenGLTexture(m_pPixmapVu->toImage());
+    m_pTextureVu->setMinificationFilter(QOpenGLTexture::Linear);
+    m_pTextureVu->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_pTextureVu->setWrapMode(QOpenGLTexture::ClampToBorder);
+
+    QString vertexShaderCode =
+            "\
+attribute vec4 position;\n\
+attribute vec3 texcoor;\n\
+varying vec3 vTexcoor;\n\
+void main()\n\
+{\n\
+    vTexcoor = texcoor;\n\
+    gl_Position = position;\n\
+}\n";
+
+    QString fragmentShaderCode =
+            "\
+uniform sampler2D m_sampler;\n\
+varying vec3 vTexcoor;\n\
+void main()\n\
+{\n\
+    vec4 m_tex = texture2D(m_sampler, vec2(vTexcoor.x, vTexcoor.y));\n\
+    gl_FragColor = m_tex;\n\
+}\n";
+
+    if (!m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderCode)) {
+        return;
+    }
+
+    if (!m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode)) {
+        return;
+    }
+
+    if (!m_shaderProgram.link()) {
+        return;
+    }
+
+    if (!m_shaderProgram.bind()) {
+        return;
+    }
 }
 #endif
 
@@ -206,8 +256,6 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
     if (shouldRender()) {
         makeCurrentIfNeeded();
         drawNativeGL();
-        //QPainter painter;
-        //draw(&painter);
     }
 #endif
 }
@@ -324,15 +372,11 @@ void WVuMeterGL::draw(QPainter* painter) {
     m_bSwapNeeded = true;
 }
 
-#include <iostream>
-
 void WVuMeterGL::fillRectNativeGL(const QRectF& rect, const QColor& color) {
     float x1 = -1.f + 2.f * rect.x() / width();
     float y1 = 1.f - 2.f * rect.y() / height();
     float x2 = x1 + 2.f * rect.width() / width();
     float y2 = y1 - 2.f * rect.height() / height();
-
-    std::cout << y1 << " " << y2 << std::endl;
 
     glBegin(GL_TRIANGLE_STRIP);
     glColor3f(color.redF(), color.greenF(), color.blueF());
@@ -347,13 +391,15 @@ void WVuMeterGL::drawNativeGL() {
     glClearColor(m_qBgColor.redF(), m_qBgColor.greenF(), m_qBgColor.blueF(), 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    /*
-    if (!m_pPixmapBack.isNull()) {
-        // Draw background.
-        QRectF sourceRect(0, 0, m_pPixmapBack->width(), m_pPixmapBack->height());
-        m_pPixmapBack->draw(rect(), &p, sourceRect);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    m_shaderProgram.bind();
+
+    if (m_pTextureBack) {
+        drawTexture(m_pTextureBack, 0, 0, 1, 1);
     }
-    */
 
     const double widgetWidth = width();
     const double widgetHeight = height();
@@ -363,45 +409,38 @@ void WVuMeterGL::drawNativeGL() {
     // Draw (part of) vu
     if (m_bHorizontal) {
         {
-            const double widgetPosition = math_clamp(widgetWidth * m_dParameter, 0.0, widgetWidth);
-            QRectF targetRect(0, 0, widgetPosition, widgetHeight);
-
-            /*if (!m_pPixmapVu.isNull()) {
-                const double pixmapPosition = math_clamp(
-                        pixmapWidth * m_dParameter, 0.0, pixmapWidth);
-                QRectF sourceRect(0, 0, pixmapPosition, pixmapHeight);
-                m_pPixmapVu->draw(targetRect, &p, sourceRect);
-            } else*/
-            {
+            if (m_pTextureVu) {
+                drawTexture(m_pTextureVu, 0.f, 0.f, math_clamp<float>(m_dParameter, 0.f, 1.f), 1.f);
+            } else {
                 // fallback to green rectangle
+                const double widgetPosition = math_clamp(
+                        widgetWidth * m_dParameter, 0.0, widgetWidth);
+                QRectF targetRect(0, 0, widgetPosition, widgetHeight);
                 fillRectNativeGL(targetRect, QColor(0, 255, 0));
             }
         }
 
         if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0 &&
                 m_dPeakParameter > m_dParameter) {
-            const double widgetPeakPosition = math_clamp(
-                    widgetWidth * m_dPeakParameter, 0.0, widgetWidth);
             const double pixmapPeakHoldSize = static_cast<double>(m_iPeakHoldSize);
-            const double widgetPeakHoldSize = widgetWidth * pixmapPeakHoldSize / pixmapWidth;
+            const double peakholdSize = pixmapPeakHoldSize / pixmapWidth;
 
-            QRectF targetRect(widgetPeakPosition - widgetPeakHoldSize,
-                    0,
-                    widgetPeakHoldSize,
-                    widgetHeight);
+            if (m_pTextureVu) {
+                drawTexture(m_pTextureVu,
+                        math_clamp<float>(
+                                m_dPeakParameter - peakholdSize, 0.f, 1.f),
+                        0.f,
+                        peakholdSize,
+                        1.f);
+            } else {
+                const double widgetPeakPosition = math_clamp(
+                        widgetWidth * m_dPeakParameter, 0.0, widgetWidth);
+                const double widgetPeakHoldSize = widgetWidth * pixmapPeakHoldSize / pixmapWidth;
+                QRectF targetRect(widgetPeakPosition - widgetPeakHoldSize,
+                        0,
+                        widgetPeakHoldSize,
+                        widgetHeight);
 
-            /* if (!m_pPixmapVu.isNull()) {
-                const double pixmapPeakPosition = math_clamp(
-                        pixmapWidth * m_dPeakParameter, 0.0, pixmapWidth);
-
-                QRectF sourceRect =
-                        QRectF(pixmapPeakPosition - pixmapPeakHoldSize,
-                                0,
-                                pixmapPeakHoldSize,
-                                pixmapHeight);
-                m_pPixmapVu->draw(targetRect, &p, sourceRect);
-            } else */
-            {
                 // fallback to green rectangle
                 fillRectNativeGL(targetRect, QColor(0, 255, 0));
             }
@@ -409,46 +448,39 @@ void WVuMeterGL::drawNativeGL() {
     } else {
         // vertical
         {
-            const double widgetPosition =
-                    math_clamp(widgetHeight * m_dParameter, 0.0, widgetHeight);
-            QRectF targetRect(0, widgetHeight - widgetPosition, widgetWidth, widgetPosition);
-
-            /* if (!m_pPixmapVu.isNull()) {
-                const double pixmapPosition = math_clamp(
-                        pixmapHeight * m_dParameter, 0.0, pixmapHeight);
-                QRectF sourceRect(0, pixmapHeight - pixmapPosition, pixmapWidth, pixmapPosition);
-                m_pPixmapVu->draw(targetRect, &p, sourceRect);
-            } else */
-            {
+            if (m_pTextureVu) {
+                drawTexture(m_pTextureVu, 0.f, 0.f, 1.f, math_clamp<float>(m_dParameter, 0.f, 1.f));
+            } else {
                 // fallback to green rectangle
+                const double widgetPosition = math_clamp(
+                        widgetHeight * m_dParameter, 0.0, widgetHeight);
+                QRectF targetRect(0, widgetHeight - widgetPosition, widgetWidth, widgetPosition);
                 fillRectNativeGL(targetRect, QColor(0, 255, 0));
             }
         }
 
         if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0 &&
                 m_dPeakParameter > m_dParameter) {
-            const double widgetPeakPosition = math_clamp(
-                    widgetHeight * m_dPeakParameter, 0.0, widgetHeight);
             const double pixmapPeakHoldSize = static_cast<double>(m_iPeakHoldSize);
-            const double widgetPeakHoldSize = widgetHeight * pixmapPeakHoldSize / pixmapHeight;
+            const double peakholdSize = pixmapPeakHoldSize / pixmapHeight;
 
-            QRectF targetRect(0,
-                    widgetHeight - widgetPeakPosition,
-                    widgetWidth,
-                    widgetPeakHoldSize);
+            if (m_pTextureVu) {
+                drawTexture(m_pTextureVu,
+                        0.f,
+                        math_clamp<float>(
+                                m_dPeakParameter - peakholdSize, 0.f, 1.f),
+                        1.f,
+                        peakholdSize);
+            } else {
+                const double widgetPeakPosition = math_clamp(
+                        widgetHeight * m_dPeakParameter, 0.0, widgetHeight);
+                const double widgetPeakHoldSize = widgetHeight * pixmapPeakHoldSize / pixmapHeight;
 
-            /* if (!m_pPixmapVu.isNull()) {
-                const double pixmapPeakPosition = math_clamp(
-                        pixmapHeight * m_dPeakParameter, 0.0, pixmapHeight);
-
-                QRectF sourceRect = QRectF(0,
-                        pixmapHeight - pixmapPeakPosition,
-                        pixmapWidth,
-                        pixmapPeakHoldSize);
-                m_pPixmapVu->draw(targetRect, &p, sourceRect);
-            } else */
-            {
                 // fallback to green rectangle
+                QRectF targetRect(0,
+                        widgetHeight - widgetPeakPosition,
+                        widgetWidth,
+                        widgetPeakHoldSize);
                 fillRectNativeGL(targetRect, QColor(0, 255, 0));
             }
         }
@@ -477,4 +509,35 @@ void WVuMeterGL::swap() {
     makeCurrentIfNeeded();
     swapBuffers();
     m_bSwapNeeded = false;
+}
+
+void WVuMeterGL::drawTexture(QOpenGLTexture* texture, float x, float y, float w, float h) {
+    const float texx1 = 1.f - x;
+    const float texy1 = 1.f - y;
+    const float texx2 = texx1 - w;
+    const float texy2 = texy1 - h;
+
+    const float posx1 = -1.f + 2.f * x;
+    const float posx2 = posx1 + 2.f * w;
+    const float posy1 = -1.f + 2.f * y;
+    const float posy2 = posy1 + 2.f * h;
+
+    const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
+    const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
+
+    int vectlocation = m_shaderProgram.attributeLocation("position");
+    int texcoordLocation = m_shaderProgram.attributeLocation("texcoor");
+
+    m_shaderProgram.enableAttributeArray(vectlocation);
+    m_shaderProgram.setAttributeArray(
+            vectlocation, GL_FLOAT, posarray, 2);
+    m_shaderProgram.enableAttributeArray(texcoordLocation);
+    m_shaderProgram.setAttributeArray(
+            texcoordLocation, GL_FLOAT, texarray, 2);
+
+    m_shaderProgram.setUniformValue("sampler", 0);
+
+    texture->bind();
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

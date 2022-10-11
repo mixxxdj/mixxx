@@ -1,5 +1,9 @@
 #pragma once
 
+#include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
+
 #include "skin/legacy/skincontext.h"
 #include "util/duration.h"
 #include "widget/wglwidget.h"
@@ -29,6 +33,7 @@ class WVuMeterGL : public WGLWidget, public WBaseWidget {
 #ifndef MIXXX_USE_QGLWIDGET
     void preRenderGL(OpenGLWindow* w) override;
     void renderGL(OpenGLWindow* w) override;
+    void initializeGL() override;
 #endif
 
   public slots:
@@ -79,4 +84,11 @@ class WVuMeterGL : public WGLWidget, public WBaseWidget {
     double m_dPeakHoldCountdownMs;
 
     QColor m_qBgColor;
+
+#ifndef MIXXX_USE_QGLWIDGET
+    void drawTexture(QOpenGLTexture* texture, float x, float y, float w, float h);
+
+    QOpenGLTexture *m_pTextureBack, *m_pTextureVu;
+    QOpenGLShaderProgram m_shaderProgram;
+#endif
 };

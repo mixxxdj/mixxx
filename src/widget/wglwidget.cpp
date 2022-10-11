@@ -90,7 +90,7 @@ WGLWidget::WGLWidget(QWidget* parent)
 }
 
 bool WGLWidget::isValid() const {
-    return true;
+    return m_pOpenGLWindow && m_pOpenGLWindow->isValid();
 }
 
 void WGLWidget::resizeEvent(QResizeEvent* event) {
