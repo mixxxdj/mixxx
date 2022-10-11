@@ -32,9 +32,6 @@ const QString kDisabledText = QStringLiteral("- - -");
 const QString kLibraryConfigGroup = QStringLiteral("[Library]");
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
-const QString kEnableSearchCompletionsKey = QStringLiteral("EnableSearchCompletions");
-const QString kEnableSearchHistoryShortcutsKey = QStringLiteral("EnableSearchHistoryShortcuts");
-
 // Border width, max. 2 px when focused (in official skins)
 constexpr int kBorderWidth = 2;
 
@@ -67,10 +64,22 @@ constexpr int WSearchLineEdit::kMaxSearchEntries;
 
 //static
 int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
+bool WSearchLineEdit::s_searchCompletionsEnabled = kEnableSearchCompletionsByDefault;
+bool WSearchLineEdit::s_searchHistoryShortcutsEnabled = kEnableSearchHistoryShortcutsByDefault;
 
 //static
 void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     s_debouncingTimeoutMillis = verifyDebouncingTimeoutMillis(debouncingTimeoutMillis);
+}
+
+//static
+void WSearchLineEdit::setSearchCompletionsEnabled(bool searchCompletionsEnabled) {
+    s_searchCompletionsEnabled = searchCompletionsEnabled;
+}
+
+//static
+void WSearchLineEdit::setSearchHistoryShortcutsEnabled(bool searchHistoryShortcutsEnabled) {
+    s_searchHistoryShortcutsEnabled = searchHistoryShortcutsEnabled;
 }
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
@@ -321,8 +330,6 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
 
 void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     int currentTextIndex = 0;
-    bool isHistoryEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(kLibraryConfigGroup, kEnableSearchHistoryShortcutsKey));
     switch (keyEvent->key()) {
     // Ctrl + F is handled in slotSetShortcutFocus()
     case Qt::Key_Backspace:
@@ -337,7 +344,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         // If we're at the top of the list the Up key clears the search bar,
         // no matter if it's a saved or unsaved query.
         // Otherwise Up is handled by the combobox itself.
-        if (!isHistoryEnabled) {
+        if (!s_searchHistoryShortcutsEnabled) {
             return;
         }
         currentTextIndex = findCurrentTextIndex();
@@ -350,7 +357,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     case Qt::Key_Down:
         // After clearing the text field the Down key
         // is expected to show the latest query
-        if (!isHistoryEnabled) {
+        if (!s_searchHistoryShortcutsEnabled) {
             return;
         }
         if (currentText().isEmpty()) {
@@ -380,7 +387,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         return;
     case Qt::Key_Space:
         // Open/close popup with Ctrl + space
-        if (isHistoryEnabled && keyEvent->modifiers() == Qt::ControlModifier) {
+        if (s_searchHistoryShortcutsEnabled && keyEvent->modifiers() == Qt::ControlModifier) {
             if (view()->isVisible()) {
                 hidePopup();
             } else {
@@ -416,6 +423,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
     QComboBox::focusInEvent(event);
+    updateCompleter();
     updateClearAndDropdownButton(currentText());
 }
 
@@ -590,10 +598,6 @@ void WSearchLineEdit::refreshState() {
     } else {
         slotDisableSearch();
     }
-
-    bool isCompletionEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(kLibraryConfigGroup, kEnableSearchCompletionsKey));
-    lineEdit()->setCompleter(isCompletionEnabled ? completer() : nullptr);
 }
 
 void WSearchLineEdit::showPopup() {
@@ -659,12 +663,8 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
     const int paddingPx = text.isEmpty() ? 0 : m_innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
 
-    // Hide the nonfunctional drop-down button (set width to 0) if the search or history is disabled.
-    const bool isHistoryEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(kLibraryConfigGroup, kEnableSearchHistoryShortcutsKey));
-    const int dropDownWidth = isEnabled() && isHistoryEnabled
-            ? static_cast<int>(m_innerHeight * 0.7)
-            : 0;
+    // Hide the nonfunctional drop-down button (set width to 0) if the search is disabled.
+    const int dropDownWidth = isEnabled() ? static_cast<int>(m_innerHeight * 0.7) : 0;
 
     const QString styleSheet = QStringLiteral(
             "WSearchLineEdit { padding-%1: %2px; }"
@@ -680,6 +680,16 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
                                                QString::number(dropDownWidth),
                                                QString::number(m_innerHeight));
     setStyleSheet(styleSheet);
+}
+
+void WSearchLineEdit::updateCompleter() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "updateCompleter"
+            << text;
+#endif // ENABLE_TRACE_LOG
+
+    lineEdit()->setCompleter(s_searchCompletionsEnabled ? completer() : nullptr);
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {

@@ -23,13 +23,6 @@
 
 using namespace mixxx::library::prefs;
 
-namespace {
-
-const QString kEnableSearchCompletionsKey = QStringLiteral("EnableSearchCompletions");
-const QString kEnableSearchHistoryShortcutsKey = QStringLiteral("EnableSearchHistoryShortcuts");
-
-} // namespace
-
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
         UserSettingsPointer pConfig,
@@ -97,12 +90,7 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
-    checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kEnableSearchCompletionsKey),
-            WSearchLineEdit::kEnableSearchCompletionsByDefault));
-    checkBoxEnableSearchHistoryShortcuts->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kEnableSearchHistoryShortcutsKey),
-            WSearchLineEdit::kEnableSearchHistoryShortcutsByDefault));
+    searchHistoryOptionsChanged();
 
     connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
@@ -284,6 +272,13 @@ void DlgPrefLibrary::slotUpdate() {
     checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
     m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
 
+    checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
+            kEnableSearchCompletionsConfigKey,
+            WSearchLineEdit::kEnableSearchCompletionsByDefault));
+    checkBoxEnableSearchHistoryShortcuts->setChecked(m_pConfig->getValue(
+            kEnableSearchHistoryShortcutsConfigKey,
+            WSearchLineEdit::kEnableSearchHistoryShortcutsByDefault));
+
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(m_iOriginalTrackTableRowHeight);
@@ -430,10 +425,11 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(kUseRelativePathOnExportConfigKey,
             ConfigValue((int)checkBox_use_relative_path->isChecked()));
 
-    m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchCompletionsKey),
+    m_pConfig->set(kEnableSearchCompletionsConfigKey,
             ConfigValue(checkBoxEnableSearchCompletions->isChecked()));
-    m_pConfig->set(ConfigKey(kConfigGroup, kEnableSearchHistoryShortcutsKey),
+    m_pConfig->set(kEnableSearchHistoryShortcutsConfigKey,
             ConfigValue(checkBoxEnableSearchHistoryShortcuts->isChecked()));
+    searchHistoryOptionsChanged();
 
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
@@ -515,6 +511,15 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
             kSearchDebouncingTimeoutMillisConfigKey,
             searchDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
+}
+
+void DlgPrefLibrary::searchHistoryOptionsChanged() {
+    WSearchLineEdit::setSearchCompletionsEnabled(m_pConfig->getValue<bool>(
+            kEnableSearchCompletionsConfigKey,
+            WSearchLineEdit::kEnableSearchCompletionsByDefault));
+    WSearchLineEdit::setSearchHistoryShortcutsEnabled(m_pConfig->getValue<bool>(
+            kEnableSearchHistoryShortcutsConfigKey,
+            WSearchLineEdit::kEnableSearchHistoryShortcutsByDefault));
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {

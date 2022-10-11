@@ -27,6 +27,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
+    static void setSearchCompletionsEnabled(bool searchCompletionsEnabled);
+    static void setSearchHistoryShortcutsEnabled(bool searchHistoryShortcutsEnabled);
     virtual void showPopup() override;
 
     explicit WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig = nullptr);
@@ -76,12 +78,15 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     // value provider that sends signals whenever the corresponding
     // configuration value changes.
     static int s_debouncingTimeoutMillis;
+    static bool s_searchCompletionsEnabled;
+    static bool s_searchHistoryShortcutsEnabled;
 
     void refreshState();
 
     void enableSearch(const QString& text);
     void updateEditBox(const QString& text);
     void updateClearAndDropdownButton(const QString& text);
+    void updateCompleter();
     void deleteSelectedComboboxItem();
     void deleteSelectedListItem();
 
