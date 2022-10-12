@@ -31,7 +31,6 @@ EffectManifestPointer Bessel8LVMixEQEffect::getManifest() {
 Bessel8LVMixEQEffect::Bessel8LVMixEQEffect() {
     m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
-    m_pEQButtonMode = std::make_unique<ControlProxy>("[Mixer Profile]", "EQButtonMode");
 }
 
 void Bessel8LVMixEQEffect::loadEngineEffectParameters(
@@ -42,6 +41,9 @@ void Bessel8LVMixEQEffect::loadEngineEffectParameters(
     m_pKillLow = parameters.value("killLow");
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
+    m_pBypassLow = parameters.value("bypassLow");
+    m_pBypassMid = parameters.value("bypassMid");
+    m_pBypassHigh = parameters.value("bypassHigh");
 }
 
 void Bessel8LVMixEQEffect::processChannel(
@@ -60,20 +62,26 @@ void Bessel8LVMixEQEffect::processChannel(
         double fLow;
         double fMid;
         double fHigh;
-        if (!m_pKillLow->toBool()) {
+        if (m_pBypassLow->toBool()) {
+            fLow = 1;
+        } else if (m_pKillLow->toBool()) {
+            fLow = 0;
+        } else {
             fLow = m_pPotLow->value();
-        } else {
-            fLow = m_pEQButtonMode->get() == 0 ? 0 : 1;
         }
-        if (!m_pKillMid->toBool()) {
+        if (m_pBypassMid->toBool()) {
+            fMid = 1;
+        } else if (m_pKillMid->toBool()) {
+            fMid = 0;
+        } else {
             fMid = m_pPotMid->value();
-        } else {
-            fMid = m_pEQButtonMode->get() == 0 ? 0 : 1;
         }
-        if (!m_pKillHigh->toBool()) {
-            fHigh = m_pPotHigh->value();
+        if (m_pBypassHigh->toBool()) {
+            fHigh = 1;
+        } else if (m_pKillHigh->toBool()) {
+            fHigh = 0;
         } else {
-            fHigh = m_pEQButtonMode->get() == 0 ? 0 : 1;
+            fHigh = m_pPotHigh->value();
         }
         pState->processChannel(pInput,
                 pOutput,

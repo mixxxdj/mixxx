@@ -16,10 +16,12 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_pLowFilterControlObject(nullptr),
           m_pMidFilterControlObject(nullptr),
           m_pHighFilterControlObject(nullptr),
-          m_pLowButtonControlObject(nullptr),
-          m_pMidButtonControlObject(nullptr),
-          m_pHighButtonControlObject(nullptr),
-          m_pEQButtonMode(nullptr),
+          m_pLowKillControlObject(nullptr),
+          m_pMidKillControlObject(nullptr),
+          m_pHighKillControlObject(nullptr),
+          m_pLowBypassControlObject(nullptr),
+          m_pMidBypassControlObject(nullptr),
+          m_pHighBypassControlObject(nullptr),
           m_alignment(Qt::AlignCenter),
           m_orientation(Qt::Horizontal),
           m_pColors(nullptr),
@@ -59,10 +61,12 @@ void WaveformRendererSignalBase::deleteControls() {
     delete m_pLowFilterControlObject;
     delete m_pMidFilterControlObject;
     delete m_pHighFilterControlObject;
-    delete m_pLowButtonControlObject;
-    delete m_pMidButtonControlObject;
-    delete m_pHighButtonControlObject;
-    delete m_pEQButtonMode;
+    delete m_pLowKillControlObject;
+    delete m_pMidKillControlObject;
+    delete m_pHighKillControlObject;
+    delete m_pLowBypassControlObject;
+    delete m_pMidBypassControlObject;
+    delete m_pHighBypassControlObject;
 }
 
 bool WaveformRendererSignalBase::init() {
@@ -79,14 +83,18 @@ bool WaveformRendererSignalBase::init() {
             eqGroup, "parameter2");
     m_pHighFilterControlObject = new ControlProxy(
             eqGroup, "parameter3");
-    m_pLowButtonControlObject = new ControlProxy(
+    m_pLowKillControlObject = new ControlProxy(
             eqGroup, "button_parameter1");
-    m_pMidButtonControlObject = new ControlProxy(
-            eqGroup, "button_parameter2");
-    m_pHighButtonControlObject = new ControlProxy(
+    m_pMidKillControlObject = new ControlProxy(
             eqGroup, "button_parameter3");
-    m_pEQButtonMode = new ControlProxy(
-            "[Mixer Profile]", "EQButtonMode");
+    m_pHighKillControlObject = new ControlProxy(
+            eqGroup, "button_parameter5");
+    m_pLowBypassControlObject = new ControlProxy(
+            eqGroup, "button_parameter2");
+    m_pMidBypassControlObject = new ControlProxy(
+            eqGroup, "button_parameter4");
+    m_pHighBypassControlObject = new ControlProxy(
+            eqGroup, "button_parameter6");
 
     return onInit();
 }
@@ -194,16 +202,22 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
             highGain *= static_cast<CSAMPLE_GAIN>(
                     factory->getVisualGain(WaveformWidgetFactory::High));
 
-            if (m_pLowButtonControlObject && m_pLowButtonControlObject->get() > 0.0) {
-                lowGain = static_cast<CSAMPLE_GAIN>(m_pEQButtonMode->get());
+            if (m_pLowBypassControlObject && m_pLowBypassControlObject->get() > 0.0) {
+                lowGain = 1.0;
+            } else if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
+                lowGain = 0.0;
             }
 
-            if (m_pMidButtonControlObject && m_pMidButtonControlObject->get() > 0.0) {
-                midGain = static_cast<CSAMPLE_GAIN>(m_pEQButtonMode->get());
+            if (m_pMidBypassControlObject && m_pMidBypassControlObject->get() > 0.0) {
+                midGain = 1.0;
+            } else if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
+                midGain = 0.0;
             }
 
-            if (m_pHighButtonControlObject && m_pHighButtonControlObject->get() > 0.0) {
-                highGain = static_cast<CSAMPLE_GAIN>(m_pEQButtonMode->get());
+            if (m_pHighBypassControlObject && m_pHighBypassControlObject->get() > 0.0) {
+                highGain = 1.0;
+            } else if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
+                highGain = 0.0;
             }
         }
 

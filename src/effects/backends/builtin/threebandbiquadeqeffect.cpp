@@ -119,7 +119,6 @@ void ThreeBandBiquadEQEffectGroupState::setFilters(
 ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect() {
     m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
-    m_pEQButtonMode = std::make_unique<ControlProxy>("[Mixer Profile]", "EQButtonMode");
 }
 
 void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
@@ -130,6 +129,9 @@ void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
     m_pKillLow = parameters.value("killLow");
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
+    m_pBypassLow = parameters.value("bypassLow");
+    m_pBypassMid = parameters.value("bypassMid");
+    m_pBypassHigh = parameters.value("bypassHigh");
 }
 
 void ThreeBandBiquadEQEffect::processChannel(
@@ -157,21 +159,15 @@ void ThreeBandBiquadEQEffect::processChannel(
     double bqGainMid = 0;
     double bqGainHigh = 0;
     if (enableState != EffectEnableState::Disabling) {
-        if (m_pEQButtonMode->get() == 0) {
-            bqGainLow = knobValueToBiquadGainDb(
-                    m_pPotLow->value(), m_pKillLow->toBool());
-            bqGainMid = knobValueToBiquadGainDb(
-                    m_pPotMid->value(), m_pKillMid->toBool());
-            bqGainHigh = knobValueToBiquadGainDb(
-                    m_pPotHigh->value(), m_pKillHigh->toBool());
-        } else {
-            bqGainLow = knobValueToBiquadGainDb(
-                    m_pKillLow->toBool() ? 1 : m_pPotLow->value(), false);
-            bqGainMid = knobValueToBiquadGainDb(
-                    m_pKillMid->toBool() ? 1 : m_pPotMid->value(), false);
-            bqGainHigh = knobValueToBiquadGainDb(
-                    m_pKillHigh->toBool() ? 1 : m_pPotHigh->value(), false);
-        }
+        bqGainLow = knobValueToBiquadGainDb(
+                m_pBypassLow->toBool() ? 1 : m_pPotLow->value(),
+                m_pKillLow->toBool() && !m_pBypassLow->toBool());
+        bqGainMid = knobValueToBiquadGainDb(
+                m_pBypassMid->toBool() ? 1 : m_pPotMid->value(),
+                m_pKillMid->toBool() && !m_pBypassMid->toBool());
+        bqGainHigh = knobValueToBiquadGainDb(
+                m_pBypassHigh->toBool() ? 1 : m_pPotHigh->value(),
+                m_pKillHigh->toBool() && !m_pBypassHigh->toBool());
     }
 
     int activeFilters = 0;

@@ -1,5 +1,4 @@
 #include "effects/chains/equalizereffectchain.h"
-
 #include "effects/effectslot.h"
 
 EqualizerEffectChain::EqualizerEffectChain(const QString& group,
@@ -10,14 +9,25 @@ EqualizerEffectChain::EqualizerEffectChain(const QString& group,
                   SignalProcessingStage::Prefader,
                   pEffectsManager,
                   pEffectsMessenger),
+          m_eqButtonMode(ConfigKey("[Mixer Profile]", "EQButtonMode")),
           m_pCOFilterWaveform(
-                  new ControlObject(ConfigKey(group, "filterWaveformEnable"))) {
+                  new ControlObject(ConfigKey(group, "filterWaveformEnable"))),
+          m_pCOFilterLowKill(
+                  new ControlPushButton(ConfigKey(group, "filterLowKill"))),
+          m_pCOFilterMidKill(
+                  new ControlPushButton(ConfigKey(group, "filterMidKill"))),
+          m_pCOFilterHighKill(
+                  new ControlPushButton(ConfigKey(group, "filterHighKill"))) {
     // Add a single effect slot
     addEffectSlot(formatEffectSlotGroup(group));
     m_effectSlots[0]->setEnabled(true);
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
-    setupLegacyAliasesForGroup(group);
+    m_pCOFilterLowKill->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pCOFilterMidKill->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pCOFilterHighKill->setButtonMode(ControlPushButton::POWERWINDOW);
+
+    setupAliasesForGroup(group);
 }
 
 void EqualizerEffectChain::setFilterWaveform(bool state) {
@@ -33,11 +43,55 @@ QString EqualizerEffectChain::formatEffectSlotGroup(const QString& group) {
             .arg(group);
 }
 
-void EqualizerEffectChain::setupLegacyAliasesForGroup(const QString& group) {
-    // Create aliases for legacy EQ controls.
+void EqualizerEffectChain::slotFilterLowKillChanged(double value) {
     EffectSlotPointer pEffectSlot = getEffectSlot(0);
     if (pEffectSlot) {
         const QString& effectSlotGroup = pEffectSlot->getGroup();
+        PollingControlProxy effectButton(ConfigKey(effectSlotGroup,
+                m_eqButtonMode.toBool() ? "button_parameter2"
+                                        : "button_parameter1"));
+        VERIFY_OR_DEBUG_ASSERT(effectButton.valid()) {
+            return;
+        }
+        effectButton.set(value);
+    }
+}
+
+void EqualizerEffectChain::slotFilterMidKillChanged(double value) {
+    EffectSlotPointer pEffectSlot = getEffectSlot(0);
+    if (pEffectSlot) {
+        const QString& effectSlotGroup = pEffectSlot->getGroup();
+        PollingControlProxy effectButton(ConfigKey(effectSlotGroup,
+                m_eqButtonMode.toBool() ? "button_parameter4"
+                                        : "button_parameter3"));
+        VERIFY_OR_DEBUG_ASSERT(effectButton.valid()) {
+            return;
+        }
+        effectButton.set(value);
+    }
+}
+
+void EqualizerEffectChain::slotFilterHighKillChanged(double value) {
+    EffectSlotPointer pEffectSlot = getEffectSlot(0);
+    if (pEffectSlot) {
+        const QString& effectSlotGroup = pEffectSlot->getGroup();
+        PollingControlProxy effectButton(ConfigKey(effectSlotGroup,
+                m_eqButtonMode.toBool() ? "button_parameter6"
+                                        : "button_parameter5"));
+        VERIFY_OR_DEBUG_ASSERT(effectButton.valid()) {
+            return;
+        }
+        effectButton.set(value);
+    }
+}
+
+void EqualizerEffectChain::setupAliasesForGroup(const QString& group) {
+    // Create aliases for controller EQ controls.
+    EffectSlotPointer pEffectSlot = getEffectSlot(0);
+    if (pEffectSlot) {
+        const QString& effectSlotGroup = pEffectSlot->getGroup();
+        PollingControlProxy eqButtonMode(ConfigKey("[Mixer Profile]", "EQButtonMode"));
+
         ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow"),
                 ConfigKey(effectSlotGroup, "parameter1"));
 
@@ -47,14 +101,18 @@ void EqualizerEffectChain::setupLegacyAliasesForGroup(const QString& group) {
         ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh"),
                 ConfigKey(effectSlotGroup, "parameter3"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill"),
-                ConfigKey(effectSlotGroup, "button_parameter1"));
-
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill"),
-                ConfigKey(effectSlotGroup, "button_parameter2"));
-
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill"),
-                ConfigKey(effectSlotGroup, "button_parameter3"));
+        connect(m_pCOFilterLowKill.get(),
+                &ControlObject::valueChanged,
+                this,
+                &EqualizerEffectChain::slotFilterLowKillChanged);
+        connect(m_pCOFilterMidKill.get(),
+                &ControlObject::valueChanged,
+                this,
+                &EqualizerEffectChain::slotFilterMidKillChanged);
+        connect(m_pCOFilterHighKill.get(),
+                &ControlObject::valueChanged,
+                this,
+                &EqualizerEffectChain::slotFilterHighKillChanged);
 
         ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow_loaded"),
                 ConfigKey(effectSlotGroup, "parameter1_loaded"));

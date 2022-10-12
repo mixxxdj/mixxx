@@ -313,7 +313,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     int numberOfPoints = buildPolygon();
 
-    if (m_pLowButtonControlObject && m_pLowButtonControlObject->get() > 0.1) {
+    if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_lowKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {
@@ -322,7 +322,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     }
     painter->drawPolygon(&m_polygon[0][0], numberOfPoints);
 
-    if (m_pMidButtonControlObject && m_pMidButtonControlObject->get() > 0.1) {
+    if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_midKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {
@@ -331,7 +331,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     }
     painter->drawPolygon(&m_polygon[1][0], numberOfPoints);
 
-    if (m_pHighButtonControlObject && m_pHighButtonControlObject->get() > 0.1) {
+    if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_highKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {

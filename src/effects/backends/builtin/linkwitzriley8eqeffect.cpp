@@ -70,7 +70,6 @@ void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq, i
 LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect() {
     m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
-    m_pEQButtonMode = std::make_unique<ControlProxy>("[Mixer Profile]", "EQButtonMode");
 }
 
 void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
@@ -81,6 +80,9 @@ void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
     m_pKillLow = parameters.value("killLow");
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
+    m_pBypassLow = parameters.value("bypassLow");
+    m_pBypassMid = parameters.value("bypassMid");
+    m_pBypassHigh = parameters.value("bypassHigh");
 }
 
 void LinkwitzRiley8EQEffect::processChannel(
@@ -92,16 +94,29 @@ void LinkwitzRiley8EQEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
-    float fButtonOnValue = static_cast<float>(m_pEQButtonMode->get());
-    float fLow = fButtonOnValue, fMid = fButtonOnValue, fHigh = fButtonOnValue;
-    if (!m_pKillLow->toBool()) {
-        fLow = static_cast<float>(m_pPotLow->value());
+    double fLow;
+    double fMid;
+    double fHigh;
+    if (m_pBypassLow->toBool()) {
+        fLow = 1;
+    } else if (m_pKillLow->toBool()) {
+        fLow = 0;
+    } else {
+        fLow = m_pPotLow->value();
     }
-    if (!m_pKillMid->toBool()) {
-        fMid = static_cast<float>(m_pPotMid->value());
+    if (m_pBypassMid->toBool()) {
+        fMid = 1;
+    } else if (m_pKillMid->toBool()) {
+        fMid = 0;
+    } else {
+        fMid = m_pPotMid->value();
     }
-    if (!m_pKillHigh->toBool()) {
-        fHigh = static_cast<float>(m_pPotHigh->value());
+    if (m_pBypassHigh->toBool()) {
+        fHigh = 1;
+    } else if (m_pKillHigh->toBool()) {
+        fHigh = 0;
+    } else {
+        fHigh = m_pPotHigh->value();
     }
 
     if (pState->m_oldSampleRate != engineParameters.sampleRate() ||

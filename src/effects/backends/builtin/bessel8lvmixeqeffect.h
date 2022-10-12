@@ -52,9 +52,12 @@ class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGrou
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
+    EngineEffectParameterPointer m_pBypassLow;
+    EngineEffectParameterPointer m_pBypassMid;
+    EngineEffectParameterPointer m_pBypassHigh;
+
     std::unique_ptr<ControlProxy> m_pLoFreqCorner;
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
-    std::unique_ptr<ControlProxy> m_pEQButtonMode;
 
     DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
 };

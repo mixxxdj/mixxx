@@ -29,10 +29,12 @@ public:
     ControlProxy* m_pLowFilterControlObject;
     ControlProxy* m_pMidFilterControlObject;
     ControlProxy* m_pHighFilterControlObject;
-    ControlProxy* m_pLowButtonControlObject;
-    ControlProxy* m_pMidButtonControlObject;
-    ControlProxy* m_pHighButtonControlObject;
-    ControlProxy* m_pEQButtonMode;
+    ControlProxy* m_pLowKillControlObject;
+    ControlProxy* m_pMidKillControlObject;
+    ControlProxy* m_pHighKillControlObject;
+    ControlProxy* m_pLowBypassControlObject;
+    ControlProxy* m_pMidBypassControlObject;
+    ControlProxy* m_pHighBypassControlObject;
 
     Qt::Alignment m_alignment;
     Qt::Orientation m_orientation;

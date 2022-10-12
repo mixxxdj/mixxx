@@ -131,8 +131,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 control = "button_parameter%1";
                 addControl(group,
                         control.arg(effect + 1),
-                        tr("%1 Button").arg(eqNames[effect]),
-                        tr("%1 Button").arg(eqNames[effect]),
+                        tr("Kill %1").arg(eqNames[effect]),
+                        tr("Kill %1").arg(eqNames[effect]),
                         bandMenu,
                         false,
                         tr("Deck %1").arg(deck));
