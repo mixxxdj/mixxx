@@ -38,6 +38,8 @@ class OpenGLWindow : public QOpenGLWindow {
     void resizeGL(int w, int h) override;
     bool event(QEvent* ev) override;
 
+    void clearWidget();
+
     const PerformanceTimer& getTimer() const;
     int getMicrosUntilSwap() const;
   public slots:
@@ -53,6 +55,8 @@ class WGLWidget : public QWidget {
     QWidget* m_pContainerWidget{};
   public:
     WGLWidget(QWidget* parent);
+    virtual ~WGLWidget();
+
     bool isContextValid() const;
     bool isContextSharing() const;
     void setAutoBufferSwap(bool);

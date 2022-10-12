@@ -36,30 +36,41 @@ OpenGLWindow::OpenGLWindow(WGLWidget* widget)
 }
 
 void OpenGLWindow::initializeGL() {
-    m_pWidget->initializeGL();
+    if (m_pWidget) {
+        m_pWidget->initializeGL();
+    }
 }
 
 void OpenGLWindow::paintGL() {
-    m_pWidget->renderGL(this);
+    if (m_pWidget) {
+        m_pWidget->renderGL(this);
+    }
 }
 
 void OpenGLWindow::resizeGL(int w, int h) {
 }
 
+void OpenGLWindow::clearWidget() {
+    m_pWidget = nullptr;
+}
+
 bool OpenGLWindow::event(QEvent* ev) {
     bool result = QOpenGLWindow::event(ev);
-    const auto t = ev->type();
 
-    if (t == QEvent::Expose) {
-        m_pWidget->resetVisualState();
+    if (m_pWidget) {
+        const auto t = ev->type();
+        if (t == QEvent::Expose) {
+            m_pWidget->resetVisualState();
+        }
+
+        if (t == QEvent::MouseButtonDblClick || t == QEvent::MouseButtonPress ||
+                t == QEvent::MouseButtonRelease || t == QEvent::MouseMove ||
+                t == QEvent::DragEnter || t == QEvent::DragLeave ||
+                t == QEvent::DragMove || t == QEvent::Drop) {
+            m_pWidget->handleEventFromWindow(ev);
+        }
     }
 
-    if (t == QEvent::MouseButtonDblClick || t == QEvent::MouseButtonPress ||
-            t == QEvent::MouseButtonRelease || t == QEvent::MouseMove ||
-            t == QEvent::DragEnter || t == QEvent::DragLeave ||
-            t == QEvent::DragMove || t == QEvent::Drop) {
-        m_pWidget->handleEventFromWindow(ev);
-    }
     return result;
 }
 
@@ -80,21 +91,26 @@ void OpenGLWindow::onFrameSwapped() {
     if (getMyTimer().elapsed().toDoubleMicros() > getMicrosUntilSwap() * 0.5) {
         getMyTimer().restart();
     }
-    m_pWidget->preRenderGL(this);
+    if (m_pWidget) {
+        m_pWidget->preRenderGL(this);
+    }
     update();
 }
 
 WGLWidget::WGLWidget(QWidget* parent)
-        : QWidget(parent) {
-    m_pOpenGLWindow = new OpenGLWindow(this);
+        : QWidget(parent), m_pOpenGLWindow(new OpenGLWindow(this)) {
     QSurfaceFormat format;
     format.setSwapInterval(1);
     m_pOpenGLWindow->setFormat(format);
     m_pContainerWidget = createWindowContainer(m_pOpenGLWindow, this);
 }
 
+WGLWidget::~WGLWidget() {
+    m_pOpenGLWindow->clearWidget();
+}
+
 bool WGLWidget::isValid() const {
-    return m_pOpenGLWindow && m_pOpenGLWindow->isValid();
+    return m_pOpenGLWindow->isValid();
 }
 
 void WGLWidget::resizeEvent(QResizeEvent* event) {
@@ -143,6 +159,7 @@ void WGLWidget::resetVisualState() {
 void WGLWidget::swapBuffers() {
     // not used when driven by WOpenGLWindow::frameSwapped, but here to be able to compile the vsyncthread driver code that uses WGLWidget derived from QGLWidget
     // and when driving this from the vsyncthread
+    makeCurrentIfNeeded();
     if (m_pOpenGLWindow->context()) {
         m_pOpenGLWindow->context()->swapBuffers(m_pOpenGLWindow->context()->surface());
     }
