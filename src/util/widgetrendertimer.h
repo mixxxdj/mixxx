@@ -26,6 +26,16 @@
 // Ironically, using this class somehow causes severe lagginess on mouse input
 // with Windows, so use #ifdefs to only call activity() on macOS; just call
 // QWidget::update() for other operating systems.
+//
+// Also when using the QOpenGLWindow based WGLWidget (when MIXXX_USE_QOPENGL is
+// defined) using this seems not necessary and makes causes lagginess
+#ifdef __APPLE__
+#ifndef MIXXX_USE_QOPENGL
+#define USE_WIDGET_RENDER_TIMER
+#endif
+#endif
+
+#ifdef USE_WIDGET_RENDER_TIMER
 class WidgetRenderTimer : public QObject {
     Q_OBJECT
   public:
@@ -53,3 +63,4 @@ class WidgetRenderTimer : public QObject {
     mixxx::Duration m_lastActivity;
     mixxx::Duration m_lastRender;
 };
+#endif

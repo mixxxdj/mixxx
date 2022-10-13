@@ -109,6 +109,15 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
+if(APPLE)
+option(QOPENGL "Use QOpenGL... classes instead of QGLWidget" ON)
+else()
+option(QOPENGL "Use QOpenGL... classes instead of QGLWidget" OFF)
+endif()
+
+if(QOPENGL)
+    add_compile_definitions(MIXXX_USE_QOPENGL)
+endif()
 
 if(APPLE)
   if(QT6)
@@ -1113,7 +1122,6 @@ else()
     src/waveform/renderers/waveformrendermarkrange.cpp
     src/waveform/renderers/waveformsignalcolors.cpp
     src/waveform/renderers/waveformwidgetrenderer.cpp
-    src/waveform/sharedglcontext.cpp
     src/waveform/visualsmanager.cpp
     src/waveform/vsyncthread.cpp
     src/waveform/waveformmarklabel.cpp
@@ -1138,10 +1146,22 @@ else()
     src/widget/woverviewlmh.cpp
     src/widget/woverviewrgb.cpp
     src/widget/wspinny.cpp
-      src/widget/wvumetergl.cpp
+    src/widget/wvumetergl.cpp
     src/widget/wwaveformviewer.cpp
   )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/widget/openglwindow.cpp
+      src/widget/wglwidgetqopengl.cpp
+    )
+  else()
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/sharedglcontext.cpp
+      src/widget/wglwidgetqglwidget.cpp
+    )
+  endif()
 endif()
+
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)

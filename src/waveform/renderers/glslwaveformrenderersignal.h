@@ -7,8 +7,18 @@
 #include "util/memory.h"
 #include "waveform/renderers/glwaveformrenderer.h"
 
-QT_FORWARD_DECLARE_CLASS(QGLFramebufferObject)
-QT_FORWARD_DECLARE_CLASS(QGLShaderProgram)
+#ifdef MIXXX_USE_QOPENGL
+#define GL_FBO_CLASS QOpenGLFramebufferObject
+#define GL_SHADER_CLASS QOpenGLShader
+#define GL_SHADER_PROGRAM_CLASS QOpenGLShaderProgram
+#else
+#define GL_FBO_CLASS QGLFramebufferObject
+#define GL_SHADER_CLASS QGLShader
+#define GL_SHADER_PROGRAM_CLASS QGLShaderProgram
+#endif
+
+QT_FORWARD_DECLARE_CLASS(GL_FBO_CLASS)
+QT_FORWARD_DECLARE_CLASS(GL_SHADER_PROGRAM_CLASS)
 
 class GLSLWaveformRendererSignal : public QObject,
                                    public GLWaveformRenderer {
@@ -50,7 +60,7 @@ class GLSLWaveformRendererSignal : public QObject,
     int m_textureRenderedWaveformCompletion;
 
     // Frame buffer for two pass rendering.
-    std::unique_ptr<QGLFramebufferObject> m_framebuffer;
+    std::unique_ptr<GL_FBO_CLASS> m_framebuffer;
 
     bool m_bDumpPng;
 
@@ -58,7 +68,7 @@ class GLSLWaveformRendererSignal : public QObject,
     bool m_shadersValid;
     ColorType m_colorType;
     const QString m_pFragShader;
-    std::unique_ptr<QGLShaderProgram> m_frameShaderProgram;
+    std::unique_ptr<GL_SHADER_PROGRAM_CLASS> m_frameShaderProgram;
 };
 
 class GLSLWaveformRendererFilteredSignal: public GLSLWaveformRendererSignal {

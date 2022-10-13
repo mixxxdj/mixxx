@@ -1,15 +1,14 @@
 #pragma once
 
-#include <QGLWidget>
-
 #include "skin/legacy/skincontext.h"
 #include "util/duration.h"
+#include "widget/wglwidget.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
 class VSyncThread;
 
-class WVuMeterGL : public QGLWidget, public WBaseWidget {
+class WVuMeterGL : public WGLWidget, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WVuMeterGL(QWidget* parent = nullptr);
@@ -39,7 +38,7 @@ class WVuMeterGL : public QGLWidget, public WBaseWidget {
     void setPeak(double parameter);
 
     // To make sure we render at least once even when we have no signal
-    bool m_bHasRendered;
+    int m_iRendersPending;
     // To indicate that we rendered so we need to swap
     bool m_bSwapNeeded;
     // Current parameter and peak parameter.

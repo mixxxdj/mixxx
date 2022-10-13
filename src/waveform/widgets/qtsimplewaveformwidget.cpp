@@ -13,15 +13,14 @@
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 QtSimpleWaveformWidget::QtSimpleWaveformWidget(
         const QString& group,
         QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
+    qDebug() << "Created WGLWidget. Context"
+             << "Valid:" << isContextValid()
+             << "Sharing:" << isContextSharing();
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -30,11 +29,6 @@ QtSimpleWaveformWidget::QtSimpleWaveformWidget(
     addRenderer<QtWaveformRendererSimpleSignal>();
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
-
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoBufferSwap(false);
 
     m_initSuccess = init();
 }
@@ -58,7 +52,7 @@ mixxx::Duration QtSimpleWaveformWidget::render() {
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
-    QPainter painter(this);
+    QPainter painter(paintDevice());
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();

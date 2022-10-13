@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QEvent>
-#include <QGLWidget>
 #include <QHideEvent>
 #include <QShowEvent>
 
@@ -14,6 +13,7 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
+#include "widget/wglwidget.h"
 #include "widget/wwidget.h"
 
 class ConfigKey;
@@ -22,7 +22,9 @@ class VisualPlayPosition;
 class VinylControlManager;
 class VSyncThread;
 
-class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener,
+class WSpinny : public WGLWidget,
+                public WBaseWidget,
+                public VinylSignalQualityListener,
                 public TrackDropTarget {
     Q_OBJECT
   public:

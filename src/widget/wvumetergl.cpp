@@ -14,9 +14,9 @@
 #define DEFAULT_HOLDSIZE 5
 
 WVuMeterGL::WVuMeterGL(QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : WGLWidget(parent),
           WBaseWidget(this),
-          m_bHasRendered(false),
+          m_iRendersPending(0),
           m_bSwapNeeded(false),
           m_dParameter(0),
           m_dPeakParameter(0),
@@ -32,10 +32,6 @@ WVuMeterGL::WVuMeterGL(QWidget* parent)
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    setAutoFillBackground(false);
-    setAutoBufferSwap(false);
-
-    // Not interested in repaint or update calls, as we draw from the vsync thread
     setUpdatesEnabled(false);
 }
 
@@ -156,16 +152,15 @@ void WVuMeterGL::updateState(mixxx::Duration elapsed) {
 
 void WVuMeterGL::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
-    // Force a rerender when render is called from the vsync thread, e.g. to
-    // git rid artifacts after hiding and showing the mixer or incomplete
-    // initial drawing.
-    m_bHasRendered = false;
 }
 
 void WVuMeterGL::showEvent(QShowEvent* e) {
     Q_UNUSED(e);
+    WGLWidget::showEvent(e);
     // Find the base color recursively in parent widget.
     m_qBgColor = mixxx::widgethelper::findBaseColor(this);
+    // 2 pendings renders, in cause we have triple buffering
+    m_iRendersPending = 2;
 }
 
 void WVuMeterGL::render(VSyncThread* vSyncThread) {
@@ -173,21 +168,15 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
 
     updateState(vSyncThread->sinceLastSwap());
 
-    if (m_bHasRendered && m_dParameter == m_dLastParameter &&
-            m_dPeakParameter == m_dLastPeakParameter) {
+    if (m_dParameter != m_dLastParameter || m_dPeakParameter != m_dLastPeakParameter) {
+        m_iRendersPending = 2;
+    }
+
+    if (m_iRendersPending == 0 || !shouldRender()) {
         return;
     }
 
-    if (!isValid() || !isVisible()) {
-        return;
-    }
-
-    auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return;
-    }
-
-    QPainter p(this);
+    QPainter p(paintDevice());
     // fill the background, in case the image contains transparency
     p.fillRect(rect(), m_qBgColor);
 
@@ -294,21 +283,15 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
 
     m_dLastParameter = m_dParameter;
     m_dLastPeakParameter = m_dPeakParameter;
-    m_bHasRendered = true;
+    m_iRendersPending--;
     m_bSwapNeeded = true;
 }
 
 void WVuMeterGL::swap() {
-    if (!isValid() || !isVisible() || !m_bSwapNeeded) {
+    if (!m_bSwapNeeded || !shouldRender()) {
         return;
     }
-    auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return;
-    }
-    if (context() != QGLContext::currentContext()) {
-        makeCurrent();
-    }
+    makeCurrentIfNeeded();
     swapBuffers();
     m_bSwapNeeded = false;
 }
