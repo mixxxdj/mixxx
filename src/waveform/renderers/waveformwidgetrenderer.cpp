@@ -187,7 +187,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     // not ready to display need to wait until track initialization is done
     // draw only first in stack (background)
     int stackSize = m_rendererStack.size();
-    if (m_trackSamples <= 0 || m_playPos == -1) {
+    if (shouldOnlyDrawBackground()) {
         if (stackSize) {
             m_rendererStack.at(0)->draw(painter, event);
         }

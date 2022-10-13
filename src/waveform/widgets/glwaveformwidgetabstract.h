@@ -1,29 +1,25 @@
 #pragma once
 
-#include <QGLWidget>
-
-#include "../renderers/glwaveformrenderersignal.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
+#include "widget/wglwidget.h"
+
+class WWaveformViewer;
 
 QT_FORWARD_DECLARE_CLASS(QString)
 
-/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & QGLWidget. Its optional
+/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & WGLWidget. Its optional
 /// member GLWaveformRenderer* m_pGlRenderer can implement a virtual method
 /// onInitializeGL, which will be called from GLWaveformRenderer::initializeGL
-/// (which overrides QGLWidget::initializeGL). This can be used for initialization
+/// (which overrides WGLWidget::initializeGL). This can be used for initialization
 /// that must be deferred until the GL context has been initialized and that can't
 /// be done in the constructor.
-class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget {
+class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget {
   public:
-    GLWaveformWidgetAbstract(const QString& group, QWidget* parent)
-            : WaveformWidgetAbstract(group),
-              QGLWidget(parent, SharedGLContext::getWidget())
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-              ,
-              m_pGlRenderer(nullptr)
-#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    {
+    GLWaveformWidgetAbstract(const QString& group, QWidget* parent);
+
+    WGLWidget* getGLWidget() override {
+        return this;
     }
 
   protected:
@@ -35,5 +31,11 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget
     }
 
     GLWaveformRendererSignal* m_pGlRenderer;
+
+  private:
+#ifdef MIXXX_USE_QOPENGL
+    void handleEventFromWindow(QEvent* ev) override;
+#endif
+
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 };

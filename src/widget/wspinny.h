@@ -1,7 +1,10 @@
 #pragma once
 
+#ifdef MIXXX_USE_QOPENGL
+#include "widget/qopengl/wspinny.h"
+#else
+
 #include <QEvent>
-#include <QGLWidget>
 #include <QHideEvent>
 #include <QShowEvent>
 
@@ -14,6 +17,7 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
+#include "widget/wglwidget.h"
 #include "widget/wwidget.h"
 
 class ConfigKey;
@@ -22,7 +26,9 @@ class VisualPlayPosition;
 class VinylControlManager;
 class VSyncThread;
 
-class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener,
+class WSpinny : public WGLWidget,
+                public WBaseWidget,
+                public VinylSignalQualityListener,
                 public TrackDropTarget {
     Q_OBJECT
   public:
@@ -138,3 +144,5 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     WCoverArtMenu* m_pCoverMenu;
     DlgCoverArtFullSize* m_pDlgCoverArt;
 };
+
+#endif // not defined MIXXX_USE_QOPENGL

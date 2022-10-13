@@ -1,15 +1,18 @@
 #pragma once
 
-#include <QGLWidget>
+#ifdef MIXXX_USE_QOPENGL
+#include "widget/qopengl/wvumetergl.h"
+#else
 
 #include "skin/legacy/skincontext.h"
 #include "util/duration.h"
+#include "widget/wglwidget.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
 class VSyncThread;
 
-class WVuMeterGL : public QGLWidget, public WBaseWidget {
+class WVuMeterGL : public WGLWidget, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WVuMeterGL(QWidget* parent = nullptr);
@@ -73,3 +76,5 @@ class WVuMeterGL : public QGLWidget, public WBaseWidget {
 
     QColor m_qBgColor;
 };
+
+#endif // not defined MIXXX_USE_QOPENGL

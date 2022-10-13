@@ -134,6 +134,10 @@ QRectF Paintable::rect() const {
     return QRectF();
 }
 
+QImage Paintable::toImage() const {
+    return m_pPixmap.isNull() ? QImage() : m_pPixmap->toImage();
+}
+
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {
     // The sourceRect is implicitly the entire Paintable.
     draw(targetRect, pPainter, rect());

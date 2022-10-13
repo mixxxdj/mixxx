@@ -109,6 +109,15 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
+if(APPLE)
+  option(QOPENGL "Use QOpenGL... classes instead of QGLWidget" ON)
+else()
+  option(QOPENGL "Use QOpenGL... classes instead of QGLWidget" OFF)
+endif()
+
+if(QOPENGL)
+  add_compile_definitions(MIXXX_USE_QOPENGL)
+endif()
 
 if(APPLE)
   if(QT6)
@@ -1146,12 +1155,12 @@ else()
     src/waveform/renderers/waveformrendermarkrange.cpp
     src/waveform/renderers/waveformsignalcolors.cpp
     src/waveform/renderers/waveformwidgetrenderer.cpp
-    src/waveform/sharedglcontext.cpp
     src/waveform/visualsmanager.cpp
     src/waveform/vsyncthread.cpp
     src/waveform/waveformmarklabel.cpp
     src/waveform/waveformwidgetfactory.cpp
     src/waveform/widgets/emptywaveformwidget.cpp
+    src/waveform/widgets/glwaveformwidgetabstract.cpp
     src/waveform/widgets/glrgbwaveformwidget.cpp
     src/waveform/widgets/glsimplewaveformwidget.cpp
     src/waveform/widgets/glslwaveformwidget.cpp
@@ -1170,11 +1179,40 @@ else()
     src/widget/woverviewhsv.cpp
     src/widget/woverviewlmh.cpp
     src/widget/woverviewrgb.cpp
-    src/widget/wspinny.cpp
-      src/widget/wvumetergl.cpp
     src/widget/wwaveformviewer.cpp
   )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/widget/openglwindow.cpp
+      src/widget/wglwidgetqopengl.cpp
+      src/widget/qopengl/wvumetergl.cpp
+      src/widget/qopengl/wspinny.cpp
+      src/waveform/renderers/qopengl/shaderloader.cpp
+      src/waveform/renderers/qopengl/waveformshaderrenderer.cpp
+      src/waveform/renderers/qopengl/waveformrenderbackground.cpp
+      src/waveform/renderers/qopengl/waveformrenderbeat.cpp
+      src/waveform/renderers/qopengl/waveformrenderer.cpp
+      src/waveform/renderers/qopengl/waveformrendererendoftrack.cpp
+      src/waveform/renderers/qopengl/waveformrendererpreroll.cpp
+      src/waveform/renderers/qopengl/waveformrendererrgb.cpp
+      src/waveform/renderers/qopengl/waveformrenderersignalbase.cpp
+      src/waveform/renderers/qopengl/waveformrendermark.cpp
+      src/waveform/renderers/qopengl/waveformrendermarkrange.cpp
+      src/waveform/widgets/qopengl/waveformwidget.cpp
+      src/waveform/widgets/qopengl/rgbwaveformwidget.cpp
+      src/waveform/widgets/qopengl/waveformwidget.cpp
+      src/waveform/widgets/qopengl/rgbwaveformwidget.cpp
+    )
+  else()
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/sharedglcontext.cpp
+      src/widget/wglwidgetqglwidget.cpp
+      src/widget/wvumetergl.cpp
+      src/widget/wspinny.cpp
+    )
+  endif()
 endif()
+
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)

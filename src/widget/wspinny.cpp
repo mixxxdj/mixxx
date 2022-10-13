@@ -11,15 +11,14 @@
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "moc_wspinny.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/fpclassify.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "waveform/sharedglcontext.h"
 #include "waveform/visualplayposition.h"
 #include "waveform/vsyncthread.h"
+#include "widget/moc_wspinny.cpp"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
@@ -29,7 +28,7 @@ WSpinny::WSpinny(
         UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : WGLWidget(parent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -72,12 +71,10 @@ WSpinny::WSpinny(
 #endif // __VINYLCONTROL__
     //Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinny(): Created QGLWidget, Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
+    qDebug() << "WSpinny(): Created WGLWidget, Context"
+             << "Valid:" << isContextValid()
+             << "Sharing:" << isContextSharing();
+    makeCurrentIfNeeded();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -96,12 +93,6 @@ WSpinny::WSpinny(
 
     connect(m_pCoverMenu, &WCoverArtMenu::coverInfoSelected, this, &WSpinny::slotCoverInfoSelected);
     connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WSpinny::slotReloadCoverArt);
-
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoFillBackground(false);
-    setAutoBufferSwap(false);
 }
 
 WSpinny::~WSpinny() {
@@ -328,12 +319,8 @@ void WSpinny::paintEvent(QPaintEvent *e) {
 }
 
 void WSpinny::render(VSyncThread* vSyncThread) {
-    if (!isValid() || !isVisible()) {
-        return;
-    }
-
-    auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
+    // TODO @m0dB move outside?
+    if (!shouldRender()) {
         return;
     }
 
@@ -346,7 +333,7 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 
     double scaleFactor = devicePixelRatioF();
 
-    QPainter p(this);
+    QPainter p(paintDevice());
     p.setRenderHint(QPainter::Antialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
@@ -415,16 +402,11 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 }
 
 void WSpinny::swap() {
-    if (!isValid() || !isVisible()) {
+    // TODO @m0dB move outside?
+    if (!shouldRender()) {
         return;
     }
-    auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return;
-    }
-    if (context() != QGLContext::currentContext()) {
-        makeCurrent();
-    }
+    makeCurrentIfNeeded();
     swapBuffers();
 }
 
@@ -439,7 +421,7 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     return scaled;
 }
 
-void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
+void WSpinny::resizeEvent(QResizeEvent* event) {
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     if (m_pFgImage && !m_pFgImage->isNull()) {
         m_fgImageScaled = m_pFgImage->scaled(
@@ -449,6 +431,7 @@ void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
         m_ghostImageScaled = m_pGhostImage->scaled(
                 size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
+    WGLWidget::resizeEvent(event);
 }
 
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle
@@ -691,6 +674,7 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
 
 void WSpinny::showEvent(QShowEvent* event) {
     Q_UNUSED(event);
+    WGLWidget::showEvent(event);
 #ifdef __VINYLCONTROL__
     // If we want to draw the VC signal on this widget then register for
     // updates.
@@ -698,6 +682,7 @@ void WSpinny::showEvent(QShowEvent* event) {
         m_pVCManager->addSignalQualityListener(this);
     }
 #endif
+    WGLWidget::showEvent(event);
 }
 
 void WSpinny::hideEvent(QHideEvent* event) {
@@ -716,7 +701,7 @@ bool WSpinny::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QGLWidget::event(pEvent);
+    return WGLWidget::event(pEvent);
 }
 
 void WSpinny::dragEnterEvent(QDragEnterEvent* event) {

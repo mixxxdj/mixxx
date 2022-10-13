@@ -1,5 +1,7 @@
 #include "util/widgetrendertimer.h"
 
+#ifdef USE_WIDGET_RENDER_TIMER
+
 #include "moc_widgetrendertimer.cpp"
 #include "util/time.h"
 
@@ -28,3 +30,5 @@ void WidgetRenderTimer::activity() {
         m_guiTickTimer.start(m_renderFrequency);
     }
 }
+
+#endif

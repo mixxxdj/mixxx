@@ -34,6 +34,7 @@ class Paintable {
     int width() const;
     int height() const;
     QRectF rect() const;
+    QImage toImage() const;
     DrawMode drawMode() const {
         return m_drawMode;
     }

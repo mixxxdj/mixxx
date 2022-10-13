@@ -14,6 +14,13 @@ class WaveformSignalColors;
 
 class WOverview;
 
+#ifdef MIXXX_USE_QOPENGL
+class QOpenGLTexture;
+namespace qopengl {
+class WaveformRenderMark;
+}
+#endif
+
 class WaveformMark {
   public:
     WaveformMark(
@@ -22,6 +29,7 @@ class WaveformMark {
             const SkinContext& context,
             const WaveformSignalColors& signalColors,
             int hotCue = Cue::kNoHotCue);
+    ~WaveformMark();
 
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
@@ -101,6 +109,10 @@ class WaveformMark {
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
+#ifdef MIXXX_USE_QOPENGL
+    std::unique_ptr<QOpenGLTexture> m_pTexture; // used by qopengl::WaveformRenderMark
+    friend class qopengl::WaveformRenderMark;
+#endif
     int m_iHotCue;
     QImage m_image;
 

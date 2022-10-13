@@ -9,6 +9,12 @@ QT_FORWARD_DECLARE_CLASS(QPainter)
 class SkinContext;
 class WaveformWidgetRenderer;
 
+#ifdef MIXXX_USE_QOPENGL
+namespace qopengl {
+class IWaveformRenderer;
+}
+#endif
+
 class WaveformRendererAbstract {
   public:
     explicit WaveformRendererAbstract(
@@ -21,6 +27,12 @@ class WaveformRendererAbstract {
 
     virtual void onResize() {}
     virtual void onSetTrack() {}
+
+#ifdef MIXXX_USE_QOPENGL
+    virtual qopengl::IWaveformRenderer* qopenglWaveformRenderer() {
+        return nullptr;
+    }
+#endif
 
   protected:
     bool isDirty() const {

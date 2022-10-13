@@ -1,11 +1,10 @@
 #include "widget/wvumetergl.h"
 
-#include "moc_wvumetergl.cpp"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/widgethelper.h"
-#include "waveform/sharedglcontext.h"
 #include "waveform/vsyncthread.h"
+#include "widget/moc_wvumetergl.cpp"
 #include "widget/wpixmapstore.h"
 
 #define DEFAULT_FALLTIME 20
@@ -14,7 +13,7 @@
 #define DEFAULT_HOLDSIZE 5
 
 WVuMeterGL::WVuMeterGL(QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : WGLWidget(parent),
           WBaseWidget(this),
           m_iPendingRenders(0),
           m_bSwapNeeded(false),
@@ -29,14 +28,6 @@ WVuMeterGL::WVuMeterGL(QWidget* parent)
           m_iPeakHoldTime(0),
           m_iPeakFallTime(0),
           m_dPeakHoldCountdownMs(0) {
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoFillBackground(false);
-    setAutoBufferSwap(false);
-
-    // Not interested in repaint or update calls, as we draw from the vsync thread
-    setUpdatesEnabled(false);
 }
 
 void WVuMeterGL::setup(const QDomNode& node, const SkinContext& context) {
@@ -164,6 +155,7 @@ void WVuMeterGL::paintEvent(QPaintEvent* e) {
 
 void WVuMeterGL::showEvent(QShowEvent* e) {
     Q_UNUSED(e);
+    WGLWidget::showEvent(e);
     // Find the base color recursively in parent widget.
     m_qBgColor = mixxx::widgethelper::findBaseColor(this);
 }
@@ -181,16 +173,7 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    if (!isValid() || !isVisible()) {
-        return;
-    }
-
-    auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return;
-    }
-
-    QPainter p(this);
+    QPainter p(paintDevice());
     // fill the background, in case the image contains transparency
     p.fillRect(rect(), m_qBgColor);
 
@@ -302,16 +285,10 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
 }
 
 void WVuMeterGL::swap() {
-    if (!isValid() || !isVisible() || !m_bSwapNeeded) {
+    if (!m_bSwapNeeded || !shouldRender()) {
         return;
     }
-    auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return;
-    }
-    if (context() != QGLContext::currentContext()) {
-        makeCurrent();
-    }
+    makeCurrentIfNeeded();
     swapBuffers();
     m_bSwapNeeded = false;
 }

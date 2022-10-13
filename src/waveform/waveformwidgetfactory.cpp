@@ -1,7 +1,10 @@
 #include "waveform/waveformwidgetfactory.h"
 
+#ifndef MIXXX_USE_QOPENGL
 #include <QGLFormat>
 #include <QGLShaderProgram>
+#endif
+
 #include <QGuiApplication>
 #include <QOpenGLFunctions>
 #include <QStringList>
@@ -35,6 +38,10 @@
 #include "waveform/widgets/qtwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
+#ifdef MIXXX_USE_QOPENGL
+#include "waveform/widgets/qopengl/rgbwaveformwidget.h"
+#endif
 #include "widget/wvumeter.h"
 #include "widget/wvumetergl.h"
 #include "widget/wwaveformviewer.h"
@@ -48,25 +55,14 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
         return false;
     }
 
-    auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
+    auto* glw = pWaveformWidget->getGLWidget();
     if (glw == nullptr) {
-        // Not a QGLWidget. We can simply use QWidget::isVisible.
+        // Not a WGLWidget. We can simply use QWidget::isVisible.
         auto* qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
 
-    if (glw == nullptr || !glw->isValid() || !glw->isVisible()) {
-        return false;
-    }
-
-    // Strangely, a widget can have non-zero width/height, be valid and visible,
-    // yet still not show up on the screen. QWindow::isExposed tells us this.
-    const QWindow* window = glw->windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return false;
-    }
-
-    return true;
+    return glw->shouldRender();
 }
 }  // anonymous namespace
 
@@ -125,6 +121,12 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
+#ifdef MIXXX_USE_QOPENGL
+    // TODO @m0dB We might want to check, but as this is intended for macOS
+    // we can be sure the OpenGL is available
+    m_openGlAvailable = true;
+    m_openGLShaderAvailable = true;
+#else
     QGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {
         // will be false if SafeMode is enabled
@@ -265,7 +267,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
         pGlWidget->hide();
     }
-
+#endif
     evaluateWidgets();
     m_time.start();
 }
@@ -370,11 +372,13 @@ void WaveformWidgetFactory::addVuMeter(WVuMeterGL* pVuMeter) {
     connect(this,
             &WaveformWidgetFactory::renderVuMeters,
             pVuMeter,
-            &WVuMeterGL::render);
+            &WVuMeterGL::render,
+            Qt::DirectConnection);
     connect(this,
             &WaveformWidgetFactory::swapVuMeters,
             pVuMeter,
-            &WVuMeterGL::swap);
+            &WVuMeterGL::swap,
+            Qt::DirectConnection);
 }
 
 void WaveformWidgetFactory::slotSkinLoaded() {
@@ -678,12 +682,22 @@ void WaveformWidgetFactory::render() {
                 if (!shouldRenderWaveforms[static_cast<int>(i)]) {
                     continue;
                 }
+#ifdef MIXXX_USE_QOPENGL
+                qopengl::IWaveformWidget* qopenglWaveformWidget =
+                        pWaveformWidget->qopenglWaveformWidget();
+                if (qopenglWaveformWidget) {
+                    qopenglWaveformWidget->renderGL();
+                } else {
+                    pWaveformWidget->render();
+                }
+#else
                 pWaveformWidget->render();
+#endif
                 //qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
         }
 
-        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
+        // WSpinnys are also double-buffered WGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
         emit renderSpinnies(m_vsyncThread);
         // Same for WVuMeterGL. Note that we are either using WVuMeter or WVuMeterGL.
@@ -732,12 +746,11 @@ void WaveformWidgetFactory::swap() {
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                QGLWidget* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
+                WGLWidget* glw = pWaveformWidget->getGLWidget();
                 if (glw != nullptr) {
-                    if (glw->context() != QGLContext::currentContext()) {
-                        glw->makeCurrent();
-                    }
+                    glw->makeCurrentIfNeeded();
                     glw->swapBuffers();
+                    glw->doneCurrent();
                 }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
@@ -904,6 +917,15 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = QtRGBWaveformWidget::useOpenGLShaders();
             developerOnly = QtRGBWaveformWidget::developerOnly();
             break;
+#ifdef MIXXX_USE_QOPENGL
+        case WaveformWidgetType::QOpenGLRGBWaveform:
+            widgetName = qopengl::RGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = qopengl::RGBWaveformWidget::useOpenGl();
+            useOpenGles = qopengl::RGBWaveformWidget::useOpenGles();
+            useOpenGLShaders = qopengl::RGBWaveformWidget::useOpenGLShaders();
+            developerOnly = qopengl::RGBWaveformWidget::developerOnly();
+            break;
+#endif
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
@@ -1010,6 +1032,11 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::QtRGBWaveform:
             widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
+#ifdef MIXXX_USE_QOPENGL
+        case WaveformWidgetType::QOpenGLRGBWaveform:
+            widget = new qopengl::RGBWaveformWidget(viewer->getGroup(), viewer);
+            break;
+#endif
         default:
         //case WaveformWidgetType::SoftwareSimpleWaveform: TODO: (vrince)
         //case WaveformWidgetType::EmptyWaveform:

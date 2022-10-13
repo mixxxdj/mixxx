@@ -6,12 +6,19 @@
 #include "util/duration.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveformwidgettype.h"
+#include "widget/wglwidget.h"
+
+#ifdef MIXXX_USE_QOPENGL
+namespace qopengl {
+class IWaveformWidget;
+}
+#endif
 
 class VSyncThread;
 
 // NOTE(vRince) This class represent objects the waveformwidgetfactory can
 // holds, IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!  we
-// can't do it here because QWidget and QGLWidget are both QWidgets so they
+// can't do it here because QWidget and WGLWidget are both QWidgets so they
 // already have a common QWidget base class (ambiguous polymorphism)
 
 class WaveformWidgetAbstract : public WaveformWidgetRenderer {
@@ -24,6 +31,18 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     bool isValid() const { return (m_widget && m_initSuccess); }
     QWidget* getWidget() { return m_widget; }
+
+    virtual WGLWidget* getGLWidget() {
+        return nullptr;
+    }
+
+#ifdef MIXXX_USE_QOPENGL
+    // Derived classes that implement the IWaveformWidget
+    // interface should return this
+    virtual qopengl::IWaveformWidget* qopenglWaveformWidget() {
+        return nullptr;
+    }
+#endif
 
     void hold();
     void release();

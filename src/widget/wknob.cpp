@@ -8,13 +8,18 @@
 #include "util/duration.h"
 
 WKnob::WKnob(QWidget* pParent)
-        : WDisplay(pParent),
+        : WDisplay(pParent)
+#ifdef USE_WIDGET_RENDER_TIMER
+          ,
           m_renderTimer(mixxx::Duration::fromMillis(20),
-                        mixxx::Duration::fromSeconds(1)) {
+                  mixxx::Duration::fromSeconds(1)) {
     connect(&m_renderTimer,
             &WidgetRenderTimer::update,
             this,
             QOverload<>::of(&QWidget::update));
+#else
+{
+#endif
     setFocusPolicy(Qt::NoFocus);
 }
 
@@ -43,7 +48,7 @@ void WKnob::leaveEvent(QEvent* e) {
 }
 
 void WKnob::inputActivity() {
-#ifdef __APPLE__
+#ifdef USE_WIDGET_RENDER_TIMER
     m_renderTimer.activity();
 #else
     update();
