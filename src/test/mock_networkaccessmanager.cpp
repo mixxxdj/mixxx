@@ -32,8 +32,8 @@ class RequestForUrlMatcher : public MatcherInterface<const QNetworkRequest&> {
   public:
     RequestForUrlMatcher(const QString& contains,
             const QMap<QString, QString>& expected_params)
-            : contains_(contains),
-              expected_params_(expected_params) {
+            : m_contains(contains),
+              m_expected_params(expected_params) {
     }
     virtual ~RequestForUrlMatcher() {
     }
@@ -41,13 +41,13 @@ class RequestForUrlMatcher : public MatcherInterface<const QNetworkRequest&> {
     virtual bool Matches(const QNetworkRequest& req) const {
         const QUrl& url = req.url();
 
-        if (!url.toString().contains(contains_)) {
+        if (!url.toString().contains(m_contains)) {
             return false;
         }
 
         QUrlQuery url_query(url);
-        for (QMap<QString, QString>::const_iterator it = expected_params_.constBegin();
-                it != expected_params_.constEnd();
+        for (QMap<QString, QString>::const_iterator it = m_expected_params.constBegin();
+                it != m_expected_params.constEnd();
                 ++it) {
             if (!url_query.hasQueryItem(it.key()) ||
                     url_query.queryItemValue(it.key()) != it.value()) {
@@ -67,8 +67,8 @@ class RequestForUrlMatcher : public MatcherInterface<const QNetworkRequest&> {
     }
 
   private:
-    QString contains_;
-    QMap<QString, QString> expected_params_;
+    QString m_contains;
+    QMap<QString, QString> m_expected_params;
 };
 
 inline Matcher<const QNetworkRequest&> RequestForUrl(
@@ -94,31 +94,29 @@ MockNetworkReply* MockNetworkAccessManager::ExpectGet(
     return reply;
 }
 
-MockNetworkReply::MockNetworkReply()
-        : data_(nullptr) {
-}
-
-MockNetworkReply::MockNetworkReply(const QByteArray& data)
-        : data_(data),
-          pos_(0) {
+MockNetworkReply::MockNetworkReply(const QByteArray& data /* = nullptr */)
+        : m_data(data),
+          m_pos(0) {
 }
 
 void MockNetworkReply::SetData(const QByteArray& data) {
-    data_ = data;
-    pos_ = 0;
+    m_data = data;
+    m_pos = 0;
 }
 
 qint64 MockNetworkReply::readData(char* data, qint64 size) {
-    if (data_.size() == pos_) {
+    if (m_data.size() == m_pos) {
         return -1;
     }
-    qint64 bytes_to_read = min(data_.size() - pos_, size);
-    memcpy(data, data_.constData() + pos_, bytes_to_read);
-    pos_ += bytes_to_read;
+    qint64 bytes_to_read = min(m_data.size() - m_pos, size);
+    memcpy(data, m_data.constData() + m_pos, bytes_to_read);
+    m_pos += bytes_to_read;
     return bytes_to_read;
 }
 
-qint64 MockNetworkReply::writeData(const char* data, qint64) {
+qint64 MockNetworkReply::writeData(const char* data, qint64 len) {
+    Q_UNUSED(data);
+    Q_UNUSED(len);
     ADD_FAILURE() << "Something tried to write to a QNetworkReply";
     return -1;
 }

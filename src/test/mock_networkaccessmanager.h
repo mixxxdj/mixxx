@@ -25,7 +25,6 @@
 #include <QUrl>
 
 #include "gmock/gmock.h"
-#include "test_utils.h"
 
 // Usage:
 // Create a MockNetworkAccessManager.
@@ -36,8 +35,7 @@
 class MockNetworkReply : public QNetworkReply {
     Q_OBJECT
   public:
-    MockNetworkReply();
-    MockNetworkReply(const QByteArray& data);
+    MockNetworkReply(const QByteArray& data = nullptr);
 
     // Use these to set expectations.
     void SetData(const QByteArray& data);
@@ -48,11 +46,11 @@ class MockNetworkReply : public QNetworkReply {
 
   protected:
     MOCK_METHOD0(abort, void());
-    virtual qint64 readData(char* data, qint64);
-    virtual qint64 writeData(const char* data, qint64);
+    qint64 readData(char* data, qint64 len) override;
+    qint64 writeData(const char* data, qint64 len) override;
 
-    QByteArray data_;
-    qint64 pos_;
+    QByteArray m_data;
+    qint64 m_pos;
 };
 
 class MockNetworkAccessManager : public QNetworkAccessManager {
