@@ -1,12 +1,41 @@
 #!/usr/bin/env python3
 import datetime
 import os
+import sys
 import subprocess
 import re
 
 import markdown
 import bs4
 from lxml import etree
+
+
+def is_in_merge():
+    git_dir = (
+        subprocess.check_output(
+            (
+                "git",
+                "rev-parse",
+                "--git-dir",
+            )
+        )
+        .decode()
+        .strip()
+    )
+    return os.path.exists(
+        os.path.join(git_dir, "MERGE_MSG")
+    ) and os.path.exists(os.path.join(git_dir, "MERGE_HEAD"))
+
+
+def is_ammending():
+    ppid = os.getppid()
+    pppid = (
+        subprocess.check_output(("ps", "-p", str(ppid), "-oppid="))
+        .decode()
+        .strip()
+    )
+    git_command = subprocess.check_output(("ps", "-p", pppid, "-ocommand="))
+    return True if b"--amend" in git_command else False
 
 
 def parse_changelog(content, development_release_date):
@@ -87,32 +116,63 @@ def main(argv=None):
     # goes for using the latest commit date.
     #
     # As a compromise, we're using the date of the parent commit before the
-    # changelog was updated. The only feasible alternative is to remove
-    # development releases completely, or remove the appstream metadata
-    # from the repository and only generate it on demand when an actual
-    # package is built.
+    # changelog was updated.
     #
-    # We need to exclude merge commits here, because the CI checks the latest
-    # commit for pushes, but actually performs a merge when checking pull
-    # requests. Therefore, the date would differ depending on the CI job reason
-    # and cause issues when merging a stable release branch into the dev
-    # branch.
+    # In case of staged changes we use HEAD, because will becomme the parent
+    # commit, after committing. We need to skip merge commits, because we
+    # cannot modify a commit during merging of a pull request on GitHub
 
-    last_changelog_commit = (
-        subprocess.check_output(
-            (
-                "git",
-                "log",
-                "-1",
-                "--no-merges",
-                "--format=%H",
-                "--",
-                changelog_path,
-            )
-        )
-        .decode()
-        .strip()
+    diff_result = subprocess.run(
+        (
+            "git",
+            "diff",
+            "--quiet",
+            "--staged",
+            "--",
+            changelog_path,
+        ),
+        capture_output=True,
+        text=True,
     )
+    changelog_changes_staged = diff_result.returncode
+
+    last_changelog_commit_first_parent = "HEAD"
+    if is_in_merge():
+        last_changelog_commit = (
+            subprocess.check_output(
+                (
+                    "git",
+                    "log",
+                    "-1",
+                    "--no-merges",
+                    "--format=%H",
+                    "HEAD",
+                    "MERGE_HEAD",
+                    "--",
+                    changelog_path,
+                )
+            )
+            .decode()
+            .strip()
+        )
+        last_changelog_commit_first_parent = last_changelog_commit + "~1"
+    elif not changelog_changes_staged or is_ammending():
+        last_changelog_commit = (
+            subprocess.check_output(
+                (
+                    "git",
+                    "log",
+                    "-1",
+                    "--no-merges",
+                    "--format=%H",
+                    "--",
+                    changelog_path,
+                )
+            )
+            .decode()
+            .strip()
+        )
+        last_changelog_commit_first_parent = last_changelog_commit + "~1"
 
     parent_changelog_change_date = datetime.datetime.fromisoformat(
         subprocess.check_output(
@@ -120,9 +180,8 @@ def main(argv=None):
                 "git",
                 "log",
                 "-1",
-                "--no-merges",
-                "--format=%cI",
-                last_changelog_commit + "~1",
+                "--format=%aI",
+                last_changelog_commit_first_parent,
             )
         )
         .decode()
@@ -143,4 +202,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

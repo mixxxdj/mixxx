@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2022-09-14" timestamp="1663109823">
+    <release version="2.4.0" type="development" date="2022-09-13" timestamp="1663046707">
       <description>
  <p>
   Cover Art
@@ -1529,7 +1529,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.4" type="development" date="2022-09-14" timestamp="1663109823">
+    <release version="2.3.4" type="development" date="2022-09-13" timestamp="1663046707">
       <description>
  <ul>
   <li>
@@ -1556,6 +1556,10 @@
    #10586
   </li>
   <li>
+   Ableton Push: Show as one device
+   #10905
+  </li>
+  <li>
    Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
    #4495
   </li>
@@ -1565,7 +1569,7 @@
    lp:1979823
   </li>
   <li>
-   MacOS builds: Perform ad-hoc signing of macOS bundle in Pull request and personal repositories
+   macOS builds: Perform ad-hoc signing of macOS bundle in Pull request and personal repositories
    #4774
   </li>
   <li>
@@ -1577,7 +1581,7 @@
    #4676
   </li>
   <li>
-   Build Mixxx on MacOS 11, replacing deprecated MacOS 10.15
+   Build Mixxx on macOS 11, replacing deprecated macOS 10.15
    #4863
   </li>
   <li>
@@ -1593,9 +1597,31 @@
    #4909
   </li>
   <li>
-   Respect MusicBrainz rate limits
+   MusicBrainz: Respect rate limits
    #10874
    #10795
+  </li>
+  <li>
+   MusicBrainz: Stop fetching after closing the dialog
+   #10878
+   #10877
+  </li>
+  <li>
+   macOs: Fix frozen skin control after Ctrl-Click
+   #10869
+   10831
+  </li>
+  <li>
+   Avoid redundant messages boxes after track loading fails
+   #10889
+  </li>
+  <li>
+   Use OpenGL VU meter widgets. This aims to improve performaces with macOS.
+   #10893
+  </li>
+  <li>
+   Prevent wild numbers from appearing during scratching under vinyl control.
+   #10916
   </li>
  </ul>
  <p>
@@ -1614,6 +1640,16 @@
   <li>
    Improve CMake 3.24 compatibility
    #10864
+  </li>
+  <li>
+   Use MIXXX_VCPKG_ROOT cmake and environment variable to find the vcpkg environment
+   #10904
+  </li>
+  <li>
+   Fix
+   -Wswitch
+   when building with FLAC &gt;= 1.4.0
+   #10921
   </li>
  </ul>
 </description>
