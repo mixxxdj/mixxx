@@ -145,7 +145,7 @@ jobs:
         run: git fetch origin --force --tags
 
       - name: "[macOS/Ubuntu 18.04] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v1.12
+        uses: jwlawson/actions-setup-cmake@v1.13
         # Ubuntu 20.04 should use the CMake version from the repos, and Visual
         # Studio on Windows comes with its own CMake version anyway.
         if: runner.os == 'macOS' || matrix.os == 'ubuntu-18.04'
@@ -415,7 +415,7 @@ jobs:
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
       - name: "Upload GitHub Actions artifacts"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
