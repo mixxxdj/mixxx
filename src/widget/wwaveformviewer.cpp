@@ -15,7 +15,7 @@
 #include "util/dnd.h"
 #include "util/math.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/waveformwidgetabstract.h"
+#include "waveform/widgets/nonglwaveformwidgetabstract.h"
 
 WWaveformViewer::WWaveformViewer(
         const QString& group,
