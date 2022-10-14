@@ -276,8 +276,11 @@ void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
 }
 
 void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
-    QColor originalColor = mixxx::RgbColor::toQColor(getCuePointerFromCueMark(pMark)->getColor());
-    pMark->setBaseColor(originalColor, m_dimBrightThreshold);
+    auto pCue = getCuePointerFromCueMark(pMark);
+    if (pCue) {
+        QColor originalColor = mixxx::RgbColor::toQColor(pCue->getColor());
+        pMark->setBaseColor(originalColor, m_dimBrightThreshold);
+    }
 }
 
 bool WWaveformViewer::isPlaying() const {
