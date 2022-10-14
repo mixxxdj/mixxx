@@ -45,6 +45,8 @@ class WaveformWidgetRenderer {
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
 
+    CuePointer getCuePointerFromIndex(int cueIndex) const;
+
     double getFirstDisplayedPosition() const {
         return m_firstDisplayedPosition;
     }

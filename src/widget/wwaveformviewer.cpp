@@ -263,15 +263,10 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 }
 
 CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) const {
-    if (pMark && pMark->getHotCue() != Cue::kNoHotCue) {
-        const QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
-        for (const auto& pCue : cueList) {
-            if (pCue->getHotCue() == pMark->getHotCue()) {
-                return pCue;
-            }
-        }
+    if (m_waveformWidget && pMark) {
+        return m_waveformWidget->getCuePointerFromIndex(pMark->getHotCue());
     }
-    return CuePointer();
+    return {};
 }
 
 void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
