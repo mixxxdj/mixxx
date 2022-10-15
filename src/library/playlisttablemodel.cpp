@@ -342,8 +342,9 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
         caps |= TRACKMODELCAPS_REMOVE;
     }
     if (m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getHiddenType(m_iPlaylistId)== PlaylistDAO::PLHT_SET_LOG) {
-        // Disable reording tracks for history playlists
-        caps &= ~(TRACKMODELCAPS_REORDER | TRACKMODELCAPS_REMOVE_PLAYLIST);
+        // Disallow reording, adding & removing tracks for history playlists
+        caps &= ~(TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER |
+                TRACKMODELCAPS_REMOVE_PLAYLIST);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {
