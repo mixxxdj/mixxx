@@ -4,12 +4,12 @@ import argparse
 import logging
 import os
 import re
-import subprocess
 import sys
 import tempfile
 import typing
 
 import githelper
+from pre_commit.util import cmd_output
 
 
 # We recommend a maximum line length of 80, but do allow up to 100 characters
@@ -22,14 +22,11 @@ BREAK_BEFORE = 80
 def get_clang_format_config_with_columnlimit(rootdir, limit):
     """Create a temporary config with ColumnLimit set to 80."""
     cpp_file = os.path.join(rootdir, "src/main.cpp")
-    proc = subprocess.run(
-        ["clang-format", "--dump-config", cpp_file],
-        capture_output=True,
-        text=True,
+    _, stdout, _ = cmd_output(
+        "clang-format", "--dump-config", cpp_file, retcode=0
     )
-    proc.check_returncode()
     return re.sub(
-        r"(ColumnLimit:\s*)\d+", r"\g<1>{}".format(BREAK_BEFORE), proc.stdout
+        r"(ColumnLimit:\s*)\d+", r"\g<1>{}".format(BREAK_BEFORE), stdout
     )
 
 
@@ -65,21 +62,12 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
 
     with open(filename) as fp:
         logger.debug("Executing: %r", cmd)
-        proc = subprocess.run(cmd, stdin=fp, capture_output=True, text=True)
-    try:
-        proc.check_returncode()
-    except subprocess.CalledProcessError:
-        logger.error(
-            "Error while executing command %s: %s",
-            cmd,
-            proc.stderr,
-        )
-        raise
+        _, stdout, stderr = cmd_output(*cmd, stdin=fp, retcode=0)
 
-    if proc.stderr:
-        logger.error(proc.stderr)
+    if stderr:
+        logger.error(stderr)
     with open(filename, mode="w") as fp:
-        fp.write(proc.stdout)
+        fp.write(stdout)
 
 
 def main(argv: typing.Optional[typing.List[str]] = None) -> int:

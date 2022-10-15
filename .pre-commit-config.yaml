@@ -82,6 +82,8 @@ repos:
           - manual
         language: python
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
+        additional_dependencies:
+          - pre_commit==2.20.0
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
