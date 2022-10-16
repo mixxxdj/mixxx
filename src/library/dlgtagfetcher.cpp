@@ -107,7 +107,6 @@ DlgTagFetcher::DlgTagFetcher(UserSettingsPointer pConfig, const TrackModel* pTra
           m_pConfig(pConfig),
           m_pTrackModel(pTrackModel),
           m_tagFetcher(this),
-          m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCurrentCoverArtLabel(make_parented<WCoverArtLabel>(this)),
           m_pWFetchedCoverArtLabel(make_parented<WCoverArtLabel>(this)) {
     init();
@@ -245,6 +244,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
             this,
             &DlgTagFetcher::slotTrackChanged);
 
+    loadCurrentTrackCover();
     m_tagFetcher.startFetch(m_track);
 }
 
@@ -255,10 +255,6 @@ void DlgTagFetcher::loadTrack(const QModelIndex& index) {
 }
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
-    if (!m_fetchedCoverArtByteArrays.isNull()) {
-        m_fetchedCoverArtByteArrays.clear();
-    }
-
     if (m_track && m_track->getId() == trackId) {
         updateOriginalTag(*m_track, tags);
     }
@@ -448,6 +444,9 @@ void DlgTagFetcher::fetchTagFinished(
         }
     }
 
+    QString fetchTagFinishedMessage = tr("The results are ready to be applied");
+    statusMessage->setText(fetchTagFinishedMessage);
+
     // qDebug() << "number of tags = " << guessedTrackReleases.size();
 }
 
@@ -494,9 +493,9 @@ void DlgTagFetcher::tagSelected() {
 
     if (!m_fetchedCoverArtByteArrays.isNull()) {
         m_fetchedCoverArtByteArrays.clear();
-        CoverInfo coverInfo;
-        QPixmap pixmap;
-        m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, pixmap);
+        m_pWFetchedCoverArtLabel->loadData(m_fetchedCoverArtByteArrays);
+        m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
+                QPixmap(CoverArtUtils::defaultCoverLocation()));
     }
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
@@ -582,7 +581,7 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
     coverInfo.setImage();
 
     loadingProgressBar->setVisible(false);
-    QString coverArtMessage = tr("Cover art found and it is ready to be applied.");
+    QString coverArtMessage = tr("Cover art is ready to be applied");
     statusMessage->setVisible(true);
     statusMessage->setText(coverArtMessage);
 
@@ -603,6 +602,6 @@ void DlgTagFetcher::getCoverArt(const QString& url) {
 void DlgTagFetcher::slotCoverArtLinkNotFound() {
     loadingProgressBar->setVisible(false);
     statusMessage->setVisible(true);
-    QString message = tr("Cover Art not available for that tag. Please try another.");
+    QString message = tr("Cover Art is not available for selected tag");
     statusMessage->setText(message);
 }

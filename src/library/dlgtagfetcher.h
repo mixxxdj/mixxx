@@ -66,10 +66,10 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
 
   private:
     // Called on population or changed via buttons Next&Prev.
-    void loadCurrentTrackCover();
     void loadTrackInternal(const TrackPointer& track);
     void addDivider(const QString& text, QTreeWidget* parent) const;
     void getCoverArt(const QString& url);
+    void loadCurrentTrackCover();
 
     UserSettingsPointer m_pConfig;
 
@@ -83,13 +83,10 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
 
     int m_percentForOneRecording;
 
-    parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCurrentCoverArtLabel;
     parented_ptr<WCoverArtLabel> m_pWFetchedCoverArtLabel;
 
     mixxx::TrackRecord m_trackRecord;
-
-    int m_progressBarStep;
 
     struct Data {
         Data()
