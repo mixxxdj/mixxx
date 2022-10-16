@@ -544,19 +544,28 @@ void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
             static_cast<DlgPrefLibrary::CoverArtFetcherQuality>(
                     fetchedCoverArtQualityConfigValue);
 
-    // Maximum size of the allUrls are 4.
+    // Cover art links task can retrieve us variable number of links with different cover art sizes
+    // Every single successful response has 2 links.
+    // These links are cover arts with 250 PX and 500 PX
+    // Some of the tags might have link of a cover art with 1200 PX
+    // Some of the tags might have link of a cover art more than 1200 PX
+    // At final, we always retrieve 2 links, but for some tags this can be 3 or 4
+    // We need to pick the correct size according to user choice
+
+    // User choices and the possible fetched cover art sizes are:
+    // Highest -> More than 1200 PX, if not available 1200 PX or 500 PX
+    // High    -> 1200 PX if not available 500 PX
+    // Medium  -> Always 500 PX fetched
+    // Low     -> Always 250 PX fetched
+
     if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::Highest) {
         getCoverArt(allUrls.last());
-        qDebug() << allUrls.last();
         return;
     } else if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::High) {
-        qDebug() << allUrls.size();
-        qDebug() << allUrls;
-        allUrls.size() < 3 ? getCoverArt(allUrls.at(1)) : getCoverArt(allUrls.at(2));
+        allUrls.size() < 3 ? getCoverArt(allUrls.last()) : getCoverArt(allUrls.at(2));
         return;
     } else if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::Medium) {
         getCoverArt(allUrls.at(1));
-        qDebug() << allUrls.at(1);
         return;
     } else {
         getCoverArt(allUrls.first());
