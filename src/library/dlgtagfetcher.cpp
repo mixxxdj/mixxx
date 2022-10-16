@@ -37,6 +37,20 @@ constexpr int kMaximumValueOfQProgressBar = 100;
 
 constexpr int kMinimumValueOfQProgressBar = 0;
 
+// There are 2 following steps for cover art fetching.
+// 1. -> "Cover Art Links Task"
+// 2. -> "Cover Art Image Task"
+// When a tag is selected, first step starts.
+// First step looks for available cover art links for selected tag.
+// Some tags might not have any available cover arts.
+// If no links found, user is informed and cover art fetching is finished.
+// If links are found, second step starts instantly.
+// Second step gets actual cover art with according to user's chosen size.
+
+constexpr int kPercentForCoverArtLinksTask = 35;
+
+constexpr int kPercentForCoverArtImageTask = 70;
+
 // Original Index of the track tag, listed all the time below 'Original Tags'.
 constexpr int kOriginalTrackIndex = -1;
 
@@ -505,9 +519,7 @@ void DlgTagFetcher::tagSelected() {
     QString coverArtMessage = tr("Looking for cover art");
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setFormat(coverArtMessage);
-    loadingProgressBar->setMinimum(0);
-    loadingProgressBar->setMaximum(100);
-    loadingProgressBar->setValue(10);
+    loadingProgressBar->setValue(kPercentForCoverArtLinksTask);
 
     m_tagFetcher.startFetchCoverArtLinks(selectedTagAlbumId);
 }
@@ -572,7 +584,6 @@ void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
 }
 
 void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
-    loadingProgressBar->setValue(80);
     QPixmap fetchedCoverArtPixmap;
     fetchedCoverArtPixmap.loadFromData(data);
     CoverInfo coverInfo;
@@ -594,8 +605,7 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
 void DlgTagFetcher::getCoverArt(const QString& url) {
     QString coverArtMessage = tr("Cover art found getting image");
     loadingProgressBar->setFormat(coverArtMessage);
-    loadingProgressBar->setValue(40);
-
+    loadingProgressBar->setValue(kPercentForCoverArtImageTask);
     m_tagFetcher.startFetchCoverArtImage(url);
 }
 
