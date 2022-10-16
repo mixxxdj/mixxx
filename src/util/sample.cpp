@@ -166,7 +166,9 @@ CSAMPLE SampleUtil::copyWithRampingNormalization(CSAMPLE* pDest,
     mixMultichannelToMono(pDest, pSrc, numSamples);
 
     CSAMPLE maxAmplitude = maxAbsAmplitude(pDest, numMonoSamples);
-    CSAMPLE_GAIN gain = targetAmplitude / maxAmplitude;
+    CSAMPLE_GAIN gain = maxAmplitude == CSAMPLE_ZERO
+            ? 1
+            : targetAmplitude / maxAmplitude;
     copyWithRampingGain(pDest, pSrc, old_gain, gain, numSamples);
 
     return gain;

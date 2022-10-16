@@ -80,7 +80,9 @@ class DistortionEffect : public EffectProcessorImpl<DistortionGroupState> {
         // Volume compensation
         CSAMPLE pInputRMS = SampleUtil::rms(pInput, numSamples);
         CSAMPLE pOutputRMS = SampleUtil::rms(pOutput, numSamples);
-        CSAMPLE_GAIN gain = pInputRMS / pOutputRMS;
+        CSAMPLE_GAIN gain = pOutputRMS == CSAMPLE_ZERO
+                ? 1
+                : pInputRMS / pOutputRMS;
 
         SampleUtil::applyRampingGain(pOutput,
                 pState->m_previousMakeUpGain,
