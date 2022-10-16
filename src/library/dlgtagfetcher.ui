@@ -135,7 +135,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="0">
         <widget class="QTreeWidget" name="tags">
          <property name="editTriggers">
           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
@@ -184,7 +184,7 @@
          </column>
         </widget>
        </item>
-       <item row="1" column="4">
+       <item row="0" column="1">
         <layout class="QVBoxLayout" name="coverFetcherLayout">
          <item>
           <widget class="QLabel" name="currentCoverLabel">
