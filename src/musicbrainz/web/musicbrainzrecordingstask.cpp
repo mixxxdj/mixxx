@@ -72,7 +72,7 @@ QNetworkRequest createNetworkRequest(
 
 MusicBrainzRecordingsTask::MusicBrainzRecordingsTask(
         QNetworkAccessManager* networkAccessManager,
-        QList<QUuid>&& recordingIds,
+        const QList<QUuid>& recordingIds,
         QObject* parent)
         : network::WebTask(
                   networkAccessManager,
