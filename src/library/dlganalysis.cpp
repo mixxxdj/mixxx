@@ -3,6 +3,7 @@
 #include <QSqlTableModel>
 
 #include "analyzer/analyzerprogress.h"
+#include "analyzer/analyzerscheduledtrack.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
@@ -161,7 +162,7 @@ void DlgAnalysis::analyze() {
     if (m_bAnalysisActive) {
         emit stopAnalysis();
     } else {
-        QList<TrackId> trackIds;
+        QList<AnalyzerScheduledTrack> tracks;
 
         QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
         foreach(QModelIndex selectedIndex, selectedIndexes) {
@@ -169,10 +170,10 @@ void DlgAnalysis::analyze() {
                 selectedIndex.row(),
                 m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data());
             if (trackId.isValid()) {
-                trackIds.append(trackId);
+                tracks.append(trackId);
             }
         }
-        emit analyzeTracks(trackIds);
+        emit analyzeTracks(tracks);
     }
 }
 

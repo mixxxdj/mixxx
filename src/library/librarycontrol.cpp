@@ -613,13 +613,13 @@ void LibraryControl::slotSelectTrack(double v) {
 
 void LibraryControl::slotMoveUp(double v) {
     if (v > 0) {
-        slotMoveVertical(1);
+        slotMoveVertical(-1);
     }
 }
 
 void LibraryControl::slotMoveDown(double v) {
     if (v > 0) {
-        slotMoveVertical(-1);
+        slotMoveVertical(1);
     }
 }
 

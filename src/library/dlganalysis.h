@@ -4,6 +4,7 @@
 #include <QItemSelection>
 
 #include "analyzer/analyzerprogress.h"
+#include "analyzer/analyzerscheduledtrack.h"
 #include "library/analysislibrarytablemodel.h"
 #include "library/libraryview.h"
 #include "library/ui_dlganalysis.h"
@@ -53,7 +54,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& player);
-    void analyzeTracks(const QList<TrackId>& trackIds);
+    void analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks);
     void stopAnalysis();
     void trackSelected(TrackPointer pTrack);
 

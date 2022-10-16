@@ -18,9 +18,6 @@ namespace {
 
 Logger kLogger("MetadataSourceTagLib");
 
-// TODO(uklotzde): Add a configurable option in the user settings
-const bool kExportTrackMetadataIntoTemporaryFile = true;
-
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
 // See also:
@@ -613,7 +610,8 @@ MetadataSourceTagLib::exportTrackMetadata(
                     << "into file" << m_fileName
                     << "with type" << m_fileType;
 
-    SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
+    SafelyWritableFile safelyWritableFile(m_fileName,
+            SafelyWritableFile::SafetyMode::Edit);
     if (!safelyWritableFile.isReady()) {
         kLogger.warning()
                 << "Unable to export track metadata into file"

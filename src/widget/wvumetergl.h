@@ -1,14 +1,18 @@
 #pragma once
 
+#include <QGLWidget>
+
 #include "skin/legacy/skincontext.h"
-#include "util/performancetimer.h"
+#include "util/duration.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
-class WVuMeter : public WWidget {
+class VSyncThread;
+
+class WVuMeterGL : public QGLWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    explicit WVuMeter(QWidget* parent = nullptr);
+    explicit WVuMeterGL(QWidget* parent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
@@ -23,15 +27,21 @@ class WVuMeter : public WWidget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
   public slots:
-    void maybeUpdate();
+    void render(VSyncThread* vSyncThread);
+    void swap();
 
   protected slots:
     void updateState(mixxx::Duration elapsed);
 
   private:
     void paintEvent(QPaintEvent* /*unused*/) override;
+    void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
 
+    // To make sure we render at least once even when we have no signal
+    bool m_bHasRendered;
+    // To indicate that we rendered so we need to swap
+    bool m_bSwapNeeded;
     // Current parameter and peak parameter.
     double m_dParameter;
     double m_dPeakParameter;
@@ -60,5 +70,5 @@ class WVuMeter : public WWidget {
     // The peak hold time remaining in milliseconds.
     double m_dPeakHoldCountdownMs;
 
-    PerformanceTimer m_timer;
+    QColor m_qBgColor;
 };

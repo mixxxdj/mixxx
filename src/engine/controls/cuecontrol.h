@@ -65,7 +65,7 @@ class HotcueControl : public QObject {
         Set = 1,
         /// Hotcue is currently active (this only applies to Saved Loop cues
         /// while their loop is enabled). This status can be used by skins or
-        /// controller mappings to highlight a the cue control that has saved the current loop,
+        /// controller mappings to highlight the cue control that has saved the current loop,
         /// because resizing or moving the loop will make persistent changes to
         /// the cue.
         Active = 2,
@@ -235,6 +235,8 @@ class CueControl : public EngineControl {
     void hotcueFocusColorNext(double v);
     void hotcueFocusColorPrev(double v);
 
+    void passthroughChanged(double v);
+
     void cueSet(double v);
     void cueClear(double v);
     void cueGoto(double v);
@@ -272,6 +274,9 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
+    void connectControls();
+    void disconnectControls();
+
     void attachCue(const CuePointer& pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
@@ -348,6 +353,8 @@ class CueControl : public EngineControl {
     ControlObject* m_pHotcueFocus;
     ControlObject* m_pHotcueFocusColorNext;
     ControlObject* m_pHotcueFocusColorPrev;
+
+    parented_ptr<ControlProxy> m_pPassthrough;
 
     QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
 

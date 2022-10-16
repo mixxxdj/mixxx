@@ -12,6 +12,10 @@
 /// QPainter API which Qt translates to OpenGL under the hood.
 class GLWaveformRenderer : protected QOpenGLFunctions_2_1 {
   public:
+    GLWaveformRenderer()
+            : m_pLastContext(nullptr) {
+    }
+
     virtual void onInitializeGL() {
         initializeOpenGLFunctions();
     }
