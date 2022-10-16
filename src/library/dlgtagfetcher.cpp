@@ -121,6 +121,7 @@ DlgTagFetcher::DlgTagFetcher(UserSettingsPointer pConfig, const TrackModel* pTra
           m_pConfig(pConfig),
           m_pTrackModel(pTrackModel),
           m_tagFetcher(this),
+          m_isCoverArtCopyWorkerRunning(false),
           m_pWCurrentCoverArtLabel(make_parented<WCoverArtLabel>(this)),
           m_pWFetchedCoverArtLabel(make_parented<WCoverArtLabel>(this)) {
     init();
@@ -339,32 +340,50 @@ void DlgTagFetcher::apply() {
 #endif // __EXTRA_METADATA__
 
     if (!m_fetchedCoverArtByteArrays.isNull()) {
-        // Worker can be called here.
-        QString coverArtLocation = m_track->getLocation() + ".jpg";
-        QFile coverArtFile(coverArtLocation);
-        coverArtFile.open(QIODevice::WriteOnly);
-        coverArtFile.write(m_fetchedCoverArtByteArrays);
-        coverArtFile.close();
+        VERIFY_OR_DEBUG_ASSERT(m_isCoverArtCopyWorkerRunning == false) {
+            return;
+        };
 
-        auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(coverArtLocation));
-        QImage updatedCoverArtFound(coverArtLocation);
-        if (!updatedCoverArtFound.isNull()) {
-            CoverInfoRelative coverInfo;
-            coverInfo.type = CoverInfo::FILE;
-            coverInfo.source = CoverInfo::USER_SELECTED;
-            coverInfo.coverLocation = coverArtLocation;
-            coverInfo.setImage(updatedCoverArtFound);
-            m_pWCurrentCoverArtLabel->setCoverArt(
-                    CoverInfo{}, QPixmap::fromImage(updatedCoverArtFound));
-            m_track->setCoverInfo(coverInfo);
-            m_fetchedCoverArtByteArrays.clear();
-            m_pWFetchedCoverArtLabel->loadData(m_fetchedCoverArtByteArrays);
-            m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
-                    QPixmap(CoverArtUtils::defaultCoverLocation()));
-            QString coverArtAppliedMessage = tr("Cover art applied.");
-            statusMessage->setText(coverArtAppliedMessage);
-        }
+        QFileInfo trackFileInfo = QFileInfo(m_track->getLocation());
+
+        QString coverArtCopyFilePath =
+                trackFileInfo.absoluteFilePath().left(
+                        trackFileInfo.absoluteFilePath().lastIndexOf('.') + 1) +
+                "jpeg";
+
+        m_worker.reset(new CoverArtCopyWorker(
+                QString(), coverArtCopyFilePath, m_fetchedCoverArtByteArrays));
+
+        connect(m_worker.data(),
+                &CoverArtCopyWorker::started,
+                this,
+                &DlgTagFetcher::slotWorkerStarted);
+
+        connect(m_worker.data(),
+                &CoverArtCopyWorker::askOverwrite,
+                this,
+                &DlgTagFetcher::slotWorkerAskOverwrite);
+
+        connect(m_worker.data(),
+                &CoverArtCopyWorker::coverArtCopyFailed,
+                this,
+                &DlgTagFetcher::slotWorkerCoverArtCopyFailed);
+
+        connect(m_worker.data(),
+                &CoverArtCopyWorker::coverArtUpdated,
+                this,
+                &DlgTagFetcher::slotWorkerCoverArtUpdated);
+
+        connect(m_worker.data(),
+                &CoverArtCopyWorker::finished,
+                this,
+                &DlgTagFetcher::slotWorkerFinished);
+
+        m_worker->start();
     }
+
+    QString coverArtAppliedMessage = tr("Selected metadata applied");
+    statusMessage->setText(coverArtAppliedMessage);
 
     m_track->replaceMetadataFromSource(
             std::move(trackMetadata),
@@ -614,4 +633,52 @@ void DlgTagFetcher::slotCoverArtLinkNotFound() {
     statusMessage->setVisible(true);
     QString message = tr("Cover Art is not available for selected tag");
     statusMessage->setText(message);
+}
+
+void DlgTagFetcher::slotWorkerStarted() {
+    m_isCoverArtCopyWorkerRunning = true;
+}
+
+void DlgTagFetcher::slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo) {
+    qDebug() << "DlgTagFetcher::slotWorkerCoverArtUpdated" << coverInfo;
+    m_track->setCoverInfo(coverInfo);
+    loadCurrentTrackCover();
+    QString coverArtAppliedMessage = tr("Metadata & Cover Art applied");
+    statusMessage->setText(coverArtAppliedMessage);
+}
+
+void DlgTagFetcher::slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
+        std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise) {
+    QFileInfo coverArtInfo(coverArtAbsolutePath);
+    QString coverArtName = coverArtInfo.completeBaseName();
+    QString coverArtFolder = coverArtInfo.absolutePath();
+    QMessageBox overwrite_box(
+            QMessageBox::Warning,
+            tr("Cover Art File Already Exists"),
+            tr("File: %1\n"
+               "Folder: %2\n"
+               "Override existing file?\n"
+               "This can not be undone!")
+                    .arg(coverArtName, coverArtFolder));
+    overwrite_box.addButton(QMessageBox::Yes);
+    overwrite_box.addButton(QMessageBox::No);
+
+    switch (overwrite_box.exec()) {
+    case QMessageBox::No:
+        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::Cancel);
+        return;
+    case QMessageBox::Yes:
+        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::Overwrite);
+        return;
+    }
+}
+
+void DlgTagFetcher::slotWorkerCoverArtCopyFailed(const QString& errorMessage) {
+    QMessageBox copyFailBox;
+    copyFailBox.setText(errorMessage);
+    copyFailBox.exec();
+}
+
+void DlgTagFetcher::slotWorkerFinished() {
+    m_isCoverArtCopyWorkerRunning = false;
 }

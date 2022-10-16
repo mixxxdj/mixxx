@@ -63,6 +63,12 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotStartFetchCoverArt(const QList<QString>& allUrls);
     void slotLoadBytesToLabel(const QByteArray& data);
     void slotCoverArtLinkNotFound();
+    void slotWorkerStarted();
+    void slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
+            std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise);
+    void slotWorkerCoverArtCopyFailed(const QString& errorMessage);
+    void slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo);
+    void slotWorkerFinished();
 
   private:
     // Called on population or changed via buttons Next&Prev.
@@ -76,6 +82,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     const TrackModel* const m_pTrackModel;
 
     TagFetcher m_tagFetcher;
+
+    bool m_isCoverArtCopyWorkerRunning;
 
     TrackPointer m_track;
 
@@ -98,4 +106,6 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     Data m_data;
 
     QByteArray m_fetchedCoverArtByteArrays;
+
+    QScopedPointer<CoverArtCopyWorker> m_worker;
 };
