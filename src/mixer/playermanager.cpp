@@ -689,9 +689,9 @@ void PlayerManager::slotLoadLocationToPlayer(
 void PlayerManager::slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group) {
     bool play = false;
     LoadWhenDeckPlaying loadWhenDeckPlaying =
-        static_cast<LoadWhenDeckPlaying>(
-            m_pConfig->getValue(kConfigKeyLoadWhenDeckPlaying,
-                                static_cast<int>(kDefaultLoadWhenDeckPlaying)));
+            static_cast<LoadWhenDeckPlaying>(
+                    m_pConfig->getValue(kConfigKeyLoadWhenDeckPlaying,
+                            static_cast<int>(kDefaultLoadWhenDeckPlaying)));
     switch (loadWhenDeckPlaying) {
         case LoadWhenDeckPlaying::AllowButStopDeck:
         case LoadWhenDeckPlaying::Reject:

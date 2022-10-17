@@ -927,7 +927,7 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
     } else {
         // support older version of this flag
         allowLoadTrackIntoPlayingDeck =
-            m_pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
+                m_pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
     }
     // If the track load override is disabled, check to see if a track is
     // playing before trying to load it

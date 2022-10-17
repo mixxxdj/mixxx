@@ -96,7 +96,7 @@ bool allowLoadToPlayer(
     } else {
         // support older version of this flag
         allowLoadTrackIntoPlayingDeck =
-            pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
+                pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
     }
     return allowLoadTrackIntoPlayingDeck;
 }
