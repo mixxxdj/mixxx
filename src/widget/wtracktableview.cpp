@@ -38,10 +38,6 @@ const ConfigKey kVScrollBarPosConfigKey{
         QStringLiteral("[Library]"),
         QStringLiteral("VScrollBarPos")};
 
-const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck{
-        QStringLiteral("[Controls]"),
-        QStringLiteral("AllowTrackLoadToPlayingDeck")};
-
 // Default color for the focus border of TableItemDelegates
 const QColor kDefaultFocusBorderColor = Qt::white;
 
@@ -931,7 +927,7 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
     } else {
         // support older version of this flag
         allowLoadTrackIntoPlayingDeck =
-            m_pConfig->getValue<bool>(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
+            m_pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
     }
     // If the track load override is disabled, check to see if a track is
     // playing before trying to load it

@@ -176,7 +176,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         loadWhenDeckPlaying = m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
     } else {
         // upgrade from older versions
-        if (m_pConfig->getValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false)) {
+        if (m_pConfig->getValue(kConfigKeyAllowTrackLoadToPlayingDeck, false)) {
             loadWhenDeckPlaying = static_cast<int>(LoadWhenDeckPlaying::Allow);
         } else {
             loadWhenDeckPlaying = static_cast<int>(kDefaultLoadWhenDeckPlaying);
