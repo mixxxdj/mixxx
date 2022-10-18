@@ -4,11 +4,11 @@ Thank you for contributing to [Mixxx](https://mixxx.org/)! Your work helps DJs a
 
 Table of Contents
 
-1. [Orientation](#Orientation)
-   1. [Git Repositories](#Git-Repositories)
-2. [Git Workflow](#Git-Workflow)
-   1. [All Contributors](#All-Contributors)
-   2. [Core Team](#Core-Team)
+1. [Orientation](#orientation)
+   1. [Git Repositories](#git-repositories)
+2. [Git Workflow](#git-workflow)
+   1. [All Contributors](#all-contributors)
+   2. [Core Team](#core-team)
 
 ## Orientation ##
 
