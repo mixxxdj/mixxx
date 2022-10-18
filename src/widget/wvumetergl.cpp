@@ -224,7 +224,7 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
             const double widgetPeakPosition = math_clamp(
                     widgetWidth * m_dPeakParameter, 0.0, widgetWidth);
             const double pixmapPeakHoldSize = static_cast<double>(m_iPeakHoldSize);
-            const double widgetPeakHoldSize = widgetWidth * pixmapPeakHoldSize / pixmapHeight;
+            const double widgetPeakHoldSize = widgetWidth * pixmapPeakHoldSize / pixmapWidth;
 
             QRectF targetRect(widgetPeakPosition - widgetPeakHoldSize,
                     0,
