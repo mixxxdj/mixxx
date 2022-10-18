@@ -634,6 +634,9 @@ void buildPlaylistTree(
         const QString& device) {
     for (uint32_t childIndex = 0; childIndex < (uint32_t)playlistTreeMap[parentID].size(); childIndex++) {
         uint32_t childID = playlistTreeMap[parentID][childIndex];
+        if (childID == 0) {
+            continue;
+        }
         QString playlistItemName = playlistNameMap[childID];
 
         QString currentPath = playlistPath + kPLaylistPathDelimiter + playlistItemName;
