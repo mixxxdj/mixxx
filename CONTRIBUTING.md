@@ -1,4 +1,4 @@
-# Mixxx Contribution Guidelines #
+# Mixxx Contribution Guidelines
 
 Thank you for contributing to [Mixxx](https://mixxx.org/)! Your work helps DJs all over the world! We are global, all volunteer team that works by consensus and we are excited to have you join us. This document specifies technical aspects of our workflow. For social aspects please refer to [CODE_OF_CONDUCT.md](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md) in this repository. We encourage you to introduce yourself on our [Zulip chat](https://mixxx.zulipchat.com/) before starting to contribute code to Mixxx.
 
@@ -10,11 +10,11 @@ Table of Contents
    1. [All Contributors](#all-contributors)
    2. [Core Team](#core-team)
 
-## Orientation ##
+## Orientation
 
 We have lots more helpful information for users and developers on the [Mixxx wiki](https://mixxx.org/wiki/doku.php/start), including [build instructions](https://mixxx.org/wiki/doku.php/start#compile_mixxx_from_source_code).
 
-### Git Repositories ###
+### Git Repositories
 
 This repository contains the Mixxx source code, skins, controller mappings, and some helpful scripts. We have a few other Git repositories too:
 
@@ -24,9 +24,9 @@ This repository contains the Mixxx source code, skins, controller mappings, and 
 
 All of these are automatically built and deployed by our [Jenkins build servers](https://builds.renegadetech.mixxx.org/) whenever a change is committed. You are welcome to open a pull request in any of these repositories.
 
-## Git Workflow ##
+## Git Workflow
 
-### All Contributors ###
+### All Contributors
 
 * Each feature/bug fix should be done on its own Git branch so they can be reviewed and merged independently. Refer to [Using Git](https://mixxx.org/wiki/doku.php/using_git) for how to do this. Please ask for help on [Zulip](https://mixxx.zulipchat.com/) if you have questions about using Git after reading that page.
 * Commits should be as small as they can while still building. The smaller the commit, the easier it is to review. It also makes it easier to revert if it is later identified as the source of a bug. If you have lots of changes that you need to commit, a [GUI Git client](https://git-scm.com/downloads/guis) can be helpful for picking out specific changes for multiple small commits.
@@ -68,7 +68,7 @@ All of these are automatically built and deployed by our [Jenkins build servers]
 * Please help review other people's pull requests. When others review your pull requests, please return the favor. The continued progress of Mixxx depends on all of us working together. Even if you are not familiar with the area of the code being changed in a pull request, you can be helpful by building the branch, verifying that it works as described, and commenting with feedback about the user experience design.
 * If you demonstrate good coding skills, help review pull requests, contribute major features, and show a commitment to Mixxx over time, we may invite you to the core team.
 
-### Core Team ###
+### Core Team
 
 Mixxx core team members are contributors who have write access to the [upstream mixxxdj repositories](https://github.com/mixxxdj/) on GitHub, access to the Jenkins web interface for the build servers, and access to the private Zulip stream for the core team.
 
