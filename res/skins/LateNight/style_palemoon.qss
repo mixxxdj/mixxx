@@ -227,11 +227,14 @@ WSearchLineEdit {
 #VuMeterBox,
 #VuMeterBoxMaster,
 #VuMeterBoxMasterSingle,
-#LatencyMeterBox[highlight="0"] {
+#LatencyMeterBox {
   background-color: #040404;
   }
+  #LatencyMeterBox[highlight="0"] {
+    border: 1px solid #040404;
+  }
   #LatencyMeterBox[highlight="1"] {
-    background-color: yellow;
+    border: 1px solid yellow;
   }
 
 #WaveformsContainer {
