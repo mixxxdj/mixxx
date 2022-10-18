@@ -84,14 +84,14 @@ bool allowLoadToPlayer(
     bool allowLoadTrackIntoPlayingDeck = false;
     if (pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
         int loadWhenDeckPlaying =
-            pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
+                pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
         switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
-            case LoadWhenDeckPlaying::Allow:
-            case LoadWhenDeckPlaying::AllowButStopDeck:
-                allowLoadTrackIntoPlayingDeck = true;
-                break;
-            case LoadWhenDeckPlaying::Reject:
-                break;
+        case LoadWhenDeckPlaying::Allow:
+        case LoadWhenDeckPlaying::AllowButStopDeck:
+            allowLoadTrackIntoPlayingDeck = true;
+            break;
+        case LoadWhenDeckPlaying::Reject:
+            break;
         }
     } else {
         // support older version of this flag

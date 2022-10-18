@@ -791,7 +791,9 @@ void WTrackMenu::updateMenus() {
                     allowLoadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
                             ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
                 }
-                bool deckEnabled = (!deckPlaying || allowLoadTrackIntoPlayingDeck) && singleTrackSelected;
+                bool deckEnabled =
+                        (!deckPlaying || allowLoadTrackIntoPlayingDeck) &&
+                        singleTrackSelected;
                 QAction* pAction = new QAction(tr("Deck %1").arg(i), this);
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);

@@ -168,9 +168,12 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             this,
             &DlgPrefDeck::slotSetTrackLoadMode);
 
-    comboBoxLoadWhenDeckPlaying->addItem(tr("Reject"), static_cast<int>(LoadWhenDeckPlaying::Reject));
-    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, but stop deck"), static_cast<int>(LoadWhenDeckPlaying::AllowButStopDeck));
-    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, play from load point"), static_cast<int>(LoadWhenDeckPlaying::Allow));
+    comboBoxLoadWhenDeckPlaying->addItem(
+            tr("Reject"), static_cast<int>(LoadWhenDeckPlaying::Reject));
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, but stop deck"),
+            static_cast<int>(LoadWhenDeckPlaying::AllowButStopDeck));
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, play from load point"),
+            static_cast<int>(LoadWhenDeckPlaying::Allow));
     int loadWhenDeckPlaying;
     if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
         loadWhenDeckPlaying = m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
@@ -182,7 +185,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             loadWhenDeckPlaying = static_cast<int>(kDefaultLoadWhenDeckPlaying);
         }
     }
-    comboBoxLoadWhenDeckPlaying->setCurrentIndex(comboBoxLoadWhenDeckPlaying->findData(loadWhenDeckPlaying));
+    comboBoxLoadWhenDeckPlaying->setCurrentIndex(
+            comboBoxLoadWhenDeckPlaying->findData(loadWhenDeckPlaying));
     m_loadWhenDeckPlaying = static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying);
     connect(comboBoxLoadWhenDeckPlaying,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -675,7 +679,7 @@ void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
 
 void DlgPrefDeck::slotLoadWhenDeckPlayingIndexChanged(int comboboxIndex) {
     m_loadWhenDeckPlaying = static_cast<LoadWhenDeckPlaying>(
-        comboBoxLoadWhenDeckPlaying->itemData(comboboxIndex).toInt());
+            comboBoxLoadWhenDeckPlaying->itemData(comboboxIndex).toInt());
 }
 
 void DlgPrefDeck::slotApply() {

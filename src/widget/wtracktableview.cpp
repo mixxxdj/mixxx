@@ -915,14 +915,14 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
     bool allowLoadTrackIntoPlayingDeck = false;
     if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
         int loadWhenDeckPlaying =
-            m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
+                m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
         switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
-            case LoadWhenDeckPlaying::Allow:
-            case LoadWhenDeckPlaying::AllowButStopDeck:
-                allowLoadTrackIntoPlayingDeck = true;
-                break;
-            case LoadWhenDeckPlaying::Reject:
-                break;
+        case LoadWhenDeckPlaying::Allow:
+        case LoadWhenDeckPlaying::AllowButStopDeck:
+            allowLoadTrackIntoPlayingDeck = true;
+            break;
+        case LoadWhenDeckPlaying::Reject:
+            break;
         }
     } else {
         // support older version of this flag
