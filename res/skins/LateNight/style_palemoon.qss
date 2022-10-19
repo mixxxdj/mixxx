@@ -351,7 +351,7 @@ WSearchLineEdit {
   border-radius: 1px;
 }
 
-/* Disbled for now since the hover effect is stuck as soon as the
+/* Disabled for now since the hover effect is stuck as soon as the
   track menu is opened.
 #TitleText[highlight="1"]:hover, #TitleTextSmall[highlight="1"]:hover,
 #ArtistText[highlight="1"]:hover, #ArtistTextSmall[highlight="1"]:hover {
@@ -1603,7 +1603,7 @@ WBeatSpinBox::down-button {
   WPushButton#MicAuxAdd {
     background-color: #1e1e20;
   }
-  /* brigth buttons in dimmed containers
+  /* bright buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
   #CueDeleteButton,
   #SplitCue[displayValue="0"],

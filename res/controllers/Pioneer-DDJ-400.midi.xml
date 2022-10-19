@@ -206,7 +206,7 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER (DECK1) - touch - enabe (on touch) / disable (on release) Scraching/Pitch
+                <description>JOG DIAL PLATTER (DECK1) - touch - enable (on touch) / disable (on release) Scratching/Pitch
                     bend
                 </description>
                 <group>[Channel1]</group>
@@ -218,7 +218,7 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER +SHIFT (DECK1) - touch - enabe (on touch) / disable (on release) highspeed
+                <description>JOG DIAL PLATTER +SHIFT (DECK1) - touch - enable (on touch) / disable (on release) highspeed
                     Pitch bend
                 </description>
                 <group>[Channel1]</group>
@@ -271,7 +271,7 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER (DECK2) - touch - enabe (on touch) / disable (on release) Scraching/Pitch
+                <description>JOG DIAL PLATTER (DECK2) - touch - enable (on touch) / disable (on release) Scratching/Pitch
                     bend
                 </description>
                 <group>[Channel2]</group>
@@ -283,7 +283,7 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER +SHIFT (DECK2) - touch - enabe (on touch) / disable (on release) highspeed
+                <description>JOG DIAL PLATTER +SHIFT (DECK2) - touch - enable (on touch) / disable (on release) highspeed
                     Pitch bend
                 </description>
                 <group>[Channel2]</group>

@@ -137,7 +137,7 @@ private:
     // TODO: Use TrackMetadata as single source of truth and do not
     // store this information redundantly.
     //
-    // PROPOSAL (as implememted by https://gitlab.com/uklotzde/aoide-rs):
+    // PROPOSAL (as implemented by https://gitlab.com/uklotzde/aoide-rs):
     // This redesign requires to track the status of some or all track
     // metadata (which includes the stream info properties) by a set of
     // bitflags:

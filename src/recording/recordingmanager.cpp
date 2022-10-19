@@ -278,7 +278,7 @@ void RecordingManager::warnFreespace() {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Low Disk Space Warning"));
-    props->setText(tr("There is less than 1 GiB of useable space in the recording folder"));
+    props->setText(tr("There is less than 1 GiB of usable space in the recording folder"));
     props->setKey("RecordingManager::warnFreespace");   // To prevent multiple windows for the same error
 
     props->addButton(QMessageBox::Ok);

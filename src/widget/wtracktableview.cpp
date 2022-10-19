@@ -480,7 +480,7 @@ void WTrackTableView::onShow() {
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // Only use this for drag and drop if the LeftButton is pressed we need to
     // check for this because mousetracking is activated and this function is
-    // called everytime the mouse is moved -- kain88 May 2012
+    // called every time the mouse is moved -- kain88 May 2012
     if (pEvent->buttons() != Qt::LeftButton) {
         // Needed for mouse-tracking to fire entered() events. If we call this
         // outside of this if statement then we get 'ghost' drags. See Bug

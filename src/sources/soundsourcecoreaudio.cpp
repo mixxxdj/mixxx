@@ -193,7 +193,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
 
     if (m_bFileIsMp3) {
         // Use the maximum value for MP3 files to ensure that all decoded samples
-        // are accurate. Otherwise the deocding tests for MP3 files fail!
+        // are accurate. Otherwise the decoding tests for MP3 files fail!
         m_seekPrefetchFrames = math_max(m_leadingFrames, kMp3MaxSeekPrefetchFrames);
     } else {
         m_seekPrefetchFrames = m_leadingFrames;

@@ -187,7 +187,7 @@ TraktorS2MK3.registerInputPackets = function () {
     this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x05, 0xFFFF, this.parameterHandler);
     /*
     do NOT map the "master" button because it also drives the analog output gain.
-    Disabling this mapping is the only way to have independant controls for the
+    Disabling this mapping is the only way to have independent controls for the
     digital master gain and the output level - the latter usually needs to be set
     at 100%.
     */
@@ -508,7 +508,7 @@ TraktorS2MK3.microphoneHandler = function (field) {
     } else {
         // Button is released, check if timer is still running
         if (TraktorS2MK3.microphonePressedTimer !== 0) {
-            // short klick -> permanent activation
+            // short click -> permanent activation
             TraktorS2MK3.microphonePressedTimer = 0;
         } else {
             engine.setValue("[Microphone]", "talkover", 0);

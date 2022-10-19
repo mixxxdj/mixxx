@@ -381,7 +381,7 @@ class SeratoMarkers2 final {
               m_lastBase64ByteFLAC('A') {
     }
 
-    /// Parse a binary Serato repesentation of the "Markers2" data from a
+    /// Parse a binary Serato representation of the "Markers2" data from a
     /// `QByteArray` and write the results to the `SeratoMarkers2` instance.
     /// The `fileType` parameter determines the exact format of the data being
     /// used.
@@ -390,7 +390,7 @@ class SeratoMarkers2 final {
             const QByteArray& outerData,
             taglib::FileType fileType);
 
-    /// Create a binary Serato repesentation of the "Markers2" data suitable
+    /// Create a binary Serato representation of the "Markers2" data suitable
     /// for `fileType` and dump it into a `QByteArray`. The content of that
     /// byte array can be used for round-trip tests or written to the
     /// appropriate tag to make it accessible to Serato.

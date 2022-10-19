@@ -48,14 +48,14 @@ QList<QString> ParserPls::parse(const QString& sFilename) {
          * We replace any '\r' with '\n' if applicaple
          * This ensures that playlists from iTunes on OS X can be parsed
          */
-        QByteArray ba = file.readAll();
+        QByteArray byteArray = file.readAll();
         //detect encoding
-        bool isCRLF_encoded = ba.contains("\r\n");
-        bool isCR_encoded = ba.contains("\r");
+        bool isCRLF_encoded = byteArray.contains("\r\n");
+        bool isCR_encoded = byteArray.contains("\r");
         if (isCR_encoded && !isCRLF_encoded) {
-            ba.replace('\r','\n');
+            byteArray.replace('\r','\n');
         }
-        QTextStream textstream(ba.constData());
+        QTextStream textstream(byteArray.constData());
 
         while(!textstream.atEnd()) {
             QString psLine = getFilePath(&textstream, basePath);

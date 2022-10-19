@@ -718,7 +718,7 @@ WEffectSelector {
 
 
 
-/************** Skin setttings ************************************************/
+/************** Skin settings ************************************************/
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';

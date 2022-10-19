@@ -169,7 +169,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
         /// internal errors of if the format of the content is not
         /// supported it should return Aborted.
         ///
-        /// Returing this error result gives other decoders with a
+        /// Returning this error result gives other decoders with a
         /// lower priority the chance to open the same file.
         /// Example: A SoundSourceProvider has been registered for
         /// files with a certain extension, but the corresponding
