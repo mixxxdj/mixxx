@@ -95,7 +95,6 @@ license.
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
 [faq]: https://github.com/mixxxdj/mixxx/wiki/Faq
 [visualstudio2019]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2019
-[CMake]: https://cmake.org/
 [easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj
