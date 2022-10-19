@@ -2503,7 +2503,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 }
 
 TEST_F(EngineSyncTest, BeatMapQantizePlay) {
-    // This test demonstates https://bugs.launchpad.net/mixxx/+bug/1874918
+    // This test demonstrates https://bugs.launchpad.net/mixxx/+bug/1874918
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 120, 0.0);
     m_pTrack1->trySetBeats(pBeats1);
 

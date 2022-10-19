@@ -596,7 +596,7 @@ For a full list of new features and bugfixes, check out the
 * New Effects Framework with 4 Effect Units and 5 Built-in Effects:
   * Flanger, Bit Crusher, Reverb, Echo, Filter
   * More to come!
-* Configurable, Resizeable User Interface with 3 Brand New Skins
+* Configurable, Resizable User Interface with 3 Brand New Skins
 * Cover Art Display
 * Music Key Detection and Shifting
 * Vinyl Audio Pass-Through

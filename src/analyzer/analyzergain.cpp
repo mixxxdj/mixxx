@@ -51,7 +51,7 @@ bool AnalyzerGain::processSamples(const CSAMPLE *pIn, const int iLen) {
 
 void AnalyzerGain::storeResults(TrackPointer tio) {
     //TODO: We are going to store values as relative peaks so that "0" means that no replaygain has been evaluated.
-    // This means that we are going to transform from dB to peaks and viceversa.
+    // This means that we are going to transform from dB to peaks and vice-versa.
     // One may think to digg into replay_gain code and modify it so that
     // it directly sends results as relative peaks.
     // In that way there is no need to spend resources in calculating log10 or pow.

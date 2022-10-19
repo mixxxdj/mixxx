@@ -780,7 +780,7 @@ void MixxxMainWindow::finalize() {
     QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
     DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
     // We need to reset the parented pointer here that it does not become a
-    // dangling pinter after the object has been deleted.
+    // dangling pointer after the object has been deleted.
     m_pMenuBar = nullptr;
     setMenuBar(nullptr);
     if (!pMenuBar.isNull()) {

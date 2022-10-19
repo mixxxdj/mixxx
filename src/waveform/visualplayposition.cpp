@@ -10,7 +10,7 @@
 
 namespace {
 // The offset is limited to two callback intervals.
-// This should be sufficiant to compensate jitter,
+// This should be sufficient to compensate jitter,
 // but does not continue in case of underflows.
 constexpr int kMaxOffsetBufferCnt = 2;
 constexpr int kMicrosPerMillis = 1000; // 1 ms contains 1000 µs

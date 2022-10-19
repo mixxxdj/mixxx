@@ -1098,7 +1098,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
         DEBUG_ASSERT(pCue->thread() == thread());
         // Ensure that the track IDs are correct
         pCue->setTrackId(m_record.getId());
-        // Start listening to cue point updatess AFTER setting
+        // Start listening to cue point updates AFTER setting
         // the track id. Otherwise we would receive unwanted
         // signals about changed cue points that may cause all
         // sorts of issues, e.g. when adding new tracks during
