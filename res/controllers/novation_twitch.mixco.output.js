@@ -4786,7 +4786,7 @@ string.js - Copyright (C) 2012-2014, JP Richardson <jprichardson@gmail.com>
     return slice.call(array, n == null || guard ? 1 : n);
   };
 
-  // Trim out all falsy values from an array.
+  // Trim out all false values from an array.
   _.compact = function(array) {
     return _.filter(array, _.identity);
   };
@@ -5970,7 +5970,7 @@ mixco.script.register(module, {
         c.input(ccIdFxBanks(0x2))
             .does("[EffectRack1_EffectUnit1]", "chain_selector")
 
-        // * The *on/off* button of the FX section completley toggles
+        // * The *on/off* button of the FX section completely toggles
         //   the first effect unit.
 
         c.control(c.noteIds(0x22, 0xB))

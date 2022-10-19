@@ -4786,7 +4786,7 @@ string.js - Copyright (C) 2012-2014, JP Richardson <jprichardson@gmail.com>
     return slice.call(array, n == null || guard ? 1 : n);
   };
 
-  // Trim out all falsy values from an array.
+  // Trim out all false values from an array.
   _.compact = function(array) {
     return _.filter(array, _.identity);
   };
