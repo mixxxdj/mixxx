@@ -10,12 +10,12 @@
       <WidgetGroup>
         <ObjectName>EffectRightBorder</ObjectName>
         <Size>3f,5f</Size>
-      </WidgetGroup>	
-    </Children>	
+      </WidgetGroup>
+    </Children>
     <Connection>
       <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
       <Transform><IsEqual>0</IsEqual></Transform>
       <BindProperty>visible</BindProperty>
-    </Connection>	
-  </WidgetGroup>	
+    </Connection>
+  </WidgetGroup>
 </Template>
