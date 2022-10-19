@@ -115,7 +115,7 @@ mixco.script.register(module, {
         c.input(ccIdFxBanks(0x2))
             .does("[EffectRack1_EffectUnit1]", "chain_selector")
 
-        // * The *on/off* button of the FX section completley toggles
+        // * The *on/off* button of the FX section completely toggles
         //   the first effect unit.
 
         c.control(c.noteIds(0x22, 0xB))

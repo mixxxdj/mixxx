@@ -1378,7 +1378,7 @@ TraktorS4MK2.displayCharLoopCounter = function(deck, charPos, character) {
     //   6        2
     //   |        |
     //    -- 7 --
-    //  Where the numbers respresent each segment of the display
+    //  Where the numbers represent each segment of the display
     //  and the dot before it is 0 (but this is dealt with in displayCharLoopDot)
 
     var numArray = {
