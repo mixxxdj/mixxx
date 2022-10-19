@@ -506,16 +506,16 @@
 
               <WidgetGroup>
                 <Pos>113,28</Pos>
-                <Size>26f,1f</Size>
+                <Size>26,1</Size>
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter>
-                    <Style>WVuMeter { background-color: #626f87; }</Style>
-                    <TooltipId>audio_latency_usage</TooltipId>
-                    <PathVu>audio_latency/audio_latency_usage.png</PathVu>
-                    <PeakHoldSize>26</PeakHoldSize>
-                    <PeakHoldTime>500</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
+                    <TooltipId>master_VuMeterL</TooltipId>
+                    <PathVu>skin:/audio_latency/audio_latency_usage.png</PathVu>
+                    <PathBack>skin:/audio_latency/audio_latency_overload_back.png</PathBack>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>1000</PeakHoldTime>
+                    <PeakFallTime>100</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Horizontal>true</Horizontal>
                     <Connection>
@@ -810,10 +810,7 @@
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
-                                        <Channel>1</Channel>
-                                        <PathBackground scalemode="STRETCH_ASPECT">vinyl_spinny_background.png</PathBackground>
-                                        <PathForeground scalemode="STRETCH_ASPECT">vinyl_spinny_foreground.png</PathForeground>
-                                        <PathGhost scalemode="STRETCH_ASPECT">vinyl_spinny_foreground_ghost.png</PathGhost>
+                    <Channel>1</Channel>
                     <Connection>
                       <ConfigKey>[Channel1],VuMeter</ConfigKey>
                     </Connection>
@@ -834,10 +831,6 @@
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
-                                        <Channel>1</Channel>
-                                        <PathBackground scalemode="STRETCH_ASPECT">vinyl_spinny_background.png</PathBackground>
-                                        <PathForeground scalemode="STRETCH_ASPECT">vinyl_spinny_foreground.png</PathForeground>
-                                        <PathGhost scalemode="STRETCH_ASPECT">vinyl_spinny_foreground_ghost.png</PathGhost>
                     <Connection>
                       <ConfigKey>[Channel2],VuMeter</ConfigKey>
                     </Connection>
@@ -857,10 +850,6 @@
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
-                                        <Channel>1</Channel>
-                                        <PathBackground scalemode="STRETCH_ASPECT">vinyl_spinny_background.png</PathBackground>
-                                        <PathForeground scalemode="STRETCH_ASPECT">vinyl_spinny_foreground.png</PathForeground>
-                                        <PathGhost scalemode="STRETCH_ASPECT">vinyl_spinny_foreground_ghost.png</PathGhost>
                     <Connection>
                       <ConfigKey>[Master],VuMeterL</ConfigKey>
                     </Connection>
@@ -880,10 +869,6 @@
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
-                                        <Channel>1</Channel>
-                                        <PathBackground scalemode="STRETCH_ASPECT">vinyl_spinny_background.png</PathBackground>
-                                        <PathForeground scalemode="STRETCH_ASPECT">vinyl_spinny_foreground.png</PathForeground>
-                                        <PathGhost scalemode="STRETCH_ASPECT">vinyl_spinny_foreground_ghost.png</PathGhost>
                     <Connection>
                       <ConfigKey>[Master],VuMeterR</ConfigKey>
                     </Connection>
