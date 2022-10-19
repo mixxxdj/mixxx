@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2022-09-13" timestamp="1663046707">
+    <release version="2.3.4" type="development" date="2022-10-19" timestamp="1666164578">
       <description>
  <ul>
   <li>
@@ -2116,7 +2116,7 @@ tips on getting started contributing code to Mixxx.
    More to come!
   </li>
   <li>
-   Configurable, Resizeable User Interface with 3 Brand New Skins
+   Configurable, Resizable User Interface with 3 Brand New Skins
   </li>
   <li>
    Cover Art Display

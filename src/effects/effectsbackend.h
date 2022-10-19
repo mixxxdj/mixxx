@@ -52,20 +52,22 @@ class EffectsBackend : public QObject {
   private:
     class RegisteredEffect {
       public:
-        RegisteredEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInitator)
-            : m_pManifest(pManifest),
-              m_pInitator(pInitator) {
+        RegisteredEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInitiator)
+                : m_pManifest(pManifest),
+                  m_pInitiator(pInitiator) {
         }
 
         RegisteredEffect() {
         }
 
         EffectManifestPointer manifest() const { return m_pManifest; };
-        EffectInstantiatorPointer initiator() const { return m_pInitator; };
+        EffectInstantiatorPointer initiator() const {
+            return m_pInitiator;
+        };
 
       private:
         EffectManifestPointer m_pManifest;
-        EffectInstantiatorPointer m_pInitator;
+        EffectInstantiatorPointer m_pInitiator;
     };
 
     QMap<QString, RegisteredEffect> m_registeredEffects;

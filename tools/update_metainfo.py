@@ -118,7 +118,7 @@ def main(argv=None):
     # As a compromise, we're using the date of the parent commit before the
     # changelog was updated.
     #
-    # In case of staged changes we use HEAD, because will becomme the parent
+    # In case of staged changes we use HEAD, because will become the parent
     # commit, after committing. We need to skip merge commits, because we
     # cannot modify a commit during merging of a pull request on GitHub
 

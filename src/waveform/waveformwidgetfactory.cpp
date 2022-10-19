@@ -928,7 +928,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
                 }
             }
         } else {
-            // No sufficiant GL supptor
+            // No sufficient GL supptor
             if (useOpenGles || useOpenGl || useOpenGLShaders) {
                 active = false;
             }

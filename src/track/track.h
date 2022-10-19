@@ -185,7 +185,7 @@ class Track : public QObject {
     void setColor(mixxx::RgbColor::optional_t);
     // Returns the user comment
     QString getComment() const;
-    // Sets the user commnet
+    // Sets the user comment
     void setComment(const QString&);
     // Return composer
     QString getComposer() const;

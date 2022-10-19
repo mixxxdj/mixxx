@@ -45,7 +45,7 @@ QList<QString> ParserPls::parse(const QString& sFilename) {
          * rather that <LF>
          *
          * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
-         * We replace any '\r' with '\n' if applicaple
+         * We replace any '\r' with '\n' if applicable
          * This ensures that playlists from iTunes on OS X can be parsed
          */
         QByteArray byteArray = file.readAll();
