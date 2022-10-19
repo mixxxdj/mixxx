@@ -41,7 +41,7 @@ jobs:
         # disable these checks for now when pushing directly (but still run these
         # on Pull Requests!).
         env:
-          SKIP: end-of-file-fixer,trailing-whitespace,clang-format,eslint,no-commit-to-branch,prettier
+          SKIP: clang-format,eslint,no-commit-to-branch,prettier
 
       - name: "Detect code style issues (pull_request)"
         uses: pre-commit/action@v3.0.0
