@@ -498,8 +498,7 @@ WSpinny { /*
   qproperty-layoutSpacing: 2;
 }
 #VuMeterBox,
-#VuMeterBoxMaster,
-#LatencyMeterBox {
+#VuMeterBoxMaster {
   /* (black) groove around Vu widgets */
   padding: 1px;
 }
