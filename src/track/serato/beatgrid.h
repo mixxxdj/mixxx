@@ -84,11 +84,14 @@ QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg);
 /// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_beatgrid.md
 class SeratoBeatGrid final {
   public:
-    SeratoBeatGrid() = default;
+    SeratoBeatGrid()
+            : m_footer(0),
+              m_extraBase64Byte('A') {
+    }
     SeratoBeatGrid(
             SeratoBeatGridTerminalMarkerPointer pTerminalMarker,
             QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers)
-            : m_pTerminalMarker(pTerminalMarker),
+            : m_pTerminalMarker(std::move(pTerminalMarker)),
               m_nonTerminalMarkers(std::move(nonTerminalMarkers)),
               m_footer(0),
               m_extraBase64Byte('A') {
