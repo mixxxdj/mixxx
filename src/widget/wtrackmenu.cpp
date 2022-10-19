@@ -32,6 +32,7 @@
 #include "moc_wtrackmenu.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/configobject.h"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/defs.h"
@@ -773,9 +774,26 @@ void WTrackMenu::updateMenus() {
                 QString deckGroup = PlayerManager::groupForDeck(i - 1);
                 bool deckPlaying = ControlObject::get(
                                            ConfigKey(deckGroup, "play")) > 0.0;
-                bool loadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
-                        ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
-                bool deckEnabled = (!deckPlaying || loadTrackIntoPlayingDeck) && singleTrackSelected;
+                bool allowLoadTrackIntoPlayingDeck = false;
+                if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
+                    int loadWhenDeckPlaying =
+                            m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
+                    switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
+                    case LoadWhenDeckPlaying::Allow:
+                    case LoadWhenDeckPlaying::AllowButStopDeck:
+                        allowLoadTrackIntoPlayingDeck = true;
+                        break;
+                    case LoadWhenDeckPlaying::Reject:
+                        break;
+                    }
+                } else {
+                    // support older version of this flag
+                    allowLoadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
+                            ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
+                }
+                bool deckEnabled =
+                        (!deckPlaying || allowLoadTrackIntoPlayingDeck) &&
+                        singleTrackSelected;
                 QAction* pAction = new QAction(tr("Deck %1").arg(i), this);
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);
