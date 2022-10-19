@@ -263,7 +263,8 @@ class Track : public QObject {
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const {
-        // Copying implicitly shared collections is thread-safe
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
         return m_cuePoints;
     }
 
