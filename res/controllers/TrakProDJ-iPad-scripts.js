@@ -337,4 +337,3 @@ TrakProDJ.jog = function(channel, control, value, status, group) {
         }
     }
 };
-

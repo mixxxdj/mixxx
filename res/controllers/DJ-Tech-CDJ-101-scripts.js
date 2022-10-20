@@ -242,4 +242,3 @@ DJTechCDJ101.jogtop = function(channel, control, value, status, group)
         engine.scratchTick(parseInt(group.substring(8,9)), value);
     }
 }
-

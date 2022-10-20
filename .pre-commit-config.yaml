@@ -41,15 +41,9 @@ repos:
       - id: check-yaml
         exclude: ^\.clang-format$
       - id: end-of-file-fixer
-        stages:
-          - commit
-          - manual
       - id: mixed-line-ending
       - id: trailing-whitespace
         exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
-        stages:
-          - commit
-          - manual
       - id: no-commit-to-branch
         # protect main and any branch that has a semver-like name
         args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']

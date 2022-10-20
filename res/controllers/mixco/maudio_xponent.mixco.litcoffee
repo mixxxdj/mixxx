@@ -16,7 +16,7 @@ functionality of the controls.
     c = mixco.control
     b = mixco.behaviour
     v = mixco.value
- 
+
     mixco.script.register module,
 
         info:
@@ -231,7 +231,7 @@ channel.
 
             c.control(noteOnId 0x2A)
                 .does g, "reloop_exit", g, "loop_enabled"
- 
+
 - The numbers set and trigger a loop of 4, 8, 16 and 32 beats
   respectively. When *shift*, they set loops of 1/8, 1/2, 1 or 2
   beats long.

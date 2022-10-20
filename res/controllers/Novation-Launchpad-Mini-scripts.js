@@ -576,4 +576,3 @@ NLM.drawPage = function() {
         }
     }
 }
-
