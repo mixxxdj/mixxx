@@ -92,7 +92,6 @@ license.
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
 [faq]: https://github.com/mixxxdj/mixxx/wiki/Faq
 [visualstudio2019]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2019
-[CMake]: https://cmake.org/
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj
