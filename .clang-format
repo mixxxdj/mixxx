@@ -5,9 +5,10 @@ IndentWidth: 4
 TabWidth: 8
 UseTab: Never
 # A ColumnLimit > 0 causes clang-format to unbreaks all short lines,
-# which is undesired here.
-# If the line length exceeds 100, "ColumnLimit:  80" is used in scripts/line-length.py
-ColumnLimit: 0
+# but unfortunately there is no config option to stop it from doing that, and
+# it's a small price to pay for avoiding brittle and complex custom formatting
+# scripts.
+ColumnLimit: 80
 ---
 Language: Cpp
 Standard: c++17

@@ -69,17 +69,10 @@ repos:
         stages:
           - commit
           - manual
-  - repo: local
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v14.0.6
     hooks:
       - id: clang-format
-        name: clang-format
-        description: "Run clang-format in two passes (reformat, then break long lines)"
-        entry: tools/clang_format.py
-        require_serial: true
-        stages:
-          - commit
-          - manual
-        language: python
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
   - repo: https://github.com/psf/black
     rev: 22.10.0
