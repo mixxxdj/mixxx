@@ -204,7 +204,7 @@ class Track : public QObject {
     void setColor(const mixxx::RgbColor::optional_t&);
     // Returns the user comment
     QString getComment() const;
-    // Sets the user commnet
+    // Sets the user comment
     void setComment(const QString&);
     // Clear comment
     void clearComment() {
@@ -340,7 +340,8 @@ class Track : public QObject {
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const {
-        // Copying implicitly shared collections is thread-safe
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
         return m_cuePoints;
     }
 

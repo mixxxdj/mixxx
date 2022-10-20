@@ -64,7 +64,7 @@ WSpinny::WSpinny(
           m_bGhostPlayback(false),
           m_pPlayer(pPlayer),
           m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgCoverArt(new DlgCoverArtFullSize(parent, pPlayer, m_pCoverMenu)) {
+          m_pDlgCoverArt(new DlgCoverArtFullSize(this, pPlayer, m_pCoverMenu)) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
 #else

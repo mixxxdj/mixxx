@@ -1215,7 +1215,7 @@ if (INFO_VECTORIZE)
     elseif(LLVM_CLANG)
         target_compile_options(mixxx-lib PUBLIC -Rpass=loop-vectorize)
     else()
-        message(STATUS "INFO_VECTORIZE not implemented for this compliler.")
+        message(STATUS "INFO_VECTORIZE not implemented for this compiler.")
     endif()
 endif()
 

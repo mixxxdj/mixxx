@@ -311,7 +311,7 @@
 * Introduce new control objects `[Master],indicator_250millis` and `[Master],indicator_500millis` [#4157](https://github.com/mixxxdj/mixxx/pull/4157)
 * Introduce new control object `[Library],clear_search` [#4331](https://github.com/mixxxdj/mixxx/pull/4331)
 * Introduce new control object `[Library],focused_widget` to focus library directly [#4369](https://github.com/mixxxdj/mixxx/pull/4369) [#4490](https://github.com/mixxxdj/mixxx/pull/4490)
-* Serch bar: Remove ESC shortcut in favour of new `[Library],focused_widget` [#4571](https://github.com/mixxxdj/mixxx/pull/4571)
+* Search bar: Remove ESC shortcut in favour of new `[Library],focused_widget` [#4571](https://github.com/mixxxdj/mixxx/pull/4571)
 * Beat spinBox/AutoDJ spinbox: Enter & Esc also move focus to library [#4617](https://github.com/mixxxdj/mixxx/pull/4617) [#4845](https://github.com/mixxxdj/mixxx/pull/4845)
 * Don't automatically enable controller if it was disabled before [#4244](https://github.com/mixxxdj/mixxx/pull/4244) [lp:1941042](https://bugs.launchpad.net/mixxx/+bug/1941042)
 * Enable Qt logging categories for controller logging [#4523](https://github.com/mixxxdj/mixxx/pull/4523)
@@ -1441,7 +1441,7 @@ For a full list of new features and bugfixes, check out the
 * New Effects Framework with 4 Effect Units and 5 Built-in Effects:
   * Flanger, Bit Crusher, Reverb, Echo, Filter
   * More to come!
-* Configurable, Resizeable User Interface with 3 Brand New Skins
+* Configurable, Resizable User Interface with 3 Brand New Skins
 * Cover Art Display
 * Music Key Detection and Shifting
 * Vinyl Audio Pass-Through

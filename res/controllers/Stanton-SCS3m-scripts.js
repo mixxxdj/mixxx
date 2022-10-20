@@ -311,7 +311,7 @@ SCS3M.Agent = function(device) {
     }
 
     // Register a handler for multiple engine values. It will be called
-    // everytime one of the values changes.
+    // every time one of the values changes.
     // controls: list of channel/control pairs to watch
     // handler: will receive list of control values as parameter in same order
     function watchmulti(controls, handler) {
