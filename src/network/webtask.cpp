@@ -232,7 +232,7 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
         m_timeoutMillis = timeoutMillis;
     }
 
-    // It is not necessary to connect the QNetworkReply::errorOccurred signal.
+    // It is not necessary to connect the QNetworkReply::error signal.
     // Network errors are also received through the QNetworkReply::finished signal.
     connect(m_pendingNetworkReplyWeakPtr.data(),
             &QNetworkReply::finished,
