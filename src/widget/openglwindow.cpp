@@ -32,14 +32,11 @@ bool OpenGLWindow::event(QEvent* ev) {
 
     if (m_pWidget) {
         const auto t = ev->type();
-        if (t == QEvent::Expose) {
-            m_pWidget->exposed();
-        }
         // Forward the following events to the WGLWidget
-        else if (t == QEvent::MouseButtonDblClick || t == QEvent::MouseButtonPress ||
+        if (t == QEvent::MouseButtonDblClick || t == QEvent::MouseButtonPress ||
                 t == QEvent::MouseButtonRelease || t == QEvent::MouseMove ||
                 t == QEvent::DragEnter || t == QEvent::DragLeave ||
-                t == QEvent::DragMove || t == QEvent::Drop) {
+                t == QEvent::DragMove || t == QEvent::Drop || t == QEvent::Wheel) {
             m_pWidget->handleEventFromWindow(ev);
         }
     }

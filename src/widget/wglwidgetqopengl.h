@@ -38,7 +38,6 @@ class WGLWidget : public QWidget {
     // called by OpenGLWindow
     virtual void handleEventFromWindow(QEvent* ev);
     virtual void initializeGL();
-    virtual void exposed();
 
   protected:
     QPaintDevice* paintDevice();

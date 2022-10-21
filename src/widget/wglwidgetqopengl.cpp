@@ -62,14 +62,11 @@ void WGLWidget::initializeGL() {
     // to be implemented in derived widgets if needed
 }
 
-void WGLWidget::exposed() {
-    // to be implemented in derived widgets if needed
-}
-
 void WGLWidget::swapBuffers() {
     if (shouldRender()) {
         makeCurrentIfNeeded();
         m_pOpenGLWindow->context()->swapBuffers(m_pOpenGLWindow->context()->surface());
+        doneCurrent();
     }
 }
 
