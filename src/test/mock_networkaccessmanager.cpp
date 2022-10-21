@@ -104,6 +104,13 @@ void MockNetworkReply::SetData(const QByteArray& data) {
     m_pos = 0;
 }
 
+void MockNetworkReply::abort() {
+    setAttribute(QNetworkRequest::HttpStatusCodeAttribute, {});
+    setError(OperationCanceledError, tr("Operation canceled"));
+    emit error(OperationCanceledError);
+    emit finished();
+}
+
 qint64 MockNetworkReply::readData(char* data, qint64 size) {
     if (m_data.size() == m_pos) {
         return -1;
