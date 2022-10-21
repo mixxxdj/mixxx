@@ -127,6 +127,11 @@ class WebTask : public NetworkTask {
             QObject* parent = nullptr);
     ~WebTask() override = default;
 
+    bool isBusy() const {
+        return state() == State::Starting ||
+                state() == State::Pending;
+    }
+
   signals:
     /// Network or server-side abort/timeout/failure
     void networkError(
@@ -162,11 +167,6 @@ class WebTask : public NetworkTask {
 
     State state() const {
         return m_state;
-    }
-
-    bool isBusy() const {
-        return state() == State::Starting ||
-                state() == State::Pending;
     }
 
     bool hasTerminated() const {
