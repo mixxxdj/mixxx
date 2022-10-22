@@ -34,7 +34,6 @@ Rectangle {
             height: control.parameter * (parent.height - 2 * anchors.margins)
             radius: width / 2
         }
-
     }
 
     Rectangle {
@@ -69,9 +68,7 @@ Rectangle {
                 position: 1
                 color: Theme.green
             }
-
         }
-
     }
 
     OpacityMask {
@@ -79,5 +76,4 @@ Rectangle {
         source: meterGradient
         maskSource: meterMask
     }
-
 }

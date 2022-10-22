@@ -24,7 +24,6 @@ Item {
                 opacity: 0
                 visible: false
             }
-
         },
         State {
             when: passthroughControl.value != 0
@@ -40,7 +39,6 @@ Item {
                 opacity: 1
                 visible: true
             }
-
         }
     ]
     transitions: [
@@ -65,16 +63,13 @@ Item {
                         property: "opacity"
                         duration: 150
                     }
-
                 }
 
                 PropertyAction {
                     target: passthroughContainer
                     property: "visible"
                 }
-
             }
-
         },
         Transition {
             enabled: waveformContainer.visible
@@ -97,16 +92,13 @@ Item {
                         property: "opacity"
                         duration: 150
                     }
-
                 }
 
                 PropertyAction {
                     target: waveformContainer
                     property: "visible"
                 }
-
             }
-
         }
     ]
 
@@ -132,7 +124,6 @@ Item {
             colorLow: Theme.green
             group: root.group
         }
-
     }
 
     Rectangle {
@@ -145,7 +136,5 @@ Item {
             anchors.centerIn: parent
             text: "Passthrough Enabled"
         }
-
     }
-
 }

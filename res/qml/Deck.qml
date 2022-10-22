@@ -20,7 +20,6 @@ Item {
         const trackLocationUrl = deckPlayer.trackLocationUrl;
         if (trackLocationUrl)
             data["text/uri-list"] = trackLocationUrl;
-
         return data;
     }
 
@@ -65,10 +64,9 @@ Item {
         barColor: Theme.bpmSliderBarColor
         bg: Theme.imgBpmSliderBackground
 
-        FadeBehavior on visible {
+        FadeBehavior on visible  {
             fadeTarget: rateSlider
         }
-
     }
 
     Rectangle {
@@ -128,7 +126,6 @@ Item {
                     anchors.centerIn: parent
                     text: "FX 1"
                 }
-
             }
 
             Rectangle {
@@ -155,7 +152,6 @@ Item {
                     anchors.centerIn: parent
                     text: "FX 2"
                 }
-
             }
 
             Rectangle {
@@ -180,17 +176,14 @@ Item {
                     const positionSeconds = samplesControl.value / 2 / sampleRateControl.value * playPositionControl.value;
                     if (isNaN(positionSeconds))
                         return "";
-
                     let minutes = Math.floor(positionSeconds / 60);
                     let seconds = positionSeconds - (minutes * 60);
                     const deciseconds = Math.trunc((seconds - Math.trunc(seconds)) * 10);
                     seconds = Math.trunc(seconds);
                     if (minutes < 10)
                         minutes = "0" + minutes;
-
                     if (seconds < 10)
                         seconds = "0" + seconds;
-
                     return minutes + ':' + seconds + "." + deciseconds;
                 }
 
@@ -214,7 +207,6 @@ Item {
                     group: root.group
                     key: "track_samples"
                 }
-
             }
 
             Item {
@@ -250,7 +242,6 @@ Item {
                     anchors.centerIn: parent
                     source: "images/icon_quantize.svg"
                 }
-
             }
 
             Item {
@@ -286,15 +277,12 @@ Item {
                     anchors.centerIn: parent
                     source: "images/icon_passthrough.svg"
                 }
-
             }
-
         }
 
-        FadeBehavior on visible {
+        FadeBehavior on visible  {
             fadeTarget: overview
         }
-
     }
 
     Item {
@@ -351,9 +339,7 @@ Item {
                     width: playButton.height
                     height: playButton.height
                 }
-
             }
-
         }
 
         Skin.SyncButton {
@@ -364,15 +350,13 @@ Item {
             group: root.group
         }
 
-        FadeBehavior on visible {
+        FadeBehavior on visible  {
             fadeTarget: buttonBar
         }
-
     }
 
     Mixxx.PlayerDropArea {
         anchors.fill: parent
         group: root.group
     }
-
 }

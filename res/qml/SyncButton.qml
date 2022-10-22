@@ -66,5 +66,4 @@ Skin.Button {
         group: root.group
         key: "sync_master"
     }
-
 }

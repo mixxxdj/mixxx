@@ -94,11 +94,8 @@ ApplicationWindow {
                         width: 640
                         height: 480
                     }
-
                 }
-
             }
-
         }
 
         Skin.DeckRow {
@@ -117,10 +114,9 @@ ApplicationWindow {
             width: parent.width
             visible: !root.maximizeLibrary
 
-            Skin.FadeBehavior on visible {
+            Skin.FadeBehavior on visible  {
                 fadeTarget: crossfader
             }
-
         }
 
         Skin.DeckRow {
@@ -132,10 +128,9 @@ ApplicationWindow {
             minimized: root.maximizeLibrary
             visible: root.show4decks
 
-            Skin.FadeBehavior on visible {
+            Skin.FadeBehavior on visible  {
                 fadeTarget: decks34
             }
-
         }
 
         Skin.SamplerRow {
@@ -144,10 +139,9 @@ ApplicationWindow {
             width: parent.width
             visible: root.showSamplers
 
-            Skin.FadeBehavior on visible {
+            Skin.FadeBehavior on visible  {
                 fadeTarget: samplers
             }
-
         }
 
         Skin.EffectRow {
@@ -156,10 +150,9 @@ ApplicationWindow {
             width: parent.width
             visible: root.showEffects
 
-            Skin.FadeBehavior on visible {
+            Skin.FadeBehavior on visible  {
                 fadeTarget: effects
             }
-
         }
 
         Skin.Library {
@@ -172,9 +165,6 @@ ApplicationWindow {
                 properties: "x,y"
                 duration: 150
             }
-
         }
-
     }
-
 }
