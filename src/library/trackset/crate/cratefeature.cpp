@@ -372,7 +372,7 @@ void CrateFeature::onRightClickChild(
     m_pAutoDjTrackSourceAction->setChecked(crate.isAutoDjSource());
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
-    m_pArchiveCrateAction->setText(crate.isLocked() ? tr("Unarchived") : tr("Archive"));
+    m_pArchiveCrateAction->setText(crate.isArchived() ? tr("Unarchive") : tr("Archive"));
 
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
@@ -536,7 +536,10 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     m_pSidebarModel->removeRows(0, pRootItem->childRows());
 
     QList<TreeItem*> modelRows;
-    modelRows.reserve(m_pTrackCollection->crates().countCrates());
+    modelRows.reserve(m_pTrackCollection->crates().countCrates(true) + 1);
+
+    auto archiveItem = new TreeItem(tr("Archived"), -1);
+    bool selectedIsArchived = false;
 
     int selectedRow = -1;
     CrateSummarySelectResult crateSummaries(
@@ -544,14 +547,25 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     CrateSummary crateSummary;
     while (crateSummaries.populateNext(&crateSummary)) {
         auto pTreeItem = newTreeItemForCrateSummary(crateSummary);
-        modelRows.append(pTreeItem.get());
-        pTreeItem.release();
+        if (crateSummary.isArchived()) {
+            archiveItem->appendChild(std::move(pTreeItem));
+        } else {
+            modelRows.append(pTreeItem.get());
+            pTreeItem.release();
+        }
         if (selectedCrateId == crateSummary.getId()) {
-            // save index for selection
-            selectedRow = modelRows.size() - 1;
+            if (crateSummary.isArchived()) {
+                selectedIsArchived = true;
+                selectedRow = archiveItem->childRows() - 1;
+            } else {
+                selectedRow = modelRows.size() - 1;
+            }
         }
     }
-
+    modelRows.append(archiveItem);
+    // Save the size of the model now because it gets cleared when the items are inserted
+    // into the model.
+    const int rowCount = modelRows.size();
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_pSidebarModel->insertTreeItemRows(modelRows, 0);
 
@@ -559,7 +573,13 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     slotTrackSelected(m_selectedTrackId);
 
     if (selectedRow >= 0) {
-        return m_pSidebarModel->index(selectedRow, 0);
+        if (selectedIsArchived) {
+            QModelIndex archiveIndex = m_pSidebarModel->index(rowCount - 1, 0);
+            m_pSidebarWidget->setExpanded(archiveIndex, true);
+            return m_pSidebarModel->index(selectedRow, 0, archiveIndex);
+        } else {
+            return m_pSidebarModel->index(selectedRow, 0);
+        }
     } else {
         return QModelIndex();
     }
@@ -610,6 +630,16 @@ QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
         if (!pTreeItem->hasChildren() && // leaf node
                 (CrateId(pTreeItem->getData()) == crateId)) {
             return index;
+        }
+        // Assume single sublevel of tree.
+        if (pTreeItem->hasChildren()) {
+            for (int childRow = 0; childRow < pTreeItem->childRows(); childRow++) {
+                TreeItem* pChild = pTreeItem->child(childRow);
+                QModelIndex childIndex = m_pSidebarModel->index(childRow, 0, index);
+                if (!pChild->hasChildren() && CrateId(pChild->getData()) == crateId) {
+                    return childIndex;
+                }
+            }
         }
     }
     qDebug() << "Tree item for crate not found:" << crateId;

@@ -244,9 +244,10 @@ void CrateStorage::createViews() {
     }
 }
 
-uint CrateStorage::countCrates() const {
+uint CrateStorage::countCrates(bool excludeArchived) const {
+    const QString whereClause = excludeArchived ? "WHERE archived != 0" : "";
     FwdSqlQuery query(m_database,
-            QStringLiteral("SELECT COUNT(*) FROM %1").arg(CRATE_TABLE));
+            QStringLiteral("SELECT COUNT(*) FROM %1 %2").arg(CRATE_TABLE, whereClause));
     if (query.execPrepared() && query.next()) {
         uint result = query.fieldValue(0).toUInt();
         DEBUG_ASSERT(!query.next());
@@ -488,7 +489,7 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
             QStringLiteral("SELECT *, "
                            "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
                            "%1.%5 in (%9)) AS %6, "
-                           "0 as %7 FROM %2 ORDER BY %8 WHERE archived=0")
+                           "0 as %7 FROM %2 WHERE archived=0 ORDER BY %8")
                     .arg(
                             CRATE_TRACKS_TABLE,
                             CRATE_TABLE,
@@ -616,7 +617,7 @@ bool CrateStorage::onUpdatingCrate(
             QString(
                     "UPDATE %1 "
                     "SET %2=:name,%3=:locked,%4=:archived,%5=:autoDjSource "
-                    "WHERE %5=:id")
+                    "WHERE %6=:id")
                     .arg(
                             CRATE_TABLE,
                             CRATETABLE_NAME,

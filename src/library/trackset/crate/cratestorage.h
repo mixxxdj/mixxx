@@ -268,7 +268,7 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
     // Crate read operations (read-only, const)
     /////////////////////////////////////////////////////////////////////////
 
-    uint countCrates() const;
+    uint countCrates(bool excludeArchived = true) const;
 
     // Omit the pCrate parameter for checking if the corresponding crate exists.
     bool readCrateById(
@@ -314,6 +314,7 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
             CrateId crateId) const;
     CrateTrackSelectResult selectTrackCratesSorted(
             TrackId trackId) const;
+    // Returns crates for the given trackids that are not archived.
     CrateSummarySelectResult selectCratesWithTrackCount(
             const QList<TrackId>& trackIds) const;
     CrateTrackSelectResult selectTracksSortedByCrateNameLike(
