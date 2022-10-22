@@ -905,6 +905,7 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
         }
     }
 
+    // XXXXXXXXXXXXXXXX need to descend into archive submenu
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
     for (TreeItem* pTreeItem : pRootItem->children()) {
