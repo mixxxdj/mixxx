@@ -89,6 +89,11 @@ void CrateFeature::initActions() {
             &QAction::triggered,
             this,
             &CrateFeature::slotToggleCrateLock);
+    m_pArchiveCrateAction = make_parented<QAction>(tr("Archive"), this);
+    connect(m_pArchiveCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotToggleCrateArchived);
 
     m_pAutoDjTrackSourceAction = make_parented<QAction>(tr("Auto DJ Track Source"), this);
     m_pAutoDjTrackSourceAction->setCheckable(true);
@@ -367,6 +372,7 @@ void CrateFeature::onRightClickChild(
     m_pAutoDjTrackSourceAction->setChecked(crate.isAutoDjSource());
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
+    m_pArchiveCrateAction->setText(crate.isLocked() ? tr("Unarchived") : tr("Archive"));
 
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
@@ -375,6 +381,7 @@ void CrateFeature::onRightClickChild(
     menu.addAction(m_pDuplicateCrateAction.get());
     menu.addAction(m_pDeleteCrateAction.get());
     menu.addAction(m_pLockCrateAction.get());
+    menu.addAction(m_pArchiveCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pAutoDjTrackSourceAction.get());
     menu.addSeparator();
@@ -494,6 +501,18 @@ void CrateFeature::slotToggleCrateLock() {
         }
     } else {
         qDebug() << "Failed to toggle lock of selected crate";
+    }
+}
+
+void CrateFeature::slotToggleCrateArchived() {
+    Crate crate;
+    if (readLastRightClickedCrate(&crate)) {
+        crate.setArchived(!crate.isArchived());
+        if (!m_pTrackCollection->updateCrate(crate)) {
+            qDebug() << "Failed to toggle archive status of crate" << crate;
+        }
+    } else {
+        qDebug() << "Failed to toggle archive status of selected crate";
     }
 }
 

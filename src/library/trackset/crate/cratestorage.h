@@ -26,6 +26,9 @@ class CrateQueryFields {
     bool isLocked(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iLocked);
     }
+    bool isArchived(const FwdSqlQuery& query) const {
+        return query.fieldValueBoolean(m_iArchived);
+    }
     bool isAutoDjSource(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iAutoDjSource);
     }
@@ -38,6 +41,7 @@ class CrateQueryFields {
     DbFieldIndex m_iId;
     DbFieldIndex m_iName;
     DbFieldIndex m_iLocked;
+    DbFieldIndex m_iArchived;
     DbFieldIndex m_iAutoDjSource;
 };
 

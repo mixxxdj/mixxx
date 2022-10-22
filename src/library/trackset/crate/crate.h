@@ -8,6 +8,7 @@ class Crate : public DbNamedEntity<CrateId> {
     explicit Crate(CrateId id = CrateId())
             : DbNamedEntity(id),
               m_locked(false),
+              m_archived(false),
               m_autoDjSource(false) {
     }
     ~Crate() override = default;
@@ -19,6 +20,13 @@ class Crate : public DbNamedEntity<CrateId> {
         m_locked = locked;
     }
 
+    bool isArchived() const {
+        return m_archived;
+    }
+    void setArchived(bool archived = true) {
+        m_archived = archived;
+    }
+
     bool isAutoDjSource() const {
         return m_autoDjSource;
     }
@@ -28,5 +36,6 @@ class Crate : public DbNamedEntity<CrateId> {
 
   private:
     bool m_locked;
+    bool m_archived;
     bool m_autoDjSource;
 };
