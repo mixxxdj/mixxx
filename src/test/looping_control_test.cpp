@@ -172,7 +172,7 @@ TEST_F(LoopingControlTest, LoopInSetAfterLoopOutStops) {
     m_pLoopStartPoint->set(mixxx::audio::FramePos{110}.toEngineSamplePos());
     EXPECT_FALSE(isLoopEnabled());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{110}, m_pLoopStartPoint);
-    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    EXPECT_EQ(-1 * std::numeric_limits<double>::infinity(), m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, LoopOutSetInsideLoopContinues) {

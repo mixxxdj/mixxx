@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QtDebug>
 
+#include "audio/frame.h"
 #include "skin/legacy/skincontext.h"
 #include "waveformsignalcolors.h"
 #include "widget/wskincolor.h"
@@ -78,7 +79,10 @@ WaveformMarkRange::WaveformMarkRange(
 bool WaveformMarkRange::active() const {
     const double startValue = start();
     const double endValue = end();
-    return startValue != endValue && startValue != -1.0 && endValue != -1.0;
+    return startValue != endValue &&
+            startValue !=
+            mixxx::audio::FramePos::kLegacyInvalidEnginePosition &&
+            endValue != mixxx::audio::FramePos::kLegacyInvalidEnginePosition;
 }
 
 bool WaveformMarkRange::enabled() const {
@@ -94,7 +98,7 @@ bool WaveformMarkRange::visible() const {
 }
 
 double WaveformMarkRange::start() const {
-    double start = -1.0;
+    double start = mixxx::audio::FramePos::kLegacyInvalidEnginePosition;
     if (m_markStartPointControl && m_markStartPointControl->valid()) {
         start = m_markStartPointControl->get();
     }
@@ -102,7 +106,7 @@ double WaveformMarkRange::start() const {
 }
 
 double WaveformMarkRange::end() const {
-    double end = -1.0;
+    double end = mixxx::audio::FramePos::kLegacyInvalidEnginePosition;
     if (m_markEndPointControl && m_markEndPointControl->valid()) {
         end = m_markEndPointControl->get();
     }

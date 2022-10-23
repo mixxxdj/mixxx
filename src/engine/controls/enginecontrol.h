@@ -18,7 +18,7 @@
 class EngineMaster;
 class EngineBuffer;
 
-constexpr int kNoTrigger = -1;
+constexpr double kNoTrigger = -1 * std::numeric_limits<double>::infinity();
 static_assert(
         mixxx::audio::FramePos::kLegacyInvalidEnginePosition == kNoTrigger,
         "Invalid engine position value mismatch");

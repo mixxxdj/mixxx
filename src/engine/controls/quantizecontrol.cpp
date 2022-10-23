@@ -91,7 +91,6 @@ void QuantizeControl::lookupBeatPositions(mixxx::audio::FramePos position) {
         mixxx::audio::FramePos prevBeatPosition;
         mixxx::audio::FramePos nextBeatPosition;
         pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
-        // FIXME: -1.0 is a valid frame position, should we set the COs to NaN?
         m_pCOPrevBeat->set(prevBeatPosition.toEngineSamplePosMaybeInvalid());
         m_pCONextBeat->set(nextBeatPosition.toEngineSamplePosMaybeInvalid());
     }

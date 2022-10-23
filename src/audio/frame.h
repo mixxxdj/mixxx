@@ -22,7 +22,8 @@ class FramePos final {
     typedef double value_t;
     static constexpr value_t kStartValue = 0;
     static constexpr value_t kInvalidValue = std::numeric_limits<FramePos::value_t>::quiet_NaN();
-    static constexpr double kLegacyInvalidEnginePosition = -1.0;
+    static constexpr double kLegacyInvalidEnginePosition =
+            -1 * std::numeric_limits<double>::infinity();
 
     constexpr FramePos()
             : m_framePosition(kInvalidValue) {

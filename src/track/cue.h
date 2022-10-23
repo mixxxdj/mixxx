@@ -20,7 +20,7 @@ class Cue : public QObject {
 
   public:
     /// A position value for the cue that signals its position is not set
-    static constexpr double kNoPosition = -1.0;
+    static constexpr double kNoPosition = -1 * std::numeric_limits<double>::infinity();
 
     /// Invalid hot cue index
     static constexpr int kNoHotCue = -1;
