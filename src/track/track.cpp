@@ -151,9 +151,9 @@ void Track::importMetadata(
         // overwriting with an inconsistent value. The bpm must always be
         // set together with the beat grid and the key text must be parsed
         // and validated.
-        const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
+        const mixxx::Bpm importedBpm = importedMetadata.getTrackInfo().getBpm();
         importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
-        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
+        const QString importedKeyText = importedMetadata.getTrackInfo().getKey();
         importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
 
         bool modified = false;
