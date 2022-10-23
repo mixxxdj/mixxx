@@ -76,7 +76,7 @@ class KeyUtils {
     static QList<mixxx::track::io::key::ChromaticKey> getCompatibleKeys(
         mixxx::track::io::key::ChromaticKey key);
 
-    static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
+    static mixxx::track::io::key::ChromaticKey guessKeyFromText(QString text);
 
     static mixxx::track::io::key::ChromaticKey calculateGlobalKey(
         const KeyChangeList& key_changes, int iTotalSamples, int iSampleRate);
