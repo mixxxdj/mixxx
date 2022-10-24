@@ -581,7 +581,7 @@ NumarkN4.Deck = function(channel) {
             theDeck.blinkTimer=0;
             return; // return early so no new timer gets created.
         }
-        // this previouslyLoaded guard is needed because everytime a new track gets
+        // this previouslyLoaded guard is needed because every time a new track gets
         // loaded into a deck without previously ejecting, a new timer would get
         // spawned which conflicted with the old (still running) timers.
         if (!this.previouslyLoaded) {

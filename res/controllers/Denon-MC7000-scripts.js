@@ -682,8 +682,8 @@ MC7000.wheelTouch = function(channel, control, value, status, group) {
 
 // The wheel that actually controls the scratching
 MC7000.wheelTurn = function(channel, control, value, status, group) {
-    // TODO(all): check for latency and use it to normalize the jog factor so jog wont be
-    // depending on audio latency anymore.
+    // TODO(all): check for latency and use it to normalize the jog factor so
+    // jog won't be depending on audio latency anymore.
 
     // A: For a control that centers on 0:
     const numTicks = (value < 0x64) ? value : (value - 128);

@@ -17,6 +17,7 @@
 #include "mixer/playermanager.h"
 #include "moc_wtracktableview.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
@@ -36,10 +37,6 @@ const ConfigKey kVScrollBarPosConfigKey{
         // unit of compilation and cannot be reused here!
         QStringLiteral("[Library]"),
         QStringLiteral("VScrollBarPos")};
-
-const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck{
-        QStringLiteral("[Controls]"),
-        QStringLiteral("AllowTrackLoadToPlayingDeck")};
 
 // Default color for the focus border of TableItemDelegates
 const QColor kDefaultFocusBorderColor = Qt::white;
@@ -313,7 +310,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
     // the flags(...) function that we're already using in LibraryTableModel. I
     // haven't been able to get it to stop us from using a model as a drag
-    // target though, so my hax above may not be completely unjustified.
+    // target though, so my hacks above may not be completely unjustified.
 
     setVisible(true);
 
@@ -915,11 +912,26 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
     if (indices.isEmpty()) {
         return;
     }
+    bool allowLoadTrackIntoPlayingDeck = false;
+    if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
+        int loadWhenDeckPlaying =
+                m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
+        switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
+        case LoadWhenDeckPlaying::Allow:
+        case LoadWhenDeckPlaying::AllowButStopDeck:
+            allowLoadTrackIntoPlayingDeck = true;
+            break;
+        case LoadWhenDeckPlaying::Reject:
+            break;
+        }
+    } else {
+        // support older version of this flag
+        allowLoadTrackIntoPlayingDeck =
+                m_pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
+    }
     // If the track load override is disabled, check to see if a track is
     // playing before trying to load it
-    if (!(m_pConfig->getValueString(
-                           ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"))
-                        .toInt())) {
+    if (!allowLoadTrackIntoPlayingDeck) {
         // TODO(XXX): Check for other than just the first preview deck.
         if (group != "[PreviewDeck1]" &&
                 ControlObject::get(ConfigKey(group, "play")) > 0.0) {

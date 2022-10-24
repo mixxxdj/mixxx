@@ -403,13 +403,13 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         folders += getRemovableDevices();
     } else {
         // we assume that the path refers to a folder in the file system
-        // populate childs
+        // populate children
         const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
         QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
                 QDir::Dirs | QDir::NoDotAndDotDot);
 
-        // loop through all the item and construct the childs
+        // loop through all the item and construct the children
         foreach (QFileInfo one, all) {
             // Skip folders that end with .app on OS X
 #if defined(__APPLE__)

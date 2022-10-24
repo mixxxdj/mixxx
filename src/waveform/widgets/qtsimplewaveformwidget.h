@@ -1,10 +1,8 @@
 #pragma once
 
-#include <QGLWidget>
+#include "glwaveformwidgetabstract.h"
 
-#include "waveformwidgetabstract.h"
-
-class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class QtSimpleWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     QtSimpleWaveformWidget(const QString& group, QWidget* parent);

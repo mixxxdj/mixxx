@@ -20,7 +20,7 @@ const Logger kLogger("SafelyWritableFile");
 const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 
 // SafelyWritableFile is also used to write cover arts.
-// Cover art worker is suffix sensetive.
+// Cover art worker is suffix sensitive.
 // In order to have a successful writing we need a correct suffix.
 // So instead of suffix, we need a temp file prefix.
 // There is a bug related with the image format reported
