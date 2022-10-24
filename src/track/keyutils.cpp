@@ -270,7 +270,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         }
     }
 
-    QRegExp openKeyMatcher(s_openKeyPattern, Qt::CaseInsensitive);
+    QRegExp openKeyMatcher(s_openKeyPattern);
     if (openKeyMatcher.exactMatch(trimmed)) {
         bool ok = false;
         int openKeyNumber = openKeyMatcher.cap(1).toInt(&ok);
@@ -280,13 +280,12 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
             return mixxx::track::io::key::INVALID;
         }
 
-        bool major = openKeyMatcher.cap(2)
-                .compare("d", Qt::CaseInsensitive) == 0;
+        bool major = openKeyMatcher.cap(2).compare("d") == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
 
-    QRegExp lancelotKeyMatcher(s_lancelotKeyPattern, Qt::CaseInsensitive);
+    QRegExp lancelotKeyMatcher(s_lancelotKeyPattern);
     if (lancelotKeyMatcher.exactMatch(trimmed)) {
         bool ok = false;
         int lancelotNumber = lancelotKeyMatcher.cap(1).toInt(&ok);
@@ -298,8 +297,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
         int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
-        bool major = lancelotKeyMatcher.cap(2)
-                .compare("b", Qt::CaseInsensitive) == 0;
+        bool major = lancelotKeyMatcher.cap(2).compare("B") == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }

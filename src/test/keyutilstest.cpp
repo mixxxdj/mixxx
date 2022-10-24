@@ -12,11 +12,6 @@ class KeyUtilsTest : public testing::Test {
 };
 
 TEST_F(KeyUtilsTest, OpenKeyNotation) {
-    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
-              KeyUtils::guessKeyFromText("1D"));
-    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
-              KeyUtils::guessKeyFromText("5M"));
-
     // Lower-case.
     EXPECT_EQ(mixxx::track::io::key::B_MAJOR,
               KeyUtils::guessKeyFromText("6d"));
@@ -37,18 +32,12 @@ TEST_F(KeyUtilsTest, LancelotNotation) {
     EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
               KeyUtils::guessKeyFromText("12A"));
 
-    // Lower-case.
-    EXPECT_EQ(mixxx::track::io::key::B_MAJOR,
-              KeyUtils::guessKeyFromText("1b"));
-    EXPECT_EQ(mixxx::track::io::key::B_MINOR,
-              KeyUtils::guessKeyFromText("10a"));
-
     // whitespace is ok
     EXPECT_EQ(mixxx::track::io::key::B_MINOR,
-              KeyUtils::guessKeyFromText("\t10a  "));
+            KeyUtils::guessKeyFromText("\t10A  "));
     // but other stuff is not
     EXPECT_EQ(mixxx::track::io::key::INVALID,
-              KeyUtils::guessKeyFromText("\t10aa  "));
+            KeyUtils::guessKeyFromText("\t10AA  "));
 }
 
 TEST_F(KeyUtilsTest, KeyNameNotation) {
