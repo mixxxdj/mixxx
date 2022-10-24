@@ -145,13 +145,13 @@ constexpr int s_sortKeysCircleOfFifthsLancelot[] = {
 /*
 // Strings used by Rapid Evolution when exporting detailed keys to file tags
 constexpr const char* s_scaleModeText[] = {
-    "ionian", // standard major
-	"aeolian", // natural minor
-	"lydian", // major with raised 4th
-	"mixolydian", // major with lowered 7th
-	"dorian", // minor with raised 6th
-	"phrygian", // minor with lowered 2nd
-	"locrian", //  minor with lowered 2nd and 7th
+       "ionian", // standard major
+        "aeolian", // natural minor
+        "lydian", // major with raised 4th
+        "mixolydian", // major with lowered 7th
+        "dorian", // minor with raised 6th
+        "phrygian", // minor with lowered 2nd
+        "locrian", //  minor with lowered 2nd and 7th
 };
 */
 

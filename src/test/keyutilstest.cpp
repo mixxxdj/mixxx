@@ -174,6 +174,44 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
             KeyUtils::guessKeyFromText("xyz"));
 }
 
+TEST_F(KeyUtilsTest, ScaleModeNotation) {
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+            KeyUtils::guessKeyFromText("C ionian"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("A aeolian"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+            KeyUtils::guessKeyFromText("F lydian"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+            KeyUtils::guessKeyFromText("G mixolydian"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("D dorian"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("E phrygian"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("B locrian"));
+
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("11A"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11B"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11I"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11L"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11M"));
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("11D"));
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("11P"));
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("11C"));
+
+    // Redundant Mode
+    EXPECT_EQ(mixxx::track::io::key::INVALID,
+            KeyUtils::guessKeyFromText("Cm ionian"));
+}
+
 mixxx::track::io::key::ChromaticKey incrementKey(
     mixxx::track::io::key::ChromaticKey key, int steps=1) {
     return static_cast<mixxx::track::io::key::ChromaticKey>(
