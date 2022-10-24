@@ -1,10 +1,12 @@
-#include <QtDebug>
+#include "track/keyutils.h"
+
 #include <QMap>
 #include <QMutexLocker>
 #include <QPair>
 #include <QRegExp>
+#include <QtDebug>
+#include <array>
 
-#include "track/keyutils.h"
 #include "util/math.h"
 
 #define MUSIC_FLAT_UTF8  "\xe299ad"
@@ -21,12 +23,9 @@ static const QString s_openKeyPattern("^\\s*(1[0-2]|[1-9])([dm])\\s*$");
 static const QString s_lancelotKeyPattern("^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$");
 
 // a-g followed by any number of sharps or flats, optionally followed by
-// a scale spec (m = minor, min, maj)
-// anchor the pattern so we don't get accidental sub-string matches
-// (?:or)? allows unabbreviated major|minor without capturing
+// a scale mode spec (m = minor, min, maj ..)
 static const QString s_keyPattern = QString::fromUtf8(
-        "^\\s*([a-g])([#♯b♭]*)"
-        "(min(?:or)?|maj(?:or)?|m)?\\s*$");
+        "^\\s*([a-g])([#♯b♭]*) *([a-z]{3}.*|m)?\\s*$");
 
 static const QString s_sharpSymbol = QString::fromUtf8("♯");
 //static const QString s_flatSymbol = QString::fromUtf8("♭");
@@ -144,6 +143,64 @@ static const int s_sortKeysCircleOfFifthsLancelot[] = {
     15, // A_MINOR
     5, // B_FLAT_MINOR
     19, // B_MINOR
+};
+
+/*
+// Strings used by Rapid Evolution when exporting detailed keys to file tags
+static const char* s_scaleModeText[] = {
+    "ionian", // standard major
+        "aeolian", // natural minor
+        "lydian", // major with raised 4th
+        "mixolydian", // major with lowered 7th
+        "dorian", // minor with raised 6th
+        "phrygian", // minor with lowered 2nd
+        "locrian", //  minor with lowered 2nd and 7th
+};
+*/
+
+static const char* s_scaleModeTextShort[] = {
+        "ion", // standard major
+        "aeo", // natural minor
+        "lyd", // major with raised 4th
+        "mix", // major with lowered 7th
+        "dor", // "dorina" or "doric" minor with raised 6th
+        "phr", // minor with lowered 2nd
+        "loc"  // minor with lowered 2nd and 7th
+};
+
+static constexpr bool s_scaleModeIsMajor[] = {
+        true,  // ionian (standard major)
+        false, // aeolian (natural minor)
+        true,  // lydian
+        true,  // mixolydian
+        false, // dorian
+        false, // phrygian
+        false, // locrian
+};
+
+// s_scaleModeTransposeSteps is used to express the detailed modes
+// as a compatible natural minor or standard major scale
+// The following table shows the relation for C major in the Circle of Fifths
+// "C ionian"     8B    C – D – E – F – G – A – B
+// "Db"
+// "D dorian"     8D    D – E – F – G – A – B – C
+// "Eb"
+// "E phrygian"   8P    E – F – G – A – B – C – D
+// "F lydian" 	  8L    F – G – A – B – C – D – E
+// "Gb"
+// "G mixolydian  8M    G – A – B – C – D – E – F
+// "Ab"
+// "A aeolian"    8A    A – B – C – D – E – F – G
+// "Bb"
+// "B locrian"    8C    B – C – D – E – F – G – A
+static constexpr int s_scaleModeTransposeSteps[] = {
+        0,  // ionian to ionian
+        0,  // aeolian to aeolian
+        -5, // lydian to ionian
+        +5, // mixolydian to ionian
+        -5, // dorian to aeolian
+        +5, // phrygian to aeolian
+        -2, // locrian to aeolian
 };
 
 QMutex KeyUtils::s_notationMutex;
@@ -324,19 +381,32 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
         QString scale = keyMatcher.cap(3);
         // we override major if a scale definition exists
-        if (! scale.isEmpty()) {
+        if (!scale.isEmpty()) {
             if (scale.compare("m", Qt::CaseInsensitive) == 0) {
+                // Aeolian
                 major = false;
             } else if (scale.startsWith("min", Qt::CaseInsensitive)) {
+                // Aeolian
                 major = false;
             } else if (scale.startsWith("maj", Qt::CaseInsensitive)) {
+                // Ionian
                 major = true;
             } else {
-                qDebug() << "WARNING: scale from regexp has unexpected value."
-                  " should never happen";
+                // Try to find detailed scale mode
+                ScaleMode scaleMode = ScaleMode::Unknown;
+                for (size_t i = 0; i < std::size(s_scaleModeTextShort); ++i) {
+                    if (scale.startsWith(s_scaleModeTextShort[i], Qt::CaseInsensitive)) {
+                        scaleMode = static_cast<ScaleMode>(i);
+                        break;
+                    }
+                }
+                if (scaleMode == ScaleMode::Unknown) {
+                    return mixxx::track::io::key::INVALID;
+                }
+                major = s_scaleModeIsMajor[static_cast<int>(scaleMode)];
+                steps += s_scaleModeTransposeSteps[static_cast<int>(scaleMode)];
             }
         }
-
         ChromaticKey letterKey = static_cast<ChromaticKey>(
             s_letterToMajorKey[letterIndex] + (major ? 0 : 12));
         return scaleKeySteps(letterKey, steps);
