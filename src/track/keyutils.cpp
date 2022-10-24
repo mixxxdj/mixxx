@@ -16,9 +16,9 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
 static const QString s_openKeyPattern("^\\s*(1[0-2]|[1-9])([dm])\\s*$");
 
-// Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-// This is also used to detect RapidEvolution Key Code format using a padding "0"
-static const QString s_lancelotKeyPattern("^\\s*0*(1[0-2]|[1-9])([ab])\\s*$");
+// Lancelot notation, the numbers 1-12 followed by A (minor) or B(I) (major).
+// or "I", "L", "M", "D", "P", "C" for the advanced modes
+static const QString s_lancelotKeyPattern("^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$");
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale spec (m = minor, min, maj)
@@ -297,7 +297,8 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
         int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
-        bool major = lancelotKeyMatcher.cap(2).compare("B") == 0;
+        const QChar lancelotScaleMode = lancelotKeyMatcher.cap(2).at(0);
+        bool major = (QString("BILM").indexOf(lancelotScaleMode) != -1);
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
