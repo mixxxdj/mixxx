@@ -36,7 +36,9 @@ Item {
                 x: 0
                 y: root.height
             }
+
         }
+
     }
 
     Mixxx.ControlProxy {
@@ -74,4 +76,5 @@ Item {
         key: "hotcue_" + root.hotcueNumber + "_color"
         onValueChanged: this.updateColor()
     }
+
 }

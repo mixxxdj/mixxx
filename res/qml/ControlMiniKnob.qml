@@ -18,4 +18,5 @@ Skin.MiniKnob {
     TapHandler {
         onDoubleTapped: control.reset()
     }
+
 }

@@ -47,5 +47,7 @@ Rectangle {
         TapHandler {
             onTapped: statusControl.value = !statusControl.value
         }
+
     }
+
 }

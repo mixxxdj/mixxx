@@ -40,6 +40,7 @@ MixxxControls.Slider {
             verticalOffset: 5
             color: "#80000000"
         }
+
     }
 
     background: Image {
@@ -48,4 +49,5 @@ MixxxControls.Slider {
         anchors.fill: parent
         anchors.margins: root.barMargin
     }
+
 }

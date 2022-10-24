@@ -79,7 +79,9 @@ Item {
                 centerX: root.width / 2 + root.arcOffsetX
                 centerY: root.width / 2 + root.arcOffsetY
             }
+
         }
+
     }
 
     DragHandler {
@@ -142,4 +144,5 @@ Item {
         property: "value"
         value: wheelHandler.value
     }
+
 }

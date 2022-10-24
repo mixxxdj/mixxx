@@ -39,8 +39,11 @@ Popup {
                         root.close();
                     }
                 }
+
             }
+
         }
+
     }
 
     Skin.Button {
@@ -62,6 +65,7 @@ Popup {
             to: 1
             duration: 100
         }
+
     }
 
     exit: Transition {
@@ -71,6 +75,7 @@ Popup {
             to: 0
             duration: 100
         }
+
     }
 
     background: BorderImage {
@@ -87,5 +92,7 @@ Popup {
             right: 20
             bottom: 10
         }
+
     }
+
 }

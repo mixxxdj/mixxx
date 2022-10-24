@@ -22,6 +22,7 @@ Skin.Button {
     onReleased: {
         if (!toggleable)
             control.value = 0;
+
     }
 
     Mixxx.ControlProxy {
@@ -30,4 +31,5 @@ Skin.Button {
         group: root.group
         key: root.key
     }
+
 }

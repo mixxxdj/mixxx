@@ -13,6 +13,7 @@ Item {
     readonly property color color: {
         if (hotcueColorControl.value < 0)
             return Theme.deckActiveColor;
+
         return "#" + hotcueColorControl.value.toString(16).padStart(6, "0");
     }
 
@@ -47,4 +48,5 @@ Item {
         group: root.group
         key: "hotcue_" + root.hotcueNumber + "_clear"
     }
+
 }

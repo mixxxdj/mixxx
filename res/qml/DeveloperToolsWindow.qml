@@ -55,6 +55,7 @@ Window {
                         right: 20
                         bottom: 10
                     }
+
                 }
 
                 Text {
@@ -93,7 +94,9 @@ Window {
                 TapHandler {
                     onTapped: controlModel.toggleSortColumn(headerDlgt.column)
                 }
+
             }
+
         }
 
         TableView {
@@ -147,7 +150,9 @@ Window {
                             elide: Text.ElideRight
                             color: Theme.deckTextColor
                         }
+
                     }
+
                 }
 
                 DelegateChoice {
@@ -172,7 +177,9 @@ Window {
                             elide: Text.ElideRight
                             color: Theme.deckTextColor
                         }
+
                     }
+
                 }
 
                 DelegateChoice {
@@ -209,8 +216,11 @@ Window {
 
                             validator: DoubleValidator {
                             }
+
                         }
+
                     }
+
                 }
 
                 DelegateChoice {
@@ -247,10 +257,17 @@ Window {
 
                             validator: DoubleValidator {
                             }
+
                         }
+
                     }
+
                 }
+
             }
+
         }
+
     }
+
 }
