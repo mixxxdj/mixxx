@@ -80,6 +80,8 @@ repos:
           - commit
           - manual
         language: python
+        additional_dependencies:
+          - clang-format==14.0.6
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
   - repo: https://github.com/psf/black
     rev: 22.10.0
