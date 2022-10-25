@@ -273,6 +273,14 @@ void DlgAutoDJ::fadeNowButton(bool) {
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     AutoDJProcessor::AutoDJError error = m_pAutoDJProcessor->toggleAutoDJ(enable);
     switch (error) {
+
+        case AutoDJProcessor::ADJ_NOT_TWO_DECKS:
+            QMessageBox::warning(nullptr,
+                tr("Auto DJ"),
+                tr("No deck assigned, Deck must be assigned to enable Auto DJ mode."),
+                QMessageBox::Ok);
+            pushButtonAutoDJ->setChecked(false);
+            break;
         case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
             QMessageBox::warning(nullptr,
                     tr("Auto DJ"),
@@ -288,6 +296,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
                     QMessageBox::Ok);
             pushButtonAutoDJ->setChecked(false);
             break;
+  
         case AutoDJProcessor::ADJ_OK:
         default:
             break;
