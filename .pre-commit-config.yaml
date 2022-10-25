@@ -74,7 +74,7 @@ repos:
       - id: clang-format
         name: clang-format
         description: "Run clang-format in two passes (reformat, then break long lines)"
-        entry: tools/clang_format.py
+        entry: python tools/clang_format.py
         require_serial: true
         stages:
           - commit
@@ -114,7 +114,7 @@ repos:
       - id: qsscheck
         name: qsscheck
         description: Run qsscheck to detect broken QSS.
-        entry: ./tools/qsscheck.py
+        entry: python tools/qsscheck.py
         args: [.]
         pass_filenames: false
         language: python
@@ -128,14 +128,14 @@ repos:
       - id: changelog
         name: changelog
         description: Add missing links to changelog.
-        entry: ./tools/changelog.py
+        entry: python tools/changelog.py
         language: python
         types: [text]
         files: ^CHANGELOG.md$
       - id: metainfo
         name: metainfo
         description: Update AppStream metainfo releases from CHANGELOG.md.
-        entry: ./tools/update_metainfo.py
+        entry: python tools/update_metainfo.py
         pass_filenames: false
         language: python
         additional_dependencies:
