@@ -1400,9 +1400,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
-    // Only create a new loop if the start and end position have changed.
-    if (loopInfo.startPosition != newloopInfo.startPosition ||
-            loopInfo.endPosition != newloopInfo.endPosition) {
+    // Only update loopinfo if the endpoints have changed, otherwise we may clobber the existing
+    // LoopSeekMode selection.
+    if (!currentLoopMatchesBeatloopSize()) {
         // If resizing an inactive loop by changing beatloop_size,
         // do not seek to the adjusted loop.
         newloopInfo.seekMode = (keepStartPoint && (enable || m_bLoopingEnabled))
@@ -1410,10 +1410,10 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                 : LoopSeekMode::MovedOut;
 
         m_loopInfo.setValue(newloopInfo);
-        emit loopUpdated(newloopInfo.startPosition, newloopInfo.endPosition);
-        m_pCOLoopStartPosition->set(newloopInfo.startPosition.toEngineSamplePos());
-        m_pCOLoopEndPosition->set(newloopInfo.endPosition.toEngineSamplePos());
     }
+    emit loopUpdated(newloopInfo.startPosition, newloopInfo.endPosition);
+    m_pCOLoopStartPosition->set(newloopInfo.startPosition.toEngineSamplePos());
+    m_pCOLoopEndPosition->set(newloopInfo.endPosition.toEngineSamplePos());
 
     if (enable) {
         setLoopingEnabled(true);
