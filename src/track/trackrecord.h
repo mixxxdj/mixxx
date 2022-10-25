@@ -94,11 +94,7 @@ class TrackRecord final {
     }
 
     track::io::key::ChromaticKey getGlobalKey() const {
-        if (getKeys().isValid()) {
-            return getKeys().getGlobalKey();
-        } else {
-            return track::io::key::INVALID;
-        }
+        return getKeys().getGlobalKey();
     }
     bool updateGlobalKey(
             track::io::key::ChromaticKey key,

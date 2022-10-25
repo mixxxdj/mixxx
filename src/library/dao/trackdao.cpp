@@ -622,23 +622,16 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":beats_sub_version", beatsSubVersion);
     pTrackLibraryQuery->bindValue(":beats", beatsBlob);
 
-    QByteArray keysBlob;
-    QString keysVersion;
-    QString keysSubVersion;
-    QString keyText;
-    mixxx::track::io::key::ChromaticKey globalKey = mixxx::track::io::key::INVALID;
-    const Keys& keys = track.getKeys();
-    if (keys.isValid()) {
-        keysBlob = keys.toByteArray();
-        keysVersion = keys.getVersion();
-        keysSubVersion = keys.getSubVersion();
-        globalKey = keys.getGlobalKey();
-        keyText = KeyUtils::getGlobalKeyText(keys);
-    }
+    const Keys keys = track.getKeys();
+    QByteArray keysBlob = keys.toByteArray();
+    QString keysVersion = keys.getVersion();
+    QString keysSubVersion = keys.getSubVersion();
+    mixxx::track::io::key::ChromaticKey key = keys.getGlobalKey();
+    QString keyText = KeyUtils::getGlobalKeyText(keys);
     pTrackLibraryQuery->bindValue(":keys", keysBlob);
     pTrackLibraryQuery->bindValue(":keys_version", keysVersion);
     pTrackLibraryQuery->bindValue(":keys_sub_version", keysSubVersion);
-    pTrackLibraryQuery->bindValue(":key_id", static_cast<int>(globalKey));
+    pTrackLibraryQuery->bindValue(":key_id", static_cast<int>(key));
     pTrackLibraryQuery->bindValue(":key", keyText);
 }
 
@@ -1252,7 +1245,7 @@ bool setTrackAudioProperties(
             mixxx::audio::SampleRate(samplerate),
             mixxx::audio::Bitrate(bitrate),
             mixxx::Duration::fromSeconds(duration));
-    return false;
+    return false; // shouldDirty
 }
 
 bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
@@ -1282,7 +1275,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     } else {
         pTrack->trySetBeats(nullptr);
     }
-    return false;
+    return false; // shouldDirty
 }
 
 bool setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
@@ -1293,9 +1286,9 @@ bool setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
     Keys keys = KeyFactory::loadKeysFromByteArray(
             keysVersion, keysSubVersion, &keysBlob);
 
-    if (keys.isValid()) {
+    if (!keysVersion.isEmpty()) {
         pTrack->setKeys(keys);
-    } else if (keyText.size() > 0) {
+    } else if (!keyText.isEmpty()) {
         // Typically this happens if we are upgrading from an older (<1.12.0)
         // version of Mixxx that didn't support Keys. We treat all legacy data
         // as user-generated because that way it will be treated sensitively.
@@ -1304,7 +1297,7 @@ bool setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
         // dirty so we save it when it is deleted.
         return true;
     }
-    return false;
+    return false; // shouldDirty;
 }
 
 bool setTrackCoverInfo(const QSqlRecord& record, const int column, Track* pTrack) {
@@ -1326,7 +1319,7 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column, Track* pTrack
             record.value(column + 4).toByteArray(),
             record.value(column + 5).toUInt());
     pTrack->setCoverInfo(coverInfo);
-    return false;
+    return false; // shouldDirty
 }
 
 struct ColumnPopulator {
@@ -1390,7 +1383,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"beats", nullptr},
             {"bpm_lock", nullptr},
 
-            // Beat detection columns are handled by setTrackKey. Do not change the
+            // Key detection columns are handled by setTrackKey. Do not change the
             // ordering of these columns or put other columns in between them!
             {"key", setTrackKey},
             {"keys_version", nullptr},
