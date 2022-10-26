@@ -1182,13 +1182,12 @@ void LoopingControl::clearActiveBeatLoop() {
     }
 }
 
-bool LoopingControl::currentLoopMatchesBeatloopSize() {
+bool LoopingControl::currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const {
     const mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return false;
     }
 
-    LoopInfo loopInfo = m_loopInfo.getValue();
     if (!loopInfo.startPosition.isValid()) {
         return false;
     }
@@ -1197,9 +1196,11 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
     const auto loopEndPosition = pBeats->findNBeatsFromPosition(
             loopInfo.startPosition, m_pCOBeatLoopSize->get());
 
-    return loopInfo.endPosition.isValid() &&
-            loopInfo.endPosition > loopEndPosition - 1 &&
-            loopInfo.endPosition < loopEndPosition + 1;
+    return positionNear(loopInfo.endPosition, loopEndPosition);
+}
+
+bool LoopingControl::positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) const {
+    return a.isValid() && a > target - 1 && a < target + 1;
 }
 
 double LoopingControl::findBeatloopSizeForLoop(
@@ -1382,7 +1383,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     // the size of the existing loop.
     // Do not return immediately so beatloop_size can be updated.
     bool omitResize = false;
-    if (!currentLoopMatchesBeatloopSize() && !enable) {
+    if (!currentLoopMatchesBeatloopSize(loopInfo) && !enable) {
         omitResize = true;
     }
 
@@ -1400,17 +1401,18 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
-    // Only update loopinfo if the endpoints have changed, otherwise we may clobber the existing
-    // LoopSeekMode selection.
-    if (!currentLoopMatchesBeatloopSize()) {
+    // Only update seek mode if the endpoints have changed sufficiently.
+    if (positionNear(newloopInfo.startPosition, loopInfo.startPosition) &&
+            positionNear(newloopInfo.endPosition, loopInfo.endPosition)) {
+        newloopInfo.seekMode = loopInfo.seekMode;
+    } else {
         // If resizing an inactive loop by changing beatloop_size,
         // do not seek to the adjusted loop.
         newloopInfo.seekMode = (keepStartPoint && (enable || m_bLoopingEnabled))
                 ? LoopSeekMode::Changed
                 : LoopSeekMode::MovedOut;
-
-        m_loopInfo.setValue(newloopInfo);
     }
+    m_loopInfo.setValue(newloopInfo);
     emit loopUpdated(newloopInfo.startPosition, newloopInfo.endPosition);
     m_pCOLoopStartPosition->set(newloopInfo.startPosition.toEngineSamplePos());
     m_pCOLoopEndPosition->set(newloopInfo.endPosition.toEngineSamplePos());
@@ -1532,7 +1534,7 @@ void LoopingControl::slotLoopMove(double beats) {
                 nullptr)) {
         const auto newLoopStartPosition =
                 pBeats->findNBeatsFromPosition(loopInfo.startPosition, beats);
-        const auto newLoopEndPosition = currentLoopMatchesBeatloopSize()
+        const auto newLoopEndPosition = currentLoopMatchesBeatloopSize(loopInfo)
                 ? pBeats->findNBeatsFromPosition(newLoopStartPosition, m_pCOBeatLoopSize->get())
                 : pBeats->findNBeatsFromPosition(loopInfo.endPosition, beats);
 

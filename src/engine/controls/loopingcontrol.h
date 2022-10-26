@@ -121,7 +121,9 @@ class LoopingControl : public EngineControl {
     void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
     void updateBeatLoopingControls();
-    bool currentLoopMatchesBeatloopSize();
+    bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const;
+    // returns true if a is valid and is fairly close to target (within +/- 1 frame).
+    bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) const;
 
     // Given loop in and out points, determine if this is a beatloop of a particular
     // size.
