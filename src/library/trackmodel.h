@@ -91,6 +91,8 @@ class TrackModel {
         SampleRate = 29,
         Color = 30,
         LastPlayedAt = 31,
+        Match = 32,
+        Playcount = 33,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,

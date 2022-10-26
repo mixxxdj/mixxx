@@ -66,6 +66,9 @@ class ColumnCache : public QObject {
 
         COLUMN_REKORDBOX_ANALYZE_PATH,
 
+        COLUMN_SUGGESTIONTABLE_PLAYCOUNT,
+        COLUMN_SUGGESTIONTABLE_MATCH,
+
         // NUM_COLUMNS should always be the last item.
         NUM_COLUMNS
     };

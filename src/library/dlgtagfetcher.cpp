@@ -189,9 +189,10 @@ void DlgTagFetcher::loadTrackInternal(const TrackPointer& track) {
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer& track) {
-    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
-        return;
-    }
+    //This block commented just for tryout.
+    //VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
+    //    return;
+    //}
     loadTrackInternal(track);
 }
 

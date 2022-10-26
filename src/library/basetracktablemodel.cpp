@@ -63,8 +63,7 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_LAST_PLAYED_AT,
         LIBRARYTABLE_TITLE,
         LIBRARYTABLE_TRACKNUMBER,
-        LIBRARYTABLE_YEAR,
-};
+        LIBRARYTABLE_YEAR};
 
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
@@ -232,6 +231,14 @@ void BaseTrackTableModel::initHeaderProperties() {
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_YEAR,
             tr("Year"),
+            defaultColumnWidth());
+    setHeaderProperties(
+            ColumnCache::COLUMN_SUGGESTIONTABLE_PLAYCOUNT,
+            tr("Playcount"),
+            defaultColumnWidth());
+    setHeaderProperties(
+            ColumnCache::COLUMN_SUGGESTIONTABLE_MATCH,
+            tr("Match"),
             defaultColumnWidth());
 }
 

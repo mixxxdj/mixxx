@@ -92,6 +92,9 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
     insertColumnNameByEnum(COLUMN_REKORDBOX_ANALYZE_PATH, REKORDBOX_ANALYZE_PATH);
 
+    insertColumnNameByEnum(COLUMN_SUGGESTIONTABLE_MATCH, SUGGESTIONTABLE_MATCH);
+    insertColumnNameByEnum(COLUMN_SUGGESTIONTABLE_PLAYCOUNT, SUGGESTIONTABLE_PLAYCOUNT);
+
     for (int i = 0; i < NUM_COLUMNS; ++i) {
         m_columnIndexByEnum[i] = -1;
     }
