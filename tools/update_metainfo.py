@@ -188,7 +188,7 @@ def main(argv=None):
         .strip()
     )
 
-    with open(changelog_path, mode="r") as fp:
+    with open(changelog_path, mode="r", encoding="utf-8") as fp:
         for release in parse_changelog(
             fp.read(), development_release_date=parent_changelog_change_date
         ):
