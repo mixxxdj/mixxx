@@ -77,7 +77,14 @@ void ProxyTrackModel::search(const QString& searchText, const QString& extraFilt
 }
 
 QString ProxyTrackModel::modelKey(bool noSearch) const {
-    return m_pTrackModel ? m_pTrackModel->modelKey(noSearch) : QString();
+    if (m_pTrackModel) {
+        if (m_bHandleSearches) {
+            return m_pTrackModel->modelKey(true) + QStringLiteral("#") + currentSearch();
+        } else {
+            return m_pTrackModel->modelKey(noSearch);
+        }
+    }
+    return QString();
 }
 
 const QString ProxyTrackModel::currentSearch() const {
