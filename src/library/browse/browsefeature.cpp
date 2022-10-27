@@ -243,7 +243,7 @@ void BrowseFeature::activate() {
 void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->getLabel() << " "
-             << item->getData();
+             << item->getData().toString();
 
     QString path = item->getData().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {

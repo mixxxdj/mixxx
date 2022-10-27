@@ -283,6 +283,7 @@ CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
         return CoverInfo();
     }
 }
+
 const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
