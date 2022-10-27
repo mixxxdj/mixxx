@@ -71,4 +71,5 @@ jobs:
 
       # AppStream metadata has been generated/updated by a pre-commit hook
       - name: "Validate AppStream metadata"
+        if: runner.os == 'Linux'
         run: appstreamcli validate res/linux/org.mixxx.Mixxx.metainfo.xml
