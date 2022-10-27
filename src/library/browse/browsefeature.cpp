@@ -32,7 +32,7 @@ BrowseFeature::BrowseFeature(
         : LibraryFeature(pLibrary, pConfig, QString("computer")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
-          m_proxyModel(&m_browseModel),
+          m_proxyModel(&m_browseModel, true),
           m_pSidebarModel(new FolderTreeModel(this)),
           m_pLastRightClickedItem(nullptr) {
     connect(this,
@@ -267,7 +267,10 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         m_browseModel.setPath(std::move(dirAccess));
     }
     emit showTrackModel(&m_proxyModel);
-    emit disableSearch();
+    // Search is restored in Library::slotShowTrackModel, disable it where it's useless
+    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        emit disableSearch();
+    }
     emit enableCoverArtDisplay(false);
 }
 

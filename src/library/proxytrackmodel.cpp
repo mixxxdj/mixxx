@@ -152,7 +152,6 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
             dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
     bool rowMatches = false;
 
-    QRegularExpression filter = filterRegularExpression();
     QListIterator<int> iter(filterColumns);
 
     while (!rowMatches && iter.hasNext()) {
@@ -161,7 +160,7 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         QVariant data = itemModel->data(index);
         if (data.canConvert<QString>()) {
             QString strData = data.toString();
-            if (strData.contains(filter)) {
+            if (strData.contains(m_currentSearch, Qt::CaseInsensitive)) {
                 rowMatches = true;
             }
         }
