@@ -58,6 +58,7 @@ jobs:
         run: |
           git diff-index -p HEAD > "${PATCH_FILE}"
           [ -s "${PATCH_FILE}" ] && echo "UPLOAD_PATCH_FILE=${PATCH_FILE}" >> "${GITHUB_ENV}"
+        shell: bash
         env:
           PATCH_FILE: pre-commit.patch
 
