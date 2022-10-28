@@ -182,11 +182,14 @@ WSearchLineEdit,
 #VuMeterBox,
 #VuMeterBoxMaster,
 #VuMeterBoxMasterSingle,
-#LatencyMeterBox[highlight="0"] {
+#LatencyMeterBox {
   background-color: #040404;
   }
+  #LatencyMeterBox[highlight="0"] {
+    border: 1px solid #040404;
+  }
   #LatencyMeterBox[highlight="1"] {
-    background-color: red;
+    border: 1px solid red;
   }
 
 #VuMasterCover {
@@ -1229,10 +1232,6 @@ QPushButton#pushButtonRecording:checked {
   background-color: #151515;
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  color: #d09300;
-}
   #SkinSettingsButton,
   #SkinSettingsNumToggle,
   #SkinSettingsText {

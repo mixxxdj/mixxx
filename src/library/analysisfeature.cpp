@@ -1,7 +1,10 @@
 #include "library/analysisfeature.h"
 
+#include <qlist.h>
+
 #include <QtDebug>
 
+#include "analyzer/analyzerscheduledtrack.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/dlganalysis.h"
 #include "library/library.h"
@@ -130,7 +133,7 @@ void AnalysisFeature::activate() {
     emit enableCoverArtDisplay(true);
 }
 
-void AnalysisFeature::analyzeTracks(const QList<TrackId>& trackIds) {
+void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks) {
     if (!m_pTrackAnalysisScheduler) {
         const int numAnalyzerThreads = numberOfAnalyzerThreads();
         kLogger.info()
@@ -161,7 +164,7 @@ void AnalysisFeature::analyzeTracks(const QList<TrackId>& trackIds) {
         emit analysisActive(true);
     }
 
-    if (m_pTrackAnalysisScheduler->scheduleTracksById(trackIds) > 0) {
+    if (m_pTrackAnalysisScheduler->scheduleTracks(tracks) > 0) {
         resumeAnalysis();
     }
 }
@@ -228,8 +231,12 @@ bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
             m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
                     urls,
                     !pSource);
-    analyzeTracks(trackIds);
-    return trackIds.size() > 0;
+    QList<AnalyzerScheduledTrack> tracks;
+    for (auto trackId : trackIds) {
+        tracks.append(trackId);
+    }
+    analyzeTracks(tracks);
+    return tracks.size() > 0;
 }
 
 bool AnalysisFeature::dragMoveAccept(const QUrl& url) {

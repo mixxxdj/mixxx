@@ -6,6 +6,7 @@
 #include <limits>
 
 #include "analyzer/analyzer.h"
+#include "analyzer/analyzertrack.h"
 #include "library/dao/analysisdao.h"
 #include "util/performancetimer.h"
 #include "waveform/waveform.h"
@@ -140,7 +141,7 @@ class AnalyzerWaveform : public Analyzer {
             const QSqlDatabase& dbConnection);
     ~AnalyzerWaveform() override;
 
-    bool initialize(TrackPointer tio,
+    bool initialize(const AnalyzerTrack& tio,
             mixxx::audio::SampleRate sampleRate,
             SINT totalSamples) override;
     bool processSamples(const CSAMPLE* buffer, SINT bufferLength) override;

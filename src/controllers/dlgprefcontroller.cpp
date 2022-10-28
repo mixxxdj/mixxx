@@ -97,6 +97,11 @@ DlgPrefController::DlgPrefController(
             &DlgPrefController::applyMapping,
             m_pControllerManager.get(),
             &ControllerManager::slotApplyMapping);
+    // Update GUI
+    connect(m_pControllerManager.get(),
+            &ControllerManager::mappingApplied,
+            this,
+            &DlgPrefController::enableWizardAndIOTabs);
 
     // Open script file links
     connect(m_ui.labelLoadedMappingScriptFileLinks,
@@ -162,6 +167,8 @@ void DlgPrefController::showLearningWizard() {
     if (!m_pMapping) {
         m_pMapping = std::shared_ptr<LegacyControllerMapping>(new LegacyMidiControllerMapping());
         emit applyMapping(m_pController, m_pMapping, true);
+        // shortcut for creating and assigning required I/O table models
+        slotShowMapping(m_pMapping);
     }
 
     // Note that DlgControllerLearning is set to delete itself on close using
@@ -471,10 +478,8 @@ void DlgPrefController::slotUpdate() {
 
     // If the controller is not mappable, disable the input and output mapping
     // sections and the learning wizard button.
-    bool isMappable = m_pController->isMappable();
-    m_ui.btnLearningWizard->setEnabled(isMappable);
-    m_ui.inputMappingsTab->setEnabled(isMappable);
-    m_ui.outputMappingsTab->setEnabled(isMappable);
+    enableWizardAndIOTabs(m_pController->isMappable() && m_pController->isOpen());
+
     // When slotUpdate() is run for the first time, this bool keeps slotPresetSelected()
     // from setting a false-postive 'dirty' flag when updating the fresh GUI.
     m_GuiInitialized = true;
@@ -541,6 +546,15 @@ QUrl DlgPrefController::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
+void DlgPrefController::enableWizardAndIOTabs(bool enable) {
+    // We always enable the Wizard button if this is a MIDI controller so we can
+    // create a new mapping from scratch with 'No Mapping'
+    const auto* midiController = qobject_cast<MidiController*>(m_pController);
+    m_ui.btnLearningWizard->setEnabled(midiController != nullptr);
+    m_ui.inputMappingsTab->setEnabled(enable);
+    m_ui.outputMappingsTab->setEnabled(enable);
+}
+
 QString DlgPrefController::mappingPathFromIndex(int index) const {
     if (index == 0) {
         // "No Mapping" item
@@ -560,6 +574,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
             if (m_GuiInitialized) {
                 setDirty(true);
             }
+            enableWizardAndIOTabs(false);
         }
     } else { // User picked a mapping
         m_ui.chkEnabledDevice->setEnabled(true);
@@ -573,8 +588,9 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     }
 
     // Check if the mapping is different from the configured mapping
-    if (m_pControllerManager->getConfiguredMappingFileForDevice(
-                m_pController->getName()) != mappingPath) {
+    if (m_GuiInitialized &&
+            m_pControllerManager->getConfiguredMappingFileForDevice(
+                    m_pController->getName()) != mappingPath) {
         setDirty(true);
     }
 

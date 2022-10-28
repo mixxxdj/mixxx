@@ -23,7 +23,7 @@ class AnalyzerGain : public Analyzer {
         return rgSettings.isAnalyzerEnabled(1);
     }
 
-    bool initialize(TrackPointer tio,
+    bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
             SINT totalSamples) override;
     bool processSamples(const CSAMPLE* pIn, SINT iLen) override;

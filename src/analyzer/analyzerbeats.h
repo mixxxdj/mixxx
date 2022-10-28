@@ -11,6 +11,7 @@
 #include <QList>
 
 #include "analyzer/analyzer.h"
+#include "analyzer/analyzertrack.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
@@ -26,7 +27,7 @@ class AnalyzerBeats : public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
     static mixxx::AnalyzerPluginInfo defaultPlugin();
 
-    bool initialize(TrackPointer pTrack,
+    bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
             SINT totalSamples) override;
     bool processSamples(const CSAMPLE* pIn, SINT iLen) override;

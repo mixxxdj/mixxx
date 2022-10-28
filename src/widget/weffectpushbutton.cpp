@@ -143,5 +143,5 @@ void WEffectPushButton::parameterUpdated() {
 
 void WEffectPushButton::slotActionChosen(QAction* action) {
     action->setChecked(true);
-    setControlParameter(action->data().toDouble());
+    setControlParameterLeftDown(action->data().toDouble());
 }

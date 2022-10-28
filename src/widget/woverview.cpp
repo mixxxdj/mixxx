@@ -85,7 +85,9 @@ WOverview::WOverview(
     m_pPassthroughControl =
             new ControlProxy(m_group, "passthrough", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
-    m_bPassthroughEnabled = static_cast<bool>(m_pPassthroughControl->get());
+    m_bPassthroughEnabled = m_pPassthroughControl->toBool();
+
+    m_pPassthroughLabel = new QLabel(this);
 
     setAcceptDrops(true);
 
@@ -95,18 +97,6 @@ WOverview::WOverview(
             this, &WOverview::onTrackAnalyzerProgress);
 
     connect(m_pCueMenuPopup.get(), &WCueMenuPopup::aboutToHide, this, &WOverview::slotCueMenuPopupAboutToHide);
-
-    m_pPassthroughLabel = new QLabel(this);
-    m_pPassthroughLabel->setObjectName("PassthroughLabel");
-    m_pPassthroughLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    // Shown on the overview waveform when vinyl passthrough is enabled
-    m_pPassthroughLabel->setText(tr("Passthrough"));
-    m_pPassthroughLabel->hide();
-    QVBoxLayout *pPassthroughLayout = new QVBoxLayout(this);
-    pPassthroughLayout->setContentsMargins(0,0,0,0);
-    pPassthroughLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    pPassthroughLayout->addWidget(m_pPassthroughLabel);
-    setLayout(pPassthroughLayout);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -199,6 +189,27 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         }
         child = child.nextSibling();
     }
+
+    DEBUG_ASSERT(m_pPassthroughLabel != nullptr);
+    m_pPassthroughLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    // Shown on the overview waveform when vinyl passthrough is enabled
+    m_pPassthroughLabel->setText(tr("Passthrough"));
+    m_pPassthroughLabel->setStyleSheet(
+            QStringLiteral("QLabel{"
+                           "font-family: 'Open Sans';"
+                           "font-size: %1px;"
+                           "font-weight: bold;"
+                           "color: %2;"
+                           "margin-left };")
+                    .arg(QString::number(int(m_iLabelFontSize * 1.5)),
+                            QColor(m_signalColors.getPassthroughLabelColor())
+                                    .name(QColor::HexRgb)));
+    m_pPassthroughLabel->hide();
+    QVBoxLayout* pPassthroughLayout = new QVBoxLayout(this);
+    pPassthroughLayout->setContentsMargins(m_iLabelFontSize, 0, 0, 0); // l, t, r, b
+    pPassthroughLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    pPassthroughLayout->addWidget(m_pPassthroughLabel);
+    setLayout(pPassthroughLayout);
 
     QString orientationString = context.selectString(node, "Orientation").toLower();
     if (orientationString == "vertical") {
@@ -483,6 +494,10 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
+    if (m_bPassthroughEnabled) {
+        m_bLeftClickDragging = false;
+        return;
+    }
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
@@ -503,6 +518,10 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 void WOverview::mousePressEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
+    if (m_bPassthroughEnabled) {
+        m_bLeftClickDragging = false;
+        return;
+    }
     if (m_pCurrentTrack == nullptr) {
         return;
     }

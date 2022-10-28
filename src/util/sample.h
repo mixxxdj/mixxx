@@ -153,6 +153,23 @@ class SampleUtil {
     static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
             CSAMPLE_GAIN new_gain, SINT numSamples);
 
+    // Apply the necessary ramping gain to normalize the signal to a given amplitude,
+    // i.e make the biggest sample have the given amplitude.
+    //
+    // The same gain is applied to every channel.
+    //
+    // We use ramping as often as possible to prevent soundwave discontinuities
+    // which can cause audible clicks and pops.
+    //
+    // Returns the applied gain.
+    static CSAMPLE copyWithRampingNormalization(CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            CSAMPLE_GAIN old_gain,
+            CSAMPLE_GAIN targetAmplitude,
+            SINT numSamples);
+
+    // TODO: tests for all this new stuff
+
     // Copy pSrc to pDest and ramp gain
     // For optimum performance use the in-place function applyRampingGain()
     // if pDest == pSrc!
@@ -201,6 +218,14 @@ class SampleUtil {
     static CLIP_STATUS sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
             const CSAMPLE* pBuffer, SINT numSamples);
 
+    // Returns the sum of the squared values of the buffer.
+    static CSAMPLE sumSquared(const CSAMPLE* pBuffer, SINT numSamples);
+
+    // Returns the root mean square of the values of the buffer.
+    static CSAMPLE rms(const CSAMPLE* pBuffer, SINT numSamples);
+
+    static CSAMPLE maxAbsAmplitude(const CSAMPLE* pBuffer, SINT numSamples);
+
     // Copies every sample in pSrc to pDest, limiting the values in pDest
     // to the valid range of CSAMPLE. pDest and pSrc must not overlap.
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
@@ -234,6 +259,11 @@ class SampleUtil {
             SINT numSamples);
     // In place version of the above.
     static void mixStereoToMono(CSAMPLE* pBuffer, SINT numSamples);
+
+    // Mix a buffer down to mono, resulting in a shorter buffer with only one channel.
+    // This uses a simple (L+R)/2 method, which assumes that the audio is
+    // "mono-compatible", ie there are no major out-of-phase parts of the signal.
+    static void mixMultichannelToMono(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT numSamples);
 
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
