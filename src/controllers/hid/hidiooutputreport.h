@@ -7,12 +7,14 @@
 
 class HidIoOutputReport {
   public:
-    HidIoOutputReport(const unsigned char& reportId, const unsigned int& reportDataSize);
+    HidIoOutputReport(const quint8& reportId, const unsigned int& reportDataSize);
 
     /// Caches new report data, which will later send by the IO thread
     void updateCachedData(const QByteArray& data,
+
             const mixxx::hid::DeviceInfo& deviceInfo,
-            const RuntimeLoggingCategory& logOutput);
+            const RuntimeLoggingCategory& logOutput,
+            bool resendUnchangedReport);
 
     /// Sends the OutputReport to the HID device, when changed data are cached.
     /// Returns true if a time consuming hid_write operation was executed.
@@ -22,15 +24,16 @@ class HidIoOutputReport {
             const RuntimeLoggingCategory& logOutput);
 
   private:
-    const unsigned char m_reportId;
+    const quint8 m_reportId;
     QByteArray m_lastSentData;
 
     /// Mutex must be locked when reading/writing m_cachedData
-    /// or m_possiblyUnsentDataCached
+    /// or m_possiblyUnsentDataCached, m_resendUnchangedReport
     QMutex m_cachedDataMutex;
 
     QByteArray m_cachedData;
     bool m_possiblyUnsentDataCached;
+    bool m_resendUnchangedReport;
 
     /// Due to swapping of the QbyteArrays, we need to store
     /// this information independent of the QBytearray size

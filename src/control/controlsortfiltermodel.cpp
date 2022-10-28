@@ -17,7 +17,7 @@ bool ControlSortFilterModel::sortDescending() const {
 }
 
 void ControlSortFilterModel::sortByColumn(int column, bool descending) {
-    const bool oldColumn = sortColumn();
+    const int oldColumn = sortColumn();
     const Qt::SortOrder oldSortOrder = sortOrder();
     const Qt::SortOrder sortOrder = descending ? Qt::DescendingOrder : Qt::AscendingOrder;
 

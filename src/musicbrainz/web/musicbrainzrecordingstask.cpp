@@ -25,12 +25,18 @@ const QString kRequestPath = QStringLiteral("/ws/2/recording/");
 
 const QByteArray kUserAgentRawHeaderKey = "User-Agent";
 
+// MusicBrainz allows only a single request per second on average
+// to avoid rate limiting.
+// See: <https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting>
+constexpr Duration kMinDurationBetweenRequests = Duration::fromMillis(1000);
+
 QString userAgentRawHeaderValue() {
     return VersionStore::applicationName() +
             QStringLiteral("/") +
             VersionStore::version() +
             QStringLiteral(" ( ") +
-            QStringLiteral(MIXXX_WEBSITE_URL) +
+            // QStringLiteral(MIXXX_WEBSITE_URL) fails to compile on Fedora 36 with GCC 12.0.x
+            MIXXX_WEBSITE_URL +
             QStringLiteral(" )");
 }
 
@@ -99,6 +105,7 @@ QNetworkReply* MusicBrainzRecordingsTask::doStartNetworkRequest(
                 << "GET"
                 << networkRequest.url();
     }
+    m_lastRequestSentAt.start();
     return networkAccessManager->get(networkRequest);
 }
 
@@ -165,7 +172,16 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
 
     // Continue with next recording id
     DEBUG_ASSERT(!m_queuedRecordingIds.isEmpty());
-    slotStart(m_parentTimeoutMillis);
+
+    // Ensure that at least kMinDurationBetweenRequests has passed
+    // since the last request before starting the next request.
+    // This is achieved by adjusting the start delay adaptively.
+    const Duration elapsedSinceLastRequestSent = m_lastRequestSentAt.elapsed();
+    const Duration delayBeforeNextRequest =
+            kMinDurationBetweenRequests -
+            std::min(kMinDurationBetweenRequests, elapsedSinceLastRequestSent);
+    emit currentRecordingFetchedFromMusicBrainz();
+    slotStart(m_parentTimeoutMillis, delayBeforeNextRequest.toIntegerMillis());
 }
 
 void MusicBrainzRecordingsTask::emitSucceeded(

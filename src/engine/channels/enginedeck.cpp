@@ -80,7 +80,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
                 pOut,
                 iBufferSize,
                 // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                static_cast<unsigned int>(m_pSampleRate->get()));
+                static_cast<unsigned int>(m_sampleRate.get()));
     }
 
     // Update VU meter
@@ -153,7 +153,7 @@ bool EngineDeck::isPassthroughActive() const {
     return (m_bPassthroughIsActive && m_sampleBuffer);
 }
 
-void EngineDeck::slotPassingToggle(double v) {
+void EngineDeck::slotPassthroughToggle(double v) {
     m_bPassthroughIsActive = v > 0;
 }
 
@@ -161,10 +161,10 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
     if (v <= 0 || m_pInputConfigured->get() > 0) {
         m_pPassing->setAndConfirm(v);
 
-        // Pass confirmed value to slotPassingToggle. We cannot use the
+        // Pass confirmed value to slotPassthroughToggle. We cannot use the
         // valueChanged signal for this, because the change originates from the
         // same ControlObject instance.
-        slotPassingToggle(v);
+        slotPassthroughToggle(v);
     } else {
         emit noPassthroughInputConfigured();
     }

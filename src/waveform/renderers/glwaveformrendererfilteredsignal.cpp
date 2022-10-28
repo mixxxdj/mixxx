@@ -11,7 +11,7 @@
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        : GLWaveformRenderer(waveformWidgetRenderer) {
 }
 
 GLWaveformRendererFilteredSignal::~GLWaveformRendererFilteredSignal() {

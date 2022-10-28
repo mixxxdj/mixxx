@@ -211,7 +211,7 @@ TEST_F(PortMidiControllerTest, Poll_Read_Basic) {
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
-                            Return(messages.size())));
+                    Return(static_cast<int>(messages.size()))));
 
     EXPECT_CALL(*m_pController, receivedShortMessage(0x90, 0x3C, 0x40, _))
             .InSequence(read);

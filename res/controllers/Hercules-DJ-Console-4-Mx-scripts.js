@@ -705,7 +705,7 @@ Hercules4Mx.onKillOrSourceChange4 = function(value, group, control) {
 //Any of the shift buttons for effects has been pressed. This button simply changes
 //the controller internal state, but we can use it for other reasons while the user maintains it pressed.
 Hercules4Mx.pressEffectShift = function(midichan, control, value, status, group) {
-    // I don't diferentiate between decks. I don't expect two shift buttons being pressed at the same time.
+    // I don't differentiate between decks. I don't expect two shift buttons being pressed at the same time.
     Hercules4Mx.shiftStatus.pressed = (value) ? true : false;
 };
 //Indicator of the shift effect state change. This happens always after shift is released
@@ -1315,8 +1315,8 @@ Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
                 Hercules4Mx.deactivateEditModeAction();
             }
             Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.loop, deck);
-            var splitted = extraparam.split(";");
-            if (splitted[0] === "roll") {
+            var split = extraparam.split(";");
+            if (split[0] === "roll") {
                 engine.setValue(group, "slip_enabled", 1);
             } else {
                 engine.setValue(group, "slip_enabled", 0);
@@ -1364,13 +1364,13 @@ Hercules4Mx.LoopButtonPush = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
         console.log("Hercules4Mx.LoopButtonPush");
     }
-    var splitted = extraparam.split(";");
-    if (splitted[0] === "roll" && splitted.length === 2) {
+    var split = extraparam.split(";");
+    if (split[0] === "roll" && split.length === 2) {
         if (engine.getValue(group, "loop_enabled") === 0 && value > 0) {
             engine.setValue(group, "slip_enabled", 1);
         }
-        Hercules4Mx.buttonPush(group, fxbutton, value, splitted[1]);
-    } else if (splitted.length === 1) {
+        Hercules4Mx.buttonPush(group, fxbutton, value, split[1]);
+    } else if (split.length === 1) {
         engine.setValue(group, "slip_enabled", 0);
         Hercules4Mx.buttonPush(group, fxbutton, value, extraparam);
     }

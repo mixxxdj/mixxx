@@ -15,6 +15,7 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
 #include "util/memory.h"
+#include "util/types.h"
 
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
 /// between an EffectSlot and the EffectProcessor. It implements the logic to handle
@@ -61,6 +62,10 @@ class EngineEffect final : public EffectsRequestHandler {
 
     const QString& name() const {
         return m_pManifest->name();
+    }
+
+    SINT getGroupDelayFrames() {
+        return m_pProcessor->getGroupDelayFrames();
     }
 
   private:

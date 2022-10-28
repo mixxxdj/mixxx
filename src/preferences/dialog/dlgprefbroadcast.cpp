@@ -214,6 +214,7 @@ void DlgPrefBroadcast::slotApply() {
 
         QString profileName = profile->getProfileName();
         QString profileMountpoint = profile->getMountpoint();
+        bool profileEnabled = profile->getEnabled();
 
         for (auto it = mountpoints.constBegin(); it != mountpoints.constEnd(); ++it) {
             if (it.value() == profileMountpoint) {
@@ -221,16 +222,19 @@ void DlgPrefBroadcast::slotApply() {
                 BroadcastProfilePtr profileWithSameMountpoint =
                         m_pSettingsModel->getProfileByName(profileNameWithSameMountpoint);
 
-                if (!profileWithSameMountpoint.isNull()
-                    && profileWithSameMountpoint->getHost().toLower()
-                    == profile->getHost().toLower()
-                    && profileWithSameMountpoint->getPort()
-                    == profile->getPort() ) {
+                if (!profileWithSameMountpoint.isNull() &&
+                        profileWithSameMountpoint->getHost().toLower() ==
+                                profile->getHost().toLower() &&
+                        profileWithSameMountpoint->getPort() ==
+                                profile->getPort()
+                        // allow same mountpoint if not both connections are enabled
+                        && (profileEnabled && profileWithSameMountpoint->getEnabled())) {
                     QMessageBox::warning(this,
                             tr("Action failed"),
                             tr("'%1' has the same Icecast mountpoint as '%2'.\n"
                                "Two source connections to the same server "
-                               "can't have the same mountpoint.")
+                               "that have the same mountpoint can not be enabled "
+                               "simultaneously.")
                                     .arg(profileName,
                                             profileNameWithSameMountpoint));
                     return;

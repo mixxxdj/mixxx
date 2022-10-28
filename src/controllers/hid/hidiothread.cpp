@@ -143,13 +143,11 @@ void HidIoThread::processInputReport(int bytesRead) {
             mixxx::Time::elapsed());
 }
 
-QByteArray HidIoThread::getInputReport(unsigned int reportID) {
+QByteArray HidIoThread::getInputReport(quint8 reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
     auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
-    // FIXME: implement upstream for hidraw backend on Linux
-    // https://github.com/libusb/hidapi/issues/259
     int bytesRead = hid_get_input_report(
             m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
     if (bytesRead <= kReportIdSize) {
@@ -168,10 +166,9 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     }
 
     // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
-    // For compatibility with HidController::processInputReport, the reportID prefix is included added here
     QByteArray returnArray = QByteArray(
-            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]),
-            bytesRead);
+            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex] + kReportIdSize),
+            bytesRead - kReportIdSize);
 
     hidDeviceLock.unlock();
 
@@ -189,7 +186,9 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     return returnArray;
 }
 
-void HidIoThread::updateCachedOutputReportData(const QByteArray& data, unsigned int reportID) {
+void HidIoThread::updateCachedOutputReportData(quint8 reportID,
+        const QByteArray& data,
+        bool resendUnchangedReport) {
     auto mapLock = lockMutex(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
         std::unique_ptr<HidIoOutputReport> pNewOutputReport;
@@ -205,7 +204,8 @@ void HidIoThread::updateCachedOutputReportData(const QByteArray& data, unsigned 
 
     mapLock.unlock();
 
-    actualOutputReportIterator->second->updateCachedData(data, m_deviceInfo, m_logOutput);
+    actualOutputReportIterator->second->updateCachedData(
+            data, m_deviceInfo, m_logOutput, resendUnchangedReport);
 }
 
 bool HidIoThread::sendNextCachedOutputReport() {
@@ -213,11 +213,15 @@ bool HidIoThread::sendNextCachedOutputReport() {
     // i is just a counter to prevent infinite loop execution.
     // If the map size increases, this loop will execute one iteration more,
     // which only has the effect, that one additional lookup operation for unsent data will be executed.
-    for (unsigned char i = 0; i < m_outputReports.size(); i++) {
+    for (std::size_t i = 0; i < m_outputReports.size(); i++) {
         auto mapLock = lockMutex(&m_outputReportMapMutex);
-        m_outputReportIterator++;
         if (m_outputReportIterator == m_outputReports.end()) {
             m_outputReportIterator = m_outputReports.begin();
+        } else {
+            m_outputReportIterator++;
+            if (m_outputReportIterator == m_outputReports.end()) {
+                m_outputReportIterator = m_outputReports.begin();
+            }
         }
         mapLock.unlock();
 
@@ -236,7 +240,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
 }
 
 void HidIoThread::sendFeatureReport(
-        const QByteArray& reportData, unsigned int reportID) {
+        quint8 reportID, const QByteArray& reportData) {
     auto startOfHidSendFeatureReport = mixxx::Time::elapsed();
     QByteArray dataArray;
     dataArray.reserve(kReportIdSize + reportData.size());
@@ -271,7 +275,7 @@ void HidIoThread::sendFeatureReport(
 }
 
 QByteArray HidIoThread::getFeatureReport(
-        unsigned int reportID) {
+        quint8 reportID) {
     auto startOfHidGetFeatureReport = mixxx::Time::elapsed();
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;

@@ -53,8 +53,8 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
         "clang-format",
         "--style=file",
         # The --assume-filename argument sets the path for the .clang-format
-        # config file implcitly by assuming a different location of the file to
-        # format
+        # config file implicitly by assuming a different location of the file
+        # to format
         "--assume-filename={}".format(
             os.path.join(
                 stylepath if stylepath else rootdir, file_to_format.filename

@@ -152,13 +152,12 @@ bool ControllerScriptEngineLegacy::initialize() {
                         wrapFunctionCode(functionName, 2)));
     }
 
-    QJSValueList args;
-    if (m_pController) {
-        args << QJSValue(m_pController->getName());
-    } else { // m_pController is nullptr in tests.
-        args << QJSValue();
-    }
-    args << QJSValue(m_logger().isDebugEnabled());
+    // m_pController is nullptr in tests.
+    const auto controllerName = m_pController ? m_pController->getName() : QString{};
+    const auto args = QJSValueList{
+            controllerName,
+            m_logger().isDebugEnabled(),
+    };
     if (!callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true)) {
         shutdown();
         return false;
@@ -168,11 +167,17 @@ bool ControllerScriptEngineLegacy::initialize() {
 }
 
 void ControllerScriptEngineLegacy::shutdown() {
-    callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
+    // There is no js engine if the mapping was not loaded from a file but by
+    // creating a new, empty mapping LegacyMidiControllerMapping with the wizard
+    if (m_pJSEngine) {
+        callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
+    }
     m_scriptWrappedFunctionCache.clear();
     m_incomingDataFunctions.clear();
     m_scriptFunctionPrefixes.clear();
-    ControllerScriptEngineBase::shutdown();
+    if (m_pJSEngine) {
+        ControllerScriptEngineBase::shutdown();
+    }
 }
 
 bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
@@ -182,9 +187,10 @@ bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
         return false;
     }
 
-    QJSValueList args;
-    args << m_pJSEngine->toScriptValue(data);
-    args << QJSValue(static_cast<uint>(data.size()));
+    const auto args = QJSValueList{
+            m_pJSEngine->toScriptValue(data),
+            static_cast<uint>(data.size()),
+    };
 
     for (const QJSValue& function : std::as_const(m_incomingDataFunctions)) {
         ControllerScriptEngineBase::executeFunction(function, args);

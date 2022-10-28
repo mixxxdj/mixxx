@@ -101,16 +101,33 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     // Important note:
     // On Windows \n will produce a <CR><CL> (=\r\n)
     // On Linux and OS X \n is <CR> (which remains \n)
-
+    bool urlEncodingUsed = false;
     QDir baseDirectory(QFileInfo(file_str).canonicalPath());
-
+    QTextCodec* codec = QTextCodec::codecForName(kStandardM3uTextEncoding);
     QString fileContents(QStringLiteral("#EXTM3U\n"));
     for (const QString& item : items) {
         fileContents += QStringLiteral("#EXTINF\n");
-        if (useRelativePath) {
-            fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
+        if (useUtf8) {
+            if (useRelativePath) {
+                fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
+            } else {
+                fileContents += item + QStringLiteral("\n");
+            }
         } else {
-            fileContents += item + QStringLiteral("\n");
+            QByteArray trackByteArray = codec->fromUnicode(item);
+            QString trackName = codec->toUnicode(trackByteArray);
+            if (trackName == item) {
+                if (useRelativePath) { //Issue: URL Location is not working properly for Relative Paths
+                    fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
+                } else {
+                    fileContents += item + QStringLiteral("\n");
+                }
+            } else {
+                QUrl itemUrl = QUrl::fromLocalFile(item);
+                QString itemUrlEncoded = itemUrl.toEncoded();
+                fileContents += itemUrlEncoded + QStringLiteral("\n");
+                urlEncodingUsed = true;
+            }
         }
     }
 
@@ -129,6 +146,13 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
                 QObject::tr("Playlist Export Failed"),
                 QObject::tr("Could not create file") + " " + file_str);
         return false;
+    }
+    if (urlEncodingUsed) {
+        QMessageBox::information(nullptr,
+                QObject::tr("Playlist Export Has Special Characters"),
+                QObject::tr("Some file paths in the playlist have special characters. "
+                            "These file paths will be encoded as absolute path URLs. "
+                            "Please select the m3u8 format for better and lossless exporting."));
     }
     file.write(outputByteArray);
     file.close();

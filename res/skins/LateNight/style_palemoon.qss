@@ -229,7 +229,13 @@ WSearchLineEdit {
 #VuMeterBoxMasterSingle,
 #LatencyMeterBox {
   background-color: #040404;
-}
+  }
+  #LatencyMeterBox[highlight="0"] {
+    border: 1px solid #040404;
+  }
+  #LatencyMeterBox[highlight="1"] {
+    border: 1px solid yellow;
+  }
 
 #WaveformsContainer {
   border-bottom: 1px solid #0c0c0c;
@@ -318,7 +324,7 @@ WSearchLineEdit {
     margin: 0px 5px;
   }
   #SkinSettingsSeparator {
-    margin: 3px 4px 7px 4px;
+    margin: 1px 4px 3px 4px;
   }
 
 /* dynamic bottom border in #DeckRow1_ */
@@ -1374,11 +1380,6 @@ QPushButton#pushButtonRecording:checked {
 
 #LibraryFeatureControls QPushButton:!enabled {
   color: #444443;
-}
-
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  color: #b24c12;
 }
 
 #SkinSettingsButton,

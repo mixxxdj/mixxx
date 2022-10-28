@@ -123,7 +123,7 @@ EffectSlot::EffectSlot(const QString& group,
     connect(m_pControlMetaParameter.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotEffectMetaParameter(value); });
+            [=, this](double value) { slotEffectMetaParameter(value); });
     m_pControlMetaParameter->set(0.0);
     m_pControlMetaParameter->setDefaultValue(0.0);
 
@@ -286,7 +286,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     DEBUG_ASSERT(!m_pManifest);
 
     // The function shall be called only with both pointers set or both null.
-    DEBUG_ASSERT(pManifest.isNull() == pEffectPreset.isNull())
+    DEBUG_ASSERT(pManifest.isNull() == pEffectPreset.isNull());
     if (!pManifest || !pEffectPreset) {
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();

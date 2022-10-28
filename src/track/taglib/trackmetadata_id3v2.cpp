@@ -66,10 +66,7 @@ const QString kFormatTYER = QStringLiteral("yyyy");
 const QString kFormatTDAT = QStringLiteral("ddMM");
 
 // Owners of ID3v2 UFID frames.
-// NOTE(uklotzde, 2019-09-28): This is the owner string for MusicBrainz
-// as written by MusicBrainz Picard 2.1.3 although the mapping table
-// doesn't mention any "http://" prefix.
-// See also: https://picard.musicbrainz.org/docs/mappings
+// https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html#id21
 const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 // Serato frames
@@ -672,7 +669,8 @@ bool importCoverImageFromTag(
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::ID3v2::Tag& tag) {
+        const TagLib::ID3v2::Tag& tag,
+        bool resetMissingTagMetadata) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
@@ -714,13 +712,13 @@ void importTrackMetadataFromTag(
                 readFirstUserTextIdentificationFrame(
                         tag,
                         QStringLiteral("COMMENT"));
-        if (!comment.isNull()) {
+        if (!comment.isNull() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setComment(comment);
         }
     }
 
     const TagLib::ID3v2::FrameList albumArtistFrames(tag.frameListMap()["TPE2"]);
-    if (!albumArtistFrames.isEmpty()) {
+    if (!albumArtistFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setArtist(
                 firstNonEmptyFrameToQString(albumArtistFrames));
     }
@@ -736,7 +734,7 @@ void importTrackMetadataFromTag(
     }
 
     const TagLib::ID3v2::FrameList composerFrames(tag.frameListMap()["TCOM"]);
-    if (!composerFrames.isEmpty()) {
+    if (!composerFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setComposer(
                 firstNonEmptyFrameToQString(composerFrames));
     }
@@ -746,33 +744,56 @@ void importTrackMetadataFromTag(
     // frames.
     // https://discussions.apple.com/thread/7900430
     // http://blog.jthink.net/2016/11/the-reason-why-is-grouping-field-no.html
-    if (tag.frameListMap().contains("GRP1")) {
-        // New grouping/work mapping
-        const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
-        if (!appleGroupingFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setGrouping(
-                    firstNonEmptyFrameToQString(appleGroupingFrames));
-        }
+    const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
+    const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
 #if defined(__EXTRA_METADATA__)
-        const TagLib::ID3v2::FrameList workFrames = tag.frameListMap()["TIT1"];
-        if (!workFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setWork(
-                    firstNonEmptyFrameToQString(workFrames));
-        }
-        const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
-        if (!movementFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setMovement(
-                    firstNonEmptyFrameToQString(movementFrames));
-        }
-#endif // __EXTRA_METADATA__
-    } else {
-        // No Apple grouping frame found -> Use the traditional mapping
-        const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
-        if (!traditionalGroupingFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setGrouping(
-                    firstNonEmptyFrameToQString(traditionalGroupingFrames));
-        }
+    // Unconditionally adopt the the new grouping/work/movement mapping
+    // from Apple iTunes. This ensures that now information is lost, even
+    // if it ends up in the wrong track properties.
+    // The code must be consistent with the corresponding write function!
+    // FIXME: Revisit this decision before enabling the code.
+    if (!appleGroupingFrames.isEmpty() || resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setGrouping(
+                firstNonEmptyFrameToQString(appleGroupingFrames));
     }
+    if (!traditionalGroupingFrames.isEmpty() || resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setWork(
+                firstNonEmptyFrameToQString(traditionalGroupingFrames));
+    }
+    const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
+    if (!movementFrames.isEmpty() || resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setMovement(
+                firstNonEmptyFrameToQString(movementFrames));
+    }
+#else  // __EXTRA_METADATA__
+    // Read the grouping from the new GRP1 frame if these frames are
+    // present in the file. Do so even if it all are empty! If no GRP1
+    // frames are present then read it from the traditional TIT1 frames.
+    // This content-sensitive, conditional behavior must match the
+    // corresponding implementation of the write function for consistent
+    // results!
+    const QString traditionalGrouping = firstNonEmptyFrameToQString(traditionalGroupingFrames);
+    if (appleGroupingFrames.isEmpty()) {
+        // Fallback
+        if (!traditionalGroupingFrames.isEmpty() || resetMissingTagMetadata) {
+            pTrackMetadata->refTrackInfo().setGrouping(traditionalGrouping);
+        }
+    } else {
+        const QString appleGrouping =
+                firstNonEmptyFrameToQString(appleGroupingFrames);
+        if (!traditionalGrouping.trimmed().isEmpty() &&
+                traditionalGrouping != appleGrouping) {
+            // Only log an informational message if the TIT1 frames carry
+            // meaningful data that differs from the GRP1 data. This might
+            // be fine if the TIT1 frames stores the "work" field that is not
+            // yet supported by Mixxx (see __EXTRA_METADATA__).
+            qInfo() << "ID3v2: Discarding content of TIT1" << traditionalGrouping
+                    << "in favor of GRP1" << appleGrouping
+                    << "for grouping (content group) field";
+        }
+        pTrackMetadata->refTrackInfo().setGrouping(appleGrouping);
+    }
+#endif // __EXTRA_METADATA__
 
     // ID3v2.4.0: TDRC replaces TYER + TDAT
     const QString recordingTime(
@@ -797,7 +818,7 @@ void importTrackMetadataFromTag(
                 }
             }
         }
-        if (!year.isEmpty()) {
+        if (!year.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setYear(year);
         }
     }
@@ -812,6 +833,9 @@ void importTrackMetadataFromTag(
                 &trackTotal);
         pTrackMetadata->refTrackInfo().setTrackNumber(trackNumber);
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setTrackNumber(QString{});
+        pTrackMetadata->refTrackInfo().setTrackTotal(QString{});
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -825,13 +849,17 @@ void importTrackMetadataFromTag(
                 &discTotal);
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setDiscNumber(QString{});
+        pTrackMetadata->refTrackInfo().setDiscTotal(QString{});
     }
 #endif // __EXTRA_METADATA__
 
     const TagLib::ID3v2::FrameList bpmFrames(tag.frameListMap()["TBPM"]);
-    if (!bpmFrames.isEmpty()) {
+    if (!bpmFrames.isEmpty() || resetMissingTagMetadata) {
         parseBpm(pTrackMetadata,
-                firstNonEmptyFrameToQString(bpmFrames));
+                firstNonEmptyFrameToQString(bpmFrames),
+                resetMissingTagMetadata);
         if (pTrackMetadata->getTrackInfo().getBpm().isValid()) {
             double bpmValue = pTrackMetadata->getTrackInfo().getBpm().value();
             // Some software use (or used) to write decimated values without comma,
@@ -876,7 +904,7 @@ void importTrackMetadataFromTag(
     }
 
     const TagLib::ID3v2::FrameList keyFrames(tag.frameListMap()["TKEY"]);
-    if (!keyFrames.isEmpty()) {
+    if (!keyFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setKey(
                 firstNonEmptyFrameToQString(keyFrames));
     }
@@ -885,15 +913,15 @@ void importTrackMetadataFromTag(
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_TRACK_GAIN"));
-    if (!trackGain.isEmpty()) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (!trackGain.isEmpty() || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_TRACK_PEAK"));
-    if (!trackPeak.isEmpty()) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (!trackPeak.isEmpty() || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -901,126 +929,126 @@ void importTrackMetadataFromTag(
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_ALBUM_GAIN"));
-    if (!albumGain.isEmpty()) {
-        parseAlbumGain(pTrackMetadata, albumGain);
+    if (!albumGain.isEmpty() || resetMissingTagMetadata) {
+        parseAlbumGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_ALBUM_PEAK"));
-    if (!albumPeak.isEmpty()) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (!albumPeak.isEmpty() || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Artist Id"));
-    if (!trackArtistId.isNull()) {
+    if (!trackArtistId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QByteArray trackRecordingId =
             readFirstUniqueFileIdentifierFrame(
                     tag,
                     kMusicBrainzOwner);
-    if (!trackRecordingId.isEmpty()) {
+    if (!trackRecordingId.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
     QString trackReleaseId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Release Track Id"));
-    if (!trackReleaseId.isNull()) {
+    if (!trackReleaseId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
     QString trackWorkId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Work Id"));
-    if (!trackWorkId.isNull()) {
+    if (!trackWorkId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(QUuid(trackWorkId));
     }
     QString albumArtistId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Album Artist Id"));
-    if (!albumArtistId.isNull()) {
+    if (!albumArtistId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
     }
     QString albumReleaseId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Album Id"));
-    if (!albumReleaseId.isNull()) {
+    if (!albumReleaseId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
     QString albumReleaseGroupId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Release Group Id"));
-    if (!albumReleaseGroupId.isNull()) {
+    if (!albumReleaseGroupId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 
     const TagLib::ID3v2::FrameList conductorFrames(tag.frameListMap()["TPE3"]);
-    if (!conductorFrames.isEmpty()) {
+    if (!conductorFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setConductor(
                 firstNonEmptyFrameToQString(conductorFrames));
     }
     const TagLib::ID3v2::FrameList isrcFrames(tag.frameListMap()["TSRC"]);
-    if (!isrcFrames.isEmpty()) {
+    if (!isrcFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setISRC(
                 firstNonEmptyFrameToQString(isrcFrames));
     }
     const TagLib::ID3v2::FrameList languageFrames(tag.frameListMap()["TLAN"]);
-    if (!languageFrames.isEmpty()) {
+    if (!languageFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLanguage(
                 firstNonEmptyFrameToQString(languageFrames));
     }
     const TagLib::ID3v2::FrameList lyricistFrames(tag.frameListMap()["TEXT"]);
-    if (!lyricistFrames.isEmpty()) {
+    if (!lyricistFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLyricist(
                 firstNonEmptyFrameToQString(lyricistFrames));
     }
     if (tag.header()->majorVersion() >= 4) {
         const TagLib::ID3v2::FrameList moodFrames(tag.frameListMap()["TMOO"]);
-        if (!moodFrames.isEmpty()) {
+        if (!moodFrames.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setMood(
                     firstNonEmptyFrameToQString(moodFrames));
         }
     }
     const TagLib::ID3v2::FrameList copyrightFrames(tag.frameListMap()["TCOP"]);
-    if (!copyrightFrames.isEmpty()) {
+    if (!copyrightFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setCopyright(
                 firstNonEmptyFrameToQString(copyrightFrames));
     }
     const TagLib::ID3v2::FrameList licenseFrames(tag.frameListMap()["WCOP"]);
-    if (!licenseFrames.isEmpty()) {
+    if (!licenseFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setLicense(
                 firstNonEmptyFrameToQString(licenseFrames));
     }
     const TagLib::ID3v2::FrameList recordLabelFrames(tag.frameListMap()["TPUB"]);
-    if (!recordLabelFrames.isEmpty()) {
+    if (!recordLabelFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setRecordLabel(
                 firstNonEmptyFrameToQString(recordLabelFrames));
     }
     const TagLib::ID3v2::FrameList remixerFrames(tag.frameListMap()["TPE4"]);
-    if (!remixerFrames.isEmpty()) {
+    if (!remixerFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setRemixer(
                 firstNonEmptyFrameToQString(remixerFrames));
     }
     const TagLib::ID3v2::FrameList subtitleFrames(tag.frameListMap()["TIT3"]);
-    if (!subtitleFrames.isEmpty()) {
+    if (!subtitleFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setSubtitle(
                 firstNonEmptyFrameToQString(subtitleFrames));
     }
     const TagLib::ID3v2::FrameList encoderFrames(tag.frameListMap()["TENC"]);
-    if (!encoderFrames.isEmpty()) {
+    if (!encoderFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoder(
                 firstNonEmptyFrameToQString(encoderFrames));
     }
     const TagLib::ID3v2::FrameList encoderSettingsFrames(tag.frameListMap()["TSSE"]);
-    if (!encoderSettingsFrames.isEmpty()) {
+    if (!encoderSettingsFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(
                 firstNonEmptyFrameToQString(encoderSettingsFrames));
     }
@@ -1137,35 +1165,36 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             "TCOM",
             trackMetadata.getTrackInfo().getComposer());
 
-    // We can use the TIT1 frame only once, either for storing the Work
-    // like Apple decided to do or traditionally for the Content Group.
-    // Rationale: If the the file already has one or more GRP1 frames
-    // or if the track has a Work field then store the Grouping in a
-    // GRP1 frame instead of using TIT1.
-    // See also: importTrackMetadataFromTag()
-    if (
 #if defined(__EXTRA_METADATA__)
-            !trackMetadata.getTrackInfo().getWork().isNull() ||
-            !trackMetadata.getTrackInfo().getMovement().isNull() ||
-#endif // __EXTRA_METADATA__
-            pTag->frameListMap().contains("GRP1")) {
-        // New grouping/work/movement mapping if properties for classical
-        // music are available or if the GRP1 frame is already present in
-        // the file.
+    // Unconditionally adopt the the new grouping/work/movement mapping
+    // from Apple iTunes. This ensures that now information is lost, even
+    // if it ends up in the wrong ID3v2 tags.
+    // The code must be consistent with the corresponding write function!
+    // FIXME: Revisit this decision before enabling the code.
+    writeTextIdentificationFrame(
+            pTag,
+            "GRP1",
+            trackMetadata.getTrackInfo().getGrouping());
+    writeTextIdentificationFrame(
+            pTag,
+            "TIT1",
+            trackMetadata.getTrackInfo().getWork());
+    writeTextIdentificationFrame(
+            pTag,
+            "MVNM",
+            trackMetadata.getTrackInfo().getMovement());
+#else  // __EXTRA_METADATA__
+    // Write the grouping back into the new GRP1 frame if any GRP1
+    // frames are already present in the file. Otherwise write it
+    // into the traditional TIT1 frame.
+    // This content-sensitive, conditional behavior must match the
+    // corresponding implementation of the read function for consistent
+    // results!
+    if (pTag->frameListMap().contains("GRP1")) {
         writeTextIdentificationFrame(
                 pTag,
                 "GRP1",
                 trackMetadata.getTrackInfo().getGrouping());
-#if defined(__EXTRA_METADATA__)
-        writeTextIdentificationFrame(
-                pTag,
-                "TIT1",
-                trackMetadata.getTrackInfo().getWork());
-        writeTextIdentificationFrame(
-                pTag,
-                "MVNM",
-                trackMetadata.getTrackInfo().getMovement());
-#endif // __EXTRA_METADATA__
     } else {
         // Stick to the traditional CONTENTGROUP mapping.
         writeTextIdentificationFrame(
@@ -1173,6 +1202,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getGrouping());
     }
+#endif // __EXTRA_METADATA__
 
     // According to the specification "The 'TBPM' frame contains the number
     // of beats per minute in the mainpart of the audio. The BPM is an
@@ -1225,20 +1255,11 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             uuidToNullableStringWithoutBraces(
                     trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
             false);
-    {
-        QByteArray identifier = trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toByteArray();
-        if (identifier.size() == 38) {
-            // Strip leading/trailing curly braces
-            DEBUG_ASSERT(identifier.startsWith('{'));
-            DEBUG_ASSERT(identifier.endsWith('}'));
-            identifier = identifier.mid(1, 36);
-        }
-        DEBUG_ASSERT(identifier.size() == 36);
-        writeUniqueFileIdentifierFrame(
-                pTag,
-                kMusicBrainzOwner,
-                identifier);
-    }
+    writeUniqueFileIdentifierFrame(
+            pTag,
+            kMusicBrainzOwner,
+            uuidToCompactAsciiHexDigits(
+                    trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
     writeUserTextIdentificationFrame(
             pTag,
             "MusicBrainz Release Track Id",

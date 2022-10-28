@@ -43,7 +43,9 @@ void EffectPresetManager::loadDefaultEffectPresets() {
         if (!pEffectPreset->isEmpty()) {
             EffectManifestPointer pManifest = m_pBackendManager->getManifest(
                     pEffectPreset->id(), pEffectPreset->backendType());
-            m_defaultPresets.insert(pManifest, pEffectPreset);
+            if (pManifest) {
+                m_defaultPresets.insert(pManifest, pEffectPreset);
+            }
         }
         file.close();
     }
@@ -69,6 +71,9 @@ void EffectPresetManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset
 
     const auto pManifest = m_pBackendManager->getManifest(
             pEffectPreset->id(), pEffectPreset->backendType());
+    VERIFY_OR_DEBUG_ASSERT(pManifest) {
+        return;
+    }
     m_defaultPresets.insert(pManifest, pEffectPreset);
 
     QDomDocument doc(EffectXml::kEffect);

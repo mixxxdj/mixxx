@@ -28,7 +28,7 @@ Description:
           <!-- Decks -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <Size>0me,1min</Size>
+            <Size>0me,23min</Size>
             <Children>
               <Label>
                 <ObjectName>CategoryLabel</ObjectName>

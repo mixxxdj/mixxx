@@ -4,6 +4,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefvinyl.cpp"
@@ -95,7 +96,8 @@ DlgPrefVinyl::DlgPrefVinyl(
 
     TroubleshootingLink->setText(coloredLinkString(
             m_pLinkColor,
-            QStringLiteral("Troubleshooting"),
+            // QStringLiteral("Troubleshooting") fails to compile on Fedora 36 with GCC 12.0.x
+            "Troubleshooting",
             MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL));
 
     connect(VinylGain, &QSlider::sliderReleased, this, &DlgPrefVinyl::slotVinylGainApply);
@@ -143,7 +145,7 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_COSpeeds.length(); i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_COSpeeds.push_back(new ControlProxy(group, "vinylcontrol_speed_type"));
+        m_COSpeeds.push_back(new PollingControlProxy(group, "vinylcontrol_speed_type"));
         setDeckWidgetsVisible(i, true);
     }
 }

@@ -5,9 +5,11 @@
 #include <QAtomicInt>
 #include <QMutex>
 #include <cfloat>
+#include <initializer_list>
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
@@ -74,10 +76,19 @@ class EngineBuffer : public EngineObject {
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
-    enum KeylockEngine {
-        SOUNDTOUCH,
-        RUBBERBAND,
-        KEYLOCK_ENGINE_COUNT,
+    // This enum is also used in mixxx.cfg
+    // Don't remove or swap values to keep backward compatibility
+    enum class KeylockEngine {
+        SoundTouch = 0,
+        RubberBandFaster = 1,
+        RubberBandFiner = 2,
+    };
+
+    // intended for iteration over the KeylockEngine enum
+    constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
+            KeylockEngine::SoundTouch,
+            KeylockEngine::RubberBandFaster,
+            KeylockEngine::RubberBandFiner,
     };
 
     EngineBuffer(const QString& group, UserSettingsPointer pConfig,
@@ -144,13 +155,35 @@ class EngineBuffer : public EngineObject {
 
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
-        case SOUNDTOUCH:
+        case KeylockEngine::SoundTouch:
             return tr("Soundtouch (faster)");
-        case RUBBERBAND:
+        case KeylockEngine::RubberBandFaster:
             return tr("Rubberband (better)");
+        case KeylockEngine::RubberBandFiner:
+            if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
+                return tr("Rubberband R3 (near-hi-fi quality)");
+            }
+            [[fallthrough]];
         default:
-            return tr("Unknown (bad value)");
+            return tr("Unknown, using Rubberband (better)");
         }
+    }
+
+    static bool isKeylockEngineAvailable(KeylockEngine engine) {
+        switch (engine) {
+        case KeylockEngine::SoundTouch:
+            return true;
+        case KeylockEngine::RubberBandFaster:
+            return true;
+        case KeylockEngine::RubberBandFiner:
+            return EngineBufferScaleRubberBand::isEngineFinerAvailable();
+        default:
+            return false;
+        }
+    }
+
+    constexpr static KeylockEngine defaultKeylockEngine() {
+        return KeylockEngine::RubberBandFaster;
     }
 
     // Request that the EngineBuffer load a track. Since the process is
@@ -246,7 +279,7 @@ class EngineBuffer : public EngineObject {
     friend class HotcueControlTest;
     friend class LoopingControlTest;
 
-    LoopingControl* m_pLoopingControl; // used for testes
+    LoopingControl* m_pLoopingControl; // used for tests
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
@@ -414,4 +447,5 @@ class EngineBuffer : public EngineObject {
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };
 
+Q_DECLARE_METATYPE(EngineBuffer::KeylockEngine)
 Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)

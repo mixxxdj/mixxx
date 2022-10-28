@@ -42,7 +42,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
   signals:
     void search(const QString& text);
-    FocusWidget searchbarFocusChange(FocusWidget newFocusWidget);
+    FocusWidget setLibraryFocus(FocusWidget newFocusWidget);
 
   public slots:
     void slotSetFont(const QFont& font);
@@ -102,4 +102,5 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     QTimer m_debouncingTimer;
     QTimer m_saveTimer;
+    bool m_queryEmitted;
 };

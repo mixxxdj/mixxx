@@ -8,7 +8,6 @@
 #include <QStandardPaths>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <QtDebug>
 
 #include "controllers/controller.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -46,6 +45,7 @@ DlgPrefController::DlgPrefController(
           m_pInputProxyModel(nullptr),
           m_pOutputTableModel(nullptr),
           m_pOutputProxyModel(nullptr),
+          m_GuiInitialized(false),
           m_bDirty(false) {
     m_ui.setupUi(this);
     // Create text color for the file and wiki links
@@ -97,6 +97,11 @@ DlgPrefController::DlgPrefController(
             &DlgPrefController::applyMapping,
             m_pControllerManager.get(),
             &ControllerManager::slotApplyMapping);
+    // Update GUI
+    connect(m_pControllerManager.get(),
+            &ControllerManager::mappingApplied,
+            this,
+            &DlgPrefController::enableWizardAndIOTabs);
 
     // Open script file links
     connect(m_ui.labelLoadedMappingScriptFileLinks,
@@ -162,6 +167,8 @@ void DlgPrefController::showLearningWizard() {
     if (!m_pMapping) {
         m_pMapping = std::shared_ptr<LegacyControllerMapping>(new LegacyMidiControllerMapping());
         emit applyMapping(m_pController, m_pMapping, true);
+        // shortcut for creating and assigning required I/O table models
+        slotShowMapping(m_pMapping);
     }
 
     // Note that DlgControllerLearning is set to delete itself on close using
@@ -464,17 +471,18 @@ void DlgPrefController::slotUpdate() {
     enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
             m_pController->getName()));
 
-    // enumeratePresets will check the m_ui.chkEnabledDevice checkbox if
-    // there is a valid mapping saved in the mixxx.cfg file. However, the
+    // enumeratePresets calls slotPresetSelected which will check the m_ui.chkEnabledDevice
+    // checkbox if there is a valid mapping saved in the mixxx.cfg file. However, the
     // checkbox should only be checked if the device is currently enabled.
     m_ui.chkEnabledDevice->setChecked(m_pController->isOpen());
 
     // If the controller is not mappable, disable the input and output mapping
     // sections and the learning wizard button.
-    bool isMappable = m_pController->isMappable();
-    m_ui.btnLearningWizard->setEnabled(isMappable);
-    m_ui.inputMappingsTab->setEnabled(isMappable);
-    m_ui.outputMappingsTab->setEnabled(isMappable);
+    enableWizardAndIOTabs(m_pController->isMappable() && m_pController->isOpen());
+
+    // When slotUpdate() is run for the first time, this bool keeps slotPresetSelected()
+    // from setting a false-postive 'dirty' flag when updating the fresh GUI.
+    m_GuiInitialized = true;
 }
 
 void DlgPrefController::slotResetToDefaults() {
@@ -506,7 +514,11 @@ void DlgPrefController::slotApply() {
         bEnabled = m_ui.chkEnabledDevice->isChecked();
 
         if (m_pMapping->isDirty()) {
-            saveMapping();
+            if (saveMapping()) {
+                // We might have saved the previous mapping with a new name,
+                // so update the mapping combobox.
+                enumerateMappings(m_pMapping->filePath());
+            }
         }
     }
     m_ui.chkEnabledDevice->setChecked(bEnabled);
@@ -534,6 +546,15 @@ QUrl DlgPrefController::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
+void DlgPrefController::enableWizardAndIOTabs(bool enable) {
+    // We always enable the Wizard button if this is a MIDI controller so we can
+    // create a new mapping from scratch with 'No Mapping'
+    const auto* midiController = qobject_cast<MidiController*>(m_pController);
+    m_ui.btnLearningWizard->setEnabled(midiController != nullptr);
+    m_ui.inputMappingsTab->setEnabled(enable);
+    m_ui.outputMappingsTab->setEnabled(enable);
+}
+
 QString DlgPrefController::mappingPathFromIndex(int index) const {
     if (index == 0) {
         // "No Mapping" item
@@ -545,37 +566,42 @@ QString DlgPrefController::mappingPathFromIndex(int index) const {
 
 void DlgPrefController::slotMappingSelected(int chosenIndex) {
     QString mappingPath = mappingPathFromIndex(chosenIndex);
-    if (mappingPath.isEmpty()) {
-        // User picked "No Mapping" item
+    if (mappingPath.isEmpty()) { // User picked "No Mapping" item
         m_ui.chkEnabledDevice->setEnabled(false);
 
         if (m_ui.chkEnabledDevice->isChecked()) {
             m_ui.chkEnabledDevice->setChecked(false);
-            setDirty(true);
+            if (m_GuiInitialized) {
+                setDirty(true);
+            }
+            enableWizardAndIOTabs(false);
         }
-    } else {
-        // User picked a mapping
+    } else { // User picked a mapping
         m_ui.chkEnabledDevice->setEnabled(true);
 
         if (!m_ui.chkEnabledDevice->isChecked()) {
             m_ui.chkEnabledDevice->setChecked(true);
-            setDirty(true);
+            if (m_GuiInitialized) {
+                setDirty(true);
+            }
         }
     }
 
     // Check if the mapping is different from the configured mapping
-    if (m_pControllerManager->getConfiguredMappingFileForDevice(
-                m_pController->getName()) != mappingPath) {
+    if (m_GuiInitialized &&
+            m_pControllerManager->getConfiguredMappingFileForDevice(
+                    m_pController->getName()) != mappingPath) {
         setDirty(true);
     }
 
     applyMappingChanges();
+    bool previousMappingSaved = false;
     if (m_pMapping && m_pMapping->isDirty()) {
         if (QMessageBox::question(this,
                     tr("Mapping has been edited"),
                     tr("Do you want to save the changes?")) ==
                 QMessageBox::Yes) {
-            saveMapping();
+            previousMappingSaved = saveMapping();
         }
     }
 
@@ -587,17 +613,23 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         DEBUG_ASSERT(!pMapping->isDirty());
     }
 
-    slotShowMapping(pMapping);
+    if (previousMappingSaved) {
+        // We might have saved the previous preset with a new name, so update
+        // the preset combobox.
+        enumerateMappings(mappingPath);
+    } else {
+        slotShowMapping(pMapping);
+    }
 }
 
-void DlgPrefController::saveMapping() {
+bool DlgPrefController::saveMapping() {
     VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
-        return;
+        return false;
     }
 
     if (!m_pMapping->isDirty()) {
         qDebug() << "Mapping is not dirty, no need to save it.";
-        return;
+        return false;
     }
 
     QString oldFilePath = m_pMapping->filePath();
@@ -643,7 +675,7 @@ void DlgPrefController::saveMapping() {
                 m_pOverwriteMappings.insert(m_pMapping->filePath(), true);
             }
         } else if (overwriteMsgBox.close()) {
-            return;
+            return false;
         }
     }
 
@@ -656,20 +688,25 @@ void DlgPrefController::saveMapping() {
     } else {
         mappingName = askForMappingName(mappingName);
         newFilePath = mappingNameToPath(m_pUserDir, mappingName);
+        if (mappingName.isEmpty()) {
+            // QInputDialog was closed
+            qDebug() << "Mapping not saved, new name is empty";
+            return false;
+        }
         m_pMapping->setName(mappingName);
         qDebug() << "Mapping renamed to" << m_pMapping->name();
     }
 
     if (!m_pMapping->saveMapping(newFilePath)) {
         qDebug() << "Failed to save mapping as" << newFilePath;
-        return;
+        return false;
     }
     qDebug() << "Mapping saved as" << newFilePath;
 
     m_pMapping->setFilePath(newFilePath);
     m_pMapping->setDirty(false);
 
-    enumerateMappings(m_pMapping->filePath());
+    return true;
 }
 
 QString DlgPrefController::askForMappingName(const QString& prefilledName) const {
@@ -699,7 +736,8 @@ QString DlgPrefController::askForMappingName(const QString& prefilledName) const
                               .remove(rxRemove)
                               .trimmed();
         if (!ok) {
-            continue;
+            // Return empty string if the dialog was canceled. Callers will deal with this.
+            return QString();
         }
         if (mappingName.isEmpty()) {
             QMessageBox::warning(nullptr,

@@ -937,7 +937,6 @@ void SeratoFeature::bindLibraryWidget(WLibrary* libraryWidget,
     edit->setOpenLinks(false);
     connect(edit, &WLibraryTextBrowser::anchorClicked, this, &SeratoFeature::htmlLinkClicked);
     libraryWidget->registerView("SERATOHOME", edit);
-    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void SeratoFeature::htmlLinkClicked(const QUrl& link) {

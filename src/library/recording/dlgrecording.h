@@ -11,7 +11,6 @@
 #include "recording/recordingmanager.h"
 #include "track/track_decl.h"
 
-class PlaylistTableModel;
 class WLibrary;
 class WTrackTableView;
 
@@ -27,7 +26,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void onShow() override{};
     bool hasFocus() const override;
     void setFocus() override;
-    void loadSelectedTrack() override;
+    void activateSelectedTrack() override;
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;

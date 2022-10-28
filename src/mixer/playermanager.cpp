@@ -437,6 +437,9 @@ void PlayerManager::addDeckInner() {
 
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup.m_name);
+
+    // Setup EQ ControlProxies used for resetting EQs on track load
+    pDeck->setupEqControls();
 }
 
 void PlayerManager::loadSamplers() {
@@ -683,16 +686,37 @@ void PlayerManager::slotLoadLocationToPlayer(
     emit loadLocationToPlayer(location, group, play);
 }
 
+void PlayerManager::slotLoadLocationToPlayerMaybePlay(
+        const QString& location, const QString& group) {
+    bool play = false;
+    LoadWhenDeckPlaying loadWhenDeckPlaying =
+            static_cast<LoadWhenDeckPlaying>(
+                    m_pConfig->getValue(kConfigKeyLoadWhenDeckPlaying,
+                            static_cast<int>(kDefaultLoadWhenDeckPlaying)));
+    switch (loadWhenDeckPlaying) {
+    case LoadWhenDeckPlaying::AllowButStopDeck:
+    case LoadWhenDeckPlaying::Reject:
+        break;
+    case LoadWhenDeckPlaying::Allow:
+        if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+            // deck is currently playing, so immediately play new track
+            play = true;
+        }
+        break;
+    }
+    slotLoadLocationToPlayer(location, group, play);
+}
+
 void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
-    slotLoadLocationToPlayer(location, groupForDeck(deck - 1));
+    slotLoadLocationToPlayer(location, groupForDeck(deck - 1), false);
 }
 
 void PlayerManager::slotLoadToPreviewDeck(const QString& location, int previewDeck) {
-    slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1));
+    slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1), false);
 }
 
 void PlayerManager::slotLoadToSampler(const QString& location, int sampler) {
-    slotLoadLocationToPlayer(location, groupForSampler(sampler - 1));
+    slotLoadLocationToPlayer(location, groupForSampler(sampler - 1), false);
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
@@ -734,7 +758,7 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         return;
     }
     if (m_pTrackAnalysisScheduler) {
-        if (m_pTrackAnalysisScheduler->scheduleTrackById(track->getId())) {
+        if (m_pTrackAnalysisScheduler->scheduleTrack(track->getId())) {
             m_pTrackAnalysisScheduler->resume();
         }
         // The first progress signal will suspend a running batch analysis

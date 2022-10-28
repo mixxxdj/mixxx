@@ -5,13 +5,12 @@
 
 #include "track/track_decl.h"
 #include "util/memory.h"
-#include "waveform/renderers/waveformrenderersignalbase.h"
+#include "waveform/renderers/glwaveformrenderer.h"
 
 QT_FORWARD_DECLARE_CLASS(QGLFramebufferObject)
 QT_FORWARD_DECLARE_CLASS(QGLShaderProgram)
 
 class GLSLWaveformRendererSignal : public QObject,
-                                   public WaveformRendererSignalBase,
                                    public GLWaveformRenderer {
     Q_OBJECT
   public:

@@ -495,7 +495,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     // There are other types of tables (eg. COLOR), these are the only ones we are
     // interested at the moment. Perhaps when/if
     // https://bugs.launchpad.net/mixxx/+bug/1100882
-    // is completed, this can be revisted.
+    // is completed, this can be revisited.
     // Attempt was made to also recover HISTORY
     // playlists (which are found on removable Rekordbox devices), however
     // they didn't appear to contain valid row_ref_t structures.
@@ -684,6 +684,9 @@ void buildPlaylistTree(
             childIndex < (uint32_t)playlistTreeMap[parentID].size();
             childIndex++) {
         uint32_t childID = playlistTreeMap[parentID][childIndex];
+        if (childID == 0) {
+            continue;
+        }
         QString playlistItemName = playlistNameMap[childID];
 
         QString currentPath = playlistPath + kPLaylistPathDelimiter + playlistItemName;
@@ -1420,7 +1423,6 @@ void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
     edit->setOpenLinks(false);
     connect(edit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
     libraryWidget->registerView("REKORDBOXHOME", edit);
-    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void RekordboxFeature::htmlLinkClicked(const QUrl& link) {

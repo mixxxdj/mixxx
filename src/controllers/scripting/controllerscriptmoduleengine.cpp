@@ -32,7 +32,7 @@ bool ControllerScriptModuleEngine::initialize() {
     }
 
     QJSValue initFunction = mod.property("init");
-    if (!executeFunction(initFunction, QJSValueList{})) {
+    if (!executeFunction(initFunction)) {
         shutdown();
         return false;
     }
@@ -47,6 +47,6 @@ bool ControllerScriptModuleEngine::initialize() {
 }
 
 void ControllerScriptModuleEngine::shutdown() {
-    executeFunction(m_shutdownFunction, QJSValueList());
+    executeFunction(m_shutdownFunction);
     ControllerScriptEngineBase::shutdown();
 }

@@ -66,7 +66,7 @@ void ControlDoublePrivate::initialize(double defaultValue) {
         if (pConfig) {
             value = pConfig->getValue(m_key, defaultValue);
         } else {
-            DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null")
+            DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null");
         }
     }
     m_defaultValue.setValue(defaultValue);
@@ -239,7 +239,8 @@ QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::takeAllInstanc
 
 //static
 QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
-    // Implicitly shared classes can safely be copied across threads
+    MMutexLocker locker(&s_qCOHashMutex);
+    // lock thread-unsafe copy constructors of QHash
     return s_qCOAliasHash;
 }
 

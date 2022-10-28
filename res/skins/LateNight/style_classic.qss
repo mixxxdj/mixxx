@@ -184,7 +184,13 @@ WSearchLineEdit,
 #VuMeterBoxMasterSingle,
 #LatencyMeterBox {
   background-color: #040404;
-}
+  }
+  #LatencyMeterBox[highlight="0"] {
+    border: 1px solid #040404;
+  }
+  #LatencyMeterBox[highlight="1"] {
+    border: 1px solid red;
+  }
 
 #VuMasterCover {
   background-color: rgba(21, 21, 21, 150);
@@ -254,7 +260,7 @@ WSearchLineEdit,
     max-height: 2px;
   }
   #SkinSettingsSeparator {
-    margin: 3px 4px 7px 4px;
+    margin: 1px 4px 3px 4px;
   }
 
 WBeatSpinBox,
@@ -1226,10 +1232,6 @@ QPushButton#pushButtonRecording:checked {
   background-color: #151515;
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  color: #d09300;
-}
   #SkinSettingsButton,
   #SkinSettingsNumToggle,
   #SkinSettingsText {

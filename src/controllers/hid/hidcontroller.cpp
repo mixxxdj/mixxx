@@ -197,18 +197,13 @@ int HidController::close() {
     return 0;
 }
 
-void HidController::sendReport(const QList<int>& data, unsigned int length, unsigned int reportID) {
-    Q_UNUSED(length);
-    QByteArray temp;
-    temp.reserve(data.size());
-    for (int datum : data) {
-        temp.append(datum);
-    }
-    m_pHidIoThread->updateCachedOutputReportData(temp, reportID);
-}
-
+/// This function is only for class compatibility with the (midi)controller
+/// and will not do the same as for MIDI devices,
+/// because sending of raw bytes is not a supported HIDAPI feature.
 void HidController::sendBytes(const QByteArray& data) {
-    m_pHidIoThread->updateCachedOutputReportData(data, 0);
+    // Some HIDAPI backends will fail if the device uses ReportIDs (as practical all DJ controllers),
+    // because 0 is no valid ReportID for these devices.
+    m_pHidIoThread->updateCachedOutputReportData(0, data, false);
 }
 
 ControllerJSProxy* HidController::jsProxy() {

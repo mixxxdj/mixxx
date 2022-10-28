@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <vector>
 
+#include "analyzer/analyzerscheduledtrack.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
 #include "library/parserm3u.h"
@@ -41,6 +43,8 @@ const ConfigKey kConfigKeyLastImportExportCrateDirectoryKey(
         "[Library]", "LastImportExportCrateDirectory");
 
 } // anonymous namespace
+
+using namespace mixxx::library::prefs;
 
 CrateFeature::CrateFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
@@ -273,7 +277,6 @@ void CrateFeature::bindLibraryWidget(
             this,
             &CrateFeature::htmlLinkClicked);
     libraryWidget->registerView(m_rootViewName, edit);
-    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -408,8 +411,17 @@ void CrateFeature::slotDeleteCrate() {
         // Store sibling id to restore selection after crate was deleted
         // to avoid the scroll position being reset to Crate root item.
         storePrevSiblingCrateId(crateId);
-        if (m_pTrackCollection->deleteCrate(crateId)) {
-            qDebug() << "Deleted crate" << crate;
+        QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+                tr("Confirm Deletion"),
+                tr("Do you really want to delete this crate?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+        if (btn == QMessageBox::Yes) {
+            if (m_pTrackCollection->deleteCrate(crateId)) {
+                qDebug() << "Deleted crate" << crate;
+                return;
+            }
+        } else {
             return;
         }
     }
@@ -595,7 +607,7 @@ void CrateFeature::slotImportPlaylist() {
 
     // Update the import/export crate directory
     QString fileDirectory(playlistFile);
-    fileDirectory.truncate(playlistFile.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(playlistFile.lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
@@ -626,7 +638,7 @@ void CrateFeature::slotCreateImportCrate() {
 
     // Set last import directory
     QString fileDirectory(playlistFiles.first());
-    fileDirectory.truncate(playlistFiles.first().lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(playlistFiles.first().lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
@@ -675,18 +687,18 @@ void CrateFeature::slotAnalyzeCrate() {
     if (m_lastRightClickedIndex.isValid()) {
         CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
         if (crateId.isValid()) {
-            QList<TrackId> trackIds;
-            trackIds.reserve(
+            QList<AnalyzerScheduledTrack> tracks;
+            tracks.reserve(
                     m_pTrackCollection->crates().countCrateTracks(crateId));
             {
                 CrateTrackSelectResult crateTracks(
                         m_pTrackCollection->crates().selectCrateTracksSorted(
                                 crateId));
                 while (crateTracks.next()) {
-                    trackIds.append(crateTracks.trackId());
+                    tracks.append(crateTracks.trackId());
                 }
             }
-            emit analyzeTracks(trackIds);
+            emit analyzeTracks(tracks);
         }
     }
 }
@@ -719,7 +731,7 @@ void CrateFeature::slotExportPlaylist() {
     }
     // Update the import/export crate directory
     QString fileDirectory(fileLocation);
-    fileDirectory.truncate(fileLocation.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(fileLocation.lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
@@ -731,7 +743,7 @@ void CrateFeature::slotExportPlaylist() {
     // check config if relative paths are desired
     bool useRelativePath =
             m_pConfig->getValue<bool>(
-                    ConfigKey("[Library]", "UseRelativePathOnExport"));
+                    kUseRelativePathOnExportConfigKey);
 
     // Create list of files of the crate
     // Create a new table model since the main one might have an active search.

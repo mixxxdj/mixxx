@@ -23,7 +23,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     createLinkColor();
     setupControllerWidgets();
 
-    connect(btnOpenUserMappings, &QPushButton::clicked, [=]() {
+    connect(btnOpenUserMappings, &QPushButton::clicked, this, [=, this]() {
         QString mappingsPath = userMappingsPath(m_pConfig);
         openLocalFile(mappingsPath);
     });
@@ -80,9 +80,6 @@ void DlgPrefControllers::openLocalFile(const QString& file) {
 }
 
 void DlgPrefControllers::slotUpdate() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
-        pControllerDlg->slotUpdate();
-    }
 }
 
 void DlgPrefControllers::slotCancel() {
@@ -135,8 +132,8 @@ void DlgPrefControllers::destroyControllerWidgets() {
     // to keep this dialog and the controllermanager consistent.
     QList<Controller*> controllerList =
             m_pControllerManager->getControllerList(false, true);
-    for (auto controller : controllerList) {
-        controller->disconnect(this);
+    for (auto* pController : controllerList) {
+        pController->disconnect(this);
     }
     while (!m_controllerPages.isEmpty()) {
         DlgPrefController* pControllerDlg = m_controllerPages.takeLast();

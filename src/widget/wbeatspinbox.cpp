@@ -1,11 +1,11 @@
 #include "widget/wbeatspinbox.h"
 
-#include <QApplication>
 #include <QLineEdit>
 #include <QRegularExpression>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "library/library_decl.h"
 #include "moc_wbeatspinbox.cpp"
 #include "util/math.h"
 
@@ -297,15 +297,15 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
 }
 
 void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
-    // Return & Enter keys apply current value.
-    // Return, Enter and Escape send a Shift+Tab event in order to move focus
-    // to a library widget. In official skins this would be the tracks table.
+    // By default, Return & Enter keys apply current value.
+    // Here, Return, Enter and Escape apply and move focus to tracks table.
+    // TODO(ronso0) switch to previously focused (library?) widget instead
     if (pEvent->key() == Qt::Key_Return ||
             pEvent->key() == Qt::Key_Enter ||
             pEvent->key() == Qt::Key_Escape) {
         QDoubleSpinBox::keyPressEvent(pEvent);
-        QKeyEvent shiftTabKeyEvent = QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
-        QApplication::sendEvent(this, &shiftTabKeyEvent);
+        ControlObject::set(ConfigKey("[Library]", "focused_widget"),
+                static_cast<double>(FocusWidget::TracksTable));
         return;
     }
     return QDoubleSpinBox::keyPressEvent(pEvent);

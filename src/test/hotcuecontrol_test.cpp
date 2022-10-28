@@ -40,7 +40,7 @@ class HotcueControlTest : public BaseSignalPathTest {
     }
 
     TrackPointer createTestTrack() const {
-        const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+        const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
         const auto pTrack = Track::newTemporary(
                 mixxx::FileAccess(mixxx::FileInfo(kTrackLocationTest)));
         pTrack->setAudioProperties(

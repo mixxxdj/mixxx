@@ -205,7 +205,7 @@ NumarkN4.topContainer = function(channel) {
             if (displayFeedback === undefined) {
                 displayFeedback = true;
             }
-            // when the layer becommes negative, the (layer+4) will force a positive/valid page indexOf
+            // when the layer becomes negative, the (layer+4) will force a positive/valid page indexOf
             layer = NumarkN4.hotcuePageIndexBehavior ? (layer+4)%4 : Math.max(Math.min(layer, 3), 0); // clamp layer value to [0;3] range
             this.hotCuePage = layer;
             if (this.timer !== 0) {
@@ -349,7 +349,7 @@ NumarkN4.MixerTemplate = function() {
             this.inKey="MoveVertical";
         },
         input: function(_midiChannel, _control, value, _status, _group) {
-            this.inSetValue(value===0x01?this.stepsize:-this.stepsize); // value "rescaling"; possibly ineffiecent.
+            this.inSetValue(value===0x01?this.stepsize:-this.stepsize); // value "rescaling"; possibly inefficient.
         },
     });
     this.navigationEncoderButton = new components.Button({
@@ -581,7 +581,7 @@ NumarkN4.Deck = function(channel) {
             theDeck.blinkTimer=0;
             return; // return early so no new timer gets created.
         }
-        // this previouslyLoaded guard is needed because everytime a new track gets
+        // this previouslyLoaded guard is needed because every time a new track gets
         // loaded into a deck without previously ejecting, a new timer would get
         // spawned which conflicted with the old (still running) timers.
         if (!this.previouslyLoaded) {

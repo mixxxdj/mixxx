@@ -82,6 +82,7 @@ class TaskMonitor
   private:
     Task* senderTask() const;
     void updateProgress();
+    void closeProgressDialog();
 
     const QString m_labelText;
     const Duration m_minimumProgressDuration;

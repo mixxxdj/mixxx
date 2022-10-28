@@ -23,7 +23,7 @@ constexpr bool kLogStats = false;
 std::atomic<int> s_numberOfInstances;
 
 template<typename T>
-inline bool compareAndSet(T* pField, const T& value) {
+inline bool compareAndSet(gsl::not_null<T*> pField, const T& value) {
     if (*pField != value) {
         // Copy the value into its final location
         *pField = value;
@@ -37,7 +37,7 @@ inline bool compareAndSet(T* pField, const T& value) {
 // Overload with a forwarding reference argument for efficiently
 // passing large, movable values.
 template<typename T>
-inline bool compareAndSet(T* pField, T&& value) {
+inline bool compareAndSet(gsl::not_null<T*> pField, T&& value) {
     if (*pField != value) {
         // Forward the value into its final location
         *pField = std::forward<T>(value);
@@ -70,10 +70,12 @@ const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 //static
 SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
         const UserSettings& userSettings) {
-    const auto syncSeratoMetadata =
-            userSettings.getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey);
     return SyncTrackMetadataParams{
-            syncSeratoMetadata,
+            .resetMissingTagMetadataOnImport =
+                    userSettings.getValue<bool>(
+                            mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey),
+            .syncSeratoMetadata = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kSyncSeratoMetadataConfigKey),
     };
 }
 
@@ -1032,6 +1034,10 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
+    // If loop cues are removed, also clear the last active loop
+    if (type == mixxx::CueType::Loop) {
+        emit loopRemove();
+    }
     if (compareAndSet(m_record.ptrMainCuePosition(), mixxx::audio::kStartFramePos)) {
         dirty = true;
     }
@@ -1200,7 +1206,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
     // connect new cue points
     for (const auto& pCue : qAsConst(m_cuePoints)) {
         DEBUG_ASSERT(pCue->thread() == thread());
-        // Start listening to cue point updatess AFTER setting
+        // Start listening to cue point updates AFTER setting
         // the track id. Otherwise we would receive unwanted
         // signals about changed cue points that may cause all
         // sorts of issues, e.g. when adding new tracks during
@@ -1422,30 +1428,6 @@ void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
     }
 }
 
-bool Track::refreshCoverImageDigest(
-        const QImage& loadedImage) {
-    auto locked = lockMutex(&m_qMutex);
-    auto coverInfo = CoverInfo(
-            m_record.getCoverInfo(),
-            m_fileAccess.info().location());
-    if (!coverInfo.refreshImageDigest(
-                loadedImage,
-                m_fileAccess.token())) {
-        return false;
-    }
-    if (!compareAndSet(
-                m_record.ptrCoverInfo(),
-                static_cast<const CoverInfoRelative&>(coverInfo))) {
-        return false;
-    }
-    kLogger.info()
-            << "Refreshed cover image digest"
-            << m_fileAccess.info().location();
-    markDirtyAndUnlock(&locked);
-    emit coverArtUpdated();
-    return true;
-}
-
 CoverInfoRelative Track::getCoverInfo() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getCoverInfo();
@@ -1576,7 +1558,12 @@ ExportTrackMetadataResult Track::exportMetadata(
     // Otherwise floating-point values like the bpm value might become
     // inconsistent with the actual value stored by the beat grid!
     mixxx::TrackMetadata normalizedFromRecord;
-    if ((metadataSource.importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
+    // Both resetMissingTagMetadata = false/true have the same effect
+    constexpr auto resetMissingTagMetadata = false;
+    if ((metadataSource.importTrackMetadataAndCoverImage(&importedFromFile,
+                               nullptr,
+                               resetMissingTagMetadata)
+                        .first ==
                 mixxx::MetadataSource::ImportResult::Succeeded)) {
         // Prevent overwriting any file tags that are not yet stored in the
         // library database! This will in turn update the current metadata

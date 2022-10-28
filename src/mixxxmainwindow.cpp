@@ -227,8 +227,7 @@ void MixxxMainWindow::initialize() {
     QFile file(":/skins/default.qss");
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray fileBytes = file.readAll();
-        QString style = QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length());
+        QString style = QString::fromLocal8Bit(fileBytes);
         setStyleSheet(style);
     } else {
         qWarning() << "Failed to load default skin styles!";
@@ -254,13 +253,13 @@ void MixxxMainWindow::initialize() {
     bool retryClicked;
     do {
         retryClicked = false;
-        SoundDeviceError result = m_pCoreServices->getSoundManager()->setupDevices();
-        if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT ||
-                result == SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL) {
+        SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
+        if (result == SoundDeviceStatus::ErrorDeviceCount ||
+                result == SoundDeviceStatus::ErrorExcessiveOutputChannel) {
             if (soundDeviceBusyDlg(&retryClicked) != QDialog::Accepted) {
                 exit(0);
             }
-        } else if (result != SOUNDDEVICE_ERROR_OK) {
+        } else if (result != SoundDeviceStatus::Ok) {
             if (soundDeviceErrorMsgDlg(result, &retryClicked) !=
                     QDialog::Accepted) {
                 exit(0);
@@ -379,7 +378,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
     DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
     // We need to reset the parented pointer here that it does not become a
-    // dangling pinter after the object has been deleted.
+    // dangling pointer after the object has been deleted.
     m_pMenuBar = nullptr;
     setMenuBar(nullptr);
     if (!pMenuBar.isNull()) {
@@ -510,16 +509,15 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
     return soundDeviceErrorDlg(title, text, retryClicked);
 }
 
-
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
-        SoundDeviceError err, bool* retryClicked) {
+        SoundDeviceStatus status, bool* retryClicked) {
     QString title(tr("Sound Device Error"));
     QString text("<html> <p>" %
                     tr("Mixxx was unable to open all the configured sound "
                        "devices.") +
             "</p> <p>" %
                     m_pCoreServices->getSoundManager()
-                            ->getLastErrorMessage(err)
+                            ->getLastErrorMessage(status)
                             .replace("\n", "<br/>") %
                     "</p><ul>"
                     "<li>" %

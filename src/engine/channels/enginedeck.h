@@ -3,7 +3,6 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/channels/enginechannel.h"
@@ -64,7 +63,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     void noPassthroughInputConfigured();
 
   public slots:
-    void slotPassingToggle(double v);
+    void slotPassthroughToggle(double v);
     void slotPassthroughChangeRequest(double v);
 
   private:

@@ -92,6 +92,9 @@ class Track : public QObject {
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const {
+        if (!m_fileAccess.info().hasLocation()) {
+            return {};
+        }
         return m_fileAccess.info().location();
     }
 
@@ -201,8 +204,12 @@ class Track : public QObject {
     void setColor(const mixxx::RgbColor::optional_t&);
     // Returns the user comment
     QString getComment() const;
-    // Sets the user commnet
+    // Sets the user comment
     void setComment(const QString&);
+    // Clear comment
+    void clearComment() {
+        setComment(QString());
+    }
     // Return composer
     QString getComposer() const;
     // Set composer
@@ -333,7 +340,8 @@ class Track : public QObject {
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const {
-        // Copying implicitly shared collections is thread-safe
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
         return m_cuePoints;
     }
 
@@ -384,12 +392,6 @@ class Track : public QObject {
     void setCoverInfo(const CoverInfoRelative& coverInfo);
     CoverInfoRelative getCoverInfo() const;
     CoverInfo getCoverInfoWithLocation() const;
-    // Verify the cover image hash and update it if necessary.
-    // If the corresponding image has already been loaded it
-    // could be provided as a parameter to avoid reloading
-    // if actually needed.
-    bool refreshCoverImageDigest(
-            const QImage& loadedImage = QImage());
 
     /// Set track metadata after importing from the source.
     ///
@@ -459,6 +461,7 @@ class Track : public QObject {
     void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
+    void loopRemove();
     void analyzed();
 
     void changed(TrackId trackId);

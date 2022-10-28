@@ -3029,7 +3029,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 }
 
 TEST_F(EngineSyncTest, BeatMapQuantizePlay) {
-    // This test demonstates https://bugs.launchpad.net/mixxx/+bug/1874918
+    // This test demonstrates https://bugs.launchpad.net/mixxx/+bug/1874918
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(120));
     m_pTrack1->trySetBeats(pBeats1);

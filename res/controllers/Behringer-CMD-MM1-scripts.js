@@ -413,7 +413,7 @@ CMDMM.fxChannel = function (physicalChannel,virtualChannel) {
       this.input=components.Pot.prototype.input;
     },
     layer4: function () {
-      this.input = function (channael, control, value, status, group) {
+      this.input = function (channel, control, value, status, group) {
         if (value>42&&value<=84) {
           this.inKey="rate";
           this.group="[Channel"+theDeck.virtualChannel+"]";

@@ -126,8 +126,8 @@ void DlgRecording::slotRestoreSearch() {
     emit restoreSearch(currentSearch());
 }
 
-void DlgRecording::loadSelectedTrack() {
-    m_pTrackTableView->loadSelectedTrack();
+void DlgRecording::activateSelectedTrack() {
+    m_pTrackTableView->activateSelectedTrack();
 }
 
 void DlgRecording::slotAddToAutoDJBottom() {

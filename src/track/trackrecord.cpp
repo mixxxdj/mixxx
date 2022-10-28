@@ -77,13 +77,12 @@ bool mergeReplayGainMetadataProperty(
     }
     return modified;
 }
-#endif // __EXTRA_METADATA__
 
 // This conditional copy operation only works for nullable properties
 // like QString or QUuid.
 template<typename T>
 bool copyIfNotNull(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isNull() &&
             *pMergedProperty != importedProperty) {
@@ -97,7 +96,7 @@ bool copyIfNotNull(
 // empty = missing.
 template<typename T>
 bool copyIfNotEmpty(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isEmpty() &&
             *pMergedProperty != importedProperty) {
@@ -106,6 +105,7 @@ bool copyIfNotEmpty(
     }
     return false;
 }
+#endif // __EXTRA_METADATA__
 
 } // anonymous namespace
 
@@ -166,21 +166,18 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
     if (getSourceSynchronizedAt() < fileSourceSynchronizedAt) {
         return SourceSyncStatus::Outdated;
     }
-    // This could actually happen when users replace files with
-    // an older version on the file system. But it should never
-    // happen under normal operation. Otherwise it might indicate
-    // a serious programming error and we should detect it early
-    // before the release. Debug assertions are only enabled in
-    // development and testing versions.
-    VERIFY_OR_DEBUG_ASSERT(getSourceSynchronizedAt() <= fileSourceSynchronizedAt) {
-        kLogger.warning()
+    if (getSourceSynchronizedAt() > fileSourceSynchronizedAt) {
+        // The internal metadata has either been updated and not re-exported (yet)
+        // or the file has been replaced with an older version. In both cases the
+        // file metadata should not be re-imported implicitly and is considered
+        // as synchronized.
+        kLogger.debug()
                 << "Internal source synchronization time stamp"
                 << getSourceSynchronizedAt()
                 << "is ahead of"
                 << fileSourceSynchronizedAt
                 << "for file"
-                << mixxx::FileInfo(fileInfo)
-                << ": Has this file been replaced with an older version?";
+                << mixxx::FileInfo(fileInfo);
     }
     return SourceSyncStatus::Synchronized;
 }

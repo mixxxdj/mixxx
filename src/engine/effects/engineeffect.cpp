@@ -151,7 +151,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
             m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
 
     // If the EngineEffect is fully disabled, do not let
-    // intermediate enabling/disabing signals from the chain override
+    // intermediate enabling/disabling signals from the chain override
     // the EngineEffect's state.
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         if (chainEnableState == EffectEnableState::Disabled) {

@@ -12,8 +12,6 @@
 
 namespace {
 
-const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
-
 const SINT kBufferSizes[] = {
         256,
         512,
@@ -77,11 +75,13 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
         return supportedFileNameSuffixes;
     }
 
-    static QStringList getFilePaths() {
+    QStringList getFilePaths() {
         QStringList filePaths;
         const QStringList fileNameSuffixes = getFileNameSuffixes();
         for (const auto& fileNameSuffix : fileNameSuffixes) {
-            filePaths.append(kTestDir.absoluteFilePath("cover-test" + fileNameSuffix));
+            filePaths.append(getTestDir().filePath(
+                    QStringLiteral("id3-test-data/cover-test") +
+                    fileNameSuffix));
         }
         return filePaths;
     }
@@ -187,7 +187,7 @@ TEST_F(SoundSourceProxyTest, open) {
                 continue;
             }
             EXPECT_LT(0, pAudioSource->getSignalInfo().getChannelCount());
-            EXPECT_LT(0, pAudioSource->getSignalInfo().getSampleRate());
+            EXPECT_LT(0u, pAudioSource->getSignalInfo().getSampleRate());
             EXPECT_FALSE(pAudioSource->frameIndexRange().empty());
         }
     }
@@ -219,7 +219,8 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    auto pTrack = Track::newTemporary(kTestDir, "artist.mp3");
+    auto pTrack = Track::newTemporary(
+            getTestDir().filePath(QStringLiteral("id3-test-data/artist.mp3")));
     SoundSourceProxy proxy(pTrack);
     EXPECT_EQ(
             SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
@@ -234,7 +235,7 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
 
     // Test a file with no metadata
     auto pTrack1 = Track::newTemporary(
-            kTestDir, "empty.mp3");
+            getTestDir().filePath(QStringLiteral("id3-test-data/empty.mp3")));
     SoundSourceProxy proxy1(pTrack1);
     EXPECT_EQ(
             SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
@@ -254,7 +255,7 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
 
     // Test a file with other metadata but no title
     auto pTrack2 = Track::newTemporary(
-            kTestDir, "cover-test-png.mp3");
+            getTestDir().filePath(QStringLiteral("id3-test-data/cover-test-png.mp3")));
     SoundSourceProxy proxy2(pTrack2);
     EXPECT_EQ(
             SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
@@ -274,7 +275,7 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
 
     // Test a file with a title
     auto pTrack3 = Track::newTemporary(
-            kTestDir, "cover-test-jpg.mp3");
+            getTestDir().filePath(QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
     SoundSourceProxy proxy3(pTrack3);
     EXPECT_EQ(
             SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
@@ -285,11 +286,16 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    auto pTrack = Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
+    auto pTrack = Track::newTemporary(
+            getTestDir().filePath(QStringLiteral("id3-test-data/TOAL_TPE2.mp3")));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
+    // Both resetMissingTagMetadata = false/true have the same effect
+    constexpr auto resetMissingTagMetadata = false;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded,
-            proxy.importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first);
+            proxy.importTrackMetadataAndCoverImage(
+                         &trackMetadata, nullptr, resetMissingTagMetadata)
+                    .first);
     EXPECT_EQ("TITLE2", trackMetadata.getTrackInfo().getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbumInfo().getTitle());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumInfo().getArtist());
@@ -758,7 +764,7 @@ TEST_F(SoundSourceProxyTest, getTypeFromFile) {
             tempDir.filePath("file_with_uppercase_suffix. MP3 ");
 
     // Create the temporary files by copying an existing file
-    const QString validFilePath = kTestDir.absoluteFilePath(QStringLiteral("empty.mp3"));
+    const QString validFilePath = getTestDir().filePath(QStringLiteral("id3-test-data/empty.mp3"));
     mixxxtest::copyFile(validFilePath, filePathWithoutSuffix);
     mixxxtest::copyFile(validFilePath, filePathWithEmptySuffix);
     mixxxtest::copyFile(validFilePath, filePathWithUnknownSuffix);
@@ -790,7 +796,7 @@ TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
     // Also verify that the shortened suffix ".aif" (case-insensitive) is
     // mapped to file type "aiff", independent of whether the file exists or not!
     const QFileInfo missingFileWithUppercaseSuffix(
-            kTestDir.absoluteFilePath(QStringLiteral("missing_file.AIF")));
+            getTestDir().filePath(QStringLiteral("id3-test-data/missing_file.AIF")));
 
     ASSERT_FALSE(missingFileWithUppercaseSuffix.exists());
 
@@ -808,7 +814,7 @@ TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
     ASSERT_TRUE(SoundSourceProxy::isFileSuffixSupported(QStringLiteral("aiff")));
 
     const QString aiffFilePath =
-            kTestDir.absoluteFilePath(QStringLiteral("cover-test.aiff"));
+            getTestDir().filePath(QStringLiteral("id3-test-data/cover-test.aiff"));
 
     ASSERT_TRUE(QFileInfo::exists(aiffFilePath));
     ASSERT_STREQ(qPrintable("aiff"),
@@ -852,7 +858,7 @@ TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
     const QString wrongFileType = QStringLiteral("aiff");
 
     const QString contentFileTypePath =
-            kTestDir.absoluteFilePath(QStringLiteral("cover-test-png.mp3"));
+            getTestDir().filePath(QStringLiteral("id3-test-data/cover-test-png.mp3"));
     const QString wrongFileTypePath =
             tempDir.filePath(QStringLiteral("cover-test.aiff"));
     mixxxtest::copyFile(contentFileTypePath, wrongFileTypePath);

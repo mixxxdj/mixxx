@@ -29,7 +29,6 @@ WTrackProperty,
 QSpinBox,
 WBeatSpinBox,
 QToolTip,
-WOverview #PassthroughLabel,
 WTrackTableViewHeader,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader::section,
@@ -58,31 +57,16 @@ WSearchLineEdit QAbstractScrollArea,
   font-style: normal;
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  font-size: 12px;
-  font-weight: bold;
-  color: #55F764;
-}
-
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
 wouldn't style the respective spinbox in Shade (anymore),
 that's why we do it in another way here */
 #spinBoxTransition {
-  font-size: 13px;
-  padding: 0px;
   selection-color: #eee;
   selection-background-color: #060613;
   }
   WBeatSpinBox {
     border: 1px solid #060613;
-  }
-  #spinBoxTransition {
-  /* omitting the border definition miraculously makes the spinbox grow */
-  /* 0px border OTOH makes the spinbox shrink disproportionately
-    border: 0px; */
-    margin: 0px 0px 2px 1px;
   }
 
 WBeatSpinBox::up-button,
@@ -144,17 +128,18 @@ WEffectSelector::indicator:unchecked,
 #MainMenu::item,
 WBeatSpinBox,
 #spinBoxTransition:up-button,
-#spinBoxTransition:down-button,
-#fadeModeCombobox,
-#fadeModeCombobox::down-arrow {
+#spinBoxTransition:down-button {
   color: #000;
   background-color: #8D98A3;
+  }
+  #fadeModeCombobox,
+  #fadeModeCombobox::down-arrow {
+    color: #000;
+    background-color: #99a0a4;
   }
   #spinBoxTransition {
     color: #000;
     background-color: #72777a;
-    height: 20px;
-    margin-left: 3px;
   }
 /* hovered items */
 #MainMenu::item:selected,
@@ -876,14 +861,32 @@ WLibrary { margin: 2px 3px 0px 0px; }
   border: 1px solid #99a0a4;
   font-size: 10px;
   }
+  #fadeModeCombobox {
+    margin: 1px 2px 3px 1px;
+    /* this is required to apply the custom styles */
+    border: 0px solid #99a0a4;
+  }
   #DlgAutoDJ > #LibraryFeatureControls QPushButton {
     padding: 0px;
     width: 32px;
     height: 18px;
     }
     QPushButton#pushButtonAutoDJ {
-      width: 40px;
+      /* icon is 40x18, final size is 42x20 */
+      min-width: 40px;
+      max-width: 40px;
     }
+  #spinBoxTransition {
+    width: 32px;
+    height: 20px;
+    padding: 0px;
+    margin-left: 3px;
+    margin: 0px 0px 2px 1px;
+  /* omitting the border definition miraculously makes the spinbox grow */
+  /* 0px border OTOH makes the spinbox shrink disproportionately
+    border: 0px; */
+    border: 0px;
+  }
 
   #LibraryFeatureControls QPushButton:!enabled {
     background-color: #72777A;

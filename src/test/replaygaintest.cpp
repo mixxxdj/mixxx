@@ -160,7 +160,7 @@ TEST_F(ReplayGainTest, NormalizePeak) {
 class AdjustReplayGainTest : public MockedEngineBackendTest {};
 
 TEST_F(AdjustReplayGainTest, AdjustReplayGainUpdatesPregain) {
-    const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+    const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
     // Load the same track in decks 1 and 2 so we can see that the pregain is adjusted on both

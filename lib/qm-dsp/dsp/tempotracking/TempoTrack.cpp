@@ -232,7 +232,7 @@ double TempoTrack::tempoMM(double* ACF, double* weight, int tsig)
                 double log2PeriodRatio = log( static_cast<double>(i)/
                                               static_cast<double>(j) ) /
                     log(2.0);
-                rcfMat[i][j] = ( abs(1.0-abs(log2PeriodRatio)) );
+                rcfMat[i][j] = ( fabs(1.0-fabs(log2PeriodRatio)) );
                 rcfMat[i][j] += ( 0.01*( 1./(m_tempoScratch[i]+m_tempoScratch[j]) ) );
             }
         }
@@ -401,7 +401,7 @@ void TempoTrack::stepDetect( double* periodP, double* periodG, int currentIdx, i
     double stepthresh = 1 * 3.9017;
 
     if( *flag ) {
-        if(abs(periodG[ currentIdx ] - periodP[ currentIdx ]) > stepthresh) {
+        if(fabs(periodG[ currentIdx ] - periodP[ currentIdx ]) > stepthresh) {
             // do nuffin'
         }
     } else {

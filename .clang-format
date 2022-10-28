@@ -1,16 +1,16 @@
 ---
 # Common configuration for all languages
 BasedOnStyle: Google
-IndentWidth:  4
-TabWidth:     8
-UseTab:       Never
+IndentWidth: 4
+TabWidth: 8
+UseTab: Never
 # A ColumnLimit > 0 causes clang-format to unbreaks all short lines,
 # which is undesired here.
 # If the line length exceeds 100, "ColumnLimit:  80" is used in scripts/line-length.py
-ColumnLimit:  0
+ColumnLimit: 0
 ---
 Language: Cpp
-Standard: c++17
+Standard: c++20
 # Customize only those options that differ from the base style!
 # Dumping the options of the base style for comparison:
 # clang-format -style=google -dump-config > .clang-format_google
@@ -48,4 +48,3 @@ DisableFormat: true
 Language: Proto
 # Don't format .proto files yet
 DisableFormat: true
-...

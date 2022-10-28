@@ -743,6 +743,15 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             navigationMenu,
             false,
             m_libraryStr);
+    addControl("[Library]",
+            "sort_focused_column",
+            tr("Sort focused column"),
+            tr("Sort the column of the cell that is currently focused, "
+               "equivalent to clicking on its header"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+
     libraryMenu->addSeparator();
     addControl("[Library]",
             "GoToItem",
@@ -785,6 +794,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             false,
             m_libraryStr);
     libraryMenu->addSeparator();
+    // Search box
     addControl("[Library]",
             "search_history_next",
             tr("Select next search history"),

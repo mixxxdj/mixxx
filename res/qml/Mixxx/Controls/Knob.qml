@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQml 2.12
 import QtQuick 2.12
 import QtQuick.Shapes 1.12

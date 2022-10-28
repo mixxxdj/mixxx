@@ -516,7 +516,7 @@ void WMainMenuBar::initialize() {
                 &WMainMenuBar::slotDeveloperStatsBase);
         pDeveloperMenu->addAction(pDeveloperStatsBase);
 
-        // "D" cannont be used with Alt here as it is already by the Developer menu
+        // "D" cannot be used with Alt here as it is already by the Developer menu
         QString scriptDebuggerTitle = tr("Deb&ugger Enabled");
         QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
         bool scriptDebuggerEnabled = m_pConfig->getValueString(
@@ -681,8 +681,7 @@ void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
 }
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
-    if (deck < 0 || deck >= m_vinylControlEnabledActions.size()) {
-        DEBUG_ASSERT(false);
+    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_vinylControlEnabledActions.size()) {
         return;
     }
     m_vinylControlEnabledActions.at(deck)->setChecked(enabled);

@@ -6,12 +6,6 @@
 #include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 
-namespace {
-
-const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
-
-} // anonymous namespace
-
 // Test for updating track metadata and cover art from files.
 class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
@@ -24,7 +18,9 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
     }
 
     static TrackPointer newTestTrack() {
-        return Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
+        return Track::newTemporary(
+                QDir(MixxxTest::getOrInitTestDir().filePath(QStringLiteral("id3-test-data"))),
+                "TOAL_TPE2.mp3");
     }
 
     TrackPointer newTestTrackParsed() const {
