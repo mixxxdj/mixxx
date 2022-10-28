@@ -111,9 +111,9 @@ class EffectProcessorImpl : public EffectProcessor {
     /// Subclasses should not implement their own destructor. All state should
     /// be stored in the EffectState subclass, not the EffectProcessorImpl subclass.
     ~EffectProcessorImpl() {
-        //if (kEffectDebugOutput) {
-        qDebug() << "~EffectProcessorImpl" << this;
-        //}
+        if (kEffectDebugOutput) {
+            qDebug() << "~EffectProcessorImpl" << this;
+        }
     };
 
     /// NOTE: Subclasses for Built-In effects must implement the following static methods for
