@@ -171,7 +171,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Shows the current volume for the left channel of the main output.");
 
     add("master_VuMeterR")
-            << tr("Master Channel R Volume Meter")
+            << tr("Main Channel R Volume Meter")
             << tr("Shows the current volume for the right channel of the main output.");
 
     add("channel_volume")
@@ -286,7 +286,7 @@ void Tooltips::addStandardTooltips() {
 
     add("show_vumeters")
             << tr("Volume Meters")
-            << tr("Show/hide volume meters for channels and master output.");
+            << tr("Show/hide volume meters for channels and main output.");
 
     add("microphone_volume")
             << tr("Microphone Volume")
