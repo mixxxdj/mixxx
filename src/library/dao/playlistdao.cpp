@@ -13,6 +13,7 @@
 #include "library/trackcollection.h"
 #include "track/track.h"
 #include "util/compatibility.h"
+#include "util/db/dbconnection.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
@@ -331,6 +332,33 @@ unsigned int PlaylistDAO::playlistCount() const {
     return numRecords;
 }
 
+QList<QPair<int, QString>> PlaylistDAO::getPlaylists(const HiddenType hidden) const {
+    //qDebug() << "PlaylistDAO::getPlaylists(hidden =" << hidden
+    //         << QThread::currentThread() << m_database.connectionName();
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            mixxx::DbConnection::collateLexicographically(
+                    QString("SELECT id, name FROM Playlists "
+                            "WHERE hidden = %1 "
+                            "ORDER BY name")
+                            .arg(hidden)));
+
+    QList<QPair<int, QString>> playlists;
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return playlists;
+    }
+
+    while (query.next()) {
+        const int id = query.value(0).toInt();
+        const QString name = query.value(1).toString();
+        playlists.append(qMakePair(id, name));
+    }
+    return playlists;
+}
+
 int PlaylistDAO::getPlaylistId(const int index) const {
     //qDebug() << "PlaylistDAO::getPlaylistId"
     //         << QThread::currentThread() << m_database.connectionName();
@@ -384,7 +412,6 @@ bool PlaylistDAO::isHidden(const int playlistId) const {
     return true;
 }
 
-
 void PlaylistDAO::removeHiddenTracks(const int playlistId) {
     ScopedTransaction transaction(m_database);
     // This query deletes all tracks marked as deleted and all
@@ -421,7 +448,6 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
     emit tracksChanged(QSet<int>{playlistId});
 }
 
-
 void PlaylistDAO::removeTracksFromPlaylistById(int playlistId, TrackId trackId) {
     ScopedTransaction transaction(m_database);
     removeTracksFromPlaylistByIdInner(playlistId, trackId);
@@ -447,7 +473,6 @@ void PlaylistDAO::removeTracksFromPlaylistByIdInner(int playlistId, TrackId trac
         removeTracksFromPlaylistInner(playlistId, position);
     }
 }
-
 
 void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     // qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
@@ -515,8 +540,6 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     m_playlistsTrackIsIn.remove(trackId, playlistId);
     emit trackRemoved(playlistId, trackId, position);
 }
-
-
 
 bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId, int position) {
     if (playlistId < 0 || !trackId.isValid() || position < 0) {
