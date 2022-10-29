@@ -36,10 +36,9 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotSingleEqChecked(int checked);
     // Slot for toggling between advanced and basic views
     void slotPopulateDeckEffectSelectors();
-    // Update Hi EQ
     void slotUpdateHiEQ();
-    // Update Lo EQ
     void slotUpdateLoEQ();
+    void slotUpdateEqButtonMode(QAbstractButton* selectedButton);
 
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
@@ -75,8 +74,10 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     ControlProxy m_COLoFreq;
     ControlProxy m_COHiFreq;
+    ControlProxy m_COButtonMode;
     UserSettingsPointer m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
+    int m_buttonMode;
 
     EffectChainPresetManagerPointer m_pChainPresetManager;
     std::shared_ptr<EffectsManager> m_pEffectsManager;

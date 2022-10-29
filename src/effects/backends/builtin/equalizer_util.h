@@ -2,6 +2,7 @@
 
 #include <QObject>
 
+#include "control/pollingcontrolproxy.h"
 #include "effects/backends/effectmanifest.h"
 
 class EqualizerUtil {
@@ -16,6 +17,8 @@ class EqualizerUtil {
             maximum = 2.0;
         }
 
+        PollingControlProxy eqButtonMode(ConfigKey("[Mixer Profile]", "EQButtonMode"));
+
         EffectManifestParameterPointer low = pManifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
@@ -28,10 +31,23 @@ class EqualizerUtil {
         EffectManifestParameterPointer killLow = pManifest->addParameter();
         killLow->setId("killLow");
         killLow->setName(QObject::tr("Kill Low"));
-        killLow->setDescription(QObject::tr("Kill the Low Filter"));
+        killLow->setDescription([eqButtonMode]() {
+            return QObject::tr("Kill the Low Filter");
+        });
         killLow->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
         killLow->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killLow->setRange(0, 0, 1);
+
+        EffectManifestParameterPointer bypassLow = pManifest->addParameter();
+        bypassLow->setId("bypassLow");
+        bypassLow->setName(QObject::tr("Bypass Low"));
+        bypassLow->setShortName(QObject::tr("Byp. Low"));
+        bypassLow->setDescription([eqButtonMode]() {
+            return QObject::tr("Bypass the Low Filter");
+        });
+        bypassLow->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+        bypassLow->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+        bypassLow->setRange(0, 0, 1);
 
         EffectManifestParameterPointer mid = pManifest->addParameter();
         mid->setId("mid");
@@ -45,10 +61,23 @@ class EqualizerUtil {
         EffectManifestParameterPointer killMid = pManifest->addParameter();
         killMid->setId("killMid");
         killMid->setName(QObject::tr("Kill Mid"));
-        killMid->setDescription(QObject::tr("Kill the Mid Filter"));
+        killMid->setDescription([eqButtonMode]() {
+            return QObject::tr("Kill the Mid Filter");
+        });
         killMid->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
         killMid->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killMid->setRange(0, 0, 1);
+
+        EffectManifestParameterPointer bypassMid = pManifest->addParameter();
+        bypassMid->setId("bypassMid");
+        bypassMid->setName(QObject::tr("Bypass Mid"));
+        bypassMid->setShortName(QObject::tr("Byp. Mid"));
+        bypassMid->setDescription([eqButtonMode]() {
+            return QObject::tr("Bypass the Mid Filter");
+        });
+        bypassMid->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+        bypassMid->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+        bypassMid->setRange(0, 0, 1);
 
         EffectManifestParameterPointer high = pManifest->addParameter();
         high->setId("high");
@@ -62,10 +91,24 @@ class EqualizerUtil {
         EffectManifestParameterPointer killHigh = pManifest->addParameter();
         killHigh->setId("killHigh");
         killHigh->setName(QObject::tr("Kill High"));
-        killHigh->setDescription(QObject::tr("Kill the High Filter"));
+        killHigh->setDescription([eqButtonMode]() {
+            return QObject::tr("Kill the High Filter");
+        });
         killHigh->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
         killHigh->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killHigh->setRange(0, 0, 1);
+
+        EffectManifestParameterPointer bypassHigh = pManifest->addParameter();
+        bypassHigh->setId("bypassHigh");
+        bypassHigh->setName(QObject::tr("Bypass High"));
+        bypassHigh->setShortName(QObject::tr("Byp. Hi."));
+        bypassHigh->setDescription([eqButtonMode]() {
+            // TODO: do we need a closure here still?
+            return QObject::tr("Bypass the High Filter");
+        });
+        bypassHigh->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+        bypassHigh->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+        bypassHigh->setRange(0, 0, 1);
     }
 
     static QString adjustFrequencyShelvesTip() {

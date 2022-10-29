@@ -27,7 +27,8 @@ EffectsManager::EffectsManager(
         : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),
-          m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040) {
+          m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040),
+          m_eqButtonMode(ConfigKey("[Mixer Profile]", "EQButtonMode"), true, 0) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());

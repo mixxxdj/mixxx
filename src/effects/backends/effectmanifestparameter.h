@@ -131,11 +131,17 @@ class EffectManifestParameter {
         m_shortName = shortName;
     }
 
-    const QString& description() const {
-        return m_description;
+    QString description() const {
+        return m_description();
     }
+
     void setDescription(const QString& description) {
-        m_description = description;
+        m_description = [description]() { return description; };
+    }
+
+    template<typename F>
+    void setDescription(F description) {
+        m_description = std::function<QString()>(description);
     }
 
     int index() const {
@@ -252,7 +258,7 @@ class EffectManifestParameter {
     QString m_id;
     QString m_name;
     QString m_shortName;
-    QString m_description;
+    std::function<QString()> m_description = []() { return QString(); };
     int m_iIndex;
 
     ParameterType m_parameterType;

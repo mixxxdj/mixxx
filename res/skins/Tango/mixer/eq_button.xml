@@ -14,7 +14,7 @@ Variables:
       [QuickEffectRack1_[ChannelA]_EffectY]
 -->
 <Template>
-  <EffectPushButton>
+  <EqualizerPushButton>
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>
@@ -35,5 +35,5 @@ Variables:
       <ConfigKey><Variable name="FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
-  </EffectPushButton>
+  </EqualizerPushButton>
 </Template>

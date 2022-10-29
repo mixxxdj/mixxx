@@ -29,8 +29,8 @@ EffectManifestPointer Bessel8LVMixEQEffect::getManifest() {
 }
 
 Bessel8LVMixEQEffect::Bessel8LVMixEQEffect() {
-    m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+    m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
+    m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
 }
 
 void Bessel8LVMixEQEffect::loadEngineEffectParameters(
@@ -41,11 +41,9 @@ void Bessel8LVMixEQEffect::loadEngineEffectParameters(
     m_pKillLow = parameters.value("killLow");
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
-}
-
-Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
-    delete m_pLoFreqCorner;
-    delete m_pHiFreqCorner;
+    m_pBypassLow = parameters.value("bypassLow");
+    m_pBypassMid = parameters.value("bypassMid");
+    m_pBypassHigh = parameters.value("bypassHigh");
 }
 
 void Bessel8LVMixEQEffect::processChannel(
@@ -64,20 +62,26 @@ void Bessel8LVMixEQEffect::processChannel(
         double fLow;
         double fMid;
         double fHigh;
-        if (!m_pKillLow->toBool()) {
-            fLow = m_pPotLow->value();
-        } else {
+        if (m_pBypassLow->toBool()) {
+            fLow = 1;
+        } else if (m_pKillLow->toBool()) {
             fLow = 0;
-        }
-        if (!m_pKillMid->toBool()) {
-            fMid = m_pPotMid->value();
         } else {
+            fLow = m_pPotLow->value();
+        }
+        if (m_pBypassMid->toBool()) {
+            fMid = 1;
+        } else if (m_pKillMid->toBool()) {
             fMid = 0;
-        }
-        if (!m_pKillHigh->toBool()) {
-            fHigh = m_pPotHigh->value();
         } else {
+            fMid = m_pPotMid->value();
+        }
+        if (m_pBypassHigh->toBool()) {
+            fHigh = 1;
+        } else if (m_pKillHigh->toBool()) {
             fHigh = 0;
+        } else {
+            fHigh = m_pPotHigh->value();
         }
         pState->processChannel(pInput,
                 pOutput,

@@ -19,7 +19,7 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
 
-      <EffectPushButton>
+      <EqualizerPushButton>
         <TooltipId>EqualizerRack_effect_button_parameter</TooltipId>
         <Size>15f,20f</Size>
         <ObjectName>EQKillButton</ObjectName>
@@ -41,7 +41,7 @@
           <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </EffectPushButton>
+      </EqualizerPushButton>
 
       <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
         <Size>0me,1min</Size>

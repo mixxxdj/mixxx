@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>540</width>
-    <height>523</height>
+    <height>668</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,88 +19,86 @@
      <property name="title">
       <string>Deck Equalizers</string>
      </property>
-      <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0">
-       <item>
-        <widget class="QCheckBox" name="CheckBoxEqOnly">
-         <property name="text">
-          <string>Only allow EQ knobs to control EQ-specific effects</string>
-         </property>
-          <property name="checked">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string>Uncheck to allow any effect to be loaded into the EQ knobs.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="CheckBoxSingleEqEffect">
-         <property name="text">
-          <string>Use the same EQ filter for all decks</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string>Uncheck to allow different decks to use different EQ effects.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="GridWidgetDecks" native="true">
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="3">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="0">
-           <widget class="QWidget" name="widget" native="true"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_2">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Equalizer Plugin</string>
-            </property>
-            <property name="leftMargin">
-             <number>3</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_3">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="leftMargin">
-             <number>3</number>
-            </property>
-            <property name="text">
-             <string>Quick Effect</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
+     <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0">
+      <item>
+       <widget class="QCheckBox" name="CheckBoxEqOnly">
+        <property name="toolTip">
+         <string>Uncheck to allow any effect to be loaded into the EQ knobs.</string>
+        </property>
+        <property name="text">
+         <string>Only allow EQ knobs to control EQ-specific effects</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="CheckBoxSingleEqEffect">
+        <property name="toolTip">
+         <string>Uncheck to allow different decks to use different EQ effects.</string>
+        </property>
+        <property name="text">
+         <string>Use the same EQ filter for all decks</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="GridWidgetDecks" native="true">
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="3">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="0">
+          <widget class="QWidget" name="widget" native="true"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_2">
+           <property name="font">
+            <font>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Equalizer Plugin</string>
+           </property>
+           <property name="leftMargin" stdset="0">
+            <number>3</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_3">
+           <property name="font">
+            <font>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Quick Effect</string>
+           </property>
+           <property name="leftMargin" stdset="0">
+            <number>3</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -306,6 +304,39 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="GroupBoxEQButtonMode">
+     <property name="title">
+      <string>EQ Buttons Mode</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0" colspan="2">
+       <layout class="QVBoxLayout">
+        <item>
+         <widget class="QRadioButton" name="radioButtonKillMode">
+          <property name="text">
+           <string>Kill</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">eqButtonModebuttonGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonBypassMode">
+          <property name="text">
+           <string>Bypass</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">eqButtonModebuttonGroup</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="MainMainEQ">
      <property name="title">
       <string>Main EQ</string>
@@ -366,38 +397,38 @@
      <property name="title">
       <string>Miscellaneous</string>
      </property>
-      <layout class="QVBoxLayout" name="miscOptionsLayout" stretch="0,0,0,0">
-       <item>
-        <widget class="QCheckBox" name="CheckBoxEqAutoReset">
-         <property name="toolTip">
-          <string>Resets the equalizers to their default values when loading a track.</string>
-         </property>
-         <property name="text">
-          <string>Reset equalizers on track load</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="CheckBoxGainAutoReset">
-         <property name="toolTip">
-          <string>Resets the deck gain to unity when loading a track.</string>
-         </property>
-         <property name="text">
-          <string>Reset gain on track load</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="CheckBoxBypass">
-         <property name="text">
-          <string>Bypass EQ effect processing</string>
-         </property>
-         <property name="toolTip">
-          <string>When checked, EQs are not processed, improving performance on slower computers.</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+     <layout class="QVBoxLayout" name="miscOptionsLayout" stretch="0,0,0">
+      <item>
+       <widget class="QCheckBox" name="CheckBoxEqAutoReset">
+        <property name="toolTip">
+         <string>Resets the equalizers to their default values when loading a track.</string>
+        </property>
+        <property name="text">
+         <string>Reset equalizers on track load</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="CheckBoxGainAutoReset">
+        <property name="toolTip">
+         <string>Resets the deck gain to unity when loading a track.</string>
+        </property>
+        <property name="text">
+         <string>Reset gain on track load</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="CheckBoxBypass">
+        <property name="toolTip">
+         <string>When checked, EQs are not processed, improving performance on slower computers.</string>
+        </property>
+        <property name="text">
+         <string>Bypass EQ effect processing</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -419,18 +450,17 @@
  <tabstops>
   <tabstop>CheckBoxEqOnly</tabstop>
   <tabstop>CheckBoxSingleEqEffect</tabstop>
-  <!-- TODO(ronso0)
-      Dynamically add Eq / Quick Effect comboboxes -->
   <tabstop>SliderHiEQ</tabstop>
   <tabstop>SliderLoEQ</tabstop>
   <tabstop>comboBoxMainEq</tabstop>
   <tabstop>pbResetMainEq</tabstop>
-  <!-- TODO(ronso0)
-      Dynamically add Main EQ sliders -->
   <tabstop>CheckBoxEqAutoReset</tabstop>
   <tabstop>CheckBoxGainAutoReset</tabstop>
   <tabstop>CheckBoxBypass</tabstop>
  </tabstops>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="eqButtonModebuttonGroup"/>
+ </buttongroups>
 </ui>

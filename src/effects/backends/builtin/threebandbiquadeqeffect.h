@@ -15,7 +15,6 @@
 class ThreeBandBiquadEQEffectGroupState final : public EffectState {
   public:
     ThreeBandBiquadEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
-    ~ThreeBandBiquadEQEffectGroupState();
 
     void setFilters(
             int sampleRate, double lowFreqCorner, double highFreqCorner);
@@ -43,7 +42,6 @@ class ThreeBandBiquadEQEffectGroupState final : public EffectState {
 class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffectGroupState> {
   public:
     ThreeBandBiquadEQEffect();
-    ~ThreeBandBiquadEQEffect() override;
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -76,6 +74,10 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
     EngineEffectParameterPointer m_pKillLow;
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
+
+    EngineEffectParameterPointer m_pBypassLow;
+    EngineEffectParameterPointer m_pBypassMid;
+    EngineEffectParameterPointer m_pBypassHigh;
 
     std::unique_ptr<ControlProxy> m_pLoFreqCorner;
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;

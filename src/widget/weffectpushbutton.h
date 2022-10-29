@@ -25,7 +25,7 @@ class WEffectPushButton : public WPushButton {
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
 
-  private slots:
+  protected slots:
     void parameterUpdated();
     void slotActionChosen(QAction* action);
 

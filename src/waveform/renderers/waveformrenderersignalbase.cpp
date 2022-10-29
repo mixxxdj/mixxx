@@ -19,6 +19,9 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_pLowKillControlObject(nullptr),
           m_pMidKillControlObject(nullptr),
           m_pHighKillControlObject(nullptr),
+          m_pLowBypassControlObject(nullptr),
+          m_pMidBypassControlObject(nullptr),
+          m_pHighBypassControlObject(nullptr),
           m_alignment(Qt::AlignCenter),
           m_orientation(Qt::Horizontal),
           m_pColors(nullptr),
@@ -54,47 +57,44 @@ WaveformRendererSignalBase::~WaveformRendererSignalBase() {
 }
 
 void WaveformRendererSignalBase::deleteControls() {
-    if (m_pEQEnabled) {
-        delete m_pEQEnabled;
-    }
-    if (m_pLowFilterControlObject) {
-        delete m_pLowFilterControlObject;
-    }
-    if (m_pMidFilterControlObject) {
-        delete m_pMidFilterControlObject;
-    }
-    if (m_pHighFilterControlObject) {
-        delete m_pHighFilterControlObject;
-    }
-    if (m_pLowKillControlObject) {
-        delete m_pLowKillControlObject;
-    }
-    if (m_pMidKillControlObject) {
-        delete m_pMidKillControlObject;
-    }
-    if (m_pHighKillControlObject) {
-        delete m_pHighKillControlObject;
-    }
+    delete m_pEQEnabled;
+    delete m_pLowFilterControlObject;
+    delete m_pMidFilterControlObject;
+    delete m_pHighFilterControlObject;
+    delete m_pLowKillControlObject;
+    delete m_pMidKillControlObject;
+    delete m_pHighKillControlObject;
+    delete m_pLowBypassControlObject;
+    delete m_pMidBypassControlObject;
+    delete m_pHighBypassControlObject;
 }
 
 bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
+    const QString eqGroup = QString("[EqualizerRack1_%1_Effect1]")
+                                    .arg(m_waveformRenderer->getGroup());
     m_pEQEnabled = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterWaveformEnable");
     m_pLowFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterLow");
+            eqGroup, "parameter1");
     m_pMidFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterMid");
+            eqGroup, "parameter2");
     m_pHighFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterHigh");
+            eqGroup, "parameter3");
     m_pLowKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterLowKill");
+            eqGroup, "button_parameter1");
     m_pMidKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterMidKill");
+            eqGroup, "button_parameter3");
     m_pHighKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterHighKill");
+            eqGroup, "button_parameter5");
+    m_pLowBypassControlObject = new ControlProxy(
+            eqGroup, "button_parameter2");
+    m_pMidBypassControlObject = new ControlProxy(
+            eqGroup, "button_parameter4");
+    m_pHighBypassControlObject = new ControlProxy(
+            eqGroup, "button_parameter6");
 
     return onInit();
 }
@@ -202,16 +202,22 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
             highGain *= static_cast<CSAMPLE_GAIN>(
                     factory->getVisualGain(WaveformWidgetFactory::High));
 
-            if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
-                lowGain = 0;
+            if (m_pLowBypassControlObject && m_pLowBypassControlObject->get() > 0.0) {
+                lowGain = 1.0;
+            } else if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
+                lowGain = 0.0;
             }
 
-            if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
-                midGain = 0;
+            if (m_pMidBypassControlObject && m_pMidBypassControlObject->get() > 0.0) {
+                midGain = 1.0;
+            } else if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
+                midGain = 0.0;
             }
 
-            if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
-                highGain = 0;
+            if (m_pHighBypassControlObject && m_pHighBypassControlObject->get() > 0.0) {
+                highGain = 1.0;
+            } else if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
+                highGain = 0.0;
             }
         }
 

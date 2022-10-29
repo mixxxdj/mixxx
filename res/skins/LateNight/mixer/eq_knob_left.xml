@@ -18,7 +18,7 @@
             <Size>18f,34f</Size>
             <Children>
               <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
-              <EffectPushButton>
+              <EqualizerPushButton>
                 <TooltipId>filter<Variable name="EqRange"/>Kill</TooltipId>
                 <ObjectName>EQKillButton_<Variable name="EqRange"/></ObjectName>
                 <Size>18f,18f</Size>
@@ -40,7 +40,7 @@
                   <ConfigKey><Variable name="EqEffect"/>,button_parameter<Variable name="EqParameter"/></ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
-              </EffectPushButton>
+              </EqualizerPushButton>
             </Children>
             <Connection>
               <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>

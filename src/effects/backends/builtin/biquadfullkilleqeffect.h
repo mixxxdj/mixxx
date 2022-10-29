@@ -94,6 +94,10 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
+    EngineEffectParameterPointer m_pBypassLow;
+    EngineEffectParameterPointer m_pBypassMid;
+    EngineEffectParameterPointer m_pBypassHigh;
+
     std::unique_ptr<ControlProxy> m_pLoFreqCorner;
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
 };

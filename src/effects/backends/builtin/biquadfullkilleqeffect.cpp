@@ -155,10 +155,10 @@ void BiquadFullKillEQEffect::loadEngineEffectParameters(
     m_pKillLow = parameters.value("killLow");
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
+    m_pBypassLow = parameters.value("bypassLow");
+    m_pBypassMid = parameters.value("bypassMid");
+    m_pBypassHigh = parameters.value("bypassHigh");
 }
-
-// BiquadFullKillEQEffect::~BiquadFullKillEQEffect() {
-// }
 
 void BiquadFullKillEQEffect::processChannel(
         BiquadFullKillEQEffectGroupState* pState,
@@ -186,11 +186,14 @@ void BiquadFullKillEQEffect::processChannel(
     double bqGainHigh = 0;
     if (enableState != EffectEnableState::Disabling) {
         bqGainLow = knobValueToBiquadGainDb(
-                m_pPotLow->value(), m_pKillLow->toBool());
+                m_pBypassLow->toBool() ? 1 : m_pPotLow->value(),
+                m_pKillLow->toBool() && !m_pBypassLow->toBool());
         bqGainMid = knobValueToBiquadGainDb(
-                m_pPotMid->value(), m_pKillMid->toBool());
+                m_pBypassMid->toBool() ? 1 : m_pPotMid->value(),
+                m_pKillMid->toBool() && !m_pBypassMid->toBool());
         bqGainHigh = knobValueToBiquadGainDb(
-                m_pPotHigh->value(), m_pKillHigh->toBool());
+                m_pBypassHigh->toBool() ? 1 : m_pPotHigh->value(),
+                m_pKillHigh->toBool() && !m_pBypassHigh->toBool());
     }
 
     int activeFilters = 0;
@@ -395,11 +398,15 @@ void BiquadFullKillEQEffect::processChannel(
                 pOutput, pOutput, engineParameters.samplesPerBuffer());
     } else {
         double fLow = knobValueToBesselRatio(
-                m_pPotLow->value(), m_pKillLow->toBool());
+                m_pBypassLow->toBool() ? 1 : m_pPotLow->value(),
+                m_pKillLow->toBool() && !m_pBypassLow->toBool());
         double fMid = knobValueToBesselRatio(
-                m_pPotMid->value(), m_pKillMid->toBool());
+                m_pBypassMid->toBool() ? 1 : m_pPotMid->value(),
+                m_pKillMid->toBool() && !m_pBypassMid->toBool());
         double fHigh = knobValueToBesselRatio(
-                m_pPotHigh->value(), m_pKillHigh->toBool());
+                m_pBypassHigh->toBool() ? 1 : m_pPotHigh->value(),
+                m_pKillHigh->toBool() && !m_pBypassHigh->toBool());
+
         pState->m_lvMixIso->processChannel(pOutput,
                 pOutput,
                 engineParameters.samplesPerBuffer(),
