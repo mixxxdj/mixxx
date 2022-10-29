@@ -1006,7 +1006,10 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_pCrateMenu->clear();
     const TrackIdList trackIds = getTrackIds();
 
-    CrateSummarySelectResult allCrates(m_pTrackCollectionManager->internalCollection()->crates().selectCratesWithTrackCount(trackIds));
+    CrateSummarySelectResult allCrates(
+            m_pTrackCollectionManager->internalCollection()
+                    ->crates()
+                    .selectCratesWithTrackCount(trackIds));
 
     CrateSummary crate;
     while (allCrates.populateNext(&crate)) {
