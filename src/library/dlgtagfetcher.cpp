@@ -89,20 +89,26 @@ void DlgTagFetcher::init() {
 }
 
 void DlgTagFetcher::slotNext() {
-    QModelIndex nextRow = m_currentTrackIndex.sibling(
-            m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
-    if (nextRow.isValid()) {
-        loadTrack(nextRow);
+    if (isSignalConnected(QMetaMethod::fromSignal(&DlgTagFetcher::next))) {
         emit next();
+    } else {
+        QModelIndex nextRow = m_currentTrackIndex.sibling(
+                m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
+        if (nextRow.isValid()) {
+            loadTrack(nextRow);
+        }
     }
 }
 
 void DlgTagFetcher::slotPrev() {
-    QModelIndex prevRow = m_currentTrackIndex.sibling(
-            m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
-    if (prevRow.isValid()) {
-        loadTrack(prevRow);
+    if (isSignalConnected(QMetaMethod::fromSignal(&DlgTagFetcher::previous))) {
         emit previous();
+    } else {
+        QModelIndex prevRow = m_currentTrackIndex.sibling(
+                m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
+        if (prevRow.isValid()) {
+            loadTrack(prevRow);
+        }
     }
 }
 
