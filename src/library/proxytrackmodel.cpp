@@ -2,6 +2,7 @@
 
 #include <QVariant>
 
+#include "library/searchqueryparser.h"
 #include "util/assert.h"
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
@@ -154,25 +155,40 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         return false;
     }
 
+    if (m_currentSearch.trimmed().isEmpty()) {
+        return true;
+    }
+
+    QStringList tokens = SearchQueryParser::splitQueryIntoWords(
+            m_currentSearch.trimmed());
+    tokens.removeDuplicates();
+
     const QList<int>& filterColumns = m_pTrackModel->searchColumns();
     QAbstractItemModel* itemModel =
             dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
-    bool rowMatches = false;
 
-    QListIterator<int> iter(filterColumns);
-
-    while (!rowMatches && iter.hasNext()) {
-        int i = iter.next();
-        QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
-        QVariant data = itemModel->data(index);
-        if (data.canConvert<QString>()) {
-            QString strData = data.toString();
-            if (strData.contains(m_currentSearch, Qt::CaseInsensitive)) {
-                rowMatches = true;
+    for (QString token : tokens) {
+        QListIterator<int> iter(filterColumns);
+        bool tokenMatch = false;
+        while (iter.hasNext() && !tokenMatch) {
+            int i = iter.next();
+            QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
+            QString strData = itemModel->data(index).toString();
+            if (!strData.isEmpty()) {
+                QString tokNoQuotes = token;
+                tokNoQuotes.remove('\"');
+                if (strData.contains(tokNoQuotes, Qt::CaseInsensitive)) {
+                    tokenMatch = true;
+                    tokens.removeOne(token);
+                }
             }
         }
     }
-    return rowMatches;
+
+    if (tokens.length() > 0) {
+        return false;
+    }
+    return true;
 }
 
 QString ProxyTrackModel::getModelSetting(const QString& name) {
