@@ -113,16 +113,17 @@ void DlgTagFetcher::slotPrev() {
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
-    results->clear();
-    disconnect(m_track.get(),
-            &Track::changed,
-            this,
-            &DlgTagFetcher::slotTrackChanged);
+    if (m_track) {
+        results->clear();
+        disconnect(m_track.get(),
+                &Track::changed,
+                this,
+                &DlgTagFetcher::slotTrackChanged);
+        m_data = Data();
+        m_networkResult = NetworkResult::Ok;
+    }
 
     m_track = pTrack;
-    m_data = Data();
-    m_networkResult = NetworkResult::Ok;
-
     if (!m_track) {
         return;
     }
