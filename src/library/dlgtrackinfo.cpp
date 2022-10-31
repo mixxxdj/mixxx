@@ -315,7 +315,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
         return;
     }
     loadTrackInternal(pTrack);
-    if (m_pDlgTagFetcher && m_pLoadedTrack) {
+    if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
     }
 }
@@ -327,7 +327,7 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_currentTrackIndex = index;
     loadTrackInternal(pTrack);
-    if (m_pDlgTagFetcher && m_currentTrackIndex.isValid()) {
+    if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_currentTrackIndex);
     }
 }
