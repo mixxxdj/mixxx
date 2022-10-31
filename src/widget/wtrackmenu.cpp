@@ -915,28 +915,27 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         return;
     }
     m_pPlaylistMenu->clear();
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
-    QMap<QString, int> playlists;
-    int numPlaylists = playlistDao.playlistCount();
-    for (int i = 0; i < numPlaylists; ++i) {
-        int iPlaylistId = playlistDao.getPlaylistId(i);
-        playlists.insert(playlistDao.getPlaylistName(iPlaylistId), iPlaylistId);
-    }
-    QMapIterator<QString, int> it(playlists);
-    while (it.hasNext()) {
-        it.next();
-        if (!playlistDao.isHidden(it.value())) {
-            // No leak because making the menu the parent means they will be
-            // auto-deleted
-            auto* pAction = new QAction(
-                    mixxx::escapeTextPropertyWithoutShortcuts(it.key()),
-                    m_pPlaylistMenu);
-            bool locked = playlistDao.isPlaylistLocked(it.value());
-            pAction->setEnabled(!locked);
-            m_pPlaylistMenu->addAction(pAction);
-            int iPlaylistId = it.value();
-            connect(pAction, &QAction::triggered, this, [this, iPlaylistId] { addSelectionToPlaylist(iPlaylistId); });
-        }
+    PlaylistDAO& playlistDao =
+            m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    QList<QPair<int, QString>> playlists =
+            playlistDao.getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
+
+    for (const auto& [id, name] : playlists) {
+        // No leak because making the menu the parent means they will be
+        // auto-deleted
+        int plId = id;
+        auto* pAction = new QAction(
+                mixxx::escapeTextPropertyWithoutShortcuts(name),
+                m_pPlaylistMenu);
+        bool locked = playlistDao.isPlaylistLocked(plId);
+        pAction->setEnabled(!locked);
+        m_pPlaylistMenu->addAction(pAction);
+        connect(pAction,
+                &QAction::triggered,
+                this,
+                [this, plId] {
+                    addSelectionToPlaylist(plId);
+                });
     }
     m_pPlaylistMenu->addSeparator();
     QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
@@ -1006,7 +1005,10 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_pCrateMenu->clear();
     const TrackIdList trackIds = getTrackIds();
 
-    CrateSummarySelectResult allCrates(m_pTrackCollectionManager->internalCollection()->crates().selectCratesWithTrackCount(trackIds));
+    CrateSummarySelectResult allCrates(
+            m_pTrackCollectionManager->internalCollection()
+                    ->crates()
+                    .selectCratesWithTrackCount(trackIds));
 
     CrateSummary crate;
     while (allCrates.populateNext(&crate)) {
