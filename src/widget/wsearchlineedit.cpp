@@ -496,14 +496,15 @@ void WSearchLineEdit::slotSaveSearch() {
         return;
     }
 
-    if (cIndex == -1) {
-        // If the query doesn't exist yet add it at the top
-        insertItem(0, cText);
-        setCurrentIndex(0);
-    } else {
-        // If query exists clear the box and use its index to set the currentIndex
-        setCurrentIndex(cIndex);
+    if (cIndex > 0) {
+        // If query exists and is not at the top, remove the original index
+        removeItem(cIndex);
     }
+    if (cIndex > 0 || cIndex == -1) {
+        // If the query doesn't exist yet or was not at top, insert it at the top
+        insertItem(0, cText);
+    }
+    setCurrentIndex(0);
 
     while (count() > kMaxSearchEntries) {
         removeItem(kMaxSearchEntries);
