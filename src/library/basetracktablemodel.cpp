@@ -643,8 +643,15 @@ QVariant BaseTrackTableModel::roleValue(
             }
             QDateTime dt = mixxx::localDateTimeFromUtc(rawValue.toDateTime());
             if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                // localized text date: "Wednesday, May 20, 1998 03:40:13 AM CEST"
                 return dt;
             }
+            if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
+                // Timstamp column in history feature:
+                // Use localized date/time format without text: "5/20/98 03:40 AM"
+                return mixxx::displayLocalDateTime(dt);
+            }
+            // For Date Added, use just the date: "5/20/98"
             return dt.date();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {

@@ -106,6 +106,9 @@ void PlaylistTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Position)] =
             fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
+            fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
