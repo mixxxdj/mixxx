@@ -283,6 +283,7 @@ CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
         return CoverInfo();
     }
 }
+
 const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
@@ -378,7 +379,8 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
 }
 
 QString BrowseTableModel::modelKey(bool noSearch) const {
-    // Browse feature does currently not support searching.
+    // Searching is handled by the proxy model, so if there is an active search
+    // modelkey is composed there, too.
     Q_UNUSED(noSearch);
     return QStringLiteral("browse:") + m_currentDirectory;
 }
