@@ -61,7 +61,7 @@ class ControlProxy : public QObject {
             // We must not block the signal source by a blocking connection
             M_FALLTHROUGH_INTENDED;
         default:
-            DEBUG_ASSERT(false);
+            DEBUG_ASSERT_UNREACHABLE(false);
             return false;
         }
 
@@ -94,7 +94,7 @@ class ControlProxy : public QObject {
             break;
         default:
             // Should be unreachable, but just to make sure ;-)
-            DEBUG_ASSERT(false);
+            DEBUG_ASSERT_UNREACHABLE(false);
             return false;
         }
         return true;

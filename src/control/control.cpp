@@ -66,7 +66,7 @@ void ControlDoublePrivate::initialize(double defaultValue) {
         if (pConfig) {
             value = pConfig->getValue(m_key, defaultValue);
         } else {
-            DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null");
+            DEBUG_ASSERT_UNREACHABLE(!"Can't load persistent value s_pUserConfig is null");
         }
     }
     m_defaultValue.setValue(defaultValue);
@@ -137,7 +137,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         if (!flags.testFlag(ControlFlag::AllowInvalidKey)) {
             qWarning() << "ControlDoublePrivate::getControl returning nullptr"
                        << "for invalid ConfigKey" << key;
-            DEBUG_ASSERT(!"Unexpected invalid key");
+            DEBUG_ASSERT_UNREACHABLE(!"Unexpected invalid key");
         }
         return nullptr;
     }
@@ -155,7 +155,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
                             << "ControlObject"
                             << key.group << key.item
                             << "already created";
-                    DEBUG_ASSERT(!"pCreatorCO != nullptr, ControlObject already created");
+                    DEBUG_ASSERT_UNREACHABLE(!"pCreatorCO != nullptr, ControlObject already created");
                     return nullptr;
                 }
                 return pControl;
@@ -317,7 +317,7 @@ double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior) {
         qWarning() << "Cannot get" << m_key << "for Midi";
-        DEBUG_ASSERT(!"pBehavior == nullptr, getParameterForMidi is returning 0");
+        DEBUG_ASSERT_UNREACHABLE(!"pBehavior == nullptr, getParameterForMidi is returning 0");
         return 0;
     }
     return pBehavior->midiToParameter(midiParam);
@@ -327,7 +327,7 @@ void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam)
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior) {
         qWarning() << "Cannot set" << m_key << "from Midi";
-        DEBUG_ASSERT(!"pBehavior == nullptr, abort setValueFromMidi()");
+        DEBUG_ASSERT_UNREACHABLE(!"pBehavior == nullptr, abort setValueFromMidi()");
         return;
     }
     pBehavior->setValueFromMidi(opcode, midiParam, this);
@@ -337,7 +337,7 @@ double ControlDoublePrivate::getMidiParameter() const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior) {
         qWarning() << "Cannot get" << m_key << "as Midi";
-        DEBUG_ASSERT(!"pBehavior == nullptr, getMidiParameter() is returning 0");
+        DEBUG_ASSERT_UNREACHABLE(!"pBehavior == nullptr, getMidiParameter() is returning 0");
         return 0;
     }
     return pBehavior->valueToMidiParameter(get());

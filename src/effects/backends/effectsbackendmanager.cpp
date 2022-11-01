@@ -108,7 +108,7 @@ const QString EffectsBackendManager::getDisplayNameForEffectPreset(
     }
     if (!manifestFound) {
         qWarning() << "Failed to find manifest for effect preset " << pPreset->id();
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
     }
     return displayName;
 }

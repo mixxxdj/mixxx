@@ -333,7 +333,7 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
             pTrack->markForMetadataExport();
             break;
         default:
-            DEBUG_ASSERT(!"unreachable");
+            DEBUG_ASSERT_UNREACHABLE(!"unreachable");
         }
     }
     return ExportTrackMetadataResult::Skipped;

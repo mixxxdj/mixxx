@@ -611,7 +611,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         break;
     }
     default:
-        DEBUG_ASSERT(!"Unknown enum value");
+        DEBUG_ASSERT_UNREACHABLE(!"Unknown enum value");
         seekOnLoad(mixxx::audio::kStartFramePos);
         break;
     }
@@ -897,7 +897,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         break;
     }
     default:
-        DEBUG_ASSERT(!"Invalid HotcueSetMode");
+        DEBUG_ASSERT_UNREACHABLE(!"Invalid HotcueSetMode");
         return;
     }
 
@@ -1115,7 +1115,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                     }
                     break;
                 default:
-                    DEBUG_ASSERT(!"Invalid CueType!");
+                    DEBUG_ASSERT_UNREACHABLE(!"Invalid CueType!");
                 }
             } else {
                 // pressed during pause or preview

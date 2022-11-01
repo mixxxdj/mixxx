@@ -26,7 +26,7 @@ void convertFloat32ToIntFormat(int* pDest, const CSAMPLE* pSrc, SINT numSamples,
                     static_cast<CSAMPLE>(static_cast<int>(INT_MAX & 0xFFFFFF00))));
         }
     } else {
-        DEBUG_ASSERT(!"Not implemented");
+        DEBUG_ASSERT_UNREACHABLE(!"Not implemented");
     }
 }
 

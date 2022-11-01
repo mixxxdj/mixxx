@@ -13,7 +13,7 @@ QDebug operator<<(QDebug dbg, ChannelLayout arg) {
     case ChannelLayout::Stereo:
         return dbg << "Stereo";
     }
-    DEBUG_ASSERT(!"unreachable code");
+    DEBUG_ASSERT_UNREACHABLE(!"unreachable code");
     return dbg;
 }
 

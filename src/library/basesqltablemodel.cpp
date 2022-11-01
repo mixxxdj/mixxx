@@ -746,7 +746,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         qWarning() << "Column"
                    << columnNameForFieldIndex(column)
                    << "is not editable!";
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
         return false;
     }
     return true;

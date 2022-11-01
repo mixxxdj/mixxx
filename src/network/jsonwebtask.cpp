@@ -206,7 +206,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
                 QNetworkRequest(url));
     }
     }
-    DEBUG_ASSERT(!"unreachable");
+    DEBUG_ASSERT_UNREACHABLE(!"unreachable");
     return nullptr;
 }
 

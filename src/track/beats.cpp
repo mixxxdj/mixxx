@@ -636,7 +636,7 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
         scaleFactor *= 3.0 / 2;
         break;
     default:
-        DEBUG_ASSERT(!"scale value invalid");
+        DEBUG_ASSERT_UNREACHABLE(!"scale value invalid");
         return nullptr;
     }
 

@@ -1499,7 +1499,7 @@ ExportTrackMetadataResult Track::exportMetadata(
                           << getLocation();
         return ExportTrackMetadataResult::Failed;
     default:
-        DEBUG_ASSERT(!"unreachable");
+        DEBUG_ASSERT_UNREACHABLE(!"unreachable");
         return ExportTrackMetadataResult::Failed;
     }
 
@@ -1653,7 +1653,7 @@ ExportTrackMetadataResult Track::exportMetadata(
                 << getLocation();
         return ExportTrackMetadataResult::Failed;
     }
-    DEBUG_ASSERT(!"unhandled case in switch statement");
+    DEBUG_ASSERT_UNREACHABLE(!"unhandled case in switch statement");
     return ExportTrackMetadataResult::Skipped;
 }
 

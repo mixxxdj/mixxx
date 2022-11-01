@@ -69,7 +69,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
     ref_ptr.reset();
     if (auto shared = weak.lock()) {
         qWarning() << name << "was leaked! Use count:" << shared.use_count();
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
     }
 }
 
@@ -168,7 +168,7 @@ CoreServices::~CoreServices() {
                     pCDP->deleteCreatorCO();
                 }
             }
-            DEBUG_ASSERT(!"Controls were leaked!");
+            DEBUG_ASSERT_UNREACHABLE(!"Controls were leaked!");
         }
         // Finally drop all shared pointers by exiting this scope
     }

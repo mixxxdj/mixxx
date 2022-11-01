@@ -183,7 +183,7 @@ class SyncTrackMetadataTest : public LibraryTest {
             EXPECT_FALSE(fileLastModified.isValid());
             break;
         default:
-            DEBUG_ASSERT(!"unreachable");
+            DEBUG_ASSERT_UNREACHABLE(!"unreachable");
         }
     }
 
@@ -272,7 +272,7 @@ class SyncTrackMetadataTest : public LibraryTest {
         case mixxx::TrackRecord::SourceSyncStatus::Synchronized:
             break;
         default:
-            DEBUG_ASSERT(!"unreachable");
+            DEBUG_ASSERT_UNREACHABLE(!"unreachable");
         }
 
         if (syncTrackMetadata &&

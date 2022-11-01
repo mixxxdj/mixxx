@@ -40,6 +40,6 @@ QString WFindOnWebMenu::composeSearchQuery(
 void WFindOnWebMenu::openInBrowser(const QUrl& url) {
     if (!QDesktopServices::openUrl(url)) {
         qWarning() << "QDesktopServices::openUrl() failed for " << url;
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
     }
 }

@@ -24,7 +24,7 @@ PerGroupEffectChain::PerGroupEffectChain(const QString& group,
             break;
         }
     }
-    DEBUG_ASSERT(handleAndGroup != nullptr);
+    RUNTIME_DEBUG_ASSERT(handleAndGroup);
 
     // Register this channel alone with the chain slot.
     registerInputChannel(*handleAndGroup);

@@ -216,7 +216,7 @@ class ControlDoublePrivateConst : public ControlDoublePrivate {
     void setInner(double value, QObject* pSender) override {
         Q_UNUSED(value)
         Q_UNUSED(pSender)
-        DEBUG_ASSERT(!"Trying to modify a default constructed (const) control object");
+        DEBUG_ASSERT_UNREACHABLE(!"Trying to modify a default constructed (const) control object");
     };
 
   protected:

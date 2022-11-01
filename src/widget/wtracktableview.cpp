@@ -957,8 +957,7 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     }
 
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-        qWarning() << "No selected tracks available";
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return trackIds;
     }
 
@@ -980,8 +979,9 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
 
 TrackId WTrackTableView::getCurrentTrackId() const {
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    if (!pTrackModel) {
         qWarning() << "No selected tracks available";
+        DEBUG_ASSERT_UNREACHABLE(false);
         return {};
     }
 
@@ -1001,8 +1001,7 @@ TrackId WTrackTableView::getCurrentTrackId() const {
 bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
     //qDebug() << "WTrackTableView::isTrackInCurrentView" << trackId;
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-        qWarning() << "No track model";
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return false;
     }
     const QVector<int> trackRows = pTrackModel->getTrackRows(trackId);
@@ -1012,14 +1011,12 @@ bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
 
 void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     QItemSelectionModel* pSelectionModel = selectionModel();
-    VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
-        qWarning() << "No selection model";
+    VERIFY_OR_DEBUG_ASSERT(pSelectionModel) {
         return;
     }
 
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-        qWarning() << "No track model";
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return;
     }
 
@@ -1041,8 +1038,7 @@ bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column, bool
     }
 
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-        qWarning() << "No track model";
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return false;
     }
     const QVector<int> trackRows = pTrackModel->getTrackRows(trackId);

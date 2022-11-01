@@ -161,7 +161,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
                     clearSampleCount);
         } break;
         default:
-            DEBUG_ASSERT(!"Unknown DiscontinuityGapMode");
+            DEBUG_ASSERT_UNREACHABLE(!"Unknown DiscontinuityGapMode");
         }
     }
 
@@ -336,7 +336,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                 outputRange.growFront(overlapRange.length());
                 break;
             default:
-                DEBUG_ASSERT(!"Unknown DiscontinuityOverlapMode");
+                DEBUG_ASSERT_UNREACHABLE(!"Unknown DiscontinuityOverlapMode");
             }
         }
     }
@@ -367,7 +367,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                 discardLastBufferedFrames(overlapRange.length());
                 break;
             default:
-                DEBUG_ASSERT(!"Unknown DiscontinuityOverlapMode");
+                DEBUG_ASSERT_UNREACHABLE(!"Unknown DiscontinuityOverlapMode");
             }
         }
     }
@@ -429,7 +429,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                     }
                 } break;
                 default:
-                    DEBUG_ASSERT(!"Unknown DiscontinuityGapMode");
+                    DEBUG_ASSERT_UNREACHABLE(!"Unknown DiscontinuityGapMode");
                 }
                 outputRange.shrinkFront(gapRange.length());
             }

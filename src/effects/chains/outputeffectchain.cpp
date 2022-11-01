@@ -23,7 +23,7 @@ OutputEffectChain::OutputEffectChain(EffectsManager* pEffectsManager,
             break;
         }
     }
-    DEBUG_ASSERT(masterHandleAndGroup != nullptr);
+    RUNTIME_DEBUG_ASSERT(masterHandleAndGroup);
 
     registerInputChannel(*masterHandleAndGroup);
     enableForInputChannel(*masterHandleAndGroup);

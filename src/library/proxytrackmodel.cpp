@@ -12,7 +12,10 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
           m_pTrackModel(dynamic_cast<TrackModel*>(pTrackModel)),
           m_currentSearch(""),
           m_bHandleSearches(bHandleSearches) {
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel && pTrackModel) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return;
     }
     setSourceModel(pTrackModel);

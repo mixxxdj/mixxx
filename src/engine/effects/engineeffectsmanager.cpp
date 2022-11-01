@@ -40,9 +40,10 @@ void EngineEffectsManager::onCallbackStart() {
                 }
             }
 
-            VERIFY_OR_DEBUG_ASSERT(chainExists) {
+            if (!chainExists) {
                 response.success = false;
                 response.status = EffectsResponse::NO_SUCH_CHAIN;
+                DEBUG_ASSERT_UNREACHABLE(false);
                 break;
             }
         }
