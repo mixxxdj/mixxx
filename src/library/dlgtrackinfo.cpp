@@ -372,7 +372,9 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtDuration->setText(
             m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
     txtBitrate->setText(
-            m_trackRecord.getMetadata().getBitrateText());
+            m_trackRecord.getMetadata().getBitrateText() +
+            QChar(' ') +
+            mixxx::audio::Bitrate::unit());
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
                     m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
