@@ -495,27 +495,18 @@ void WSearchLineEdit::slotSaveSearch() {
     if (cText.isEmpty() || !isEnabled()) {
         return;
     }
-    if (cIndex == -1) {
-        removeItem(-1);
-    }
 
-    // Check if the text is already listed
-    QSet<QString> querySet;
-    for (int index = 0; index < count(); index++) {
-        querySet.insert(itemText(index));
-    }
-    if (querySet.contains(cText)) {
-        // If query exists clear the box and use its index to set the currentIndex
-        int cIndex = findData(cText, Qt::DisplayRole);
-        setCurrentIndex(cIndex);
-        return;
-    } else {
-        // Else add it at the top
+    if (cIndex == -1) {
+        // If the query doesn't exist yet add it at the top
         insertItem(0, cText);
         setCurrentIndex(0);
-        while (count() > kMaxSearchEntries) {
-            removeItem(kMaxSearchEntries);
-        }
+    } else {
+        // If query exists clear the box and use its index to set the currentIndex
+        setCurrentIndex(cIndex);
+    }
+
+    while (count() > kMaxSearchEntries) {
+        removeItem(kMaxSearchEntries);
     }
 }
 
