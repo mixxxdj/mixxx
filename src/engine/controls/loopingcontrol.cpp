@@ -16,6 +16,11 @@
 
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
+
+// returns true if a is valid and is fairly close to target (within +/- 1 frame).
+bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) {
+    return a.isValid() && a > target - 1 && a < target + 1;
+}
 }
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
@@ -626,7 +631,10 @@ void LoopingControl::setLoop(mixxx::audio::FramePos startPosition,
         slotLoopInGoto(1);
     }
 
+    // Don't allow loop size widget setting to trigger creation of another loop.
+    m_pCOBeatLoopSize->blockSignals(true);
     m_pCOBeatLoopSize->setAndConfirm(findBeatloopSizeForLoop(startPosition, endPosition));
+    m_pCOBeatLoopSize->blockSignals(false);
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {
@@ -1197,10 +1205,6 @@ bool LoopingControl::currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) co
             loopInfo.startPosition, m_pCOBeatLoopSize->get());
 
     return positionNear(loopInfo.endPosition, loopEndPosition);
-}
-
-bool LoopingControl::positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) const {
-    return a.isValid() && a > target - 1 && a < target + 1;
 }
 
 double LoopingControl::findBeatloopSizeForLoop(
