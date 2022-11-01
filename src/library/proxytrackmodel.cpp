@@ -155,24 +155,22 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         return false;
     }
 
-    if (m_currentSearch.trimmed().isEmpty()) {
+    const QString currSearch = m_currentSearch.trimmed();
+    if (currSearch.isEmpty()) {
         return true;
     }
 
-    QStringList tokens = SearchQueryParser::splitQueryIntoWords(
-            m_currentSearch.trimmed());
+    QStringList tokens = SearchQueryParser::splitQueryIntoWords(currSearch);
     tokens.removeDuplicates();
 
     const QList<int>& filterColumns = m_pTrackModel->searchColumns();
     QAbstractItemModel* itemModel =
             dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
 
-    for (QString token : tokens) {
-        QListIterator<int> iter(filterColumns);
+    for (const auto& token : std::as_const(tokens)) {
         bool tokenMatch = false;
-        while (iter.hasNext() && !tokenMatch) {
-            int i = iter.next();
-            QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
+        for (const auto column : std::as_const(filterColumns)) {
+            QModelIndex index = itemModel->index(sourceRow, column, sourceParent);
             QString strData = itemModel->data(index).toString();
             if (!strData.isEmpty()) {
                 QString tokNoQuotes = token;
@@ -181,6 +179,9 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
                     tokenMatch = true;
                     tokens.removeOne(token);
                 }
+            }
+            if (tokenMatch) {
+                break;
             }
         }
     }
