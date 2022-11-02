@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDomNode>
+#include <QTimer>
 
 #include "effects/effectparameterslotbase.h"
 #include "skin/legacy/skincontext.h"
@@ -21,6 +22,7 @@ class WEffectParameterNameBase : public WLabel {
 
   protected slots:
     void parameterUpdated();
+    void showNewValue(double v);
 
   protected:
     void setEffectParameterSlot(EffectParameterSlotBasePointer pEffectKnobParameterSlot);
@@ -31,4 +33,6 @@ class WEffectParameterNameBase : public WLabel {
 
   private:
     const QString mimeTextIdentifier() const;
+    QString m_text;
+    QTimer m_displayNameResetTimer;
 };

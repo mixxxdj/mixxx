@@ -55,6 +55,7 @@ class EffectParameterSlotBase : public QObject {
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
+    void valueChanged(double v);
 
   public slots:
     // Solely for handling control changes
