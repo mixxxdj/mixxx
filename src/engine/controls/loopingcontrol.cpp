@@ -1405,16 +1405,15 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
-    // Only update seek mode if the endpoints have changed sufficiently.
-    if (positionNear(newloopInfo.startPosition, loopInfo.startPosition) &&
-            positionNear(newloopInfo.endPosition, loopInfo.endPosition)) {
-        newloopInfo.seekMode = loopInfo.seekMode;
+    // If the start point has changed, or the loop is not enabled,
+    // or if the endpoints are nearly the same, do not seek forward into the adjusted loop.
+    if (!keepStartPoint ||
+            !(enable || m_bLoopingEnabled) ||
+            (positionNear(newloopInfo.startPosition, loopInfo.startPosition) &&
+                    positionNear(newloopInfo.endPosition, loopInfo.endPosition))) {
+        newloopInfo.seekMode = LoopSeekMode::MovedOut;
     } else {
-        // If resizing an inactive loop by changing beatloop_size,
-        // do not seek to the adjusted loop.
-        newloopInfo.seekMode = (keepStartPoint && (enable || m_bLoopingEnabled))
-                ? LoopSeekMode::Changed
-                : LoopSeekMode::MovedOut;
+        newloopInfo.seekMode = LoopSeekMode::Changed;
     }
     m_loopInfo.setValue(newloopInfo);
     emit loopUpdated(newloopInfo.startPosition, newloopInfo.endPosition);
