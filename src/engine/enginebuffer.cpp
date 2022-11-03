@@ -1382,12 +1382,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         speed = 0;
     }
 
-    // Report fractional playpos to SyncControl.
-    // TODO(rryan) It's kind of hacky that this is in updateIndicators but it
-    // prevents us from computing fFractionalPlaypos multiple times per
-    // EngineBuffer::process().
-    m_pSyncControl->reportTrackPosition(fFractionalPlaypos);
-
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesSinceLastIndicatorUpdate >
