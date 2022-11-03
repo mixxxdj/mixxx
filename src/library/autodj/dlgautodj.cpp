@@ -272,24 +272,31 @@ void DlgAutoDJ::fadeNowButton(bool) {
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     AutoDJProcessor::AutoDJError error = m_pAutoDJProcessor->toggleAutoDJ(enable);
     switch (error) {
-        case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
-            QMessageBox::warning(nullptr,
-                    tr("Auto DJ"),
-                    tr("One deck must be stopped to enable Auto DJ mode."),
-                    QMessageBox::Ok);
-            // Make sure the button becomes unpushed.
-            pushButtonAutoDJ->setChecked(false);
-            break;
-        case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
-            QMessageBox::warning(nullptr,
-                    tr("Auto DJ"),
-                    tr("Decks 3 and 4 must be stopped to enable Auto DJ mode."),
-                    QMessageBox::Ok);
-            pushButtonAutoDJ->setChecked(false);
-            break;
-        case AutoDJProcessor::ADJ_OK:
-        default:
-            break;
+    case AutoDJProcessor::ADJ_NOT_TWO_DECKS:
+        QMessageBox::warning(nullptr,
+                tr("Auto DJ"),
+                tr("Auto DJ requires two decks assigned to opposite sides of the crossfader."),
+                QMessageBox::Ok);
+        // Make sure the button becomes unpushed.
+        pushButtonAutoDJ->setChecked(false);
+        break;
+    case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
+        QMessageBox::warning(nullptr,
+                tr("Auto DJ"),
+                tr("One deck must be stopped to enable Auto DJ mode."),
+                QMessageBox::Ok);
+        pushButtonAutoDJ->setChecked(false);
+        break;
+    case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
+        QMessageBox::warning(nullptr,
+                tr("Auto DJ"),
+                tr("Decks 3 and 4 must be stopped to enable Auto DJ mode."),
+                QMessageBox::Ok);
+        pushButtonAutoDJ->setChecked(false);
+        break;
+    case AutoDJProcessor::ADJ_OK:
+    default:
+        break;
     }
 }
 
