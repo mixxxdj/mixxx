@@ -35,6 +35,14 @@ void WEffectParameterNameBase::setEffectParameterSlot(
                 &EffectParameterSlotBase::updated,
                 this,
                 &WEffectParameterNameBase::parameterUpdated);
+        if (qobject_cast<EffectKnobParameterSlot*>(m_pParameterSlot.data())) {
+            // Make connection to show parameter value instead of name briefly
+            // after value has changed.
+            connect(m_pParameterSlot.data(),
+                    &EffectParameterSlotBase::valueChanged,
+                    this,
+                    &WEffectParameterNameBase::showNewValue);
+        }
     }
     parameterUpdated();
 }
@@ -49,14 +57,6 @@ void WEffectParameterNameBase::parameterUpdated() {
         setBaseTooltip(QString("%1\n%2").arg(
                 m_pParameterSlot->name(),
                 m_pParameterSlot->description()));
-        // Make connection to show parameter value instead of name briefly
-        // after value has changed.
-        if (m_pParameterSlot->parameterType() == EffectParameterType::Knob) {
-            connect(m_pParameterSlot.data(),
-                    &EffectParameterSlotBase::valueChanged,
-                    this,
-                    &WEffectParameterNameBase::showNewValue);
-        }
     } else {
         m_text = kNoEffectString;
         setBaseTooltip(tr("No effect loaded."));
