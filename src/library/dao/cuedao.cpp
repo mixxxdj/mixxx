@@ -40,7 +40,7 @@ CuePointer cueFromRow(const QSqlRecord& row) {
     const auto id = DbId(row.value(row.indexOf("id")));
     TrackId trackId(row.value(row.indexOf("track_id")));
     int type = row.value(row.indexOf("type")).toInt();
-    int position = row.value(row.indexOf("position")).toInt();
+    double position = row.value(row.indexOf("position")).toDouble();
     int length = row.value(row.indexOf("length")).toInt();
     int hotcue = row.value(row.indexOf("hotcue")).toInt();
     QString label = labelFromQVariant(row.value(row.indexOf("label")));
