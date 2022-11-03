@@ -10,6 +10,7 @@ on:
     paths:
       - "CHANGELOG.md"
 
+permissions: {}
 jobs:
   trigger-changelog-update:
     name: Trigger Changelog update on manual repository
