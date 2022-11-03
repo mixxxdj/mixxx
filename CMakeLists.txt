@@ -1580,7 +1580,9 @@ add_executable(mixxx-test
   src/test/metaknob_link_test.cpp
   src/test/midicontrollertest.cpp
   src/test/mixxxtest.cpp
+  src/test/mock_networkaccessmanager.cpp
   src/test/movinginterquartilemean_test.cpp
+  src/test/musicbrainzrecordingstasktest.cpp
   src/test/nativeeffects_test.cpp
   src/test/performancetimer_test.cpp
   src/test/playcountertest.cpp
