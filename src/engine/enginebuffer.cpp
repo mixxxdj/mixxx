@@ -1017,18 +1017,23 @@ void EngineBuffer::processTrackLocked(
         rate = m_rate_old;
     }
 
-    const mixxx::audio::FramePos trackEndPosition = getTrackEndPosition();
-    bool atEnd = m_playPosition >= trackEndPosition;
-    bool backwards = rate < 0;
-
     bool bCurBufferPaused = false;
-    if (atEnd && !backwards) {
-        // do not play past end
-        bCurBufferPaused = true;
-    } else if (rate == 0 && !is_scratching) {
-        // do not process samples if have no transport
-        // the linear scaler supports ramping down to 0
-        // this is used for pause by scratching only
+    bool atEnd = false;
+    bool backwards = rate < 0;
+    const mixxx::audio::FramePos trackEndPosition = getTrackEndPosition();
+    if (trackEndPosition.isValid()) {
+        atEnd = m_playPosition >= trackEndPosition;
+        if (atEnd && !backwards) {
+            // do not play past end
+            bCurBufferPaused = true;
+        } else if (rate == 0 && !is_scratching) {
+            // do not process samples if have no transport
+            // the linear scaler supports ramping down to 0
+            // this is used for pause by scratching only
+            bCurBufferPaused = true;
+        }
+    } else {
+        // Track has already been ejected.
         bCurBufferPaused = true;
     }
 
@@ -1089,12 +1094,10 @@ void EngineBuffer::processTrackLocked(
 
     // Handle repeat mode
     const bool atStart = m_playPosition <= mixxx::audio::kStartFramePos;
-    atEnd = m_playPosition >= trackEndPosition;
 
     bool repeat_enabled = m_pRepeat->toBool();
 
-    bool end_of_track = //(at_start && backwards) ||
-            (atEnd && !backwards);
+    bool end_of_track = atEnd && !backwards;
 
     // If playbutton is pressed, check if we are at start or end of track
     if ((m_playButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool()))
