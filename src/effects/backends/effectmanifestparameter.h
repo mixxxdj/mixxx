@@ -121,6 +121,60 @@ class EffectManifestParameter {
         }
     }
 
+    static QString unitsHintToString(const UnitsHint unitsHint) {
+        switch (unitsHint) {
+        case UnitsHint::BPM:
+            return QStringLiteral("BPM");
+        case UnitsHint::Cent:
+            return QStringLiteral("ct");
+        case UnitsHint::Centimetre:
+            return QStringLiteral("cm");
+        case UnitsHint::Decibel:
+            return QStringLiteral("dB");
+        case UnitsHint::Degree:
+            return QStringLiteral("°");
+        case UnitsHint::Frame:
+            return QStringLiteral("f");
+        case UnitsHint::Hertz:
+            return QStringLiteral("Hz");
+        case UnitsHint::Inch:
+            return QStringLiteral("in");
+        case UnitsHint::KiloHertz:
+            return QStringLiteral("kHz");
+        case UnitsHint::Kilometer:
+            return QStringLiteral("km");
+        case UnitsHint::Meter:
+            return QStringLiteral("m");
+        case UnitsHint::MegaHertz:
+            return QStringLiteral("MHz");
+        case UnitsHint::Mile:
+            return QStringLiteral("mi");
+        case UnitsHint::Minute:
+            return QStringLiteral("min");
+        case UnitsHint::Millmeter:
+            return QStringLiteral("mm");
+        case UnitsHint::Millisecond:
+            return QStringLiteral("ms");
+        case UnitsHint::Octave:
+            return QStringLiteral("oct");
+        case UnitsHint::Percentage:
+            return QStringLiteral("%");
+        case UnitsHint::Seconds:
+            return QStringLiteral("s");
+        case UnitsHint::Semitone12tet:
+            return QStringLiteral("semi");
+        case UnitsHint::Unknown:
+        case UnitsHint::Beat:
+        case UnitsHint::Beats:
+        case UnitsHint::Bar:
+        case UnitsHint::Coefficient:
+        case UnitsHint::Midinote:
+        case UnitsHint::SampleRate:
+        default:
+            return QLatin1String("");
+        }
+    }
+
     enum class LinkType : int {
         /// Not controlled by the meta knob
         None = 0,
@@ -244,6 +298,9 @@ class EffectManifestParameter {
 
     UnitsHint unitsHint() const {
         return m_unitsHint;
+    }
+    const QString unitString() const {
+        return unitsHintToString(m_unitsHint);
     }
     void setUnitsHint(UnitsHint unitsHint) {
         m_unitsHint = unitsHint;
