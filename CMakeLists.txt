@@ -2277,22 +2277,16 @@ target_link_libraries(mixxx-lib PRIVATE Threads::Threads)
 
 # iOS/OS X Frameworks
 if(APPLE)
-  find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${COREFOUNDATION_LIBRARY})
+  target_link_libraries(mixxx-lib PRIVATE "-weak_framework CoreFoundation")
 
   # The iOS/OS X security framework is used to implement sandboxing.
-  find_library(SECURITY_LIBRARY Security REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${SECURITY_LIBRARY})
+  target_link_libraries(mixxx-lib PRIVATE "-weak_framework Security")
 
-  find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${CORESERVICES_LIBRARY})
-
-  find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${FOUNDATION_LIBRARY})
+  target_link_libraries(mixxx-lib PRIVATE "-weak_framework CoreServices")
+  target_link_libraries(mixxx-lib PRIVATE "-weak_framework Foundation")
 
   # Used for battery measurements and controlling the screensaver on OS X and iOS.
-  find_library(IOKIT_LIBRARY IOKit REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${IOKIT_LIBRARY})
+  target_link_libraries(mixxx-lib PRIVATE "-weak_framework IOKit")
 endif()
 
 #
@@ -2377,8 +2371,7 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
-  find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${AUDIOTOOLBOX_LIBRARY})
+  target_link_libraries(mixxx-lib PRIVATE "-weak_framework AudioToolbox")
   target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
@@ -2673,7 +2666,7 @@ if(HID)
     elseif(APPLE)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
         find_library(AppKit_LIBRARY AppKit REQUIRED)
-        target_link_libraries(mixxx-hidapi PUBLIC ${AppKit_LIBRARY})
+        target_link_libraries(mixxx-hidapi PUBLIC "-weak_framework AppKit")
     elseif(UNIX)
       if(NOT LibUSB_FOUND)
         message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
