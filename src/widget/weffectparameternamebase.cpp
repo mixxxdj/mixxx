@@ -9,8 +9,6 @@
 
 namespace {
 const QString kMimeTextDelimiter = QStringLiteral("\n");
-// for rounding the value display to 2 decimals
-constexpr int kValDecimals = 100;
 } // anonymous namespace
 
 WEffectParameterNameBase::WEffectParameterNameBase(
@@ -78,14 +76,19 @@ void WEffectParameterNameBase::showNewValue(double newValue) {
         m_parameterUpdated = false;
         return;
     }
-    // TODO(ronso0) Trim decimals if value string is longer than X digits to
-    // prevent labels to expand.
-    double newValRounded =
-            std::ceil(newValue * kValDecimals) / kValDecimals;
+    int absVal = abs(static_cast<int>(round(newValue)));
+    int tenPowDecimals = 1; // omit decimals
+    if (absVal < 100) {     // 0-99: round to 2 decimals
+        tenPowDecimals = 100;
+    } else if (absVal < 1000) { // 100-999: round to 1 decimal
+        tenPowDecimals = 10;
+    }
+    double dispVal = round(newValue * tenPowDecimals) / tenPowDecimals;
+
     if (m_unitString.isEmpty()) {
-        setText(QString::number(newValRounded));
+        setText(QString::number(dispVal));
     } else {
-        setText(QString::number(newValRounded) + QChar(' ') + m_unitString);
+        setText(QString::number(dispVal) + QChar(' ') + m_unitString);
     }
     m_displayNameResetTimer.start();
 }
