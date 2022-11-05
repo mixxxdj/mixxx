@@ -16,8 +16,7 @@ constexpr int kValDecimals = 100;
 WEffectParameterNameBase::WEffectParameterNameBase(
         QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
-          m_pEffectsManager(pEffectsManager),
-          m_text("") {
+          m_pEffectsManager(pEffectsManager) {
     setAcceptDrops(true);
     parameterUpdated();
     // When the parameter value changed it is display briefly.
@@ -57,17 +56,37 @@ void WEffectParameterNameBase::parameterUpdated() {
         setBaseTooltip(QString("%1\n%2").arg(
                 m_pParameterSlot->name(),
                 m_pParameterSlot->description()));
+        EffectManifestParameterPointer pManifest = m_pParameterSlot->getManifest();
+        if (!pManifest.isNull()) {
+            m_unitString = m_pParameterSlot->getManifest()->unitString();
+        } else {
+            m_unitString = QString();
+        }
     } else {
+        m_unitString = QString();
         m_text = kNoEffectString;
         setBaseTooltip(tr("No effect loaded."));
     }
     setText(m_text);
+    m_parameterUpdated = true;
 }
 
 void WEffectParameterNameBase::showNewValue(double newValue) {
+    // Don't show the value for a newly loaded parameter. 'valueChanged' is emitted
+    // if this parameter is linked to the Meta knob
+    if (m_parameterUpdated) {
+        m_parameterUpdated = false;
+        return;
+    }
+    // TODO(ronso0) Trim decimals if value string is longer than X digits to
+    // prevent labels to expand.
     double newValRounded =
             std::ceil(newValue * kValDecimals) / kValDecimals;
-    setText(QString::number(newValRounded));
+    if (m_unitString.isEmpty()) {
+        setText(QString::number(newValRounded));
+    } else {
+        setText(QString::number(newValRounded) + QChar(' ') + m_unitString);
+    }
     m_displayNameResetTimer.start();
 }
 
