@@ -36,12 +36,35 @@ class EffectManifestParameter {
 
     enum class UnitsHint : int {
         Unknown = 0,
-        Time,
-        Hertz,
-        /// Fraction of the Sample Rate
-        SampleRate,
         /// Multiples of a Beat
         Beats,
+        Beat,
+        Bar,
+        BPM,
+        Cent,
+        Centimetre,
+        Coefficient,
+        Decibel,
+        Degree,
+        Frame,
+        Hertz,
+        Inch,
+        KiloHertz,
+        Kilometer,
+        Meter,
+        MegaHertz,
+        Midinote,
+        Mile,
+        Minute,
+        Millmeter,
+        Millisecond,
+        Octave,
+        Percentage,
+        /// Fraction of the Sample Rate
+        SampleRate,
+        Seconds,
+        Semitone12tet,
+        Time, // units?
     };
 
     enum class LinkType : int {
