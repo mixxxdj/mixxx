@@ -47,6 +47,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             }
         }
 
+        // Does this detect a knob/slider parameter?
         if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
                 !lilv_port_has_property(
                         m_pLV2plugin, port, properties["enumeration_port"]) &&
@@ -69,7 +70,21 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setId(symbol);
             // node must not be freed here, it is owned by port
 
-            param->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+            EffectManifestParameter::UnitsHint unitsHint =
+                    EffectManifestParameter::UnitsHint::Unknown;
+            // Consider only 'unit' values that start with LV2_UNITS_PREFIX.
+            // This ignore custom units::Unit nodes
+            LilvNode* unit = lilv_port_get(m_pLV2plugin, port, properties["unit"]);
+            if (unit) {
+                QString unitStr = lilv_node_as_string(unit);
+                QString prefix = lilv_node_as_string(properties["unit_prefix"]);
+                if (unitStr.startsWith(prefix)) {
+                    unitsHint = EffectManifestParameter::lv2UnitToUnitsHint(unitStr.remove(prefix));
+                }
+            }
+            param->setUnitsHint(unitsHint);
+            lilv_node_free(unit);
+
             if (util_isnan(m_default[i]) || m_default[i] < m_minimum[i] ||
                     m_default[i] > m_maximum[i]) {
                 m_default[i] = m_minimum[i];

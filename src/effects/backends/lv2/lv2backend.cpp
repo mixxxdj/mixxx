@@ -1,5 +1,7 @@
 #include "effects/backends/lv2/lv2backend.h"
 
+#include <lv2/units/units.h>
+
 #include "effects/backends/lv2/lv2effectprocessor.h"
 #include "effects/backends/lv2/lv2manifest.h"
 
@@ -39,6 +41,8 @@ void LV2Backend::initializeProperties() {
     m_properties["button_port"] = lilv_new_uri(m_pWorld, LV2_CORE__toggled);
     m_properties["integer_port"] = lilv_new_uri(m_pWorld, LV2_CORE__integer);
     m_properties["enumeration_port"] = lilv_new_uri(m_pWorld, LV2_CORE__enumeration);
+    m_properties["unit"] = lilv_new_uri(m_pWorld, LV2_UNITS__unit);
+    m_properties["unit_prefix"] = lilv_new_uri(m_pWorld, LV2_UNITS_PREFIX);
 }
 
 const QList<QString> LV2Backend::getEffectIds() const {

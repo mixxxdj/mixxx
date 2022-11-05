@@ -67,6 +67,60 @@ class EffectManifestParameter {
         Time, // units?
     };
 
+    static UnitsHint lv2UnitToUnitsHint(const QString& lv2Unit) {
+        if (lv2Unit == QLatin1String("bar")) {
+            return UnitsHint::Bar;
+        } else if (lv2Unit == QLatin1String("beat")) {
+            return UnitsHint::Beat;
+        } else if (lv2Unit == QLatin1String("bpm")) {
+            return UnitsHint::BPM;
+        } else if (lv2Unit == QLatin1String("cent")) {
+            return UnitsHint::Cent;
+        } else if (lv2Unit == QLatin1String("cm")) {
+            return UnitsHint::Centimetre;
+        } else if (lv2Unit == QLatin1String("coef")) {
+            return UnitsHint::Coefficient;
+        } else if (lv2Unit == QLatin1String("db")) {
+            return UnitsHint::Decibel;
+        } else if (lv2Unit == QLatin1String("degree")) {
+            return UnitsHint::Degree;
+        } else if (lv2Unit == QLatin1String("frame")) {
+            return UnitsHint::Frame;
+        } else if (lv2Unit == QLatin1String("hz")) {
+            return UnitsHint::Hertz;
+        } else if (lv2Unit == QLatin1String("inch")) {
+            return UnitsHint::Inch;
+        } else if (lv2Unit == QLatin1String("khz")) {
+            return UnitsHint::KiloHertz;
+        } else if (lv2Unit == QLatin1String("km")) {
+            return UnitsHint::Kilometer;
+        } else if (lv2Unit == QLatin1String("m")) {
+            return UnitsHint::Meter;
+        } else if (lv2Unit == QLatin1String("mhz")) {
+            return UnitsHint::MegaHertz;
+        } else if (lv2Unit == QLatin1String("midiNote")) {
+            return UnitsHint::Midinote;
+        } else if (lv2Unit == QLatin1String("mile")) {
+            return UnitsHint::Mile;
+        } else if (lv2Unit == QLatin1String("min")) {
+            return UnitsHint::Minute;
+        } else if (lv2Unit == QLatin1String("mm")) {
+            return UnitsHint::Millmeter;
+        } else if (lv2Unit == QLatin1String("ms")) {
+            return UnitsHint::Millisecond;
+        } else if (lv2Unit == QLatin1String("oct")) {
+            return UnitsHint::Octave;
+        } else if (lv2Unit == QLatin1String("pc")) {
+            return UnitsHint::Percentage;
+        } else if (lv2Unit == QLatin1String("s")) {
+            return UnitsHint::Seconds;
+        } else if (lv2Unit == QLatin1String("semitone12TET")) {
+            return UnitsHint::Semitone12tet;
+        } else {
+            return UnitsHint::Unknown;
+        }
+    }
+
     enum class LinkType : int {
         /// Not controlled by the meta knob
         None = 0,
