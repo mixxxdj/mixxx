@@ -171,7 +171,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ matrix.buildenv_basepath }}
-          key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
+          key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}+1
 
       - name: "[macOS] Import Apple code signing identity"
         id: apple_codesign
