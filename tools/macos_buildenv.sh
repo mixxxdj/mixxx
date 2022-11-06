@@ -55,8 +55,9 @@ case "$1" in
                 fi
                 echo ""
                 echo "Extracting ${BUILDENV_NAME}.tar.gz..."
-                tar xf "${BUILDENV_PATH}.tar.gz" -C "${BUILDENV_BASEPATH}" && \
+                tar xf "${BUILDENV_PATH}.tar.gz" -C "${BUILDENV_BASEPATH}" --exclude=*portaudio* && \
                 echo "Successfully extracted ${BUILDENV_NAME}.tar.gz"
+                brew install portaudio
             else
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, run the command below to download it."
                 echo "source ${THIS_SCRIPT_NAME} setup"
