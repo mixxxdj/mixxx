@@ -27,7 +27,7 @@ void LV2Backend::enumeratePlugins() {
         if (lilv_plugin_is_replaced(plug)) {
             continue;
         }
-        auto lv2Manifest = LV2EffectManifestPointer::create(plug, m_properties);
+        auto lv2Manifest = LV2EffectManifestPointer::create(m_pWorld, plug, m_properties);
         lv2Manifest->setBackendType(getType());
         m_registeredEffects.insert(lv2Manifest->id(), lv2Manifest);
     }
@@ -43,6 +43,7 @@ void LV2Backend::initializeProperties() {
     m_properties["enumeration_port"] = lilv_new_uri(m_pWorld, LV2_CORE__enumeration);
     m_properties["unit"] = lilv_new_uri(m_pWorld, LV2_UNITS__unit);
     m_properties["unit_prefix"] = lilv_new_uri(m_pWorld, LV2_UNITS_PREFIX);
+    m_properties["unit_symbol"] = lilv_new_uri(m_pWorld, LV2_UNITS__symbol);
 }
 
 const QList<QString> LV2Backend::getEffectIds() const {

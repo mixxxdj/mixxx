@@ -3,7 +3,12 @@
 #include "effects/backends/effectmanifestparameter.h"
 #include "util/fpclassify.h"
 
-LV2Manifest::LV2Manifest(const LilvPlugin* plug,
+namespace {
+constexpr bool lv2ParamDebug = true;
+} // namespace
+
+LV2Manifest::LV2Manifest(LilvWorld* world,
+        const LilvPlugin* plug,
         QHash<QString, LilvNode*>& properties)
         : EffectManifest(),
           m_minimum(lilv_plugin_get_num_ports(plug)),
@@ -72,18 +77,42 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
             EffectManifestParameter::UnitsHint unitsHint =
                     EffectManifestParameter::UnitsHint::Unknown;
-            // Consider only 'unit' values that start with LV2_UNITS_PREFIX.
-            // This ignore custom units::Unit nodes
-            LilvNode* unit = lilv_port_get(m_pLV2plugin, port, properties["unit"]);
-            if (unit) {
-                QString unitStr = lilv_node_as_string(unit);
-                QString prefix = lilv_node_as_string(properties["unit_prefix"]);
-                if (unitStr.startsWith(prefix)) {
-                    unitsHint = EffectManifestParameter::lv2UnitToUnitsHint(unitStr.remove(prefix));
+            LilvNodes* units = lilv_port_get_value(m_pLV2plugin, port, properties["unit"]);
+            if (lilv_nodes_size(units) > 0) {
+                LilvNode* unit = lilv_nodes_get_first(units);
+                // If this is a unit symbol URI, e.g. http://lv2plug.in/ns/extensions/units#ms
+                if (lilv_node_is_uri(unit)) {
+                    QString unitStr = lilv_node_as_uri(unit);
+                    // that starts with the 'units' prefix, isolate the identifier
+                    if (unitStr.startsWith(lilv_node_as_string(properties["unit_prefix"]))) {
+                        unitsHint = EffectManifestParameter::lv2UnitToUnitsHint(
+                                unitStr.remove(lilv_node_as_string(properties["unit_prefix"])));
+                    }
+                } else { // Try to extract the custom unit symbol string
+                    LilvNode* customUnit =
+                            lilv_world_get(world, unit, properties["unit_symbol"], NULL);
+                    if (customUnit) {
+                        // Accepted custom units needs to be 'whitelisted' in
+                        // EffectManifestParameter::lv2UnitToUnitsHint and added to
+                        // EffectManifestParameter::unitsHintToString
+                        unitsHint = EffectManifestParameter::lv2UnitToUnitsHint(
+                                lilv_node_as_string(customUnit));
+                        if (lv2ParamDebug &&
+                                unitsHint == EffectManifestParameter::UnitsHint::Unknown &&
+                                !param->ignoreCustomUnit(lilv_node_as_string(customUnit))) {
+                            qDebug().nospace()
+                                    << "LV2Manifest: plugin \""
+                                    << lilv_node_as_string(lilv_plugin_get_name(
+                                               m_pLV2plugin))
+                                    << "\" has custom unit \""
+                                    << lilv_node_as_string(customUnit)
+                                    << "\" for parameter " << param->name();
+                        }
+                    }
                 }
             }
             param->setUnitsHint(unitsHint);
-            lilv_node_free(unit);
+            lilv_nodes_free(units);
 
             if (util_isnan(m_default[i]) || m_default[i] < m_minimum[i] ||
                     m_default[i] > m_maximum[i]) {

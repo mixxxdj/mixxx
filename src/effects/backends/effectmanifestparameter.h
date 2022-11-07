@@ -68,6 +68,8 @@ class EffectManifestParameter {
     };
 
     static UnitsHint lv2UnitToUnitsHint(const QString& lv2Unit) {
+        // Add custom LV2 units here (with correct case) and also
+        // in unitsHintToString()
         if (lv2Unit == QLatin1String("bar")) {
             return UnitsHint::Bar;
         } else if (lv2Unit == QLatin1String("beat")) {
@@ -173,6 +175,17 @@ class EffectManifestParameter {
         default:
             return QLatin1String("");
         }
+    }
+
+    // Custom units we do not want to use in effect widgets
+    QSet<QString> customUnitsBlacklist = {
+            "(coef)",
+            "G",
+            "samp",
+            "st"};
+
+    bool ignoreCustomUnit(const QString& unit) {
+        return customUnitsBlacklist.contains(unit);
     }
 
     enum class LinkType : int {
