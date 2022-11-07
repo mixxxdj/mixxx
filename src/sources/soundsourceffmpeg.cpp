@@ -70,7 +70,7 @@ const Logger kLogger("SoundSourceFFmpeg");
 // https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
 
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
-inline void initChannelLayoutFromStream(
+void initChannelLayoutFromStream(
         AVChannelLayout* pUninitializedChannelLayout,
         const AVStream& avStream) {
     if (avStream.codecpar->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
@@ -90,7 +90,7 @@ inline void initChannelLayoutFromStream(
     }
 }
 #else
-inline int64_t getStreamChannelLayout(const AVStream& avStream) {
+int64_t getStreamChannelLayout(const AVStream& avStream) {
     auto channel_layout = avStream.codecpar->channel_layout;
     if (channel_layout == kavChannelLayoutUndefined) {
         // Workaround: FFmpeg sometimes fails to determine the channel
@@ -107,7 +107,7 @@ inline int64_t getStreamChannelLayout(const AVStream& avStream) {
 }
 #endif
 
-inline int64_t getStreamStartTime(const AVStream& avStream) {
+int64_t getStreamStartTime(const AVStream& avStream) {
     auto start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
