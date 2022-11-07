@@ -1978,7 +1978,43 @@ find_package(Vorbis REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Vorbis::vorbis Vorbis::vorbisenc Vorbis::vorbisfile)
 
 # PortAudio
-find_package(PortAudio REQUIRED)
+if(NOT APPLE)
+  find_package(PortAudio REQUIRED)
+else()
+  # The macOS build environment contains a portaudio 19.6 without macOS Ventura 13.0 Support
+  set(PortAudio_VERSION 19.7.0)
+  set(PortAudio_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/portaudio-install")
+  set(PortAudio_LIBRARIES "${PortAudio_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}portaudio${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  set(PortAudio_INCLUDE_DIRS "${PortAudio_INSTALL_DIR}/include")
+
+  ExternalProject_Add(portaudio
+    URL "https://github.com/PortAudio/portaudio/archive/refs/tags/v${PortAudio_VERSION}.zip"
+    URL_HASH SHA256=ce1e7b27ad362cb9745de7da3d266a996b085ca75a12ac62c881f88ab6894acf
+    DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+    DOWNLOAD_NAME "portaudio-v${PortAudio_VERSION}.zip"
+    INSTALL_DIR ${PortAudio_INSTALL_DIR}
+    LIST_SEPARATOR "|"
+    CMAKE_ARGS
+      -DBUILD_SHARED_LIBS=OFF
+      -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
+      -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
+      -DBUILD_TESTING=OFF
+    BUILD_COMMAND ${CMAKE_COMMAND} --build .
+    BUILD_BYPRODUCTS <INSTALL_DIR>/${PortAudio_LIBRARIES}
+    EXCLUDE_FROM_ALL TRUE
+  )
+  add_dependencies(mixxx-lib portaudio)
+  target_link_libraries(mixxx-lib PRIVATE
+      "-weak_framework AudioToolbox"
+      "-weak_framework AudioUnit"
+      "-weak_framework CoreAudio"
+      "-weak_framework CoreFoundation"
+      "-weak_framework CoreServices"
+  )
+endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortAudio_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PRIVATE ${PortAudio_LIBRARIES})
 
@@ -2377,8 +2413,6 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
-  find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${AUDIOTOOLBOX_LIBRARY})
   target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
