@@ -88,8 +88,7 @@ class EngineBuffer : public EngineObject {
     constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
             KeylockEngine::SoundTouch,
             KeylockEngine::RubberBandFaster,
-            KeylockEngine::RubberBandFiner,
-    };
+            KeylockEngine::RubberBandFiner};
 
     EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
