@@ -70,23 +70,27 @@ const Logger kLogger("SoundSourceFFmpeg");
 // https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
 
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
-inline void getStreamChannelLayout(AVChannelLayout* pChannelLayout, const AVStream& avStream) {
+void initChannelLayoutFromStream(
+        AVChannelLayout* pUninitializedChannelLayout,
+        const AVStream& avStream) {
     if (avStream.codecpar->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
         // Workaround: FFmpeg sometimes fails to determine the channel
         // layout, e.g. for a mono WAV files with a single channel!
-        av_channel_layout_default(pChannelLayout, avStream.codecpar->ch_layout.nb_channels);
+        av_channel_layout_default(pUninitializedChannelLayout,
+                avStream.codecpar->ch_layout.nb_channels);
         kLogger.info()
                 << "Unknown channel layout -> using default layout"
-                << pChannelLayout->order
+                << pUninitializedChannelLayout->order
                 << "for"
                 << avStream.codecpar->ch_layout.nb_channels
                 << "channel(s)";
     } else {
-        av_channel_layout_copy(pChannelLayout, &avStream.codecpar->ch_layout);
+        av_channel_layout_default(pUninitializedChannelLayout, 0);
+        av_channel_layout_copy(pUninitializedChannelLayout, &avStream.codecpar->ch_layout);
     }
 }
 #else
-inline int64_t getStreamChannelLayout(const AVStream& avStream) {
+int64_t getStreamChannelLayout(const AVStream& avStream) {
     auto channel_layout = avStream.codecpar->channel_layout;
     if (channel_layout == kavChannelLayoutUndefined) {
         // Workaround: FFmpeg sometimes fails to determine the channel
@@ -103,7 +107,7 @@ inline int64_t getStreamChannelLayout(const AVStream& avStream) {
 }
 #endif
 
-inline int64_t getStreamStartTime(const AVStream& avStream) {
+int64_t getStreamStartTime(const AVStream& avStream) {
     auto start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
@@ -612,7 +616,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     if (kLogger.debugEnabled()) {
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
         AVChannelLayout fixedChannelLayout;
-        getStreamChannelLayout(&fixedChannelLayout, *m_pavStream);
+        initChannelLayoutFromStream(&fixedChannelLayout, *m_pavStream);
 #endif
         kLogger.debug()
                 << "AVStream"
@@ -730,7 +734,7 @@ bool SoundSourceFFmpeg::initResampling(
         audio::SampleRate* pResampledSampleRate) {
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
     AVChannelLayout avStreamChannelLayout;
-    getStreamChannelLayout(&avStreamChannelLayout, *m_pavStream);
+    initChannelLayoutFromStream(&avStreamChannelLayout, *m_pavStream);
     const auto streamChannelCount =
             audio::ChannelCount(m_pavStream->codecpar->ch_layout.nb_channels);
 #else
