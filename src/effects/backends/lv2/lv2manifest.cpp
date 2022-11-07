@@ -66,13 +66,11 @@ LV2Manifest::LV2Manifest(LilvWorld* world,
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
-            QString paramName = lilv_node_as_string(info);
-            param->setName(paramName);
+            param->setName(lilv_node_as_string(info));
             lilv_node_free(info);
 
             const LilvNode* node = lilv_port_get_symbol(m_pLV2plugin, port);
-            QString symbol = lilv_node_as_string(node);
-            param->setId(symbol);
+            param->setId(lilv_node_as_string(node));
             // node must not be freed here, it is owned by port
 
             EffectManifestParameter::UnitsHint unitsHint =
@@ -120,13 +118,7 @@ LV2Manifest::LV2Manifest(LilvWorld* world,
             }
             param->setRange(m_minimum[i], m_default[i], m_maximum[i]);
 
-            // Set the appropriate Hints
-            if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-                param->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-            } else if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
-                buildEnumerationOptions(port, param);
-                param->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-            } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
+            if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
                 param->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
             } else {
                 param->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
@@ -146,13 +138,11 @@ LV2Manifest::LV2Manifest(LilvWorld* world,
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
-            QString paramName = lilv_node_as_string(info);
-            param->setName(paramName);
+            param->setName(lilv_node_as_string(info));
             lilv_node_free(info);
 
             const LilvNode* node = lilv_port_get_symbol(m_pLV2plugin, port);
-            QString symbol = lilv_node_as_string(node);
-            param->setId(symbol);
+            param->setId(lilv_node_as_string(node));
             // info must not be freed here, it is owned by port
 
             param->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
@@ -225,9 +215,8 @@ void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
         const LilvScalePoint* option = lilv_scale_points_get(options, iterator);
         const LilvNode* description = lilv_scale_point_get_label(option);
         const LilvNode* value = lilv_scale_point_get_value(option);
-        QString strDescription(lilv_node_as_string(description));
 
-        param->appendStep(qMakePair(strDescription,
+        param->appendStep(qMakePair(QString(lilv_node_as_string(description)),
                 static_cast<double>(lilv_node_as_float(value))));
     }
 
