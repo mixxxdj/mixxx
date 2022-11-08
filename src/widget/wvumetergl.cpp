@@ -16,7 +16,7 @@
 WVuMeterGL::WVuMeterGL(QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
-          m_bHasRendered(false),
+          m_iPendingRenders(0),
           m_bSwapNeeded(false),
           m_dParameter(0),
           m_dPeakParameter(0),
@@ -156,10 +156,10 @@ void WVuMeterGL::updateState(mixxx::Duration elapsed) {
 
 void WVuMeterGL::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
-    // Force a rerender when render is called from the vsync thread, e.g. to
+    // Force rerendering when render is called from the vsync thread, e.g. to
     // git rid artifacts after hiding and showing the mixer or incomplete
-    // initial drawing.
-    m_bHasRendered = false;
+    // initial drawing. Use 2 passes, in case triple buffering is used.
+    m_iPendingRenders = 2;
 }
 
 void WVuMeterGL::showEvent(QShowEvent* e) {
@@ -173,8 +173,11 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
 
     updateState(vSyncThread->sinceLastSwap());
 
-    if (m_bHasRendered && m_dParameter == m_dLastParameter &&
-            m_dPeakParameter == m_dLastPeakParameter) {
+    if (m_dParameter != m_dLastParameter || m_dPeakParameter != m_dLastPeakParameter) {
+        m_iPendingRenders = 2;
+    }
+
+    if (m_iPendingRenders == 0) {
         return;
     }
 
@@ -294,7 +297,7 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
 
     m_dLastParameter = m_dParameter;
     m_dLastPeakParameter = m_dPeakParameter;
-    m_bHasRendered = true;
+    m_iPendingRenders--;
     m_bSwapNeeded = true;
 }
 

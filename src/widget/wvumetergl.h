@@ -38,8 +38,9 @@ class WVuMeterGL : public QGLWidget, public WBaseWidget {
     void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
 
-    // To make sure we render at least once even when we have no signal
-    bool m_bHasRendered;
+    // To make sure we render at least N times even when we have no signal,
+    // for example after showEvent()
+    int m_iPendingRenders;
     // To indicate that we rendered so we need to swap
     bool m_bSwapNeeded;
     // Current parameter and peak parameter.
