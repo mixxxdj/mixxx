@@ -312,9 +312,11 @@ void DlgPrefSound::slotApply() {
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     {
         ScopedWaitCursor cursor;
-        m_pKeylockEngine->set(keylockComboBox->currentData().toDouble());
+        const auto keylockEngine =
+                keylockComboBox->currentData().value<EngineBuffer::KeylockEngine>();
+        m_pKeylockEngine->set(static_cast<double>(keylockEngine));
         m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
-                ConfigValue(keylockComboBox->currentData().toInt()));
+                ConfigValue(static_cast<int>(keylockEngine)));
 
         status = m_pSoundManager->setConfig(m_config);
     }
