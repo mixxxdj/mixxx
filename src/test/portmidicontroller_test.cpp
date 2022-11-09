@@ -64,9 +64,11 @@ class PortMidiControllerTest : public MixxxTest {
     PortMidiControllerTest()
             : m_mockInput(new MockPortMidiDevice(&m_inputDeviceInfo, 0)),
               m_mockOutput(new MockPortMidiDevice(&m_outputDeviceInfo, 0)) {
+        // PmDeviceInfo::name is non const since portmidi 2.0.1
+        // We maintain the memory here in place of Pm_GetDeviceInfo()
         char inputDeviceName[] = "Test Input Device";
         char outputDeviceName[] = "Test Output Device";
-        char interf[] = "Test";
+        constexpr const char interf[] = "Test";
         m_inputDeviceInfo.name = inputDeviceName;
         m_inputDeviceInfo.interf = interf;
         m_inputDeviceInfo.input = 1;
