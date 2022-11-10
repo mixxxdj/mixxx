@@ -313,8 +313,8 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
         // * clear selection in adjacent view
         // * restore previous selection (select first item if none was selected)
         //   which updates the info box via 'currentRowChanged' signals
-        auto pChainList = dynamic_cast<QListView*>(object);
-        auto pEffectList = dynamic_cast<QTableView*>(object);
+        auto pChainList = qobject_cast<QListView*>(object);
+        auto pEffectList = qobject_cast<QTableView*>(object);
         // Restore previous selection only if focus was changed with keyboard.
         // For mouse clicks, that procedure would select the wrong index.
         QFocusEvent* focEv = static_cast<QFocusEvent*>(event);
