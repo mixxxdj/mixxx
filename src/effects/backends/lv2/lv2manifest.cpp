@@ -83,7 +83,7 @@ LV2Manifest::LV2Manifest(LilvWorld* world,
                     QString unitStr = lilv_node_as_uri(unit);
                     // that starts with the 'units' prefix, isolate the identifier
                     if (unitStr.startsWith(lilv_node_as_string(properties["unit_prefix"]))) {
-                        unitsHint = EffectManifestParameter::lv2UnitToUnitsHint(
+                        unitsHint = param->lv2UnitToUnitsHint(
                                 unitStr.remove(lilv_node_as_string(properties["unit_prefix"])));
                     }
                 } else { // Try to extract the custom unit symbol string
@@ -93,7 +93,7 @@ LV2Manifest::LV2Manifest(LilvWorld* world,
                         // Accepted custom units needs to be 'whitelisted' in
                         // EffectManifestParameter::lv2UnitToUnitsHint and added to
                         // EffectManifestParameter::unitsHintStringHash
-                        unitsHint = EffectManifestParameter::lv2UnitToUnitsHint(
+                        unitsHint = param->lv2UnitToUnitsHint(
                                 lilv_node_as_string(customUnit));
                         if (lv2ParamDebug &&
                                 unitsHint == EffectManifestParameter::UnitsHint::Unknown &&
