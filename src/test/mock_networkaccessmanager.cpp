@@ -107,7 +107,7 @@ void MockNetworkReply::SetData(const QByteArray& data) {
 void MockNetworkReply::abort() {
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, {});
     setError(OperationCanceledError, tr("Operation canceled"));
-    emit error(OperationCanceledError);
+    emit errorOccurred(OperationCanceledError);
     emit finished();
 }
 
