@@ -1,11 +1,12 @@
 #pragma once
 
-#include <QMouseEvent>
-#include <QWheelEvent>
 #include <QColor>
 #include <QCursor>
-#include <QPoint>
+#include <QMouseEvent>
 #include <QPixmap>
+#include <QPoint>
+#include <QTimer>
+#include <QWheelEvent>
 
 #include "util/math.h"
 
@@ -17,6 +18,8 @@ class KnobEventHandler {
             QPixmap blankPixmap(32, 32);
             blankPixmap.fill(QColor(0, 0, 0, 0));
             m_blankCursor = QCursor(blankPixmap);
+            m_wheelCursorTimer.setSingleShot(true);
+            m_wheelCursorTimer.setInterval(800);
     }
 
     double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
@@ -103,6 +106,7 @@ class KnobEventHandler {
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
+        pWidget->setCursor(m_blankCursor);
         // For legacy (MIDI) reasons this is tuned to 127.
         double wheelDirection = e->angleDelta().y() / (120.0 * 127.0);
         double newValue = pWidget->getControlParameter() + wheelDirection;
@@ -113,6 +117,13 @@ class KnobEventHandler {
         pWidget->setControlParameter(newValue);
         pWidget->inputActivity();
         e->accept();
+        m_wheelCursorTimer.start();
+        m_wheelCursorTimer.callOnTimeout(
+                [pWidget]() {
+                    if (pWidget) {
+                        pWidget->unsetCursor();
+                    }
+                });
     }
 
   private:
@@ -123,4 +134,5 @@ class KnobEventHandler {
     QPoint m_startPos;
     QPoint m_prevPos;
     QCursor m_blankCursor;
+    QTimer m_wheelCursorTimer;
 };
