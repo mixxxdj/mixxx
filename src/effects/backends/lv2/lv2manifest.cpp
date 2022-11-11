@@ -92,7 +92,7 @@ LV2Manifest::LV2Manifest(LilvWorld* world,
                     if (customUnit) {
                         // Accepted custom units needs to be 'whitelisted' in
                         // EffectManifestParameter::lv2UnitToUnitsHint and added to
-                        // EffectManifestParameter::unitsHintToString
+                        // EffectManifestParameter::unitsHintStringHash
                         unitsHint = EffectManifestParameter::lv2UnitToUnitsHint(
                                 lilv_node_as_string(customUnit));
                         if (lv2ParamDebug &&

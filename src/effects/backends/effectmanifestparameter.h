@@ -123,59 +123,28 @@ class EffectManifestParameter {
         }
     }
 
-    static QString unitsHintToString(const UnitsHint unitsHint) {
-        switch (unitsHint) {
-        case UnitsHint::BPM:
-            return QStringLiteral("BPM");
-        case UnitsHint::Cent:
-            return QStringLiteral("ct");
-        case UnitsHint::Centimetre:
-            return QStringLiteral("cm");
-        case UnitsHint::Decibel:
-            return QStringLiteral("dB");
-        case UnitsHint::Degree:
-            return QStringLiteral("°");
-        case UnitsHint::Frame:
-            return QStringLiteral("f");
-        case UnitsHint::Hertz:
-            return QStringLiteral("Hz");
-        case UnitsHint::Inch:
-            return QStringLiteral("in");
-        case UnitsHint::KiloHertz:
-            return QStringLiteral("kHz");
-        case UnitsHint::Kilometer:
-            return QStringLiteral("km");
-        case UnitsHint::Meter:
-            return QStringLiteral("m");
-        case UnitsHint::MegaHertz:
-            return QStringLiteral("MHz");
-        case UnitsHint::Mile:
-            return QStringLiteral("mi");
-        case UnitsHint::Minute:
-            return QStringLiteral("min");
-        case UnitsHint::Millmeter:
-            return QStringLiteral("mm");
-        case UnitsHint::Millisecond:
-            return QStringLiteral("ms");
-        case UnitsHint::Octave:
-            return QStringLiteral("oct");
-        case UnitsHint::Percentage:
-            return QStringLiteral("%");
-        case UnitsHint::Seconds:
-            return QStringLiteral("s");
-        case UnitsHint::Semitone12tet:
-            return QStringLiteral("semi");
-        case UnitsHint::Unknown:
-        case UnitsHint::Beat:
-        case UnitsHint::Beats:
-        case UnitsHint::Bar:
-        case UnitsHint::Coefficient:
-        case UnitsHint::Midinote:
-        case UnitsHint::SampleRate:
-        default:
-            return QLatin1String("");
-        }
-    }
+    const QHash<UnitsHint, QString> unitsHintStringHash{
+            {UnitsHint::BPM, QString("BPM")},
+            {UnitsHint::Cent, QString("ct")},
+            {UnitsHint::Centimetre, QString("cm")},
+            {UnitsHint::Decibel, QString("dB")},
+            {UnitsHint::Degree, QString("°")},
+            {UnitsHint::Frame, QString("f")},
+            {UnitsHint::Hertz, QString("Hz")},
+            {UnitsHint::Inch, QString("in")},
+            {UnitsHint::KiloHertz, QString("kHz")},
+            {UnitsHint::Kilometer, QString("km")},
+            {UnitsHint::Meter, QString("m")},
+            {UnitsHint::MegaHertz, QString("MHz")},
+            {UnitsHint::Mile, QString("mi")},
+            {UnitsHint::Minute, QString("min")},
+            {UnitsHint::Millmeter, QString("mm")},
+            {UnitsHint::Millisecond, QString("ms")},
+            {UnitsHint::Octave, QString("oct")},
+            {UnitsHint::Percentage, QString("%")},
+            {UnitsHint::Seconds, QString("s")},
+            {UnitsHint::Semitone12tet, QString("semi")},
+    };
 
     // Custom units we do not want to use in effect widgets
     QSet<QString> customUnitsBlacklist = {
@@ -312,11 +281,12 @@ class EffectManifestParameter {
     UnitsHint unitsHint() const {
         return m_unitsHint;
     }
-    const QString unitString() const {
-        return unitsHintToString(m_unitsHint);
-    }
     void setUnitsHint(UnitsHint unitsHint) {
         m_unitsHint = unitsHint;
+        m_unitString = EffectManifestParameter::unitsHintStringHash.value(unitsHint);
+    }
+    const QString unitString() const {
+        return m_unitString;
     }
 
     LinkType defaultLinkType() const {
@@ -405,6 +375,7 @@ class EffectManifestParameter {
     ParameterType m_parameterType;
     ValueScaler m_valueScaler;
     UnitsHint m_unitsHint;
+    QString m_unitString;
     LinkType m_defaultLinkType;
     LinkInversion m_defaultLinkInversion;
     double m_neutralPointOnScale;
@@ -427,4 +398,10 @@ typedef EffectManifestParameter::ParameterType EffectParameterType;
 
 inline qhash_seed_t qHash(const EffectParameterType& parameterType) {
     return static_cast<qhash_seed_t>(parameterType);
+}
+
+typedef EffectManifestParameter::UnitsHint UnitsHint;
+
+inline qhash_seed_t qHash(const UnitsHint& uhint) {
+    return static_cast<qhash_seed_t>(uhint);
 }
