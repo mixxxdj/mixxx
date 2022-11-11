@@ -19,6 +19,7 @@ WEffectParameterNameBase::WEffectParameterNameBase(
           m_pEffectsManager(pEffectsManager),
           m_text("") {
     setAcceptDrops(true);
+    setCursor(Qt::OpenHandCursor);
     parameterUpdated();
     // When the parameter value changed it is display briefly.
     // Set up the timer that restores the parameter name.
