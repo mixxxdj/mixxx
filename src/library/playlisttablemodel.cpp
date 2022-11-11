@@ -348,7 +348,7 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
                     ->getPlaylistDAO()
                     .getHiddenType(m_iPlaylistId)) {
         // Disable track reordering for history playlists
-        caps &= ~(Capability::Reorder | Capability::RemovePlaylist);
+        caps &= ~(Capability::ReceiveDrops | Capability::Reorder | Capability::RemovePlaylist);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {

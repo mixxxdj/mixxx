@@ -7,6 +7,7 @@
 #include "audio/frame.h"
 #include "audio/types.h"
 #include "control/controlproxy.h"
+#include "library/relocatedtrack.h"
 #include "library/trackset/crate/crateid.h"
 #include "moc_mixxxapplication.cpp"
 #include "soundio/soundmanagerutil.h"
@@ -103,6 +104,10 @@ void MixxxApplication::registerMetaTypes() {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QMetaType::registerComparators<SoundDeviceId>();
 #endif
+
+    // Library Scanner
+    qRegisterMetaType<RelocatedTrack>();
+    qRegisterMetaType<QList<RelocatedTrack>>();
 
     // Various custom data types
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");

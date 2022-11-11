@@ -676,6 +676,10 @@ WLibrary {
 
 /************** Mixer *********************************************************/
 
+#CrossfaderContainer[highlight="1"] {
+  border:  1px solid #cf9200;
+}
+
 #MixerDecks {
   padding: 2px 6px 2px 6px;
   }

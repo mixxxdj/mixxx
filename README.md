@@ -87,7 +87,7 @@ license.
 [download-stable]: https://mixxx.org/download/#stable
 [download-testing]: https://mixxx.org/download/#testing
 [issues]: https://github.com/mixxxdj/mixxx/issues
-[fileabug]: https://github.com/mixxxdj/mixxx/issues/new
+[fileabug]: https://github.com/mixxxdj/mixxx/issues/new/choose
 [twitter]: https://twitter.com/mixxxdj
 [facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
 [blog]: https://mixxx.org/news/
@@ -101,6 +101,6 @@ license.
 [Mixxx i18n wiki]: https://github.com/mixxxdj/mixxx/wiki/Internationalization
 [Mixxx localization forum]: https://mixxx.discourse.group/c/translation/13
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
-[hardware compatibility]: https://github.com/mixxxdj/mixxx/wiki/Hardware-Compatibility
+[hardware compatibility]: https://manual.mixxx.org/2.3/en/hardware/manuals.html
 [zulip]: https://mixxx.zulipchat.com/
 [discourse]: https://mixxx.discourse.group/
