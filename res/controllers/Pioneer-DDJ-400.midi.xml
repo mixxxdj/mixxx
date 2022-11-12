@@ -1605,6 +1605,169 @@
             </control>
             <!-- BEAT LOOP MODE END -->
 
+            <!-- BEAT LOOP ROLL MODE START (PAD FX1) -->
+            <control>
+                <description>PAD 1 (DECK1) BEAT LOOP ROLL MODE - press - 1/32 Beatloop</description>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.03125_activate</key>
+                <status>0x97</status>
+                <midino>0x10</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 1 (DECK2) BEAT LOOP ROLL MODE - press - 1/32 Beatloop</description>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.03125_activate</key>
+                <status>0x99</status>
+                <midino>0x10</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 (DECK1) BEAT LOOP ROLL MODE - press - 1/16 Beatloop</description>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.0625_activate</key>
+                <status>0x97</status>
+                <midino>0x11</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 (DECK2) BEAT LOOP ROLL MODE - press - 1/16 Beatloop</description>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.0625_activate</key>
+                <status>0x99</status>
+                <midino>0x11</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 (DECK1) BEAT LOOP ROLL MODE - press - 1/8 Beatloop</description>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.125_activate</key>
+                <status>0x97</status>
+                <midino>0x12</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 (DECK2) BEAT LOOP ROLL MODE - press - 1/8 Beatloop</description>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.125_activate</key>
+                <status>0x99</status>
+                <midino>0x12</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 (DECK1) BEAT LOOP ROLL MODE - press - 1/4 Beatloop</description>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.25_activate</key>
+                <status>0x97</status>
+                <midino>0x13</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 (DECK2) BEAT LOOP ROLL MODE - press - 1/4 Beatloop</description>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.25_activate</key>
+                <status>0x99</status>
+                <midino>0x13</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 (DECK1) BEAT LOOP ROLL MODE - press - 1/2 Beatloop</description>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.5_activate</key>
+                <status>0x97</status>
+                <midino>0x14</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 (DECK2) BEAT LOOP ROLL MODE - press - 1/2 Beatloop</description>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.5_activate</key>
+                <status>0x99</status>
+                <midino>0x14</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 (DECK1) BEAT LOOP ROLL MODE - press - 1 Beatloop</description>
+                <group>[Channel1]</group>
+                <key>beatlooproll_1_activate</key>
+                <status>0x97</status>
+                <midino>0x15</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 (DECK2) BEAT LOOP ROLL MODE - press - 1 Beatloop</description>
+                <group>[Channel2]</group>
+                <key>beatlooproll_1_activate</key>
+                <status>0x99</status>
+                <midino>0x15</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 (DECK1) BEAT LOOP ROLL MODE - press - 2 Beatloop</description>
+                <group>[Channel1]</group>
+                <key>beatlooproll_2_activate</key>
+                <status>0x97</status>
+                <midino>0x16</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 (DECK2) BEAT LOOP ROLL MODE - press - 2 Beatloop</description>
+                <group>[Channel2]</group>
+                <key>beatlooproll_2_activate</key>
+                <status>0x99</status>
+                <midino>0x16</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 (DECK1) BEAT LOOP ROLL MODE - press - 4 Beatloop</description>
+                <group>[Channel1]</group>
+                <key>beatlooproll_4_activate</key>
+                <status>0x97</status>
+                <midino>0x17</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 (DECK2) BEAT LOOP ROLL MODE - press - 4 Beatloop</description>
+                <group>[Channel2]</group>
+                <key>beatlooproll_4_activate</key>
+                <status>0x99</status>
+                <midino>0x17</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <!-- BEAT LOOP ROLL MODE END -->
+
             <!-- BEAT JUMP MODE START-->
             <control>
                 <description>PAD 1 (DECK1) BEAT JUMP MODE - press - Jump 1 Beat backwards</description>
@@ -2933,6 +3096,137 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
+
+            <!-- BEAT LOOP ROLL MODE pads (PAD FX1) -->
+            <output>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.03125_activate</key>
+                <status>0x97</status>
+                <midino>0x10</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.03125_activate</key>
+                <status>0x99</status>
+                <midino>0x10</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.0625_activate</key>
+                <status>0x97</status>
+                <midino>0x11</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.0625_activate</key>
+                <status>0x99</status>
+                <midino>0x11</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.125_activate</key>
+                <status>0x97</status>
+                <midino>0x12</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.125_activate</key>
+                <status>0x99</status>
+                <midino>0x12</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.25_activate</key>
+                <status>0x97</status>
+                <midino>0x13</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.25_activate</key>
+                <status>0x99</status>
+                <midino>0x13</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.5_activate</key>
+                <status>0x97</status>
+                <midino>0x14</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.5_activate</key>
+                <status>0x99</status>
+                <midino>0x14</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>beatlooproll_1_activate</key>
+                <status>0x97</status>
+                <midino>0x15</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>beatlooproll_1_activate</key>
+                <status>0x99</status>
+                <midino>0x15</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>beatlooproll_2_activate</key>
+                <status>0x97</status>
+                <midino>0x16</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>beatlooproll_2_activate</key>
+                <status>0x99</status>
+                <midino>0x16</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>beatlooproll_4_activate</key>
+                <status>0x97</status>
+                <midino>0x17</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>beatlooproll_4_activate</key>
+                <status>0x99</status>
+                <midino>0x17</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <!-- BEAT LOOP ROLL MODE pads -->
 
             <!-- SAMPLER Mode Pads (while SHIFT IS pressed)-->
             <!-- Deck 1 pads -->
