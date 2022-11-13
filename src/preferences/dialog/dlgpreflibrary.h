@@ -20,7 +20,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
         Ignore = 3,
     };
 
-    enum class CoverArtFetcherQuality : int {
+    enum class CoverArtFetcherQuality {
         Low = 0,
         Medium = 1,
         High = 2,
