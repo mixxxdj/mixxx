@@ -14,9 +14,9 @@ class MusicBrainzRecordingsTaskTest : public MixxxTest {
     MusicBrainzRecordingsTaskTest() {
         m_pReceiver.reset(new MockMusicBrainzReceiver());
         m_recordingIds = {
-                "416a273e-51b8-4b1c-8873-4c9b4ed54a0f",
-                "5e0aa7e4-01cb-441c-9fc2-d89e890cb981",
-                "5f6340ae-9cab-4f00-83d5-7ad00ac35f5b"};
+                QUuid::fromString(QLatin1String("416a273e-51b8-4b1c-8873-4c9b4ed54a0f")),
+                QUuid::fromString(QLatin1String("5e0aa7e4-01cb-441c-9fc2-d89e890cb981")),
+                QUuid::fromString(QLatin1String("5f6340ae-9cab-4f00-83d5-7ad00ac35f5b"))};
         m_expectedParams = {
                 {"inc", "artists+artist-credits+releases+release-groups+media"}};
 
