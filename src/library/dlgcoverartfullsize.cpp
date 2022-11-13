@@ -82,7 +82,7 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     slotLoadTrack(pTrack);
 }
 
-void DlgCoverArtFullSize::init(const QByteArray& fetchedCoverArtBytes) {
+void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
     QPixmap image;
     image.loadFromData(fetchedCoverArtBytes);
 
@@ -91,7 +91,7 @@ void DlgCoverArtFullSize::init(const QByteArray& fetchedCoverArtBytes) {
     raise();
     activateWindow();
 
-    QString fetchedCoverArtWindowTitle = "Fetched Cover Art";
+    QString fetchedCoverArtWindowTitle = tr("Fetched Cover Art");
 
     setWindowTitle(fetchedCoverArtWindowTitle);
 
