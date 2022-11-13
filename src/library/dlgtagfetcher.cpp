@@ -131,14 +131,7 @@ void DlgTagFetcher::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
-    currentCoverArtLayout->setAlignment(Qt::AlignRight | Qt::AlignTop | Qt::AlignCenter);
-    currentCoverArtLayout->setSpacing(0);
-    currentCoverArtLayout->setContentsMargins(0, 0, 0, 0);
     currentCoverArtLayout->insertWidget(0, m_pWCurrentCoverArtLabel.get());
-
-    fetchedCoverArtLayout->setAlignment(Qt::AlignRight | Qt::AlignBottom | Qt::AlignCenter);
-    fetchedCoverArtLayout->setSpacing(0);
-    fetchedCoverArtLayout->setContentsMargins(0, 0, 0, 0);
     fetchedCoverArtLayout->insertWidget(0, m_pWFetchedCoverArtLabel.get());
 
     if (m_pTrackModel) {
