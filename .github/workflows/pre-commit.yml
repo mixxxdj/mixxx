@@ -61,6 +61,7 @@ jobs:
         run: |
           git diff-index -p HEAD > "${PATCH_FILE}"
           [ -s "${PATCH_FILE}" ] && echo "UPLOAD_PATCH_FILE=${PATCH_FILE}" >> "${GITHUB_ENV}"
+        shell: bash
         env:
           PATCH_FILE: pre-commit.patch
 
@@ -73,4 +74,5 @@ jobs:
 
       # AppStream metadata has been generated/updated by a pre-commit hook
       - name: "Validate AppStream metadata"
+        if: runner.os == 'Linux'
         run: appstreamcli validate res/linux/org.mixxx.Mixxx.metainfo.xml
