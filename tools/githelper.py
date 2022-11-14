@@ -21,7 +21,7 @@ def get_toplevel_path() -> str:
 
     cmd = ["git", "rev-parse", "--show-toplevel"]
     logger.debug("Executing: %r", cmd)
-    return subprocess.check_output(cmd, text=True).strip()
+    return os.path.normpath(subprocess.check_output(cmd, text=True).strip())
 
 
 def get_moved_files(
