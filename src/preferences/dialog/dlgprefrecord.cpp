@@ -328,13 +328,11 @@ void DlgPrefRecord::updateTextQuality() {
     bool isVbr = false;
     if (m_selFormat.internalName == ENCODING_MP3) {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
-        int i=0;
         for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
                     isVbr = true;
                 }
-                i++;
             }
         }
     }
