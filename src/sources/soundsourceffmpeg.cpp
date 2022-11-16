@@ -19,7 +19,9 @@ namespace {
 
 constexpr AVSampleFormat kavSampleFormat = AV_SAMPLE_FMT_FLT;
 
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
 constexpr uint64_t kavChannelLayoutUndefined = 0;
+#endif
 
 constexpr int64_t kavStreamDefaultStartTime = 0;
 
