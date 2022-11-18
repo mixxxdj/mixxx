@@ -10,16 +10,20 @@
 
 #include "util/math.h"
 
+// duration (ms) the cursor is blanked after a mouse wheel event
+// 800 ms is the duration the parameter value is shown in the parameter name widget
+// src/widget/weffectparameternamebase.cpp
+constexpr int wheelEventCursorTimeout = 800;
+
 template <class T>
 class KnobEventHandler {
   public:
     KnobEventHandler()
-            : m_bRightButtonPressed(false) {
-            QPixmap blankPixmap(32, 32);
-            blankPixmap.fill(QColor(0, 0, 0, 0));
-            m_blankCursor = QCursor(blankPixmap);
-            m_wheelCursorTimer.setSingleShot(true);
-            m_wheelCursorTimer.setInterval(800);
+            : m_bRightButtonPressed(false),
+              m_pWheelCursorTimer(nullptr) {
+        QPixmap blankPixmap(32, 32);
+        blankPixmap.fill(QColor(0, 0, 0, 0));
+        m_blankCursor = QCursor(blankPixmap);
     }
 
     double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
@@ -106,6 +110,8 @@ class KnobEventHandler {
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
+        // Hide/blank the cursor so the parameter value below the knob is not obscured.
+        // Restore the cursor when the timer runs out, or when the cursor leaves the widget.
         pWidget->setCursor(m_blankCursor);
         // For legacy (MIDI) reasons this is tuned to 127.
         double wheelDirection = e->angleDelta().y() / (120.0 * 127.0);
@@ -117,8 +123,13 @@ class KnobEventHandler {
         pWidget->setControlParameter(newValue);
         pWidget->inputActivity();
         e->accept();
-        m_wheelCursorTimer.start();
-        m_wheelCursorTimer.callOnTimeout(
+        if (!m_pWheelCursorTimer) {
+            m_pWheelCursorTimer = new QTimer(pWidget);
+            m_pWheelCursorTimer->setSingleShot(true);
+            m_pWheelCursorTimer->setInterval(wheelEventCursorTimeout);
+        }
+        m_pWheelCursorTimer->start();
+        m_pWheelCursorTimer->callOnTimeout(
                 [pWidget]() {
                     if (pWidget) {
                         pWidget->unsetCursor();
@@ -127,8 +138,8 @@ class KnobEventHandler {
     }
 
     void leaveEvent(T* pWidget, QEvent* e) {
-        if (m_wheelCursorTimer.isActive()) {
-            m_wheelCursorTimer.stop();
+        if (m_pWheelCursorTimer && m_pWheelCursorTimer->isActive()) {
+            m_pWheelCursorTimer->stop();
             pWidget->unsetCursor();
         }
         e->accept();
@@ -142,5 +153,5 @@ class KnobEventHandler {
     QPoint m_startPos;
     QPoint m_prevPos;
     QCursor m_blankCursor;
-    QTimer m_wheelCursorTimer;
+    QTimer* m_pWheelCursorTimer;
 };
