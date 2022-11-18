@@ -126,6 +126,14 @@ class KnobEventHandler {
                 });
     }
 
+    void leaveEvent(T* pWidget, QEvent* e) {
+        if (m_wheelCursorTimer.isActive()) {
+            m_wheelCursorTimer.stop();
+            pWidget->unsetCursor();
+        }
+        e->accept();
+    }
+
   private:
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;

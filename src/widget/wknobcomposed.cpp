@@ -227,6 +227,10 @@ void WKnobComposed::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
 }
 
+void WKnobComposed::leaveEvent(QEvent* e) {
+    m_handler.leaveEvent(this, e);
+}
+
 void WKnobComposed::inputActivity() {
 #ifdef __APPLE__
     m_renderTimer.activity();
