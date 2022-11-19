@@ -5,6 +5,8 @@
 #include <QTextCodec>
 #include <QThread>
 #include <QtDebug>
+#include <cstdio>
+#include <stdexcept>
 
 #include "config.h"
 #include "coreservices.h"

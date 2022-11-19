@@ -57,7 +57,7 @@ class SoundManager : public QObject {
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
-    SoundDeviceError setupDevices();
+    SoundDeviceStatus setupDevices();
 
     // Playermanager will notify us when the number of decks changes.
     void setConfiguredDeckCount(int count);
@@ -65,7 +65,7 @@ class SoundManager : public QObject {
 
     SoundDevicePointer getErrorDevice() const;
     QString getErrorDeviceName() const;
-    QString getLastErrorMessage(SoundDeviceError err) const;
+    QString getLastErrorMessage(SoundDeviceStatus status) const;
 
     // Returns a list of samplerates we will attempt to support for a given API.
     QList<unsigned int> getSampleRates(const QString& api) const;
@@ -76,7 +76,7 @@ class SoundManager : public QObject {
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
-    SoundDeviceError setConfig(const SoundManagerConfig& config);
+    SoundDeviceStatus setConfig(const SoundManagerConfig& config);
     void checkConfig();
 
     void onDeviceOutputCallback(const SINT iFramesPerBuffer);

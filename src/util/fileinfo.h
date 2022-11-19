@@ -203,6 +203,9 @@ class FileInfo final {
     QString baseName() const {
         return m_fileInfo.baseName();
     }
+    QString completeBaseName() const {
+        return m_fileInfo.completeBaseName();
+    }
 
     QDateTime birthTime() const {
         return m_fileInfo.birthTime();

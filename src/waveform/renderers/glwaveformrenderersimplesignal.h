@@ -3,12 +3,11 @@
 #include "waveform/renderers/glwaveformrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveform/renderers/waveformrenderersignalbase.h"
+#include "waveform/renderers/glwaveformrenderer.h"
 
 class ControlObject;
 
-class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase,
-                                       public GLWaveformRenderer {
+class GLWaveformRendererSimpleSignal : public GLWaveformRenderer {
   public:
     explicit GLWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererSimpleSignal();

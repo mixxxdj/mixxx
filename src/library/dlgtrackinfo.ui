@@ -578,6 +578,12 @@
             </item>
             <item row="2" column="3">
              <widget class="QLabel" name="txtDateAdded">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string/>
               </property>

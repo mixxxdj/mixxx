@@ -15,8 +15,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 QtHSVWaveformWidget::QtHSVWaveformWidget(const QString& group, QWidget* parent)
-        : QGLWidget(parent),
-          WaveformWidgetAbstract(group) {
+        : GLWaveformWidgetAbstract(group, parent) {
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }

@@ -363,12 +363,14 @@ void EffectChainPresetManager::setQuickEffectPresetOrder(
     emit quickEffectChainPresetListUpdated();
 }
 
-void EffectChainPresetManager::savePreset(EffectChainPointer pChainSlot) {
+void EffectChainPresetManager::savePresetAndReload(EffectChainPointer pChainSlot) {
     auto pPreset = EffectChainPresetPointer::create(pChainSlot.data());
-    savePreset(pPreset);
+    if (savePreset(pPreset)) {
+        pChainSlot->loadChainPreset(pPreset);
+    }
 }
 
-void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
+bool EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     QString name;
     QString errorText;
     while (name.isEmpty() || m_effectChainPresets.contains(name)) {
@@ -381,7 +383,7 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
                 &okay)
                        .trimmed();
         if (!okay) {
-            return;
+            return false;
         }
 
         if (name.isEmpty()) {
@@ -404,6 +406,7 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     emit quickEffectChainPresetListUpdated();
 
     savePresetXml(pPreset);
+    return true;
 }
 
 void EffectChainPresetManager::updatePreset(EffectChainPointer pChainSlot) {

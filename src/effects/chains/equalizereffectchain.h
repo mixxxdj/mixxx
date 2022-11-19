@@ -11,7 +11,8 @@
 class EqualizerEffectChain : public PerGroupEffectChain {
     Q_OBJECT
   public:
-    EqualizerEffectChain(const QString& group,
+    EqualizerEffectChain(
+            const ChannelHandleAndGroup& handleAndGroup,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 

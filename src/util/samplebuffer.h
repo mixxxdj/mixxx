@@ -2,7 +2,9 @@
 
 
 #include <algorithm> // std::swap
+#include <span>
 
+#include "util/span.h"
 #include "util/types.h"
 
 
@@ -53,7 +55,7 @@ class SampleBuffer final {
         return *this;
     }
 
-    SINT size() const {
+    constexpr SINT size() const {
         return m_size;
     }
 
@@ -70,6 +72,13 @@ class SampleBuffer final {
         // >=: allow access to one element behind allocated memory
         DEBUG_ASSERT(m_size >= offset);
         return m_data + offset;
+    }
+
+    std::span<CSAMPLE> span() {
+        return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
+    }
+    std::span<const CSAMPLE> span() const {
+        return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
     }
 
     CSAMPLE& operator[](SINT index) {

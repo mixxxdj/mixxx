@@ -18,8 +18,7 @@
 QtSimpleWaveformWidget::QtSimpleWaveformWidget(
         const QString& group,
         QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+        : GLWaveformWidgetAbstract(group, parent) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();

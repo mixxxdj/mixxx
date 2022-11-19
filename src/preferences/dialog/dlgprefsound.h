@@ -7,7 +7,7 @@
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
-#include "soundio/sounddeviceerror.h"
+#include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
 
 class SoundManager;

@@ -9,7 +9,9 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/math.h"
 #include "util/sample.h"
+#include "util/types.h"
 
 namespace RubberBand {
 class RubberBandStretcher;
@@ -29,7 +31,7 @@ class PitchShiftGroupState : public EffectState {
 
 class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> {
   public:
-    PitchShiftEffect() = default;
+    PitchShiftEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -50,7 +52,11 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
         return getId();
     }
 
+    bool m_currentFormant;
     EngineEffectParameterPointer m_pPitchParameter;
+    EngineEffectParameterPointer m_pRangeParameter;
+    EngineEffectParameterPointer m_pSemitonesModeParameter;
+    EngineEffectParameterPointer m_pFormantPreservingParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PitchShiftEffect);
 };
