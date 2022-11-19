@@ -2284,6 +2284,9 @@ if(QT6)
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
+
+  # Ensure linting runs when building the default "all" target
+  set_target_properties(all_qmllint PROPERTIES EXCLUDE_FROM_ALL FALSE)
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
