@@ -39,6 +39,7 @@ class DlgCoverArtFullSize
             mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotTrackCoverArtUpdated();
+    void adjustImageAndDialogSize();
 
     // slots that handle signals from WCoverArtMenu
     void slotCoverMenu(const QPoint& pos);

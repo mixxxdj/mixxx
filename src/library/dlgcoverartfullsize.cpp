@@ -17,7 +17,8 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
         WCoverArtMenu* pCoverMenu)
         : QDialog(parent),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(pCoverMenu) {
+          m_pCoverMenu(pCoverMenu),
+          m_coverPressed(false) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -83,20 +84,16 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
 }
 
 void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
-    QPixmap image;
-    image.loadFromData(fetchedCoverArtBytes);
+    m_pixmap.loadFromData(fetchedCoverArtBytes);
 
-    resize(image.size().width(), image.size().height());
+    // The real size will be calculated later by adjustImageAndDialogSize().
+    resize(100, 100);
     show();
+    setWindowTitle(tr("Fetched Cover Art"));
     raise();
     activateWindow();
 
-    QString fetchedCoverArtWindowTitle = tr("Fetched Cover Art");
-
-    setWindowTitle(fetchedCoverArtWindowTitle);
-
-    //TODO: Do a better scaling. It populates wrong if the cover art size highest.
-    coverArt->setPixmap(image);
+    adjustImageAndDialogSize();
 }
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
@@ -175,6 +172,10 @@ void DlgCoverArtFullSize::slotCoverFound(
 
     m_pixmap = pixmap;
 
+    adjustImageAndDialogSize();
+}
+
+void DlgCoverArtFullSize::adjustImageAndDialogSize() {
     if (m_pixmap.isNull()) {
         coverArt->setPixmap(QPixmap());
         hide();
