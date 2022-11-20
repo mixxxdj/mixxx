@@ -1406,8 +1406,6 @@ class HIDController {
     /**
      * Find Output control matching give group and name
      *
-     * @todo The current implementation of this often called function is very slow and does not
-     * scale, due to several nested loops.
      * @param {string} m_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
      * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
      * @returns {bitObject|packetField} Bit or bytewise field - Returns undefined if output field
