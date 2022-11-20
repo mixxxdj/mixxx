@@ -203,12 +203,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
-    radioButton_dbclick_bottom->setChecked(false);
-    radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
-    radioButton_cover_art_fetcher_highest->setChecked(false);
-    radioButton_cover_art_fetcher_high->setChecked(false);
-    radioButton_cover_art_fetcher_medium->setChecked(false);
     radioButton_cover_art_fetcher_lowest->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
