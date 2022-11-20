@@ -12,7 +12,6 @@
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(this),
-          m_iEffectSlotIndex(-1),
           m_pEffectsManager(pEffectsManager),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()) {
     // Prevent this widget from getting focused by Tab/Shift+Tab
@@ -28,8 +27,6 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, pChainSlot);
-    m_iEffectSlotIndex = EffectWidgetUtils::getEffectSlotIndexFromNode(
-            node, context);
 
     if (m_pEffectSlot != nullptr) {
         connect(m_pVisibleEffectsList.data(),

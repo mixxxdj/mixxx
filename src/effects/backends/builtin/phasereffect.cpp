@@ -63,9 +63,9 @@ EffectManifestPointer PhaserEffect::getManifest() {
     stages->setShortName(QObject::tr("Stages"));
     stages->setDescription(QObject::tr(
             "Number of stages")); // stages of what?
-    stages->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    stages->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     stages->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-    stages->setRange(1.0, 3.5, 6.0);
+    stages->setRange(1.0, 7.0, 12.0);
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("depth");
@@ -153,7 +153,7 @@ void PhaserEffect::processChannel(
 
     const auto feedback = static_cast<CSAMPLE>(m_pFeedbackParameter->value());
     const auto range = static_cast<CSAMPLE>(m_pRangeParameter->value());
-    const auto stages = static_cast<int>(2 * m_pStagesParameter->value());
+    const auto stages = static_cast<int>(m_pStagesParameter->value());
 
     CSAMPLE* oldInLeft = pState->oldInLeft;
     CSAMPLE* oldOutLeft = pState->oldOutLeft;

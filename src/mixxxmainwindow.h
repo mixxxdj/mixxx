@@ -7,7 +7,7 @@
 #include "coreservices.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
-#include "soundio/sounddeviceerror.h"
+#include "soundio/sounddevicestatus.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
@@ -104,7 +104,7 @@ class MixxxMainWindow : public QMainWindow {
             const QString &title, const QString &text, bool* retryClicked);
     QDialog::DialogCode soundDeviceBusyDlg(bool* retryClicked);
     QDialog::DialogCode soundDeviceErrorMsgDlg(
-            SoundDeviceError err, bool* retryClicked);
+            SoundDeviceStatus status, bool* retryClicked);
     QDialog::DialogCode noOutputDlg(bool* continueClicked);
 
     std::shared_ptr<mixxx::CoreServices> m_pCoreServices;

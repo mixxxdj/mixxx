@@ -7,6 +7,7 @@
 #include <QUrl>
 #include <QVariant>
 
+#include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/trackanalysisscheduler.h"
 #include "library/dlganalysis.h"
 #include "library/libraryfeature.h"
@@ -40,7 +41,7 @@ class AnalysisFeature : public LibraryFeature {
 
   public slots:
     void activate() override;
-    void analyzeTracks(const QList<TrackId>& trackIds);
+    void analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks);
 
     void suspendAnalysis();
     void resumeAnalysis();

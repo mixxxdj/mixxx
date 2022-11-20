@@ -22,10 +22,7 @@ EngineDeck::EngineDeck(
                   primaryDeck),
           m_pConfig(pConfig),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
-          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
-          // Need a +1 here because the CircularBuffer only allows its size-1
-          // items to be held at once (it keeps a blank spot open persistently)
-          m_wasActive(false) {
+          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
     m_pInputConfigured->setReadOnly();
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -101,7 +98,7 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
     return m_pBuffer;
 }
 
-bool EngineDeck::isActive() {
+EngineChannel::ActiveState EngineDeck::updateActiveState() {
     bool active = false;
     if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
         active = true;
@@ -109,11 +106,16 @@ bool EngineDeck::isActive() {
         active = m_pBuffer->isTrackLoaded() || isPassthroughActive();
     }
 
-    if (!active && m_wasActive) {
-        m_vuMeter.reset();
+    if (active) {
+        m_active = true;
+        return ActiveState::Active;
     }
-    m_wasActive = active;
-    return active;
+    if (m_active) {
+        m_vuMeter.reset();
+        m_active = false;
+        return ActiveState::WasActive;
+    }
+    return ActiveState::Inactive;
 }
 
 void EngineDeck::receiveBuffer(
@@ -153,7 +155,7 @@ bool EngineDeck::isPassthroughActive() const {
     return (m_bPassthroughIsActive && m_sampleBuffer);
 }
 
-void EngineDeck::slotPassingToggle(double v) {
+void EngineDeck::slotPassthroughToggle(double v) {
     m_bPassthroughIsActive = v > 0;
 }
 
@@ -161,10 +163,10 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
     if (v <= 0 || m_pInputConfigured->get() > 0) {
         m_pPassing->setAndConfirm(v);
 
-        // Pass confirmed value to slotPassingToggle. We cannot use the
+        // Pass confirmed value to slotPassthroughToggle. We cannot use the
         // valueChanged signal for this, because the change originates from the
         // same ControlObject instance.
-        slotPassingToggle(v);
+        slotPassthroughToggle(v);
     } else {
         emit noPassthroughInputConfigured();
     }

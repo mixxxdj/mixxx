@@ -283,7 +283,7 @@ class HIDModifierList {
     get(name) {
         if (!(name in this.modifiers)) {
             console.error(`HIDModifierList.get - Unknown modifier: ${name}`);
-            return undefined;
+            return false;
         }
         return this.modifiers[name];
     }

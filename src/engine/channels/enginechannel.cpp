@@ -15,6 +15,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
           m_sampleRate("[Master]", "samplerate"),
           m_sampleBuffer(nullptr),
           m_bIsPrimaryDeck(isPrimaryDeck),
+          m_active(false),
           m_bIsTalkoverChannel(isTalkoverChannel),
           m_channelIndex(-1) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));

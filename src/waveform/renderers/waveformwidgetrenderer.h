@@ -39,11 +39,13 @@ class WaveformWidgetRenderer {
     const QString& getGroup() const {
         return m_group;
     }
-    const TrackPointer getTrackInfo() const {
+    const TrackPointer& getTrackInfo() const {
         return m_pTrack;
     }
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
+
+    CuePointer getCuePointerFromIndex(int cueIndex) const;
 
     double getFirstDisplayedPosition() const {
         return m_firstDisplayedPosition;
@@ -153,6 +155,8 @@ class WaveformWidgetRenderer {
         m_playMarkerPosition = newPos;
     }
 
+    void setPassThroughEnabled(bool enabled);
+
   protected:
     const QString m_group;
     TrackPointer m_pTrack;
@@ -163,6 +167,7 @@ class WaveformWidgetRenderer {
     int m_width;
     float m_devicePixelRatio;
     WaveformSignalColors m_colors;
+    QColor m_passthroughLabelColor;
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
@@ -210,4 +215,6 @@ private:
             QPointF p1,
             QPointF p2,
             QPointF p3);
+    void drawPassthroughLabel(QPainter* painter);
+    bool m_passthroughEnabled;
 };

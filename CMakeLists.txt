@@ -33,36 +33,60 @@ if(POLICY CMP0099)
   cmake_policy(SET CMP0099 NEW)
 endif()
 
-
-# Set up vcpkg
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
-    set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
+# An imported target missing its location property fails during generation.
+if(POLICY CMP0111)
+  cmake_policy(SET CMP0111 NEW)
 endif()
 
-if(DEFINED VCPKG_ROOT)
-  set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
+# Set the timestamp of extracted files to the time of the extraction instead of
+# the archived timestamp to make sure that dependent files are rebuilt if the
+# URL changes.
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
+# We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
+# in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
+# Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
+# adjusted by CMAKE_TOOLCHAIN_FILE.
+if(DEFINED ENV{MIXXX_VCPKG_ROOT} AND NOT DEFINED MIXXX_VCPKG_ROOT)
+    set(MIXXX_VCPKG_ROOT "$ENV{MIXXX_VCPKG_ROOT}")
+endif()
+
+if(DEFINED MIXXX_VCPKG_ROOT)
+  if(EXISTS "$ENV{MIXXX_VCPKG_ROOT}/overlay/ports" OR NOT EXISTS "$ENV{MIXXX_VCPKG_ROOT}/ports")
+    # MIXXX_VCPKG_ROOT points to our vcpkg environment
+    # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
+    message(STATUS "Using MIXXX_VCPKG_ROOT: $ENV{MIXXX_VCPKG_ROOT}")
+  else()
+    message(FATAL_ERROR "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+  endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
-    set(VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/ports")
+    # required for manifest mode
+    set(VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/ports")
     if(APPLE)
-        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/osx")
+        list(APPEND VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/osx")
     elseif(WIN32)
-        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/windows")
+        list(APPEND VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/windows")
     endif()
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
-    set(VCPKG_OVERLAY_TRIPLETS "${VCPKG_ROOT}/overlay/triplets")
-  endif()
-
-  if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET})
-    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
+    # required for manifest mode
+    set(VCPKG_OVERLAY_TRIPLETS "${MIXXX_VCPKG_ROOT}/overlay/triplets")
   endif()
 
   if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+    set(CMAKE_TOOLCHAIN_FILE "${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
   endif()
 endif()
+
+if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
+  set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
+endif()
+set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
+
 
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
@@ -97,7 +121,7 @@ if(APPLE)
     # Minimum macOS version supported by Qt 5.12
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
     if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.12")
+      set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
     endif()
     # Needed for deployment target < 10.14
     add_compile_options(-fno-aligned-allocation)
@@ -467,8 +491,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
+  src/analyzer/analyzerscheduledtrack.cpp
   src/analyzer/analyzersilence.cpp
   src/analyzer/analyzerthread.cpp
+  src/analyzer/analyzertrack.cpp
   src/analyzer/analyzerwaveform.cpp
   src/analyzer/plugins/analyzerqueenmarybeats.cpp
   src/analyzer/plugins/analyzerqueenmarykey.cpp
@@ -577,6 +603,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
+  src/effects/backends/builtin/distortioneffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
   src/effects/backends/builtin/phasereffect.cpp
   src/effects/backends/builtin/pitchshifteffect.cpp
@@ -628,6 +655,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/controls/ratecontrol.cpp
   src/engine/effects/engineeffect.cpp
   src/engine/effects/engineeffectchain.cpp
+  src/engine/effects/engineeffectsdelay.cpp
   src/engine/effects/engineeffectsmanager.cpp
   src/engine/enginebuffer.cpp
   src/engine/enginedelay.cpp
@@ -709,6 +737,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dlgtrackinfo.cpp
   src/library/dlgtrackinfo.ui
   src/library/dlgtrackmetadataexport.cpp
+  src/library/export/coverartcopyworker.cpp
   src/library/export/dlgtrackexport.ui
   src/library/export/trackexportdlg.cpp
   src/library/export/trackexportwizard.cpp
@@ -909,6 +938,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
   src/util/console.cpp
+  src/util/safelywritablefile.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
   src/util/db/dbconnectionpooled.cpp
@@ -925,9 +955,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/duration.cpp
   src/util/experiment.cpp
   src/util/file.cpp
+  src/util/imagefiledata.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/filename.cpp
+  src/util/imagefiledata.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
   src/util/logger.cpp
@@ -937,6 +969,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/performancetimer.cpp
   src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
+  src/util/ringdelaybuffer.cpp
   src/util/rotary.cpp
   src/util/runtimeloggingcategory.cpp
   src/util/sample.cpp
@@ -1106,6 +1139,7 @@ else()
     src/widget/woverviewlmh.cpp
     src/widget/woverviewrgb.cpp
     src/widget/wspinny.cpp
+      src/widget/wvumetergl.cpp
     src/widget/wwaveformviewer.cpp
   )
 endif()
@@ -1171,6 +1205,19 @@ else()
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
+endif()
+
+option(INFO_VECTORIZE "Let the compiler show vectorized loops" OFF)
+if (INFO_VECTORIZE)
+    if(MSVC)
+        target_compile_options(mixxx-lib PUBLIC /Qvec-report:1)
+    elseif(GNU_GCC)
+        target_compile_options(mixxx-lib PUBLIC -fopt-info-vec-optimized)
+    elseif(LLVM_CLANG)
+        target_compile_options(mixxx-lib PUBLIC -Rpass=loop-vectorize)
+    else()
+        message(STATUS "INFO_VECTORIZE not implemented for this compiler.")
+    endif()
 endif()
 
 option(WARNINGS_FATAL "Fail if compiler generates a warning" OFF)
@@ -1649,6 +1696,7 @@ add_executable(mixxx-test
   #src/test/effectchainslottest.cpp
   src/test/enginebufferscalelineartest.cpp
   src/test/enginebuffertest.cpp
+  src/test/engineeffectsdelay_test.cpp
   src/test/enginefilterbiquadtest.cpp
   src/test/enginemastertest.cpp
   src/test/enginemicrophonetest.cpp
@@ -1672,7 +1720,9 @@ add_executable(mixxx-test
   #src/test/metaknob_link_test.cpp
   src/test/midicontrollertest.cpp
   src/test/mixxxtest.cpp
+  src/test/mock_networkaccessmanager.cpp
   src/test/movinginterquartilemean_test.cpp
+  src/test/musicbrainzrecordingstasktest.cpp
   src/test/nativeeffects_test.cpp
   src/test/performancetimer_test.cpp
   src/test/playcountertest.cpp
@@ -1686,6 +1736,7 @@ add_executable(mixxx-test
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
   src/test/rgbcolor_test.cpp
+  src/test/ringdelaybuffer_test.cpp
   src/test/samplebuffertest.cpp
   src/test/sampleutiltest.cpp
   src/test/schemamanager_test.cpp
@@ -2004,6 +2055,11 @@ if(KEYFINDER)
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
+    # CMake does not pass lists of paths properly to external projects.
+    # This is worked around by changing the list separator.
+    string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+
     # For offline builds download the archive file from the URL and
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
@@ -2013,12 +2069,13 @@ if(KEYFINDER)
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libkeyfinder-${LIBKEYFINDER_VERSION}.zip"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
+      LIST_SEPARATOR "|"
       CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-        -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+        -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
@@ -2179,7 +2236,7 @@ if(QT6)
   set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-lib
     URI Mixxx
-    VERSION 0.1
+    VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
     IMPORTS QtQuick
     QML_FILES
@@ -2211,7 +2268,7 @@ if(QT6)
   set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-qml-mixxxcontrols
     URI Mixxx.Controls
-    VERSION 0.1
+    VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
     OPTIONAL_IMPORTS Mixxx
     QML_FILES
@@ -2604,29 +2661,30 @@ elseif(WIN32)
   endif()
 endif()
 
-# FFmpeg 4.x support
+# FFmpeg support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-default_option(FFMPEG "FFmpeg 4.x support" "FFMPEG_FOUND")
+default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
 if(FFMPEG)
   if(NOT FFMPEG_FOUND)
     message(FATAL_ERROR "FFMPEG was not found")
   endif()
 
   # Check minimum required versions
+  # Minimum library versions according to <https://ffmpeg.org/download.html>
   # Windows: Version numbers are not available!?
   # macOS: Untested
-  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
+  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
   endif()
-  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
+  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
   endif()
-  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
-    message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
+  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
   endif()
-  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
-    message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
+  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100)
+    message(FATAL_ERROR "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
   endif()
 
   target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
@@ -2989,7 +3047,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal jammy kinetic)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")

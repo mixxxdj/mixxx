@@ -2,12 +2,12 @@
 
 #include <QWidget>
 
-#include "waveform/widgets/waveformwidgetabstract.h"
+#include "waveform/widgets/nonglwaveformwidgetabstract.h"
 
 // This class can be used as a template file to create new WaveformWidgets it
 // contain minimal set of method to re-implement
 
-class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
+class EmptyWaveformWidget : public NonGLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     virtual ~EmptyWaveformWidget();

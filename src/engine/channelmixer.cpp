@@ -27,7 +27,10 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         EngineMaster::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];
         CSAMPLE_GAIN oldGain = gainCache.m_gain;
         CSAMPLE_GAIN newGain;
-        if (gainCache.m_fadeout) {
+        bool fadeout = gainCache.m_fadeout ||
+                (pChannelInfo->m_pChannel &&
+                        !pChannelInfo->m_pChannel->isActive());
+        if (fadeout) {
             newGain = 0;
             gainCache.m_fadeout = false;
         } else {
@@ -42,7 +45,8 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
                 iSampleRate,
                 pChannelInfo->m_features,
                 oldGain,
-                newGain);
+                newGain,
+                fadeout);
     }
 }
 
@@ -69,7 +73,10 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
         EngineMaster::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];
         CSAMPLE_GAIN oldGain = gainCache.m_gain;
         CSAMPLE_GAIN newGain;
-        if (gainCache.m_fadeout) {
+        bool fadeout = gainCache.m_fadeout ||
+                (pChannelInfo->m_pChannel &&
+                        !pChannelInfo->m_pChannel->isActive());
+        if (fadeout) {
             newGain = 0;
             gainCache.m_fadeout = false;
         } else {
@@ -83,7 +90,8 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
                 iSampleRate,
                 pChannelInfo->m_features,
                 oldGain,
-                newGain);
+                newGain,
+                fadeout);
         SampleUtil::add(pOutput, pChannelInfo->m_pBuffer, iBufferSize);
     }
 }

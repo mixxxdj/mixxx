@@ -1586,8 +1586,8 @@ KANE_QuNeo.assertJumpLEDs = function (deck, numBeats) {
     var old = KANE_QuNeo.jumpLoopLEDs[channel];
     old.splice(old.indexOf(off[0]),1) // turn off the off stuff
     KANE_QuNeo.jumpLoopLEDs[channel] = old.concat(on); // turn on the new stuff
-    KANE_QuNeo.LEDs(0x91,off,0x00); // update offs
-    KANE_QuNeo.triggerVuMeter(deck); // update ons
+    KANE_QuNeo.LEDs(0x91,off,0x00);
+    KANE_QuNeo.triggerVuMeter(deck);
 }
 
 /****** (RLED) Rotary LEDs ******/

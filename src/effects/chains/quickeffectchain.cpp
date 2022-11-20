@@ -3,18 +3,21 @@
 #include "effects/effectslot.h"
 #include "effects/presets/effectchainpresetmanager.h"
 
-QuickEffectChain::QuickEffectChain(const QString& group,
+QuickEffectChain::QuickEffectChain(
+        const ChannelHandleAndGroup& handleAndGroup,
         EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger)
-        : PerGroupEffectChain(group,
-                  formatEffectChainGroup(group),
+        : PerGroupEffectChain(
+                  handleAndGroup,
+                  formatEffectChainGroup(handleAndGroup.name()),
                   SignalProcessingStage::Postfader,
                   pEffectsManager,
                   pEffectsMessenger) {
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
-        addEffectSlot(formatEffectSlotGroup(group, i));
+        addEffectSlot(formatEffectSlotGroup(handleAndGroup.name(), i));
         m_effectSlots.at(i)->setEnabled(true);
     }
+    enableForInputChannel(handleAndGroup);
     // The base EffectChain class constructor connects to the signal for the list of StandardEffectChain presets,
     // but QuickEffectChain has a separate list, so disconnect the signal which is inappropriate for this subclass.
     disconnect(m_pChainPresetManager.data(),

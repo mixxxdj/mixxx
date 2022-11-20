@@ -1,5 +1,6 @@
 #include "analyzer/analyzerwaveform.h"
 
+#include "analyzer/analyzertrack.h"
 #include "engine/engineobject.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "engine/filters/enginefilterbutterworth8.h"
@@ -33,7 +34,7 @@ AnalyzerWaveform::~AnalyzerWaveform() {
     destroyFilters();
 }
 
-bool AnalyzerWaveform::initialize(TrackPointer tio,
+bool AnalyzerWaveform::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     if (totalSamples == 0) {
@@ -42,7 +43,7 @@ bool AnalyzerWaveform::initialize(TrackPointer tio,
     }
 
     // If we don't need to calculate the waveform/wavesummary, skip.
-    if (!shouldAnalyze(tio)) {
+    if (!shouldAnalyze(tio.getTrack())) {
         return false;
     }
 
@@ -65,8 +66,8 @@ bool AnalyzerWaveform::initialize(TrackPointer tio,
     // Now, that the Waveform memory is initialized, we can set set them to
     // the TIO. Be aware that other threads of Mixxx can touch them from
     // now.
-    tio->setWaveform(m_waveform);
-    tio->setWaveformSummary(m_waveformSummary);
+    tio.getTrack()->setWaveform(m_waveform);
+    tio.getTrack()->setWaveformSummary(m_waveformSummary);
 
     m_waveformData = m_waveform->data();
     m_waveformSummaryData = m_waveformSummary->data();
