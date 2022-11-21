@@ -306,8 +306,8 @@ void TagFetcher::slotMusicBrainzTaskSucceeded(
 
 void TagFetcher::startFetchCoverArtLinks(
         const QUuid& albumReleaseId) {
-    //In here the progress message can be handled better.
-    //emit fetchProgress(tr("Finding Possible Cover Arts on Cover Art Archive"));
+    // In here the progress message can be handled better.
+    // emit fetchProgress(tr("Finding Possible Cover Arts on Cover Art Archive"));
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     terminate();
 

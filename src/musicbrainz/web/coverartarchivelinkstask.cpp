@@ -58,7 +58,6 @@ QNetworkReply* CoverArtArchiveLinksTask::sendNetworkRequest(
         const QUrl& url,
         const QJsonDocument& content) {
     DEBUG_ASSERT(networkAccessManager);
-    //DEBUG_ASSERT(!m_queuedAlbumReleaseIds.first().isNull());
     Q_UNUSED(method);
     DEBUG_ASSERT(method == network::HttpRequestMethod::Get);
     networkAccessManager->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);

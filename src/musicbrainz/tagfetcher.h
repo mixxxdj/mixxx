@@ -26,18 +26,18 @@ class TagFetcher : public QObject {
     void startFetch(
             TrackPointer pTrack);
 
-    //This is called from dlgTagFetcher.
-    //This starts the initial task for to find the cover art links
-    //4 Possible cover art links fetched in this task.
-    //This can be >1200px-1200px-500px-250px image links.
+    // This is called from dlgTagFetcher.
+    // This starts the initial task for to find the cover art links
+    // 4 Possible cover art links fetched in this task.
+    // This can be >1200px-1200px-500px-250px image links.
     void startFetchCoverArtLinks(const QUuid& albumReleaseId);
 
-    //After the first task is done successfully.
-    //This is called automatically.
-    //This task starts to fetch the image.
-    //Link provided from preference option.
-    //After a success task, related label updated with cover art.
-    //If user presses apply, cover art downloaded and applied to the song.
+    // After the first task is done successfully.
+    // This is called automatically.
+    // This task starts to fetch the image.
+    // Link provided from preference option.
+    // After a success task, related label updated with cover art.
+    // If user presses apply, cover art downloaded and applied to the song.
     void startFetchCoverArtImage(
             const QString& coverArtUrl);
 

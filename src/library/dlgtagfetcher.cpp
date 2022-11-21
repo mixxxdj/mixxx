@@ -598,7 +598,7 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
 
     m_fetchedCoverArtByteArrays = data;
     m_pWFetchedCoverArtLabel->loadData(
-            m_fetchedCoverArtByteArrays); //This data loaded because for full size.
+            m_fetchedCoverArtByteArrays); // This data loaded because for full size.
     m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
 }
 
