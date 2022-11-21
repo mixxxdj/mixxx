@@ -204,7 +204,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_rekordbox->setChecked(true);
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
-    radioButton_cover_art_fetcher_lowest->setChecked(true);
+    radioButton_cover_art_fetcher_medium->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
     searchDebouncingTimeoutSpinBox->setValue(
