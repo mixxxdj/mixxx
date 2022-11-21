@@ -35,27 +35,40 @@ class StringCollator {
 /// A nullptr-safe variant of the corresponding standard C function.
 ///
 /// Treats nullptr like an empty string and returns 0.
+/// The c++11 strnlen_s() is not available on all targets
 inline std::size_t strnlen(
         const char* str,
-        std::size_t len) {
+        std::size_t maxlen) {
     if (str == nullptr) {
         return 0;
     }
-    // Invoke the global function
-    return ::strnlen(str, len);
+    // Invoke the global function and benefit from SIMD implementations
+    return ::strnlen(str, maxlen);
 }
 
 /// A nullptr-safe variant of the corresponding standard C function.
 ///
 /// Treats nullptr like an empty string and returns 0.
+/// The c++11 wcsnlen_s is not available on all targets
+/// and wcsnlen() is not available on OpenBSD
 inline std::size_t wcsnlen(
         const wchar_t* wcs,
-        std::size_t len) {
+        std::size_t maxlen) {
     if (wcs == nullptr) {
         return 0;
     }
-    // Invoke the global function
-    return ::wcsnlen(wcs, len);
+#if !defined(__BSD__) || defined(__USE_XOPEN2K8)
+    // Invoke the global function SIMD implementations
+    return ::wcsnlen(wcs, maxlen);
+#else
+    std::size_t n;
+    for (n = 0; n < maxlen; n++) {
+        if (!wcs[n]) {
+            break;
+        }
+    }
+    return n;
+#endif
 }
 
 /// Convert a wide-character C string to QString.
