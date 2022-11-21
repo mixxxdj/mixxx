@@ -50,32 +50,45 @@ class DeckClass {
         const sideChannel = ["[Channel1]", "[Channel2]"];
         const sideOffset = [0, 0];
 
-        if (this.parent.deckSwitch["[Channel1]"] === 2) {
+        if (this.parent.deckSwitch["[Channel1]"] === 1) {
+            sideChannel[1] = "[Channel1]";
+            sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
+        } else if (this.parent.deckSwitch["[Channel1]"] === 2) {
             sideChannel[1] = "[Channel1]";
             sideOffset[1] = 4;  // Second 4 hotcues mapped to the pads
+        } else if (this.parent.deckSwitch["[Channel1]"] === 3) {
+            sideChannel[1] = "[Channel1]";
+            sideOffset[1] = -1;  // IntroBegin/End and OutroBegin/End mapped to the pads
         } else if (this.parent.deckSwitch["[Channel3]"] === 1) {
             sideChannel[1] = "[Channel3]";
             sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
         } else if (this.parent.deckSwitch["[Channel3]"] === 2) {
             sideChannel[1] = "[Channel3]";
             sideOffset[1] = 4;  // Second 4 hotcues mapped to the pads
-        } else {
-            sideChannel[1] = "[Channel1]";
-            sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
+        } else if (this.parent.deckSwitch["[Channel3]"] === 3) {
+            sideChannel[1] = "[Channel3]";
+            sideOffset[1] = -1;  // IntroBegin/End and OutroBegin/End mapped to the pads
         }
-        if (this.parent.deckSwitch["[Channel2]"] === 2) {
+        if (this.parent.deckSwitch["[Channel2]"] === 1) {
+            sideChannel[2] = "[Channel2]";
+            sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
+        } else if (this.parent.deckSwitch["[Channel2]"] === 2) {
             sideChannel[2] = "[Channel2]";
             sideOffset[2] = 4;  // Second 4 hotcues mapped to the pads
+        } else if (this.parent.deckSwitch["[Channel2]"] === 3) {
+            sideChannel[2] = "[Channel2]";
+            sideOffset[2] = -1;  // IntroBegin/End and OutroBegin/End mapped to the pads
         } else if (this.parent.deckSwitch["[Channel4]"] === 1) {
             sideChannel[2] = "[Channel4]";
             sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
         } else if (this.parent.deckSwitch["[Channel4]"] === 2) {
             sideChannel[2] = "[Channel4]";
             sideOffset[2] = 4;  // Second 4 hotcues mapped to the pads
-        } else {
-            sideChannel[2] = "[Channel2]";
-            sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
+        } else if (this.parent.deckSwitch["[Channel4]"] === 3) {
+            sideChannel[2] = "[Channel4]";
+            sideOffset[2] = -1;  // IntroBegin/End an
         }
+
         let chIdx;
         if (this.activeChannel === "[Channel1]") {
             chIdx = 1;
@@ -92,9 +105,28 @@ class DeckClass {
         } else {
             action = "_activate";
         }
-        console.log("setting " + "hotcue_" + padNumber + action + " " + field.value);
-        engine.setValue(
-            sideChannel[chIdx], "hotcue_" + (sideOffset[chIdx] + padNumber) + action, field.value);
+        if (sideOffset[chIdx] === -1) {
+            if (padNumber === 1) {
+                engine.setValue(
+                    sideChannel[chIdx], "intro_start" + action, field.value);
+            } else
+            if (padNumber === 2) {
+                engine.setValue(
+                    sideChannel[chIdx], "intro_end" + action, field.value);
+            } else
+            if (padNumber === 3) {
+                engine.setValue(
+                    sideChannel[chIdx], "outro_start" + action, field.value);
+            } else
+            if (padNumber === 4) {
+                engine.setValue(
+                    sideChannel[chIdx], "outro_end" + action, field.value);
+            }
+        } else {
+            console.log("setting " + "hotcue_" + padNumber + action + " " + field.value);
+            engine.setValue(
+                sideChannel[chIdx], "hotcue_" + (sideOffset[chIdx] + padNumber) + action, field.value);
+        }
     }
 
     fluxHandler(field) {
@@ -607,6 +639,19 @@ class DeckClass {
     registerOutputs4Decks() {
         console.log("TraktorZ2: registerOutputs4Decks  this.activeChannel:" + this.activeChannel);
 
+        engine.makeConnection(
+            this.activeChannel, "intro_start_enabled",
+            this.parent.hotcueOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "intro_end_enabled",
+            this.parent.hotcueOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "outro_start_enabled",
+            this.parent.hotcueOutputHandler.bind(this.parent));
+        engine.makeConnection(
+            this.activeChannel, "outro_end_enabled",
+            this.parent.hotcueOutputHandler.bind(this.parent));
+
         for (let hotcue = 1; hotcue <= 8; hotcue++) {
             engine.makeConnection(
                 this.activeChannel, "hotcue_" + hotcue + "_color",
@@ -877,13 +922,21 @@ class TraktorZ2Class {
                 this.deckSwitch["[Channel2]"] = 0;
             }
 
-            if (this.deckSwitch[field.group] !== 1) {
-                this.deckSwitch[field.group] = 1;
-                this.controller.setOutput(field.group, "!deck", kLedBright, true);
+            if (this.shiftPressed === false) {
+                if (this.deckSwitch[field.group] !== 1) {
+                    // Show HotCues 1...4
+                    this.deckSwitch[field.group] = 1;
+                    this.controller.setOutput(field.group, "!deck", kLedBright, true);
 
-            } else if (engine.getValue("[Skin]", "show_8_hotcues")) {
-                this.deckSwitch[field.group] = 2;
-                this.controller.setOutput(field.group, "!deck", kLedDimmed, true);
+                } else if (engine.getValue("[Skin]", "show_8_hotcues")) {
+                    // Show HotCues 5...8
+                    this.deckSwitch[field.group] = 2;
+                    this.controller.setOutput(field.group, "!deck", kLedDimmed, true);
+                }
+            } else {
+                // Show IntroBegin/End and OutroBegin/End
+                this.deckSwitch[field.group] = 3;
+                this.controller.setOutput(field.group, "!deck", kLedBright, true);
             }
             this.hotcueOutputHandler();  // Set new hotcue button colors
         }
@@ -1720,32 +1773,43 @@ class TraktorZ2Class {
     hotcueOutputHandler() {
         const sideChannel = ["[Channel1]", "[Channel2]"];
         const sideOffset = [0, 0];
-
-        if (this.deckSwitch["[Channel1]"] === 2) {
+        if (this.deckSwitch["[Channel1]"] === 1) {
+            sideChannel[1] = "[Channel1]";
+            sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
+        } else if (this.deckSwitch["[Channel1]"] === 2) {
             sideChannel[1] = "[Channel1]";
             sideOffset[1] = 4;  // Second 4 hotcues mapped to the pads
+        } else if (this.deckSwitch["[Channel1]"] === 3) {
+            sideChannel[1] = "[Channel1]";
+            sideOffset[1] = -1;  // IntroBegin/End and OutroBegin/End mapped to the pads
         } else if (this.deckSwitch["[Channel3]"] === 1) {
             sideChannel[1] = "[Channel3]";
             sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
         } else if (this.deckSwitch["[Channel3]"] === 2) {
             sideChannel[1] = "[Channel3]";
             sideOffset[1] = 4;  // Second 4 hotcues mapped to the pads
-        } else {
-            sideChannel[1] = "[Channel1]";
-            sideOffset[1] = 0;  // First 4 hotcues mapped to the pads
+        } else if (this.deckSwitch["[Channel3]"] === 3) {
+            sideChannel[1] = "[Channel3]";
+            sideOffset[1] = -1;  // IntroBegin/End and OutroBegin/End mapped to the pads
         }
-        if (this.deckSwitch["[Channel2]"] === 2) {
+        if (this.deckSwitch["[Channel2]"] === 1) {
+            sideChannel[2] = "[Channel2]";
+            sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
+        } else if (this.deckSwitch["[Channel2]"] === 2) {
             sideChannel[2] = "[Channel2]";
             sideOffset[2] = 4;  // Second 4 hotcues mapped to the pads
+        } else if (this.deckSwitch["[Channel2]"] === 3) {
+            sideChannel[2] = "[Channel2]";
+            sideOffset[2] = -1;  // IntroBegin/End and OutroBegin/End mapped to the pads
         } else if (this.deckSwitch["[Channel4]"] === 1) {
             sideChannel[2] = "[Channel4]";
             sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
         } else if (this.deckSwitch["[Channel4]"] === 2) {
             sideChannel[2] = "[Channel4]";
             sideOffset[2] = 4;  // Second 4 hotcues mapped to the pads
-        } else {
-            sideChannel[2] = "[Channel2]";
-            sideOffset[2] = 0;  // First 4 hotcues mapped to the pads
+        } else if (this.deckSwitch["[Channel4]"] === 3) {
+            sideChannel[2] = "[Channel4]";
+            sideOffset[2] = -1;  // IntroBegin/End and OutroBegin/End mapped to the pads
         }
 
         for (let chidx = 1; chidx <= 2; chidx++) {
@@ -1756,6 +1820,10 @@ class TraktorZ2Class {
                 if (engine.getValue(
                     sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_enabled") === 0) {
                     colorCode = 0;
+                }
+                if (sideOffset[chidx] === -1) {
+                    // Show IntroBegin/End and OutroBegin/End
+                    colorCode = 0x0000FF; // Blue
                 }
                 let red = ((colorCode & 0xFF0000) >> 16);
                 let green = ((colorCode & 0x00FF00) >> 8);
@@ -1774,7 +1842,13 @@ class TraktorZ2Class {
                 blue *= brightnessCorrectionFactor;
 
                 // Scale color down to 30% if a saved loop is assigned
-                if (engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_type") === 4) {
+                // or unset Intro/Outro marker is assigned
+                if ((sideOffset[chidx] === -1 &&
+                    ((i === 1 && engine.getValue(sideChannel[chidx], "intro_start_enabled") === 0) ||
+                    (i === 2 && engine.getValue(sideChannel[chidx], "intro_end_enabled") === 0) ||
+                    (i === 3 && engine.getValue(sideChannel[chidx], "outro_start_enabled") === 0) ||
+                    (i === 4 && engine.getValue(sideChannel[chidx], "outro_end_enabled") === 0)
+                    )) || engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_type") === 4) {
                     red = Math.ceil(red * 0.3);
                     green = Math.ceil(green * 0.3);
                     blue = Math.ceil(blue * 0.25);  // Blue LED is dominant -> dim it slightly
@@ -1846,7 +1920,7 @@ class TraktorZ2Class {
 
     /**
      * @param group may be either[Channel1] or [Channel2]
-     * @param {boolean} sendMessage: if true, send HID package immediateley
+     * @param {boolean} sendMessage if true, send HID package immediateley
      * @param sendMessage
      */
     displayLoopCount(group, sendMessage) {
