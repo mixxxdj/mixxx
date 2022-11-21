@@ -1861,10 +1861,10 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
 
 # KeyFinder
-set(LIBKEYFINDER_VERSION 2.2.6)
-find_package(KeyFinder ${LIBKEYFINDER_VERSION})
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
+  set(LIBKEYFINDER_VERSION 2.2.6)
+  find_package(KeyFinder ${LIBKEYFINDER_VERSION})
   if (KeyFinder_FOUND)
     target_link_libraries(mixxx-lib PRIVATE KeyFinder::KeyFinder)
   else()
