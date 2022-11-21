@@ -163,7 +163,7 @@ class DeckClass {
             return;
         }
 
-        // Shift presed and hold
+        // Shift pressed and hold
         if (((this.parent.shiftState & 0x01) === 0x01) && (field.value === 1)) {
             script.toggleControl(this.activeChannel, "keylock");
             return;
@@ -1351,7 +1351,7 @@ class TraktorZ2Class {
             this.shiftState |= 0x01;
             this.controller.setOutput("[Master]", "shift", kLedBright, true);
 
-            this.shiftPressedTimer = engine.beginTimer(200, () => {
+            this.shiftPressedTimer = engine.beginTimer(200, function() {
                 // Reset sync button timer state if active
                 if (this.shiftPressedTimer !== 0) {
                     this.shiftPressedTimer = 0;
@@ -1360,7 +1360,7 @@ class TraktorZ2Class {
                 this.displayLoopCount("[Channel1]", false);
                 this.displayLoopCount("[Channel2]", true);
                 console.log("TraktorZ2: shift unlocked");
-            }, true);
+            }.bind(this), true);
 
             console.log("TraktorZ2: shift pressed");
         } else if (this.shiftPressed === true && field.value === 0) {
@@ -1492,13 +1492,13 @@ class TraktorZ2Class {
             this.displayVuValue(engine.getValue("[Channel3]", "VuMeter"), "[Channel3]", "VuMeter");
             this.displayPeakIndicator(
                 engine.getValue("[Channel3]", "PeakIndicator"), "[Channel3]", "PeakIndicator");
-            this.pregainCh3Timer = engine.beginTimer(2500, () => {
+            this.pregainCh3Timer = engine.beginTimer(2500, function() {
                 this.pregainCh3Timer = 0;
                 this.displayVuValue(
                     engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
                 this.displayPeakIndicator(
                     engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
-            }, true);
+            }.bind(this), true);
         }
         if ((field.group === "[Channel2]") && (this.pregainCh4Timer !== 0)) {
             engine.stopTimer(this.pregainCh4Timer);
@@ -1514,13 +1514,13 @@ class TraktorZ2Class {
             this.displayVuValue(engine.getValue("[Channel4]", "VuMeter"), "[Channel4]", "VuMeter");
             this.displayPeakIndicator(
                 engine.getValue("[Channel4]", "PeakIndicator"), "[Channel4]", "PeakIndicator");
-            this.pregainCh4Timer = engine.beginTimer(2500, () => {
+            this.pregainCh4Timer = engine.beginTimer(2500, function() {
                 this.pregainCh4Timer = 0;
                 this.displayVuValue(
                     engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
                 this.displayPeakIndicator(
                     engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
-            }, true);
+            }.bind(this), true);
         }
     }
 
