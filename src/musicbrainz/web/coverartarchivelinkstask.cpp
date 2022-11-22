@@ -41,26 +41,26 @@ QNetworkRequest createNetworkRequest(
 } // anonymous namespace
 
 CoverArtArchiveLinksTask::CoverArtArchiveLinksTask(
-        QNetworkAccessManager* networkAccessManager,
+        QNetworkAccessManager* pNetworkAccessManager,
         const QUuid& albumReleaseId,
-        QObject* parent)
+        QObject* pParent)
         : network::JsonWebTask(
-                  networkAccessManager,
+                  pNetworkAccessManager,
                   kBaseUrl,
                   lookupRequest(),
-                  parent),
+                  pParent),
           m_albumReleaseId(albumReleaseId) {
 }
 
 QNetworkReply* CoverArtArchiveLinksTask::sendNetworkRequest(
-        QNetworkAccessManager* networkAccessManager,
+        QNetworkAccessManager* pNetworkAccessManager,
         network::HttpRequestMethod method,
         const QUrl& url,
         const QJsonDocument& content) {
-    DEBUG_ASSERT(networkAccessManager);
+    DEBUG_ASSERT(pNetworkAccessManager);
     Q_UNUSED(method);
     DEBUG_ASSERT(method == network::HttpRequestMethod::Get);
-    networkAccessManager->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
+    pNetworkAccessManager->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 
     const QNetworkRequest networkRequest = createNetworkRequest(m_albumReleaseId);
 
@@ -73,7 +73,7 @@ QNetworkReply* CoverArtArchiveLinksTask::sendNetworkRequest(
                 << "Get"
                 << url;
     }
-    return networkAccessManager->get(networkRequest);
+    return pNetworkAccessManager->get(networkRequest);
 }
 
 void CoverArtArchiveLinksTask::onFinished(

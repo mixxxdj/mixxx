@@ -25,21 +25,21 @@ QNetworkRequest createNetworkRequest(const QString& coverArtUrl) {
 } // anonymous namespace
 
 CoverArtArchiveImageTask::CoverArtArchiveImageTask(
-        QNetworkAccessManager* networkAccessManager,
+        QNetworkAccessManager* pNetworkAccessManager,
         const QString& coverArtLink,
-        QObject* parent)
+        QObject* pParent)
         : network::WebTask(
-                  networkAccessManager,
-                  parent),
+                  pNetworkAccessManager,
+                  pParent),
           m_coverArtUrl(coverArtLink) {
 }
 
 QNetworkReply* CoverArtArchiveImageTask::doStartNetworkRequest(
-        QNetworkAccessManager* networkAccessManager,
+        QNetworkAccessManager* pNetworkAccessManager,
         int parentTimeoutMillis) {
-    networkAccessManager->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
+    pNetworkAccessManager->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    DEBUG_ASSERT(networkAccessManager);
+    DEBUG_ASSERT(pNetworkAccessManager);
 
     const QNetworkRequest networkRequest =
             createNetworkRequest(m_coverArtUrl);
@@ -49,15 +49,15 @@ QNetworkReply* CoverArtArchiveImageTask::doStartNetworkRequest(
                 << "GET"
                 << networkRequest.url();
     }
-    return networkAccessManager->get(networkRequest);
+    return pNetworkAccessManager->get(networkRequest);
 }
 
 void CoverArtArchiveImageTask::doNetworkReplyFinished(
-        QNetworkReply* finishedNetworkReply,
+        QNetworkReply* pFinishedNetworkReply,
         network::HttpStatusCode statusCode) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    const QByteArray resultImageBytes = finishedNetworkReply->readAll();
+    const QByteArray resultImageBytes = pFinishedNetworkReply->readAll();
 
     if (statusCode != 200) {
         kLogger.info()

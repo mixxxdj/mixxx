@@ -9,9 +9,9 @@ class CoverArtArchiveImageTask : public network::WebTask {
 
   public:
     CoverArtArchiveImageTask(
-            QNetworkAccessManager* networkAccessManager,
+            QNetworkAccessManager* pNetworkAccessManager,
             const QString& coverArtLink,
-            QObject* parent = nullptr);
+            QObject* pParent = nullptr);
     ~CoverArtArchiveImageTask() override = default;
 
   signals:
@@ -25,11 +25,11 @@ class CoverArtArchiveImageTask : public network::WebTask {
 
   private:
     QNetworkReply* doStartNetworkRequest(
-            QNetworkAccessManager* networkAccessManager,
+            QNetworkAccessManager* pNetworkAccessManager,
             int parentTimeoutMillis) override;
 
     void doNetworkReplyFinished(
-            QNetworkReply* finishedNetworkReply,
+            QNetworkReply* pFinishedNetworkReply,
             network::HttpStatusCode statusCode) override;
 
     QString m_coverArtUrl;

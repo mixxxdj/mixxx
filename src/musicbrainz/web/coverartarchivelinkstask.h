@@ -14,9 +14,9 @@ class CoverArtArchiveLinksTask : public network::JsonWebTask {
 
   public:
     CoverArtArchiveLinksTask(
-            QNetworkAccessManager* networkAccessManager,
+            QNetworkAccessManager* pNetworkAccessManager,
             const QUuid& albumReleaseId,
-            QObject* parent = nullptr);
+            QObject* pParent = nullptr);
 
     ~CoverArtArchiveLinksTask() override = default;
 
@@ -26,7 +26,7 @@ class CoverArtArchiveLinksTask : public network::JsonWebTask {
 
   private:
     QNetworkReply* sendNetworkRequest(
-            QNetworkAccessManager* networkAccessManager,
+            QNetworkAccessManager* pNetworkAccessManager,
             network::HttpRequestMethod method,
             const QUrl& url,
             const QJsonDocument& content) override;
