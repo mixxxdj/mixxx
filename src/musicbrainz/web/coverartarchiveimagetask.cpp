@@ -63,10 +63,49 @@ void CoverArtArchiveImageTask::doNetworkReplyFinished(
         kLogger.info()
                 << "GET reply"
                 << "statusCode:" << statusCode;
+        emitFailed(
+                network::WebResponse(
+                        pFinishedNetworkReply->url(),
+                        pFinishedNetworkReply->request().url(),
+                        statusCode),
+                statusCode,
+                QStringLiteral("Failed to get Image"));
         return;
     }
 
-    emit succeeded(resultImageBytes);
+    emitSucceeded(resultImageBytes);
+}
+
+void CoverArtArchiveImageTask::emitSucceeded(
+        const QByteArray& coverArtImageBytes) {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&CoverArtArchiveImageTask::succeeded)) {
+        kLogger.warning()
+                << "Unhandled succeeded signal";
+        deleteLater();
+        return;
+    }
+    emit succeeded(coverArtImageBytes);
+}
+
+void CoverArtArchiveImageTask::emitFailed(
+        const network::WebResponse& response,
+        int errorCode,
+        const QString& errorMessage) {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&CoverArtArchiveImageTask::failed)) {
+        kLogger.warning()
+                << "Unhandled failed signal"
+                << response
+                << errorCode
+                << errorMessage;
+        deleteLater();
+        return;
+    }
+    emit failed(
+            response,
+            errorCode,
+            errorMessage);
 }
 
 } // namespace mixxx

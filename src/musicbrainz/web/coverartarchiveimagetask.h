@@ -32,6 +32,13 @@ class CoverArtArchiveImageTask : public network::WebTask {
             QNetworkReply* pFinishedNetworkReply,
             network::HttpStatusCode statusCode) override;
 
+    void emitSucceeded(const QByteArray& coverArtImageBytes);
+
+    void emitFailed(
+            const network::WebResponse& response,
+            int errorCode,
+            const QString& errorMessage);
+
     QString m_coverArtUrl;
 
     QByteArray coverArtImageBytes;
