@@ -36,7 +36,7 @@ class StringCollator {
 ///
 /// Treats nullptr like an empty string and returns 0.
 /// The c++11 strnlen_s() is not available on all targets
-inline std::size_t strnlen(
+inline std::size_t strnlen_s(
         const char* str,
         std::size_t maxlen) {
     if (str == nullptr) {
@@ -51,7 +51,7 @@ inline std::size_t strnlen(
 /// Treats nullptr like an empty string and returns 0.
 /// The c++11 wcsnlen_s is not available on all targets
 /// and wcsnlen() is not available on OpenBSD
-inline std::size_t wcsnlen(
+inline std::size_t wcsnlen_s(
         const wchar_t* wcs,
         std::size_t maxlen) {
     if (wcs == nullptr) {
