@@ -635,14 +635,12 @@ void LibraryControl::slotMoveVertical(double v) {
         return;
     }
     case FocusWidget::TracksTable: {
-        // This wraps around at the top/bottom of the tracks list. Doesn't match
-        // Up/Down key behaviour, but it greatly improves the ergonomics of
-        // navigating a list of tracks sorted by key from a controller.
-        // Otherwise moving from 12/C#m/E to 1/G#m/B requires either a serious
-        // workout or reaching for the mouse/keyboard.
-        const auto i = static_cast<int>(v);
-        slotSelectTrack(i);
-        return;
+        // `WLibraryTableView`'s cursor movement function has been overridden to
+        // wrap the selection around at the top/bottom of the tracks list. This
+        // behavior is thus shared between `[Library],MoveVertical` and Up/Down
+        // cursor key presses. See `WLibraryTableView::moveCursor()` for an
+        // explanation on why this is useful.
+        break;
     }
     case FocusWidget::Dialog: {
         // For navigating dialogs map up/down to Tab/BackTab
