@@ -635,12 +635,14 @@ void LibraryControl::slotMoveVertical(double v) {
         return;
     }
     case FocusWidget::TracksTable: {
-        // This wraps around at top/bottom. Doesn't match Up/Down key behaviour
-        // and may not be desired.
-        //int i = static_cast<int>(v);
-        //slotSelectTrack(i);
-        //return;
-        break;
+        // This wraps around at the top/bottom of the tracks list. Doesn't match
+        // Up/Down key behaviour, but it greatly improves the ergonomics of
+        // navigating a list of tracks sorted by key from a controller.
+        // Otherwise moving from 12/C#m/E to 1/G#m/B requires either a serious
+        // workout or reaching for the mouse/keyboard.
+        const auto i = static_cast<int>(v);
+        slotSelectTrack(i);
+        return;
     }
     case FocusWidget::Dialog: {
         // For navigating dialogs map up/down to Tab/BackTab
