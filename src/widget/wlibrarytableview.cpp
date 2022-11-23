@@ -275,17 +275,35 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
                     cursorAction == QAbstractItemView::MoveDown)) {
         // This is very similar to `moveSelection()`, except that it doesn't
         // actually modify the selection
-        const int row = currentIndex().row();
-        const int column = currentIndex().column();
-        if (cursorAction == QAbstractItemView::MoveDown) {
-            if (row + 1 < pModel->rowCount()) {
-                return pModel->index(row + 1, column);
+        const QModelIndex current = currentIndex();
+        if (current.isValid()) {
+            const int row = currentIndex().row();
+            const int column = currentIndex().column();
+            if (cursorAction == QAbstractItemView::MoveDown) {
+                if (row + 1 < pModel->rowCount()) {
+                    return pModel->index(row + 1, column);
+                } else {
+                    return pModel->index(0, column);
+                }
             } else {
-                return pModel->index(0, column);
+                if (row - 1 >= 0) {
+                    return pModel->index(row - 1, column);
+                } else {
+                    return pModel->index(pModel->rowCount() - 1, column);
+                }
             }
         } else {
-            if (row - 1 >= 0) {
-                return pModel->index(row - 1, column);
+            // Selecting a hidden column doesn't work, so we'll need to find the
+            // first non-hidden column here
+            int column = 0;
+            while (isColumnHidden(column) && column < pModel->columnCount()) {
+                column++;
+            }
+
+            // If the cursor does not yet exist (because the view has not yet
+            // been interacted with) then this selects the first/last row
+            if (cursorAction == QAbstractItemView::MoveDown) {
+                return pModel->index(0, column);
             } else {
                 return pModel->index(pModel->rowCount() - 1, column);
             }
