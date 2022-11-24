@@ -550,23 +550,25 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 void DlgTrackInfo::slotKeyTextChanged() {
     // Try to parse the user's input as a key.
     const QString newKeyText = txtKey->text();
-    Keys newKeys = KeyFactory::makeBasicKeysNormalized(newKeyText,
-            mixxx::track::io::key::USER);
-    const mixxx::track::io::key::ChromaticKey globalKey(newKeys.getGlobalKey());
+    mixxx::track::io::key::ChromaticKey newKey =
+            KeyUtils::guessKeyFromText(newKeyText);
 
-    // If the new key string is invalid and not empty them reject the new key.
-    if (globalKey == mixxx::track::io::key::INVALID && !newKeyText.isEmpty()) {
+    if (newKey == mixxx::track::io::key::INVALID) {
+        // revert the user edit if we can't guess a valid key from it
         txtKey->setText(KeyUtils::formatGlobalKey(m_keysClone));
         return;
     }
 
     // If the new key is the same as the old key, reject the change.
-    if (globalKey == m_keysClone.getGlobalKey()) {
+    if (newKey == m_keysClone.getGlobalKey()) {
         return;
     }
 
-    // Otherwise, accept.
+    Keys newKeys = KeyFactory::makeBasicKeys(
+            newKey,
+            mixxx::track::io::key::USER);
     m_keysClone = newKeys;
+    txtKey->setText(KeyUtils::formatGlobalKey(m_keysClone));
 }
 
 void DlgTrackInfo::slotImportMetadataFromFile() {
