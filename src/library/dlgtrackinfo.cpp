@@ -610,7 +610,7 @@ void DlgTrackInfo::saveTrack() {
     // handlers manually to capture any changes. If the bpm or key was unchanged
     // or invalid then the change will be ignored/rejected.
     slotSpinBpmValueChanged(spinBpm->value());
-    static_cast<void>(updateKeyText()); // discard result
+    updateKeyText();
 
     // Update the cached track
     //
@@ -730,17 +730,16 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     updateSpinBpmFromBeats();
 }
 
-mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
-    const auto keyText = txtKey->text().trimmed();
+void DlgTrackInfo::updateKeyText() {
+    const auto keyText = txtKey->text();
     const auto updateResult =
             m_trackRecord.updateGlobalKeyNormalizeText(
                     keyText,
                     mixxx::track::io::key::USER);
     if (updateResult == mixxx::UpdateResult::Rejected) {
         // Restore the current key text
-        displayKeyText();
     }
-    return updateResult;
+    displayKeyText();
 }
 
 void DlgTrackInfo::displayKeyText() {
@@ -749,10 +748,7 @@ void DlgTrackInfo::displayKeyText() {
 }
 
 void DlgTrackInfo::slotKeyTextChanged() {
-    if (updateKeyText() != mixxx::UpdateResult::Unchanged) {
-        // Ensure that the text field always reflects the actual value
-        displayKeyText();
-    }
+    updateKeyText();
 }
 
 void DlgTrackInfo::slotRatingChanged(int rating) {
