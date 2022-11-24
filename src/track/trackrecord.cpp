@@ -48,7 +48,7 @@ UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
     // Try to parse the input as a key.
     mixxx::track::io::key::ChromaticKey newKey =
             KeyUtils::guessKeyFromText(keyText);
-    if (newKey == mixxx::track::io::key::INVALID) {
+    if (newKey == mixxx::track::io::key::INVALID  && !keyText.isEmpty()) {
         // revert if we can't guess a valid key from it
         return UpdateResult::Rejected;
     }
@@ -58,8 +58,15 @@ UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
         return UpdateResult::Unchanged;
     }
 
-    Keys newKeys = KeyFactory::makeBasicKeys(newKey, keySource);
-    setKeys(newKeys);
+    Keys newKeys;
+    if (keySource == mixxx::track::io::key::FILE_METADATA) {
+        newKeys = KeyFactory::makeBasicKeysKeepText(
+                keyText,
+                mixxx::track::io::key::FILE_METADATA);
+    } else {
+        newKeys = KeyFactory::makeBasicKeys(newKey, keySource);
+    }
+	setKeys(newKeys);
     return UpdateResult::Updated;
 }
 

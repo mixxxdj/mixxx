@@ -8,6 +8,7 @@
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
+#include "track/keyfactory.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
