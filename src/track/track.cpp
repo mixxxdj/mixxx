@@ -7,6 +7,7 @@
 #include "moc_track.cpp"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
+#include "track/keyfactory.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
@@ -196,15 +197,19 @@ void Track::importMetadata(
         const auto newBpm = getBpmWhileLocked();
 
         auto keysModified = false;
-        if (KeyUtils::guessKeyFromText(importedKeyText) != mixxx::track::io::key::INVALID) {
-            // Only update the current key with a valid value. Otherwise preserve
-            // the existing value.
-            keysModified = m_record.updateGlobalKeyText(
-                    importedKeyText,
-                    mixxx::track::io::key::FILE_METADATA);
+        const Keys keys = KeyFactory::makeBasicKeysKeepText(
+                importedKeyText,
+                mixxx::track::io::key::FILE_METADATA);
+        // Only update the current key with a valid value. Otherwise preserve
+        // the existing value.
+        if (keys.getGlobalKey() != mixxx::track::io::key::INVALID) {
+            if (keys != m_record.getKeys()) {
+                m_record.setKeys(keys);
+                keysModified = true;
+            }
         }
         modified |= keysModified;
-        const auto newKey = m_record.getGlobalKey();
+        const auto newKey = m_record.getKeys().getGlobalKey();
 
         // Import track color from Serato tags if available
         const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
