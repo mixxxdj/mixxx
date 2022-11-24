@@ -27,49 +27,6 @@ void TrackRecord::setKeys(const Keys& keys) {
     m_keys = std::move(keys);
 }
 
-bool TrackRecord::updateGlobalKey(
-        track::io::key::ChromaticKey key,
-        track::io::key::Source keySource) {
-    if (key == track::io::key::INVALID) {
-        return false;
-    } else {
-        Keys keys = KeyFactory::makeBasicKeys(key, keySource);
-        if (m_keys.getGlobalKey() != keys.getGlobalKey()) {
-            setKeys(keys);
-            return true;
-        }
-    }
-    return false;
-}
-
-UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
-        const QString& keyText,
-        track::io::key::Source keySource) {
-    // Try to parse the input as a key.
-    mixxx::track::io::key::ChromaticKey newKey =
-            KeyUtils::guessKeyFromText(keyText);
-    if (newKey == mixxx::track::io::key::INVALID  && !keyText.isEmpty()) {
-        // revert if we can't guess a valid key from it
-        return UpdateResult::Rejected;
-    }
-
-    // If the new key is the same as the old key, reject the change.
-    if (m_keys.getGlobalKey() == newKey) {
-        return UpdateResult::Unchanged;
-    }
-
-    Keys newKeys;
-    if (keySource == mixxx::track::io::key::FILE_METADATA) {
-        newKeys = KeyFactory::makeBasicKeysKeepText(
-                keyText,
-                mixxx::track::io::key::FILE_METADATA);
-    } else {
-        newKeys = KeyFactory::makeBasicKeys(newKey, keySource);
-    }
-	setKeys(newKeys);
-    return UpdateResult::Updated;
-}
-
 namespace {
 
 #if defined(__EXTRA_METADATA__)
