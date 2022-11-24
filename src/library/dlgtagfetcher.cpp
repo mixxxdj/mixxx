@@ -550,37 +550,30 @@ void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
     DlgPrefLibrary::CoverArtFetcherQuality fetcherQuality =
             static_cast<DlgPrefLibrary::CoverArtFetcherQuality>(
                     m_pConfig->getValue(mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
-                            static_cast<int>(DlgPrefLibrary::CoverArtFetcherQuality::Low)));
+                            static_cast<int>(DlgPrefLibrary::CoverArtFetcherQuality::Medium)));
 
     // Cover art links task can retrieve us variable number of links with different cover art sizes
     // Every single successful response has 2 links.
-    // These links are cover arts with 250 PX and 500 PX
-    // Some of the tags might have link of a cover art with 1200 PX
-    // Some of the tags might have link of a cover art more than 1200 PX
-    // At final, we always retrieve 2 links, but for some tags this can be 3 or 4
-    // We need to pick the correct size according to user choice
+    // These links belongs to cover arts with 250 PX and 500 PX
+    // Some of the releases might have link of a cover art with 1200 PX
+    // Some of the releases might have link of a cover art which is more than 1200 PX
+    // To sum up, 2 links are always retrieved, but for some releases this can be 3 or 4
+    // Picking the correct size according to user choice is a must.
 
     // User choices and the possible fetched cover art sizes are:
-    // Highest -> More than 1200 PX, if not available 1200 PX or 500 PX
-    // High    -> 1200 PX if not available 500 PX
-    // Medium  -> Always 500 PX fetched
-    // Low     -> Always 250 PX fetched
+    // Highest -> >1200 PX, if not available highest possible
+    // High    -> 1200 PX, if not available highest possible
+    // Medium  -> 500 PX, at all times
+    // Low     -> 250 PX, at all times
 
     VERIFY_OR_DEBUG_ASSERT(!allUrls.isEmpty()) {
         return;
     }
 
-    if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::Highest) {
-        getCoverArt(allUrls.last());
-        return;
-    } else if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::High) {
-        allUrls.size() < 3 ? getCoverArt(allUrls.last()) : getCoverArt(allUrls.at(2));
-        return;
-    } else if (fetcherQuality == DlgPrefLibrary::CoverArtFetcherQuality::Medium) {
-        allUrls.size() == 2 ? getCoverArt(allUrls.at(1)) : getCoverArt(allUrls.first());
-        return;
+    if (allUrls.size() > static_cast<int>(fetcherQuality)) {
+        getCoverArt(allUrls.at(static_cast<int>(fetcherQuality)));
     } else {
-        getCoverArt(allUrls.first());
+        getCoverArt(allUrls.last());
     }
 }
 
