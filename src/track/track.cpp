@@ -158,9 +158,10 @@ void Track::replaceMetadataFromSource(
     {
         // Save some new values for later
         const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
-        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
+        const QString importedKeyText = importedMetadata.getTrackInfo().getKeyText();
         // Parse the imported key before entering the locking scope
-        const auto importedKey = KeyUtils::guessKeyFromText(importedKeyText);
+        const mixxx::track::io::key::ChromaticKey importedKey =
+                KeyUtils::guessKeyFromText(importedKeyText);
 
         // enter locking scope
         auto locked = lockMutex(&m_qMutex);
@@ -170,7 +171,8 @@ void Track::replaceMetadataFromSource(
         // set together with the beat grid and the key text must be parsed
         // and validated.
         importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
-        importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
+        importedMetadata.refTrackInfo().setKeyText(
+                m_record.getMetadata().getTrackInfo().getKeyText());
 
         const auto oldReplayGain =
                 m_record.getMetadata().getTrackInfo().getReplayGain();

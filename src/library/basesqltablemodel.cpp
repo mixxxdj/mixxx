@@ -737,7 +737,8 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         StarRating starRating = value.value<StarRating>();
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
-        pTrack->setKeyText(value.toString(),
+        pTrack->setKeyText(
+                value.toString(),
                 mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLocked(value.toBool());

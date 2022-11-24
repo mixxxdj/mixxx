@@ -905,7 +905,7 @@ void importTrackMetadataFromTag(
 
     const TagLib::ID3v2::FrameList keyFrames(tag.frameListMap()["TKEY"]);
     if (!keyFrames.isEmpty() || resetMissingTagMetadata) {
-        pTrackMetadata->refTrackInfo().setKey(
+        pTrackMetadata->refTrackInfo().setKeyText(
                 firstNonEmptyFrameToQString(keyFrames));
     }
 
@@ -1217,7 +1217,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     writeTextIdentificationFrame(
             pTag,
             "TKEY",
-            trackMetadata.getTrackInfo().getKey());
+            trackMetadata.getTrackInfo().getKeyText());
 
     writeUserTextIdentificationFrame(
             pTag,
