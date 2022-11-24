@@ -225,7 +225,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // paFramesPerBufferUnspecified in non-blocking mode because the latency
     // comes from the JACK daemon. (PA should give an error or something though,
     // but it doesn't.)
-    if (m_deviceInfo->hostApi == paJACK) {
+    if (m_deviceTypeId == paJACK) {
         m_framesPerBuffer = paFramesPerBufferUnspecified;
     }
 
