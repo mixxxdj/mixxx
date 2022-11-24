@@ -108,6 +108,10 @@ void CoverArtArchiveLinksTask::onFinished(
         return;
     }
 
+    // An example JSON schema can be found for the release: 48cf6a4e-4c61-4214-afe3-ed4e11d902c9
+    // JSON Schema: https://coverartarchive.org/release/48cf6a4e-4c61-4214-afe3-ed4e11d902c9
+    // See also: https://wiki.musicbrainz.org/Cover_Art_Archive/API
+
     QList<QString> allUrls;
     DEBUG_ASSERT(jsonObject.value(QLatin1String("images")).isArray());
     const QJsonArray images = jsonObject.value(QLatin1String("images")).toArray();
@@ -117,6 +121,10 @@ void CoverArtArchiveLinksTask::onFinished(
 
         const auto thumbnails = imageObject.value(QLatin1String("thumbnails")).toObject();
         DEBUG_ASSERT(!thumbnails.isEmpty());
+
+        // Due to few exceptions encountered
+        // For 250 PX and 500 PX cover arts, "small" and "large" keys are used.
+        // See: https://coverartarchive.org/release/5240094f-9d79-44fd-9985-77c7287bcc16
 
         const auto smallThumbnailUrl = thumbnails.value(QLatin1String("small")).toString();
         DEBUG_ASSERT(!smallThumbnailUrl.isNull());
