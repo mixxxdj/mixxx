@@ -43,7 +43,7 @@ bool TrackRecord::updateGlobalKey(
 bool TrackRecord::updateGlobalKeyText(
         const QString& keyText,
         track::io::key::Source keySource) {
-    Keys keys = KeyFactory::makeBasicKeysFromText(keyText, keySource);
+    Keys keys = KeyFactory::makeBasicKeysNormalized(keyText, keySource);
     if (keys.getGlobalKey() == track::io::key::INVALID) {
         return false;
     } else {

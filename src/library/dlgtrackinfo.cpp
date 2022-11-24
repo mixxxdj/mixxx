@@ -550,7 +550,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 void DlgTrackInfo::slotKeyTextChanged() {
     // Try to parse the user's input as a key.
     const QString newKeyText = txtKey->text();
-    Keys newKeys = KeyFactory::makeBasicKeysFromText(newKeyText,
+    Keys newKeys = KeyFactory::makeBasicKeysNormalized(newKeyText,
             mixxx::track::io::key::USER);
     const mixxx::track::io::key::ChromaticKey globalKey(newKeys.getGlobalKey());
 
