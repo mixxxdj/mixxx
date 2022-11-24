@@ -93,16 +93,6 @@ class TrackRecord final {
         return m_keys;
     }
 
-    track::io::key::ChromaticKey getGlobalKey() const {
-        return getKeys().getGlobalKey();
-    }
-    bool updateGlobalKey(
-            track::io::key::ChromaticKey key,
-            track::io::key::Source keySource);
-
-    QString getGlobalKeyText() const {
-        return KeyUtils::formatGlobalKey(getKeys());
-    }
     UpdateResult updateGlobalKeyNormalizeText(
             const QString& keyText,
             track::io::key::Source keySource);

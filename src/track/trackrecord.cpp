@@ -27,21 +27,6 @@ void TrackRecord::setKeys(const Keys& keys) {
     m_keys = std::move(keys);
 }
 
-bool TrackRecord::updateGlobalKey(
-        track::io::key::ChromaticKey key,
-        track::io::key::Source keySource) {
-    if (key == track::io::key::INVALID) {
-        return false;
-    } else {
-        Keys keys = KeyFactory::makeBasicKeys(key, keySource);
-        if (m_keys.getGlobalKey() != keys.getGlobalKey()) {
-            setKeys(keys);
-            return true;
-        }
-    }
-    return false;
-}
-
 UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
         const QString& keyText,
         track::io::key::Source keySource) {
