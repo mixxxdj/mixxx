@@ -669,7 +669,7 @@ void WSpinny::mousePressEvent(QMouseEvent * e) {
         }
     } else {
         if (!m_loadedCover.isNull()) {
-            m_pDlgCoverArt->init(m_loadedTrack);
+            m_pDlgCoverArt->showTrackCoverArt(m_loadedTrack);
         } else if (m_bShowCover) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             m_pCoverMenu->popup(e->globalPosition().toPoint());

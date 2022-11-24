@@ -273,7 +273,7 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
             // actually has a cover.  The `init` method already shows the
             // window and then emits a signal to load the cover, so this can't
             // be handled by the method itself.
-            m_pDlgFullSize->init(m_loadedTrack);
+            m_pDlgFullSize->showTrackCoverArt(m_loadedTrack);
         }
     } // else it was a long leftclick or a right click that's already been processed
 }

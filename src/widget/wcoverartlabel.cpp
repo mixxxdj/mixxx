@@ -97,9 +97,9 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
             if (m_loadedCover.isNull()) {
                 return;
             } else if (!m_pLoadedTrack && !m_Data.isNull()) {
-                m_pDlgFullSize->initFetchedCoverArt(m_Data);
+                m_pDlgFullSize->showFetchedCoverArt(m_Data);
             } else {
-                m_pDlgFullSize->init(m_pLoadedTrack);
+                m_pDlgFullSize->showTrackCoverArt(m_pLoadedTrack);
             }
         }
     }

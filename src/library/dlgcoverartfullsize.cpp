@@ -65,7 +65,7 @@ void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
     }
 }
 
-void DlgCoverArtFullSize::init(TrackPointer pTrack) {
+void DlgCoverArtFullSize::showTrackCoverArt(TrackPointer pTrack) {
     if (!pTrack) {
         return;
     }
@@ -83,7 +83,7 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     slotLoadTrack(pTrack);
 }
 
-void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
+void DlgCoverArtFullSize::showFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
     m_pixmap.loadFromData(fetchedCoverArtBytes);
 
     // The real size will be calculated later by adjustImageAndDialogSize().

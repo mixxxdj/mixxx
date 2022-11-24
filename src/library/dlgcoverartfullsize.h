@@ -21,8 +21,8 @@ class DlgCoverArtFullSize
             WCoverArtMenu* pCoverMenu = nullptr);
     ~DlgCoverArtFullSize() override = default;
 
-    void init(TrackPointer pTrack);
-    void initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes);
+    void showTrackCoverArt(TrackPointer pTrack);
+    void showFetchedCoverArt(const QByteArray& fetchedCoverArtBytes);
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* ) override;
     void mouseMoveEvent(QMouseEvent* ) override;
