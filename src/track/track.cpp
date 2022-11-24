@@ -153,8 +153,9 @@ void Track::importMetadata(
         // and validated.
         const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
         importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
-        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
-        importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
+        const auto importedKeyText = importedMetadata.getTrackInfo().getKeyText();
+        importedMetadata.refTrackInfo().setKeyText(
+                m_record.getMetadata().getTrackInfo().getKeyText());
 
         bool modified = false;
         // Only set the metadata synchronized flag (column `header_parsed`
