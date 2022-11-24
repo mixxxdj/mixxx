@@ -479,7 +479,7 @@ namespace {
         QString keysVersion = keys.getVersion();
         QString keysSubVersion = keys.getSubVersion();
         mixxx::track::io::key::ChromaticKey key = keys.getGlobalKey();
-        QString keyText = KeyUtils::formatGlobalKey(keys);
+        QString keyText = keys.getGlobalKeyText();
         pTrackLibraryQuery->bindValue(":keys", keysBlob);
         pTrackLibraryQuery->bindValue(":keys_version", keysVersion);
         pTrackLibraryQuery->bindValue(":keys_sub_version", keysSubVersion);
@@ -1102,21 +1102,24 @@ bool setTrackKey(const QSqlRecord& record, const int column,
     QString keysVersion = record.value(column + 1).toString();
     QString keysSubVersion = record.value(column + 2).toString();
     QByteArray keysBlob = record.value(column + 3).toByteArray();
-    Keys keys = KeyFactory::loadKeysFromByteArray(
-            keysVersion, keysSubVersion, &keysBlob);
-
+    bool shouldDirty = false;
     if (!keysVersion.isEmpty()) {
-        pTrack->setKeys(keys);
+        pTrack->setKeys(KeyFactory::loadKeysFromByteArray(
+                keysVersion,
+                keysSubVersion,
+                &keysBlob));
     } else if (!keyText.isEmpty()) {
         // Typically this happens if we are upgrading from an older (<1.12.0)
         // version of Mixxx that didn't support Keys. We treat all legacy data
         // as user-generated because that way it will be treated sensitively.
-        pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
+        pTrack->setKeys(KeyFactory::makeBasicKeysKeepText(
+                keyText,
+                mixxx::track::io::key::USER));
         // The in-database data would change because of this. Mark the track
         // dirty so we save it when it is deleted.
-        return true;
+        shouldDirty = true;
     }
-    return false; // shouldDirty;
+    return shouldDirty;
 }
 
 bool setTrackCoverInfo(const QSqlRecord& record, const int column,
