@@ -85,20 +85,6 @@ class TrackRecord final {
         return m_keys;
     }
 
-    track::io::key::ChromaticKey getGlobalKey() const {
-        return getKeys().getGlobalKey();
-    }
-    bool updateGlobalKey(
-            track::io::key::ChromaticKey key,
-            track::io::key::Source keySource);
-
-    QString getGlobalKeyText() const {
-        return KeyUtils::formatGlobalKey(getKeys());
-    }
-    bool updateGlobalKeyText(
-            const QString& keyText,
-            track::io::key::Source keySource);
-
     // Merge the current metadata with new and additional properties
     // imported from the file. Since these properties are not (yet)
     // stored in the library or have been added later all existing

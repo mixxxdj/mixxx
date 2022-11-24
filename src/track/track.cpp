@@ -1259,7 +1259,7 @@ void Track::setRating (int rating) {
 }
 
 void Track::afterKeysUpdated(QMutexLocker* pLock) {
-    const auto newKey = m_record.getGlobalKey();
+    const auto newKey = m_record.getKeys().getGlobalKey();
     markDirtyAndUnlock(pLock);
     emitKeysUpdated(newKey);
 }
@@ -1289,28 +1289,34 @@ Keys Track::getKeys() const {
 
 void Track::setKey(mixxx::track::io::key::ChromaticKey key,
                    mixxx::track::io::key::Source keySource) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_record.updateGlobalKey(key, keySource)) {
-        afterKeysUpdated(&lock);
+    if (key == mixxx::track::io::key::INVALID) {
+        return;
     }
+    const Keys keys = KeyFactory::makeBasicKeys(key, keySource);
+    QMutexLocker lock(&m_qMutex);
+    m_record.setKeys(keys);
+    afterKeysUpdated(&lock);
 }
 
 mixxx::track::io::key::ChromaticKey Track::getKey() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getGlobalKey();
+    return m_record.getKeys().getGlobalKey();
 }
 
+// returns the formatted key for display purpose
 QString Track::getKeyText() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_record.getGlobalKeyText();
+    Keys keys;
+    { // lock scope
+        QMutexLocker lock(&m_qMutex);
+        keys = m_record.getKeys();
+    }
+    return KeyUtils::formatGlobalKey(keys);
 }
 
+// normalizes the keyText before storing
 void Track::setKeyText(const QString& keyText,
                        mixxx::track::io::key::Source keySource) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_record.updateGlobalKeyText(keyText, keySource)) {
-        afterKeysUpdated(&lock);
-    }
+    setKey(KeyUtils::guessKeyFromText(keyText), keySource);
 }
 
 void Track::setBpmLocked(bool bpmLocked) {
