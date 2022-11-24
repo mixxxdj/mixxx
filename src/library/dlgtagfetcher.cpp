@@ -337,10 +337,13 @@ void DlgTagFetcher::apply() {
 
         QFileInfo trackFileInfo = QFileInfo(m_track->getLocation());
 
+        // Compose the Cover Art file path. Use the correct file extension
+        // by checking from the fetched image bytes (disregard extension
+        // from file link).
         QString coverArtCopyFilePath =
                 trackFileInfo.absoluteFilePath().left(
                         trackFileInfo.absoluteFilePath().lastIndexOf('.') + 1) +
-                "jpeg";
+                ImageFileData::readFormatFrom(m_fetchedCoverArtByteArrays);
 
         m_worker.reset(new CoverArtCopyWorker(
                 QString(), coverArtCopyFilePath, m_fetchedCoverArtByteArrays));
