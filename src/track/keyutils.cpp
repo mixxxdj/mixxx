@@ -204,8 +204,9 @@ QString KeyUtils::keyToString(ChromaticKey key,
     }
 
     if (notation == KeyNotation::Custom) {
-        // The default value for notation is KeyUtils::KeyNotation::Custom, so this executes when the function is
-        // called without a notation specified after KeyUtils::setNotation has set up s_notation.
+        // The default value for notation is KeyUtils::KeyNotation::Custom, so
+        // this executes when the function is called without a notation specified
+        // after KeyUtils::setNotation has set up s_notation.
         QMutexLocker locker(&s_notationMutex);
         auto it = s_notation.constFind(key);
         if (it != s_notation.constEnd()) {
@@ -236,8 +237,8 @@ QString KeyUtils::keyToString(ChromaticKey key,
 }
 
 // static
-QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
-    const mixxx::track::io::key::ChromaticKey globalKey(keys.getGlobalKey());
+QString KeyUtils::formatGlobalKey(const Keys& keys, KeyNotation notation) {
+    const mixxx::track::io::key::ChromaticKey globalKey = keys.getGlobalKey();
     if (globalKey != mixxx::track::io::key::INVALID) {
         return keyToString(globalKey, notation);
     } else {

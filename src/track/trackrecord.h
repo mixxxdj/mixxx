@@ -93,7 +93,7 @@ class TrackRecord final {
             track::io::key::Source keySource);
 
     QString getGlobalKeyText() const {
-        return KeyUtils::getGlobalKeyText(getKeys());
+        return KeyUtils::formatGlobalKey(getKeys());
     }
     bool updateGlobalKeyText(
             const QString& keyText,
