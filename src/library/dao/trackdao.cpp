@@ -627,7 +627,7 @@ void bindTrackLibraryValues(
     QString keysVersion = keys.getVersion();
     QString keysSubVersion = keys.getSubVersion();
     mixxx::track::io::key::ChromaticKey key = keys.getGlobalKey();
-    QString keyText = KeyUtils::getGlobalKeyText(keys);
+    QString keyText = KeyUtils::formatGlobalKey(keys);
     pTrackLibraryQuery->bindValue(":keys", keysBlob);
     pTrackLibraryQuery->bindValue(":keys_version", keysVersion);
     pTrackLibraryQuery->bindValue(":keys_sub_version", keysSubVersion);
