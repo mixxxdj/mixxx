@@ -39,6 +39,11 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent, WCoverArtMenu* pCoverMenu)
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
     setPixmap(m_defaultCover);
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this,
+            &WCoverArtLabel::customContextMenuRequested,
+            this,
+            &WCoverArtLabel::slotCoverMenu);
 }
 
 WCoverArtLabel::~WCoverArtLabel() = default;
@@ -66,18 +71,9 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
 }
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
-    if (!m_pCoverMenu) {
-        return;
+    if (m_pCoverMenu) {
+        m_pCoverMenu->popup(mapToGlobal(pos));
     }
-    m_pCoverMenu->popup(mapToGlobal(pos));
-}
-
-void WCoverArtLabel::contextMenuEvent(QContextMenuEvent* event) {
-    if (m_pCoverMenu == nullptr) {
-        return;
-    }
-    event->accept();
-    m_pCoverMenu->popup(event->globalPos());
 }
 
 void WCoverArtLabel::loadTrack(TrackPointer pTrack) {
