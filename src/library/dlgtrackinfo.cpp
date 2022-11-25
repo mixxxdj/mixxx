@@ -262,9 +262,6 @@ void DlgTrackInfo::slotCancel() {
     reject();
 }
 
-void DlgTrackInfo::trackUpdated() {
-}
-
 void DlgTrackInfo::slotNextButton() {
     loadNextTrack();
 }
@@ -420,6 +417,7 @@ void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
 
     m_pLoadedTrack = pTrack;
 
+    // swap these two?
     updateFromTrack(*m_pLoadedTrack);
     m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
 
