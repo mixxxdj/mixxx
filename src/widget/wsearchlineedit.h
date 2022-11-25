@@ -1,8 +1,7 @@
 #pragma once
 
-#include <qcompleter.h>
-
 #include <QComboBox>
+#include <QCompleter>
 #include <QDomNode>
 #include <QEvent>
 #include <QTimer>
@@ -24,8 +23,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     static constexpr int kMaxDebouncingTimeoutMillis = 9999;
     static constexpr int kSaveTimeoutMillis = 5000;
     static constexpr int kMaxSearchEntries = 50;
-    static constexpr bool kEnableSearchCompletionsByDefault = true;
-    static constexpr bool kEnableSearchHistoryShortcutsByDefault = true;
+    static constexpr bool kEnableCompletionsByDefault = true;
+    static constexpr bool kEnableHistoryShortcutsByDefault = true;
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
@@ -80,8 +79,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     // value provider that sends signals whenever the corresponding
     // configuration value changes.
     static int s_debouncingTimeoutMillis;
-    static bool s_searchCompletionsEnabled;
-    static bool s_searchHistoryShortcutsEnabled;
+    static bool s_completionsEnabled;
+    static bool s_historyShortcutsEnabled;
 
     void refreshState();
 

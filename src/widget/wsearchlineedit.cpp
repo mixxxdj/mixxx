@@ -1,14 +1,12 @@
 #include "wsearchlineedit.h"
 
-#include <qcompleter.h>
-#include <qstringliteral.h>
-
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QFont>
 #include <QLineEdit>
 #include <QShortcut>
 #include <QSizePolicy>
+#include <QStringLiteral>
 #include <QStyle>
 
 #include "moc_wsearchlineedit.cpp"
@@ -65,22 +63,22 @@ constexpr int WSearchLineEdit::kMaxSearchEntries;
 
 //static
 int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
-bool WSearchLineEdit::s_searchCompletionsEnabled = kEnableSearchCompletionsByDefault;
-bool WSearchLineEdit::s_searchHistoryShortcutsEnabled = kEnableSearchHistoryShortcutsByDefault;
+bool WSearchLineEdit::s_completionsEnabled = kEnableCompletionsByDefault;
+bool WSearchLineEdit::s_historyShortcutsEnabled = kEnableHistoryShortcutsByDefault;
 
 //static
 void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     s_debouncingTimeoutMillis = verifyDebouncingTimeoutMillis(debouncingTimeoutMillis);
 }
 
-//static
+// static
 void WSearchLineEdit::setSearchCompletionsEnabled(bool searchCompletionsEnabled) {
-    s_searchCompletionsEnabled = searchCompletionsEnabled;
+    s_completionsEnabled = searchCompletionsEnabled;
 }
 
-//static
+// static
 void WSearchLineEdit::setSearchHistoryShortcutsEnabled(bool searchHistoryShortcutsEnabled) {
-    s_searchHistoryShortcutsEnabled = searchHistoryShortcutsEnabled;
+    s_historyShortcutsEnabled = searchHistoryShortcutsEnabled;
 }
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
@@ -350,7 +348,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         // If we're at the top of the list the Up key clears the search bar,
         // no matter if it's a saved or unsaved query.
         // Otherwise Up is handled by the combobox itself.
-        if (!s_searchHistoryShortcutsEnabled) {
+        if (!s_historyShortcutsEnabled) {
             return;
         }
         currentTextIndex = findCurrentTextIndex();
@@ -363,7 +361,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     case Qt::Key_Down:
         // After clearing the text field the Down key
         // is expected to show the latest query
-        if (!s_searchHistoryShortcutsEnabled) {
+        if (!s_historyShortcutsEnabled) {
             return;
         }
         if (currentText().isEmpty()) {
@@ -393,7 +391,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         return;
     case Qt::Key_Space:
         // Open/close popup with Ctrl + space
-        if (s_searchHistoryShortcutsEnabled && keyEvent->modifiers() == Qt::ControlModifier) {
+        if (s_historyShortcutsEnabled && keyEvent->modifiers() == Qt::ControlModifier) {
             if (view()->isVisible()) {
                 hidePopup();
             } else {
@@ -691,11 +689,10 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
 void WSearchLineEdit::updateCompleter() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "updateCompleter"
-            << text;
+            << "updateCompleter";
 #endif // ENABLE_TRACE_LOG
 
-    lineEdit()->setCompleter(s_searchCompletionsEnabled ? m_completer.toWeakRef() : nullptr);
+    lineEdit()->setCompleter(s_completionsEnabled ? m_completer.toWeakRef() : nullptr);
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {

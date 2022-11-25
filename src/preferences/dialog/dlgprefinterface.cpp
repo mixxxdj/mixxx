@@ -12,7 +12,6 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "moc_dlgprefinterface.cpp"
-#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "skin/skin.h"

@@ -212,9 +212,9 @@ void DlgPrefLibrary::slotResetToDefaults() {
     setLibraryFont(QApplication::font());
     searchDebouncingTimeoutSpinBox->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
-    checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kEnableSearchCompletionsByDefault);
+    checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kEnableCompletionsByDefault);
     checkBoxEnableSearchHistoryShortcuts->setChecked(
-            WSearchLineEdit::kEnableSearchHistoryShortcutsByDefault);
+            WSearchLineEdit::kEnableHistoryShortcutsByDefault);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -274,10 +274,10 @@ void DlgPrefLibrary::slotUpdate() {
 
     checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
             kEnableSearchCompletionsConfigKey,
-            WSearchLineEdit::kEnableSearchCompletionsByDefault));
+            WSearchLineEdit::kEnableCompletionsByDefault));
     checkBoxEnableSearchHistoryShortcuts->setChecked(m_pConfig->getValue(
             kEnableSearchHistoryShortcutsConfigKey,
-            WSearchLineEdit::kEnableSearchHistoryShortcutsByDefault));
+            WSearchLineEdit::kEnableHistoryShortcutsByDefault));
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -516,10 +516,10 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
 void DlgPrefLibrary::searchHistoryOptionsChanged() {
     WSearchLineEdit::setSearchCompletionsEnabled(m_pConfig->getValue<bool>(
             kEnableSearchCompletionsConfigKey,
-            WSearchLineEdit::kEnableSearchCompletionsByDefault));
+            WSearchLineEdit::kEnableCompletionsByDefault));
     WSearchLineEdit::setSearchHistoryShortcutsEnabled(m_pConfig->getValue<bool>(
             kEnableSearchHistoryShortcutsConfigKey,
-            WSearchLineEdit::kEnableSearchHistoryShortcutsByDefault));
+            WSearchLineEdit::kEnableHistoryShortcutsByDefault));
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
