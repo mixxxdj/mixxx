@@ -42,7 +42,6 @@
 #include "util/widgethelper.h"
 #include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
-#include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
 #include "widget/wsearchrelatedtracksmenu.h"
