@@ -1,10 +1,10 @@
 // Name: Reloop Mixage
 // Author: Bim Overbohm
-// Version: 1.0.2 needs Mixxx 2.1+
+// Version: 1.0.3 needs Mixxx 2.1+
 
 var Mixage = {};
 
-Mixage.updateVUMetersTimer = 0;
+Mixage.vuMeterConnection = [];
 Mixage.libraryHideTimer = 0;
 Mixage.libraryReducedHideTimeout = 500;
 Mixage.libraryHideTimeout = 4000;
@@ -19,12 +19,18 @@ Mixage.effectRackEnabled = [false, false]; // if effect rack 1/2 is enabled for 
 Mixage.init = function(/*id, debugging*/) {
     Mixage.connectControlsToFunctions("[Channel1]");
     Mixage.connectControlsToFunctions("[Channel2]");
-    // all buttons off
+    // all button LEDs off
     for (var i = 0; i < 255; i++) {
         midi.sendShortMsg(0x90, i, 0);
     }
     // start timers for updating the VU meters
-    Mixage.updateVUMetersTimer = engine.beginTimer(33, Mixage.updateVUMeters);
+    Mixage.vuMeterConnection[0] = engine.makeConnection("[Channel1]", "VuMeter", function(val) {
+        midi.sendShortMsg(0x90, 29, val * 7);
+    });
+    Mixage.vuMeterConnection[1] = engine.makeConnection("[Channel2]", "VuMeter", function(val) {
+        midi.sendShortMsg(0x90, 30, val * 7);
+    });
+    // disable scrating on both decks
     engine.scratchDisable(1);
     engine.scratchDisable(2);
     // disable effects for both channels
@@ -35,7 +41,8 @@ Mixage.init = function(/*id, debugging*/) {
 };
 
 Mixage.shutdown = function() {
-    engine.stopTimer(Mixage.updateVUMetersTimer);
+    Mixage.vuMeterConnection[0].disconnect();
+    Mixage.vuMeterConnection[1].disconnect();
     Mixage.setLibraryMaximized(false);
     Mixage.connectControlsToFunctions("[Channel1]", true);
     Mixage.connectControlsToFunctions("[Channel2]", true);
@@ -93,11 +100,6 @@ Mixage.connectControlsToFunctions = function(group, remove) {
 // Toggle the LED on the MIDI controller by sending a MIDI message
 Mixage.toggleLED = function(value, group, control) {
     midi.sendShortMsg(0x90, Mixage.ledMap[group][control], (value === 1) ? 0x7F : 0);
-};
-
-Mixage.updateVUMeters = function() {
-    midi.sendShortMsg(0x90, 29, engine.getValue("[Channel1]", "VuMeter") * 7);
-    midi.sendShortMsg(0x90, 30, engine.getValue("[Channel2]", "VuMeter") * 7);
 };
 
 // Toggle the LED on play button and make sure the preview deck stops when starting to play in a deck
