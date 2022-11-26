@@ -127,7 +127,7 @@ void WCoverArtMenu::slotStarted() {
 }
 
 void WCoverArtMenu::slotCoverArtUpdated(const CoverInfoRelative& coverInfo) {
-    qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
+    qDebug() << "WCoverArtMenu::slotCoverArtUpdated emit" << coverInfo;
     emit coverInfoSelected(coverInfo);
 }
 

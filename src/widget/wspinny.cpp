@@ -87,7 +87,7 @@ WSpinny::WSpinny(
                 &WSpinny::slotCoverFound);
     }
 
-    if (m_pPlayer != nullptr) {
+    if (m_pPlayer) {
         connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WSpinny::slotLoadTrack);
         connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WSpinny::slotLoadingTrack);
         // just in case a track is already loaded
@@ -308,7 +308,7 @@ void WSpinny::slotCoverFound(
 }
 
 void WSpinny::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    if (m_loadedTrack != nullptr) {
+    if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
         m_loadedTrack->setCoverInfo(coverInfo);
     }
@@ -333,11 +333,11 @@ void WSpinny::render(VSyncThread* vSyncThread) {
     }
 
     auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
+    if (!window || !window->isExposed()) {
         return;
     }
 
-    if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
+    if (!m_pVisualPlayPos.isNull() && vSyncThread) {
         m_pVisualPlayPos->getPlaySlipAtNextVSync(
                 vSyncThread,
                 &m_dAngleCurrentPlaypos,
@@ -419,7 +419,7 @@ void WSpinny::swap() {
         return;
     }
     auto* window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
+    if (!window || !window->isExposed()) {
         return;
     }
     if (context() != QGLContext::currentContext()) {
@@ -547,7 +547,7 @@ void WSpinny::updateVinylControlSpeed(double rpm) {
 
 void WSpinny::updateVinylControlSignalEnabled(double enabled) {
 #ifdef __VINYLCONTROL__
-    if (m_pVCManager == nullptr) {
+    if (!m_pVCManager) {
         return;
     }
     m_bSignalActive = enabled != 0;
@@ -623,7 +623,7 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
 }
 
 void WSpinny::mousePressEvent(QMouseEvent * e) {
-    if (m_loadedTrack == nullptr) {
+    if (!m_loadedTrack) {
         return;
     }
 
@@ -670,7 +670,7 @@ void WSpinny::mousePressEvent(QMouseEvent * e) {
     } else {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_loadedTrack);
-        } else if (!m_pDlgCoverArt->isVisible() && m_bShowCover) {
+        } else if (m_bShowCover) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             m_pCoverMenu->popup(e->globalPosition().toPoint());
 #else
