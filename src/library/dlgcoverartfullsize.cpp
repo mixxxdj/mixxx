@@ -96,7 +96,10 @@ void DlgCoverArtFullSize::showFetchedCoverArt(const QByteArray& fetchedCoverArtB
     adjustImageAndDialogSize();
 }
 
-void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
+void DlgCoverArtFullSize::loadTrack(TrackPointer pTrack) {
+    if (m_pLoadedTrack == pTrack) {
+        return;
+    }
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
@@ -109,44 +112,52 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
                 &Track::coverArtUpdated,
                 this,
                 &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
-
-        // Somehow setting the widow title triggered a bug in Xlib that resulted
-        // in a deadlock before the check for isVisible() was added.
-        // Unfortunately the original bug was difficult to reproduce, so I am
-        // not sure if checking isVisible() before setting the window title
-        // actually works around the Xlib bug or merely makes it much less
-        // likely to be triggered. Before the isVisible() check was added,
-        // the window title was getting set on DlgCoverArtFullSize instances
-        // that had never been shown whenever a track was loaded.
-        // https://bugs.launchpad.net/mixxx/+bug/1789059
-        // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
-        if (isVisible()) {
-            QString windowTitle;
-            const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
-            const QString artist = m_pLoadedTrack->getArtist();
-            const QString album = m_pLoadedTrack->getAlbum();
-            const QString year = m_pLoadedTrack->getYear();
-            if (!albumArtist.isEmpty()) {
-                windowTitle = albumArtist;
-            } else if (!artist.isEmpty()) {
-                windowTitle += artist;
-            }
-            if (!album.isEmpty()) {
-                if (!windowTitle.isEmpty()) {
-                    windowTitle += " - ";
-                }
-                windowTitle += album;
-            }
-            if (!year.isEmpty()) {
-                if (!windowTitle.isEmpty()) {
-                    windowTitle += " ";
-                }
-                windowTitle += QString("(%1)").arg(year);
-            }
-            setWindowTitle(windowTitle);
-        }
     }
+}
+
+void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
+    loadTrack(pTrack);
+    setWindowTitleFromTrack();
     slotTrackCoverArtUpdated();
+}
+
+void DlgCoverArtFullSize::setWindowTitleFromTrack() {
+    // Somehow setting the widow title triggered a bug in Xlib that resulted
+    // in a deadlock before the check for isVisible() was added.
+    // Unfortunately the original bug was difficult to reproduce, so I am
+    // not sure if checking isVisible() before setting the window title
+    // actually works around the Xlib bug or merely makes it much less
+    // likely to be triggered. Before the isVisible() check was added,
+    // the window title was getting set on DlgCoverArtFullSize instances
+    // that had never been shown whenever a track was loaded.
+    // https://bugs.launchpad.net/mixxx/+bug/1789059
+    // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
+    if (!isVisible() || !m_pLoadedTrack) {
+        return;
+    }
+    QString windowTitle;
+    const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
+    const QString artist = m_pLoadedTrack->getArtist();
+    const QString album = m_pLoadedTrack->getAlbum();
+    const QString year = m_pLoadedTrack->getYear();
+    if (!albumArtist.isEmpty()) {
+        windowTitle = albumArtist;
+    } else if (!artist.isEmpty()) {
+        windowTitle += artist;
+    }
+    if (!album.isEmpty()) {
+        if (!windowTitle.isEmpty()) {
+            windowTitle += " - ";
+        }
+        windowTitle += album;
+    }
+    if (!year.isEmpty()) {
+        if (!windowTitle.isEmpty()) {
+            windowTitle += " ";
+        }
+        windowTitle += QString("(%1)").arg(year);
+    }
+    setWindowTitle(windowTitle);
 }
 
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
