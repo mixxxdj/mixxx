@@ -45,7 +45,7 @@ WCoverArtLabel::~WCoverArtLabel() = default;
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
         const QPixmap& px) {
-    if (m_pCoverMenu != nullptr) {
+    if (m_pCoverMenu) {
         m_pCoverMenu->setCoverArt(coverInfo);
     }
     if (px.isNull()) {
@@ -66,7 +66,7 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
 }
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
-    if (m_pCoverMenu == nullptr) {
+    if (!m_pCoverMenu) {
         return;
     }
     m_pCoverMenu->popup(mapToGlobal(pos));
@@ -89,7 +89,7 @@ void WCoverArtLabel::loadData(const QByteArray& data) {
 }
 
 void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
-    if (m_pCoverMenu != nullptr && m_pCoverMenu->isVisible()) {
+    if (m_pCoverMenu && m_pCoverMenu->isVisible()) {
         return;
     }
 

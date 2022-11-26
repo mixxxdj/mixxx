@@ -84,7 +84,7 @@ WSpinnyBase::WSpinnyBase(
                 &WSpinnyBase::slotCoverFound);
     }
 
-    if (m_pPlayer != nullptr) {
+    if (m_pPlayer) {
         connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WSpinnyBase::slotLoadTrack);
         connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WSpinnyBase::slotLoadingTrack);
     }
@@ -306,7 +306,7 @@ void WSpinnyBase::slotCoverFound(
 }
 
 void WSpinnyBase::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    if (m_pLoadedTrack != nullptr) {
+    if (m_pLoadedTrack) {
         // Will trigger slotTrackCoverArtUpdated(), slotCoverFound() updates the menu
         m_pLoadedTrack->setCoverInfo(coverInfo);
     }
@@ -330,7 +330,7 @@ void WSpinnyBase::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
+    if (!m_pVisualPlayPos.isNull() && vSyncThread) {
         m_pVisualPlayPos->getPlaySlipAtNextVSync(
                 vSyncThread,
                 &m_dAngleCurrentPlaypos,

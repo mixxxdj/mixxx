@@ -32,7 +32,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
             &DlgCoverArtFullSize::customContextMenuRequested,
             this,
             &DlgCoverArtFullSize::slotCoverMenu);
-    if (m_pCoverMenu != nullptr) {
+    if (m_pCoverMenu) {
         connect(m_pCoverMenu,
                 &WCoverArtMenu::coverInfoSelected,
                 this,
@@ -43,7 +43,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
                 &DlgCoverArtFullSize::slotReloadCoverArt);
     }
 
-    if (m_pPlayer != nullptr) {
+    if (m_pPlayer) {
         connect(pPlayer,
                 &BaseTrackPlayer::newTrackLoaded,
                 this,
@@ -97,14 +97,14 @@ void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtB
 }
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
-    if (m_pLoadedTrack != nullptr) {
+    if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
                 &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
     }
     m_pLoadedTrack = pTrack;
-    if (m_pLoadedTrack != nullptr) {
+    if (m_pLoadedTrack) {
         connect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
@@ -245,7 +245,7 @@ void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    if ((m_pCoverMenu != nullptr && !m_pCoverMenu->isVisible()) || m_pCoverMenu == nullptr) {
+    if ((m_pCoverMenu && !m_pCoverMenu->isVisible()) || !m_pCoverMenu) {
         m_clickTimer.setSingleShot(true);
         m_clickTimer.start(500);
         m_coverPressed = true;
@@ -260,7 +260,7 @@ void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
 
 void DlgCoverArtFullSize::mouseReleaseEvent(QMouseEvent* event) {
     m_coverPressed = false;
-    if (m_pCoverMenu != nullptr && m_pCoverMenu->isVisible()) {
+    if (m_pCoverMenu && m_pCoverMenu->isVisible()) {
         return;
     }
 
@@ -291,7 +291,7 @@ void DlgCoverArtFullSize::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void DlgCoverArtFullSize::slotCoverMenu(const QPoint& pos) {
-    if (m_pCoverMenu != nullptr) {
+    if (m_pCoverMenu) {
         m_pCoverMenu->popup(mapToGlobal(pos));
     }
 }

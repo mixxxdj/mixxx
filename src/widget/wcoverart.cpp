@@ -43,7 +43,7 @@ WCoverArt::WCoverArt(QWidget* parent,
     connect(m_pMenu, &WCoverArtMenu::coverInfoSelected, this, &WCoverArt::slotCoverInfoSelected);
     connect(m_pMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArt::slotReloadCoverArt);
 
-    if (m_pPlayer != nullptr) {
+    if (m_pPlayer) {
         connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WCoverArt::slotLoadTrack);
         connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WCoverArt::slotLoadingTrack);
 
