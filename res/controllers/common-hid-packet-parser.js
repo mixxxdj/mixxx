@@ -384,7 +384,7 @@ class HIDPacket {
      * Can only pack bits and byte values, patches welcome.
      *
      * @todo Implement multi byte bit vector outputs
-     * @param {Uint8Array} data Data received as InputReport from the device
+     * @param {Uint8Array} data Data to be send as OutputReport to the device
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      */
@@ -399,9 +399,10 @@ class HIDPacket {
                 console.error("HIDPacket.pack - Packing multibyte bit vectors not yet supported");
                 return;
             }
-            for (const bit_id in bitVector.bits) {
-                const bit = bitVector.bits[bit_id];
-                data[field.offset] = data[field.offset] | bit.value;
+            const bitVectorKeyArr = Object.keys(bitVector.bits);
+            let bitVectorIdx = bitVectorKeyArr.length;
+            while (bitVectorIdx--) {
+                data[field.offset] |= bitVector.bits[bitVectorKeyArr[bitVectorIdx]].value;
             }
             return;
         }
@@ -592,8 +593,11 @@ class HIDPacket {
         }
         const bitVector = /** @type {HIDBitVector} */ (field.value);
         const bit_id = `${group}.${name}`;
-        for (const bit_name in bitVector.bits) {
-            const bit = bitVector.bits[bit_name];
+
+        const bitVectorKeyArr = Object.keys(bitVector.bits);
+        let bitVectorKeyIdx = bitVectorKeyArr.length;
+        while (bitVectorKeyIdx--) {
+            const bit = bitVector.bits[bitVectorKeyArr[bitVectorKeyIdx]];
             if (bit.id === bit_id) {
                 return bit;
             }
@@ -952,11 +956,15 @@ class HIDPacket {
             return undefined;
         }
         const bitVector = /** @type {HIDBitVector} */ (field.value);
-        for (const bit_id in bitVector.bits) {
-            const bit = bitVector.bits[bit_id];
+
+
+        const bitVectorKeyArr = Object.keys(bitVector.bits);
+        let bitVectorKeyIdx = bitVectorKeyArr.length;
+        while (bitVectorKeyIdx--) {
+            const bit = bitVector.bits[bitVectorKeyArr[bitVectorKeyIdx]];
             const new_value = (bit.bitmask & value) >> bit.bit_offset;
             if (bit.value !== undefined && bit.value !== new_value) {
-                bits[bit_id] = bit;
+                bits[bitVectorKeyArr[bitVectorKeyIdx]] = bit;
             }
             bit.value = new_value;
         }
@@ -978,25 +986,34 @@ class HIDPacket {
          */
         const field_changes = {};
 
-        for (const group_name in this.groups) {
-            const group = this.groups[group_name];
-            for (const field_id in group) {
-                const field = group[field_id];
+        const groupKeyArr = Object.keys(this.groups);
+        let groupKeyIdx = groupKeyArr.length;
+        while (groupKeyIdx--) {
+            const group = this.groups[groupKeyArr[groupKeyIdx]];
+
+            const fieldKeyArr = Object.keys(group);
+            let fieldKeyIdx = fieldKeyArr.length;
+            while (fieldKeyIdx--) {
+                const field = group[fieldKeyArr[fieldKeyIdx]];
+
                 if (field === undefined) {
                     continue;
                 }
 
                 const value = this.unpack(data, field);
                 if (value === undefined) {
-                    console.error(`HIDPacket.parse - Parsing packet field value for ${field_id}`);
+                    console.error(`HIDPacket.parse - Parsing packet field value for ${group}.${field}`);
                     return;
                 }
 
                 if (field.type === "bitvector") {
                     // Bitvector deltas are checked in parseBitVector
-                    const changed_bits = this.parseBitVector(field, value);
-                    for (const bit_name in changed_bits) {
-                        field_changes[bit_name] = changed_bits[bit_name];
+                    const changedBits = this.parseBitVector(field, value);
+
+                    const changedBitsKeyArr = Object.keys(changedBits);
+                    let changedBitsKeyIdx = changedBitsKeyArr.length;
+                    while (changedBitsKeyIdx--) {
+                        field_changes[changedBitsKeyArr[changedBitsKeyIdx]] = changedBits[changedBitsKeyArr[changedBitsKeyIdx]];
                     }
 
                 } else if (field.type === "control") {
@@ -1049,11 +1066,17 @@ class HIDPacket {
                 data[header_byte] = this.header[header_byte];
             }
         }
+        const groupKeyArr = Object.keys(this.groups);
+        let groupKeyIdx = groupKeyArr.length;
+        while (groupKeyIdx--) {
+            const group = this.groups[groupKeyArr[groupKeyIdx]];
 
-        for (const group_name in this.groups) {
-            const group = this.groups[group_name];
-            for (const field_name in group) {
-                this.pack(data, group[field_name]);
+            const fieldKeyArr = Object.keys(group);
+            let fieldKeyIdx = fieldKeyArr.length;
+            while (fieldKeyIdx--) {
+                const field = group[fieldKeyArr[fieldKeyIdx]];
+
+                this.pack(data, field);
             }
         }
 
@@ -1669,9 +1692,11 @@ class HIDController {
         if (this.InputPackets === undefined) {
             return;
         }
-        for (const name in this.InputPackets) {
+        const InputPacketsKeyArr = Object.keys(this.InputPackets);
+        let InputPacketsIdx = InputPacketsKeyArr.length;
+        while (InputPacketsIdx--) {
             /** @type {HIDPacket} */
-            let packet = this.InputPackets[name];
+            let packet = this.InputPackets[InputPacketsKeyArr[InputPacketsIdx]];
 
             // When the device uses ReportIDs to enumerate the reports, hidapi
             // prepends the report ID to the data sent to Mixxx. If the device
@@ -1739,16 +1764,18 @@ class HIDController {
      * @param {Object.<string, packetField | bitObject>} delta
      */
     processIncomingPacket(packet, delta) {
-        /** @type {packetField} */
-        for (const name in delta) {
-            // @ts-ignore ignoredControlChanges should be defined in  the users mapping
+
+        const deltaKeyArr = Object.keys(delta);
+        let deltaIdx = deltaKeyArr.length;
+        while (deltaIdx--) {
+            // @ts-ignore ignoredControlChanges should be defined in the users mapping
             // see EKS-Otus.js for an example
             if (this.ignoredControlChanges !== undefined &&
                 // @ts-ignore
-                this.ignoredControlChanges.indexOf(name) !== -1) {
+                this.ignoredControlChanges.indexOf(deltaKeyArr[deltaIdx]) !== -1) {
                 continue;
             }
-            const field = delta[name];
+            const field = delta[deltaKeyArr[deltaIdx]];
             if (field.type === "button") {
                 // Button/Boolean field
                 this.processButton(field);
