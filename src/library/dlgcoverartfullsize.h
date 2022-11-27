@@ -22,6 +22,7 @@ class DlgCoverArtFullSize
     ~DlgCoverArtFullSize() override = default;
 
     void showTrackCoverArt(TrackPointer pTrack);
+    void showTrackCoverArt(TrackPointer pTrack, const CoverInfo& coverInfo);
     void showFetchedCoverArt(const QByteArray& fetchedCoverArtBytes);
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* ) override;
