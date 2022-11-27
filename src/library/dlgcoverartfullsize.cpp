@@ -19,7 +19,8 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
         : QDialog(parent),
           m_pPlayer(pPlayer),
           m_pCoverMenu(pCoverMenu),
-          m_coverPressed(false) {
+          m_coverPressed(false),
+          m_wasVisible(false) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -62,6 +63,7 @@ void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
     if (parentWidget()) {
         // Since the widget has a parent, this instance will be reused again.
         // We need to prevent qt from destroying it's children
+        m_wasVisible = false;
         hide();
         // If you zoom in so the window is larger then the desktop, close the
         // window and reopen, the window will not be resized correctly
@@ -80,11 +82,13 @@ void DlgCoverArtFullSize::showTrackCoverArt(TrackPointer pTrack) {
     }
     show();
     raise();
-    activateWindow();
+    if (!m_wasVisible) {
+        // Only activate (set keyboard focus) if this wasn't visible before.
+        // This will e.g. keep the tracks table focused when scrolling through tracks.
+        activateWindow();
+    }
 
     loadTrack(pTrack);
-    // This must be called after show() to set the window title. Refer to the
-    // comment in setWindowTitleFromTrack() for details.
     setWindowTitleFromTrack();
     slotTrackCoverArtUpdated();
     // slotCoverFound() calls adjustImageAndDialogSize()
@@ -98,7 +102,9 @@ void DlgCoverArtFullSize::showTrackCoverArt(TrackPointer pTrack,
 
     show();
     raise();
-    activateWindow();
+    if (!m_wasVisible) {
+        activateWindow();
+    }
 
     loadTrack(pTrack);
     setWindowTitleFromTrack();
@@ -219,45 +225,58 @@ void DlgCoverArtFullSize::adjustImageAndDialogSize() {
         return;
     }
 
-    // Scale down dialog if the pixmap is larger than the screen.
+    if (!isVisible()) {
+        return;
+    }
+    // Keep dialog position and size and fit in the image if the dialog was already
+    // visible while loading the new cover.
+    // Otherwise, try to show the cover in full size. Scale down the dialog if
+    // the pixmap is larger than the screen.
     // Use 90% of screen size instead of 100% to prevent an issue with
     // whitespace appearing on the side when resizing a window whose
     // borders touch the edges of the screen.
-    QSize dialogSize = m_pixmap.size();
-    QWidget* centerOverWidget = parentWidget();
-    VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
-        qWarning() << "DlgCoverArtFullSize does not have a parent.";
-        centerOverWidget = this;
-    }
-
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+    QSize dialogSize;
     QRect screenGeometry;
-    VERIFY_OR_DEBUG_ASSERT(pScreen) {
-        qWarning() << "Assuming screen size of 800x600px.";
-        screenGeometry = QRect(0, 0, 800, 600);
-    }
-    else {
-        screenGeometry = pScreen->geometry();
+    if (!m_wasVisible) {
+        dialogSize = m_pixmap.size();
+        QWidget* centerOverWidget = parentWidget();
+        VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
+            qWarning() << "DlgCoverArtFullSize does not have a parent.";
+            centerOverWidget = this;
+        }
+
+        const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+        VERIFY_OR_DEBUG_ASSERT(pScreen) {
+            qWarning() << "Assuming screen size of 800x600px.";
+            screenGeometry = QRect(0, 0, 800, 600);
+        }
+        else {
+            screenGeometry = pScreen->geometry();
+        }
+
+        const QSize availableScreenSpace = screenGeometry.size() * 0.9;
+        if (dialogSize.height() > availableScreenSpace.height()) {
+            dialogSize.scale(dialogSize.width(), screenGeometry.height(), Qt::KeepAspectRatio);
+        } else if (dialogSize.width() > screenGeometry.width()) {
+            dialogSize.scale(screenGeometry.width(), dialogSize.height(), Qt::KeepAspectRatio);
+        }
     }
 
-    const QSize availableScreenSpace = screenGeometry.size() * 0.9;
-    if (dialogSize.height() > availableScreenSpace.height()) {
-        dialogSize.scale(dialogSize.width(), screenGeometry.height(), Qt::KeepAspectRatio);
-    } else if (dialogSize.width() > screenGeometry.width()) {
-        dialogSize.scale(screenGeometry.width(), dialogSize.height(), Qt::KeepAspectRatio);
-    }
     QPixmap resizedPixmap = m_pixmap.scaled(size() * devicePixelRatioF(),
             Qt::KeepAspectRatio,
             Qt::SmoothTransformation);
     resizedPixmap.setDevicePixelRatio(devicePixelRatioF());
     coverArt->setPixmap(resizedPixmap);
 
-    // center the window
-    setGeometry(QStyle::alignedRect(
-            Qt::LeftToRight,
-            Qt::AlignCenter,
-            dialogSize,
-            screenGeometry));
+    if (!m_wasVisible) {
+        // center the window
+        setGeometry(QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                dialogSize,
+                screenGeometry));
+    }
+    m_wasVisible = true;
 }
 
 // slots to handle signals from the context menu

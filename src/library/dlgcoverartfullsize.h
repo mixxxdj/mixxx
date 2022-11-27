@@ -58,4 +58,5 @@ class DlgCoverArtFullSize
     QTimer m_clickTimer;
     QPoint m_dragStartPosition;
     bool m_coverPressed;
+    bool m_wasVisible;
 };
