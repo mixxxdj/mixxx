@@ -146,6 +146,7 @@ class SoundSourceProxy {
     static QRegExp s_supportedFileNamesRegex;
 
     friend class TrackCollectionManager;
+    friend class TrackMetadataExportTest_keepWithespaceKey_Test;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack, UserSettingsPointer pConfig);
 

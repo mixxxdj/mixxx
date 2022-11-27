@@ -1410,7 +1410,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-    if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
+    if (pConfig && pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
         const auto streamInfo = m_record.getStreamInfoFromSource();
         VERIFY_OR_DEBUG_ASSERT(streamInfo &&
                 streamInfo->getSignalInfo().isValid() &&
