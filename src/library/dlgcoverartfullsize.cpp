@@ -7,6 +7,7 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dlgtrackinfo.h"
 #include "moc_dlgcoverartfullsize.cpp"
 #include "track/track.h"
 #include "util/widgethelper.h"
@@ -32,7 +33,11 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
             &DlgCoverArtFullSize::customContextMenuRequested,
             this,
             &DlgCoverArtFullSize::slotCoverMenu);
-    if (m_pCoverMenu) {
+
+    // Only connect to the menu signals if this is not a grandchild of DlgTrackInfo.
+    // DlgTrackInfo is already connected to these signals, and catching these signals
+    // here would apply cover changes immediately, thus circumvent the Apply button there.
+    if (m_pCoverMenu && !(parent && qobject_cast<DlgTrackInfo*>(parent->parent()))) {
         connect(m_pCoverMenu,
                 &WCoverArtMenu::coverInfoSelected,
                 this,
