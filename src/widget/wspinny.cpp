@@ -298,12 +298,17 @@ void WSpinny::slotCoverFound(
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
-    if (pRequestor == this &&
-            m_loadedTrack &&
-            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
-        m_loadedCover = pixmap;
-        m_loadedCoverScaled = scaledCoverArt(pixmap);
-        update();
+    if (pRequestor != this ||
+            !m_loadedTrack ||
+            m_loadedTrack->getLocation() != coverInfo.trackLocation) {
+        return;
+    }
+
+    m_loadedCover = pixmap;
+    m_loadedCoverScaled = scaledCoverArt(pixmap);
+    update();
+    if (m_pDlgCoverArt->isVisible()) {
+        m_pDlgCoverArt->showTrackCoverArt(m_loadedTrack);
     }
 }
 

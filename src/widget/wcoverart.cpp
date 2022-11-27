@@ -156,17 +156,19 @@ void WCoverArt::slotCoverFound(
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
-    if (!m_bEnable) {
+    if (!m_bEnable ||
+            pRequestor != this ||
+            !m_loadedTrack ||
+            m_loadedTrack->getLocation() != coverInfo.trackLocation) {
         return;
     }
 
-    if (pRequestor == this &&
-            m_loadedTrack &&
-            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
-        m_lastRequestedCover = coverInfo;
-        m_loadedCover = pixmap;
-        m_loadedCoverScaled = scaledCoverArt(pixmap);
-        update();
+    m_lastRequestedCover = coverInfo;
+    m_loadedCover = pixmap;
+    m_loadedCoverScaled = scaledCoverArt(pixmap);
+    update();
+    if (m_pDlgFullSize->isVisible()) {
+        m_pDlgFullSize->showTrackCoverArt(m_loadedTrack);
     }
 }
 

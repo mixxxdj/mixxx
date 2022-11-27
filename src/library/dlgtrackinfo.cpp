@@ -318,14 +318,13 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 void DlgTrackInfo::replaceTrackRecord(
         mixxx::TrackRecord trackRecord,
         const QString& trackLocation) {
+    qWarning() << " Dlg replaceTrRec";
     // Signals are already blocked
     m_trackRecord = std::move(trackRecord);
 
     const auto coverInfo = CoverInfo(
             m_trackRecord.getCoverInfo(),
             trackLocation);
-    m_pWCoverArtLabel->setCoverArt(coverInfo, QPixmap());
-    // Executed concurrently
     CoverArtCache::requestCover(this, coverInfo);
 
     // Non-editable fields

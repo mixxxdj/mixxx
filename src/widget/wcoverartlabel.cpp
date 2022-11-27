@@ -70,6 +70,12 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
     setMinimumSize(frameSize);
     setMaximumSize(frameSize);
 
+    // Update the full-size cover if it is visible.
+    // Used only if this belongs to DlgTrackInfo.
+    if (m_pDlgFullSize->isVisible() && m_pLoadedTrack) {
+        qWarning() << "              isVis > showTrackCover";
+        m_pDlgFullSize->showTrackCoverArt(m_pLoadedTrack, m_coverInfo);
+    }
 }
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {

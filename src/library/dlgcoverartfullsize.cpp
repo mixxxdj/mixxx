@@ -63,6 +63,10 @@ void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
         // Since the widget has a parent, this instance will be reused again.
         // We need to prevent qt from destroying it's children
         hide();
+        // If you zoom in so the window is larger then the desktop, close the
+        // window and reopen, the window will not be resized correctly
+        // by slotCoverFound. Setting a small fixed size when hiding fixes this.
+        resize(100, 100);
         slotLoadTrack(nullptr);
         event->ignore();
     } else {
@@ -74,11 +78,6 @@ void DlgCoverArtFullSize::showTrackCoverArt(TrackPointer pTrack) {
     if (!pTrack) {
         return;
     }
-    // The real size will be calculated later.
-    // If you zoom in so the window is larger then the desktop, close the
-    // window and reopen, the window will not be resized correctly
-    // by slotCoverFound. Setting a small fixed size before show fixes this
-    resize(100, 100);
     show();
     raise();
     activateWindow();
@@ -97,23 +96,24 @@ void DlgCoverArtFullSize::showTrackCoverArt(TrackPointer pTrack,
         return;
     }
 
-    // The real size will be calculated later by adjustImageAndDialogSize().
-    resize(100, 100);
     show();
     raise();
     activateWindow();
 
     loadTrack(pTrack);
     setWindowTitleFromTrack();
-    CoverArtCache::requestCover(this, coverInfo);
-    // slotCoverFound() calls adjustImageAndDialogSize()
+    if (coverInfo.trackLocation.isEmpty() || !coverInfo.hasImage()) {
+        m_pixmap = QPixmap();
+        adjustImageAndDialogSize();
+    } else {
+        CoverArtCache::requestCover(this, coverInfo);
+        // slotCoverFound() calls adjustImageAndDialogSize()
+    }
 }
 
 void DlgCoverArtFullSize::showFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
     m_pixmap.loadFromData(fetchedCoverArtBytes);
 
-    // The real size will be calculated later by adjustImageAndDialogSize().
-    resize(100, 100);
     show();
     setWindowTitle(tr("Fetched Cover Art"));
     raise();
@@ -215,7 +215,7 @@ void DlgCoverArtFullSize::slotCoverFound(
 void DlgCoverArtFullSize::adjustImageAndDialogSize() {
     if (m_pixmap.isNull()) {
         coverArt->setPixmap(QPixmap());
-        hide();
+        close();
         return;
     }
 
