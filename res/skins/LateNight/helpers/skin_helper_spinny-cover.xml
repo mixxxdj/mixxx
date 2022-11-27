@@ -56,7 +56,7 @@ Controls:
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
                 <MinimumSize>1,0</MinimumSize>
-                <MaximumSize>-1,0</MaximumSize>
+                <MaximumSize>2,0</MaximumSize>
                 <Children>
                   <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
