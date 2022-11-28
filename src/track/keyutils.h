@@ -21,7 +21,8 @@ class KeyUtils {
         Traditional = 4,
         OpenKeyAndTraditional = 5,
         LancelotAndTraditional = 6,
-        NumKeyNotations = 7
+        StandardID3v2 = 7,
+        NumKeyNotations = 8
     };
 
     enum class ScaleMode {

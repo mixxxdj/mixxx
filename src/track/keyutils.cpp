@@ -64,6 +64,34 @@ const QString s_traditionalKeyNames[] = {
         QString::fromUtf8("B♭m"),
         QString::fromUtf8("Bm")};
 
+// defined here: https://id3.org/id3v2.3.0
+static const QString s_standardID3v2KeyNames[] = {
+        QString::fromUtf8("o"),
+        QString::fromUtf8("C"),
+        QString::fromUtf8("Db"),
+        QString::fromUtf8("D"),
+        QString::fromUtf8("Eb"),
+        QString::fromUtf8("E"),
+        QString::fromUtf8("F"),
+        QString::fromUtf8("F#"),
+        QString::fromUtf8("G"),
+        QString::fromUtf8("Ab"),
+        QString::fromUtf8("A"),
+        QString::fromUtf8("Bb"),
+        QString::fromUtf8("B"),
+        QString::fromUtf8("Cm"),
+        QString::fromUtf8("C#m"),
+        QString::fromUtf8("Dm"),
+        QString::fromUtf8("Ebm"),
+        QString::fromUtf8("Em"),
+        QString::fromUtf8("Fm"),
+        QString::fromUtf8("F#m"),
+        QString::fromUtf8("Gm"),
+        QString::fromUtf8("G#m"),
+        QString::fromUtf8("Am"),
+        QString::fromUtf8("Bbm"),
+        QString::fromUtf8("Bm")};
+
 // Maps an OpenKey number to its major and minor key.
 constexpr ChromaticKey s_openKeyToKeys[][2] = {
         // 0 is not a valid OpenKey number.
@@ -309,6 +337,8 @@ QString KeyUtils::keyToString(ChromaticKey key,
         return QString::number(number) + (major ? "B" : "A") + " (" + trad + ")";
     } else if (notation == KeyNotation::Traditional) {
         return s_traditionalKeyNames[static_cast<int>(key)];
+    } else if (notation == KeyNotation::StandardID3v2) {
+        return s_standardID3v2KeyNames[static_cast<int>(key)];
     }
     return keyDebugName(key);
 }
