@@ -48,6 +48,7 @@ class TrackMetadataExportTest : public testing::Test {
 TEST_F(TrackMetadataExportTest, keepWithespaceKey) {
     const QString kWhiteSpacesKey = QStringLiteral("  A#m  ");
     const QString kNormalizedKey = QString::fromUtf8("B♭m");
+    const QString kId3Key = QStringLiteral("Bbm");
 
     // Generate a file name for exporting metadata
     const QString exportTrackPath = m_exportTempDir.filePath(kEmptyFile);
@@ -83,6 +84,6 @@ TEST_F(TrackMetadataExportTest, keepWithespaceKey) {
 
     // normalize user edits
     pTrack->setKeyText(kWhiteSpacesKey);
-    // the internal value is now normalized as well
-    EXPECT_EQ(pTrack->getKeys().getGlobalKeyText().toStdString(), kNormalizedKey.toStdString());
+    // the internal value is now at the preferred ID3v2 format
+    EXPECT_EQ(pTrack->getKeys().getGlobalKeyText().toStdString(), kId3Key.toStdString());
 }
