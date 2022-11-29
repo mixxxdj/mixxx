@@ -127,6 +127,18 @@ include(ExternalProject)
 include(GNUInstallDirs)
 include(DefaultOption)
 
+# Verify VCPKG settings
+if(DEFINED _VCPKG_INSTALLED_DIR)
+  if(NOT EXISTS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+    # Fail early if this part of CMAKE_PREFIX_PATH does not exist
+    # else the library lookups below will fail with misleading error messages
+    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
+        "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
+  else()
+    message(STATUS "Using VCPKG_TARGET_TRIPLET: ${VCPKG_TARGET_TRIPLET}")
+  endif()
+endif()
+
 #######################################################################
 # Compilers and toolchains
 
