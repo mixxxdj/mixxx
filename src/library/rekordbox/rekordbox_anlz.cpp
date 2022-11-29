@@ -17,10 +17,8 @@ void rekordbox_anlz_t::_read() {
     m__unnamed3 = m__io->read_bytes((len_header() - _io()->pos()));
     m_sections = new std::vector<tagged_section_t*>();
     {
-        int i = 0;
         while (!m__io->is_eof()) {
             m_sections->push_back(new tagged_section_t(m__io, this, m__root));
-            i++;
         }
     }
 }
