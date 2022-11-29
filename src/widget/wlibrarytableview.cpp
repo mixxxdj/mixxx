@@ -263,50 +263,80 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
 
 QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
         Qt::KeyboardModifiers modifiers) {
-    // The up and down cursor keys should wrap the list around. This behavior
-    // also applies to the `[Library],MoveVertical` action that is usually bound
-    // to the library browse encoder on controllers. Otherwise browsing a
-    // key-sorted library list requires either a serious workout or the user
-    // needs to reach for the mouse or keyboard when moving between 12/C#m/E and
-    // 1/G#m/B.
     QAbstractItemModel* pModel = model();
-    if (pModel &&
-            (cursorAction == QAbstractItemView::MoveUp ||
-                    cursorAction == QAbstractItemView::MoveDown)) {
-        // This is very similar to `moveSelection()`, except that it doesn't
-        // actually modify the selection
-        const QModelIndex current = currentIndex();
-        if (current.isValid()) {
-            const int row = currentIndex().row();
-            const int column = currentIndex().column();
-            if (cursorAction == QAbstractItemView::MoveDown) {
-                if (row + 1 < pModel->rowCount()) {
-                    return pModel->index(row + 1, column);
+    if (pModel) {
+        switch (cursorAction) {
+        // The up and down cursor keys should wrap the list around. This
+        // behavior also applies to the `[Library],MoveVertical` action that is
+        // usually bound to the library browse encoder on controllers. Otherwise
+        // browsing a key-sorted library list requires either a serious workout
+        // or the user needs to reach for the mouse or keyboard when moving
+        // between 12/C#m/E and 1/G#m/B. This is very similar to
+        // `moveSelection()`, except that it doesn't actually modify the
+        // selection
+        case QAbstractItemView::MoveUp:
+        case QAbstractItemView::MoveDown: {
+            const QModelIndex current = currentIndex();
+            if (current.isValid()) {
+                const int row = currentIndex().row();
+                const int column = currentIndex().column();
+                if (cursorAction == QAbstractItemView::MoveDown) {
+                    if (row + 1 < pModel->rowCount()) {
+                        return pModel->index(row + 1, column);
+                    } else {
+                        return pModel->index(0, column);
+                    }
                 } else {
-                    return pModel->index(0, column);
+                    if (row - 1 >= 0) {
+                        return pModel->index(row - 1, column);
+                    } else {
+                        return pModel->index(pModel->rowCount() - 1, column);
+                    }
                 }
             } else {
-                if (row - 1 >= 0) {
-                    return pModel->index(row - 1, column);
+                // Selecting a hidden column doesn't work, so we'll need to find
+                // the first non-hidden column here
+                int column = 0;
+                while (isColumnHidden(column) && column < pModel->columnCount()) {
+                    column++;
+                }
+
+                // If the cursor does not yet exist (because the view has not
+                // yet been interacted with) then this selects the first/last
+                // row
+                if (cursorAction == QAbstractItemView::MoveDown) {
+                    return pModel->index(0, column);
                 } else {
                     return pModel->index(pModel->rowCount() - 1, column);
                 }
             }
-        } else {
-            // Selecting a hidden column doesn't work, so we'll need to find the
-            // first non-hidden column here
-            int column = 0;
-            while (isColumnHidden(column) && column < pModel->columnCount()) {
-                column++;
+        } break;
+        // By default the home and end keys move to the first and last column
+        // rather than the first and last row
+        case QAbstractItemView::MoveHome:
+        case QAbstractItemView::MoveEnd: {
+            const QModelIndex current = currentIndex();
+
+            // We don't want to change the selected column if a column has
+            // already been selected
+            int column = current.column();
+            if (!current.isValid()) {
+                // Selecting a hidden column doesn't work, so we'll need to find
+                // the first non-hidden column here
+                int column = 0;
+                while (isColumnHidden(column) && column < pModel->columnCount()) {
+                    column++;
+                }
             }
 
-            // If the cursor does not yet exist (because the view has not yet
-            // been interacted with) then this selects the first/last row
-            if (cursorAction == QAbstractItemView::MoveDown) {
+            if (cursorAction == QAbstractItemView::MoveHome) {
                 return pModel->index(0, column);
             } else {
                 return pModel->index(pModel->rowCount() - 1, column);
             }
+        } break;
+        default:
+            break;
         }
     }
 
