@@ -810,7 +810,7 @@ AbletonPush.commonControls = function () {
                 this.Finger = value;
                 return 0;
             } else {
-                const returnVal = value - this.Finger;
+                var returnVal = value - this.Finger;
                 this.Finger = value;
                 return returnVal;
             }
