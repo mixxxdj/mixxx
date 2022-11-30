@@ -29,11 +29,11 @@ AbletonPush.controls = [
     {status: 0x90, control: 0x24, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x25, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x26, type: "RGBPads", zone: "Left", defaultColor: ""},
-    {status: 0x90, control: 0x27, type: "RGBPads", zone: "Left", defaultColor: "R_white"},
+    {status: 0x90, control: 0x27, type: "RGBPads", zone: "Left", defaultColor: "rWhite"},
     {status: 0x90, control: 0x28, type: "RGBPads", zone: "Right", defaultColor: ""},
     {status: 0x90, control: 0x29, type: "RGBPads", zone: "Right", defaultColor: ""},
     {status: 0x90, control: 0x2A, type: "RGBPads", zone: "Right", defaultColor: ""},
-    {status: 0x90, control: 0x2B, type: "RGBPads", zone: "Right", defaultColor: "R_grey"},
+    {status: 0x90, control: 0x2B, type: "RGBPads", zone: "Right", defaultColor: "rGrey"},
     {status: 0x90, control: 0x2C, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x2D, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x2E, type: "RGBPads", zone: "Left", defaultColor: ""},
@@ -50,14 +50,14 @@ AbletonPush.controls = [
     {status: 0x90, control: 0x39, type: "RGBPads", zone: "Right", defaultColor: ""},
     {status: 0x90, control: 0x3A, type: "RGBPads", zone: "Right", defaultColor: ""},
     {status: 0x90, control: 0x3B, type: "RGBPads", zone: "Right", defaultColor: ""},
-    {status: 0x90, control: 0x3C, type: "RGBPads", zone: "Left", defaultColor: "R_red_dim"},
+    {status: 0x90, control: 0x3C, type: "RGBPads", zone: "Left", defaultColor: "rRedDim"},
     {status: 0x90, control: 0x3D, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x3E, type: "RGBPads", zone: "Left", defaultColor: ""},
-    {status: 0x90, control: 0x3F, type: "RGBPads", zone: "Left", defaultColor: "R_red_dim"},
-    {status: 0x90, control: 0x40, type: "RGBPads", zone: "Right", defaultColor: "R_red_dim"},
+    {status: 0x90, control: 0x3F, type: "RGBPads", zone: "Left", defaultColor: "rRedDim"},
+    {status: 0x90, control: 0x40, type: "RGBPads", zone: "Right", defaultColor: "rRedDim"},
     {status: 0x90, control: 0x41, type: "RGBPads", zone: "Right", defaultColor: ""},
     {status: 0x90, control: 0x42, type: "RGBPads", zone: "Right", defaultColor: ""},
-    {status: 0x90, control: 0x43, type: "RGBPads", zone: "Right", defaultColor: "R_red_dim"},
+    {status: 0x90, control: 0x43, type: "RGBPads", zone: "Right", defaultColor: "rRedDim"},
     {status: 0x90, control: 0x44, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x45, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x46, type: "RGBPads", zone: "Left", defaultColor: ""},
@@ -84,11 +84,11 @@ AbletonPush.controls = [
     {status: 0x90, control: 0x5B, type: "RGBPads", zone: "Right", defaultColor: ""},
     {status: 0x90, control: 0x5C, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x5D, type: "RGBPads", zone: "Left", defaultColor: ""},
-    {status: 0x90, control: 0x5E, type: "RGBPads", zone: "Left", defaultColor: "R_orange_dim"},
+    {status: 0x90, control: 0x5E, type: "RGBPads", zone: "Left", defaultColor: "rOrangedim"},
     {status: 0x90, control: 0x5F, type: "RGBPads", zone: "Left", defaultColor: ""},
     {status: 0x90, control: 0x60, type: "RGBPads", zone: "Right", defaultColor: ""},
     {status: 0x90, control: 0x61, type: "RGBPads", zone: "Right", defaultColor: ""},
-    {status: 0x90, control: 0x62, type: "RGBPads", zone: "Right", defaultColor: "R_orange_dim"},
+    {status: 0x90, control: 0x62, type: "RGBPads", zone: "Right", defaultColor: "rOrangedim"},
     {status: 0x90, control: 0x63, type: "RGBPads", zone: "Right", defaultColor: ""},
     {status: 0xA0, control: 0x24, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
     {status: 0xA0, control: 0x25, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
@@ -159,11 +159,11 @@ AbletonPush.controls = [
     {status: 0xB0, control: 0x0E, type: "Knobs", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x0F, type: "Knobs", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x14, type: "ColorButtons", zone: "Left", defaultColor: ""},
-    {status: 0xB0, control: 0x15, type: "ColorButtons", zone: "Left", defaultColor: "C_red_dim"},
+    {status: 0xB0, control: 0x15, type: "ColorButtons", zone: "Left", defaultColor: "cRedDim"},
     {status: 0xB0, control: 0x16, type: "ColorButtons", zone: "Left", defaultColor: ""},
     {status: 0xB0, control: 0x17, type: "ColorButtons", zone: "Left", defaultColor: ""},
     {status: 0xB0, control: 0x18, type: "ColorButtons", zone: "Right", defaultColor: ""},
-    {status: 0xB0, control: 0x19, type: "ColorButtons", zone: "Right", defaultColor: "C_red_dim"},
+    {status: 0xB0, control: 0x19, type: "ColorButtons", zone: "Right", defaultColor: "cRedDim"},
     {status: 0xB0, control: 0x1A, type: "ColorButtons", zone: "Right", defaultColor: ""},
     {status: 0xB0, control: 0x1B, type: "ColorButtons", zone: "Right", defaultColor: ""},
     {status: 0xB0, control: 0x1C, type: "Buttons", zone: "Common", defaultColor: ""},
@@ -181,7 +181,7 @@ AbletonPush.controls = [
     {status: 0xB0, control: 0x2E, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x2F, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x30, type: "Buttons", zone: "Common", defaultColor: ""},
-    {status: 0xB0, control: 0x31, type: "Buttons", zone: "Common", defaultColor: "M_dim"},
+    {status: 0xB0, control: 0x31, type: "Buttons", zone: "Common", defaultColor: "mDim"},
     {status: 0xB0, control: 0x32, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x33, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x34, type: "Buttons", zone: "Common", defaultColor: ""},
@@ -205,18 +205,18 @@ AbletonPush.controls = [
     {status: 0xB0, control: 0x4D, type: "Knobs", zone: "Right", defaultColor: ""},
     {status: 0xB0, control: 0x4E, type: "Knobs", zone: "Right", defaultColor: ""},
     {status: 0xB0, control: 0x4F, type: "Knobs", zone: "Common", defaultColor: ""},
-    {status: 0xB0, control: 0x55, type: "Buttons", zone: "Common", defaultColor: "M_light"},
+    {status: 0xB0, control: 0x55, type: "Buttons", zone: "Common", defaultColor: "mLight"},
     {status: 0xB0, control: 0x56, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x57, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x58, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x59, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x5A, type: "Buttons", zone: "Common", defaultColor: ""},
     {status: 0xB0, control: 0x66, type: "RGBButtons", zone: "Left", defaultColor: ""},
-    {status: 0xB0, control: 0x67, type: "RGBButtons", zone: "Left", defaultColor: "R_pink_dim"},
+    {status: 0xB0, control: 0x67, type: "RGBButtons", zone: "Left", defaultColor: "rPinkDim"},
     {status: 0xB0, control: 0x68, type: "RGBButtons", zone: "Left", defaultColor: ""},
     {status: 0xB0, control: 0x69, type: "RGBButtons", zone: "Left", defaultColor: ""},
     {status: 0xB0, control: 0x6A, type: "RGBButtons", zone: "Right", defaultColor: ""},
-    {status: 0xB0, control: 0x6B, type: "RGBButtons", zone: "Right", defaultColor: "R_pink_dim"},
+    {status: 0xB0, control: 0x6B, type: "RGBButtons", zone: "Right", defaultColor: "rPinkDim"},
     {status: 0xB0, control: 0x6C, type: "RGBButtons", zone: "Right", defaultColor: ""},
     {status: 0xB0, control: 0x6D, type: "RGBButtons", zone: "Right", defaultColor: ""},
     {status: 0xB0, control: 0x6E, type: "Buttons", zone: "Common", defaultColor: ""},
@@ -409,6 +409,46 @@ AbletonPush.Keys = ["-",
     "8m / A#m",
     "3m / Bm",
 ];
+
+/**
+ * Ascii special chars for the screen
+ */
+AbletonPush.SpecialChars = {
+    "↑": 0x00,
+    "↓": 0x01,
+    "≡": 0x02,
+    "┣": 0x03,
+    "┫": 0x04,
+    "║": 0x05,
+    "╍": 0x06,
+    "🗀": 0x07,
+    "╏": 0x08,
+    "°": 0x09,
+    "Ä": 0x0A,
+    "Ç": 0x0B,
+    "Ö": 0x0C,
+    "Ü": 0x0D,
+    "β": 0x0E,
+    "à": 0x0F,
+    "ä": 0x10,
+    "ç": 0x11,
+    "è": 0x12,
+    "é": 0x13,
+    "ê": 0x14,
+    "î": 0x15,
+    "ñ": 0x16,
+    "ö": 0x17,
+    "÷": 0x18,
+    "∅": 0x19,
+    "ü": 0x1A,
+    "þ": 0x1B,
+    "…": 0x1C,
+    "█": 0x1D,
+    "→": 0x1E,
+    "←": 0x1F,
+    "=": 0x3D,
+    "▶": 0x7F,
+};
 
 /**
  * Function called at MIXXX startup
@@ -1293,7 +1333,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             // Show track time using "duration" to get track time/total
             var duration = Math.round(engine.getValue(this.group, "duration"));
             var second = Math.round(value * duration);
-            if (second !== this.lastSecond) { // Only send sysex when value changes.
+            if (second !== this.lastSecond) { // Only send sysex every second.
                 this.lastSecond = second;
                 AbletonPush.displayText(3, 1+3*((parseInt(this.group.substr(8, 1))+1)%2),
                     second + "/" + Math.round(duration), 2-(parseInt(this.group.substr(8, 1))+1)%2);
@@ -1309,10 +1349,10 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
                     value=0;
                 } else {
                     // Transform position value in text string
-                    for (n=1; n<Math.ceil(value/2); n++) { text.push(0x06); }
-                    text.push(3+(value+1)%2);
+                    for (n=1; n<Math.ceil(value/2); n++) { text.push(AbletonPush.SpecialChars["╍"]); }
+                    text.push(AbletonPush.SpecialChars["┣"] + ((value+1)%2));
                 }
-                for (n=Math.ceil(value/2); n<17; n++) { text.push(0x06); }
+                for (n=Math.ceil(value/2); n<17; n++) { text.push(AbletonPush.SpecialChars["╍"]); }
                 AbletonPush.displayText(3, 2+(parseInt(this.group.substr(8, 1))+1)%2, text);
             }
 
@@ -1399,10 +1439,12 @@ AbletonPush.displayText = function(iLine, iBloc, Text, iSubBloc) {
     if (typeof(Text) === "string") {
         var sText = Text;
         Text = [];
-        // Test if text is ASCII only - disabled to pass eslint validation
-        /*if (!/^[\x00-\x7F]*$/.test(sText)) {
+        // Test if text is ASCII only
+        // ASCII control characters are used for writing cursors, so allow them in the regex.
+        // eslint-disable-next-line no-control-regex
+        if (!/^[\x00-\x7F]*$/.test(sText)) {
             sText="ERROR not ASCII";
-        }*/
+        }
         // Prepare text
         if (sText.length > textLen) {
             sText=sText.slice(0, textLen);
@@ -1480,16 +1522,16 @@ AbletonPush.displayCursor = function(options) {
     if ((this.mid>0) && (this.value===this.mid)) {
         text.push(0x06, 0x06, 0x06, 0x04, 0x03, 0x06, 0x06, 0x06);
     } else {
-        for (n=1; n<Math.ceil(value2/2); n++) { text.push(0x06); }
-        text.push(3+(value2+1)%2);
-        for (n=Math.ceil(value2/2); n<8; n++) { text.push(0x06); }
+        for (n=1; n<Math.ceil(value2/2); n++) { text.push(AbletonPush.SpecialChars["╍"]); }
+        text.push(AbletonPush.SpecialChars["┣"] + ((value2+1)%2));
+        for (n=Math.ceil(value2/2); n<8; n++) { text.push(AbletonPush.SpecialChars["╍"]); }
     }
 
     // Overlap Overclock if set
     if ((this.oc>0) && (valueoc>0)) {
         valueoc = Math.floor(valueoc*15)+1;
-        for (n=1; n<Math.ceil(valueoc/2); n++) { text[n-1]=0x02; }
-        text[n-1] = (((valueoc+1)%2)===1) ? 0x02 : 0x3D;
+        for (n=1; n<Math.ceil(valueoc/2); n++) { text[n-1]=AbletonPush.SpecialChars["≡"]; }
+        text[n-1] = (((valueoc+1)%2)===1) ? AbletonPush.SpecialChars["≡"] : AbletonPush.SpecialChars["="];
     }
     AbletonPush.displayText(2, Math.ceil((this.hbloc/2)), text, (2-(this.hbloc%2)));
 };
