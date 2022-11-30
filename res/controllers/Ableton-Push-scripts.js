@@ -4,14 +4,14 @@ var AbletonPush = {};
  * Settings
  */
 AbletonPush.KnobSensitivity = 0.01; // Define the global encoders sensitivity to MIXXX knobs
-const Debug = false; // Bypass loading screen, disable vu-meter and show more logs
+AbletonPush.Debug = false; // Bypass loading screen, disable vu-meter and show more logs
 
 /**
  * Create controls list. For each control:
  *  - Status = midi status
  *  - Control = midi control
  *  - Type = Buttons, Knobs, KnobsTouch, ColorButtons, RGBButtons, RGBPads
- *  - Zone = Common, Left, Right (TODO : split Right anbd Left in 3 parts : top, middle and bottom depending on Page layer)
+ *  - Zone = Common, Left, Right (TODO : split Right and Left in 3 parts : top, middle and bottom depending on Page layer)
  */
 AbletonPush.controls = [
     {status:0x90, control:0x00, type:'KnobsTouch', zone:'Left', defaultColor:''},
@@ -418,7 +418,7 @@ AbletonPush.Keys = [ '-',
  */
 AbletonPush.init = function (id, debugging) {
     // Show image on Push
-    if (!Debug) AbletonPush.showImage();
+    if (!AbletonPush.Debug) AbletonPush.showImage();
 
     // Screen message
     AbletonPush.displayText(1,0,"")
@@ -434,7 +434,7 @@ AbletonPush.init = function (id, debugging) {
     // Set defaults
     AbletonPush.Page="2Decks"; // Seelct the 2 decks page at startup
 
-    if (Debug) AbletonPush.init2();
+    if (AbletonPush.Debug) AbletonPush.init2();
 }
 
 /**
@@ -837,7 +837,7 @@ AbletonPush.commonControls = function () {
      * Output only controls
      *  */
     // Master Vu-Meter
-    if (!Debug) this.VuMeter = new components.Component({
+    if (!AbletonPush.Debug) this.VuMeter = new components.Component({
         group: '[Master]',
         outKey: 'VuMeter',
         wait: 100, // milliseconds to wait between 2 updates to restrain flooding midi messages
@@ -911,7 +911,7 @@ AbletonPush.fullDeck = function (deckNumbers, midiShift) {
                 AbletonPush.CommonControls.PitchBend.group = this.group;
                 AbletonPush.CommonControls.PitchBend.deck = this.group.substr(8,1);
 
-                // Ligth this button and dim other channel
+                // Light this button and dim other channel
                 this.send(AbletonPush.Colors.R_white);
                 midi.sendShortMsg(this.midi[0], this.midi[1] + 2*(2-midiShift), AbletonPush.Colors.R_grey);
             };
@@ -1303,7 +1303,7 @@ AbletonPush.fullDeck = function (deckNumbers, midiShift) {
     });
 
     /**
-     *  Componnents used to show info on screen
+     *  Components used to show info on screen
      *  */
     // Track position
     this.screen_TrackPosition = new components.Component({
@@ -1416,8 +1416,8 @@ AbletonPush.fullDeck.prototype = new components.Deck();
  * 
  * @param {String, Array} Text Text to display
  * @param {Number} iLine Line number (1 to 4)
- * @param {Number} iBloc Text bloc number on the line (1 to 4) - 0 to display full line
- * @param {Number} iSubBloc Push text only to one half of the bloc (1 or 2)
+ * @param {Number} iBloc Text block number on the line (1 to 4) - 0 to display full line
+ * @param {Number} iSubBloc Push text only to one half of the block (1 or 2)
  */
 AbletonPush.displayText = function(iLine, iBloc, Text, iSubBloc) {
     // Test line 1 to 4
@@ -1425,11 +1425,11 @@ AbletonPush.displayText = function(iLine, iBloc, Text, iSubBloc) {
         iLine = 1;
         Text = "ERROR line";
     }
-    // Test bloc 0 to 4
+    // Test block 0 to 4
     if(isNaN(iBloc) || iBloc < 0 || iBloc > 4) {
         iLine = 1;
         iBloc = 0;
-        Text = "ERROR bloc";
+        Text = "ERROR block";
     }
     // Test subbloc
     if(isNaN(iSubBloc) || iSubBloc < 1 || iSubBloc > 2) {
@@ -1480,7 +1480,7 @@ AbletonPush.displayText = function(iLine, iBloc, Text, iSubBloc) {
  * Displaying a cursor on the screen.
  * Be careful this function use named parameters.
  * 
- * @param {Number} hbloc Text half/bloc number on the line (1 to 8)
+ * @param {Number} hbloc Text half/block number on the line (1 to 8)
  * @param {Number} value Value of the control
  * @param {Number} min value of the control (default 0)
  * @param {Number} max value of the control (default 1)
