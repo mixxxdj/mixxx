@@ -14,222 +14,222 @@ AbletonPush.Debug = false; // Bypass loading screen, disable vu-meter and show m
  *  - Zone = Common, Left, Right (TODO : split Right and Left in 3 parts : top, middle and bottom depending on Page layer)
  */
 AbletonPush.controls = [
-    {status:0x90, control:0x00, type:"KnobsTouch", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x01, type:"KnobsTouch", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x02, type:"KnobsTouch", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x03, type:"KnobsTouch", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x04, type:"KnobsTouch", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x05, type:"KnobsTouch", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x06, type:"KnobsTouch", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x07, type:"KnobsTouch", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x08, type:"KnobsTouch", zone:"Common", defaultColor:""},
-    {status:0x90, control:0x09, type:"KnobsTouch", zone:"Common", defaultColor:""},
-    {status:0x90, control:0x0A, type:"KnobsTouch", zone:"Common", defaultColor:""},
-    {status:0x90, control:0x0C, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0x90, control:0x24, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x25, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x26, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x27, type:"RGBPads", zone:"Left", defaultColor:"R_white"},
-    {status:0x90, control:0x28, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x29, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x2A, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x2B, type:"RGBPads", zone:"Right", defaultColor:"R_grey"},
-    {status:0x90, control:0x2C, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x2D, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x2E, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x2F, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x30, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x31, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x32, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x33, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x34, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x35, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x36, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x37, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x38, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x39, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x3A, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x3B, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x3C, type:"RGBPads", zone:"Left", defaultColor:"R_red_dim"},
-    {status:0x90, control:0x3D, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x3E, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x3F, type:"RGBPads", zone:"Left", defaultColor:"R_red_dim"},
-    {status:0x90, control:0x40, type:"RGBPads", zone:"Right", defaultColor:"R_red_dim"},
-    {status:0x90, control:0x41, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x42, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x43, type:"RGBPads", zone:"Right", defaultColor:"R_red_dim"},
-    {status:0x90, control:0x44, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x45, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x46, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x47, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x48, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x49, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x4A, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x4B, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x4C, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x4D, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x4E, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x4F, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x50, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x51, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x52, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x53, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x54, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x55, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x56, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x57, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x58, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x59, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x5A, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x5B, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x5C, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x5D, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x5E, type:"RGBPads", zone:"Left", defaultColor:"R_orange_dim"},
-    {status:0x90, control:0x5F, type:"RGBPads", zone:"Left", defaultColor:""},
-    {status:0x90, control:0x60, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x61, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0x90, control:0x62, type:"RGBPads", zone:"Right", defaultColor:"R_orange_dim"},
-    {status:0x90, control:0x63, type:"RGBPads", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x24, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x25, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x26, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x27, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x28, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x29, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x2A, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x2B, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x2C, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x2D, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x2E, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x2F, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x30, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x31, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x32, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x33, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x34, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x35, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x36, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x37, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x38, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x39, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x3A, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x3B, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x3C, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x3D, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x3E, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x3F, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x40, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x41, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x42, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x43, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x44, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x45, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x46, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x47, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x48, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x49, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x4A, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x4B, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x4C, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x4D, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x4E, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x4F, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x50, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x51, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x52, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x53, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x54, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x55, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x56, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x57, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x58, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x59, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x5A, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x5B, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x5C, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x5D, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x5E, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x5F, type:"RGBPadsPressure", zone:"Left", defaultColor:""},
-    {status:0xA0, control:0x60, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x61, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x62, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xA0, control:0x63, type:"RGBPadsPressure", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x03, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x09, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x0E, type:"Knobs", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x0F, type:"Knobs", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x14, type:"ColorButtons", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x15, type:"ColorButtons", zone:"Left", defaultColor:"C_red_dim"},
-    {status:0xB0, control:0x16, type:"ColorButtons", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x17, type:"ColorButtons", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x18, type:"ColorButtons", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x19, type:"ColorButtons", zone:"Right", defaultColor:"C_red_dim"},
-    {status:0xB0, control:0x1A, type:"ColorButtons", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x1B, type:"ColorButtons", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x1C, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x1D, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x24, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x25, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x26, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x27, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x28, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x29, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x2A, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x2B, type:"ColorButtons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x2C, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x2D, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x2E, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x2F, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x30, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x31, type:"Buttons", zone:"Common", defaultColor:"M_dim"},
-    {status:0xB0, control:0x32, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x33, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x34, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x35, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x36, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x37, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x38, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x39, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x3A, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x3B, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x3C, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x3D, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x3E, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x3F, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x47, type:"Knobs", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x48, type:"Knobs", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x49, type:"Knobs", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x4A, type:"Knobs", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x4B, type:"Knobs", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x4C, type:"Knobs", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x4D, type:"Knobs", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x4E, type:"Knobs", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x4F, type:"Knobs", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x55, type:"Buttons", zone:"Common", defaultColor:"M_light"},
-    {status:0xB0, control:0x56, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x57, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x58, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x59, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x5A, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x66, type:"RGBButtons", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x67, type:"RGBButtons", zone:"Left", defaultColor:"R_pink_dim"},
-    {status:0xB0, control:0x68, type:"RGBButtons", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x69, type:"RGBButtons", zone:"Left", defaultColor:""},
-    {status:0xB0, control:0x6A, type:"RGBButtons", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x6B, type:"RGBButtons", zone:"Right", defaultColor:"R_pink_dim"},
-    {status:0xB0, control:0x6C, type:"RGBButtons", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x6D, type:"RGBButtons", zone:"Right", defaultColor:""},
-    {status:0xB0, control:0x6E, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x6F, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x70, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x71, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x72, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x73, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x74, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x75, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x76, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xB0, control:0x77, type:"Buttons", zone:"Common", defaultColor:""},
-    {status:0xE0, control:0x00, type:"PitchBend", zone:"Common", defaultColor:""},
+    {status: 0x90, control: 0x00, type: "KnobsTouch", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x01, type: "KnobsTouch", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x02, type: "KnobsTouch", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x03, type: "KnobsTouch", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x04, type: "KnobsTouch", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x05, type: "KnobsTouch", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x06, type: "KnobsTouch", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x07, type: "KnobsTouch", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x08, type: "KnobsTouch", zone: "Common", defaultColor: ""},
+    {status: 0x90, control: 0x09, type: "KnobsTouch", zone: "Common", defaultColor: ""},
+    {status: 0x90, control: 0x0A, type: "KnobsTouch", zone: "Common", defaultColor: ""},
+    {status: 0x90, control: 0x0C, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0x90, control: 0x24, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x25, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x26, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x27, type: "RGBPads", zone: "Left", defaultColor: "R_white"},
+    {status: 0x90, control: 0x28, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x29, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x2A, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x2B, type: "RGBPads", zone: "Right", defaultColor: "R_grey"},
+    {status: 0x90, control: 0x2C, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x2D, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x2E, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x2F, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x30, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x31, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x32, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x33, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x34, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x35, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x36, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x37, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x38, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x39, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x3A, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x3B, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x3C, type: "RGBPads", zone: "Left", defaultColor: "R_red_dim"},
+    {status: 0x90, control: 0x3D, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x3E, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x3F, type: "RGBPads", zone: "Left", defaultColor: "R_red_dim"},
+    {status: 0x90, control: 0x40, type: "RGBPads", zone: "Right", defaultColor: "R_red_dim"},
+    {status: 0x90, control: 0x41, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x42, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x43, type: "RGBPads", zone: "Right", defaultColor: "R_red_dim"},
+    {status: 0x90, control: 0x44, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x45, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x46, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x47, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x48, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x49, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x4A, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x4B, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x4C, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x4D, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x4E, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x4F, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x50, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x51, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x52, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x53, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x54, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x55, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x56, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x57, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x58, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x59, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x5A, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x5B, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x5C, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x5D, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x5E, type: "RGBPads", zone: "Left", defaultColor: "R_orange_dim"},
+    {status: 0x90, control: 0x5F, type: "RGBPads", zone: "Left", defaultColor: ""},
+    {status: 0x90, control: 0x60, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x61, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0x90, control: 0x62, type: "RGBPads", zone: "Right", defaultColor: "R_orange_dim"},
+    {status: 0x90, control: 0x63, type: "RGBPads", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x24, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x25, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x26, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x27, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x28, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x29, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x2A, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x2B, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x2C, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x2D, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x2E, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x2F, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x30, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x31, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x32, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x33, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x34, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x35, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x36, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x37, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x38, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x39, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x3A, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x3B, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x3C, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x3D, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x3E, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x3F, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x40, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x41, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x42, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x43, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x44, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x45, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x46, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x47, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x48, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x49, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x4A, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x4B, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x4C, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x4D, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x4E, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x4F, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x50, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x51, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x52, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x53, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x54, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x55, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x56, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x57, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x58, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x59, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x5A, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x5B, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x5C, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x5D, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x5E, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x5F, type: "RGBPadsPressure", zone: "Left", defaultColor: ""},
+    {status: 0xA0, control: 0x60, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x61, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x62, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xA0, control: 0x63, type: "RGBPadsPressure", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x03, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x09, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x0E, type: "Knobs", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x0F, type: "Knobs", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x14, type: "ColorButtons", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x15, type: "ColorButtons", zone: "Left", defaultColor: "C_red_dim"},
+    {status: 0xB0, control: 0x16, type: "ColorButtons", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x17, type: "ColorButtons", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x18, type: "ColorButtons", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x19, type: "ColorButtons", zone: "Right", defaultColor: "C_red_dim"},
+    {status: 0xB0, control: 0x1A, type: "ColorButtons", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x1B, type: "ColorButtons", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x1C, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x1D, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x24, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x25, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x26, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x27, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x28, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x29, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x2A, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x2B, type: "ColorButtons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x2C, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x2D, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x2E, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x2F, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x30, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x31, type: "Buttons", zone: "Common", defaultColor: "M_dim"},
+    {status: 0xB0, control: 0x32, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x33, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x34, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x35, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x36, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x37, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x38, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x39, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x3A, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x3B, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x3C, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x3D, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x3E, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x3F, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x47, type: "Knobs", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x48, type: "Knobs", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x49, type: "Knobs", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x4A, type: "Knobs", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x4B, type: "Knobs", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x4C, type: "Knobs", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x4D, type: "Knobs", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x4E, type: "Knobs", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x4F, type: "Knobs", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x55, type: "Buttons", zone: "Common", defaultColor: "M_light"},
+    {status: 0xB0, control: 0x56, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x57, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x58, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x59, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x5A, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x66, type: "RGBButtons", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x67, type: "RGBButtons", zone: "Left", defaultColor: "R_pink_dim"},
+    {status: 0xB0, control: 0x68, type: "RGBButtons", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x69, type: "RGBButtons", zone: "Left", defaultColor: ""},
+    {status: 0xB0, control: 0x6A, type: "RGBButtons", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x6B, type: "RGBButtons", zone: "Right", defaultColor: "R_pink_dim"},
+    {status: 0xB0, control: 0x6C, type: "RGBButtons", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x6D, type: "RGBButtons", zone: "Right", defaultColor: ""},
+    {status: 0xB0, control: 0x6E, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x6F, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x70, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x71, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x72, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x73, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x74, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x75, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x76, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xB0, control: 0x77, type: "Buttons", zone: "Common", defaultColor: ""},
+    {status: 0xE0, control: 0x00, type: "PitchBend", zone: "Common", defaultColor: ""},
 ];
 
 AbletonPush.image_MIXXX = [
@@ -315,7 +315,6 @@ AbletonPush.image_MIXXX = [
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 ];
-    
 
 /**
  *  Led buttons color mapping
@@ -341,50 +340,50 @@ AbletonPush.Colors = {
     _blinkslow: 1,
     _blinkfast: 2,
 
-    R_grey:          0x01,
-    R_white:         0x03,
-    R_red_faint:     0x04,
-    R_red:           0x05,
-    R_red_medium:    0x06,
-    R_red_dim:       0x07,
-    R_orange_faint:  0x08,
-    R_orange:        0x09,
+    R_grey: 0x01,
+    R_white: 0x03,
+    R_red_faint: 0x04,
+    R_red: 0x05,
+    R_red_medium: 0x06,
+    R_red_dim: 0x07,
+    R_orange_faint: 0x08,
+    R_orange: 0x09,
     R_orange_medium: 0x0A,
-    R_orange_dim:    0x0B,
-    R_yellow_faint:  0x0C,
-    R_yellow:        0x0D,
+    R_orange_dim: 0x0B,
+    R_yellow_faint: 0x0C,
+    R_yellow: 0x0D,
     R_yellow_medium: 0x0E,
-    R_yellow_dim:    0x0F,
-    R_apple_faint:   0x14,
-    R_apple:         0x15,
-    R_apple_medium:  0x16,
-    R_apple_dim:     0x17,
-    R_green_faint:   0x14,
-    R_green:         0x15,
-    R_green_medium:  0x16,
-    R_green_dim:     0x17,
-    R_cyan_faint:    0x24,
-    R_cyan:          0x25,
-    R_cyan_medium:   0x26,
-    R_cyan_dim:      0x27,
-    R_blue_faint:    0x2C,
-    R_blue:          0x2D,
-    R_blue_medium:   0x2E,
-    R_blue_dim:      0x2F,
-    R_purple_faint:  0x30,
-    R_purple:        0x31,
+    R_yellow_dim: 0x0F,
+    R_apple_faint: 0x14,
+    R_apple: 0x15,
+    R_apple_medium: 0x16,
+    R_apple_dim: 0x17,
+    R_green_faint: 0x14,
+    R_green: 0x15,
+    R_green_medium: 0x16,
+    R_green_dim: 0x17,
+    R_cyan_faint: 0x24,
+    R_cyan: 0x25,
+    R_cyan_medium: 0x26,
+    R_cyan_dim: 0x27,
+    R_blue_faint: 0x2C,
+    R_blue: 0x2D,
+    R_blue_medium: 0x2E,
+    R_blue_dim: 0x2F,
+    R_purple_faint: 0x30,
+    R_purple: 0x31,
     R_purple_medium: 0x32,
-    R_purple_dim:    0x33,
-    R_pink_faint:    0x38,
-    R_pink:          0x39,
-    R_pink_medium:   0x3A,
-    R_pink_dim:      0x3B
+    R_purple_dim: 0x33,
+    R_pink_faint: 0x38,
+    R_pink: 0x39,
+    R_pink_medium: 0x3A,
+    R_pink_dim: 0x3B
 };
 
 /**
  * Text for the keys on the screen
  */
-AbletonPush.Keys = [ "-",
+AbletonPush.Keys = ["-",
     "1d / C",
     "8d / C#",
     "3d / D",
@@ -453,7 +452,7 @@ AbletonPush.init2 = function() {
     AbletonPush.displayText(2, 0, "");
     AbletonPush.displayText(3, 0, "");
     AbletonPush.displayText(4, 0, "");
-    
+
     // Create custom Component Container using components-js
     AbletonPush.LeftControls = new AbletonPush.fullDeck([1, 3], 0);
     AbletonPush.RightControls = new AbletonPush.fullDeck([2, 4], 4);
@@ -464,7 +463,7 @@ AbletonPush.init2 = function() {
     AbletonPush.displayText(3, 4, "Deck 2", 2);
 
     // Show knobs texts on screen
-    AbletonPush.displayText(1, 0, "FX Super   Gain   Volume   Pitch  FX Super   Gain   Volume   Pitch  ")
+    AbletonPush.displayText(1, 0, "FX Super   Gain   Volume   Pitch  FX Super   Gain   Volume   Pitch  ");
 };
 
 /**
@@ -834,7 +833,7 @@ AbletonPush.commonControls = function() {
             wait_flag: false,
             output: function(value, _group, _control) {
                 if (!this.wait_flag) {
-                    AbletonPush.setPitchBendLeds( Math.floor(value*24) );
+                    AbletonPush.setPitchBendLeds(Math.floor(value*24));
                     this.wait_flag=true;
                     this.waitTimer = engine.beginTimer(this.wait, function() {
                         this.wait_flag = false;
@@ -858,7 +857,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     // to "this" in the context of the generic components.Deck constructor
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call
     components.Deck.call(this, deckNumbers);
-    
+
     this.RGBPads = [];
     this.RGBPadsPressure = [];
     this.RGBButtons = [];
@@ -1203,7 +1202,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             }
         },
         output: function(value, _group, _control) {
-            AbletonPush.displayCursor({hbloc:2+4*((parseInt(this.group.substr(8, 1))+1)%2), value:value, oc: 4});
+            AbletonPush.displayCursor({hbloc: 2+4*((parseInt(this.group.substr(8, 1))+1)%2), value:value, oc: 4});
         },
     });
     this.Knobs[0x49 + midiShift] = new components.Encoder({
@@ -1295,11 +1294,10 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             var duration = Math.round(engine.getValue(this.group, "duration"));
             var second = Math.round(value * duration);
             if (second !== this.last_second) { // Only send sysex when value changes.
-                    this.last_second = second;
-                    AbletonPush.displayText(3, 1+3*((parseInt(this.group.substr(8, 1))+1)%2),
-                        second + "/" + Math.round(duration), 2-(parseInt(this.group.substr(8, 1))+1)%2);
-                    print("=============================="+this.group + " = "+second + " / "+midiShift);
-                }
+                this.last_second = second;
+                AbletonPush.displayText(3, 1+3*((parseInt(this.group.substr(8, 1))+1)%2),
+                    second + "/" + Math.round(duration), 2-(parseInt(this.group.substr(8, 1))+1)%2);
+            }
 
             // Show track position fader
             value=Math.floor(value*33)+1;
@@ -1319,18 +1317,18 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
 
         },
     });
-    
+
     this.screen_BeatLoop = new components.Component({
         outKey: "beatloop_size",
         output: function(value, _group, _control) {
-            if (value<1) value="1/" + 1/value;
+            if (value<1) { value="1/" + 1/value; }
             AbletonPush.displayText(4, 1+2*((parseInt(this.group.substr(8, 1))+1)%2), "" + value, 1);
         },
     });
     this.screen_BeatJump = new components.Component({
         outKey: "beatjump_size",
         output: function(value, _group, _control) {
-            if (value<1) value="1/" + 1/value;
+            if (value<1) { value="1/" + 1/value; }
             AbletonPush.displayText(4, 1+2*((parseInt(this.group.substr(8, 1))+1)%2), "" + value, 2);
         },
     });
@@ -1453,7 +1451,7 @@ AbletonPush.displayCursor = function(options) {
     this.oc = -1;
     // Get parameters
     _.assign(this, options);
-    
+
     // Keep oc value if required
     if (this.oc>0) {
         var valueoc = (this.value > this.max) ? this.value - this.max : 0;
@@ -1469,7 +1467,7 @@ AbletonPush.displayCursor = function(options) {
     // Translate to 0-1
     this.value = (this.value - this.min) / (this.max - this.min);
     this.mid = (this.mid - this.min) / (this.max - this.min);
-    
+
     // Clean number
     var value2=Math.round(this.value*100)/100;
 
@@ -1488,11 +1486,11 @@ AbletonPush.displayCursor = function(options) {
     // Overlap Overclock if set
     if ((this.oc>0) && (valueoc>0)) {
         valueoc = Math.floor(valueoc*15)+1;
-        for (n=1; n<Math.ceil(valueoc/2); n++) text[n-1]=0x02;
+        for (n=1; n<Math.ceil(valueoc/2); n++) { text[n-1]=0x02; }
         text[n-1] = (((valueoc+1)%2)==1) ? 0x02 : 0x3D;
     }
     AbletonPush.displayText(2, Math.ceil((this.hbloc/2)), text, (2-(this.hbloc%2)));
-}
+};
 
 /**
  * Set a pad color from 8 bit RGB value
@@ -1505,11 +1503,11 @@ AbletonPush.displayCursor = function(options) {
 AbletonPush.setRGBPadColor = function(Pad, R, G, B) {
     var aSysex = [0xF0, 0x47, 0x79, 0x15, 0x04, 0x00, 0x08, Pad-0x24, 0x00, R/16, R%16, G/16, G%16, B/16, B%16, 0xF7];
     midi.sendSysexMsg(aSysex, aSysex.length);
-}
+};
 
 /**
  * Set pitchbend leds level
- * 
+ *
  * @param {Number} Level Between 0 and 24
  */
 AbletonPush.setPitchBendLeds = function(Level) {
