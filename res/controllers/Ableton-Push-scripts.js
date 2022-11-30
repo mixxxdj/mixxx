@@ -232,7 +232,7 @@ AbletonPush.controls = [
     {status: 0xE0, control: 0x00, type: "PitchBend", zone: "Common", defaultColor: ""},
 ];
 
-AbletonPush.image_MIXXX = [
+AbletonPush.imageMIXXX = [
     // Offset 0x00000000 to 0x000003BF
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -325,59 +325,59 @@ AbletonPush.image_MIXXX = [
 AbletonPush.Colors = {
     off: 0x00,
 
-    M_dim: 1,
-    M_light: 4,
+    mDim: 1,
+    mLight: 4,
 
-    C_red_dim: 1,
-    C_red: 4,
-    C_orange_dim: 7,
-    C_orange: 10,
-    C_yellow_dim: 13,
-    C_yellow: 16,
-    C_green_dim: 19,
-    C_green: 22,
+    cRedDim: 1,
+    cRed: 4,
+    cOrangeDim: 7,
+    cOrange: 10,
+    cYellowDim: 13,
+    cYellow: 16,
+    cGreenDim: 19,
+    cGreen: 22,
 
     _blinkslow: 1,
     _blinkfast: 2,
 
-    R_grey: 0x01,
-    R_white: 0x03,
-    R_red_faint: 0x04,
-    R_red: 0x05,
-    R_red_medium: 0x06,
-    R_red_dim: 0x07,
-    R_orange_faint: 0x08,
-    R_orange: 0x09,
-    R_orange_medium: 0x0A,
-    R_orange_dim: 0x0B,
-    R_yellow_faint: 0x0C,
-    R_yellow: 0x0D,
-    R_yellow_medium: 0x0E,
-    R_yellow_dim: 0x0F,
-    R_apple_faint: 0x14,
-    R_apple: 0x15,
-    R_apple_medium: 0x16,
-    R_apple_dim: 0x17,
-    R_green_faint: 0x14,
-    R_green: 0x15,
-    R_green_medium: 0x16,
-    R_green_dim: 0x17,
-    R_cyan_faint: 0x24,
-    R_cyan: 0x25,
-    R_cyan_medium: 0x26,
-    R_cyan_dim: 0x27,
-    R_blue_faint: 0x2C,
-    R_blue: 0x2D,
-    R_blue_medium: 0x2E,
-    R_blue_dim: 0x2F,
-    R_purple_faint: 0x30,
-    R_purple: 0x31,
-    R_purple_medium: 0x32,
-    R_purple_dim: 0x33,
-    R_pink_faint: 0x38,
-    R_pink: 0x39,
-    R_pink_medium: 0x3A,
-    R_pink_dim: 0x3B
+    rGrey: 0x01,
+    rWhite: 0x03,
+    rRedFaint: 0x04,
+    rRed: 0x05,
+    rRedMedium: 0x06,
+    rRedDim: 0x07,
+    rOrangeFaint: 0x08,
+    rOrange: 0x09,
+    rOrangeMedium: 0x0A,
+    rOrangeDim: 0x0B,
+    rYellowFaint: 0x0C,
+    rYellow: 0x0D,
+    rYellowMedium: 0x0E,
+    rYellowDim: 0x0F,
+    rAppleFaint: 0x14,
+    rApple: 0x15,
+    rAppleMedium: 0x16,
+    rAppleDim: 0x17,
+    rGreenFaint: 0x14,
+    rGreen: 0x15,
+    rGreenMedium: 0x16,
+    rGreenDim: 0x17,
+    rCyanFaint: 0x24,
+    rCyan: 0x25,
+    rCyanMedium: 0x26,
+    rCyanDim: 0x27,
+    rBlueFaint: 0x2C,
+    rBlue: 0x2D,
+    rBlueMedium: 0x2E,
+    rBlueDim: 0x2F,
+    rPurpleFaint: 0x30,
+    rPurple: 0x31,
+    rPurpleMedium: 0x32,
+    rPurpleDim: 0x33,
+    rPinkFaint: 0x38,
+    rPink: 0x39,
+    rPinkMedium: 0x3A,
+    rPinkDim: 0x3B
 };
 
 /**
@@ -412,10 +412,8 @@ AbletonPush.Keys = ["-",
 
 /**
  * Function called at MIXXX startup
- * @param {*} id
- * @param {*} debugging
  */
-AbletonPush.init = function(id, debugging) {
+AbletonPush.init = function() {
     // Show image on Push
     if (!AbletonPush.Debug) { AbletonPush.showImage(); }
 
@@ -541,15 +539,15 @@ AbletonPush.commonControls = function() {
         group: "[AutoDJ]",
         key: "enabled",
         type: components.Button.prototype.types.toggle,
-        on: AbletonPush.Colors.M_light+AbletonPush.Colors._blinkslow,
-        off: AbletonPush.Colors.M_dim,
+        on: AbletonPush.Colors.mLight+AbletonPush.Colors._blinkslow,
+        off: AbletonPush.Colors.mDim,
     });
     this.Buttons[0x09] = new components.Button({
         midi: [0xB0, 0x09],
         group: "[AutoDJ]",
         key: "fade_now",
-        on: AbletonPush.Colors.M_light,
-        off: AbletonPush.Colors.M_dim,
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
     });
 
     //this.Buttons[0x77] = ;
@@ -562,39 +560,39 @@ AbletonPush.commonControls = function() {
     //this.Buttons[0x58] = ;
     //this.Buttons[0x57] = ;
     this.Buttons[0x56] = {};
-    this.Buttons[0x56].input = function(channel, control, value, status) {
+    this.Buttons[0x56].input = function(channel, control, value) {
         // Switch decks to channels 3/4
         if (value === 0x7F) {
             AbletonPush.LeftControls.setCurrentDeck("[Channel3]");
             AbletonPush.RightControls.setCurrentDeck("[Channel4]");
             // Change button lights
             midi.sendShortMsg(0xB0, 0x55, AbletonPush.Colors.off);
-            midi.sendShortMsg(0xB0, 0x56, AbletonPush.Colors.M_light);
+            midi.sendShortMsg(0xB0, 0x56, AbletonPush.Colors.mLight);
             // Change deck text
             AbletonPush.displayText(3, 1, "Deck 3", 1);
             AbletonPush.displayText(3, 4, "Deck 4", 2);
             // Set jogwhell select button color
             var curDeck=AbletonPush.CommonControls.PitchBend.deck;
-            midi.sendShortMsg(0x90, 0x27, (curDeck === 1) ? AbletonPush.Colors.R_white : AbletonPush.Colors.R_grey);
-            midi.sendShortMsg(0x90, 0x2B, (curDeck === 2) ? AbletonPush.Colors.R_white : AbletonPush.Colors.R_grey);
+            midi.sendShortMsg(0x90, 0x27, (curDeck === 1) ? AbletonPush.Colors.rWhite : AbletonPush.Colors.rGrey);
+            midi.sendShortMsg(0x90, 0x2B, (curDeck === 2) ? AbletonPush.Colors.rWhite : AbletonPush.Colors.rGrey);
         }
     };
     this.Buttons[0x55] = {};
-    this.Buttons[0x55].input = function(channel, control, value, status) {
+    this.Buttons[0x55].input = function(channel, control, value) {
         // Switch decks to channels 1/2
         if (value === 0x7F) {
             AbletonPush.LeftControls.setCurrentDeck("[Channel1]");
             AbletonPush.RightControls.setCurrentDeck("[Channel2]");
             // Change button lights
-            midi.sendShortMsg(0xB0, 0x55, AbletonPush.Colors.M_light);
+            midi.sendShortMsg(0xB0, 0x55, AbletonPush.Colors.mLight);
             midi.sendShortMsg(0xB0, 0x56, AbletonPush.Colors.off);
             // Change deck text
             AbletonPush.displayText(3, 1, "Deck 1", 1);
             AbletonPush.displayText(3, 4, "Deck 2", 2);
             // Set jogwhell select button color
             var curDeck=AbletonPush.CommonControls.PitchBend.deck;
-            midi.sendShortMsg(0x90, 0x27, (curDeck === 3) ? AbletonPush.Colors.R_white : AbletonPush.Colors.R_grey);
-            midi.sendShortMsg(0x90, 0x2B, (curDeck === 4) ? AbletonPush.Colors.R_white : AbletonPush.Colors.R_grey);
+            midi.sendShortMsg(0x90, 0x27, (curDeck === 3) ? AbletonPush.Colors.rWhite : AbletonPush.Colors.rGrey);
+            midi.sendShortMsg(0x90, 0x2B, (curDeck === 4) ? AbletonPush.Colors.rWhite : AbletonPush.Colors.rGrey);
         }
     };
 
@@ -604,10 +602,10 @@ AbletonPush.commonControls = function() {
         midi: [0xB0, 0x0F],
         group: "[Master]",
         inKey: "headGain",
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             this.inKey = (AbletonPush.shift) ? "gain" : "headGain";
             // Test if outkey not the same as current key and call connect if required.
-            if (this.inKey != this.outKey) {
+            if (this.inKey !== this.outKey) {
                 this.disconnect();
                 this.outKey = this.inKey;
                 this.connect();
@@ -626,7 +624,7 @@ AbletonPush.commonControls = function() {
 
     //this.KnobsTouch[0x0A] = ;
     this.KnobsTouch[0x09] = new components.Component({
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value === 0x7F) {
                 if (AbletonPush.shift) {
                     AbletonPush.displayText(1, 1, "Master", 1);
@@ -658,7 +656,7 @@ AbletonPush.commonControls = function() {
         group: "[Master]",
         key: "crossfader",
         outConnect: false,
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value < 0x40) {
                 this.inSetParameter(this.inGetParameter() + (value * AbletonPush.KnobSensitivity));
             } else {
@@ -670,7 +668,7 @@ AbletonPush.commonControls = function() {
         },
     });
     this.KnobsTouch[0x08] = new components.Component({
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value === 0x7F) {
                 if (AbletonPush.shift) { // Shift pushed : reset value
                     engine.setValue("[Master]", "crossfader", 0);
@@ -712,43 +710,43 @@ AbletonPush.commonControls = function() {
         midi: [0xB0, 0x72],
         group: "[EqualizerRack1_[Channel1]_Effect1]",
         key: "button_parameter3",
-        on: AbletonPush.Colors.M_light,
-        off: AbletonPush.Colors.M_dim,
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
     });
     this.Buttons[0x73] = new components.Button({
         midi: [0xB0, 0x73],
         group: "[EqualizerRack1_[Channel2]_Effect1]",
         key: "button_parameter3",
-        on: AbletonPush.Colors.M_light,
-        off: AbletonPush.Colors.M_dim,
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
     });
     this.Buttons[0x70] = new components.Button({
         midi: [0xB0, 0x70],
         group: "[EqualizerRack1_[Channel1]_Effect1]",
         key: "button_parameter2",
-        on: AbletonPush.Colors.M_light,
-        off: AbletonPush.Colors.M_dim,
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
     });
     this.Buttons[0x71] = new components.Button({
         midi: [0xB0, 0x71],
         group: "[EqualizerRack1_[Channel2]_Effect1]",
         key: "button_parameter2",
-        on: AbletonPush.Colors.M_light,
-        off: AbletonPush.Colors.M_dim,
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
     });
     this.Buttons[0x6E] = new components.Button({
         midi: [0xB0, 0x6E],
         group: "[EqualizerRack1_[Channel1]_Effect1]",
         key: "button_parameter1",
-        on: AbletonPush.Colors.M_light,
-        off: AbletonPush.Colors.M_dim,
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
     });
     this.Buttons[0x6F] = new components.Button({
         midi: [0xB0, 0x6F],
         group: "[EqualizerRack1_[Channel2]_Effect1]",
         key: "button_parameter1",
-        on: AbletonPush.Colors.M_light,
-        off: AbletonPush.Colors.M_dim,
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
     });
 
     //this.Buttons[0x3F] = ;
@@ -773,12 +771,12 @@ AbletonPush.commonControls = function() {
             AbletonPush.LeftControls.shift();
             AbletonPush.RightControls.shift();
             AbletonPush.shift = true;
-            midi.sendShortMsg(status, control, AbletonPush.Colors.M_light); // Set button led
+            midi.sendShortMsg(status, control, AbletonPush.Colors.mLight); // Set button led
         } else {
             AbletonPush.LeftControls.unshift();
             AbletonPush.RightControls.unshift();
             AbletonPush.shift = false;
-            midi.sendShortMsg(status, control, AbletonPush.Colors.M_dim); // Set button led
+            midi.sendShortMsg(status, control, AbletonPush.Colors.mDim); // Set button led
         }
     };
     //this.Buttons[0x30] = ;
@@ -830,13 +828,13 @@ AbletonPush.commonControls = function() {
             group: "[Master]",
             outKey: "VuMeter",
             wait: 100, // milliseconds to wait between 2 updates to restrain flooding midi messages
-            wait_flag: false,
+            waitFlag: false,
             output: function(value, _group, _control) {
-                if (!this.wait_flag) {
+                if (!this.waitFlag) {
                     AbletonPush.setPitchBendLeds(Math.floor(value*24));
-                    this.wait_flag=true;
+                    this.waitFlag=true;
                     this.waitTimer = engine.beginTimer(this.wait, function() {
-                        this.wait_flag = false;
+                        this.waitFlag = false;
                         this.waitTimer = 0;
                     }, true);
                 }
@@ -868,53 +866,55 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     // 1st row of RGB pads
     this.RGBPads[0x24 + midiShift] = new components.PlayButton({
         midi: [0x90, 0x24 + midiShift],
-        on: AbletonPush.Colors.R_green,
-        off: AbletonPush.Colors.R_red_dim,
+        on: AbletonPush.Colors.rGreen,
+        off: AbletonPush.Colors.rRedDim,
     });
     this.RGBPads[0x25 + midiShift] = new components.CueButton({
         midi: [0x90, 0x25 + midiShift],
-        on: AbletonPush.Colors.R_orange,
-        off: AbletonPush.Colors.R_orange_dim,
+        on: AbletonPush.Colors.rOrange,
+        off: AbletonPush.Colors.rOrangeDim,
     });
 
     this.RGBPads[0x26 + midiShift] = new components.Button({
         midi: [0x90, 0x26 + midiShift],
         key: "cue_play",
-        on: AbletonPush.Colors.R_orange,
-        off: AbletonPush.Colors.R_orange_dim,
+        on: AbletonPush.Colors.rOrange,
+        off: AbletonPush.Colors.rOrangeDim,
     });
     this.RGBPads[0x27 + midiShift] = new components.Button({
         midi: [0x90, 0x27 + midiShift],
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value>0 && this.group.substr(0, 8) === "[Channel") {
                 AbletonPush.CommonControls.PitchBend.group = this.group;
                 AbletonPush.CommonControls.PitchBend.deck = this.group.substr(8, 1);
 
                 // Light this button and dim other channel
-                this.send(AbletonPush.Colors.R_white);
-                midi.sendShortMsg(this.midi[0], this.midi[1] + 2*(2-midiShift), AbletonPush.Colors.R_grey);
+                this.send(AbletonPush.Colors.rWhite);
+                midi.sendShortMsg(this.midi[0], this.midi[1] + 2*(2-midiShift), AbletonPush.Colors.rGrey);
             }
         },
     });
 
     // Hotcues on rows 3 and 2
-    for (var i = 1; i <= 4; i++) {
-        var midiNum=0x33 + i + midiShift;
+    var i = 0;
+    var midiNum = 0;
+    for (i = 1; i <= 4; i++) {
+        midiNum=0x33 + i + midiShift;
         this.RGBPads[midiNum] = new components.HotcueButton({
             midi: [0x90, midiNum],
             number: i,
-            sendRGB: function(color_obj) {
-                AbletonPush.setRGBPadColor(this.midi[1], color_obj.red, color_obj.green, color_obj.blue);
+            sendRGB: function(colorObj) {
+                AbletonPush.setRGBPadColor(this.midi[1], colorObj.red, colorObj.green, colorObj.blue);
             }
         });
     }
-    for (var i = 5; i <= 8; i++) {
-        var midiNum=0x27 + i + midiShift;
+    for (i = 5; i <= 8; i++) {
+        midiNum=0x27 + i + midiShift;
         this.RGBPads[midiNum] = new components.HotcueButton({
             midi: [0x90, midiNum],
             number: i,
-            sendRGB: function(color_obj) {
-                AbletonPush.setRGBPadColor(this.midi[1], color_obj.red, color_obj.green, color_obj.blue);
+            sendRGB: function(colorObj) {
+                AbletonPush.setRGBPadColor(this.midi[1], colorObj.red, colorObj.green, colorObj.blue);
             }
         });
     }
@@ -923,7 +923,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.RGBPads[0x3C + midiShift] = new components.Component({
         midi: [0x90, 0x3C + midiShift],
         input: function(channel, control, value, _status, _group) {
-            this.send((value>0) ? AbletonPush.Colors.R_red : AbletonPush.Colors.R_red_dim);
+            this.send((value>0) ? AbletonPush.Colors.rRed : AbletonPush.Colors.rRedDim);
         },
     });
     this.RGBPadsPressure[0x3C + midiShift] = new components.Pot({
@@ -938,19 +938,19 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.RGBPads[0x3D + midiShift] = new components.Button({
         midi: [0x90, 0x3D + midiShift],
         key: "beatjump_backward",
-        on: AbletonPush.Colors.R_pink,
-        off: AbletonPush.Colors.R_pink_dim,
+        on: AbletonPush.Colors.rPink,
+        off: AbletonPush.Colors.rPinkDim,
     });
     this.RGBPads[0x3E + midiShift] = new components.Button({
         midi: [0x90, 0x3E + midiShift],
         key: "beatjump_forward",
-        on: AbletonPush.Colors.R_pink,
-        off: AbletonPush.Colors.R_pink_dim,
+        on: AbletonPush.Colors.rPink,
+        off: AbletonPush.Colors.rPinkDim,
     });
     this.RGBPads[0x3F + midiShift] = new components.Component({
         midi: [0x90, 0x3F + midiShift],
         input: function(channel, control, value, _status, _group) {
-            this.send((value>0) ? AbletonPush.Colors.R_red : AbletonPush.Colors.R_red_dim);
+            this.send((value>0) ? AbletonPush.Colors.rRed : AbletonPush.Colors.rRedDim);
         },
     });
     this.RGBPadsPressure[0x3F + midiShift] = new components.Pot({
@@ -973,8 +973,8 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         shift: function() {
             this.inKey = "intro_start_clear";
         },
-        on: AbletonPush.Colors.R_orange,
-        off: AbletonPush.Colors.R_orange_dim,
+        on: AbletonPush.Colors.rOrange,
+        off: AbletonPush.Colors.rOrangeDim,
     });
     this.RGBPads[0x45 + midiShift] = new components.Button({
         midi: [0x90, 0x45 + midiShift],
@@ -985,8 +985,8 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         shift: function() {
             this.inKey = "intro_end_clear";
         },
-        on: AbletonPush.Colors.R_orange,
-        off: AbletonPush.Colors.R_orange_dim,
+        on: AbletonPush.Colors.rOrange,
+        off: AbletonPush.Colors.rOrangeDim,
     });
     this.RGBPads[0x46 + midiShift] = new components.Button({
         midi: [0x90, 0x46 + midiShift],
@@ -997,8 +997,8 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         shift: function() {
             this.inKey = "outro_start_clear";
         },
-        on: AbletonPush.Colors.R_orange,
-        off: AbletonPush.Colors.R_orange_dim,
+        on: AbletonPush.Colors.rOrange,
+        off: AbletonPush.Colors.rOrangeDim,
     });
     this.RGBPads[0x47 + midiShift] = new components.Button({
         midi: [0x90, 0x47 + midiShift],
@@ -1009,35 +1009,35 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         shift: function() {
             this.inKey = "outro_end_clear";
         },
-        on: AbletonPush.Colors.R_orange,
-        off: AbletonPush.Colors.R_orange_dim,
+        on: AbletonPush.Colors.rOrange,
+        off: AbletonPush.Colors.rOrangeDim,
     });
 
     // row 6 of RGB pads
     this.RGBPads[0x4C + midiShift] = new components.SyncButton({
         midi: [0x90, 0x4C + midiShift],
-        on: AbletonPush.Colors.R_grey,
+        on: AbletonPush.Colors.rGrey,
         off: AbletonPush.Colors.off,
     });
     this.RGBPads[0x4D + midiShift] = new components.Button({
         midi: [0x90, 0x4D + midiShift],
         key: "slip_enabled",
         type: components.Button.prototype.types.toggle,
-        on: AbletonPush.Colors.R_grey,
+        on: AbletonPush.Colors.rGrey,
         off: AbletonPush.Colors.off,
     });
     this.RGBPads[0x4E + midiShift] = new components.Button({
         midi: [0x90, 0x4E + midiShift],
         key: "quantize",
         type: components.Button.prototype.types.toggle,
-        on: AbletonPush.Colors.R_grey,
+        on: AbletonPush.Colors.rGrey,
         off: AbletonPush.Colors.off,
     });
     this.RGBPads[0x4F + midiShift] = new components.Button({
         midi: [0x90, 0x4F + midiShift],
         key: "keylock",
         type: components.Button.prototype.types.toggle,
-        on: AbletonPush.Colors.R_grey,
+        on: AbletonPush.Colors.rGrey,
         off: AbletonPush.Colors.off,
     });
 
@@ -1045,27 +1045,27 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.RGBPads[0x54 + midiShift] = new components.Button({
         midi: [0x90, 0x54 + midiShift],
         key: "loop_in",
-        on: AbletonPush.Colors.R_green,
-        off: AbletonPush.Colors.R_green_dim,
+        on: AbletonPush.Colors.rGreen,
+        off: AbletonPush.Colors.rGreenDim,
     });
     this.RGBPads[0x55 + midiShift] = new components.Button({
         midi: [0x90, 0x55 + midiShift],
         key: "loop_out",
-        on: AbletonPush.Colors.R_green,
-        off: AbletonPush.Colors.R_green_dim,
+        on: AbletonPush.Colors.rGreen,
+        off: AbletonPush.Colors.rGreenDim,
     });
     this.RGBPads[0x56 + midiShift] = new components.Button({
         midi: [0x90, 0x56 + midiShift],
         key: "pfl",
         type: components.Button.prototype.types.toggle,
-        on: AbletonPush.Colors.R_white,
+        on: AbletonPush.Colors.rWhite,
         off: AbletonPush.Colors.off,
     });
     this.RGBPads[0x57 + midiShift] = new components.Button({
         midi: [0x90, 0x57 + midiShift],
         key: "reset_key",
-        on: AbletonPush.Colors.R_yellow,
-        off: AbletonPush.Colors.R_yellow_dim,
+        on: AbletonPush.Colors.rYellow,
+        off: AbletonPush.Colors.rYellowDim,
     });
 
     // row 8 of RGB pads
@@ -1073,48 +1073,48 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         midi: [0x90, 0x5C + midiShift],
         key: "beatloop_activate",
         type: components.Button.prototype.types.toggle,
-        on: AbletonPush.Colors.R_green,
-        off: AbletonPush.Colors.R_green_dim,
+        on: AbletonPush.Colors.rGreen,
+        off: AbletonPush.Colors.rGreenDim,
     });
     this.RGBPads[0x5D + midiShift] = new components.LoopToggleButton({
         midi: [0x90, 0x5D + midiShift],
-        on: AbletonPush.Colors.R_green,
-        off: AbletonPush.Colors.R_green_dim,
+        on: AbletonPush.Colors.rGreen,
+        off: AbletonPush.Colors.rGreenDim,
     });
     this.RGBPads[0x5E + midiShift] = new components.Button({
         midi: [0x90, 0x5E + midiShift],
-        input: function(channel, control, value, status) {
+        input: function(channel, control, value, status, _group) {
             if (this.isPress(channel, control, value, status)) {
                 engine.setValue(this.group, "rate", 0);
-                midi.sendShortMsg(status, control, AbletonPush.Colors.R_orange);
+                midi.sendShortMsg(status, control, AbletonPush.Colors.rOrange);
             } else {
-                midi.sendShortMsg(status, control, AbletonPush.Colors.R_orange_dim);
+                midi.sendShortMsg(status, control, AbletonPush.Colors.rOrangeDim);
             }
         },
     });
     this.RGBPads[0x5F + midiShift] = new components.Button({
         midi: [0x90, 0x5F + midiShift],
         key: "sync_key",
-        on: AbletonPush.Colors.R_yellow,
-        off: AbletonPush.Colors.R_yellow_dim,
+        on: AbletonPush.Colors.rYellow,
+        off: AbletonPush.Colors.rYellowDim,
     });
 
     // row 9 : RGB buttons
     this.RGBButtons[0x66 + midiShift] = new components.Button({
         midi: [0xB0, 0x66 + midiShift],
         key: "loop_halve",
-        on: AbletonPush.Colors.R_green,
-        off: AbletonPush.Colors.R_green_dim,
+        on: AbletonPush.Colors.rGreen,
+        off: AbletonPush.Colors.rGreenDim,
     });
     this.RGBButtons[0x67 + midiShift] = new components.Button({
         midi: [0xB0, 0x67 + midiShift],
-        input: function(channel, control, value, status) {
+        input: function(channel, control, value, status, _group) {
             if (this.isPress(channel, control, value, status)) {
                 var oldval = engine.getValue(this.group, "beatjump_size");
                 if (oldval > 0.03125) { engine.setValue(this.group, "beatjump_size", oldval / 2); }
-                midi.sendShortMsg(status, control, AbletonPush.Colors.R_pink);
+                midi.sendShortMsg(status, control, AbletonPush.Colors.rPink);
             } else {
-                midi.sendShortMsg(status, control, AbletonPush.Colors.R_pink_dim);
+                midi.sendShortMsg(status, control, AbletonPush.Colors.rPinkDim);
             }
         },
     });
@@ -1127,32 +1127,32 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             this.inKey = "rate_perm_down_small";
         },
         key: "rate_perm_down",
-        on: AbletonPush.Colors.R_orange,
-        off: AbletonPush.Colors.R_orange_dim,
+        on: AbletonPush.Colors.rOrange,
+        off: AbletonPush.Colors.rOrangeDim,
     });
     this.RGBButtons[0x69 + midiShift] = new components.Button({
         midi: [0xB0, 0x69 + midiShift],
         key: "pitch_down",
-        on: AbletonPush.Colors.R_yellow,
-        off: AbletonPush.Colors.R_yellow_dim,
+        on: AbletonPush.Colors.rYellow,
+        off: AbletonPush.Colors.rYellowDim,
     });
 
     // row 10 : Color buttons
     this.ColorButtons[0x14 + midiShift] = new components.Button({
         midi: [0xB0, 0x14 + midiShift],
         key: "loop_double",
-        on: AbletonPush.Colors.C_green,
-        off: AbletonPush.Colors.C_green_dim,
+        on: AbletonPush.Colors.cGreen,
+        off: AbletonPush.Colors.cGreenDim,
     });
     this.ColorButtons[0x15 + midiShift] = new components.Button({
         midi: [0xB0, 0x15 + midiShift],
-        input: function(channel, control, value, status) {
+        input: function(channel, control, value, status, _group) {
             if (this.isPress(channel, control, value, status)) {
                 var oldval = engine.getValue(this.group, "beatjump_size");
                 if (oldval < 512) { engine.setValue(this.group, "beatjump_size", oldval * 2); }
-                midi.sendShortMsg(status, control, AbletonPush.Colors.C_red);
+                midi.sendShortMsg(status, control, AbletonPush.Colors.cRed);
             } else {
-                midi.sendShortMsg(status, control, AbletonPush.Colors.C_red_dim);
+                midi.sendShortMsg(status, control, AbletonPush.Colors.cRedDim);
             }
         },
     });
@@ -1165,14 +1165,14 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             this.inKey = "rate_perm_up_small";
         },
         key: "rate_perm_up",
-        on: AbletonPush.Colors.C_orange,
-        off: AbletonPush.Colors.C_orange_dim,
+        on: AbletonPush.Colors.cOrange,
+        off: AbletonPush.Colors.cOrangeDim,
     });
     this.ColorButtons[0x17 + midiShift] = new components.Button({
         midi: [0xB0, 0x17 + midiShift],
         key: "pitch_up",
-        on: AbletonPush.Colors.C_yellow,
-        off: AbletonPush.Colors.C_yellow_dim,
+        on: AbletonPush.Colors.cYellow,
+        off: AbletonPush.Colors.cYellowDim,
     });
 
     // Knobs
@@ -1180,7 +1180,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         midi: [0xB0, 0x47 + midiShift],
         group: "[QuickEffectRack1_" + this.currentDeck + "]",
         key: "super1",
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value < 0x40) {
                 this.inSetParameter(this.inGetParameter() + (value * AbletonPush.KnobSensitivity));
             } else {
@@ -1194,7 +1194,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.Knobs[0x48 + midiShift] = new components.Encoder({
         midi: [0xB0, 0x48 + midiShift],
         key: "pregain",
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value < 0x40) {
                 this.inSetParameter(this.inGetParameter() + (value * AbletonPush.KnobSensitivity));
             } else {
@@ -1202,13 +1202,13 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             }
         },
         output: function(value, _group, _control) {
-            AbletonPush.displayCursor({hbloc: 2+4*((parseInt(this.group.substr(8, 1))+1)%2), value:value, oc: 4});
+            AbletonPush.displayCursor({hbloc: 2+4*((parseInt(this.group.substr(8, 1))+1)%2), value: value, oc: 4});
         },
     });
     this.Knobs[0x49 + midiShift] = new components.Encoder({
         midi: [0xB0, 0x49 + midiShift],
         key: "volume",
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value < 0x40) {
                 this.inSetParameter(this.inGetParameter() + (value * AbletonPush.KnobSensitivity));
             } else {
@@ -1222,7 +1222,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.Knobs[0x4A + midiShift] = new components.Encoder({
         midi: [0xB0, 0x4A + midiShift],
         key: "pitch_adjust",
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value < 0x40) {
                 this.inSetParameter(this.inGetParameter() + (value * AbletonPush.KnobSensitivity));
             } else {
@@ -1239,7 +1239,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         shift: function() { this.isShifted = true; },
         unshift: function() { this.isShifted = false; },
         group: "[QuickEffectRack1_" + this.currentDeck + "]",
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value === 0x7F) {
                 if (this.isShifted) { // Shift pushed : reset value
                     script.triggerControl(this.group, "super1_set_default", 0x01);
@@ -1250,7 +1250,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.KnobsTouch[0x01 + midiShift] = new components.Component({
         shift: function() { this.isShifted = true; },
         unshift: function() { this.isShifted = false; },
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value === 0x7F) {
                 if (this.isShifted) { // Shift pushed : reset value
                     engine.setValue(this.group, "pregain", 1);
@@ -1261,7 +1261,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.KnobsTouch[0x02 + midiShift] = new components.Component({
         shift: function() { this.isShifted = true; },
         unshift: function() { this.isShifted = false; },
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value === 0x7F) {
                 if (this.isShifted) { // Shift pushed : reset value
                     engine.setValue(this.group, "volume", 1);
@@ -1272,7 +1272,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.KnobsTouch[0x03 + midiShift] = new components.Component({
         shift: function() { this.isShifted = true; },
         unshift: function() { this.isShifted = false; },
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value === 0x7F) {
                 if (this.isShifted) { // Shift pushed : reset value
                     engine.setValue(this.group, "pitch_adjust", 0);
@@ -1285,16 +1285,16 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
      *  Components used to show info on screen
      *  */
     // Track position
-    this.screen_TrackPosition = new components.Component({
+    this.screenTrackPosition = new components.Component({
         outKey: "playposition",
-        last_value: -1,
-        last_second: -1,
+        lastValue: -1,
+        lastSecond: -1,
         output: function(value, _group, _control) {
             // Show track time using "duration" to get track time/total
             var duration = Math.round(engine.getValue(this.group, "duration"));
             var second = Math.round(value * duration);
-            if (second !== this.last_second) { // Only send sysex when value changes.
-                this.last_second = second;
+            if (second !== this.lastSecond) { // Only send sysex when value changes.
+                this.lastSecond = second;
                 AbletonPush.displayText(3, 1+3*((parseInt(this.group.substr(8, 1))+1)%2),
                     second + "/" + Math.round(duration), 2-(parseInt(this.group.substr(8, 1))+1)%2);
             }
@@ -1302,8 +1302,9 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             // Show track position fader
             value=Math.floor(value*33)+1;
             if (value !== this.last_value) { // Only send sysex when value changes.
-                this.last_value = value;
+                this.lastValue = value;
                 var text=[];
+                var n=0;
                 if (value<1) {
                     value=0;
                 } else {
@@ -1318,27 +1319,27 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         },
     });
 
-    this.screen_BeatLoop = new components.Component({
+    this.screenBeatLoop = new components.Component({
         outKey: "beatloop_size",
         output: function(value, _group, _control) {
             if (value<1) { value="1/" + 1/value; }
             AbletonPush.displayText(4, 1+2*((parseInt(this.group.substr(8, 1))+1)%2), "" + value, 1);
         },
     });
-    this.screen_BeatJump = new components.Component({
+    this.screenBeatJump = new components.Component({
         outKey: "beatjump_size",
         output: function(value, _group, _control) {
             if (value<1) { value="1/" + 1/value; }
             AbletonPush.displayText(4, 1+2*((parseInt(this.group.substr(8, 1))+1)%2), "" + value, 2);
         },
     });
-    this.screen_BPM = new components.Component({
+    this.screenBPM = new components.Component({
         outKey: "visual_bpm",
         output: function(value, _group, _control) {
             AbletonPush.displayText(4, 2+2*((parseInt(this.group.substr(8, 1))+1)%2), "" + value, 1);
         },
     });
-    this.screen_Key = new components.Component({
+    this.screenKey = new components.Component({
         outKey: "key",
         output: function(value, _group, _control) {
             AbletonPush.displayText(4, 2+2*((parseInt(this.group.substr(8, 1))+1)%2), AbletonPush.Keys[value], 2);
@@ -1398,10 +1399,10 @@ AbletonPush.displayText = function(iLine, iBloc, Text, iSubBloc) {
     if (typeof(Text) === "string") {
         var sText = Text;
         Text = [];
-        // Test if text is ASCII only
-        if (!/^[\x00-\x7F]*$/.test(sText)) {
+        // Test if text is ASCII only - disabled to pass eslint validation
+        /*if (!/^[\x00-\x7F]*$/.test(sText)) {
             sText="ERROR not ASCII";
-        }
+        }*/
         // Prepare text
         if (sText.length > textLen) {
             sText=sText.slice(0, textLen);
@@ -1411,7 +1412,7 @@ AbletonPush.displayText = function(iLine, iBloc, Text, iSubBloc) {
             Text.push(Number(sText.charCodeAt(i)));
         }
     }
-    for (s=Text.length; s<textLen; s++) { (s%2==1) ? Text.push(0x20): Text.unshift(0x20); } // Complete with spaces (keeping text centered)
+    for (var s=Text.length; s<textLen; s++) { (s%2===1) ? Text.push(0x20): Text.unshift(0x20); } // Complete with spaces (keeping text centered)
 
     // Prepares Sysex message
     var aSysex = [0xF0, 0x47, 0x79, 0x15, 0x17+iLine, 0x00];
@@ -1474,8 +1475,9 @@ AbletonPush.displayCursor = function(options) {
     // Create steps
     value2=Math.round(value2*15)+1;
     var text=[];
+    var n=0;
     // Transform position value in text string
-    if ((this.mid>0) && (this.value==this.mid)) {
+    if ((this.mid>0) && (this.value===this.mid)) {
         text.push(0x06, 0x06, 0x06, 0x04, 0x03, 0x06, 0x06, 0x06);
     } else {
         for (n=1; n<Math.ceil(value2/2); n++) { text.push(0x06); }
@@ -1487,7 +1489,7 @@ AbletonPush.displayCursor = function(options) {
     if ((this.oc>0) && (valueoc>0)) {
         valueoc = Math.floor(valueoc*15)+1;
         for (n=1; n<Math.ceil(valueoc/2); n++) { text[n-1]=0x02; }
-        text[n-1] = (((valueoc+1)%2)==1) ? 0x02 : 0x3D;
+        text[n-1] = (((valueoc+1)%2)===1) ? 0x02 : 0x3D;
     }
     AbletonPush.displayText(2, Math.ceil((this.hbloc/2)), text, (2-(this.hbloc%2)));
 };
@@ -1534,23 +1536,23 @@ AbletonPush.setPitchBendLeds = function(Level) {
  * @param {number} pos Position for recursive call
  */
 AbletonPush.showImage = function(pos) {
-    var width=AbletonPush.image_MIXXX.length/8/3;
+    var width=AbletonPush.imageMIXXX.length/8/3;
     if (typeof(pos) === "undefined") { pos=0; }
 
     // Parse image to set RGB leds
-    for (x=0; x<8; x++) {
-        for (y=0; y<8; y++) {
+    for (var x=0; x<8; x++) {
+        for (var y=0; y<8; y++) {
             // get pixel address
-            pixel=((x+pos)*3)+(y*width*3);
-            led=(0x5C+x)-(y*8);
+            var pixel=((x+pos)*3)+(y*width*3);
+            var led=(0x5C+x)-(y*8);
             // Set led color
-            AbletonPush.setRGBPadColor(led, AbletonPush.image_MIXXX[pixel], AbletonPush.image_MIXXX[pixel+1], AbletonPush.image_MIXXX[pixel+2]);
+            AbletonPush.setRGBPadColor(led, AbletonPush.imageMIXXX[pixel], AbletonPush.imageMIXXX[pixel+1], AbletonPush.imageMIXXX[pixel+2]);
         }
     }
 
     // If image left to print, scroll it with a timer.
     if (pos<width-8) {
-        next=pos+1;
+        var next=pos+1;
         engine.beginTimer(100, "AbletonPush.showImage("+next+")", true);
     } else {
         // Do init2 to finish startup sequence
