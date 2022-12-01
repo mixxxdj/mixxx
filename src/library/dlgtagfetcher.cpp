@@ -227,11 +227,6 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{}, QPixmap{});
 
-    disconnect(m_track.get(),
-            &Track::changed,
-            this,
-            &DlgTagFetcher::slotTrackChanged);
-
     m_track = pTrack;
     if (!m_track) {
         return;
