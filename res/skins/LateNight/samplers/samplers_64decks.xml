@@ -1,0 +1,1135 @@
+<!-- Copy/paste nightmare waiting to find a way to make samplers_row.xml working.
+    Sorry...
+  -->
+<Template>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandButtonContainer1</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">row1</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandButtonContainer2</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">row2</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandButtonContainer3</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">row3</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandButtonContainer4</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">row4</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandButtonContainer5</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">row5</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandButtonContainer6</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">row6</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandButtonContainer7</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">row7</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandButtonContainer8</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">row8</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_row1">
+        <Children>
+
+          <!-- 8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">1</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">2</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">3</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">4</SetVariable>
+              </Template>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpandButtonContainer1</ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">5</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">6</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">7</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">8</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- 8 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_row1" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row 1 2 | 5 6 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">1</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">2</SetVariable>
+                  </Template>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpandButtonContainer1</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">5</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">6</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <!-- Second row 3 4 | 7 8 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">3</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">4</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">7</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">8</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_row2">
+        <Children>
+
+          <!-- 8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">9</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">10</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">11</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">12</SetVariable>
+              </Template>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpandButtonContainer2</ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">13</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">14</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">15</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">16</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- 8 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_row2" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row 1 2 | 5 6 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">9</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">10</SetVariable>
+                  </Template>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpandButtonContainer2</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">13</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">14</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <!-- Second row 3 4 | 7 8 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">11</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">12</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">15</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">16</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_row3">
+        <Children>
+
+          <!-- 8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">17</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">18</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">19</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">20</SetVariable>
+              </Template>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpandButtonContainer3</ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">21</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">22</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">23</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">24</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- 8 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_row3" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row 1 2 | 5 6 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">17</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">18</SetVariable>
+                  </Template>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpandButtonContainer3</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">21</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">22</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <!-- Second row 3 4 | 7 8 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">19</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">20</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">23</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">24</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_row4">
+        <Children>
+
+          <!-- 8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">25</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">26</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">27</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">28</SetVariable>
+              </Template>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpandButtonContainer4</ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">29</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">30</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">31</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">32</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- 8 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_row4" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row 1 2 | 5 6 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">25</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">26</SetVariable>
+                  </Template>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpandButtonContainer4</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">29</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">30</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <!-- Second row 3 4 | 7 8 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">27</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">28</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">31</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">32</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_row5">
+        <Children>
+
+          <!-- 8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">33</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">34</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">35</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">36</SetVariable>
+              </Template>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpandButtonContainer5</ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">37</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">38</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">39</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">40</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- 8 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_row5" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row 1 2 | 5 6 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">33</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">34</SetVariable>
+                  </Template>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpandButtonContainer5</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">37</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">38</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <!-- Second row 3 4 | 7 8 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">35</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">36</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">39</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">40</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_row6">
+        <Children>
+
+          <!-- 8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">41</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">42</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">43</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">44</SetVariable>
+              </Template>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpandButtonContainer6</ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">45</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">46</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">47</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">48</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- 8 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_row6" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row 1 2 | 5 6 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">41</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">42</SetVariable>
+                  </Template>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpandButtonContainer6</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">45</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">46</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <!-- Second row 3 4 | 7 8 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">43</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">44</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">47</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">48</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_row7">
+        <Children>
+
+          <!-- 8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">49</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">50</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">51</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">52</SetVariable>
+              </Template>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpandButtonContainer7</ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">53</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">54</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">55</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">56</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- 8 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_row7" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row 1 2 | 5 6 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">49</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">50</SetVariable>
+                  </Template>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpandButtonContainer7</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">53</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">54</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <!-- Second row 3 4 | 7 8 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">51</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">52</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">55</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">56</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_row8">
+        <Children>
+
+          <!-- 8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">57</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">58</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">59</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">60</SetVariable>
+              </Template>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpandButtonContainer8</ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">61</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">62</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">63</SetVariable>
+              </Template>
+
+              <Template src="skin:/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum">64</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- 8 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_row8" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row 1 2 | 5 6 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">57</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">58</SetVariable>
+                  </Template>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpandButtonContainer8</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">61</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">62</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <!-- Second row 3 4 | 7 8 -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">59</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">60</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">63</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum">64</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+
+</Template>

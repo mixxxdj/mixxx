@@ -32,7 +32,6 @@
 
               <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum"><Variable name="sampler1"/></SetVariable>
-                <SetVariable name="row"><Variable name="row"/></SetVariable>
               </Template>
 
               <Template src="skin:/samplers/sampler_mini.xml">

@@ -504,7 +504,7 @@ Description:
                               </Template>
                               <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
                                 <SetVariable name="Text">64</SetVariable>
-                                <SetVariable name="Setting">[LateNight],show_Xsamplers</SetVariable>
+                                <SetVariable name="Setting">[LateNight],show_64samplers</SetVariable>
                                 <SetVariable name="IsEqual">1</SetVariable>
                                 <SetVariable name="Width">30f</SetVariable>
                               </Template>

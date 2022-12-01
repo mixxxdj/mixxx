@@ -14,7 +14,7 @@
   </SingletonDefinition>
 
   <!-- Create Singletons for each row of 8 samplers -->
-  <SingletonDefinition>
+  <!-- SingletonDefinition>
     <ObjectName>SamplerRow1</ObjectName>
     <Children>
       <Template src="skin:/samplers/samplers_row.xml">
@@ -148,7 +148,7 @@
         <SetVariable name="sampler8">64</SetVariable>
       </Template>
     </Children>
-  </SingletonDefinition>
+  </SingletonDefinition -->
 
   <WidgetGroup>
     <Layout>horizontal</Layout>
@@ -182,35 +182,12 @@
             </Children>
           </WidgetGroup>
 
-          <!--X Samplers -->
-          <WidgetGroup trigger="[LateNight],show_Xsamplers" on_hide_select="1">
+          <!--64 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_64samplers" on_hide_select="1">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <Children>
-              <SingletonContainer>
-                <ObjectName>SamplerRow1</ObjectName>
-              </SingletonContainer>
-              <SingletonContainer>
-                <ObjectName>SamplerRow2</ObjectName>
-              </SingletonContainer>
-              <SingletonContainer>
-                <ObjectName>SamplerRow3</ObjectName>
-              </SingletonContainer>
-              <SingletonContainer>
-                <ObjectName>SamplerRow4</ObjectName>
-              </SingletonContainer>
-              <SingletonContainer>
-                <ObjectName>SamplerRow5</ObjectName>
-              </SingletonContainer>
-              <SingletonContainer>
-                <ObjectName>SamplerRow6</ObjectName>
-              </SingletonContainer>
-              <SingletonContainer>
-                <ObjectName>SamplerRow7</ObjectName>
-              </SingletonContainer>
-              <SingletonContainer>
-                <ObjectName>SamplerRow8</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:/samplers/samplers_64decks.xml"/>
             </Children>
           </WidgetGroup>
         </Children>
