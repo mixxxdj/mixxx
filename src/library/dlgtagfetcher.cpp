@@ -510,12 +510,10 @@ void DlgTagFetcher::tagSelected() {
     const int tagIndex = tags->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedTag = tagIndex;
 
-    if (!m_fetchedCoverArtByteArrays.isNull()) {
-        m_fetchedCoverArtByteArrays.clear();
-        m_pWFetchedCoverArtLabel->loadData(m_fetchedCoverArtByteArrays);
-        m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
-                QPixmap(CoverArtUtils::defaultCoverLocation()));
-    }
+    m_fetchedCoverArtByteArrays.clear();
+    m_pWFetchedCoverArtLabel->loadData(QByteArray());
+    m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
+            QPixmap(CoverArtUtils::defaultCoverLocation()));
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
     QUuid selectedTagAlbumId = trackRelease.albumReleaseId;
