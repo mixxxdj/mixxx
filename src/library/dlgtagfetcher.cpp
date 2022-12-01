@@ -93,9 +93,9 @@ void addTrack(
         const QStringList& trackRow,
         int tagIndex,
         QTreeWidget* pParent) {
-    QTreeWidgetItem* item = new QTreeWidgetItem(pParent, trackRow);
-    item->setData(0, Qt::UserRole, tagIndex);
-    item->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
+    QTreeWidgetItem* pItem = new QTreeWidgetItem(pParent, trackRow);
+    pItem->setData(0, Qt::UserRole, tagIndex);
+    pItem->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
 }
 
 void updateOriginalTag(const Track& track, QTreeWidget* pParent) {
@@ -215,9 +215,9 @@ void DlgTagFetcher::slotPrev() {
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
-    if (m_track) {
+    if (m_pTrack) {
         tags->clear();
-        disconnect(m_track.get(),
+        disconnect(m_pTrack.get(),
                 &Track::changed,
                 this,
                 &DlgTagFetcher::slotTrackChanged);
@@ -227,8 +227,8 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{}, QPixmap{});
 
-    m_track = pTrack;
-    if (!m_track) {
+    m_pTrack = pTrack;
+    if (!m_pTrack) {
         return;
     }
 
@@ -238,15 +238,15 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     addDivider(tr("Original tags"), tags);
-    addTrack(trackColumnValues(*m_track), kOriginalTrackIndex, tags);
+    addTrack(trackColumnValues(*m_pTrack), kOriginalTrackIndex, tags);
 
-    connect(m_track.get(),
+    connect(m_pTrack.get(),
             &Track::changed,
             this,
             &DlgTagFetcher::slotTrackChanged);
 
     loadCurrentTrackCover();
-    m_tagFetcher.startFetch(m_track);
+    m_tagFetcher.startFetch(m_pTrack);
 }
 
 void DlgTagFetcher::loadTrack(const QModelIndex& index) {
@@ -256,8 +256,8 @@ void DlgTagFetcher::loadTrack(const QModelIndex& index) {
 }
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
-    if (m_track && m_track->getId() == trackId) {
-        updateOriginalTag(*m_track, tags);
+    if (m_pTrack && m_pTrack->getId() == trackId) {
+        updateOriginalTag(*m_pTrack, tags);
     }
 }
 
@@ -269,7 +269,7 @@ void DlgTagFetcher::apply() {
     DEBUG_ASSERT(tagIndex < m_data.m_tags.size());
     const mixxx::musicbrainz::TrackRelease& trackRelease =
             m_data.m_tags[tagIndex];
-    mixxx::TrackMetadata trackMetadata = m_track->getMetadata();
+    mixxx::TrackMetadata trackMetadata = m_pTrack->getMetadata();
     if (!trackRelease.artist.isEmpty()) {
         trackMetadata.refTrackInfo().setArtist(
                 trackRelease.artist);
@@ -330,7 +330,7 @@ void DlgTagFetcher::apply() {
             return;
         };
 
-        QFileInfo trackFileInfo = QFileInfo(m_track->getLocation());
+        QFileInfo trackFileInfo = QFileInfo(m_pTrack->getLocation());
 
         // Compose the Cover Art file path. Use the correct file extension
         // by checking from the fetched image bytes (disregard extension
@@ -340,40 +340,40 @@ void DlgTagFetcher::apply() {
                         trackFileInfo.absoluteFilePath().lastIndexOf('.') + 1) +
                 ImageFileData::readFormatFrom(m_fetchedCoverArtByteArrays);
 
-        m_worker.reset(new CoverArtCopyWorker(
+        m_pWorker.reset(new CoverArtCopyWorker(
                 QString(), coverArtCopyFilePath, m_fetchedCoverArtByteArrays));
 
-        connect(m_worker.data(),
+        connect(m_pWorker.data(),
                 &CoverArtCopyWorker::started,
                 this,
                 &DlgTagFetcher::slotWorkerStarted);
 
-        connect(m_worker.data(),
+        connect(m_pWorker.data(),
                 &CoverArtCopyWorker::askOverwrite,
                 this,
                 &DlgTagFetcher::slotWorkerAskOverwrite);
 
-        connect(m_worker.data(),
+        connect(m_pWorker.data(),
                 &CoverArtCopyWorker::coverArtCopyFailed,
                 this,
                 &DlgTagFetcher::slotWorkerCoverArtCopyFailed);
 
-        connect(m_worker.data(),
+        connect(m_pWorker.data(),
                 &CoverArtCopyWorker::coverArtUpdated,
                 this,
                 &DlgTagFetcher::slotWorkerCoverArtUpdated);
 
-        connect(m_worker.data(),
+        connect(m_pWorker.data(),
                 &CoverArtCopyWorker::finished,
                 this,
                 &DlgTagFetcher::slotWorkerFinished);
 
-        m_worker->start();
+        m_pWorker->start();
     }
 
     statusMessage->setText(tr("Selected metadata applied"));
 
-    m_track->replaceMetadataFromSource(
+    m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp
@@ -385,7 +385,7 @@ void DlgTagFetcher::retry() {
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
-    m_tagFetcher.startFetch(m_track);
+    m_tagFetcher.startFetch(m_pTrack);
 }
 
 void DlgTagFetcher::quit() {
@@ -405,9 +405,9 @@ void DlgTagFetcher::showProgressOfConstantTask(const QString& text) {
 }
 
 void DlgTagFetcher::loadCurrentTrackCover() {
-    m_pWCurrentCoverArtLabel->loadTrack(m_track);
+    m_pWCurrentCoverArtLabel->loadTrack(m_pTrack);
     CoverArtCache* pCache = CoverArtCache::instance();
-    pCache->requestTrackCover(this, m_track);
+    pCache->requestTrackCover(this, m_pTrack);
 }
 
 void DlgTagFetcher::showProgressOfRecordingTask() {
@@ -423,7 +423,7 @@ void DlgTagFetcher::setPercentOfEachRecordings(int totalRecordingsFound) {
 void DlgTagFetcher::fetchTagFinished(
         TrackPointer pTrack,
         const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
-    VERIFY_OR_DEBUG_ASSERT(pTrack == m_track) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack == m_pTrack) {
         return;
     }
     m_data.m_tags = guessedTrackReleases;
@@ -438,7 +438,7 @@ void DlgTagFetcher::fetchTagFinished(
         loadingProgressBar->setVisible(false);
         statusMessage->setVisible(true);
 
-        VERIFY_OR_DEBUG_ASSERT(m_track) {
+        VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
             return;
         }
 
@@ -487,15 +487,15 @@ void DlgTagFetcher::slotNetworkResult(
 }
 
 void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* pParent) const {
-    QTreeWidgetItem* item = new QTreeWidgetItem(pParent);
-    item->setFirstColumnSpanned(true);
-    item->setText(0, text);
-    item->setFlags(Qt::NoItemFlags);
-    item->setForeground(0, palette().color(QPalette::Disabled, QPalette::Text));
+    QTreeWidgetItem* pItem = new QTreeWidgetItem(pParent);
+    pItem->setFirstColumnSpanned(true);
+    pItem->setText(0, text);
+    pItem->setFlags(Qt::NoItemFlags);
+    pItem->setForeground(0, palette().color(QPalette::Disabled, QPalette::Text));
 
     QFont bold_font(font());
     bold_font.setBold(true);
-    item->setFont(0, bold_font);
+    pItem->setFont(0, bold_font);
 }
 
 void DlgTagFetcher::tagSelected() {
@@ -535,8 +535,8 @@ void DlgTagFetcher::slotCoverFound(
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
     if (pRequestor == this &&
-            m_track &&
-            m_track->getLocation() == coverInfo.trackLocation) {
+            m_pTrack &&
+            m_pTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
         m_pWCurrentCoverArtLabel->setCoverArt(coverInfo, pixmap);
     }
@@ -609,13 +609,13 @@ void DlgTagFetcher::slotWorkerStarted() {
 
 void DlgTagFetcher::slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo) {
     qDebug() << "DlgTagFetcher::slotWorkerCoverArtUpdated" << coverInfo;
-    m_track->setCoverInfo(coverInfo);
+    m_pTrack->setCoverInfo(coverInfo);
     loadCurrentTrackCover();
     statusMessage->setText(tr("Metadata & Cover Art applied"));
 }
 
 void DlgTagFetcher::slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
-        std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise) {
+        std::promise<CoverArtCopyWorker::OverwriteAnswer>* pPromise) {
     QFileInfo coverArtInfo(coverArtAbsolutePath);
     QString coverArtName = coverArtInfo.completeBaseName();
     QString coverArtFolder = coverArtInfo.absolutePath();
@@ -632,10 +632,10 @@ void DlgTagFetcher::slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
 
     switch (overwrite_box.exec()) {
     case QMessageBox::No:
-        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::Cancel);
+        pPromise->set_value(CoverArtCopyWorker::OverwriteAnswer::Cancel);
         return;
     case QMessageBox::Yes:
-        promise->set_value(CoverArtCopyWorker::OverwriteAnswer::Overwrite);
+        pPromise->set_value(CoverArtCopyWorker::OverwriteAnswer::Overwrite);
         return;
     }
 }

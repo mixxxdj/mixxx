@@ -29,7 +29,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void init();
 
   public slots:
-    void loadTrack(const TrackPointer& track);
+    void loadTrack(const TrackPointer& pTrack);
     void loadTrack(const QModelIndex& index);
 
   signals:
@@ -64,15 +64,15 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotCoverArtLinkNotFound();
     void slotWorkerStarted();
     void slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
-            std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise);
+            std::promise<CoverArtCopyWorker::OverwriteAnswer>* pPromise);
     void slotWorkerCoverArtCopyFailed(const QString& errorMessage);
     void slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo);
     void slotWorkerFinished();
 
   private:
     // Called on population or changed via buttons Next&Prev.
-    void loadTrackInternal(const TrackPointer& track);
-    void addDivider(const QString& text, QTreeWidget* parent) const;
+    void loadTrackInternal(const TrackPointer& pTrack);
+    void addDivider(const QString& text, QTreeWidget* pParent) const;
     void getCoverArt(const QString& url);
     void loadCurrentTrackCover();
 
@@ -84,7 +84,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
 
     bool m_isCoverArtCopyWorkerRunning;
 
-    TrackPointer m_track;
+    TrackPointer m_pTrack;
 
     QModelIndex m_currentTrackIndex;
 
@@ -106,5 +106,5 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
 
     QByteArray m_fetchedCoverArtByteArrays;
 
-    QScopedPointer<CoverArtCopyWorker> m_worker;
+    QScopedPointer<CoverArtCopyWorker> m_pWorker;
 };
