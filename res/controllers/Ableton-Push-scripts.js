@@ -11,7 +11,8 @@ AbletonPush.Debug = false; // Bypass loading screen, disable vu-meter and show m
  *  - Status = midi status
  *  - Control = midi control
  *  - Type = Buttons, Knobs, KnobsTouch, ColorButtons, RGBButtons, RGBPads
- *  - Zone = Common, Left, Right (TODO : split Right and Left in 3 parts : top, middle and bottom depending on Page layer)
+ *  - Zone = Common, Left, Right (TODO : split Right and Left in 3 parts : top, middle and bottom depending on Page layer) - alternative : split zones by page (zone2Decks, zone4Decks, zoneSampler, etc...).
+ * TODO : remove requirement for defaultColor and set default colors in each object creation for each page
  */
 AbletonPush.controls = [
     {status: 0x90, control: 0x00, type: "KnobsTouch", zone: "Left", defaultColor: ""},
@@ -469,7 +470,7 @@ AbletonPush.init = function() {
     AbletonPush.setPitchBendLeds(1);
 
     // Set defaults
-    AbletonPush.Page="2Decks"; // Seelct the 2 decks page at startup
+    AbletonPush.Page="2Decks"; // Select the 2 decks page at startup
 
     if (AbletonPush.Debug) { AbletonPush.init2(); }
 };
@@ -485,23 +486,11 @@ AbletonPush.init2 = function() {
         midi.sendShortMsg(value.status, value.control, AbletonPush.Colors[value.defaultColor]);
     });
 
-    // Clear screen
-    AbletonPush.displayText(1, 0, "");
-    AbletonPush.displayText(2, 0, "");
-    AbletonPush.displayText(3, 0, "");
-    AbletonPush.displayText(4, 0, "");
-
     // Create custom Component Container using components-js
-    AbletonPush.LeftControls = new AbletonPush.fullDeck([1, 3], 0);
-    AbletonPush.RightControls = new AbletonPush.fullDeck([2, 4], 4);
     AbletonPush.CommonControls = new AbletonPush.commonControls();
 
-    // Show default decks on screen
-    AbletonPush.displayText(3, 1, "Deck 1", 1);
-    AbletonPush.displayText(3, 4, "Deck 2", 2);
-
-    // Show knobs texts on screen
-    AbletonPush.displayText(1, 0, "FX Super   Gain   Volume   Pitch  FX Super   Gain   Volume   Pitch  ");
+    // Start on 2Decks page
+    AbletonPush.loadPage("2Decks");
 };
 
 /**
@@ -524,6 +513,57 @@ AbletonPush.shutdown = function() {
     AbletonPush.displayText(3, 0, "");
     AbletonPush.displayText(4, 0, "");
 };
+
+/**
+ * Load a page on the Push
+ * @param {string} pageName Name of the page to load. Can be any of :
+ *     - 2Decks: 2 channel mode, split between left and right of pads and top knobs.
+ *     - 4Decks: 4 decks at the same time (TODO)
+ *     - Sampler: sample control (TODO)
+ *     - FX: FX control (TODO)
+ */
+AbletonPush.loadPage = function(pageName) {
+    // TODO : Unload variable controls
+    // Use "AbletonPush.variableControls" array to know what is to unload
+
+    // Turn off all pad LEDs and color buttons
+    _.forEach(_.concat(
+        _.filter(AbletonPush.controls, {"type": "Buttons"}),
+        _.filter(AbletonPush.controls, {"type": "ColorButtons"}),
+        _.filter(AbletonPush.controls, {"type": "RGBPads"}),
+        _.filter(AbletonPush.controls, {"type": "RGBButtons"})
+    ), function(value) {
+        midi.sendShortMsg(value.status, value.control, 0x00);
+    });
+
+    // Clear screen
+    AbletonPush.displayText(1, 0, "");
+    AbletonPush.displayText(2, 0, "");
+    AbletonPush.displayText(3, 0, "");
+    AbletonPush.displayText(4, 0, "");
+
+    // Load new controls
+    AbletonPush.variableControls = [];
+    if (pageName === "2Decks") {
+        // Create controls
+        AbletonPush.LeftControls = new AbletonPush.fullDeck([1, 3], 0);
+        AbletonPush.RightControls = new AbletonPush.fullDeck([2, 4], 4);
+        // Keep track of the controls for further unloading
+        AbletonPush.variableControls.push(AbletonPush.LeftControls);
+        AbletonPush.variableControls.push(AbletonPush.RightControls);
+    
+        // Show default decks on screen
+        AbletonPush.displayText(3, 1, "Deck 1", 1);
+        AbletonPush.displayText(3, 4, "Deck 2", 2);
+
+        // Show knobs texts on screen
+        AbletonPush.displayText(1, 0, "FX Super   Gain   Volume   Pitch  FX Super   Gain   Volume   Pitch  ");
+
+    } else {
+        // No page found, clear the Push.
+
+    }
+}
 
 //=========================================
 // Midi Handler function to route midi inputs to the right controls
@@ -831,6 +871,7 @@ AbletonPush.commonControls = function() {
         wheelResolution: 6000, // how many ticks per revolution the jogwheel has
         alpha: 1/8, // alpha-filter
         inValueScale: function(value) {
+            // TODO: start with no deck (try changing deck to "0" and see what happens) - if not working, try changing invaluescale value - otherwise, superseedes input function...
             // If Finger is <0, then this is first touch value
             if (this.Finger<0) {
                 this.Finger = value;
@@ -857,7 +898,6 @@ AbletonPush.commonControls = function() {
             }
         },
     });
-
 
     /**
      * Output only controls
@@ -924,7 +964,9 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.RGBPads[0x27 + midiShift] = new components.Button({
         midi: [0x90, 0x27 + midiShift],
         input: function(channel, control, value, _status, _group) {
-            if (value>0 && this.group.substr(0, 8) === "[Channel") {
+            //if (value>0 && this.group.substr(0, 8) === "[Channel") {
+            if (value>0) {
+                // TODO: change to toggle on push (pitchbend disabled/enabled)
                 AbletonPush.CommonControls.PitchBend.group = this.group;
                 AbletonPush.CommonControls.PitchBend.deck = this.group.substr(8, 1);
 
