@@ -85,10 +85,18 @@
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
     <!-- Samplers -->
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-      <attribute persist="true" config_key="[LateNight],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[LateNight],sampler_rows">6</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_1-4">0</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_1-8">0</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row1">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row2">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row3">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row4">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row5">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row6">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row7">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row8">0</attribute>
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
     <!-- Library -->

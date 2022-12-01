@@ -502,6 +502,12 @@ Description:
                                 <SetVariable name="IsEqual">1</SetVariable>
                                 <SetVariable name="Width">30f</SetVariable>
                               </Template>
+                              <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
+                                <SetVariable name="Text">64</SetVariable>
+                                <SetVariable name="Setting">[LateNight],show_Xsamplers</SetVariable>
+                                <SetVariable name="IsEqual">1</SetVariable>
+                                <SetVariable name="Width">30f</SetVariable>
+                              </Template>
                               <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
                             </Children>
                           </WidgetGroup>
