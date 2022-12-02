@@ -60,7 +60,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
                      ->getPlaylistDAO(),
             &PlaylistDAO::tracksChanged,
             this,
-            &DlgAutoDJ::updateInfo);
+            &DlgAutoDJ::updateTotalInfo);
 
     connect(pLibrary,
             &Library::setTrackTableFont,
@@ -220,7 +220,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
-    updateInfo();
+    updateTotalInfo();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -381,7 +381,7 @@ void DlgAutoDJ::updateSelectionInfo() {
     }
 }
 
-void DlgAutoDJ::updateInfo() {
+void DlgAutoDJ::updateTotalInfo() {
     PlaylistSummarySelectResult summaries = m_pTrackCollection->playlists().selectPlaylistSummaries(
             PlaylistDAO::HiddenType::PLHT_AUTO_DJ);
     PlaylistSummary summary;
