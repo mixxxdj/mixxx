@@ -543,7 +543,7 @@ AbletonPush.loadPage = function(pageName) {
         // Keep track of the controls for further unloading
         AbletonPush.allControls.push(AbletonPush.LeftControls);
         AbletonPush.allControls.push(AbletonPush.RightControls);
-    
+
         // Show default decks on screen
         AbletonPush.displayText(3, 1, "Deck 1", 1);
         AbletonPush.displayText(3, 4, "Deck 2", 2);
@@ -555,7 +555,7 @@ AbletonPush.loadPage = function(pageName) {
         // Keep track of the controls for further unloading
         AbletonPush.allControls.push(AbletonPush.LeftControls);
         AbletonPush.allControls.push(AbletonPush.RightControls);
-    
+
         // Show default decks on screen
         AbletonPush.displayText(3, 1, "Deck 3", 1);
         AbletonPush.displayText(3, 4, "Deck 4", 2);
@@ -570,7 +570,7 @@ AbletonPush.loadPage = function(pageName) {
         // No page found, clear the Push.
 
     }
-}
+};
 
 //=========================================
 // Midi Handler function to route midi inputs to the right controls
@@ -1353,7 +1353,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             }
         },
         output: function(value, _group, _control) {
-            AbletonPush.displayText(1, 2+2*((parseInt(this.group.substr(8, 1))+1)%2), "Volume",1);
+            AbletonPush.displayText(1, 2+2*((parseInt(this.group.substr(8, 1))+1)%2), "Volume", 1);
             AbletonPush.displayCursor({hbloc: 3+4*((parseInt(this.group.substr(8, 1))+1)%2), value: value});
         },
     });
@@ -1505,7 +1505,7 @@ AbletonPush.fullDeck.prototype = new components.Deck();
 /**
  * Constructor for a deck of 64 samplers.
  */
- AbletonPush.samplersDeck = function() {
+AbletonPush.samplersDeck = function() {
 
     this.Buttons = [];
     this.RGBPads = [];
