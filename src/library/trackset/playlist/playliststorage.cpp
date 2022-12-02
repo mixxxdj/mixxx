@@ -22,8 +22,8 @@ const QString kPlaylistSummaryViewSelect =
                 "  %1.id AS id, "
                 "  %1.name AS name, "
                 "  LOWER(%1.name) AS %4, "
-                "  COUNT(case %3.%8 when 0 then 1 else null end) AS %9, "
-                "  SUM(case %3.%8 when 0 then %3.%7 else 0 end) AS %10 "
+                "  COUNT(case %3.%7 when 0 then 1 else null end) AS %8, "
+                "  SUM(case %3.%7 when 0 then %3.duration else 0 end) AS %9 "
                 "FROM %1 "
                 "LEFT JOIN %2 ON %2.%5 = %1.id "
                 "LEFT JOIN %3 ON %2.%6 = %3.id "
@@ -36,7 +36,6 @@ const QString kPlaylistSummaryViewSelect =
                         PLAYLISTTABLE_SORTNAME,
                         PLAYLISTTRACKSTABLE_PLAYLISTID,
                         PLAYLISTTRACKSTABLE_TRACKID,
-                        LIBRARYTABLE_DURATION,
                         LIBRARYTABLE_MIXXXDELETED,
                         PLAYLISTSUMMARY_TRACK_COUNT,
                         PLAYLISTSUMMARY_TRACK_DURATION);
