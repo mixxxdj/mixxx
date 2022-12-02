@@ -220,7 +220,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="labelInfo">
+       <widget class="QLabel" name="labelTotalInfo">
         <property name="text">
          <string/>
         </property>

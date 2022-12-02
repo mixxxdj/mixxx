@@ -397,7 +397,7 @@ void DlgAutoDJ::updateTotalInfo() {
     label.append(summary.getTrackDurationText());
     label.append(QString(" (%1)").arg(summary.getTrackCount()));
 
-    labelInfo->setText(label);
+    labelTotalInfo->setText(label);
 }
 
 bool DlgAutoDJ::hasFocus() const {
