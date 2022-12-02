@@ -19,7 +19,7 @@
 var TraktorS2MK3 = new function () {
     this.controller = new HIDController();
     this.shiftPressed = { "[Channel1]": false, "[Channel2]": false };
-    this.fxButtonState = { 1: false, 2: false, 3: false, 4: false };
+    this.fxButtonActive = { "[Channel1]": 0, "[Channel2]": 0 };
     this.padModeState = { "[Channel1]": 0, "[Channel2]": 0 }; // 0 = Hotcues Mode, 1 = Samples Mode
 
     // Knob encoder states (hold values between 0x0 and 0xF)
@@ -592,15 +592,32 @@ TraktorS2MK3.fxHandler = function (field) {
         return;
     }
 
+    const fxButtonCount = 4;
+    const availableGroups = [ "[Channel1]", "[Channel2]" ];
+    var targetGroups = [];
     var fxNumber = parseInt(field.id[field.id.length - 1]);
-    var group = "[EffectRack1_EffectUnit" + fxNumber + "]";
 
-    // Toggle effect unit
-    TraktorS2MK3.fxButtonState[fxNumber] = !TraktorS2MK3.fxButtonState[fxNumber];
+    // Target decks whose shift button is pressed.
+    for (let group of availableGroups) {
+        if (TraktorS2MK3.shiftPressed[group]) targetGroups.push(group);
+    }
 
-    engine.setValue(group, "group_[Channel1]_enable", TraktorS2MK3.fxButtonState[fxNumber]);
-    engine.setValue(group, "group_[Channel2]_enable", TraktorS2MK3.fxButtonState[fxNumber]);
-    TraktorS2MK3.outputHandler(TraktorS2MK3.fxButtonState[fxNumber], field.group, "fxButton" + fxNumber);
+    // If no shift button was pressed fall back to target all decks.
+    if (targetGroups.length === 0) targetGroups = availableGroups;
+
+    for (let group of targetGroups) {
+        TraktorS2MK3.fxButtonActive[group] = fxNumber;
+        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", TraktorS2MK3.fxButtonActive[group]);
+    }
+
+    // There is no way on the controller to indicate which deck the effect applies to, but we'll keep all active buttons lit.
+    for (let fxButton = 1; fxButton <= fxButtonCount; ++fxButton) {
+        let active = false;
+        for (let group of availableGroups) {
+            active = active || TraktorS2MK3.fxButtonActive[group] === fxButton;
+        }
+        TraktorS2MK3.outputHandler(active, field.group, "fxButton" + fxButton);
+    }
 };
 
 TraktorS2MK3.reverseHandler = function (field) {
