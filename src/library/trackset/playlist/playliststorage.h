@@ -2,6 +2,7 @@
 
 #include <QSqlDatabase>
 
+#include "library/dao/playlistdao.h"
 #include "library/trackset/playlist/playlistsummary.h"
 #include "util/db/fwdsqlqueryselectresult.h"
 #include "util/db/sqlstorage.h"
@@ -99,13 +100,13 @@ class PlaylistStorage : public virtual /*implements*/ SqlStorage {
     // Playlist read operations (read-only, const)
     /////////////////////////////////////////////////////////////////////////
 
-    uint countPlaylists() const;
+    uint countPlaylists(PlaylistDAO::HiddenType type) const;
 
     /////////////////////////////////////////////////////////////////////////
     // PlaylistSummary view operations (read-only, const)
     /////////////////////////////////////////////////////////////////////////
 
-    PlaylistSummarySelectResult selectPlaylistSummaries() const;
+    PlaylistSummarySelectResult selectPlaylistSummaries(PlaylistDAO::HiddenType type) const;
 
     // Omit the pPlaylistSummary parameter for checking if the corresponding crate exists.
     bool readPlaylistSummaryById(PlaylistId playlistId,

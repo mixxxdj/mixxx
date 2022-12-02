@@ -137,11 +137,12 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     QList<TreeItem*> data_list;
     data_list.reserve(m_pTrackCollection->playlists()
-                              .countPlaylists());
+                              .countPlaylists(PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN));
 
     int selectedRow = -1;
-    PlaylistSummarySelectResult playlistSummaries(m_pTrackCollection->playlists()
-                                                          .selectPlaylistSummaries());
+    PlaylistSummarySelectResult playlistSummaries(
+            m_pTrackCollection->playlists().selectPlaylistSummaries(
+                    PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN));
     PlaylistSummary playlistSummary;
     while (playlistSummaries.populateNext(&playlistSummary)) {
         int playlistId = playlistSummary.getId().value();

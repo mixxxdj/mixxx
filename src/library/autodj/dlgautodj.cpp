@@ -32,7 +32,8 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
                   parent->getTrackTableBackgroundColorOpacity(),
                   /*no sorting*/ false)),
           m_bShowButtonText(parent->getShowButtonText()),
-          m_pAutoDJTableModel(nullptr) {
+          m_pAutoDJTableModel(nullptr),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -381,17 +382,20 @@ void DlgAutoDJ::updateSelectionInfo() {
 }
 
 void DlgAutoDJ::updateInfo() {
-    double duration = 0.0;
-
-    int rows = m_pAutoDJTableModel->rowCount();
-    for (int row = 0; row < rows; ++row) {
-        TrackPointer pTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(row, 0));
-        duration += pTrack->getDuration();
+    PlaylistSummarySelectResult summaries = m_pTrackCollection->playlists().selectPlaylistSummaries(
+            PlaylistDAO::HiddenType::PLHT_AUTO_DJ);
+    PlaylistSummary summary;
+    VERIFY_OR_DEBUG_ASSERT(summaries.populateNext(&summary)) {
+        qWarning() << "No AutoDJ playlist found";
+        return;
+    }
+    if (summaries.next()) {
+        qWarning() << "More than one AutoDJ playlist found!";
     }
 
     QString label;
-    label.append(mixxx::DurationBase::formatTime(duration));
-    label.append(QString(" (%1)").arg(rows));
+    label.append(summary.getTrackDurationText());
+    label.append(QString(" (%1)").arg(summary.getTrackCount()));
 
     labelInfo->setText(label);
 }

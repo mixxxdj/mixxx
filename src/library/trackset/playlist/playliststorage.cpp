@@ -1,6 +1,5 @@
 #include "library/trackset/playlist/playliststorage.h"
 
-#include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
@@ -22,12 +21,12 @@ const QString kPlaylistSummaryViewSelect =
                 "  %1.id AS id, "
                 "  %1.name AS name, "
                 "  LOWER(%1.name) AS %4, "
+                "  %1.hidden AS hidden, "
                 "  COUNT(case %3.%7 when 0 then 1 else null end) AS %8, "
                 "  SUM(case %3.%7 when 0 then %3.duration else 0 end) AS %9 "
                 "FROM %1 "
                 "LEFT JOIN %2 ON %2.%5 = %1.id "
                 "LEFT JOIN %3 ON %2.%6 = %3.id "
-                "WHERE %1.hidden = 0 "
                 "GROUP BY %1.id")
                 .arg(
                         PLAYLIST_TABLE,
@@ -90,10 +89,11 @@ void PlaylistStorage::createViews() {
     }
 }
 
-uint PlaylistStorage::countPlaylists() const {
+uint PlaylistStorage::countPlaylists(const PlaylistDAO::HiddenType type) const {
     FwdSqlQuery query(m_database,
-            QStringLiteral("SELECT COUNT(*) FROM %1")
+            QStringLiteral("SELECT COUNT(*) FROM %1 WHERE %1.hidden = :hiddenType")
                     .arg(PLAYLIST_TABLE));
+    query.bindValue(":hiddenType", type);
     if (query.execPrepared() && query.next()) {
         uint result = query.fieldValue(0).toUInt();
         DEBUG_ASSERT(!query.next());
@@ -103,10 +103,12 @@ uint PlaylistStorage::countPlaylists() const {
     }
 }
 
-PlaylistSummarySelectResult PlaylistStorage::selectPlaylistSummaries() const {
+PlaylistSummarySelectResult PlaylistStorage::selectPlaylistSummaries(
+        const PlaylistDAO::HiddenType type) const {
     FwdSqlQuery query(m_database,
-            QStringLiteral("SELECT * FROM %1 ORDER BY %2")
+            QStringLiteral("SELECT * FROM %1 WHERE %1.hidden = :hiddenType ORDER BY %2")
                     .arg(PLAYLIST_SUMMARY_VIEW, PLAYLISTTABLE_SORTNAME));
+    query.bindValue(":hiddenType", type);
     if (query.execPrepared()) {
         return PlaylistSummarySelectResult(std::move(query));
     } else {
