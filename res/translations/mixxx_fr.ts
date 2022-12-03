@@ -3395,12 +3395,12 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
         <translation>Anciens contributeurs</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="362"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="366"/>
         <source>Official Website</source>
         <translation>Site Internet officiel</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="372"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="376"/>
         <source>Donate</source>
         <translation>Donation</translation>
     </message>
@@ -3661,26 +3661,31 @@ dernier son.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="278"/>
+        <source>Auto DJ requires two decks assigned to opposite sides of the crossfader.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="286"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
         <translation>Une platine doit être arrêtée pour activer le mode Auto DJ.</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="286"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="293"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation>Platines 3 et 4 doivent être arrêtées pour activer le mode Auto DJ.</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="309"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="316"/>
         <source>Enable</source>
         <translation>Active</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="318"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="325"/>
         <source>Disable</source>
         <translation>Désactive</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="363"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="370"/>
         <source>Displays the duration and number of selected tracks.</source>
         <translation>Affiche la durée et le nombre de piste sélectionnées</translation>
     </message>
@@ -3688,6 +3693,7 @@ dernier son.</translation>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="285"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="292"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
@@ -6307,28 +6313,28 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
         <translation>Sélectionnez le répertoire des enregistrements</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="392"/>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="399"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="390"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="397"/>
         <source>Recordings directory invalid</source>
         <translation>Répertoire des enregistrements non valide</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="393"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="391"/>
         <source>Recordings directory must be set to an existing directory.</source>
         <translation>Le répertoire des enregistrements doit être défini sur un répertoire existant. </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="400"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="398"/>
         <source>Recordings directory must be set to a directory.</source>
         <translation>Le répertoire des enregistrements doit être défini sur un répertoire. </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="405"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="403"/>
         <source>Recordings directory not writable</source>
         <translation>Répertoire des enregistrements non accessible en écriture </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="406"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="404"/>
         <source>You do not have write access to %1. Choose a recordings directory you have write access to.</source>
         <translation>Vous n&apos;avez pas d&apos;accès en écriture à %1. Choisissez un répertoire d&apos;enregistrements auquel vous avez accès en écriture. </translation>
     </message>
@@ -7450,37 +7456,37 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
         <translation>&amp;Fermer</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="238"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="236"/>
         <source>Status: %1</source>
         <translation>État: %1</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="258"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="256"/>
         <source>HTTP Status: %1</source>
         <translation>État HTTP: %1</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="259"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="257"/>
         <source>Code: %1</source>
         <translation>Code: %1</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="261"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="259"/>
         <source>Mixxx can&apos;t connect to %1 for an unknown reason.</source>
         <translation>Mixxx ne peut se connecter à %1 pour une raison inconnue.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="263"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="261"/>
         <source>Mixxx can&apos;t connect to %1.</source>
         <translation>Mixxx ne peut se connecter à %1.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="291"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="289"/>
         <source>Original tags</source>
         <translation>Tags initiaux</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="294"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="292"/>
         <source>Suggested tags</source>
         <translation>Tags suggérés</translation>
     </message>
@@ -8507,6 +8513,14 @@ Voulez-vous sélectionner un périphérique d&apos;entrée ?</translation>
         <location filename="../../src/mixxx.cpp" line="1724"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Abandonner toutes les modifications et quitter Mixxx ?</translation>
+    </message>
+</context>
+<context>
+    <name>MockNetworkReply</name>
+    <message>
+        <location filename="../../src/test/mock_networkaccessmanager.cpp" line="109"/>
+        <source>Operation canceled</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -10108,8 +10122,8 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
-        <source>There is less than 1 GiB of useable space in the recording folder</source>
-        <translation>Il reste moins d&apos;un gigaoctet d&apos;espace disponible dans le dossier d&apos;enregistrement</translation>
+        <source>There is less than 1 GiB of usable space in the recording folder</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
@@ -10144,54 +10158,54 @@ Complètement à droite: fin de la période d&apos;effet</translation>
 <context>
     <name>RekordboxFeature</name>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1270"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1353"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1527"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1273"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1356"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1530"/>
         <source>Rekordbox</source>
         <translation>Rekordbox</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1371"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1374"/>
         <source>Playlists</source>
         <translation>Listes de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1370"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1373"/>
         <source>Folders</source>
         <translation>Dossiers</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1373"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1376"/>
         <source>Hot cues</source>
         <translation>Repères rapides</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1375"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1378"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
         <translation>Boucles (actuellement, seule la première boucle est disponible dans Mixxx)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1378"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1381"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
         <translation>Vérifie les périphériques USB/SD Rekordbox connectés (actualise)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1372"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1375"/>
         <source>Beatgrids</source>
         <translation>Grilles rythmiques</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1354"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1357"/>
         <source>Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode.&lt;br/&gt;Rekordbox can only export to USB or SD devices with a FAT or HFS file system.&lt;br/&gt;Mixxx can read a database from any device that contains the database folders (&lt;tt&gt;PIONEER&lt;/tt&gt; and &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Not supported are Rekordbox databases that have been moved to an external device via&lt;br/&gt;&lt;i&gt;Preferences &gt; Advanced &gt; Database management&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;The following data is read:</source>
         <translation>Lit les bases de données exportées pour les lecteurs Pioneer CDJ / XDJ en utilisant le mode d&apos;exportation Rekordbox.&lt;br/&gt;Rekordbox peut uniquement exporter vers des périphériques USB ou SD avec un système de fichiers FAT ou HFS.&lt;br/&gt;Mixxx peut lire une base de données à partir de n&apos;importe quel périphérique contenant des dossiers de base de données (&lt;tt&gt;PIONEER&lt;/tt&gt; et &lt;tt&gt;contenu&lt;/tt&gt;).&lt;br/&gt;Ne sont pas prises en charge les bases de données Rekordbox qui ont été déplacées vers un périphérique externe via&lt;br/&gt;&lt;i&gt;Préférences&gt; Avancé&gt; Gestion de la base de données&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;Les données suivantes sont lues :</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1374"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1377"/>
         <source>Memory cues</source>
         <translation>Repères mémoire</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1404"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1407"/>
         <source>(loading) Rekordbox</source>
         <translation>(chargement) Rekordbox</translation>
     </message>
@@ -10614,12 +10628,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
         <translation>Création de l&apos;empreinte de la piste</translation>
     </message>
     <message>
-        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="77"/>
+        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="97"/>
         <source>Identifying track through Acoustid</source>
         <translation>Identification de la piste via Acoustid</translation>
     </message>
     <message>
-        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="126"/>
+        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="146"/>
         <source>Retrieving metadata from MusicBrainz</source>
         <translation>Récupération des métadonnées de MusicBrainz</translation>
     </message>
@@ -14037,135 +14051,135 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
         <translation><numerusform>Marquage des métadonnées de %n piste(s) à exporter dans les tags de fichier</numerusform><numerusform>Marquage des métadonnées de %n piste(s) à exporter dans les tags de fichier</numerusform><numerusform>Marquage des métadonnées de %n piste(s) à exporter dans les tags de fichier</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="942"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="941"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="963"/>
         <source>Create New Playlist</source>
         <translation>Créer une nouvelle liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="965"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
         <source>Enter name for new playlist:</source>
         <translation>Entrer le nom de la nouvelle liste de lecture :</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="967"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="966"/>
         <source>New Playlist</source>
         <translation>Nouvelle liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="974"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="978"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="987"/>
         <source>Playlist Creation Failed</source>
         <translation>La création de la liste de lecture a échoué</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="976"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
         <source>A playlist by that name already exists.</source>
         <translation>Il existe déjà une liste de lecture avec ce nom</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="980"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Une liste de lecture ne peut pas être sans nom.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="989"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Une erreur inconnue s&apos;est produite à la création de la liste de lecture : </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1051"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1053"/>
         <source>Add to New Crate</source>
         <translation>Ajouter dans un nouveau Bac</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1145"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1147"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation><numerusform>Scaling BPM of %n track(s)</numerusform><numerusform>Mise à l&apos;échelle du BPM de %n piste(s)</numerusform><numerusform>Mise à l&apos;échelle du BPM de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1175"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1177"/>
         <source>Locking BPM of %n track(s)</source>
         <translation><numerusform>Verrouillage du BPM de %n piste(s) </numerusform><numerusform>Verrouillage du BPM de %n piste(s) </numerusform><numerusform>Verrouillage du BPM de %n piste(s) </numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1176"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1178"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation><numerusform>Déverrouillage du BPM de %n piste(s)</numerusform><numerusform>Déverrouillage du BPM de% n piste (s) </numerusform><numerusform>Déverrouillage du BPM de% n piste (s) </numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1205"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1207"/>
         <source>Setting color of %n track(s)</source>
         <translation><numerusform>Définition de la couleur de %n piste(s)</numerusform><numerusform>Définition de la couleur de %n piste(s)</numerusform><numerusform>Définition de la couleur de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1253"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1255"/>
         <source>Resetting play count of %n track(s)</source>
         <translation><numerusform>Réinitialisation du nombre de lectures de %n piste(s)</numerusform><numerusform>Réinitialisation du nombre de lectures de% n piste (s) </numerusform><numerusform>Réinitialisation du nombre de lectures de% n piste (s) </numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1275"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1277"/>
         <source>Resetting beats of %n track(s)</source>
         <translation><numerusform>Réinitialisation des battements de %n piste(s)</numerusform><numerusform>Réinitialisation des battements de %n piste(s) </numerusform><numerusform>Réinitialisation des battements de %n piste(s) </numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1298"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1300"/>
         <source>Clearing rating of %n track(s)</source>
         <translation><numerusform>Suppression de %n piste(s)</numerusform><numerusform>Effacer le taux de %n piste(s)</numerusform><numerusform>Effacer le taux de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1327"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1329"/>
         <source>Removing main cue from %n track(s)</source>
         <translation><numerusform>Suppression du repère principal de %n piste(s)</numerusform><numerusform>Suppression repère principal de %n piste(s)</numerusform><numerusform>Suppression repère principal de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1337"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1339"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation><numerusform>Suppression du repère outro de %n piste(s)</numerusform><numerusform>Suppression repère outro de %n piste(s)</numerusform><numerusform>Suppression repère outro de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1347"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1349"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation><numerusform>Suppression repère intro de %n piste(s)</numerusform><numerusform>Suppression repère intro de %n piste(s)</numerusform><numerusform>Suppression repère intro de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1357"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1359"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation><numerusform>Suppression repère boucle de %n piste(s)</numerusform><numerusform>Suppression repère boucle de %n piste(s)</numerusform><numerusform>Suppression repère boucle de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1367"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1369"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation><numerusform>Suppression repères rapide de %n piste(s)</numerusform><numerusform>Suppression repères rapide de %n piste(s)</numerusform><numerusform>Suppression repères rapide de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1389"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1391"/>
         <source>Resetting keys of %n track(s)</source>
         <translation><numerusform>Réinitialisation des tonalités de %n piste(s)</numerusform><numerusform>Réinitialisation des tonalités de %n piste(s)</numerusform><numerusform>Réinitialisation des tonalités de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1411"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1413"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation><numerusform>Réinitialisation ReplayGain de %n piste(s)</numerusform><numerusform>Réinitialisation ReplayGain de %n piste(s)</numerusform><numerusform>Réinitialisation ReplayGain de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1442"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1444"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation><numerusform>Réinitialisation forme d&apos;onde de %n piste(s)</numerusform><numerusform>Réinitialisation forme d&apos;onde de %n piste(s)</numerusform><numerusform>Réinitialisation forme d&apos;onde de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1498"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1500"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation><numerusform>Réinitialisation de toutes les métadonnées de performance de %n piste(s)</numerusform><numerusform>Réinitialisation de toutes les métadonnées de performance de %n piste(s)</numerusform><numerusform>Réinitialisation de toutes les métadonnées de performance de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1604"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1606"/>
         <source>Setting cover art of %n track(s)</source>
         <translation><numerusform>Définition de la pochette d&apos;album de %n piste(s)</numerusform><numerusform>Définition de la pochette d&apos;album de %n piste(s)</numerusform><numerusform>Définition de la pochette d&apos;album de %n piste(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1628"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1630"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation><numerusform>Rechargement de la pochette d&apos;album de %n piste(s)</numerusform><numerusform>Rechargement de la pochette d&apos;album de %n piste(s)</numerusform><numerusform>Rechargement de la pochette d&apos;album de %n piste(s)</numerusform></translation>
     </message>
@@ -14234,9 +14248,14 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
 <context>
     <name>mixxx::network::WebTask</name>
     <message>
-        <location filename="../../src/network/webtask.cpp" line="211"/>
+        <location filename="../../src/network/webtask.cpp" line="202"/>
         <source>No network access</source>
         <translation>Pas d&apos;accès au réseau</translation>
+    </message>
+    <message>
+        <location filename="../../src/network/webtask.cpp" line="220"/>
+        <source>The Network request has not been started</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 </TS>

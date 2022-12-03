@@ -3393,12 +3393,12 @@
         <translation>過去的貢獻者</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="362"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="366"/>
         <source>Official Website</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="372"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="376"/>
         <source>Donate</source>
         <translation type="unfinished"/>
     </message>
@@ -3632,26 +3632,31 @@ last sound.</source>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="278"/>
+        <source>Auto DJ requires two decks assigned to opposite sides of the crossfader.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="286"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
         <translation>要启动自动 DJ 模式，必须停止一个碟机。</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="286"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="293"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation>必须停止碟机 3 和碟机 4 以启用自动DJ 模式。</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="309"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="316"/>
         <source>Enable</source>
         <translation>启用</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="318"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="325"/>
         <source>Disable</source>
         <translation>禁用</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="363"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="370"/>
         <source>Displays the duration and number of selected tracks.</source>
         <translation>Displays the duration and number of selected tracks.</translation>
     </message>
@@ -3659,6 +3664,7 @@ last sound.</source>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="285"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="292"/>
         <source>Auto DJ</source>
         <translation>自動DJ</translation>
     </message>
@@ -6269,28 +6275,28 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>選擇錄音目錄</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="392"/>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="399"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="390"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="397"/>
         <source>Recordings directory invalid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="393"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="391"/>
         <source>Recordings directory must be set to an existing directory.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="400"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="398"/>
         <source>Recordings directory must be set to a directory.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="405"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="403"/>
         <source>Recordings directory not writable</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="406"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="404"/>
         <source>You do not have write access to %1. Choose a recordings directory you have write access to.</source>
         <translation type="unfinished"/>
     </message>
@@ -7412,37 +7418,37 @@ Select from different types of displays for the waveform, which differ primarily
         <translation>與關閉</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="238"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="236"/>
         <source>Status: %1</source>
         <translation>状态：%1</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="258"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="256"/>
         <source>HTTP Status: %1</source>
         <translation>HTTP 状态：%1</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="259"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="257"/>
         <source>Code: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="261"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="259"/>
         <source>Mixxx can&apos;t connect to %1 for an unknown reason.</source>
         <translation>Mixxx 无法连接到 %1，错误原因未知。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="263"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="261"/>
         <source>Mixxx can&apos;t connect to %1.</source>
         <translation>Mixxx 無法連接到 %1。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="291"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="289"/>
         <source>Original tags</source>
         <translation>原始标签</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="294"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="292"/>
         <source>Suggested tags</source>
         <translation>建議的標籤</translation>
     </message>
@@ -8466,6 +8472,14 @@ Do you want to select an input device?</source>
         <location filename="../../src/mixxx.cpp" line="1724"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>放棄所有更改並退出 Mixxx？</translation>
+    </message>
+</context>
+<context>
+    <name>MockNetworkReply</name>
+    <message>
+        <location filename="../../src/test/mock_networkaccessmanager.cpp" line="109"/>
+        <source>Operation canceled</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -10059,8 +10073,8 @@ Fully right: end of the effect period</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
-        <source>There is less than 1 GiB of useable space in the recording folder</source>
-        <translation>There is less than 1 GiB of useable space in the recording folder</translation>
+        <source>There is less than 1 GiB of usable space in the recording folder</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
@@ -10095,54 +10109,54 @@ Fully right: end of the effect period</translation>
 <context>
     <name>RekordboxFeature</name>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1270"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1353"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1527"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1273"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1356"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1530"/>
         <source>Rekordbox</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1371"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1374"/>
         <source>Playlists</source>
         <translation>播放列表</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1370"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1373"/>
         <source>Folders</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1373"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1376"/>
         <source>Hot cues</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1375"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1378"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1378"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1381"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1372"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1375"/>
         <source>Beatgrids</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1354"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1357"/>
         <source>Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode.&lt;br/&gt;Rekordbox can only export to USB or SD devices with a FAT or HFS file system.&lt;br/&gt;Mixxx can read a database from any device that contains the database folders (&lt;tt&gt;PIONEER&lt;/tt&gt; and &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Not supported are Rekordbox databases that have been moved to an external device via&lt;br/&gt;&lt;i&gt;Preferences &gt; Advanced &gt; Database management&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;The following data is read:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1374"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1377"/>
         <source>Memory cues</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1404"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1407"/>
         <source>(loading) Rekordbox</source>
         <translation type="unfinished"/>
     </message>
@@ -10565,12 +10579,12 @@ Fully right: end of the effect period</translation>
         <translation>指紋識別跟蹤</translation>
     </message>
     <message>
-        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="77"/>
+        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="97"/>
         <source>Identifying track through Acoustid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="126"/>
+        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="146"/>
         <source>Retrieving metadata from MusicBrainz</source>
         <translation type="unfinished"/>
     </message>
@@ -13988,135 +14002,135 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="942"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="941"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="963"/>
         <source>Create New Playlist</source>
         <translation>建立播放清單</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="965"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
         <source>Enter name for new playlist:</source>
         <translation>輸入新播放清單的名稱:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="967"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="966"/>
         <source>New Playlist</source>
         <translation>新播放清單</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="974"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="978"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="987"/>
         <source>Playlist Creation Failed</source>
         <translation>建立播放清單失敗</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="976"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
         <source>A playlist by that name already exists.</source>
         <translation>已存在該名稱的播放清單。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="980"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>播放清單名稱不能為空白。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="989"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>建立播放清單時發生了未知的錯誤:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1051"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1053"/>
         <source>Add to New Crate</source>
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1145"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1147"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1175"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1177"/>
         <source>Locking BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1176"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1178"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1205"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1207"/>
         <source>Setting color of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1253"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1255"/>
         <source>Resetting play count of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1275"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1277"/>
         <source>Resetting beats of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1298"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1300"/>
         <source>Clearing rating of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1327"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1329"/>
         <source>Removing main cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1337"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1339"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1347"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1349"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1357"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1359"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1367"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1369"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1389"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1391"/>
         <source>Resetting keys of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1411"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1413"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1442"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1444"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1498"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1500"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1604"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1606"/>
         <source>Setting cover art of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1628"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1630"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
@@ -14185,9 +14199,14 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
 <context>
     <name>mixxx::network::WebTask</name>
     <message>
-        <location filename="../../src/network/webtask.cpp" line="211"/>
+        <location filename="../../src/network/webtask.cpp" line="202"/>
         <source>No network access</source>
         <translation>无网络连接</translation>
+    </message>
+    <message>
+        <location filename="../../src/network/webtask.cpp" line="220"/>
+        <source>The Network request has not been started</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 </TS>

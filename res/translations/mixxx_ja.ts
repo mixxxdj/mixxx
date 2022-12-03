@@ -1137,7 +1137,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="335"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="383"/>
         <source>Hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>ホットキュー %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="456"/>
@@ -3392,12 +3392,12 @@
         <translation>過去の開発</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="362"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="366"/>
         <source>Official Website</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="372"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="376"/>
         <source>Donate</source>
         <translation type="unfinished"/>
     </message>
@@ -3627,26 +3627,31 @@ last sound.</source>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="278"/>
-        <source>One deck must be stopped to enable Auto DJ mode.</source>
+        <source>Auto DJ requires two decks assigned to opposite sides of the crossfader.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="286"/>
+        <source>One deck must be stopped to enable Auto DJ mode.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="293"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="309"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="316"/>
         <source>Enable</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="318"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="325"/>
         <source>Disable</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="363"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="370"/>
         <source>Displays the duration and number of selected tracks.</source>
         <translation type="unfinished"/>
     </message>
@@ -3654,6 +3659,7 @@ last sound.</source>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="285"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="292"/>
         <source>Auto DJ</source>
         <translation>オートDJ</translation>
     </message>
@@ -5914,7 +5920,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="210"/>
         <source>Library Font:</source>
-        <translation type="unfinished"/>
+        <translation>ライブラリのフォント:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="386"/>
@@ -5934,12 +5940,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="418"/>
         <source>Open Mixxx Settings Folder</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx 設定フォルダを開く</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="184"/>
         <source>Library Row Height:</source>
-        <translation type="unfinished"/>
+        <translation>ライブラリの行の高さ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="160"/>
@@ -5954,12 +5960,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="227"/>
         <source>...</source>
-        <translation type="unfinished"/>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="194"/>
         <source> px</source>
-        <translation type="unfinished"/>
+        <translation>px</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="170"/>
@@ -5969,7 +5975,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="234"/>
         <source>Search-as-you-type timeout:</source>
-        <translation type="unfinished"/>
+        <translation>検索タイプ入力のタイムアウト:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="244"/>
@@ -5984,12 +5990,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="299"/>
         <source>External Libraries</source>
-        <translation type="unfinished"/>
+        <translation>外部ライブラリ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="375"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
-        <translation type="unfinished"/>
+        <translation>設定を有効にするには Mixxx を再起動する必要があります。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="305"/>
@@ -6020,7 +6026,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="288"/>
         <source>Ignore</source>
-        <translation type="unfinished"/>
+        <translation>何もしない</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="315"/>
@@ -6050,7 +6056,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="365"/>
         <source>All external libraries shown are write protected.</source>
-        <translation type="unfinished"/>
+        <translation>表示されている全ての外部ライブラリは書き込み保護されます。</translation>
     </message>
 </context>
 <context>
@@ -6243,28 +6249,28 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="392"/>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="399"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="390"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="397"/>
         <source>Recordings directory invalid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="393"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="391"/>
         <source>Recordings directory must be set to an existing directory.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="400"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="398"/>
         <source>Recordings directory must be set to a directory.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="405"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="403"/>
         <source>Recordings directory not writable</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="406"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="404"/>
         <source>You do not have write access to %1. Choose a recordings directory you have write access to.</source>
         <translation type="unfinished"/>
     </message>
@@ -7382,37 +7388,37 @@ Select from different types of displays for the waveform, which differ primarily
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="238"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="236"/>
         <source>Status: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="258"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="256"/>
         <source>HTTP Status: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="259"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="257"/>
         <source>Code: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="261"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="259"/>
         <source>Mixxx can&apos;t connect to %1 for an unknown reason.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="263"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="261"/>
         <source>Mixxx can&apos;t connect to %1.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="291"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="289"/>
         <source>Original tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="294"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="292"/>
         <source>Suggested tags</source>
         <translation type="unfinished"/>
     </message>
@@ -8430,6 +8436,14 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/mixxx.cpp" line="1724"/>
         <source>Discard any changes and exit Mixxx?</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>MockNetworkReply</name>
+    <message>
+        <location filename="../../src/test/mock_networkaccessmanager.cpp" line="109"/>
+        <source>Operation canceled</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -9999,7 +10013,7 @@ Fully right: end of the effect period</source>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
-        <source>There is less than 1 GiB of useable space in the recording folder</source>
+        <source>There is less than 1 GiB of usable space in the recording folder</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -10035,54 +10049,54 @@ Fully right: end of the effect period</source>
 <context>
     <name>RekordboxFeature</name>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1270"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1353"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1527"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1273"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1356"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1530"/>
         <source>Rekordbox</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1371"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1374"/>
         <source>Playlists</source>
         <translation>プレイリスト</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1370"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1373"/>
         <source>Folders</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1373"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1376"/>
         <source>Hot cues</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1375"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1378"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1378"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1381"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1372"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1375"/>
         <source>Beatgrids</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1354"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1357"/>
         <source>Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode.&lt;br/&gt;Rekordbox can only export to USB or SD devices with a FAT or HFS file system.&lt;br/&gt;Mixxx can read a database from any device that contains the database folders (&lt;tt&gt;PIONEER&lt;/tt&gt; and &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Not supported are Rekordbox databases that have been moved to an external device via&lt;br/&gt;&lt;i&gt;Preferences &gt; Advanced &gt; Database management&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;The following data is read:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1374"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1377"/>
         <source>Memory cues</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1404"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1407"/>
         <source>(loading) Rekordbox</source>
         <translation type="unfinished"/>
     </message>
@@ -10505,12 +10519,12 @@ Fully right: end of the effect period</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="77"/>
+        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="97"/>
         <source>Identifying track through Acoustid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="126"/>
+        <location filename="../../src/musicbrainz/tagfetcher.cpp" line="146"/>
         <source>Retrieving metadata from MusicBrainz</source>
         <translation type="unfinished"/>
     </message>
@@ -13159,7 +13173,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="87"/>
         <source>Loads a track in deck %1</source>
-        <translation type="unfinished"/>
+        <translation>デッキ %1 にトラックを読み込み</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="88"/>
@@ -13199,7 +13213,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="147"/>
         <source>Create &amp;New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>新しいプレイリストを作成(&amp;N)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="148"/>
@@ -13214,7 +13228,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="160"/>
         <source>Create New &amp;Crate</source>
-        <translation type="unfinished"/>
+        <translation>新しいレコードボックスを作成(&amp;C)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="161"/>
@@ -13288,7 +13302,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="233"/>
         <source>Show Preview Deck</source>
-        <translation type="unfinished"/>
+        <translation>プレビューデッキを表示</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="234"/>
@@ -13304,7 +13318,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="248"/>
         <source>Show Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>カバーアートを表示</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="249"/>
@@ -13486,7 +13500,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="512"/>
         <source>Deb&amp;ugger Enabled</source>
-        <translation type="unfinished"/>
+        <translation>デバッガを有効化(&amp;u)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="513"/>
@@ -13526,7 +13540,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="581"/>
         <source>&amp;Keyboard Shortcuts</source>
-        <translation type="unfinished"/>
+        <translation>キーボードショートカット(&amp;K)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="582"/>
@@ -13536,7 +13550,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="595"/>
         <source>&amp;Translate This Application</source>
-        <translation type="unfinished"/>
+        <translation>このアプリケーションを翻訳(&amp;T)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="596"/>
@@ -13926,135 +13940,135 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="942"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="941"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="963"/>
         <source>Create New Playlist</source>
         <translation>新規プレイリストの作成</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="965"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
         <source>Enter name for new playlist:</source>
         <translation>新しいプレイリストの名前</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="967"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="966"/>
         <source>New Playlist</source>
         <translation>プレイリストの新規作成</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="974"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="978"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="987"/>
         <source>Playlist Creation Failed</source>
         <translation>プレイリストの作成に失敗</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="976"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
         <source>A playlist by that name already exists.</source>
         <translation>同じ名前のプレイリストが既にあります。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="980"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>プレイリストには名前が必要です。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="989"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>プレイリストの作成中に不明なエラーが発生しました </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1051"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1053"/>
         <source>Add to New Crate</source>
         <translation>新しいレコードボックスに追加</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1145"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1147"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1175"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1177"/>
         <source>Locking BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1176"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1178"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1205"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1207"/>
         <source>Setting color of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1253"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1255"/>
         <source>Resetting play count of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1275"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1277"/>
         <source>Resetting beats of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1298"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1300"/>
         <source>Clearing rating of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1327"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1329"/>
         <source>Removing main cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1337"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1339"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1347"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1349"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1357"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1359"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1367"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1369"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1389"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1391"/>
         <source>Resetting keys of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1411"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1413"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1442"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1444"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1498"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1500"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1604"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1606"/>
         <source>Setting cover art of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1628"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1630"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
@@ -14123,8 +14137,13 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>mixxx::network::WebTask</name>
     <message>
-        <location filename="../../src/network/webtask.cpp" line="211"/>
+        <location filename="../../src/network/webtask.cpp" line="202"/>
         <source>No network access</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/network/webtask.cpp" line="220"/>
+        <source>The Network request has not been started</source>
         <translation type="unfinished"/>
     </message>
 </context>
