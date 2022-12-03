@@ -32,7 +32,7 @@ class SoundDevice {
         return m_hostAPI;
     }
     void setSampleRate(double sampleRate);
-    void setFramesPerBuffer(unsigned int framesPerBuffer);
+    void setConfigFramesPerBuffer(unsigned int framesPerBuffer);
     virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers) = 0;
     virtual bool isOpen() const = 0;
     virtual SoundDeviceError close() = 0;
@@ -89,7 +89,7 @@ class SoundDevice {
     // differently sized buffers. As such this value should only be used for
     // configuring the audio devices. The actual runtime buffer size should be
     // used for any computations working with audio.
-    SINT m_framesPerBuffer;
+    SINT m_configFramesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
 };

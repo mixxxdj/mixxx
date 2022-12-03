@@ -17,7 +17,7 @@ SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
           m_iNumInputChannels(2),
           m_dSampleRate(44100.0),
           m_hostAPI("Unknown API"),
-          m_framesPerBuffer(0) {
+          m_configFramesPerBuffer(0) {
 }
 
 int SoundDevice::getNumInputChannels() const {
@@ -36,7 +36,7 @@ void SoundDevice::setSampleRate(double sampleRate) {
     m_dSampleRate = sampleRate;
 }
 
-void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
+void SoundDevice::setConfigFramesPerBuffer(unsigned int framesPerBuffer) {
     if (framesPerBuffer * 2 > MAX_BUFFER_LEN) {
         // framesPerBuffer * 2 because a frame will generally end up
         // being 2 samples and MAX_BUFFER_LEN is a number of samples
@@ -44,7 +44,7 @@ void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
         reportFatalErrorAndQuit("framesPerBuffer too big in "
                                 "SoundDevice::setFramesPerBuffer(uint)");
     }
-    m_framesPerBuffer = framesPerBuffer;
+    m_configFramesPerBuffer = framesPerBuffer;
 }
 
 SoundDeviceError SoundDevice::addOutput(const AudioOutputBuffer &out) {

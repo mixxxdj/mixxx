@@ -445,7 +445,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
         if (mode.isInput || mode.isOutput) {
             pDevice->setSampleRate(m_config.getSampleRate());
-            pDevice->setFramesPerBuffer(m_config.getFramesPerBuffer());
+            pDevice->setConfigFramesPerBuffer(m_config.getFramesPerBuffer());
             toOpen.append(mode);
         }
     }
