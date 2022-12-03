@@ -221,10 +221,10 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
              << "| Input channels:"
              << m_inputParams.channelCount;
 
-    // PortAudio's JACK backend also only properly supports
-    // paFramesPerBufferUnspecified in non-blocking mode because the latency
-    // comes from the JACK daemon. (PA should give an error or something though,
-    // but it doesn't.)
+    // PortAudio's JACK back end has its own buffering to split or merge the buffer
+    // received from JACK to the desired size.
+    // However, we use here paFramesPerBufferUnspecified to use the JACK buffer size
+    // which offers the best responds time without additional jitter.
     if (m_deviceTypeId == paJACK) {
         m_configFramesPerBuffer = paFramesPerBufferUnspecified;
     }
