@@ -382,15 +382,9 @@ void DlgAutoDJ::updateSelectionInfo() {
 }
 
 void DlgAutoDJ::updateTotalInfo() {
-    PlaylistSummarySelectResult summaries = m_pTrackCollection->playlists().selectPlaylistSummaries(
-            PlaylistDAO::HiddenType::PLHT_AUTO_DJ);
     PlaylistSummary summary;
-    VERIFY_OR_DEBUG_ASSERT(summaries.populateNext(&summary)) {
-        qWarning() << "No AutoDJ playlist found";
+    if (!m_pTrackCollection->playlists().readAutoDJPlaylistSummary(&summary)) {
         return;
-    }
-    if (summaries.next()) {
-        qWarning() << "More than one AutoDJ playlist found!";
     }
 
     QString label;

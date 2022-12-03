@@ -138,3 +138,17 @@ bool PlaylistStorage::readPlaylistSummaryById(
     }
     return false;
 }
+
+bool PlaylistStorage::readAutoDJPlaylistSummary(PlaylistSummary* pPlaylistSummary) const {
+    PlaylistSummarySelectResult summaries =
+            selectPlaylistSummaries(PlaylistDAO::HiddenType::PLHT_AUTO_DJ);
+    if (pPlaylistSummary != nullptr ? summaries.populateNext(pPlaylistSummary) : summaries.next()) {
+        VERIFY_OR_DEBUG_ASSERT(!summaries.next()) {
+            kLogger.warning() << "More than one AutoDJ playlist found!";
+        }
+        return true;
+    } else {
+        kLogger.warning() << "No AutoDJ playlist found";
+    }
+    return false;
+}

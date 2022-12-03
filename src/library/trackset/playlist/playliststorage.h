@@ -112,6 +112,8 @@ class PlaylistStorage : public virtual /*implements*/ SqlStorage {
     bool readPlaylistSummaryById(PlaylistId playlistId,
             PlaylistSummary* pPlaylistSummary = nullptr) const;
 
+    bool readAutoDJPlaylistSummary(PlaylistSummary* pPlaylistSummary) const;
+
   private:
     void createViews();
 
