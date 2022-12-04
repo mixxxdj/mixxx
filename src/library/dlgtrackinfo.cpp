@@ -49,10 +49,12 @@ DlgTrackInfo::DlgTrackInfo(
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
           m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
+    qWarning() << " DlgTI ::";
     init();
 }
 
 void DlgTrackInfo::init() {
+    qWarning() << " DlgTI init";
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
@@ -461,6 +463,7 @@ void DlgTrackInfo::slotCoverFound(
     if (pRequestor == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
+        qWarning() << " DlgTI coverFound";
         m_trackRecord.setCoverInfo(coverInfo);
         m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
     }
@@ -476,7 +479,7 @@ void DlgTrackInfo::slotReloadCoverArt() {
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    qDebug() << "DlgTrackInfo::slotCoverInfoSelected" << coverInfo;
+    qWarning() << " DlgTI coverInfoSelected";
     VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
         return;
     }

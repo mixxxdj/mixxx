@@ -50,6 +50,10 @@ WCoverArtLabel::~WCoverArtLabel() = default;
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
         const QPixmap& px) {
+    qWarning() << "   CoverLabel setCoverArt, coverInfo:";
+    qWarning() << "       type:" << static_cast<int>(coverInfo.type)
+               << "hasTrLoc:" << bool(!coverInfo.trackLocation.isEmpty())
+               << "hasImg:" << coverInfo.hasImage();
     m_coverInfo = coverInfo;
     if (m_pCoverMenu) {
         m_pCoverMenu->setCoverArt(coverInfo);

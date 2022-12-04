@@ -124,10 +124,12 @@ DlgTagFetcher::DlgTagFetcher(UserSettingsPointer pConfig, const TrackModel* pTra
           m_isCoverArtCopyWorkerRunning(false),
           m_pWCurrentCoverArtLabel(make_parented<WCoverArtLabel>(this)),
           m_pWFetchedCoverArtLabel(make_parented<WCoverArtLabel>(this)) {
+    qWarning() << "  ## DlgTF::";
     init();
 }
 
 void DlgTagFetcher::init() {
+    qWarning() << "  ## DlgTF init";
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
