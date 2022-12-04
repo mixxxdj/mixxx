@@ -63,10 +63,11 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
         m_dSampleRate = 44100.0;
     }
 
-    qDebug() << "framesPerBuffer:" << m_configFramesPerBuffer;
+    const SINT framesPerBuffer = m_configFramesPerBuffer;
+    qDebug() << "framesPerBuffer:" << framesPerBuffer;
 
     const auto requestedBufferTime = mixxx::Duration::fromSeconds(
-            m_configFramesPerBuffer / m_dSampleRate);
+            framesPerBuffer / m_dSampleRate);
     qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
              << requestedBufferTime;
 
@@ -75,11 +76,11 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
     // This is what should work best.
     if (m_iNumOutputChannels) {
         m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
-                m_iNumOutputChannels * m_configFramesPerBuffer * 2);
+                m_iNumOutputChannels * framesPerBuffer * 2);
     }
     if (m_iNumInputChannels) {
         m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(
-                m_iNumInputChannels * m_configFramesPerBuffer * 2);
+                m_iNumInputChannels * framesPerBuffer * 2);
     }
 
     m_pNetworkStream->startStream(m_dSampleRate);
@@ -409,10 +410,12 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
 }
 
 void SoundDeviceNetwork::callbackProcessClkRef() {
+    const SINT framesPerBuffer = m_configFramesPerBuffer;
+
     // This must be the very first call, to measure an exact value
     // NOTE: For network streams the buffer size is always the configured buffer
     //       size
-    updateCallbackEntryToDacTime(m_configFramesPerBuffer);
+    updateCallbackEntryToDacTime(framesPerBuffer);
 
     Trace trace("SoundDeviceNetwork::callbackProcessClkRef %1",
                 m_deviceId.name);
@@ -464,19 +467,19 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         }
     }
 
-    m_pSoundManager->readProcess(m_configFramesPerBuffer);
+    m_pSoundManager->readProcess(framesPerBuffer);
 
     {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
                 m_deviceId.name);
-        m_pSoundManager->onDeviceOutputCallback(m_configFramesPerBuffer);
+        m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }
 
-    m_pSoundManager->writeProcess(m_configFramesPerBuffer);
+    m_pSoundManager->writeProcess(framesPerBuffer);
 
-    m_pSoundManager->processUnderflowHappened(m_configFramesPerBuffer);
+    m_pSoundManager->processUnderflowHappened(framesPerBuffer);
 
-    updateAudioLatencyUsage(m_configFramesPerBuffer);
+    updateAudioLatencyUsage(framesPerBuffer);
 }
 
 void SoundDeviceNetwork::updateCallbackEntryToDacTime(SINT framesPerBuffer) {

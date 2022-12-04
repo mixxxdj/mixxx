@@ -51,8 +51,8 @@ class SoundDevicePortAudio : public SoundDevice {
     }
 
   private:
-    void updateCallbackEntryToDacTime(const SINT framesPerBuffer,
-            const PaStreamCallbackTimeInfo* timeInfo);
+    void updateCallbackEntryToDacTime(
+            SINT framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo);
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
 
     // PortAudio stream for this device.

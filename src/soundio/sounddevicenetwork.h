@@ -66,9 +66,7 @@ class SoundDeviceNetwork : public SoundDevice {
     int m_framesSinceAudioLatencyUsageUpdate;
     std::unique_ptr<SoundDeviceNetworkThread> m_pThread;
     bool m_denormals;
-    /**
-     * The deadline for the next buffer, in microseconds since the Unix epoch.
-     */
+    /// The deadline for the next buffer, in microseconds since the Unix epoch.
     qint64 m_targetTime;
     PerformanceTimer m_clkRefTimer;
 };

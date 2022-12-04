@@ -982,7 +982,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 }
 
 void SoundDevicePortAudio::updateCallbackEntryToDacTime(
-        const SINT framesPerBuffer,
+        SINT framesPerBuffer,
         const PaStreamCallbackTimeInfo* timeInfo) {
     double timeSinceLastCbSecs = m_clkRefTimer.restart().toDoubleSeconds();
 
