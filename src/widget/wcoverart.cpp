@@ -141,6 +141,7 @@ void WCoverArt::slotReset() {
 }
 
 void WCoverArt::slotTrackCoverArtUpdated() {
+    qWarning() << "   CoverArt cover update";
     if (m_loadedTrack) {
         CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
@@ -161,6 +162,7 @@ void WCoverArt::slotCoverFound(
     if (pRequestor == this &&
             m_loadedTrack &&
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {
+        qWarning() << "    CoverArt cover found";
         m_lastRequestedCover = coverInfo;
         m_pMenu->setCoverArt(m_lastRequestedCover);
         m_loadedCover = pixmap;
@@ -170,6 +172,7 @@ void WCoverArt::slotCoverFound(
 }
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
+    qWarning() << "   CoverArt load track";
     if (m_loadedTrack) {
         disconnect(m_loadedTrack.get(),
                 &Track::coverArtUpdated,
@@ -185,6 +188,8 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
                 &Track::coverArtUpdated,
                 this,
                 &WCoverArt::slotTrackCoverArtUpdated);
+    } else {
+        qWarning() << "            track == NULL";
     }
 
     if (!m_bEnable) {

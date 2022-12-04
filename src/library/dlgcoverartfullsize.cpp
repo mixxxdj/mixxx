@@ -34,10 +34,12 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
             this,
             &DlgCoverArtFullSize::slotCoverMenu);
 
+    qWarning() << "       FullSize::";
     // Only connect to the menu signals if this is not a grandchild of DlgTrackInfo.
     // DlgTrackInfo is already connected to these signals, and catching these signals
     // here would apply cover changes immediately, thus circumvent the Apply button there.
     if (m_pCoverMenu && !(pParent && qobject_cast<DlgTrackInfo*>(pParent->parent()))) {
+        qWarning() << "                  connect to cover menu signals";
         connect(m_pCoverMenu,
                 &WCoverArtMenu::coverInfoSelected,
                 this,
@@ -46,6 +48,10 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
                 &WCoverArtMenu::reloadCoverArt,
                 this,
                 &DlgCoverArtFullSize::slotReloadCoverArt);
+    } else if (m_pCoverMenu) {
+        qWarning() << "                  dlgTI, don't connect to cover menu signals";
+    } else {
+        qWarning() << "                  no cover menu to connect to";
     }
 
     if (m_pPlayer) {
@@ -59,6 +65,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
 }
 
 void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
+    qWarning() << "   FullSize closeEvent";
     if (parentWidget()) {
         // Since the widget has a parent, this instance will be reused again.
         // We need to prevent qt from destroying it's children
@@ -71,7 +78,9 @@ void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
 }
 
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {
+    qWarning() << "   FullSize init from track";
     if (!pTrack) {
+        qWarning() << "            track == NULL";
         return;
     }
     // The real size will be calculated later.
@@ -93,7 +102,12 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
 
 void DlgCoverArtFullSize::init(TrackPointer pTrack,
         const CoverInfo& coverInfo) {
+    qWarning() << "   FullSize init from coverInfo";
+    qWarning() << "       type:" << static_cast<int>(coverInfo.type)
+               << "hasTrLoc:" << bool(!coverInfo.trackLocation.isEmpty());
+    //<< "hasImg:" << coverInfo.hasImage();
     if (!pTrack) {
+        qWarning() << "            track == NULL";
         return;
     }
 
@@ -142,6 +156,14 @@ void DlgCoverArtFullSize::loadTrack(TrackPointer pTrack) {
 }
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
+    if (sender()) {
+        qWarning() << "   FullSize slotLoadTrack (signal from" << sender();
+    } else {
+        qWarning() << "   FullSize slotLoadTrack (internal)";
+    }
+    if (!pTrack) {
+        qWarning() << "            track is NULL";
+    }
     loadTrack(pTrack);
     setWindowTitleFromTrack();
     slotTrackCoverArtUpdated();
@@ -159,8 +181,10 @@ void DlgCoverArtFullSize::setWindowTitleFromTrack() {
     // https://bugs.launchpad.net/mixxx/+bug/1789059
     // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
     if (!isVisible() || !m_pLoadedTrack) {
+        qWarning() << "    (FullSize setWindowTitleFromTrack)";
         return;
     }
+    qWarning() << "    FullSize setWindowTitleFromTrack";
     QString windowTitle;
     const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
     const QString artist = m_pLoadedTrack->getArtist();
@@ -187,9 +211,11 @@ void DlgCoverArtFullSize::setWindowTitleFromTrack() {
 }
 
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
+    qWarning() << "     FullSize slotTrackCoverArtUpdated";
     if (m_pLoadedTrack) {
         CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     } else {
+        qWarning() << "            track is NULL";
         coverArt->setPixmap(QPixmap());
     }
 }
@@ -206,6 +232,7 @@ void DlgCoverArtFullSize::slotCoverFound(
             m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
         return;
     }
+    qWarning() << "      FullSize coverFound";
 
     m_pixmap = pixmap;
     adjustImageAndDialogSize();
@@ -213,6 +240,8 @@ void DlgCoverArtFullSize::slotCoverFound(
 
 void DlgCoverArtFullSize::adjustImageAndDialogSize() {
     if (m_pixmap.isNull()) {
+        qWarning() << "       FullSize adjustImageAndDialogSize";
+        qWarning() << "            pix == Null, hide";
         coverArt->setPixmap(QPixmap());
         hide();
         return;
@@ -272,8 +301,11 @@ void DlgCoverArtFullSize::slotReloadCoverArt() {
 void DlgCoverArtFullSize::slotCoverInfoSelected(
         const CoverInfoRelative& coverInfo) {
     if (!m_pLoadedTrack) {
+        qWarning() << "   FullSize coverInfoSelected";
+        qWarning() << "            track == NULL";
         return;
     }
+    qWarning() << "   FullSize coverInfoSelected (other parent" << parent();
     m_pLoadedTrack->setCoverInfo(coverInfo);
 }
 
