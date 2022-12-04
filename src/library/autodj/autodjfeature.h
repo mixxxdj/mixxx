@@ -99,4 +99,6 @@ class AutoDJFeature : public LibraryFeature {
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);
+
+    void slotPlaylistsChanged(const QSet<int>& playlistIds);
 };

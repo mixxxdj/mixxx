@@ -96,6 +96,12 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this,
             &AutoDJFeature::slotCrateChanged);
 
+    // Be notified when tracks are added/removed to/from playlist(s).
+    connect(&m_playlistDao,
+            &PlaylistDAO::tracksChanged,
+            this,
+            &AutoDJFeature::slotPlaylistsChanged);
+
     // Create context-menu items to allow crates to be added to, and removed
     // from, the auto-DJ queue.
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
@@ -111,7 +117,15 @@ AutoDJFeature::~AutoDJFeature() {
 }
 
 QVariant AutoDJFeature::title() {
-    return tr("Auto DJ");
+    QString title = tr("Auto DJ");
+
+    PlaylistSummary summary;
+    if (m_pTrackCollection->playlists().readAutoDJPlaylistSummary(&summary) &&
+            summary.getTrackCount() > 0) {
+        title.append(QString(" (%1)").arg(summary.getTrackDurationText()));
+    }
+
+    return title;
 }
 
 void AutoDJFeature::bindLibraryWidget(
@@ -320,5 +334,12 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
 void AutoDJFeature::slotRandomQueue(int numTracksToAdd) {
     for (int addCount = 0; addCount < numTracksToAdd; ++addCount) {
         slotAddRandomTrack();
+    }
+}
+
+void AutoDJFeature::slotPlaylistsChanged(const QSet<int>& playlistIds) {
+    if (playlistIds.contains(m_iAutoDJPlaylistId)) {
+        // If AutoDJ playlist was changed, notify that feature title has changed since it contains duration of the AutoDJ playlist.
+        emit featureIsLoading(this, false);
     }
 }
