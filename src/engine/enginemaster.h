@@ -262,8 +262,10 @@ class EngineMaster : public QObject, public AudioSource {
     void processChannels(int iBufferSize);
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
-    void applyMasterEffects();
-    void processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphones);
+    void applyMasterEffects(int iBufferSize);
+    void processHeadphones(
+            const CSAMPLE_GAIN masterMixGainInHeadphones,
+            int iBufferSize);
     bool sidechainMixRequired() const;
 
     EngineEffectsManager* m_pEngineEffectsManager;
@@ -284,7 +286,6 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
 
     unsigned int m_iSampleRate;
-    unsigned int m_iBufferSize;
 
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
