@@ -495,6 +495,7 @@ void Track::emitChangedSignalsForAllMetadata() {
     emit durationChanged();
     emit infoChanged();
     emit keyChanged();
+    emit coverArtUpdated();
 }
 
 bool Track::checkSourceSynchronized() const {
