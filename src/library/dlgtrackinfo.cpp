@@ -496,6 +496,7 @@ void DlgTrackInfo::slotCoverFound(
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
+        // this also updates the cover menu with the new Coverinfo
         m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
     }
 }

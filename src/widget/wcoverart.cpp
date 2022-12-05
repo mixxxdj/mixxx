@@ -164,6 +164,7 @@ void WCoverArt::slotCoverFound(
             m_loadedTrack &&
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_lastRequestedCover = coverInfo;
+        m_pMenu->setCoverArt(m_lastRequestedCover);
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
