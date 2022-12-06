@@ -40,7 +40,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_alphaBeatGrid(90),
           // Really create some to manage those;
           m_visualPlayPosition(nullptr),
-          m_playPos(-1),
           m_playPosVSample(0),
           m_totalVSamples(0),
           m_pRateRatioCO(nullptr),
@@ -50,7 +49,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_pTrackSamplesControlObject(nullptr),
           m_trackSamples(0.0),
           m_scaleFactor(1.0),
-          m_playMarkerPosition(s_defaultPlayMarkerPosition) {
+          m_playMarkerPosition(s_defaultPlayMarkerPosition),
+          m_playPos(-1) {
     //qDebug() << "WaveformWidgetRenderer";
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
