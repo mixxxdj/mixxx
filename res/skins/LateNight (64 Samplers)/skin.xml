@@ -29,16 +29,16 @@
 <!DOCTYPE skin>
 <skin>
   <manifest>
-    <title>LateNight</title>
+    <title>LateNight (64 Samplers)</title>
     <author>owilliams, ronso0</author>
-    <version>2.3.0.01</version>
-    <description>A wide nighttime skin with stacked waveforms, 4 decks in 3 configurations and up to 16 samplers.</description>
+    <version>2.3.4.01</version>
+    <description>A wide nighttime skin with stacked waveforms, 4 decks in 3 configurations and up to 64 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
     <!-- Set skin defaults -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Master],num_samplers">64</attribute>
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
 
@@ -48,11 +48,9 @@
       <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_loop_controls">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Skin],select_big_spinny_or_cover">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
       <!-- ToDo: deck-independent vinyl controls? -->
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <!-- Deck variant that is shown as soon as the mixer is hidden.
@@ -65,8 +63,7 @@
       <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
       <!-- Compact deck -->
       <attribute persist="true" config_key="[Skin],show_rate_controls_compact">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_loop_controls_compact">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_beatjump_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loopjump_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_sync_button_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_key_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_key_controls_compact">1</attribute>
@@ -89,6 +86,14 @@
       <attribute persist="true" config_key="[LateNight],expand_samplers_1-4">0</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_1-8">0</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row1">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row2">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row3">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row4">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row5">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row6">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row7">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_row8">0</attribute>
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
     <!-- Library -->
@@ -125,7 +130,7 @@
     <Scheme>
       <Name>PaleMoon</Name>
       <!-- Mix any of the existing button, knob, slider or style theme subsets.
-        The button templates for example link to skin:../LateNight/BtnTheme/buttons/btn_...
+        The button templates for example link to skin:/BtnTheme/buttons/btn_...
 
         BtnScheme     borders / background images for pushbuttons, spinboxes,
                       effect selector, AutoDJ fade mode selector.
@@ -172,7 +177,6 @@
       <SetVariable name="IntroOutroColor">#2c5c9a</SetVariable>
       <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
       <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
-      <SetVariable name="PassthroughLabelColor">#b24c12</SetVariable>
       <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
       <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
       <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
@@ -183,7 +187,7 @@
            Other buttons that use text (like vinyl controls and Fx assign button) are styled
            in css via
               border-width: 2px;
-              border-image: url(skin:../LateNight/path/to/btn_icon.svg) 2 2 2 2;
+              border-image: url(skin:/path/to/btn_icon.svg) 2 2 2 2;
         Example themes: (in PaleMoon only the embedded style is used)
         * elevated: domed buttons that stand out, with a 3D border and a drop shadow
         * embedded: slightly domed buttons that seem leveled with surface and a surrounding groove
@@ -277,7 +281,6 @@
       <SetVariable name="IntroOutroColor">#0000ff</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
-      <SetVariable name="PassthroughLabelColor">#d09300</SetVariable>
       <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
       <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
       <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
@@ -302,7 +305,7 @@
     QLabel {
       <!-- ToDo ronso0 :: Unfortunately, variables are not considered here, yet ;)
           because the launch screen appears while the skin is parsed.
-      image: url(skin:../LateNight/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
+      image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
       image: url(skin:../LateNight/palemoon/style/mixxx_logo.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
@@ -463,7 +466,7 @@
                         </WidgetGroup>
 
                         <Template src="skin:../LateNight/fx_rack.xml"/>
-                        <Template src="skin:../LateNight/samplers_rack.xml"/>
+                        <Template src="skin:samplers_rack.xml"/>
                         <Template src="skin:../LateNight/mic_aux_rack.xml"/>
 
                         <SingletonContainer>
@@ -503,7 +506,7 @@
 
               </Children>
             </WidgetStack>
-            <Template src="skin:../LateNight/skin_settings.xml"/>
+            <Template src="skin:skin_settings.xml"/>
 
           </Children>
         </WidgetGroup><!-- regular/maximized library + skin settings menu -->

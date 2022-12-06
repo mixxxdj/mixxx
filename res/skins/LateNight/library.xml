@@ -32,7 +32,7 @@
                 <MinimumSize>100,</MinimumSize>
                 <Children>
 
-                  <Template src="skin:/decks/preview_deck.xml"/>
+                  <Template src="skin:../LateNight/decks/preview_deck.xml"/>
 
                   <WidgetGroup><!--SearchBox + Library expand toggle -->
                     <Layout>horizontal</Layout>
@@ -52,7 +52,7 @@
                         <ObjectName>LibExpandBox</ObjectName>
                         <Layout>vertical</Layout>
                         <Children>
-                          <Template src="skin:/controls/button_2state.xml">
+                          <Template src="skin:../LateNight/controls/button_2state.xml">
                             <SetVariable name="TooltipId">maximize_library</SetVariable>
                             <SetVariable name="ObjectName">LibExpand</SetVariable>
                             <SetVariable name="Size">18f,18me</SetVariable>

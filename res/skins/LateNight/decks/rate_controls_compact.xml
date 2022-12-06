@@ -80,6 +80,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
+<<<<<<< HEAD
                       <PushButton>
                         <TooltipId>sync_enabled</TooltipId>
                         <ObjectName>SyncDeck</ObjectName>
@@ -105,6 +106,17 @@
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
+=======
+                      <Template src="skin:../LateNight/controls/button_2state_right.xml">
+                        <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                        <SetVariable name="ObjectName">SyncDeck</SetVariable>
+                        <SetVariable name="Size">48f,22f</SetVariable>
+                        <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+                        <SetVariable name="BtnSize">sync</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_enabled</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatsync_tempo</SetVariable>
+                      </Template>
+>>>>>>> 74a5dce94b (Make LateNight 64 samplers a dedicated skin)
                     </Children>
                   </WidgetGroup>
 
@@ -131,8 +143,8 @@
                             <Size>40f,79f</Size>
                             <Pos>5,2</Pos>
                             <TooltipId>rate</TooltipId>
-                            <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
-                            <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact_sync.svg</Slider>
+                            <Handle scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                            <Slider scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact_sync.svg</Slider>
                             <Horizontal>false</Horizontal>
                             <BarWidth><Variable name="BarWidth"/></BarWidth>
                             <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
@@ -193,8 +205,8 @@
                         <Size>40f,95f</Size>
                         <Pos>5,2</Pos>
                         <TooltipId>rate</TooltipId>
-                        <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
-                        <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact.svg</Slider>
+                        <Handle scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact.svg</Slider>
                         <Horizontal>false</Horizontal>
                         <BarWidth><Variable name="BarWidth"/></BarWidth>
                         <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
