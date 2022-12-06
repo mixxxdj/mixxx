@@ -92,8 +92,6 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
         ControlObject::set(ConfigKey("[Master]", "latency"),
                 requestedBufferTime.toDoubleMillis());
         ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
-        ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"),
-                requestedBufferTime.toDoubleMillis());
 
         // Network stream was just started above so we have to wait until
         // we can pass one chunk.

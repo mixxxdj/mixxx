@@ -21,18 +21,19 @@ double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
           m_key(key) {
-    m_audioBufferSize = new ControlProxy(
-            "[Master]", "audio_buffer_size", this);
-    m_audioBufferSize->connectValueChanged(this, &VisualPlayPosition::slotAudioBufferSizeChanged);
-    m_audioBufferMicros = static_cast<int>(m_audioBufferSize->get() * kMicrosPerMillis);
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
     m_listVisualPlayPosition.remove(m_key);
 }
 
-void VisualPlayPosition::set(double playPos, double rate, double positionStep,
-        double slipPosition, double tempoTrackSeconds) {
+void VisualPlayPosition::set(
+        double playPos,
+        double rate,
+        double positionStep,
+        double slipPosition,
+        double tempoTrackSeconds,
+        double audioBufferMicroS) {
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
     data.m_callbackEntrytoDac = static_cast<int>(m_dCallbackEntryToDacSecs * 1000000); // s to µs
@@ -41,6 +42,7 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
     data.m_positionStep = positionStep;
     data.m_slipPosition = slipPosition;
     data.m_tempoTrackSeconds = tempoTrackSeconds;
+    data.m_audioBufferMicroS = audioBufferMicroS;
 
     // Atomic write
     m_data.setValue(data);
@@ -50,18 +52,18 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
 double VisualPlayPosition::calcPosAtNextVSync(
         VSyncThread* pVSyncThread, const VisualPlayPositionData& data) {
     double playPos = data.m_enginePlayPos; // load playPos for the first sample in Buffer
-    if (m_audioBufferMicros) {
+    if (data.m_audioBufferMicroS) {
         int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
         int offset = refToVSync - data.m_callbackEntrytoDac;
         // The offset is limited to the audio buffer + waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
-        int maxOffset = static_cast<int>(m_audioBufferMicros +
+        int maxOffset = static_cast<int>(data.m_audioBufferMicroS +
                 pVSyncThread->getSyncIntervalTimeMicros());
         offset = math_clamp(offset, -maxOffset, maxOffset);
         // add the offset for the position of the sample that will be transferred to the DAC
         // When the next display frame is displayed
-        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
+        playPos += data.m_positionStep * offset * data.m_rate / data.m_audioBufferMicroS;
     }
     // qDebug() << "playPos" << playPos << offset;
     return playPos;
@@ -103,10 +105,6 @@ void VisualPlayPosition::getTrackTime(double* pPlayPosition, double* pTempoTrack
         *pPlayPosition = 0;
         *pTempoTrackSeconds = 0;
     }
-}
-
-void VisualPlayPosition::slotAudioBufferSizeChanged(double sizeMillis) {
-    m_audioBufferMicros = static_cast<int>(sizeMillis * kMicrosPerMillis);
 }
 
 //static

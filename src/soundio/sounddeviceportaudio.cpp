@@ -368,7 +368,6 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
         ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
-        ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferMSec);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
     }
