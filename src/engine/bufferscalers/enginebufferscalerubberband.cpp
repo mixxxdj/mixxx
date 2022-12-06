@@ -19,7 +19,7 @@ namespace {
 // TODO (XXX): this should be removed. It is only needed to work around
 // a Rubberband 1.3 bug.
 // This is the default increment from RubberBand 1.8.1.
-size_t kRubberBandBlockSize = 256;
+constexpr size_t kRubberBandBlockSize = 256;
 
 #define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
 
