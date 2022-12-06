@@ -23,8 +23,8 @@ class SoundDevicePortAudio : public SoundDevice {
     SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
     bool isOpen() const override;
     SoundDeviceError close() override;
-    void readProcess() override;
-    void writeProcess() override;
+    void readProcess(SINT framesPerBuffer) override;
+    void writeProcess(SINT framesPerBuffer) override;
     QString getError() const override;
 
     // This callback function gets called every time the sound device runs out of
@@ -50,7 +50,8 @@ class SoundDevicePortAudio : public SoundDevice {
     }
 
   private:
-    void updateCallbackEntryToDacTime(const PaStreamCallbackTimeInfo* timeInfo);
+    void updateCallbackEntryToDacTime(const SINT framesPerBuffer,
+            const PaStreamCallbackTimeInfo* timeInfo);
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
 
     // PortAudio stream for this device.
