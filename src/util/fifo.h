@@ -10,19 +10,22 @@ class FIFO {
   public:
     explicit FIFO(int size)
             : m_data(NULL) {
-        size = roundUpToPowerOf2(size);
+        m_size = roundUpToPowerOf2(size);
         // If we can't represent the next higher power of 2 then bail.
-        if (size < 0) {
+        if (m_size < 0) {
             return;
         }
-        m_data = new DataType[size];
+        m_data = new DataType[m_size];
         PaUtil_InitializeRingBuffer(&m_ringBuffer,
                 static_cast<ring_buffer_size_t>(sizeof(DataType)),
-                static_cast<ring_buffer_size_t>(size),
+                static_cast<ring_buffer_size_t>(m_size),
                 m_data);
     }
     virtual ~FIFO() {
         delete [] m_data;
+    }
+    int size() const {
+        return m_size;
     }
     int readAvailable() const {
         return PaUtil_GetRingBufferReadAvailable(&m_ringBuffer);
@@ -66,6 +69,7 @@ class FIFO {
     }
 
   private:
+    int m_size;
     DataType* m_data;
     PaUtilRingBuffer m_ringBuffer;
     DISALLOW_COPY_AND_ASSIGN(FIFO<DataType>);
