@@ -311,8 +311,8 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
                 }
             }
         } break;
-        // By default the home and end keys move to the first and last column
-        // rather than the first and last row
+        // Make the home and end keys move to the first and last row rather than
+        // the first and last column (QAbstractItemView default)
         case QAbstractItemView::MoveHome:
         case QAbstractItemView::MoveEnd: {
             const QModelIndex current = currentIndex();
