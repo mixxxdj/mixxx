@@ -9,10 +9,6 @@
 #include "waveform/vsyncthread.h"
 
 namespace {
-// The offset is limited to two callback intervals.
-// This should be sufficient to compensate jitter,
-// but does not continue in case of underflows.
-constexpr int kMaxOffsetBufferCnt = 2;
 constexpr int kMicrosPerMillis = 1000; // 1 ms contains 1000 µs
 } // anonymous namespace
 
@@ -53,13 +49,18 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
 
 double VisualPlayPosition::calcPosAtNextVSync(
         VSyncThread* pVSyncThread, const VisualPlayPositionData& data) {
-    int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-    int offset = refToVSync - data.m_callbackEntrytoDac;
-    offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
     double playPos = data.m_enginePlayPos; // load playPos for the first sample in Buffer
-    // add the offset for the position of the sample that will be transferred to the DAC
-    // When the next display frame is displayed
     if (m_audioBufferMicros) {
+        int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+        int offset = refToVSync - data.m_callbackEntrytoDac;
+        // The offset is limited to the audio buffer + waveform sync interval
+        // This should be sufficient to compensate jitter, but does not continue
+        // in case of underflows.
+        int maxOffset = static_cast<int>(m_audioBufferMicros +
+                pVSyncThread->getSyncIntervalTimeMicros());
+        offset = math_clamp(offset, -maxOffset, maxOffset);
+        // add the offset for the position of the sample that will be transferred to the DAC
+        // When the next display frame is displayed
         playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
     }
     // qDebug() << "playPos" << playPos << offset;
