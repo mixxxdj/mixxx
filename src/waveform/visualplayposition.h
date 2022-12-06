@@ -47,8 +47,10 @@ class VisualPlayPosition : public QObject {
     // engine thread.
     void set(double playPos, double rate, double positionStep,
             double slipPosition, double tempoTrackSeconds);
-    double getAtNextVSync(VSyncThread* vsyncThread);
-    void getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double* playPosition, double* slipPosition);
+    double getAtNextVSync(VSyncThread* pVSyncThread);
+    void getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
+            double* playPosition,
+            double* slipPosition);
     double getEnginePlayPos();
     void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 
@@ -68,6 +70,7 @@ class VisualPlayPosition : public QObject {
     void slotAudioBufferSizeChanged(double sizeMs);
 
   private:
+    double calcPosAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
     ControlValueAtomic<VisualPlayPositionData> m_data;
     ControlProxy* m_audioBufferSize;
     int m_audioBufferMicros; // Audio buffer size in µs
