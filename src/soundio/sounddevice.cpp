@@ -3,6 +3,7 @@
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
+#include "control/controlobject.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/debug.h"
@@ -84,6 +85,14 @@ void SoundDevice::clearInputs() {
 
 bool SoundDevice::operator==(const SoundDevice &other) const {
     return m_deviceId == other.getDeviceId();
+}
+
+void SoundDevice::maybeUpdateBufferSize(double bufferSizeMs) {
+    if (bufferSizeMs != m_lastBufferSizeMs) {
+        ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferSizeMs);
+
+        m_lastBufferSizeMs = bufferSizeMs;
+    }
 }
 
 void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
