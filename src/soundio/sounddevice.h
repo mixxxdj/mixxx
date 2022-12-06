@@ -57,6 +57,13 @@ class SoundDevice {
     bool operator==(const QString &other) const;
 
   protected:
+    /**
+     * Broadcast the buffer size in milliseconds to the GUI if it has changed.
+     * This affects the waveform visualizers and a couple other components. This
+     * should be called at the start of a process callback.
+     */
+    void maybeUpdateBufferSize(double bufferSizeMs);
+
     void composeOutputBuffer(CSAMPLE* outputBuffer,
                              const SINT iFramesPerBuffer,
                              const SINT readOffset,
@@ -92,6 +99,13 @@ class SoundDevice {
     SINT m_framesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
+
+  private:
+    /**
+     * The last buffer size that was sent to the `[Master],audio_buffer_size`
+     * control object. This is set in `maybeUpdateBufferSize()`.
+     */
+    double m_lastBufferSizeMs = 0;
 };
 
 typedef QSharedPointer<SoundDevice> SoundDevicePointer;

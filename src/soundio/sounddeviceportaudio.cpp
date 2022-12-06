@@ -367,7 +367,8 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
         ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
-        ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferMSec);
+        // This one is also updated at the start of the process callback
+        maybeUpdateBufferSize(bufferMSec);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
     }
@@ -879,6 +880,12 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         PaStreamCallbackFlags statusFlags) {
     // This must be the very first call, else timeInfo becomes invalid
     updateCallbackEntryToDacTime(framesPerBuffer, timeInfo);
+
+    // The buffer size may have changed since the last process call. In that
+    // case we'll broadcast this change to the GUI or else the waveform
+    // visualizers will throw a fit.
+    const double bufferSizeMs = framesPerBuffer / m_dSampleRate * 1000;
+    maybeUpdateBufferSize(bufferSizeMs);
 
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1",
                 m_deviceId.debugName());
