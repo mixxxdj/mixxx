@@ -32,19 +32,21 @@ class SoundDeviceNetwork : public SoundDevice {
     SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
     bool isOpen() const override;
     SoundDeviceError close() override;
-    void readProcess() override;
-    void writeProcess() override;
+    void readProcess(SINT framesPerBuffer) override;
+    void writeProcess(SINT framesPerBuffer) override;
     QString getError() const override;
 
     unsigned int getDefaultSampleRate() const override {
         return 44100;
     }
 
+    // NOTE: This does not take a frames per buffer argument because that is
+    //       always equal to the configured buffer size for network streams
     void callbackProcessClkRef();
 
   private:
-    void updateCallbackEntryToDacTime();
-    void updateAudioLatencyUsage();
+    void updateCallbackEntryToDacTime(SINT framesPerBuffer);
+    void updateAudioLatencyUsage(SINT framesPerBuffer);
 
     void workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker,
             int outChunkSize, int readAvailable,
@@ -61,10 +63,12 @@ class SoundDeviceNetwork : public SoundDevice {
 
     std::unique_ptr<ControlProxy> m_pMasterAudioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
-    mixxx::Duration m_audioBufferTime;
     int m_framesSinceAudioLatencyUsageUpdate;
     std::unique_ptr<SoundDeviceNetworkThread> m_pThread;
     bool m_denormals;
+    /**
+     * The deadline for the next buffer, in microseconds since the Unix epoch.
+     */
     qint64 m_targetTime;
     PerformanceTimer m_clkRefTimer;
 };

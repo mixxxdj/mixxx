@@ -609,18 +609,18 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
     }
 }
 
-void SoundManager::writeProcess() const {
+void SoundManager::writeProcess(SINT framesPerBuffer) const {
     for (const auto& pDevice: m_devices) {
         if (pDevice) {
-            pDevice->writeProcess();
+            pDevice->writeProcess(framesPerBuffer);
         }
     }
 }
 
-void SoundManager::readProcess() const {
+void SoundManager::readProcess(SINT framesPerBuffer) const {
     for (const auto& pDevice: m_devices) {
         if (pDevice) {
-            pDevice->readProcess();
+            pDevice->readProcess(framesPerBuffer);
         }
     }
 }
@@ -689,14 +689,14 @@ int SoundManager::getConfiguredDeckCount() const {
     return m_config.getDeckCount();
 }
 
-void SoundManager::processUnderflowHappened() {
+void SoundManager::processUnderflowHappened(SINT framesPerBuffer) {
     if (m_underflowUpdateCount == 0) {
         if (atomicLoadRelaxed(m_underflowHappened)) {
             m_pMasterAudioLatencyOverload->set(1.0);
             m_pMasterAudioLatencyOverloadCount->set(
                     m_pMasterAudioLatencyOverloadCount->get() + 1);
-            m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
-                    / m_config.getFramesPerBuffer() / 1000;
+            m_underflowUpdateCount = CPU_OVERLOAD_DURATION *
+                    m_config.getSampleRate() / framesPerBuffer / 1000;
 
             m_underflowHappened = 0; // resetting here is not thread safe,
                                      // but that is OK, because we count only

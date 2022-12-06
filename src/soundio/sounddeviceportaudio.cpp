@@ -442,10 +442,10 @@ QString SoundDevicePortAudio::getError() const {
     return m_lastError;
 }
 
-void SoundDevicePortAudio::readProcess() {
+void SoundDevicePortAudio::readProcess(SINT framesPerBuffer) {
     PaStream* pStream = m_pStream;
     if (pStream && m_inputParams.channelCount && m_inputFifo) {
-        int inChunkSize = m_framesPerBuffer * m_inputParams.channelCount;
+        int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
         if (m_syncBuffers == 0) { // "Experimental (no delay)"
 
             if (m_inputFifo->readAvailable() == 0) {
@@ -569,15 +569,15 @@ void SoundDevicePortAudio::readProcess() {
             clearInputBuffer(inChunkSize - readCount, readCount);
         }
 
-        m_pSoundManager->pushInputBuffers(m_audioInputs, m_framesPerBuffer);
+        m_pSoundManager->pushInputBuffers(m_audioInputs, framesPerBuffer);
     }
 }
 
-void SoundDevicePortAudio::writeProcess() {
+void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
     PaStream* pStream = m_pStream;
 
     if (pStream && m_outputParams.channelCount && m_outputFifo) {
-        int outChunkSize = m_framesPerBuffer * m_outputParams.channelCount;
+        int outChunkSize = framesPerBuffer * m_outputParams.channelCount;
         int writeAvailable = m_outputFifo->writeAvailable();
         int writeCount = outChunkSize;
         if (outChunkSize > writeAvailable) {
@@ -868,7 +868,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
     // This must be the very first call, else timeInfo becomes invalid
-    updateCallbackEntryToDacTime(timeInfo);
+    updateCallbackEntryToDacTime(framesPerBuffer, timeInfo);
 
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1",
                 m_deviceId.debugName());
@@ -944,7 +944,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         m_pSoundManager->underflowHappened(6);
     }
 
-    m_pSoundManager->processUnderflowHappened();
+    m_pSoundManager->processUnderflowHappened(framesPerBuffer);
 
     //Note: Input is processed first so that any ControlObject changes made in
     //      response to input are processed as soon as possible (that is, when
@@ -955,10 +955,10 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input %1",
                 m_deviceId.debugName());
         composeInputBuffer(in, framesPerBuffer, 0, m_inputParams.channelCount);
-        m_pSoundManager->pushInputBuffers(m_audioInputs, m_framesPerBuffer);
+        m_pSoundManager->pushInputBuffers(m_audioInputs, framesPerBuffer);
     }
 
-    m_pSoundManager->readProcess();
+    m_pSoundManager->readProcess(framesPerBuffer);
 
     {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
@@ -981,7 +981,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         composeOutputBuffer(out, framesPerBuffer, 0, m_outputParams.channelCount);
     }
 
-    m_pSoundManager->writeProcess();
+    m_pSoundManager->writeProcess(framesPerBuffer);
 
     updateAudioLatencyUsage(framesPerBuffer);
 
@@ -989,6 +989,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 }
 
 void SoundDevicePortAudio::updateCallbackEntryToDacTime(
+        const SINT framesPerBuffer,
         const PaStreamCallbackTimeInfo* timeInfo) {
     double timeSinceLastCbSecs = m_clkRefTimer.restart().toDoubleSeconds();
 
@@ -1018,8 +1019,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 
     PaTime callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
             - timeInfo->currentTime;
-    double bufferSizeSec = m_framesPerBuffer / m_dSampleRate;
-
+    double bufferSizeSec = framesPerBuffer / m_dSampleRate;
 
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
