@@ -438,6 +438,15 @@ void SoundDevicePortAudio::readProcess(SINT framesPerBuffer) {
     PaStream* pStream = m_pStream;
     if (pStream && m_inputParams.channelCount && m_inputFifo) {
         int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
+
+        // TODO: This should not occur, but if it does it will result in
+        //       constant xruns. Should we just roll with it and reallocate the
+        //       FIFO buffer right here and now?
+        if (inChunkSize > m_inputFifo->size()) {
+            qWarning() << "Input FIFO has size " << m_inputFifo->size()
+                       << ", but we want to read " << inChunkSize << " samples";
+        }
+
         if (m_syncBuffers == 0) { // "Experimental (no delay)"
 
             if (m_inputFifo->readAvailable() == 0) {
@@ -570,6 +579,15 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
 
     if (pStream && m_outputParams.channelCount && m_outputFifo) {
         int outChunkSize = framesPerBuffer * m_outputParams.channelCount;
+
+        // TODO: This should not occur, but if it does it will result in
+        //       constant xruns. Should we just roll with it and reallocate the
+        //       FIFO buffer right here and now?
+        if (outChunkSize > m_outputFifo->size()) {
+            qWarning() << "Output FIFO has size " << m_inputFifo->size()
+                       << ", but we want to read " << outChunkSize << " samples";
+        }
+
         int writeAvailable = m_outputFifo->writeAvailable();
         int writeCount = outChunkSize;
         if (outChunkSize > writeAvailable) {
