@@ -257,9 +257,8 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // we need an additional artificial delay
         if (m_outputParams.channelCount) {
             // On chunk for reading one for writing and on for drift correction
-            m_outputFifo = new FIFO<CSAMPLE>(
-                    m_outputParams.channelCount * m_framesPerBuffer
-                            * kFifoSize);
+            m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
+                    m_outputParams.channelCount * m_framesPerBuffer * kFifoSize);
             // Clear first 1.5 chunks on for the required artificial delaly to
             // a allow jitter and a half, because we can't predict which
             // callback fires first.
@@ -276,7 +275,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             m_outputFifo->releaseWriteRegions(writeCount);
         }
         if (m_inputParams.channelCount) {
-            m_inputFifo = new FIFO<CSAMPLE>(
+            m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_inputParams.channelCount * m_framesPerBuffer * kFifoSize);
             // Clear first 1.5 chunks (see above)
             int writeCount = m_inputParams.channelCount * m_framesPerBuffer *
@@ -296,20 +295,20 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // reference device clock
         callback = paV19Callback;
         if (m_outputParams.channelCount) {
-            m_outputFifo = new FIFO<CSAMPLE>(
+            m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_outputParams.channelCount * m_framesPerBuffer);
         }
         if (m_inputParams.channelCount) {
-            m_inputFifo = new FIFO<CSAMPLE>(
+            m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_inputParams.channelCount * m_framesPerBuffer);
         }
     } else if (m_syncBuffers == 0) { // "Experimental (no delay)"
         if (m_outputParams.channelCount) {
-            m_outputFifo = new FIFO<CSAMPLE>(
+            m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_outputParams.channelCount * m_framesPerBuffer * 2);
         }
         if (m_inputParams.channelCount) {
-            m_inputFifo = new FIFO<CSAMPLE>(
+            m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_inputParams.channelCount * m_framesPerBuffer * 2);
         }
     }
@@ -422,17 +421,10 @@ SoundDeviceError SoundDevicePortAudio::close() {
                        << Pa_GetErrorText(err) << m_deviceId;
             return SOUNDDEVICE_ERROR_ERR;
         }
-
-        if (m_outputFifo) {
-            delete m_outputFifo;
-        }
-        if (m_inputFifo) {
-            delete m_inputFifo;
-        }
     }
 
-    m_outputFifo = nullptr;
-    m_inputFifo = nullptr;
+    m_outputFifo.reset();
+    m_inputFifo.reset();
     m_bSetThreadPriority = false;
 
     return SOUNDDEVICE_ERROR_OK;
