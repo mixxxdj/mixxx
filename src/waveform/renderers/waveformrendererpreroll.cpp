@@ -42,7 +42,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     if (preRollVisible || postRollVisible) {
         const double playMarkerPositionFrac = m_waveformRenderer->getPlayMarkerPosition();
         const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
-        const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
+        const double numberOfVisibleVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
 
         const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
         const int totalVSamples = m_waveformRenderer->getTotalVSample();
@@ -76,8 +76,14 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         if (preRollVisible) {
             // VSample position of the right-most triangle's tip
             double triangleTipVSamplePosition =
-                    numberOfVSamples * playMarkerPositionFrac -
+                    numberOfVisibleVSamples * playMarkerPositionFrac -
                     currentVSamplePosition;
+            double invisibleVSamples = triangleTipVSamplePosition - numberOfVisibleVSamples;
+            if (invisibleVSamples > 0) {
+                triangleTipVSamplePosition -=
+                        floor(invisibleVSamples / polyVSampleOffset) *
+                        polyVSampleOffset;
+            }
 
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
@@ -96,8 +102,14 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
             const int remainingVSamples = totalVSamples - currentVSamplePosition;
             // Sample position of the left-most triangle's tip
             double triangleTipVSamplePosition =
-                    playMarkerPositionFrac * numberOfVSamples +
+                    numberOfVisibleVSamples * playMarkerPositionFrac +
                     remainingVSamples;
+            double invisibleVSamples = triangleTipVSamplePosition - numberOfVisibleVSamples;
+            if (invisibleVSamples > 0) {
+                triangleTipVSamplePosition -=
+                        floor(invisibleVSamples / polyVSampleOffset) *
+                        polyVSampleOffset;
+            }
 
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
@@ -105,7 +117,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
                     << QPointF(polyPixelWidth, halfBreadth + halfPolyBreadth);
             polygon.translate(triangleTipVSamplePosition / vSamplesPerPixel, 0);
 
-            for (; triangleTipVSamplePosition < numberOfVSamples;
+            for (; triangleTipVSamplePosition < numberOfVisibleVSamples;
                     triangleTipVSamplePosition += polyVSampleOffset) {
                 painter->drawPolygon(polygon);
                 polygon.translate(polyPixelOffset, 0);
