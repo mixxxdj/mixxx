@@ -28,20 +28,14 @@ constexpr size_t kRubberBandBlockSize = 256;
 EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
         ReadAheadManager* pReadAheadManager)
         : m_pReadAheadManager(pReadAheadManager),
-          m_buffer_back(SampleUtil::alloc(MAX_BUFFER_LEN)),
+          m_buffers{std::vector<CSAMPLE>(MAX_BUFFER_LEN), std::vector<CSAMPLE>(MAX_BUFFER_LEN)},
+          m_bufferPtrs{m_buffers[0].data(), m_buffers[1].data()},
+          m_interleavedReadBuffer(MAX_BUFFER_LEN),
           m_bBackwards(false),
           m_useEngineFiner(false) {
-    m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
     // Initialize the internal buffers to prevent re-allocations
     // in the real-time thread.
     onSampleRateChanged();
-}
-
-EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
-    SampleUtil::free(m_buffer_back);
-    SampleUtil::free(m_retrieve_buffer[0]);
-    SampleUtil::free(m_retrieve_buffer[1]);
 }
 
 void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
@@ -151,22 +145,25 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
     SINT frames_available = m_pRubberBand->available();
     SINT frames_to_read = math_min(frames_available, frames);
     SINT received_frames = static_cast<SINT>(m_pRubberBand->retrieve(
-            m_retrieve_buffer, frames_to_read));
+            m_bufferPtrs.data(), frames_to_read));
+
+    DEBUG_ASSERT(received_frames <= static_cast<ssize_t>(m_buffers[0].size()));
 
     SampleUtil::interleaveBuffer(pBuffer,
-                                 m_retrieve_buffer[0],
-                                 m_retrieve_buffer[1],
-                                 received_frames);
+            m_buffers[0].data(),
+            m_buffers[1].data(),
+            received_frames);
     return received_frames;
 }
 
 void EngineBufferScaleRubberBand::deinterleaveAndProcess(
         const CSAMPLE* pBuffer, SINT frames, bool flush) {
+    DEBUG_ASSERT(frames <= static_cast<ssize_t>(m_buffers[0].size()));
 
     SampleUtil::deinterleaveBuffer(
-            m_retrieve_buffer[0], m_retrieve_buffer[1], pBuffer, frames);
+            m_buffers[0].data(), m_buffers[1].data(), pBuffer, frames);
 
-    m_pRubberBand->process(m_retrieve_buffer,
+    m_pRubberBand->process(m_bufferPtrs.data(),
             frames,
             flush);
 }
@@ -234,13 +231,13 @@ double EngineBufferScaleRubberBand::scaleBuffer(
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
-                deinterleaveAndProcess(m_buffer_back, iAvailFrames, false);
+                deinterleaveAndProcess(m_interleavedReadBuffer.data(), iAvailFrames, false);
             } else {
                 if (last_read_failed) {
                     // Flush and break out after the next retrieval. If we are
                     // at EOF this serves to get the last samples out of
                     // RubberBand.
-                    deinterleaveAndProcess(m_buffer_back, 0, true);
+                    deinterleaveAndProcess(m_interleavedReadBuffer.data(), 0, true);
                     break_out_after_retrieve_and_reset_rubberband = true;
                 }
                 last_read_failed = true;
