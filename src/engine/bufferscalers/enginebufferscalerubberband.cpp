@@ -290,7 +290,13 @@ void EngineBufferScaleRubberBand::reset() {
     // need to run some silent samples through the time stretching engine first
     // before using it. Otherwise it will eat add a short fade-in, destroying
     // the initial transient.
+#if RUBBERBANDV3
     size_t remaining_padding = m_pRubberBand->getPreferredStartPad();
+#else
+    // This _should_ be equal to the latency in older Rubber Band versions:
+    // https://github.com/breakfastquay/rubberband/blob/c5f99d5ff2cba2f4f1def6c38c7843bbb9ac7a78/main/main.cpp#L652
+    size_t remaining_padding = m_pRubberBand->getLatency();
+#endif
     std::fill_n(m_buffers[0].begin(), kRubberBandBlockSize, 0.0f);
     std::fill_n(m_buffers[1].begin(), kRubberBandBlockSize, 0.0f);
     while (remaining_padding > 0) {
@@ -300,7 +306,11 @@ void EngineBufferScaleRubberBand::reset() {
         remaining_padding -= pad_samples;
     }
 
+#if RUBBERBANDV3
     size_t padding_to_drop = m_pRubberBand->getStartDelay();
+#else
+    size_t padding_to_drop = m_pRubberBand->getLatency();
+#endif
     while (padding_to_drop > 0) {
         const size_t drop_samples = std::min<size_t>(padding_to_drop, kRubberBandBlockSize);
         m_pRubberBand->retrieve(m_bufferPtrs.data(), drop_samples);
