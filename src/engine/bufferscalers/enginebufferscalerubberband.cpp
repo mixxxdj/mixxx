@@ -26,7 +26,7 @@ constexpr size_t kRubberBandBlockSize = 256;
 EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
         ReadAheadManager* pReadAheadManager)
         : m_pReadAheadManager(pReadAheadManager),
-          m_buffers{std::vector<CSAMPLE>(MAX_BUFFER_LEN), std::vector<CSAMPLE>(MAX_BUFFER_LEN)},
+          m_buffers{mixxx::SampleBuffer(MAX_BUFFER_LEN), mixxx::SampleBuffer(MAX_BUFFER_LEN)},
           m_bufferPtrs{m_buffers[0].data(), m_buffers[1].data()},
           m_interleavedReadBuffer(MAX_BUFFER_LEN),
           m_bBackwards(false),
@@ -297,8 +297,8 @@ void EngineBufferScaleRubberBand::reset() {
     // https://github.com/breakfastquay/rubberband/blob/c5f99d5ff2cba2f4f1def6c38c7843bbb9ac7a78/main/main.cpp#L652
     size_t remaining_padding = m_pRubberBand->getLatency();
 #endif
-    std::fill_n(m_buffers[0].begin(), kRubberBandBlockSize, 0.0f);
-    std::fill_n(m_buffers[1].begin(), kRubberBandBlockSize, 0.0f);
+    std::fill_n(m_buffers[0].span().begin(), kRubberBandBlockSize, 0.0f);
+    std::fill_n(m_buffers[1].span().begin(), kRubberBandBlockSize, 0.0f);
     while (remaining_padding > 0) {
         const size_t pad_samples = std::min<size_t>(remaining_padding, kRubberBandBlockSize);
         m_pRubberBand->process(m_bufferPtrs.data(), pad_samples, false);
