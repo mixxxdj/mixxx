@@ -101,10 +101,8 @@ class SoundDevice {
     QList<AudioInputBuffer> m_audioInputs;
 
   private:
-    /**
-     * The last buffer size that was sent to the `[Master],audio_buffer_size`
-     * control object. This is set in `maybeUpdateBufferSize()`.
-     */
+    /// The last buffer size that was sent to the `[Master],audio_buffer_size`
+    /// control object. This is set in `maybeUpdateBufferSize()`.
     double m_lastBufferSizeMs = 0;
 };
 
