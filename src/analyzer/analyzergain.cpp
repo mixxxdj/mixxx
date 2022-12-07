@@ -42,6 +42,7 @@ bool AnalyzerGain::processSamples(const CSAMPLE *pIn, const int iLen) {
         delete[] m_pRightTempBuffer;
         m_pLeftTempBuffer = new CSAMPLE[halfLength];
         m_pRightTempBuffer = new CSAMPLE[halfLength];
+        m_iBufferSize = halfLength;
     }
     SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer, m_pRightTempBuffer, pIn, halfLength);
     SampleUtil::applyGain(m_pLeftTempBuffer, 32767, halfLength);
