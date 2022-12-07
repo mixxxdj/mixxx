@@ -1,14 +1,12 @@
 #pragma once
 
+#include <rubberband/RubberBandStretcher.h>
+
 #include <array>
 #include <vector>
 
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "util/memory.h"
-
-namespace RubberBand {
-class RubberBandStretcher;
-}  // namespace RubberBand
 
 class ReadAheadManager;
 
@@ -47,6 +45,10 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     void onSampleRateChanged() override;
 
     int runningEngineVersion();
+    /// Reset the rubberband instance and run the prerequisite amount of padding
+    /// through it. This should be used instead of calling
+    /// `m_pRubberBand->reset()` directly.
+    void reset();
 
     void deinterleaveAndProcess(const CSAMPLE* pBuffer, SINT frames, bool flush);
     SINT retrieveAndDeinterleave(CSAMPLE* pBuffer, SINT frames);

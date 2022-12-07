@@ -1,7 +1,5 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 
-#include <rubberband/RubberBandStretcher.h>
-
 #include <QtDebug>
 
 #include "control/controlobject.h"
@@ -136,7 +134,7 @@ void EngineBufferScaleRubberBand::clear() {
     VERIFY_OR_DEBUG_ASSERT(m_pRubberBand) {
         return;
     }
-    m_pRubberBand->reset();
+    reset();
 }
 
 SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
@@ -196,10 +194,10 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         read += getOutputSignal().frames2samples(received_frames);
 
         if (break_out_after_retrieve_and_reset_rubberband) {
-            //qDebug() << "break_out_after_retrieve_and_reset_rubberband";
+            // qDebug() << "break_out_after_retrieve_and_reset_rubberband";
             // If we break out early then we have flushed RubberBand and need to
             // reset it.
-            m_pRubberBand->reset();
+            reset();
             break;
         }
 
@@ -218,15 +216,15 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                 iLenFramesRequired = kRubberBandBlockSize;
             }
         }
-        //qDebug() << "iLenFramesRequired" << iLenFramesRequired;
+        // qDebug() << "iLenFramesRequired" << iLenFramesRequired;
 
         if (remaining_frames > 0 && iLenFramesRequired > 0) {
             SINT iAvailSamples = m_pReadAheadManager->getNextSamples(
-                        // The value doesn't matter here. All that matters is we
-                        // are going forward or backward.
-                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
-                        m_buffer_back,
-                        getOutputSignal().frames2samples(iLenFramesRequired));
+                    // The value doesn't matter here. All that matters is we
+                    // are going forward or backward.
+                    (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
+                    m_interleavedReadBuffer.data(),
+                    getOutputSignal().frames2samples(iLenFramesRequired));
             SINT iAvailFrames = getOutputSignal().samples2frames(iAvailSamples);
 
             if (iAvailFrames > 0) {
@@ -282,4 +280,31 @@ int EngineBufferScaleRubberBand::runningEngineVersion() {
 #else
     return 2;
 #endif
+}
+
+void EngineBufferScaleRubberBand::reset() {
+    m_pRubberBand->reset();
+
+    // As mentioned in the docs (https://breakfastquay.com/rubberband/code-doc/)
+    // and FAQ (https://breakfastquay.com/rubberband/integration.html#faqs), you
+    // need to run some silent samples through the time stretching engine first
+    // before using it. Otherwise it will eat add a short fade-in, destroying
+    // the initial transient.
+    size_t remaining_padding = m_pRubberBand->getPreferredStartPad();
+    std::fill_n(m_buffers[0].begin(), kRubberBandBlockSize, 0.0f);
+    std::fill_n(m_buffers[1].begin(), kRubberBandBlockSize, 0.0f);
+    while (remaining_padding > 0) {
+        const size_t pad_samples = std::min<size_t>(remaining_padding, kRubberBandBlockSize);
+        m_pRubberBand->process(m_bufferPtrs.data(), pad_samples, false);
+
+        remaining_padding -= pad_samples;
+    }
+
+    size_t padding_to_drop = m_pRubberBand->getStartDelay();
+    while (padding_to_drop > 0) {
+        const size_t drop_samples = std::min<size_t>(padding_to_drop, kRubberBandBlockSize);
+        m_pRubberBand->retrieve(m_bufferPtrs.data(), drop_samples);
+
+        padding_to_drop -= drop_samples;
+    }
 }
