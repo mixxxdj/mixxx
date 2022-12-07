@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QColor>
 #include <QCursor>
 #include <QMouseEvent>
 #include <QPixmap>
@@ -22,7 +21,7 @@ class KnobEventHandler {
             : m_bRightButtonPressed(false),
               m_pWheelCursorTimer(nullptr) {
         QPixmap blankPixmap(32, 32);
-        blankPixmap.fill(QColor(0, 0, 0, 0));
+        blankPixmap.fill(Qt::transparent);
         m_blankCursor = QCursor(blankPixmap);
     }
 
