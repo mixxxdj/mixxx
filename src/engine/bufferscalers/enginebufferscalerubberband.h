@@ -11,7 +11,7 @@
 class ReadAheadManager;
 
 // Uses librubberband to scale audio.  This class is not thread safe.
-class EngineBufferScaleRubberBand : public EngineBufferScale {
+class EngineBufferScaleRubberBand final : public EngineBufferScale {
     Q_OBJECT
   public:
     explicit EngineBufferScaleRubberBand(
