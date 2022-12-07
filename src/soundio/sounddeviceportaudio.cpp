@@ -11,6 +11,7 @@
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/defs.h"
 #include "util/denormalsarezero.h"
 #include "util/fifo.h"
 #include "util/math.h"
@@ -248,11 +249,26 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     m_syncBuffers = syncBuffers;
 
     // Create the callback function pointer.
-    PaStreamCallback* callback = nullptr;
+    PaStreamCallback* pCallback = nullptr;
     if (isClkRefDevice) {
-        callback = paV19CallbackClkRef;
+        pCallback = paV19CallbackClkRef;
+    } else if (framesPerBuffer == paFramesPerBufferUnspecified) {
+        m_syncBuffers = 1;
+        // This happens in case of JACK, where PortAudio creates artificial
+        // device streams from one native JACK server callback "JackCallback()"
+        // For every sound hardware. Clock drift can not happen, but the buffers
+        // are processed: In 1 - Out 1 - In 2 - Out 2
+        // This causes even with the "Experimental (no delay)" setting
+        // one extra buffer delay for the non clock reference device
+        pCallback = paV19Callback;
+        if (m_outputParams.channelCount) {
+            m_outputFifo = new FIFO<CSAMPLE>(MAX_BUFFER_LEN);
+        }
+        if (m_inputParams.channelCount) {
+            m_inputFifo = new FIFO<CSAMPLE>(MAX_BUFFER_LEN);
+        }
     } else if (m_syncBuffers == 2) { // "Default (long delay)"
-        callback = paV19CallbackDrift;
+        pCallback = paV19CallbackDrift;
         // to avoid overflows when one callback overtakes the other or
         // when there is a clock drift compared to the clock reference device
         // we need an additional artificial delay
@@ -294,7 +310,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     } else if (m_syncBuffers == 1) { // "Disabled (short delay)"
         // this can be used on a second device when it is driven by the Clock
         // reference device clock
-        callback = paV19Callback;
+        pCallback = paV19Callback;
         if (m_outputParams.channelCount) {
             m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_outputParams.channelCount * framesPerBuffer);
@@ -322,7 +338,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             m_dSampleRate,
             framesPerBuffer,
             paClipOff, // Stream flags
-            callback,
+            pCallback,
             (void*)this); // pointer passed to the callback function
 
     if (err != paNoError) {
