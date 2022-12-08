@@ -262,7 +262,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // This causes even with the "Experimental (no delay)" setting
         // one extra buffer delay for the non clock reference device
         pCallback = paV19Callback;
-        if (m_outputParams.channelCount) {
+        if (m_outputParams.channelCount > 0) {
             m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(MAX_BUFFER_LEN);
         }
         if (m_inputParams.channelCount) {
@@ -273,7 +273,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // to avoid overflows when one callback overtakes the other or
         // when there is a clock drift compared to the clock reference device
         // we need an additional artificial delay
-        if (m_outputParams.channelCount) {
+        if (m_outputParams.channelCount > 0) {
             // On chunk for reading one for writing and on for drift correction
             m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_outputParams.channelCount * framesPerBuffer * kFifoSize);
@@ -292,7 +292,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             SampleUtil::clear(dataPtr2, size2);
             m_outputFifo->releaseWriteRegions(writeCount);
         }
-        if (m_inputParams.channelCount) {
+        if (m_inputParams.channelCount > 0) {
             m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_inputParams.channelCount * framesPerBuffer * kFifoSize);
             // Clear first 1.5 chunks (see above)
@@ -312,7 +312,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // this can be used on a second device when it is driven by the Clock
         // reference device clock
         pCallback = paV19Callback;
-        if (m_outputParams.channelCount) {
+        if (m_outputParams.channelCount > 0) {
             m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_outputParams.channelCount * framesPerBuffer);
         }
@@ -321,11 +321,11 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
                     m_inputParams.channelCount * framesPerBuffer);
         }
     } else if (m_syncBuffers == 0) { // "Experimental (no delay)"
-        if (m_outputParams.channelCount) {
+        if (m_outputParams.channelCount > 0) {
             m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_outputParams.channelCount * framesPerBuffer * 2);
         }
-        if (m_inputParams.channelCount) {
+        if (m_inputParams.channelCount > 0) {
             m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(
                     m_inputParams.channelCount * framesPerBuffer * 2);
         }
@@ -769,7 +769,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
         }
     }
 
-    if (m_outputParams.channelCount) {
+    if (m_outputParams.channelCount > 0) {
         int outChunkSize = framesPerBuffer * m_outputParams.channelCount;
         int readAvailable = m_outputFifo->readAvailable();
 
@@ -816,7 +816,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
             m_pSoundManager->underflowHappened(11);
             //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Buffer empty";
         }
-     }
+    }
     return paContinue;
 }
 
@@ -849,7 +849,7 @@ int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
         }
     }
 
-    if (m_outputParams.channelCount) {
+    if (m_outputParams.channelCount > 0) {
         int outChunkSize = framesPerBuffer * m_outputParams.channelCount;
         int readAvailable = m_outputFifo->readAvailable();
         if (readAvailable >= outChunkSize) {
@@ -868,7 +868,7 @@ int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
             m_pSoundManager->underflowHappened(5);
             //qDebug() << "callbackProcess read:" << "Buffer empty";
         }
-     }
+    }
     return paContinue;
 }
 
