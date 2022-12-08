@@ -217,9 +217,10 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // PortAudio's JACK back end has its own buffering to split or merge the buffer
         // received from JACK to the desired size.
         // However, we use here paFramesPerBufferUnspecified to use the JACK buffer size
-        // which offers the best responds time without additional jitter.
+        // which offers the best response time without additional jitter due to two
+        // successive callback without the expected pause.
         framesPerBuffer = paFramesPerBufferUnspecified;
-        qDebug() << "framesPerBuffer: Unspecified";
+        qDebug() << "Using JACK server's frames per buffer";
     } else {
         qDebug() << "framesPerBuffer:" << framesPerBuffer;
     }
