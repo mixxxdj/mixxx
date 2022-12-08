@@ -52,7 +52,7 @@ void VisualPlayPosition::set(
 double VisualPlayPosition::calcPosAtNextVSync(
         VSyncThread* pVSyncThread, const VisualPlayPositionData& data) {
     double playPos = data.m_enginePlayPos; // load playPos for the first sample in Buffer
-    if (data.m_audioBufferMicroS) {
+    if (data.m_audioBufferMicroS != 0.0) {
         int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
         int offset = refToVSync - data.m_callbackEntrytoDac;
         // The offset is limited to the audio buffer + waveform sync interval
