@@ -818,6 +818,7 @@ void EngineMaster::processHeadphones(
     // buffer with a mono mix of the master output buffer.
     if (m_pHeadSplitEnabled->toBool()) {
         // note: NOT VECTORIZED because of in place copy
+        // with all compilers, except clang >= 14.
         for (SINT i = 0; i + 1 < iBufferSize; i += 2) {
             m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
             m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
