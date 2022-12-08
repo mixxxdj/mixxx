@@ -522,10 +522,15 @@ void DlgPrefSound::apiChanged(int index) {
         sampleRateComboBox->setEnabled(false);
         latencyLabel->setEnabled(false);
         audioBufferComboBox->setEnabled(false);
+        deviceSyncComboBox->setEnabled(false);
+        engineClockComboBox->setEnabled(false);
+
     } else {
         sampleRateComboBox->setEnabled(true);
         latencyLabel->setEnabled(true);
         audioBufferComboBox->setEnabled(true);
+        deviceSyncComboBox->setEnabled(true);
+        engineClockComboBox->setEnabled(true);
     }
 }
 

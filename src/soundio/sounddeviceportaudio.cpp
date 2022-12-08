@@ -262,10 +262,10 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // one extra buffer delay for the non clock reference device
         pCallback = paV19Callback;
         if (m_outputParams.channelCount) {
-            m_outputFifo = new FIFO<CSAMPLE>(MAX_BUFFER_LEN);
+            m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(MAX_BUFFER_LEN);
         }
         if (m_inputParams.channelCount) {
-            m_inputFifo = new FIFO<CSAMPLE>(MAX_BUFFER_LEN);
+            m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(MAX_BUFFER_LEN);
         }
     } else if (m_syncBuffers == 2) { // "Default (long delay)"
         pCallback = paV19CallbackDrift;

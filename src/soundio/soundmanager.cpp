@@ -400,7 +400,7 @@ SoundDeviceError SoundManager::setupDevices() {
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
             AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
             outputs.append(out);
-            if (m_config.getForceNetworkClock()) {
+            if (m_config.getForceNetworkClock() && !jackApiUsed()) {
                 pNewMasterClockRef = pDevice;
             }
         }
@@ -424,7 +424,7 @@ SoundDeviceError SoundManager::setupDevices() {
                 goto closeAndError;
             }
 
-            if (!m_config.getForceNetworkClock()) {
+            if (!m_config.getForceNetworkClock() || jackApiUsed()) {
                 if (out.getType() == AudioOutput::MASTER) {
                     pNewMasterClockRef = pDevice;
                 } else if ((out.getType() == AudioOutput::DECK ||
