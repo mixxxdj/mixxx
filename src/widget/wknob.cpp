@@ -38,6 +38,10 @@ void WKnob::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
 }
 
+void WKnob::leaveEvent(QEvent* e) {
+    m_handler.leaveEvent(this, e);
+}
+
 void WKnob::inputActivity() {
 #ifdef __APPLE__
     m_renderTimer.activity();
