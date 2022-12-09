@@ -41,11 +41,6 @@ TraktorS3.SamplerModePressAndHold = false;
 // enables scratch mode.
 TraktorS3.JogDefaultOn = true;
 
-// When set to true, wait for the track to come to a complete standstill after
-// releasing the jog wheel before resuming playback. When this is disabled the
-// track continues playing immediately when you release the jog wheel.
-TraktorS3.JogInertiaDelay = false;
-
 // If true, the sampler buttons on Deck 1 are samplers 1-8 and the sampler buttons on Deck 2 are
 // 9-16.  If false, both decks are samplers 1-8.
 TraktorS3.SixteenSamplers = false;
@@ -198,13 +193,9 @@ TraktorS3.Deck = function(controller, deckNumber, group) {
     this.padModeState = 0;
 
     // Jog wheel state
-    // tickReceived is used to detect when the platter has stopped moving.
-    this.tickReceived = false;
     this.lastTickVal = 0;
     this.lastTickTime = 0;
     this.lastTickWallClock = 0;
-    // Only used when `TraktorS3.JogInertiaDelay` is disabled
-    this.wheelTouchInertiaTimer = 0;
 
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
@@ -645,60 +636,24 @@ TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
         return;
     }
 
-    if (TraktorS3.JogInertiaDelay && this.wheelTouchInertiaTimer !== 0) {
-        // The wheel was touched again, reset the timer.
-        engine.stopTimer(this.wheelTouchInertiaTimer);
-        this.wheelTouchInertiaTimer = 0;
-    }
-
-    // If shift is pressed, reset right away.
-    if (field.value === 0 && this.shiftPressed) {
-        engine.setValue(this.activeChannel, "scratch2", 0.0);
-        engine.scratchDisable(this.deckNumber);
-        this.playIndicatorHandler(0, this.activeChannel);
-        return;
-    }
-
     if (field.value !== 0) {
         engine.scratchEnable(this.deckNumber, 768, 33.33334, TraktorS3.Alpha, TraktorS3.Beta);
-    } else if (TraktorS3.JogInertiaDelay) {
-        // The wheel keeps moving after the user lifts their finger, so don't
-        // release scratch mode right away
-        this.tickReceived = false;
-        this.wheelTouchInertiaTimer = engine.beginTimer(
-            100, TraktorS3.bind(TraktorS3.Deck.prototype.checkJogInertia, this), false);
     } else {
-        // If `TraktorS3.JogInertiaDelay` is not enabled then releasing the jog
-        // wheel should immediately disable scratch mode so the track continues
-        // playing back normally (with any leftover momentum from scratching)
         engine.scratchDisable(this.deckNumber);
-    }
-};
 
-// Only used when `TraktorS3.JogInertiaDelay` has been enabled`
-TraktorS3.Deck.prototype.checkJogInertia = function() {
-    // If we've received no ticks since the last call we are stopped.
-    // In jog mode we always stop right away.
-    if (!this.tickReceived) {
-        engine.scratchTick(this.deckNumber, 0.0);
-        engine.scratchDisable(this.deckNumber);
-        this.playIndicatorHandler(0, this.activeChannel);
-        engine.stopTimer(this.wheelTouchInertiaTimer);
-        this.wheelTouchInertiaTimer = 0;
+        // If shift is pressed, reset right away.
+        if (this.shiftPressed) {
+            engine.setValue(this.activeChannel, "scratch2", 0.0);
+            this.playIndicatorHandler(0, this.activeChannel);
+        }
     }
-    this.tickReceived = false;
 };
 
 TraktorS3.Deck.prototype.jogHandler = function(field) {
-    this.tickReceived = true;
     const deltas = this.wheelDeltas(field.value);
 
     // If shift button is held, do a simple seek.
     if (this.shiftPressed) {
-        // But if we're in the inertial period, ignore any wheel motion.
-        if (this.wheelTouchInertiaTimer !== 0) {
-            return;
-        }
         let playPosition = engine.getValue(this.activeChannel, "playposition");
         playPosition += deltas[0] / 2048.0;
         playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
