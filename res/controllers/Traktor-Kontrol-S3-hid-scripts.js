@@ -176,6 +176,7 @@ TraktorS3.Deck = function(controller, deckNumber, group) {
     this.deckNumber = deckNumber;
     this.group = group;
     this.activeChannel = "[Channel" + deckNumber + "]";
+    this.activeChannelNumber = deckNumber;
     // When true, touching the wheel enables scratch mode.  When off, touching the wheel
     // has no special effect
     this.jogToggled = TraktorS3.JogDefaultOn;
@@ -210,6 +211,7 @@ TraktorS3.Deck.prototype.activateChannel = function(channel) {
         return;
     }
     this.activeChannel = channel.group;
+    this.activeChannelNumber = channel.groupNumber;
     engine.softTakeoverIgnoreNextValue(this.activeChannel, "rate");
     this.controller.lightDeck(this.activeChannel);
 };
@@ -637,9 +639,9 @@ TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
     }
 
     if (field.value !== 0) {
-        engine.scratchEnable(this.deckNumber, 768, 33.33334, TraktorS3.Alpha, TraktorS3.Beta);
+        engine.scratchEnable(this.activeChannelNumber, 768, 33.33334, TraktorS3.Alpha, TraktorS3.Beta);
     } else {
-        engine.scratchDisable(this.deckNumber);
+        engine.scratchDisable(this.activeChannelNumber);
 
         // If shift is pressed, reset right away.
         if (this.shiftPressed) {
@@ -663,8 +665,8 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
     const tickDelta = deltas[0];
     const timeDelta = deltas[1];
 
-    if (engine.isScratching(this.deckNumber)) {
-        engine.scratchTick(this.deckNumber, tickDelta);
+    if (engine.isScratching(this.activeChannelNumber)) {
+        engine.scratchTick(this.activeChannelNumber, tickDelta);
     } else {
         // The scratch rate is the ratio of the wheel's speed to "regular"
         // speed, which we're going to call 33.33 RPM. It's 768 ticks for a
@@ -968,6 +970,8 @@ TraktorS3.Channel = function(controller, parentDeck, group) {
     this.controller = controller;
     this.parentDeck = parentDeck;
     this.group = group;
+    // We need the channel number for the scratch controls
+    this.groupNumber = Number(group.match(/\[Channel(\d+)\]/)[1]);
     this.fxEnabledState = false;
 
     this.trackDurationSec = 0;
@@ -1797,8 +1801,8 @@ TraktorS3.Controller.prototype.deckSwitchHandler = function(field) {
     const channel = this.Channels[field.group];
     const deck = channel.parentDeck;
 
-    if (engine.isScratching(deck.deckNumber)) {
-        engine.scratchDisable(deck.deckNumber);
+    if (engine.isScratching(channel.groupNumber)) {
+        engine.scratchDisable(channel.groupNumber);
     }
 
     deck.activateChannel(channel);
