@@ -65,6 +65,10 @@ TraktorS3.ChannelColors = {
 TraktorS3.LEDDimValue = 0x00;
 TraktorS3.LEDBrightValue = 0x02;
 
+// Parameters for the scratch smoothing
+TraktorS3.Alpha = 1.0 / 8;
+TraktorS3.Beta = TraktorS3.Alpha / 32;
+
 // Set to true to output debug messages and debug light outputs.
 TraktorS3.DebugMode = false;
 
@@ -650,13 +654,13 @@ TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
     // If shift is pressed, reset right away.
     if (field.value === 0 && this.shiftPressed) {
         engine.setValue(this.activeChannel, "scratch2", 0.0);
-        engine.setValue(this.activeChannel, "scratch2_enable", false);
+        engine.scratchDisable(this.deckNumber);
         this.playIndicatorHandler(0, this.activeChannel);
         return;
     }
 
     if (field.value !== 0) {
-        engine.setValue(this.activeChannel, "scratch2_enable", true);
+        engine.scratchEnable(this.deckNumber, 768, 33.33334, TraktorS3.Alpha, TraktorS3.Beta);
     } else if (TraktorS3.JogInertiaDelay) {
         // The wheel keeps moving after the user lifts their finger, so don't
         // release scratch mode right away
@@ -667,7 +671,7 @@ TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
         // If `TraktorS3.JogInertiaDelay` is not enabled then releasing the jog
         // wheel should immediately disable scratch mode so the track continues
         // playing back normally (with any leftover momentum from scratching)
-        engine.setValue(this.activeChannel, "scratch2_enable", false);
+        engine.scratchDisable(this.deckNumber);
     }
 };
 
@@ -676,8 +680,8 @@ TraktorS3.Deck.prototype.checkJogInertia = function() {
     // If we've received no ticks since the last call we are stopped.
     // In jog mode we always stop right away.
     if (!this.tickReceived) {
-        engine.setValue(this.activeChannel, "scratch2", 0.0);
-        engine.setValue(this.activeChannel, "scratch2_enable", false);
+        engine.scratchTick(this.deckNumber, 0.0);
+        engine.scratchDisable(this.deckNumber);
         this.playIndicatorHandler(0, this.activeChannel);
         engine.stopTimer(this.wheelTouchInertiaTimer);
         this.wheelTouchInertiaTimer = 0;
@@ -716,8 +720,8 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
 
     // The Mixxx scratch code tries to do accumulation and time calculation itself.
     // This controller is better, so just use its values.
-    if (engine.getValue(this.activeChannel, "scratch2_enable")) {
-        engine.setValue(this.activeChannel, "scratch2", velocity);
+    if (engine.isScratching(this.deckNumber)) {
+        engine.scratchTick(this.deckNumber, velocity);
     } else {
         // If we're playing, just nudge.
         if (engine.getValue(this.activeChannel, "play")) {
@@ -1840,10 +1844,8 @@ TraktorS3.Controller.prototype.deckSwitchHandler = function(field) {
     const channel = this.Channels[field.group];
     const deck = channel.parentDeck;
 
-    const isScratching = engine.getValue(deck.activeChannel, "scratch2_enable");
-    if (isScratching) {
-        engine.setValue(deck.activeChannel, "scratch2", 0.0);
-        engine.setValue(deck.activeChannel, "scratch2_enable", false);
+    if (engine.isScratching(deck.deckNumber)) {
+        engine.scratchDisable(deck.deckNumber);
     }
 
     deck.activateChannel(channel);
