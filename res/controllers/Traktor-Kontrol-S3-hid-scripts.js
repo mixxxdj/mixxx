@@ -663,21 +663,19 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
     const tickDelta = deltas[0];
     const timeDelta = deltas[1];
 
-    // The scratch rate is the ratio of the wheel's speed to "regular" speed,
-    // which we're going to call 33.33 RPM.  It's 768 ticks for a circle, and
-    // 400000 ticks per second, and 33.33 RPM is 1.8 seconds per rotation, so
-    // the standard speed is 768 / (400000 * 1.8)
-    const thirtyThree = 768 / 720000;
-
-    // Our actual speed is tickDelta / timeDelta.  Take the ratio of those to get the
-    // rate ratio.
-    let velocity = (tickDelta / timeDelta) / thirtyThree;
-
-    // The Mixxx scratch code tries to do accumulation and time calculation itself.
-    // This controller is better, so just use its values.
     if (engine.isScratching(this.deckNumber)) {
-        engine.scratchTick(this.deckNumber, velocity);
+        engine.scratchTick(this.deckNumber, tickDelta);
     } else {
+        // The scratch rate is the ratio of the wheel's speed to "regular"
+        // speed, which we're going to call 33.33 RPM. It's 768 ticks for a
+        // circle, and 400000 ticks per second, and 33.33 RPM is 1.8 seconds per
+        // rotation, so the standard speed is 768 / (400000 * 1.8)
+        const thirtyThree = 768 / 720000;
+
+        // Our actual speed is tickDelta / timeDelta. Take the ratio of those to
+        // get the rate ratio.
+        let velocity = (tickDelta / timeDelta) / thirtyThree;
+
         // If we're playing, just nudge.
         if (engine.getValue(this.activeChannel, "play")) {
             velocity /= 4;
