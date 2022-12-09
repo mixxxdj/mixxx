@@ -8,11 +8,6 @@
 #include "util/math.h"
 #include "waveform/vsyncthread.h"
 
-namespace {
-constexpr int kMicrosPerMillis = 1000; // 1 ms contains 1000 µs
-} // anonymous namespace
-
-
 //static
 QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
