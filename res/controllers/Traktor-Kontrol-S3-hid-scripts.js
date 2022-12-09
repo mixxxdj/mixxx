@@ -676,14 +676,8 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
 
         // Our actual speed is tickDelta / timeDelta. Take the ratio of those to
         // get the rate ratio.
-        let velocity = (tickDelta / timeDelta) / thirtyThree;
+        const velocity = (tickDelta / timeDelta) / thirtyThree;
 
-        // If we're playing, just nudge.
-        if (engine.getValue(this.activeChannel, "play")) {
-            velocity /= 4;
-        } else {
-            velocity *= 2;
-        }
         engine.setValue(this.activeChannel, "jog", velocity);
     }
 };
