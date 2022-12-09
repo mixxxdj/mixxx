@@ -7,7 +7,8 @@
 EffectChainPreset::EffectChainPreset()
         : m_name(kNoEffectString),
           m_mixMode(EffectChainMixMode::DrySlashWet),
-          m_dSuper(0.0) {
+          m_dSuper(0.0),
+          m_readOnly(false) {
 }
 
 EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {

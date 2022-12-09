@@ -56,5 +56,5 @@ class EffectChainPreset {
     EffectChainMixMode::Type m_mixMode;
     double m_dSuper;
     QList<EffectPresetPointer> m_effectPresets;
-    bool m_readOnly = false;
+    bool m_readOnly;
 };
