@@ -126,12 +126,12 @@ void EffectChainPresetManager::importPreset() {
             // Don't allow '---' because that's the name of the internal empty preset
             if (pPreset->name() == kNoEffectString) {
                 pPreset->setName(pPreset->name() +
-                        QLatin1String(" (") + tr("imported") + QLatin1String(")"));
+                        QStringLiteral(" (") + tr("imported") + QStringLiteral(")"));
             }
 
             while (m_effectChainPresets.contains(pPreset->name())) {
                 pPreset->setName(pPreset->name() +
-                        QLatin1String(" (") + tr("duplicate") + QLatin1String(")"));
+                        QStringLiteral(" (") + tr("duplicate") + QStringLiteral(")"));
             }
 
             // An imported chain preset might contain an LV2 plugin that the user does not
