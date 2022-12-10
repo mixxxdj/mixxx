@@ -238,10 +238,10 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
             CachingReaderChunk::frames2samples(
                     m_pAudioSource->frameLength());
 
-    CuePointer pAudibleSound =
-            pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pAudibleSound) {
-        m_firstSoundFrameToVerify = pAudibleSound->getPosition();
+    CuePointer pN60dBSound =
+            pTrack->findCueByType(mixxx::CueType::N60dBSound);
+    if (pN60dBSound) {
+        m_firstSoundFrameToVerify = pN60dBSound->getPosition();
     }
 
     // The engine must not request any chunks before receiving the

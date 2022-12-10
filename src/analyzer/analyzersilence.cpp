@@ -16,9 +16,9 @@ constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
+    CuePointer pN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
 
-    if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLengthFrames() <= 0) {
+    if (!pIntroCue || !pOutroCue || !pN60dBSound || pN60dBSound->getLengthFrames() <= 0) {
         return true;
     }
     return false;
@@ -114,21 +114,20 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     const auto firstSoundPosition = mixxx::audio::FramePos(m_iSignalStart);
     const auto lastSoundPosition = mixxx::audio::FramePos(m_iSignalEnd);
 
-    CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pAudibleSound == nullptr) {
-        pAudibleSound = pTrack->createAndAddCue(
-                mixxx::CueType::AudibleSound,
+    CuePointer pN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
+    if (pN60dBSound == nullptr) {
+        pN60dBSound = pTrack->createAndAddCue(
+                mixxx::CueType::N60dBSound,
                 Cue::kNoHotCue,
                 firstSoundPosition,
                 lastSoundPosition);
     } else {
-        // The user has no way to directly edit the AudibleSound cue. If the user
+        // The user has no way to directly edit the N60dBSound cue. If the user
         // has deleted the Intro or Outro Cue, this analysis will be rerun when
-        // the track is loaded again. In this case, adjust the AudibleSound Cue's
+        // the track is loaded again. In this case, adjust the N60dBSound Cue's
         // positions. This could be helpful, for example, when the track length
-        // is changed in a different program, or the silence detection threshold
-        // is changed.
-        pAudibleSound->setStartAndEndPosition(firstSoundPosition, lastSoundPosition);
+        // is changed in a different program.
+        pN60dBSound->setStartAndEndPosition(firstSoundPosition, lastSoundPosition);
     }
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
