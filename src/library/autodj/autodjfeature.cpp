@@ -339,7 +339,8 @@ void AutoDJFeature::slotRandomQueue(int numTracksToAdd) {
 
 void AutoDJFeature::slotPlaylistsChanged(const QSet<int>& playlistIds) {
     if (playlistIds.contains(m_iAutoDJPlaylistId)) {
-        // If AutoDJ playlist was changed, notify that feature title has changed since it contains duration of the AutoDJ playlist.
+        // If AutoDJ playlist was changed, notify that feature title has changed
+        // since it contains duration of the AutoDJ playlist.
         emit featureIsLoading(this, false);
     }
 }
