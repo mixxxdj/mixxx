@@ -273,7 +273,10 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
         // or the user needs to reach for the mouse or keyboard when moving
         // between 12/C#m/E and 1/G#m/B. This is very similar to
         // `moveSelection()`, except that it doesn't actually modify the
-        // selection
+        // selection. It simply returns a new cursor that the keyboard event
+        // handler in `QAbstractItemView` uses to either move the cursor, move
+        // the selection, or extend the selection depending on which modifier
+        // keys are held down.
         case QAbstractItemView::MoveUp:
         case QAbstractItemView::MoveDown: {
             const QModelIndex current = currentIndex();
