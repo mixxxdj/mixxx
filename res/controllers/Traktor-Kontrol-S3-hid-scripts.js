@@ -64,6 +64,11 @@ TraktorS3.LEDBrightValue = 0x02;
 TraktorS3.Alpha = 1.0 / 8;
 TraktorS3.Beta = TraktorS3.Alpha / 32;
 
+// These options can be set to non-null values to initialize the beat jump and
+// loop sizes for all four decks when the controller is connected
+TraktorS3.DefaultBeatJumpSize = null; // 32
+TraktorS3.DefaultBeatLoopLength = null; // 32
+
 // Set to true to output debug messages and debug light outputs.
 TraktorS3.DebugMode = false;
 
@@ -980,6 +985,16 @@ TraktorS3.Channel = function(controller, parentDeck, group) {
     this.vuConnection = {};
     this.clipConnection = {};
     this.hotcueCallbacks = [];
+
+    // The script by default doesn't change any of the deck's settings, but it's
+    // useful to be able to initialize these settings to your preferences when
+    // you turn on the controller
+    if (TraktorS3.DefaultBeatJumpSize !== null) {
+        engine.setValue(group, "beatjump_size", TraktorS3.DefaultBeatJumpSize);
+    }
+    if (TraktorS3.DefaultBeatLoopLength !== null) {
+        engine.setValue(group, "beatloop_size", TraktorS3.DefaultBeatLoopLength);
+    }
 };
 
 // Finds the shortest distance between two angles on the wheel, assuming
