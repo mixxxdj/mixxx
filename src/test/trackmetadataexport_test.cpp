@@ -47,7 +47,7 @@ class TrackMetadataExportTest : public testing::Test {
 
 TEST_F(TrackMetadataExportTest, keepWithespaceKey) {
     const QString kWhiteSpacesKey = QStringLiteral("  A#m  ");
-    const QString kNormalizedKey = QStringLiteral("B♭m");
+    const QString kNormalizedKey = QString::fromUtf8("B♭m");
 
     // Generate a file name for exporting metadata
     const QString exportTrackPath = m_exportTempDir.filePath(kEmptyFile);
