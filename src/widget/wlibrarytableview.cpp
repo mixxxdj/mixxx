@@ -294,6 +294,13 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
                     }
                 }
             } else {
+                // If the cursor does not yet exist (because the view has not
+                // yet been interacted with) then this selects the first or last
+                // row
+                const int row = cursorAction == QAbstractItemView::MoveUp
+                        ? pModel->rowCount() - 1
+                        : 0;
+
                 // Selecting a hidden column doesn't work, so we'll need to find
                 // the first non-hidden column here
                 int column = 0;
@@ -301,14 +308,7 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
                     column++;
                 }
 
-                // If the cursor does not yet exist (because the view has not
-                // yet been interacted with) then this selects the first/last
-                // row
-                if (cursorAction == QAbstractItemView::MoveDown) {
-                    return pModel->index(0, column);
-                } else {
-                    return pModel->index(pModel->rowCount() - 1, column);
-                }
+                return pModel->index(row, column);
             }
         } break;
         // Make the home and end keys move to the first and last row rather than
