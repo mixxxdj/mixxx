@@ -1,7 +1,5 @@
 #include "library/dao/playlistdao.h"
 
-#include "moc_playlistdao.cpp"
-
 #include <QRandomGenerator>
 #include <QtDebug>
 #include <QtSql>
@@ -9,7 +7,9 @@
 #include "library/autodj/autodjprocessor.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "moc_playlistdao.cpp"
 #include "track/track.h"
+#include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/math.h"
 
@@ -402,6 +402,33 @@ unsigned int PlaylistDAO::playlistCount() const {
         numRecords = query.value(query.record().indexOf("count")).toInt();
     }
     return numRecords;
+}
+
+QList<QPair<int, QString>> PlaylistDAO::getPlaylists(const HiddenType hidden) const {
+    //qDebug() << "PlaylistDAO::getPlaylists(hidden =" << hidden
+    //         << QThread::currentThread() << m_database.connectionName();
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            mixxx::DbConnection::collateLexicographically(
+                    QString("SELECT id, name FROM Playlists "
+                            "WHERE hidden = %1 "
+                            "ORDER BY name")
+                            .arg(hidden)));
+
+    QList<QPair<int, QString>> playlists;
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return playlists;
+    }
+
+    while (query.next()) {
+        const int id = query.value(0).toInt();
+        const QString name = query.value(1).toString();
+        playlists.append(qMakePair(id, name));
+    }
+    return playlists;
 }
 
 int PlaylistDAO::getPlaylistId(const int index) const {

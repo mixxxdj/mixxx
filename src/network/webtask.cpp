@@ -123,17 +123,13 @@ void WebTask::onNetworkError(
         QNetworkReply::NetworkError errorCode,
         const QString& errorString,
         const WebResponseWithContent& responseWithContent) {
-    DEBUG_ASSERT(m_state == State::Pending);
+    DEBUG_ASSERT(m_state == State::Failed || m_state == State::Pending);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
 
     DEBUG_ASSERT(errorCode != QNetworkReply::NoError);
     switch (errorCode) {
-    case QNetworkReply::OperationCanceledError:
-        // Client-side abort or timeout
-        m_state = State::Aborted;
-        break;
-    case QNetworkReply::TimeoutError:
-        // Network or server-side timeout
+    case QNetworkReply::OperationCanceledError: // Client-side timeout
+    case QNetworkReply::TimeoutError:           // Network or server-side timeout
         m_state = State::TimedOut;
         break;
     default:
@@ -141,14 +137,10 @@ void WebTask::onNetworkError(
     }
     DEBUG_ASSERT(hasTerminated());
 
-    if (m_state == State::Aborted) {
-        emitAborted(responseWithContent.requestUrl());
-    } else {
-        emitNetworkError(
-                errorCode,
-                errorString,
-                responseWithContent);
-    }
+    emitNetworkError(
+            errorCode,
+            errorString,
+            responseWithContent);
 }
 
 void WebTask::emitNetworkError(
@@ -183,7 +175,6 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
     // Reset state
     DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-    m_state = State::Initial;
     m_timeoutMillis = kNoTimeout;
 
     if (delayMillis > 0) {
@@ -205,7 +196,7 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
 
     auto* const pNetworkAccessManager = m_networkAccessManagerWeakPtr.data();
     VERIFY_OR_DEBUG_ASSERT(pNetworkAccessManager) {
-        m_state = State::Pending;
+        m_state = State::Failed;
         onNetworkError(
                 QNetworkReply::NetworkSessionFailedError,
                 tr("No network access"),
@@ -222,18 +213,12 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
     m_pendingNetworkReplyWeakPtr = doStartNetworkRequest(
             pNetworkAccessManager,
             timeoutMillis);
-    // Still idle, because we are in the same thread.
-    // The derived class is not allowed to abort a request
-    // during the callback before it has beeen started
-    // successfully. Instead it should return nullptr
-    // to abort the task immediately.
-    DEBUG_ASSERT(m_state == State::Initial);
     if (!m_pendingNetworkReplyWeakPtr) {
-        kLogger.debug()
-                << this
-                << "Network request has not been started";
-        m_state = State::Aborted;
-        emitAborted(/*request URL is unknown*/);
+        m_state = State::Failed;
+        onNetworkError(
+                QNetworkReply::NetworkSessionFailedError,
+                tr("The Network request has not been started"),
+                WebResponseWithContent{});
         return;
     }
 
@@ -247,7 +232,7 @@ void WebTask::slotStart(int timeoutMillis, int delayMillis) {
         m_timeoutMillis = timeoutMillis;
     }
 
-    // It is not necessary to connect the QNetworkReply::errorOccurred signal.
+    // It is not necessary to connect the QNetworkReply::error signal.
     // Network errors are also received through the QNetworkReply::finished signal.
     connect(m_pendingNetworkReplyWeakPtr.data(),
             &QNetworkReply::finished,
@@ -263,7 +248,7 @@ void WebTask::slotAbort() {
         if (m_state == State::Initial) {
             kLogger.debug()
                     << this
-                    << "Cannot abort idle task";
+                    << "Cannot abort task in Initial state";
         } else {
             DEBUG_ASSERT(hasTerminated());
             kLogger.debug()
@@ -403,25 +388,33 @@ void WebTask::slotNetworkReplyFinished() {
         m_timeoutTimerId = kInvalidTimerId;
     }
 
-    const auto statusCode = readStatusCode(*pFinishedNetworkReply);
+    const HttpStatusCode statusCode = readStatusCode(*pFinishedNetworkReply);
     if (pFinishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
-        onNetworkError(
-                pFinishedNetworkReply->error(),
-                pFinishedNetworkReply->errorString(),
-                WebResponseWithContent{
-                        WebResponse{
-                                pFinishedNetworkReply->url(),
-                                pFinishedNetworkReply->request().url(),
-                                statusCode},
-                        readContentType(*pFinishedNetworkReply),
-                        readContentData(pFinishedNetworkReply).value_or(QByteArray{}),
-                });
-        DEBUG_ASSERT(hasTerminated());
+        m_state = State::Failed;
+        onNetworkError(pFinishedNetworkReply, statusCode);
         return;
     }
 
     m_state = State::Finished;
     doNetworkReplyFinished(pFinishedNetworkReply, statusCode);
+}
+
+void WebTask::onNetworkError(
+        QNetworkReply* pFinishedNetworkReply,
+        HttpStatusCode statusCode) {
+    onNetworkError(
+            pFinishedNetworkReply->error(),
+            pFinishedNetworkReply->errorString(),
+            WebResponseWithContent{
+                    WebResponse{
+                            pFinishedNetworkReply->url(),
+                            pFinishedNetworkReply->request().url(),
+                            statusCode},
+                    readContentType(*pFinishedNetworkReply),
+                    readContentData(pFinishedNetworkReply).value_or(QByteArray{}),
+            });
+    DEBUG_ASSERT(hasTerminated());
+    return;
 }
 
 } // namespace network

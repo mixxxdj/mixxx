@@ -141,42 +141,49 @@ void DlgTagFetcher::init() {
 }
 
 void DlgTagFetcher::slotNext() {
-    QModelIndex nextRow = m_currentTrackIndex.sibling(
-            m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
-    if (nextRow.isValid()) {
-        loadTrack(nextRow);
+    if (isSignalConnected(QMetaMethod::fromSignal(&DlgTagFetcher::next))) {
         emit next();
+    } else {
+        QModelIndex nextRow = m_currentTrackIndex.sibling(
+                m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
+        if (nextRow.isValid()) {
+            loadTrack(nextRow);
+        }
     }
 }
 
 void DlgTagFetcher::slotPrev() {
-    QModelIndex prevRow = m_currentTrackIndex.sibling(
-            m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
-    if (prevRow.isValid()) {
-        loadTrack(prevRow);
+    if (isSignalConnected(QMetaMethod::fromSignal(&DlgTagFetcher::previous))) {
         emit previous();
+    } else {
+        QModelIndex prevRow = m_currentTrackIndex.sibling(
+                m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
+        if (prevRow.isValid()) {
+            loadTrack(prevRow);
+        }
     }
 }
 
-void DlgTagFetcher::loadTrackInternal(const TrackPointer& track) {
-    if (!track) {
+void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
+    if (m_track) {
+        tags->clear();
+        disconnect(m_track.get(),
+                &Track::changed,
+                this,
+                &DlgTagFetcher::slotTrackChanged);
+        m_data = Data();
+    }
+
+    m_track = pTrack;
+    if (!m_track) {
         return;
     }
-    tags->clear();
-    disconnect(m_track.get(),
-            &Track::changed,
-            this,
-            &DlgTagFetcher::slotTrackChanged);
-
-    m_track = track;
-    m_data = Data();
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
     successMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
-    tags->clear();
     addDivider(tr("Original tags"), tags);
     addTrack(trackColumnValues(*m_track), kOriginalTrackIndex, tags);
 
@@ -188,20 +195,10 @@ void DlgTagFetcher::loadTrackInternal(const TrackPointer& track) {
     m_tagFetcher.startFetch(m_track);
 }
 
-void DlgTagFetcher::loadTrack(const TrackPointer& track) {
-    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
-        return;
-    }
-    loadTrackInternal(track);
-}
-
 void DlgTagFetcher::loadTrack(const QModelIndex& index) {
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
-        return;
-    }
-    TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_currentTrackIndex = index;
-    loadTrackInternal(pTrack);
+    TrackPointer pTrack = m_pTrackModel->getTrack(index);
+    loadTrack(pTrack);
 }
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {

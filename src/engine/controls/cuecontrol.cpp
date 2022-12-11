@@ -1267,13 +1267,15 @@ void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
         appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
     }
 
-    CuePointer pN60dBSound =
-            m_pLoadedTrack->findCueByType(mixxx::CueType::N60dBSound);
-    if (pN60dBSound) {
-        const mixxx::audio::FramePos frame = pN60dBSound->getPosition();
-        appendCueHint(pHintList, frame, Hint::Type::FirstSound);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    if (pLoadedTrack) {
+        CuePointer pN60dBSound =
+                pLoadedTrack->findCueByType(mixxx::CueType::N60dBSound);
+        if (pN60dBSound) {
+            const mixxx::audio::FramePos frame = pN60dBSound->getPosition();
+            appendCueHint(pHintList, frame, Hint::Type::FirstSound);
+        }
     }
-
     appendCueHint(pHintList, m_pIntroStartPosition->get(), Hint::Type::IntroStart);
     appendCueHint(pHintList, m_pIntroEndPosition->get(), Hint::Type::IntroEnd);
     appendCueHint(pHintList, m_pOutroStartPosition->get(), Hint::Type::OutroStart);

@@ -43,10 +43,8 @@ class EngineEffectChain final : public EffectsRequestHandler {
             CSAMPLE* pOut,
             const unsigned int numSamples,
             const unsigned int sampleRate,
-            const GroupFeatureState& groupFeatures);
-
-    /// called from main thread
-    void deleteStatesForInputChannel(const ChannelHandle channel);
+            const GroupFeatureState& groupFeatures,
+            bool fadeout);
 
   private:
     struct ChannelStatus {
@@ -65,14 +63,8 @@ class EngineEffectChain final : public EffectsRequestHandler {
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
-    bool enableForInputChannel(ChannelHandle inputHandle,
-            EffectStatesMapArray* statesForEffectsInChain);
+    bool enableForInputChannel(ChannelHandle inputHandle);
     bool disableForInputChannel(ChannelHandle inputHandle);
-
-    // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
-    // handle.
-    ChannelStatus& getChannelStatus(const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle);
 
     QString m_group;
     EffectEnableState m_enableState;

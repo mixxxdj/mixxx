@@ -705,6 +705,10 @@ WBeatSpinBox::down-button,
 
 /************** Mixer ***************************************************/
 
+#CrossfaderContainer[highlight="1"] {
+  border:  1px solid #b2421c;
+}
+
 #MixerDecks {
   padding: 2px 5px 2px 5px;
   }
