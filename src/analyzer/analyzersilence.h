@@ -28,9 +28,10 @@ class AnalyzerSilence : public Analyzer {
     /// or -1 if no sample is found.
     static SINT findLastSoundInChunk(std::span<const CSAMPLE> samples);
 
-    /// Returns true if the first sound if found at the given frame and logs a warning message if not.
-    /// This can be uses to detect changes since the last analysis run and is an indicator for
-    /// file edits or decoder changes/issues
+    /// Returns true if the first sound if found at the given frame and logs a
+    /// warning message if not. This can be uses to detect changes since the
+    /// last analysis run and is an indicator for file edits or decoder
+    /// changes/issues
     static bool verifyFirstSound(std::span<const CSAMPLE> samples,
             mixxx::audio::FramePos firstSoundFrame);
 

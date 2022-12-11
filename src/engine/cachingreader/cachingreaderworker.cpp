@@ -278,7 +278,8 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
                     mixxx::audio::FramePos(1))) {
             qDebug() << "First sound found at the previously stored position";
         } else {
-            // This can happen in case of track edits or replacements, changed encoders or encoding issues.
+            // This can happen in case of track edits or replacements, changed
+            // encoders or encoding issues.
             qWarning() << "First sound has been moved! The beatgrid and "
                           "other annotations are no longer valid";
         }
