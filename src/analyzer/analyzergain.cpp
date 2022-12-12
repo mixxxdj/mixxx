@@ -41,6 +41,7 @@ bool AnalyzerGain::processSamples(const CSAMPLE *pIn, const int iLen) {
     if (halfLength > m_iBufferSize) {
         m_pLeftTempBuffer.resize(halfLength);
         m_pRightTempBuffer.resize(halfLength);
+        m_iBufferSize = halfLength;
     }
     SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer.data(),
             m_pRightTempBuffer.data(),
