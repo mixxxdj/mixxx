@@ -74,17 +74,19 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         }
 
         if (preRollVisible) {
-            // VSample position of the right-most triangle's tip
+            // VSample position of the right-most triangle's tip just before the track start
             double triangleTipVSamplePosition =
                     numberOfVisibleVSamples * playMarkerPositionFrac -
                     currentVSamplePosition;
+            // Number of invisible VSamples from the right of the viewport boundary
+            // to the track start
             double invisibleVSamples = triangleTipVSamplePosition - numberOfVisibleVSamples;
+            // get tip position of the last partial visible triangle to draw only visible triangles
             if (invisibleVSamples > 0) {
                 triangleTipVSamplePosition -=
                         floor(invisibleVSamples / polyVSampleOffset) *
                         polyVSampleOffset;
             }
-
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
                     << QPointF(-polyPixelWidth, halfBreadth - halfPolyBreadth)
@@ -100,11 +102,14 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 
         if (postRollVisible) {
             const int remainingVSamples = totalVSamples - currentVSamplePosition;
-            // Sample position of the left-most triangle's tip
+            // VSample position of the left-most triangle's tip just after the track end
             double triangleTipVSamplePosition =
                     numberOfVisibleVSamples * playMarkerPositionFrac +
                     remainingVSamples;
+            // Number of invisible VSamples from the track end to the right of the
+            // viewport boundary
             double invisibleVSamples = triangleTipVSamplePosition - numberOfVisibleVSamples;
+            // get tip position of the fist partial visible triangle to draw only visible triangle
             if (invisibleVSamples > 0) {
                 triangleTipVSamplePosition -=
                         floor(invisibleVSamples / polyVSampleOffset) *
