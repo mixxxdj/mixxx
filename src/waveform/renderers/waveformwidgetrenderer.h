@@ -83,9 +83,6 @@ class WaveformWidgetRenderer {
         return m_trackPixelCount * (position - m_firstDisplayedPosition);
     }
 
-    double getPlayPos() const {
-        return m_playPos;
-    }
     int getPlayPosVSample() const {
         return m_playPosVSample;
     }
@@ -183,7 +180,6 @@ class WaveformWidgetRenderer {
     //TODO: vRince create some class to manage control/value
     //ControlConnection
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
-    double m_playPos;
     int m_playPosVSample;
     int m_totalVSamples;
     ControlProxy* m_pRateRatioCO;
@@ -216,5 +212,7 @@ private:
             QPointF p2,
             QPointF p3);
     void drawPassthroughLabel(QPainter* painter);
+
     bool m_passthroughEnabled;
+    double m_playPos;
 };

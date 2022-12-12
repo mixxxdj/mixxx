@@ -36,8 +36,8 @@ void AnalyzerGain::cleanup() {
 bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT iLen) {
     ScopedTimer t("AnalyzerGain::process()");
 
-    int halfLength = static_cast<int>(iLen / 2);
-    if (halfLength > 0) {
+    SINT halfLength = static_cast<int>(iLen / 2);
+    if (halfLength > static_cast<SINT>(m_pLeftTempBuffer.size())) {
         m_pLeftTempBuffer.resize(halfLength);
         m_pRightTempBuffer.resize(halfLength);
     }
