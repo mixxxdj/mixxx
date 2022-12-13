@@ -213,4 +213,26 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     EXPECT_DOUBLE_EQ(kManualOutroPosition.value(), pOutroCue->getLengthFrames());
 }
 
+TEST_F(AnalyzerSilenceTest, verifyFirstSound) {
+    const CSAMPLE s[] = {
+            0.0000f,
+            0.0000f,
+            -0.0002f,
+            -0.0002f,
+            0.0004f,
+            0.0004f,
+            -0.0008f,
+            -0.0008f,
+            0.0010f,
+            0.0010f,
+            0.0011f,
+            0.0010f,
+            -0.0020f,
+            -0.0020f};
+    std::span<const CSAMPLE> samples = s;
+
+    EXPECT_EQ(false, AnalyzerSilence::verifyFirstSound(samples, mixxx::audio::FramePos(5)));
+    EXPECT_EQ(true, AnalyzerSilence::verifyFirstSound(samples, mixxx::audio::FramePos(4)));
+}
+
 } // namespace
