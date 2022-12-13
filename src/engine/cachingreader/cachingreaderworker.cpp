@@ -238,6 +238,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
             CachingReaderChunk::frames2samples(
                     m_pAudioSource->frameLength());
 
+    // This code is a workaround until we have found a better solution to
+    // verify and correct offsets.
     CuePointer pN60dBSound =
             pTrack->findCueByType(mixxx::CueType::N60dBSound);
     if (pN60dBSound) {
