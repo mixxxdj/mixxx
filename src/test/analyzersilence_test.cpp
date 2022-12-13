@@ -17,7 +17,8 @@ constexpr double kTonePitchHz = 1000.0; // 1kHz
 class AnalyzerSilenceTest : public MixxxTest {
   protected:
     AnalyzerSilenceTest()
-            : analyzerSilence(config()) {
+            : analyzerSilence(config()),
+              nTrackSampleDataLength(0) {
     }
 
     void SetUp() override {
@@ -46,12 +47,12 @@ class AnalyzerSilenceTest : public MixxxTest {
     AnalyzerSilence analyzerSilence;
     TrackPointer pTrack;
     std::vector<CSAMPLE> pTrackSampleData;
-    int nTrackSampleDataLength; // in samples
+    SINT nTrackSampleDataLength; // in samples
 };
 
 TEST_F(AnalyzerSilenceTest, SilenceTrack) {
     // Fill the entire buffer with silence
-    for (int i = 0; i < nTrackSampleDataLength; i++) {
+    for (SINT i = 0; i < nTrackSampleDataLength; i++) {
         pTrackSampleData[i] = 0.0;
     }
 
@@ -210,6 +211,28 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
 
     EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
     EXPECT_DOUBLE_EQ(kManualOutroPosition.value(), pOutroCue->getLengthFrames());
+}
+
+TEST_F(AnalyzerSilenceTest, verifyFirstSound) {
+    const CSAMPLE s[] = {
+            0.0000f,
+            0.0000f,
+            -0.0002f,
+            -0.0002f,
+            0.0004f,
+            0.0004f,
+            -0.0008f,
+            -0.0008f,
+            0.0010f,
+            0.0010f,
+            0.0011f,
+            0.0010f,
+            -0.0020f,
+            -0.0020f};
+    std::span<const CSAMPLE> samples = s;
+
+    EXPECT_EQ(false, AnalyzerSilence::verifyFirstSound(samples, mixxx::audio::FramePos(5)));
+    EXPECT_EQ(true, AnalyzerSilence::verifyFirstSound(samples, mixxx::audio::FramePos(4)));
 }
 
 } // namespace

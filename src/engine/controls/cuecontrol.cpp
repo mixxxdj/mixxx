@@ -571,14 +571,14 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         }
         break;
     case SeekOnLoadMode::FirstSound: {
-        CuePointer pAudibleSound =
-                pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
-        mixxx::audio::FramePos audibleSoundPosition = mixxx::audio::kInvalidFramePos;
-        if (pAudibleSound) {
-            audibleSoundPosition = pAudibleSound->getPosition();
+        CuePointer pN60dBSound =
+                pNewTrack->findCueByType(mixxx::CueType::N60dBSound);
+        mixxx::audio::FramePos n60dBSoundPosition;
+        if (pN60dBSound) {
+            n60dBSoundPosition = pN60dBSound->getPosition();
         }
-        if (audibleSoundPosition.isValid()) {
-            seekOnLoad(audibleSoundPosition);
+        if (n60dBSoundPosition.isValid()) {
+            seekOnLoad(n60dBSoundPosition);
         } else {
             seekOnLoad(mixxx::audio::kStartFramePos);
         }
@@ -1269,10 +1269,10 @@ void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
 
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     if (pLoadedTrack) {
-        CuePointer pAudibleSound =
-                pLoadedTrack->findCueByType(mixxx::CueType::AudibleSound);
-        if (pAudibleSound) {
-            const mixxx::audio::FramePos frame = pAudibleSound->getPosition();
+        CuePointer pN60dBSound =
+                pLoadedTrack->findCueByType(mixxx::CueType::N60dBSound);
+        if (pN60dBSound) {
+            const mixxx::audio::FramePos frame = pN60dBSound->getPosition();
             appendCueHint(pHintList, frame, Hint::Type::FirstSound);
         }
     }

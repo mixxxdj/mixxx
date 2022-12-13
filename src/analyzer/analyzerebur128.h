@@ -17,8 +17,8 @@ class AnalyzerEbur128 : public Analyzer {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
-            int totalSamples) override;
-    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+            SINT totalSamples) override;
+    bool processSamples(const CSAMPLE* pIn, SINT iLen) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
 

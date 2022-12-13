@@ -25,7 +25,7 @@ class Analyzer {
     //  3. If the initialization failed log the internal error and return false.
     virtual bool initialize(const AnalyzerTrack& tio,
             mixxx::audio::SampleRate sampleRate,
-            int totalSamples) = 0;
+            SINT totalSamples) = 0;
 
     /////////////////////////////////////////////////////////////////////////
     // All following methods will only be invoked after initialize()
@@ -36,7 +36,7 @@ class Analyzer {
     // If processing fails the analysis can be aborted early by returning
     // false. After aborting the analysis only cleanup() will be invoked,
     // but not finalize()!
-    virtual bool processSamples(const CSAMPLE* pIn, const int iLen) = 0;
+    virtual bool processSamples(const CSAMPLE* pIn, SINT iLen) = 0;
 
     // Update the track object with the analysis results after
     // processing finished successfully, i.e. all available audio
@@ -77,7 +77,7 @@ class AnalyzerWithState final {
         return m_active = m_analyzer->initialize(tio, sampleRate, totalSamples);
     }
 
-    void processSamples(const CSAMPLE* pIn, const int iLen) {
+    void processSamples(const CSAMPLE* pIn, SINT iLen) {
         if (m_active) {
             m_active = m_analyzer->processSamples(pIn, iLen);
             if (!m_active) {

@@ -23,7 +23,7 @@ AnalyzerEbur128::~AnalyzerEbur128() {
 
 bool AnalyzerEbur128::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
+        SINT totalSamples) {
     if (m_rgSettings.isAnalyzerDisabled(2, tio.getTrack()) || totalSamples == 0) {
         qDebug() << "Skipping AnalyzerEbur128";
         return false;
@@ -43,7 +43,7 @@ void AnalyzerEbur128::cleanup() {
     }
 }
 
-bool AnalyzerEbur128::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerEbur128::processSamples(const CSAMPLE* pIn, SINT iLen) {
     VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return false;
     }
