@@ -21,11 +21,11 @@ class AnalyzerSilence : public Analyzer {
     void cleanup() override;
 
     /// returns the index of the first sample in the buffer that is above -60 dB
-    /// or iLen if no sample is found
+    /// or samples.size() if no sample is found
     static SINT findFirstSoundInChunk(std::span<const CSAMPLE> samples);
 
     /// returns the index of the last sample in the buffer that is above -60 dB
-    /// or -1 if no sample is found.
+    /// or samples.size() if no sample is found
     static SINT findLastSoundInChunk(std::span<const CSAMPLE> samples);
 
     /// Returns true if the first sound if found at the given frame and logs a

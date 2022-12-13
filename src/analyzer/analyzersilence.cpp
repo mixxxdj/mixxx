@@ -63,10 +63,13 @@ SINT AnalyzerSilence::findFirstSoundInChunk(std::span<const CSAMPLE> samples) {
 }
 
 // static
-/// returns a std::reverse_iterator
 SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
     // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
-    return std::distance(first_sound(samples.rbegin(), samples.rend()), samples.rend()) - 1;
+    SINT ret = std::distance(first_sound(samples.rbegin(), samples.rend()), samples.rend()) - 1;
+    if (ret == -1) {
+        ret = samples.size();
+    }
+    return ret;
 }
 
 // static
@@ -84,14 +87,13 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
     std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pIn, iLen);
     if (m_iSignalStart < 0) {
         const SINT firstSoundSample = findFirstSoundInChunk(samples);
-        if (firstSoundSample < static_cast<SINT>(samples.size())) {
+        if (firstSoundSample < iLen) {
             m_iSignalStart = m_iFramesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
         }
     }
     if (m_iSignalStart >= 0) {
         const SINT lastSoundSample = findLastSoundInChunk(samples);
-        if (lastSoundSample > -1 &&           // only silence
-                lastSoundSample < iLen - 1) { // only sound
+        if (lastSoundSample < iLen - 1) { // not only sound or silence
             m_iSignalEnd = m_iFramesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
         }
     }
