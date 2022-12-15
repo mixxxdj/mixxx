@@ -140,17 +140,29 @@ void EngineBufferScaleRubberBand::clear() {
 SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         CSAMPLE* pBuffer,
         SINT frames) {
-    SINT frames_available = m_pRubberBand->available();
-    SINT frames_to_read = math_min(frames_available, frames);
+    const SINT frames_available = m_pRubberBand->available();
+    const SINT frames_to_read = math_min(frames_available, frames);
     SINT received_frames = static_cast<SINT>(m_pRubberBand->retrieve(
             m_bufferPtrs.data(), frames_to_read));
+    SINT frame_offset = 0;
+
+    // As explained below in `reset()`, the first time this is called we need to
+    // drop the silence we fed into the time stretcher as padding from the
+    // output
+    if (m_remainingPaddingInOutput > 0) {
+        const SINT drop_num_frames = std::min(received_frames, m_remainingPaddingInOutput);
+
+        m_remainingPaddingInOutput -= drop_num_frames;
+        received_frames -= drop_num_frames;
+        frame_offset += drop_num_frames;
+    }
 
     DEBUG_ASSERT(received_frames <= static_cast<ssize_t>(m_buffers[0].size()));
-
     SampleUtil::interleaveBuffer(pBuffer,
-            m_buffers[0].data(),
-            m_buffers[1].data(),
+            m_buffers[0].data() + frame_offset,
+            m_buffers[1].data() + frame_offset,
             received_frames);
+
     return received_frames;
 }
 
@@ -187,6 +199,9 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         // enough calls to retrieveAndDeinterleave because CachingReader returns
         // zeros for reads that are not in cache. So it's safe to loop here
         // without any checks for failure in retrieveAndDeinterleave.
+        // If the time stretcher has just been reset then this will throw away
+        // the first `m_remainingPaddingInOutput` samples of silence padding
+        // from the output.
         SINT received_frames = retrieveAndDeinterleave(
                 read, remaining_frames);
         remaining_frames -= received_frames;
@@ -328,11 +343,9 @@ void EngineBufferScaleRubberBand::reset() {
         remaining_padding -= pad_samples;
     }
 
-    size_t padding_to_drop = getStartDelay();
-    while (padding_to_drop > 0) {
-        const size_t drop_samples = std::min<size_t>(padding_to_drop, kRubberBandBlockSize);
-        m_pRubberBand->retrieve(m_bufferPtrs.data(), drop_samples);
-
-        padding_to_drop -= drop_samples;
-    }
+    // The silence we just added covers half a window (see the last paragraph of
+    // https://github.com/mixxxdj/mixxx/pull/11120#discussion_r1050011104). This
+    // silence should be dropped from the result when the `retrieve()` in
+    // `retrieveAndDeinterleave()` first starts producing audio.
+    m_remainingPaddingInOutput = static_cast<SINT>(getStartDelay());
 }

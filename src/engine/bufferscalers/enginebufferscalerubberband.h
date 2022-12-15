@@ -78,6 +78,10 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
 
     // Holds the playback direction
     bool m_bBackwards;
+    /// The amount of silence padding that still needs to be dropped from the
+    /// retrieve samples in `retrieveAndDeinterleave()`. See the `reset()`
+    /// function for an explanation.
+    SINT m_remainingPaddingInOutput = 0;
 
     bool m_useEngineFiner;
 };
