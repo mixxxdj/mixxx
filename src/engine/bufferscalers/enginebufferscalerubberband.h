@@ -44,6 +44,12 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     // Reset RubberBand library with new audio signal
     void onSampleRateChanged() override;
 
+    /// Calls `m_pRubberBand->getPreferredStartPad()`, with backwards
+    /// compatibility for older librubberband versions.
+    size_t getPreferredStartPad() const;
+    /// Calls `m_pRubberBand->getStartDelay()`, with backwards compatibility for
+    /// older librubberband versions.
+    size_t getStartDelay() const;
     int runningEngineVersion();
     /// Reset the rubberband instance and run the prerequisite amount of padding
     /// through it. This should be used instead of calling
