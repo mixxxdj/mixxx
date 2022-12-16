@@ -244,14 +244,17 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
                     // Select the first row if no row is focused
                     selectRow(0);
                     DEBUG_ASSERT(currentIndex().row() == 0);
-                } else {
-                    // Select the row of the currently focused index.
-                    // For some reason selectRow(currentIndex().row()) would not
-                    // select for the first Qt::BacktabFocusReason in a session
-                    // even though currentIndex() is valid.
-                    selectionModel()->select(currentIndex(),
-                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                    // Unfortunately, even though we now have a valid currentIndex(),
+                    // that would still not be selected by now if we're here because of
+                    // the first Qt::BacktabFocusReason to tracks in this session. (Qt 5.12.8)
+                    // So let's use the currentIndex below.
                 }
+                // Select the row of the currently focused index.
+                // For some reason selectRow(currentIndex().row()) would not
+                // select for the first Qt::BacktabFocusReason in a session
+                // even though currentIndex() is valid.
+                selectionModel()->select(currentIndex(),
+                        QItemSelectionModel::Select | QItemSelectionModel::Rows);
             }
             DEBUG_ASSERT(currentIndex().isValid());
             DEBUG_ASSERT(selectionModel()->isSelected(currentIndex()));
