@@ -126,7 +126,7 @@ class SoundManager : public QObject {
 
     void setJACKName() const;
     bool jackApiUsed() const {
-        return m_jackSampleRate.isValid();
+        return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
     }
 
     EngineMaster *m_pMaster;
