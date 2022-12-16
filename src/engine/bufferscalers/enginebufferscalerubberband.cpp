@@ -306,6 +306,9 @@ void EngineBufferScaleRubberBand::reset() {
     // need to run some silent samples through the time stretching engine first
     // before using it. Otherwise it will eat add a short fade-in, destroying
     // the initial transient.
+    //
+    // See https://github.com/mixxxdj/mixxx/pull/11120#discussion_r1050011104
+    // for more information.
     size_t remaining_padding = getPreferredStartPad();
     const size_t block_size = std::min<size_t>(remaining_padding, m_buffers[0].size());
     std::fill_n(m_buffers[0].span().begin(), block_size, 0.0f);
