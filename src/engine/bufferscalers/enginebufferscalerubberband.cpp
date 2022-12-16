@@ -12,16 +12,7 @@
 
 using RubberBand::RubberBandStretcher;
 
-namespace {
-
-// TODO (XXX): this should be removed. It is only needed to work around
-// a Rubberband 1.3 bug.
-// This is the default increment from RubberBand 1.8.1.
-constexpr size_t kRubberBandBlockSize = 256;
-
 #define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
-
-}  // namespace
 
 EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
         ReadAheadManager* pReadAheadManager)
@@ -120,9 +111,6 @@ void EngineBufferScaleRubberBand::onSampleRateChanged() {
             getOutputSignal().getSampleRate(),
             getOutputSignal().getChannelCount(),
             rubberbandOptions);
-    // TODO (XXX): we should always be able to provide rubberband as
-    // many samples as it wants. So remove this.
-    m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
     // Setting the time ratio to a very high value will cause RubberBand
     // to preallocate buffers large enough to (almost certainly)
     // avoid memory reallocations during playback.
@@ -216,35 +204,20 @@ double EngineBufferScaleRubberBand::scaleBuffer(
             break;
         }
 
-        SINT iLenFramesRequired = static_cast<SINT>(m_pRubberBand->getSamplesRequired());
-        if (iLenFramesRequired == 0) {
-            // TODO (XXX): Rubberband 1.3 is not being packaged anymore.
-            // Remove this workaround.
-            //
-            // rubberband 1.3 (packaged up through Ubuntu Quantal) has a bug
-            // where it can report 0 samples needed forever which leads us to an
-            // infinite loop. To work around this, we check if available() is
-            // zero. If it is, then we submit a fixed block size of
-            // kRubberBandBlockSize.
-            int available = m_pRubberBand->available();
-            if (available == 0) {
-                iLenFramesRequired = kRubberBandBlockSize;
-            }
-        }
-        // qDebug() << "iLenFramesRequired" << iLenFramesRequired;
-
-        if (remaining_frames > 0 && iLenFramesRequired > 0) {
-            SINT iAvailSamples = m_pReadAheadManager->getNextSamples(
+        const SINT next_block_frames_required =
+                static_cast<SINT>(m_pRubberBand->getSamplesRequired());
+        if (remaining_frames > 0 && next_block_frames_required > 0) {
+            const SINT available_samples = m_pReadAheadManager->getNextSamples(
                     // The value doesn't matter here. All that matters is we
                     // are going forward or backward.
                     (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                     m_interleavedReadBuffer.data(),
-                    getOutputSignal().frames2samples(iLenFramesRequired));
-            SINT iAvailFrames = getOutputSignal().samples2frames(iAvailSamples);
+                    getOutputSignal().frames2samples(next_block_frames_required));
+            const SINT available_frames = getOutputSignal().samples2frames(available_samples);
 
-            if (iAvailFrames > 0) {
+            if (available_frames > 0) {
                 last_read_failed = false;
-                deinterleaveAndProcess(m_interleavedReadBuffer.data(), iAvailFrames, false);
+                deinterleaveAndProcess(m_interleavedReadBuffer.data(), available_frames, false);
             } else {
                 if (last_read_failed) {
                     // Flush and break out after the next retrieval. If we are
@@ -334,10 +307,11 @@ void EngineBufferScaleRubberBand::reset() {
     // before using it. Otherwise it will eat add a short fade-in, destroying
     // the initial transient.
     size_t remaining_padding = getPreferredStartPad();
-    std::fill_n(m_buffers[0].span().begin(), kRubberBandBlockSize, 0.0f);
-    std::fill_n(m_buffers[1].span().begin(), kRubberBandBlockSize, 0.0f);
+    const size_t block_size = std::min<size_t>(remaining_padding, m_buffers[0].size());
+    std::fill_n(m_buffers[0].span().begin(), block_size, 0.0f);
+    std::fill_n(m_buffers[1].span().begin(), block_size, 0.0f);
     while (remaining_padding > 0) {
-        const size_t pad_samples = std::min<size_t>(remaining_padding, kRubberBandBlockSize);
+        const size_t pad_samples = std::min<size_t>(remaining_padding, block_size);
         m_pRubberBand->process(m_bufferPtrs.data(), pad_samples, false);
 
         remaining_padding -= pad_samples;
