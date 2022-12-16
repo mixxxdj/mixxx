@@ -157,7 +157,7 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         frame_offset += drop_num_frames;
     }
 
-    DEBUG_ASSERT(received_frames <= static_cast<ssize_t>(m_buffers[0].size()));
+    DEBUG_ASSERT((received_frames + frame_offset) <= static_cast<ssize_t>(m_buffers[0].size()));
     SampleUtil::interleaveBuffer(pBuffer,
             m_buffers[0].data() + frame_offset,
             m_buffers[1].data() + frame_offset,
