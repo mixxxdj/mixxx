@@ -459,13 +459,9 @@ void WSearchLineEdit::slotRestoreSearch(const QString& text) {
             << "slotRestoreSearch"
             << text;
 #endif // ENABLE_TRACE_LOG
-    if (text.isNull()) {
-        slotDisableSearch();
-    } else {
-        // we save the current search before we switch to a new text
-        slotSaveSearch();
-        enableSearch(text);
-    }
+    // we save the current search before we switch to a new text
+    slotSaveSearch();
+    enableSearch(text);
 }
 
 void WSearchLineEdit::slotTriggerSearch() {

@@ -31,6 +31,12 @@ void CrateTableModel::selectCrate(CrateId crateId) {
         qDebug() << "Already focused on crate " << crateId;
         return;
     }
+    // Store search text
+    QString currSearch = currentSearch();
+    if (m_selectedCrate.isValid() && !currSearch.trimmed().isEmpty()) {
+        m_searchTexts.insert(m_selectedCrate.value(), currSearch);
+    }
+
     m_selectedCrate = crateId;
 
     QString tableName = QStringLiteral("crate_%1").arg(m_selectedCrate.toString());
@@ -65,7 +71,9 @@ void CrateTableModel::selectCrate(CrateId crateId) {
             LIBRARYTABLE_ID,
             columns,
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setSearch("");
+
+    // Restore search text
+    setSearch(m_searchTexts.value(m_selectedCrate.value()));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
