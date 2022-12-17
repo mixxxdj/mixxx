@@ -127,6 +127,11 @@ void PlaylistTableModel::setTableModel(int playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;
     }
+    // Store search text
+    QString currSearch = currentSearch();
+    if (m_iPlaylistId != -1 && !currSearch.trimmed().isEmpty()) {
+        m_searchTexts.insert(m_iPlaylistId, currSearch);
+    }
 
     m_iPlaylistId = playlistId;
 
@@ -173,7 +178,9 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             LIBRARYTABLE_ID,
             columns,
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setSearch("");
+
+    // Restore search text
+    setSearch(m_searchTexts.value(m_iPlaylistId));
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 }
