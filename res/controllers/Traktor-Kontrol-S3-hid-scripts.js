@@ -65,9 +65,13 @@ TraktorS3.Alpha = 1.0 / 8;
 TraktorS3.Beta = TraktorS3.Alpha / 32;
 
 // These options can be set to non-null values to initialize the beat jump and
-// loop sizes for all four decks when the controller is connected
+// loop sizes and sync and quantize states for all four decks when the
+// controller is connected
 TraktorS3.DefaultBeatJumpSize = null; // 32
 TraktorS3.DefaultBeatLoopLength = null; // 32
+TraktorS3.DefaultSyncEnabled = null; // true
+TraktorS3.DefaultQuantizeEnabled = null; // true
+TraktorS3.DefaultKeylockEnabled = null; // true
 
 // Set to true to output debug messages and debug light outputs.
 TraktorS3.DebugMode = false;
@@ -994,6 +998,15 @@ TraktorS3.Channel = function(controller, parentDeck, group) {
     }
     if (TraktorS3.DefaultBeatLoopLength !== null) {
         engine.setValue(group, "beatloop_size", TraktorS3.DefaultBeatLoopLength);
+    }
+    if (TraktorS3.DefaultSyncEnabled !== null) {
+        engine.setValue(group, "sync_enabled", TraktorS3.DefaultSyncEnabled);
+    }
+    if (TraktorS3.DefaultQuantizeEnabled !== null) {
+        engine.setValue(group, "quantize", TraktorS3.DefaultQuantizeEnabled);
+    }
+    if (TraktorS3.DefaultKeylockEnabled !== null) {
+        engine.setValue(group, "keylock", TraktorS3.DefaultKeylockEnabled);
     }
 };
 
