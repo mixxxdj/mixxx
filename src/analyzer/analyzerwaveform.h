@@ -143,8 +143,8 @@ class AnalyzerWaveform : public Analyzer {
 
     bool initialize(const AnalyzerTrack& tio,
             mixxx::audio::SampleRate sampleRate,
-            int totalSamples) override;
-    bool processSamples(const CSAMPLE* buffer, const int bufferLength) override;
+            SINT totalSamples) override;
+    bool processSamples(const CSAMPLE* buffer, SINT bufferLength) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
 

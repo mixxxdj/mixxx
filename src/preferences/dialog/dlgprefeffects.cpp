@@ -313,30 +313,42 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
         // * clear selection in adjacent view
         // * restore previous selection (select first item if none was selected)
         //   which updates the info box via 'currentRowChanged' signals
-        auto pChainList = dynamic_cast<QListView*>(object);
-        auto pEffectList = dynamic_cast<QTableView*>(object);
+        auto pChainList = qobject_cast<QListView*>(object);
+        auto pEffectList = qobject_cast<QTableView*>(object);
+        // Restore previous selection only if focus was changed with keyboard.
+        // For mouse clicks, that procedure would select the wrong index.
+        QFocusEvent* focEv = static_cast<QFocusEvent*>(event);
+        bool keyboardFocusIn = false;
+        if (focEv->reason() == Qt::TabFocusReason ||
+                focEv->reason() == Qt::BacktabFocusReason) {
+            keyboardFocusIn = true;
+        }
 
         if (pChainList) {
             m_pFocusedChainList = pChainList;
             unfocusedChainList()->selectionModel()->clearSelection();
-            QModelIndex currIndex = m_pFocusedChainList->selectionModel()->currentIndex();
-            if (!currIndex.isValid()) {
-                currIndex = m_pFocusedChainList->model()->index(0, 0);
+            if (keyboardFocusIn) {
+                QModelIndex currIndex = m_pFocusedChainList->selectionModel()->currentIndex();
+                if (!currIndex.isValid()) {
+                    currIndex = m_pFocusedChainList->model()->index(0, 0);
+                }
+                m_pFocusedChainList->selectionModel()->clearCurrentIndex();
+                m_pFocusedChainList->selectionModel()->setCurrentIndex(
+                        currIndex,
+                        QItemSelectionModel::ClearAndSelect);
             }
-            m_pFocusedChainList->selectionModel()->clearCurrentIndex();
-            m_pFocusedChainList->selectionModel()->setCurrentIndex(
-                    currIndex,
-                    QItemSelectionModel::ClearAndSelect);
             return true;
         } else if (pEffectList) {
             m_pFocusedEffectList = pEffectList;
             unfocusedEffectList()->selectionModel()->clearSelection();
-            QModelIndex currIndex = m_pFocusedEffectList->currentIndex();
-            if (!currIndex.isValid()) {
-                currIndex = pEffectList->model()->index(0, 0);
+            if (keyboardFocusIn) {
+                QModelIndex currIndex = m_pFocusedEffectList->currentIndex();
+                if (!currIndex.isValid()) {
+                    currIndex = pEffectList->model()->index(0, 0);
+                }
+                pEffectList->selectionModel()->clearCurrentIndex();
+                pEffectList->selectRow(currIndex.row());
             }
-            pEffectList->selectionModel()->clearCurrentIndex();
-            pEffectList->selectRow(currIndex.row());
             return true;
         } else {
             return false;

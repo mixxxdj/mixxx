@@ -77,7 +77,7 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
             });
 }
 
-bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, SINT iLen) {
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     if (!m_pKeyMode) {
         return false;

@@ -44,7 +44,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
 
 bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
+        SINT totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -197,7 +197,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     return true;
 }
 
-bool AnalyzerBeats::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT iLen) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }
