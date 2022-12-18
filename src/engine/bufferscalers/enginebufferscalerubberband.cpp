@@ -130,6 +130,7 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         SINT frames) {
     const SINT frames_available = m_pRubberBand->available();
     const SINT frames_to_read = math_min(frames_available, frames);
+    DEBUG_ASSERT(frames_to_read <= m_buffers[0].size());
     SINT received_frames = static_cast<SINT>(m_pRubberBand->retrieve(
             m_bufferPtrs.data(), frames_to_read));
     SINT frame_offset = 0;
@@ -145,7 +146,7 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         frame_offset += drop_num_frames;
     }
 
-    DEBUG_ASSERT((received_frames + frame_offset) <= static_cast<ssize_t>(m_buffers[0].size()));
+    DEBUG_ASSERT(received_frames <= frames);
     SampleUtil::interleaveBuffer(pBuffer,
             m_buffers[0].data() + frame_offset,
             m_buffers[1].data() + frame_offset,
