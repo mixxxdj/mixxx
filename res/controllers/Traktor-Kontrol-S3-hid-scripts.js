@@ -1698,14 +1698,20 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
             TraktorS3.bind(TraktorS3.Channel.prototype.endOfTrackHandler, chanob));
     }
 
-    // Dirty hack to set initial values in the packet parser. The packet parser
-    // only sends updates to this controller script if they have changed from
-    // their previous value, and it will ignore the initial value value.
-    TraktorS3.incomingData([1, ...Array(19).fill(0)]);
-    TraktorS3.incomingData([2, ...Array(62).fill(0)]);
+    // Query the current values from the controller and set them. The packet
+    // parser ignores the first time a value is set, so we'll need to set it
+    // with different values once. Report 2 contains the state of the mixer
+    // controls.
+    const report2Values = new Uint8Array(controller.getInputReport(2));
+    TraktorS3.incomingData([2, ...Array.from(report2Values.map(x => ~x))]);
+    TraktorS3.incomingData([2, ...Array.from(report2Values)]);
 
-    // Query the current values from the controller and set them
-    TraktorS3.incomingData([2, ...Array.from(new Uint8Array(controller.getInputReport(2)))]);
+    // Report 1 is the state of the deck controls. These shouldn't have any
+    // initial effect, and most of these values will be 0 anyways. We'll just
+    // tell the packet parser the current values so it won't ignore the next
+    // input.
+    const report1Values = new Uint8Array(controller.getInputReport(1));
+    TraktorS3.incomingData([1, ...Array.from(report1Values)]);
 
     // NOTE: Soft takeovers must only be enabled after setting the initial
     //       value, or the above line won't have any effect
