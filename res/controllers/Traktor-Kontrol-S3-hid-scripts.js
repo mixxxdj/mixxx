@@ -1688,7 +1688,27 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
 
     this.hid.registerInputPacket(messageLong);
 
-    // Soft takeovers
+    for (ch in this.Channels) {
+        const chanob = this.Channels[ch];
+        engine.makeConnection(ch, "playposition",
+            TraktorS3.bind(TraktorS3.Channel.prototype.playpositionChanged, chanob));
+        engine.connectControl(ch, "track_loaded",
+            TraktorS3.bind(TraktorS3.Channel.prototype.trackLoadedHandler, chanob));
+        engine.connectControl(ch, "end_of_track",
+            TraktorS3.bind(TraktorS3.Channel.prototype.endOfTrackHandler, chanob));
+    }
+
+    // Dirty hack to set initial values in the packet parser. The packet parser
+    // only sends updates to this controller script if they have changed from
+    // their previous value, and it will ignore the initial value value.
+    TraktorS3.incomingData([1, ...Array(19).fill(0)]);
+    TraktorS3.incomingData([2, ...Array(62).fill(0)]);
+
+    // Query the current values from the controller and set them
+    TraktorS3.incomingData([2, ...Array.from(new Uint8Array(controller.getInputReport(2)))]);
+
+    // NOTE: Soft takeovers must only be enabled after setting the initial
+    //       value, or the above line won't have any effect
     for (var ch = 1; ch <= 4; ch++) {
         var group = "[Channel" + ch + "]";
         if (!TraktorS3.PitchSliderRelativeMode) {
@@ -1738,20 +1758,6 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
     for (let i = 1; i <= 16; ++i) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
-
-    for (ch in this.Channels) {
-        const chanob = this.Channels[ch];
-        engine.makeConnection(ch, "playposition",
-            TraktorS3.bind(TraktorS3.Channel.prototype.playpositionChanged, chanob));
-        engine.connectControl(ch, "track_loaded",
-            TraktorS3.bind(TraktorS3.Channel.prototype.trackLoadedHandler, chanob));
-        engine.connectControl(ch, "end_of_track",
-            TraktorS3.bind(TraktorS3.Channel.prototype.endOfTrackHandler, chanob));
-    }
-
-    // Dirty hack to set initial values in the packet parser
-    const data = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    TraktorS3.incomingData(data);
 };
 
 TraktorS3.Controller.prototype.registerInputJog = function(message, group, name, offset, bitmask, callback) {
