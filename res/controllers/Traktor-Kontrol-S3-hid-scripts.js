@@ -46,6 +46,9 @@ var TraktorS3 = {};
 // section was originally intended to be used by Native Instruments. Disable
 // this option to use the second, Mixxx-specific mode.
 TraktorS3.StockFxMode = true;
+// When enabled, set all channels to the first FX chain on startup. Otherwise
+// the quick FX chain assignments from the last Mixxx run are preserved.
+TraktorS3.StockFxModeDefaultToFilter = true;
 
 // The pitch slider can operate either in absolute or relative mode.
 // In absolute mode:
@@ -2359,6 +2362,12 @@ TraktorS3.StockFxControl = class {
         // just before changing the quick effect chain because there's no built
         // in way to preserve the value.
         this.oldSuperKnobValues = [null, null, null, null];
+
+        if (TraktorS3.StockFxModeDefaultToFilter) {
+            for (let channel = 1; channel <= 4; channel++) {
+                this.setQuickEffectChain(channel, 0);
+            }
+        }
     }
 
     registerInputs(messageShort, messageLong) {
