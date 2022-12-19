@@ -27,6 +27,19 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     m_parameterStr = tr("Parameter %1");
     m_libraryStr = tr("Library");
 
+    m_numGroupsTrMap.insert("Channel", m_deckStr);
+    m_numGroupsTrMap.insert("Sampler", m_samplerStr);
+    m_numGroupsTrMap.insert("PreviewDeck", m_previewdeckStr);
+    m_numGroupsTrMap.insert("Microphone", m_microphoneStr);
+    m_numGroupsTrMap.insert("Auxiliary", m_auxStr);
+    m_numGroupsTrMap.insert("EffectRack", m_effectRackStr);
+
+    m_otherGroupsTrMap.insert("Skin", tr("Skin"));
+    m_otherGroupsTrMap.insert("Library", m_libraryStr);
+    m_otherGroupsTrMap.insert("Controller", tr("Controller"));
+    // TODO(ronso0) "translate" legacy 'Master' to 'Main' in main branch?
+    m_otherGroupsTrMap.insert("Master", "Master");
+
     // Mixer Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
     // Crossfader / Orientation

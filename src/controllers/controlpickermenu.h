@@ -19,6 +19,14 @@ class ControlPickerMenu : public QMenu {
     QString descriptionForConfigKey(const ConfigKey& key) const;
     QString controlTitleForConfigKey(const ConfigKey& key) const;
 
+    // share translated group strings
+    QMap<QString, QString> getNumGroupsTrMap() const {
+        return m_numGroupsTrMap;
+    }
+    QMap<QString, QString> getOtherGroupsTrMap() const {
+        return m_otherGroupsTrMap;
+    }
+
   signals:
     // Emitted when the user selects a control from the menu.
     void controlPicked(const ConfigKey& control);
@@ -112,4 +120,7 @@ class ControlPickerMenu : public QMenu {
     QList<ConfigKey> m_controlsAvailable;
     QHash<ConfigKey, QString> m_descriptionsByKey;
     QHash<ConfigKey, QString> m_titlesByKey;
+
+    QMap<QString, QString> m_numGroupsTrMap;
+    QMap<QString, QString> m_otherGroupsTrMap;
 };
