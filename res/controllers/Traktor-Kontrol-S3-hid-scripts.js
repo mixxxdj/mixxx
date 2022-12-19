@@ -2432,6 +2432,10 @@ TraktorS3.StockFxControl = class {
             if (this.pressedFxSelectButtons.length === 1) {
                 this.individualFxChainAssigned = false;
             }
+
+            // The button will be dimly lit while pressed if it has not yet been
+            // assigned to any channels
+            this.lightFxSelectButtons(fxNumber);
         } else {
             this.pressedFxSelectButtons.splice(this.pressedFxSelectButtons.indexOf(fxNumber));
             if (this.pressedFxSelectButtons.length === 0 && !this.individualFxChainAssigned) {
@@ -2533,7 +2537,7 @@ TraktorS3.StockFxControl = class {
         }
     }
 
-    lightFxSelectButtons() {
+    lightFxSelectButtons(singleFxNumber = null) {
         // We'll light up the currently active FX chains. This means only a
         // single button is lit when all channels use the same quick effect
         // chain.
@@ -2543,14 +2547,24 @@ TraktorS3.StockFxControl = class {
             activeFxSelectButtons.add(fxNumber);
         }
 
-        for (let fxNumber = 0; fxNumber <= 4; fxNumber++) {
+        const lightButton = function(fxNumber) {
             // By default the LED is off
-            const ledColor = this.fxColors[fxNumber] +
-                ((activeFxSelectButtons.has(fxNumber) || this.pressedFxSelectButtons.indexOf(fxNumber) !== -1)
-                    ? TraktorS3.LEDBrightValue
-                    : TraktorS3.LEDDimValue);
+            let ledColor = 0;
+            if (activeFxSelectButtons.has(fxNumber)) {
+                ledColor = this.fxColors[fxNumber] + TraktorS3.LEDBrightValue;
+            } else if (this.pressedFxSelectButtons.indexOf(fxNumber) !== -1) {
+                ledColor = this.fxColors[fxNumber] + TraktorS3.LEDDimValue;
+            }
 
             this.controller.hid.setOutput("[ChannelX]", `!fxButton${fxNumber}`, ledColor, !this.controller.batchingOutputs);
+        }.bind(this);
+
+        if (singleFxNumber !== null) {
+            lightButton(singleFxNumber);
+        } else {
+            for (let fxNumber = 0; fxNumber <= 4; fxNumber++) {
+                lightButton(fxNumber);
+            }
         }
     }
 
