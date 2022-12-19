@@ -42,13 +42,13 @@ var TraktorS3 = {};
 // - Another mode that exposes all of Mixxx's effect controls at the expense of
 //   being more complex to use. See the manual for the full key binding scheme.
 //
-// The first mode is dubbed 'stock mode' as it behaves in the way the mixer FX
+// The first mode is dubbed 'vanilla mode' as it behaves in the way the mixer FX
 // section was originally intended to be used by Native Instruments. Disable
 // this option to use the second, Mixxx-specific mode.
-TraktorS3.StockFxMode = true;
+TraktorS3.VanillaFxMode = true;
 // When enabled, set all channels to the first FX chain on startup. Otherwise
 // the quick FX chain assignments from the last Mixxx run are preserved.
-TraktorS3.StockFxModeDefaultToFilter = true;
+TraktorS3.VanillaFxModeDefaultToFilter = true;
 
 // The pitch slider can operate either in absolute or relative mode.
 // In absolute mode:
@@ -2334,9 +2334,9 @@ TraktorS3.shutdown = function() {
 /**
  * An alternative to `FXControl` that behaves more similarly to how the
  * controller works with Traktor. See the description for
- * `TraktorS3.StockFxMode` for more information.
+ * `TraktorS3.VanillaFxMode` for more information.
  */
-TraktorS3.StockFxControl = class {
+TraktorS3.VanillaFxControl = class {
     constructor(controller) {
         this.controller = controller;
 
@@ -2369,7 +2369,7 @@ TraktorS3.StockFxControl = class {
             4: this.controller.hid.LEDColors.YELLOW,
         };
 
-        if (TraktorS3.StockFxModeDefaultToFilter) {
+        if (TraktorS3.VanillaFxModeDefaultToFilter) {
             for (let channel = 1; channel <= 4; channel++) {
                 this.setQuickEffectChain(channel, 0);
             }
@@ -2610,8 +2610,8 @@ TraktorS3.init = function(_id) {
         "[Channel2]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks.deck2, "[Channel2]"),
     };
 
-    if (TraktorS3.StockFxMode) {
-        this.kontrol.fxController = new TraktorS3.StockFxControl(this.kontrol);
+    if (TraktorS3.VanillaFxMode) {
+        this.kontrol.fxController = new TraktorS3.VanillaFxControl(this.kontrol);
     } else {
         this.kontrol.fxController = new TraktorS3.FXControl(this.kontrol);
     }
@@ -2631,7 +2631,7 @@ TraktorS3.init = function(_id) {
         this.kontrol.lightDeck("[Channel2]", true);
 
         // TODO: Fix capitalization for the old mode
-        if (TraktorS3.StockFxMode) {
+        if (TraktorS3.VanillaFxMode) {
             this.kontrol.fxController.lightFx();
         } else {
             this.kontrol.fxController.lightFX();
