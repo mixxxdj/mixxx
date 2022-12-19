@@ -1353,7 +1353,7 @@ TraktorS3.FXControl.prototype.changeState = function(newState) {
     case this.STATE_FOCUS:
         this.focusBlinkTimer = engine.beginTimer(150, function() {
             TraktorS3.kontrol.fxController.focusBlinkState = !TraktorS3.kontrol.fxController.focusBlinkState;
-            TraktorS3.kontrol.fxController.lightFX();
+            TraktorS3.kontrol.fxController.lightFx();
         }, false);
     }
 };
@@ -1371,7 +1371,7 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
                 this.changeState(this.STATE_EFFECT);
             }
         }
-        this.lightFX();
+        this.lightFx();
         return;
     }
 
@@ -1419,7 +1419,7 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
         this.activeFX = fxNumber;
         break;
     }
-    this.lightFX();
+    this.lightFx();
 };
 
 TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
@@ -1427,7 +1427,7 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
     this.enablePressed[field.group] = !!field.value;
 
     if (!field.value) {
-        this.lightFX();
+        this.lightFx();
         return;
     }
 
@@ -1456,7 +1456,7 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
         script.toggleControl(group, key);
         break;
     }
-    this.lightFX();
+    this.lightFx();
 };
 
 TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
@@ -1515,7 +1515,7 @@ TraktorS3.FXControl.prototype.getChannelColor = function(group, status) {
     }
 };
 
-TraktorS3.FXControl.prototype.lightFX = function() {
+TraktorS3.FXControl.prototype.lightFx = function() {
     this.controller.batchingOutputs = true;
 
     // Loop through select buttons
@@ -2178,7 +2178,7 @@ TraktorS3.Controller.prototype.lightDeck = function(group, sendPackets) {
             this.basicOutput(0, "[Master]", "!extButton");
         }
     }
-    // this.lightFX();
+    // this.lightFx();
 
     // Selected deck lights
     if (group === "[Channel1]") {
@@ -2630,12 +2630,7 @@ TraktorS3.init = function(_id) {
         this.kontrol.lightDeck("[Channel1]", false);
         this.kontrol.lightDeck("[Channel2]", true);
 
-        // TODO: Fix capitalization for the old mode
-        if (TraktorS3.VanillaFxMode) {
-            this.kontrol.fxController.lightFx();
-        } else {
-            this.kontrol.fxController.lightFX();
-        }
+        this.kontrol.fxController.lightFx();
     }
 
     this.kontrol.setInputLineMode(TraktorS3.inputModeLine);
