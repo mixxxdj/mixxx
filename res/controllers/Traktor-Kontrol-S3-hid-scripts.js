@@ -2434,7 +2434,7 @@ TraktorS3.StockFxControl = class {
             }
         } else {
             this.pressedFxSelectButtons.splice(this.pressedFxSelectButtons.indexOf(fxNumber));
-            if (!this.individualFxChainAssigned) {
+            if (this.pressedFxSelectButtons.length === 0 && !this.individualFxChainAssigned) {
                 for (let channel = 1; channel <= 4; channel++) {
                     this.setQuickEffectChain(channel, fxNumber);
                 }
