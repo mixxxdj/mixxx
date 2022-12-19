@@ -15,6 +15,38 @@
 var TraktorS3 = {};
 
 // ==== Friendly User Configuration ====
+// This controller script has two modes for controlling FX:
+//
+// - A mode where the Filter and FX 1-4 buttons switch between the first five
+//   quick effect chain presets found in Settings -> Effects, and the FX Enable
+//   buttons toggle the enabled/bypass status of those quick effect chains. This
+//   emulates the intended behavior of the Mixer FX section on the Traktor
+//   Kontrol S3. The Filter button is bound to the first preset in the list, and
+//   the FX 1-4 buttons are bound to presets 2-5.  For consistency you should
+//   make sure that the default quick effect chain in Settings -> Equalizers is
+//   set to the first chain so that pressing the Filter button returns you to
+//   the default quick effect chain. The super knob's value is preserved when
+//   changing between quick effect chain presets.
+//
+//   The intended use case is to set quick effect chain preset 0 to either the
+//   Filter or Moog Filter effect, and presets 1-5 to a chain that contains that
+//   same filter and an additional effect.
+//
+//   Pressing one of the five FX/Filter buttons switches every channel's quick
+//   effect chain to the corresponding preset. Holding one of the buttons down
+//   while pressing one of the four channel's Filter Enable buttons will assign
+//   the chain to just that channel. When the Filter Enable button is not
+//   enabled then channel will behave the same as if the first Filter quick
+//   effect chain preset was used.
+//
+// - Another mode that exposes all of Mixxx's effect controls at the expense of
+//   being more complex to use. See the manual for the full key binding scheme.
+//
+// The first mode is dubbed 'stock mode' as it behaves in the way the mixer FX
+// section was originally intended to be used by Native Instruments. Disable
+// this option to use the second, Mixxx-specific mode.
+TraktorS3.StockFxMode = true;
+
 // The pitch slider can operate either in absolute or relative mode.
 // In absolute mode:
 // * Moving the pitch slider works like normal
@@ -2296,6 +2328,337 @@ TraktorS3.shutdown = function() {
     HIDDebug("TraktorS3: Shutdown done!");
 };
 
+/**
+ * An alternative to `FXControl` that behaves more similarly to how the
+ * controller works with Traktor. See the description for
+ * `TraktorS3.StockFxMode` for more information.
+ *
+ * TODO: Return to quick effect chain 1 on shutdown, and probably do the same
+ *       thing on init.
+ * TODO: Link the outputs for when the effect chain is changed from the software.
+ */
+TraktorS3.StockFxControl = class {
+    constructor(controller) {
+        this.controller = controller;
+
+        // This contains the indices of the currently held down Filter and FX
+        // select buttons, 0 being the filter and 1-4 being the four FX buttons.
+        // We keep track of whether they're currently held down so we can assign
+        // an effect chain to a single channel by holding down one of those five
+        // buttons and then pressing the channel's FX On button.
+        this.pressedFxSelectButtons = [];
+        // When one of the FX select buttons is held down we need to keep track
+        // of whether or not we assigned any quick effect chains. If this
+        // happened, then we should avoid changing the other channel's quick
+        // effect chains when the button is released. This is reset to false
+        // when the last FX Select button is released.
+        this.individualFxChainAssigned = false;
+
+        // When non-null, the channel's super knob value will be set to this
+        // value when the quick effect chain has changed. This value is stored
+        // just before changing the quick effect chain because there's no built
+        // in way to preserve the value.
+        this.oldSuperKnobValues = [null, null, null, null];
+    }
+
+    registerInputs(messageShort, messageLong) {
+        // The filter button
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx0", 0x08, 0x80, this.fxSelectHandler.bind(this));
+        // The FX 1-4 buttons
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x08, this.fxSelectHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x08, 0x10, this.fxSelectHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x08, 0x20, this.fxSelectHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, this.fxSelectHandler.bind(this));
+
+        this.controller.registerInputScaler(messageLong, "[Channel1]", "!fxKnob", 0x39, 0xFFFF, this.fxKnobHandler.bind(this));
+        this.controller.registerInputScaler(messageLong, "[Channel2]", "!fxKnob", 0x3B, 0xFFFF, this.fxKnobHandler.bind(this));
+        this.controller.registerInputScaler(messageLong, "[Channel3]", "!fxKnob", 0x37, 0xFFFF, this.fxKnobHandler.bind(this));
+        this.controller.registerInputScaler(messageLong, "[Channel4]", "!fxKnob", 0x3D, 0xFFFF, this.fxKnobHandler.bind(this));
+
+        this.controller.registerInputButton(messageShort, "[Channel3]", "!fxEnabled", 0x07, 0x08, this.fxEnableHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[Channel1]", "!fxEnabled", 0x07, 0x10, this.fxEnableHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[Channel2]", "!fxEnabled", 0x07, 0x20, this.fxEnableHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[Channel4]", "!fxEnabled", 0x07, 0x40, this.fxEnableHandler.bind(this));
+
+        // We'll restore the old super knob values here when changing quick effect chains
+        engine.connectControl("[QuickEffectRack1_[Channel1]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
+        engine.connectControl("[QuickEffectRack1_[Channel2]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
+        engine.connectControl("[QuickEffectRack1_[Channel3]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
+        engine.connectControl("[QuickEffectRack1_[Channel4]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
+    }
+
+    fxSelectHandler(field) {
+        // FX Number 0 is the filter, and 1-4 are the FX 1-4 buttons
+        const fxNumber = parseInt(field.name[field.name.length - 1]);
+
+        // If one of the four FX On buttons is pressed while one of the five FX
+        // select buttons are held down, then only that channel's quick effect
+        // chain assignments are changed. `this.individualFxChainAssigned` keeps
+        // track of whether a quick effects chain has been assigned to an
+        // individual channel. To avoid weird things from happening, we keep
+        // track of which buttons are pressed. The global effect chain should
+        // only change when the last button has been released, and holding down
+        // one FX button, assigning that effect to a channel, holding down a
+        // second button, and releasing both shouldn't change the global effect
+        // assignments.
+        if (field.value === 1) {
+            this.pressedFxSelectButtons.push(fxNumber);
+            if (this.pressedFxSelectButtons.length === 1) {
+                this.individualFxChainAssigned = false;
+            }
+        } else {
+            this.pressedFxSelectButtons.splice(this.pressedFxSelectButtons.indexOf(fxNumber));
+            if (!this.individualFxChainAssigned) {
+                for (let channel = 1; channel <= 4; channel++) {
+                    this.setQuickEffectChain(channel, fxNumber);
+                }
+            }
+        }
+    }
+
+    fxKnobHandler(field) {
+        // If the external input toggle is enabled then we should not change
+        // channel four's filters as the other mixer controls now also affect
+        // the microphone rather than channel four
+        if (field.group === "[Channel4]" && this.controller.channel4InputMode) {
+            return;
+        }
+
+        const value = field.value / 4095;
+        engine.setParameter(`[QuickEffectRack1_${field.group}]`, "super1", value);
+    }
+
+    fxEnableHandler(field) {
+        if (field.value === 0) {
+            return;
+        }
+
+        // Depending on whether or not one of the five FX+Filter buttons are
+        // pressed we'll either assign a quick effects chain to this channel or
+        // we'll toggle the quick effect chain's status
+        if (this.pressedFxSelectButtons.length > 0) {
+            // We'll use the last button pressed
+            const fxNumber = this.pressedFxSelectButtons[this.pressedFxSelectButtons.length - 1];
+            const channelNumber = parseInt(field.group[field.group.length - 2]);
+
+            this.setQuickEffectChain(channelNumber, fxNumber);
+
+            // This will prevent releasing the button(s) from affecting the
+            // other channels
+            this.individualFxChainAssigned = true;
+        } else {
+            const currentStatus = engine.getValue(`[QuickEffectRack1_${field.group}]`, "enabled");
+            engine.setValue(`[QuickEffectRack1_${field.group}]`, "enabled", !currentStatus);
+        }
+    }
+
+    quickEffectChainLoadHandler(_value, group, _key) {
+        // There's no built in way to change effect chains while preserving the
+        // super knob values, so we'll do this ourselves. The old super knob
+        // value is set in `this.setQuickEffectChain()`.
+        // FIXME: There needs to be a way in Mixxx to change the quick effect
+        //        chain without changing this value. You can hear the default
+        //        value poking through when changing to the same effect.
+        const channelNumber = parseInt(group[group.length - 3]);
+        if (this.oldSuperKnobValues[channelNumber - 1] !== null) {
+            engine.softTakeover(group, "super1", false);
+            engine.setValue(group, "super1", this.oldSuperKnobValues[channelNumber - 1]);
+            engine.softTakeover(group, "super1", true);
+
+            this.oldSuperKnobValues[channelNumber - 1] = null;
+        }
+    }
+
+    /**
+     * Set the quick effect chain preset for a channel. This preserves the current super knob value
+     *
+     * @param {number} channel The channel number, in 1-4.
+     * @param {number} fxButtonIndex The index of the FX button, 0 being the
+     *   filter button. Quick effect chain presets are one-indexed, so
+     *   fxButtonIndex 0-5 will be mapped to quick effect chain presets 1-6.
+     */
+    setQuickEffectChain(channel, fxButtonIndex) {
+        // We can't immediately restore this value because it may take a buffer
+        // until the effect chain is actually changed. So instead we'll store
+        // the old value, and then restore it in
+        // `this.quickEffectChainLoadHandler()`.
+        const superValue = engine.getValue(`[QuickEffectRack1_[Channel${channel}]]`, "super1");
+        this.oldSuperKnobValues[channel - 1] = superValue;
+
+        engine.setValue(`[QuickEffectRack1_[Channel${channel}]]`, "loaded_chain_preset", fxButtonIndex + 1);
+    }
+
+    // TODO: Link the LEDs for the FX select and enable buttons
+
+    // getFXSelectLEDValue(fxNumber, status) {
+    //     const ledValue = this.controller.fxLEDValue[fxNumber];
+    //     switch (status) {
+    //         case this.LIGHT_OFF:
+    //             return 0x00;
+    //         case this.LIGHT_DIM:
+    //             return ledValue;
+    //         case this.LIGHT_BRIGHT:
+    //             return ledValue + 0x02;
+    //     }
+    // }
+    // getChannelColor(group, status) {
+    //     const ledValue = this.controller.hid.LEDColors[TraktorS3.ChannelColors[group]];
+    //     switch (status) {
+    //         case this.LIGHT_OFF:
+    //             return 0x00;
+    //         case this.LIGHT_DIM:
+    //             return ledValue;
+    //         case this.LIGHT_BRIGHT:
+    //             return ledValue + 0x02;
+    //     }
+    // }
+    // lightFX() {
+    //     this.controller.batchingOutputs = true;
+
+    //     // Loop through select buttons
+    //     // Idx zero is filter button
+    //     for (let idx = 0; idx < 5; idx++) {
+    //         this.lightSelect(idx);
+    //     }
+    //     for (let ch = 1; ch <= 4; ch++) {
+    //         const channel = "[Channel" + ch + "]";
+    //         this.lightEnable(channel);
+    //     }
+
+    //     this.controller.batchingOutputs = false;
+    //     for (const packetName in this.controller.hid.OutputPackets) {
+    //         this.controller.hid.OutputPackets[packetName].send();
+    //     }
+    // }
+    // lightSelect(idx) {
+    //     let status = this.LIGHT_OFF;
+    //     let ledValue = 0x00;
+    //     switch (this.currentState) {
+    //         case this.STATE_FILTER:
+    //             // Always light when pressed
+    //             if (this.selectPressed[idx]) {
+    //                 status = this.LIGHT_BRIGHT;
+    //             } else {
+    //                 // select buttons on if fx unit enabled for the pressed channel,
+    //                 // otherwise disabled.
+    //                 status = this.LIGHT_DIM;
+    //                 const pressed = this.firstPressedEnable();
+    //                 if (pressed) {
+    //                     if (idx === 0) {
+    //                         var fxGroup = "[QuickEffectRack1_" + pressed + "_Effect1]";
+    //                         var fxKey = "enabled";
+    //                     } else {
+    //                         fxGroup = "[EffectRack1_EffectUnit" + idx + "]";
+    //                         fxKey = "group_" + pressed + "_enable";
+    //                     }
+    //                     if (engine.getParameter(fxGroup, fxKey)) {
+    //                         status = this.LIGHT_BRIGHT;
+    //                     } else {
+    //                         status = this.LIGHT_OFF;
+    //                     }
+    //                 }
+    //                 ledValue = this.getFXSelectLEDValue(idx, status);
+    //             }
+    //             break;
+    //         case this.STATE_EFFECT_INIT:
+    //         // Fallthrough intended
+    //         case this.STATE_EFFECT:
+    //             // Highlight if pressed, disable if active effect.
+    //             // Otherwise off.
+    //             if (this.selectPressed[idx]) {
+    //                 status = this.LIGHT_BRIGHT;
+    //             } else if (idx === this.activeFX) {
+    //                 status = this.LIGHT_BRIGHT;
+    //             }
+    //             break;
+    //         case this.STATE_FOCUS:
+    //             // if blink state is false, only like active fx bright
+    //             // if blink state is true, active fx is bright and selected effect
+    //             // is dim.  if those are the same, active fx is dim
+    //             if (this.selectPressed[idx]) {
+    //                 status = this.LIGHT_BRIGHT;
+    //             } else {
+    //                 if (idx === this.activeFX) {
+    //                     status = this.LIGHT_BRIGHT;
+    //                 }
+    //                 if (this.focusBlinkState) {
+    //                     const fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
+    //                     const focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
+    //                     if (idx === focusedEffect) {
+    //                         status = this.LIGHT_DIM;
+    //                     }
+    //                 }
+    //             }
+    //             break;
+    //     }
+    //     ledValue = this.getFXSelectLEDValue(idx, status);
+    //     this.controller.hid.setOutput("[ChannelX]", "!fxButton" + idx, ledValue, false);
+    // }
+    // lightEnable(channel) {
+    //     let status = this.LIGHT_OFF;
+    //     let ledValue = 0x00;
+    //     const buttonNumber = this.channelToIndex(channel);
+    //     switch (this.currentState) {
+    //         case this.STATE_FILTER:
+    //             // enable buttons highlighted if pressed or if any fx unit enabled for channel.
+    //             // Highlight if pressed.
+    //             status = this.LIGHT_DIM;
+    //             if (this.enablePressed[channel]) {
+    //                 status = this.LIGHT_BRIGHT;
+    //             } else {
+    //                 for (let idx = 1; idx <= 4 && status === this.LIGHT_OFF; idx++) {
+    //                     var group = "[EffectRack1_EffectUnit" + idx + "]";
+    //                     var key = "group_" + channel + "_enable";
+    //                     if (engine.getParameter(group, key)) {
+    //                         status = this.LIGHT_DIM;
+    //                     }
+    //                 }
+    //             }
+    //             // Enable buttons have regular deck colors
+    //             ledValue = this.getChannelColor(channel, status);
+    //             break;
+    //         case this.STATE_EFFECT_INIT:
+    //         // Fallthrough intended
+    //         case this.STATE_EFFECT:
+    //             if (this.enablePressed[channel]) {
+    //                 status = this.LIGHT_BRIGHT;
+    //             } else {
+    //                 // off if nothing loaded, dim if loaded, bright if enabled.
+    //                 group = "[EffectRack1_EffectUnit" + this.activeFX + "_Effect" + buttonNumber + "]";
+    //                 if (engine.getParameter(group, "loaded")) {
+    //                     status = this.LIGHT_DIM;
+    //                 }
+    //                 if (engine.getParameter(group, "enabled")) {
+    //                     status = this.LIGHT_BRIGHT;
+    //                 }
+    //             }
+    //             // Colors match effect colors so it's obvious we're in a different mode
+    //             ledValue = this.getFXSelectLEDValue(this.activeFX, status);
+    //             break;
+    //         case this.STATE_FOCUS:
+    //             if (this.enablePressed[channel]) {
+    //                 status = this.LIGHT_BRIGHT;
+    //             } else {
+    //                 const fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
+    //                 const focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
+    //                 group = fxGroupPrefix + "_Effect" + focusedEffect + "]";
+    //                 key = "button_parameter" + buttonNumber;
+    //                 // Off if not loaded, dim if loaded, bright if enabled.
+    //                 if (engine.getParameter(group, key + "_loaded")) {
+    //                     status = this.LIGHT_DIM;
+    //                 }
+    //                 if (engine.getParameter(group, key)) {
+    //                     status = this.LIGHT_BRIGHT;
+    //                 }
+    //             }
+    //             // Colors match effect colors so it's obvious we're in a different mode
+    //             ledValue = this.getFXSelectLEDValue(this.activeFX, status);
+    //             break;
+    //     }
+    //     this.controller.hid.setOutput(channel, "!fxEnabled", ledValue, false);
+    // }
+};
+
 TraktorS3.init = function(_id) {
     this.kontrol = new TraktorS3.Controller();
     this.kontrol.Decks = {
@@ -2310,7 +2673,11 @@ TraktorS3.init = function(_id) {
         "[Channel2]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks.deck2, "[Channel2]"),
     };
 
-    this.kontrol.fxController = new TraktorS3.FXControl(this.kontrol);
+    if (TraktorS3.StockFxMode) {
+        this.kontrol.fxController = new TraktorS3.StockFxControl(this.kontrol);
+    } else {
+        this.kontrol.fxController = new TraktorS3.FXControl(this.kontrol);
+    }
 
     this.kontrol.registerInputPackets();
     this.kontrol.registerOutputPackets();
@@ -2325,7 +2692,12 @@ TraktorS3.init = function(_id) {
         this.kontrol.lightDeck("[Channel4]", false);
         this.kontrol.lightDeck("[Channel1]", false);
         this.kontrol.lightDeck("[Channel2]", true);
-        this.kontrol.fxController.lightFX();
+
+        if (TraktorS3.StockFxMode) {
+            // FIXME: Either manually light things or have output links figure it out
+        } else {
+            this.kontrol.fxController.lightFX();
+        }
     }
 
     this.kontrol.setInputLineMode(TraktorS3.inputModeLine);
