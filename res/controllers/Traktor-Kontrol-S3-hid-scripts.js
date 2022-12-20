@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////
 //
-// Traktor Kontrol S3 HID controller script v1.00
-// Last modification: August 2020
-// Author: Owen Williams
+// Traktor Kontrol S3 HID controller script v2.00
+// Last modification: December 2022
+// Authors: Owen Williams, Robbert van der Helm
 // https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3
 //
 ///////////////////////////////////////////////////////////////////////////////////
