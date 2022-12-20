@@ -27,4 +27,5 @@ class CrateTableModel final : public TrackSetTableModel {
 
   private:
     CrateId m_selectedCrate;
+    QHash<int, QString> m_searchTexts;
 };

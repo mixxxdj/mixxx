@@ -93,7 +93,7 @@ repos:
     hooks:
       - id: black
         files: ^tools/.*$
-  - repo: https://gitlab.com/pycqa/flake8
+  - repo: https://github.com/pycqa/flake8
     rev: "5.0.4"
     hooks:
       - id: flake8
@@ -141,9 +141,9 @@ repos:
         files: ^CHANGELOG.md$
       - id: qmlformat
         name: qmlformat
-        entry: tools/qmlformat.py
+        entry: python tools/qmlformat.py
         pass_filenames: true
-        language: system
+        language: python
         types: [text]
         files: ^.*\.qml$
       - id: qmllint

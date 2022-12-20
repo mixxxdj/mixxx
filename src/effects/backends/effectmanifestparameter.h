@@ -26,9 +26,11 @@ class EffectManifestParameter {
         LinearInverse,
         Logarithmic,
         LogarithmicInverse,
+        /// A step rotary with integer steps arranged with equal distance on scale
+        Integral,
         /// A step rotary, steps given by m_steps are arranged with equal
         /// distance on scale
-        Integral,
+        // Stepped,
         /// For button and enum controls, not accessible from many controllers,
         /// no linking to meta knob
         Toggle,

@@ -129,7 +129,12 @@ DlgAbout::DlgAbout()
             << "Javier Vilalta"
             << "David Chocholat&yacute;"
             << "Fabian Wolter"
-            << "Matteo Gheza";
+            << "Matteo Gheza"
+            << "Michael Bacarella"
+            << "Somesh Metri"
+            << "Maarten de Boer"
+            << "Doteya"
+            << "olafklingt";
 
     QStringList specialThanks;
     specialThanks

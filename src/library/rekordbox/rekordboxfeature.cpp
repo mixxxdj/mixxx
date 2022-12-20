@@ -1513,6 +1513,7 @@ void RekordboxFeature::activate() {
 
     emit enableCoverArtDisplay(true);
     emit switchToView("REKORDBOXHOME");
+    emit disableSearch();
 }
 
 void RekordboxFeature::activateChild(const QModelIndex& index) {

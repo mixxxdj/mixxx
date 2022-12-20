@@ -186,7 +186,7 @@ class AudioInputBuffer : public AudioInput {
 
 
 class AudioSource {
-public:
+  public:
     virtual ~AudioSource() = default;
 
     virtual const CSAMPLE* buffer(const AudioOutput& output) const = 0;
@@ -207,7 +207,7 @@ public:
 };
 
 class AudioDestination {
-public:
+  public:
     virtual ~AudioDestination() = default;
 
     /// This is called by SoundManager whenever there are new samples from the
