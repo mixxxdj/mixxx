@@ -49,6 +49,10 @@ TraktorS3.VanillaFxMode = true;
 // When enabled, set all channels to the first FX chain on startup. Otherwise
 // the quick FX chain assignments from the last Mixxx run are preserved.
 TraktorS3.VanillaFxModeDefaultToFilter = true;
+// When enabled, the FX Enable buttons will use the colors set in
+// `TraktorS3.ChannelColors` when the filter effect is selected. Disabling this
+// will use the Filter button's orange color instead.
+TraktorS3.VanillaFxModeChannelColors = true;
 
 // The pitch slider can operate either in absolute or relative mode.
 // In absolute mode:
@@ -2344,7 +2348,7 @@ TraktorS3.VanillaFxControl = class {
         // select buttons, 0 being the filter and 1-4 being the four FX buttons.
         // We keep track of whether they're currently held down so we can assign
         // an effect chain to a single channel by holding down one of those five
-        // buttons and then pressing the channel's FX On button.
+        // buttons and then pressing the channel's FX Enable button.
         this.pressedFxSelectButtons = [];
         // When one of the FX select buttons is held down we need to keep track
         // of whether or not we assigned any quick effect chains. If this
@@ -2417,17 +2421,17 @@ TraktorS3.VanillaFxControl = class {
         // FX Number 0 is the filter, and 1-4 are the FX 1-4 buttons
         const fxNumber = parseInt(field.name[field.name.length - 1]);
 
-        // If one of the four FX On buttons is pressed while one of the five FX
-        // select buttons are held down, then only that channel's quick effect
-        // chain assignments are changed. `this.individualFxChainAssigned` keeps
-        // track of whether a quick effects chain has been assigned to an
-        // individual channel. To avoid weird things from happening, we keep
-        // track of which buttons are pressed. The global effect chain should
-        // only change when the last button has been released, and holding down
-        // one FX button, assigning that effect to a channel, holding down a
-        // second button, and releasing both shouldn't change the global effect
-        // assignments.
-        if (field.value === 1) {
+        // If one of the four FX Enable buttons is pressed while one of the five
+        // FX select buttons are held down, then only that channel's quick
+        // effect chain assignments are changed.
+        // `this.individualFxChainAssigned` keeps track of whether a quick
+        // effects chain has been assigned to an individual channel. To avoid
+        // weird things from happening, we keep track of which buttons are
+        // pressed. The global effect chain should only change when the last
+        // button has been released, and holding down one FX button, assigning
+        // that effect to a channel, holding down a second button, and releasing
+        // both shouldn't change the global effect assignments.
+        if (TraktorS3.VanillaFxModeChannelColors && field.value === 1) {
             this.pressedFxSelectButtons.push(fxNumber);
             if (this.pressedFxSelectButtons.length === 1) {
                 this.individualFxChainAssigned = false;
