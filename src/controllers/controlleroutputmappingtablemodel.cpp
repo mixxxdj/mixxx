@@ -8,8 +8,9 @@
 #include "controllers/midi/midiutils.h"
 #include "moc_controlleroutputmappingtablemodel.cpp"
 
-ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent)
-        : ControllerMappingTableModel(pParent) {
+ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent,
+        ControlPickerMenu* pControlPickerMenu)
+        : ControllerMappingTableModel(pParent, pControlPickerMenu) {
 }
 
 ControllerOutputMappingTableModel::~ControllerOutputMappingTableModel() {
@@ -112,7 +113,7 @@ QAbstractItemDelegate* ControllerOutputMappingTableModel::delegateForColumn(
             case MIDI_COLUMN_OFF:
                 return new MidiByteDelegate(pParent);
             case MIDI_COLUMN_ACTION:
-                return new ControlDelegate(this);
+                return new ControlDelegate(this, m_pControlPickerMenu);
         }
     }
     return nullptr;

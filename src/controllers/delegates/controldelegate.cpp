@@ -8,10 +8,9 @@
 #include "controllers/midi/midimessage.h"
 #include "moc_controldelegate.cpp"
 
-ControlDelegate::ControlDelegate(QObject* pParent)
+ControlDelegate::ControlDelegate(QObject* pParent, ControlPickerMenu* pControlPickerMenu)
         : QStyledItemDelegate(pParent),
-          // TODO(ronso0) create only one ControlPickerMenu instance per DlgPrefController
-          m_pPicker(new ControlPickerMenu(nullptr)),
+          m_pPicker(pControlPickerMenu),
           m_iMidiOptionsColumn(-1),
           m_bIsIndexScript(false) {
     m_numGroupsTrMap = m_pPicker->getNumGroupsTrMap();

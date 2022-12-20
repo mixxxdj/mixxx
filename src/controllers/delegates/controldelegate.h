@@ -7,7 +7,7 @@
 class ControlDelegate : public QStyledItemDelegate {
     Q_OBJECT
   public:
-    ControlDelegate(QObject* pParent);
+    ControlDelegate(QObject* pParent, ControlPickerMenu* pControlPickerMenu);
     virtual ~ControlDelegate();
 
     inline void setMidiOptionsColumn(int column) {
