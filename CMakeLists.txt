@@ -1484,19 +1484,6 @@ if(MSVC)
 endif()
 
 if(WIN32)
-  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
-  # there is no particular reason to look for this file versus any other one in the directory.
-  find_file(QT_TRANSLATION_FILE qt_de.qm PATH_SUFFIXES share/qt5/translations)
-  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
-  install(
-    DIRECTORY "${QT_TRANSLATIONS}"
-    DESTINATION "${MIXXX_INSTALL_DATADIR}"
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-    FILES_MATCHING REGEX
-      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-  )
-
   # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is blocklisted.
   # Qt does not link these and vcpkg does not build them as a dependency of Qt,
   # so copy them manually.
@@ -2171,6 +2158,21 @@ elseif(WIN32)
       gdi32       # libshout
     )
   endif()
+endif()
+
+if(APPLE OR WIN32)
+  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
+  # there is no particular reason to look for this file versus any other one in the directory.
+  find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
+  install(
+    DIRECTORY "${QT_TRANSLATIONS}"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
 endif()
 
 # QtScriptByteArray
