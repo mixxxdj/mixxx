@@ -209,13 +209,6 @@ TraktorS3.Controller = function() {
     this.samplerCallbacks = [];
 };
 
-// Mixxx's javascript doesn't support .bind natively, so here's a simple version.
-TraktorS3.bind = function(fn, obj) {
-    return function() {
-        return fn.apply(obj, arguments);
-    };
-};
-
 //// Deck Objects ////
 // Decks are the physical controllers on either side of the controller.
 // Each Deck can control 2 channels.
@@ -272,7 +265,7 @@ TraktorS3.Deck.prototype.defineButton = function(msg, name, deckOffset, deckBitm
         deckOffset = deck2Offset;
         deckBitmask = deck2Bitmask;
     }
-    this.controller.registerInputButton(msg, this.group, name, deckOffset, deckBitmask, TraktorS3.bind(fn, this));
+    this.controller.registerInputButton(msg, this.group, name, deckOffset, deckBitmask, fn.bind(this));
 };
 
 TraktorS3.Deck.prototype.defineJog = function(message, name, deckOffset, deck2Offset, callback) {
@@ -281,7 +274,7 @@ TraktorS3.Deck.prototype.defineJog = function(message, name, deckOffset, deck2Of
     }
     // Jog wheels have four byte input: 1 byte for distance ticks, and 3 bytes for a timecode.
     message.addControl(this.group, name, deckOffset, "I", 0xFFFFFFFF);
-    message.setCallback(this.group, name, TraktorS3.bind(callback, this));
+    message.setCallback(this.group, name, callback.bind(this));
 };
 
 // defineScaler configures ranged controls like knobs and sliders.
@@ -290,7 +283,7 @@ TraktorS3.Deck.prototype.defineScaler = function(msg, name, deckOffset, deckBitm
         deckOffset = deck2Offset;
         deckBitmask = deck2Bitmask;
     }
-    this.controller.registerInputScaler(msg, this.group, name, deckOffset, deckBitmask, TraktorS3.bind(fn, this));
+    this.controller.registerInputScaler(msg, this.group, name, deckOffset, deckBitmask, fn.bind(this));
 };
 
 TraktorS3.Deck.prototype.registerInputs = function(messageShort, messageLong) {
@@ -387,13 +380,13 @@ TraktorS3.Deck.prototype.syncHandler = function(field) {
         if (engine.getValue(this.activeChannel, "sync_enabled") === 0) {
             script.triggerControl(this.activeChannel, "beatsync");
             // Start timer to measure how long button is pressed
-            this.syncPressedTimer = engine.beginTimer(300, TraktorS3.bind(function() {
+            this.syncPressedTimer = engine.beginTimer(300, function() {
                 engine.setValue(this.activeChannel, "sync_enabled", 1);
                 // Reset sync button timer state if active
                 if (this.syncPressedTimer !== 0) {
                     this.syncPressedTimer = 0;
                 }
-            }, this), true);
+            }.bind(this), this, true);
 
             // Light corresponding LED when button is pressed
             this.colorOutput(1, "sync_enabled");
@@ -886,14 +879,14 @@ TraktorS3.Deck.prototype.linkOutputs = function() {
         this.basicOutput(value, key);
     };
 
-    this.defineLink("play_indicator", TraktorS3.bind(TraktorS3.Deck.prototype.playIndicatorHandler, this));
-    this.defineLink("cue_indicator", TraktorS3.bind(colorOutput, this));
-    this.defineLink("sync_enabled", TraktorS3.bind(colorOutput, this));
-    this.defineLink("keylock", TraktorS3.bind(colorOutput, this));
-    this.defineLink("slip_enabled", TraktorS3.bind(colorOutput, this));
-    this.defineLink("quantize", TraktorS3.bind(colorOutput, this));
-    this.defineLink("reverse", TraktorS3.bind(basicOutput, this));
-    this.defineLink("scratch2_enable", TraktorS3.bind(colorOutput, this));
+    this.defineLink("play_indicator", TraktorS3.Deck.prototype.playIndicatorHandler.bind(this));
+    this.defineLink("cue_indicator", colorOutput.bind(this));
+    this.defineLink("sync_enabled", colorOutput.bind(this));
+    this.defineLink("keylock", colorOutput.bind(this));
+    this.defineLink("slip_enabled", colorOutput.bind(this));
+    this.defineLink("quantize", colorOutput.bind(this));
+    this.defineLink("reverse", basicOutput.bind(this));
+    this.defineLink("scratch2_enable", colorOutput.bind(this));
 };
 
 TraktorS3.Deck.prototype.deckBaseColor = function() {
@@ -1115,16 +1108,16 @@ TraktorS3.Channel.prototype.vuMeterHandler = function(value) {
 };
 
 TraktorS3.Channel.prototype.linkOutputs = function() {
-    this.vuConnection = engine.makeConnection(this.group, "VuMeter", TraktorS3.bind(TraktorS3.Channel.prototype.vuMeterHandler, this));
-    this.clipConnection = engine.makeConnection(this.group, "PeakIndicator", TraktorS3.bind(TraktorS3.Controller.prototype.peakOutput, this.controller));
-    this.controller.linkChannelOutput(this.group, "pfl", TraktorS3.bind(TraktorS3.Controller.prototype.pflOutput, this.controller));
+    this.vuConnection = engine.makeConnection(this.group, "VuMeter", TraktorS3.Channel.prototype.vuMeterHandler.bind(this));
+    this.clipConnection = engine.makeConnection(this.group, "PeakIndicator", TraktorS3.Controller.prototype.peakOutput.bind(this.controller));
+    this.controller.linkChannelOutput(this.group, "pfl", TraktorS3.Controller.prototype.pflOutput.bind(this.controller));
     for (let j = 1; j <= 8; j++) {
         this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_enabled",
-            TraktorS3.bind(TraktorS3.Channel.prototype.hotcuesOutput, this)));
+            TraktorS3.Channel.prototype.hotcuesOutput.bind(this)));
         this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_activate",
-            TraktorS3.bind(TraktorS3.Channel.prototype.hotcuesOutput, this)));
+            TraktorS3.Channel.prototype.hotcuesOutput.bind(this)));
         this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_color",
-            TraktorS3.bind(TraktorS3.Channel.prototype.hotcuesOutput, this)));
+            TraktorS3.Channel.prototype.hotcuesOutput.bind(this)));
     }
 };
 
@@ -1252,21 +1245,21 @@ TraktorS3.FXControl = function(controller) {
 TraktorS3.FXControl.prototype.registerInputs = function(messageShort, messageLong) {
     // FX Buttons
     const fxFn = TraktorS3.FXControl.prototype;
-    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x08, TraktorS3.bind(fxFn.fxSelectHandler, this));
-    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x08, 0x10, TraktorS3.bind(fxFn.fxSelectHandler, this));
-    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x08, 0x20, TraktorS3.bind(fxFn.fxSelectHandler, this));
-    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, TraktorS3.bind(fxFn.fxSelectHandler, this));
-    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx0", 0x08, 0x80, TraktorS3.bind(fxFn.fxSelectHandler, this));
+    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x08, fxFn.fxSelectHandler.bind(this));
+    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x08, 0x10, fxFn.fxSelectHandler.bind(this));
+    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x08, 0x20, fxFn.fxSelectHandler.bind(this));
+    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, fxFn.fxSelectHandler.bind(this));
+    this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx0", 0x08, 0x80, fxFn.fxSelectHandler.bind(this));
 
-    this.controller.registerInputButton(messageShort, "[Channel3]", "!fxEnabled", 0x07, 0x08, TraktorS3.bind(fxFn.fxEnableHandler, this));
-    this.controller.registerInputButton(messageShort, "[Channel1]", "!fxEnabled", 0x07, 0x10, TraktorS3.bind(fxFn.fxEnableHandler, this));
-    this.controller.registerInputButton(messageShort, "[Channel2]", "!fxEnabled", 0x07, 0x20, TraktorS3.bind(fxFn.fxEnableHandler, this));
-    this.controller.registerInputButton(messageShort, "[Channel4]", "!fxEnabled", 0x07, 0x40, TraktorS3.bind(fxFn.fxEnableHandler, this));
+    this.controller.registerInputButton(messageShort, "[Channel3]", "!fxEnabled", 0x07, 0x08, fxFn.fxEnableHandler.bind(this));
+    this.controller.registerInputButton(messageShort, "[Channel1]", "!fxEnabled", 0x07, 0x10, fxFn.fxEnableHandler.bind(this));
+    this.controller.registerInputButton(messageShort, "[Channel2]", "!fxEnabled", 0x07, 0x20, fxFn.fxEnableHandler.bind(this));
+    this.controller.registerInputButton(messageShort, "[Channel4]", "!fxEnabled", 0x07, 0x40, fxFn.fxEnableHandler.bind(this));
 
-    this.controller.registerInputScaler(messageLong, "[Channel1]", "!fxKnob", 0x39, 0xFFFF, TraktorS3.bind(fxFn.fxKnobHandler, this));
-    this.controller.registerInputScaler(messageLong, "[Channel2]", "!fxKnob", 0x3B, 0xFFFF, TraktorS3.bind(fxFn.fxKnobHandler, this));
-    this.controller.registerInputScaler(messageLong, "[Channel3]", "!fxKnob", 0x37, 0xFFFF, TraktorS3.bind(fxFn.fxKnobHandler, this));
-    this.controller.registerInputScaler(messageLong, "[Channel4]", "!fxKnob", 0x3D, 0xFFFF, TraktorS3.bind(fxFn.fxKnobHandler, this));
+    this.controller.registerInputScaler(messageLong, "[Channel1]", "!fxKnob", 0x39, 0xFFFF, fxFn.fxKnobHandler.bind(this));
+    this.controller.registerInputScaler(messageLong, "[Channel2]", "!fxKnob", 0x3B, 0xFFFF, fxFn.fxKnobHandler.bind(this));
+    this.controller.registerInputScaler(messageLong, "[Channel3]", "!fxKnob", 0x37, 0xFFFF, fxFn.fxKnobHandler.bind(this));
+    this.controller.registerInputScaler(messageLong, "[Channel4]", "!fxKnob", 0x3D, 0xFFFF, fxFn.fxKnobHandler.bind(this));
 };
 
 TraktorS3.FXControl.prototype.channelToIndex = function(group) {
@@ -1676,19 +1669,19 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
         deck.registerInputs(messageShort, messageLong);
     }
 
-    this.registerInputButton(messageShort, "[Channel1]", "!switchDeck", 0x02, 0x02, TraktorS3.bind(TraktorS3.Controller.prototype.deckSwitchHandler, this));
-    this.registerInputButton(messageShort, "[Channel2]", "!switchDeck", 0x05, 0x04, TraktorS3.bind(TraktorS3.Controller.prototype.deckSwitchHandler, this));
-    this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, TraktorS3.bind(TraktorS3.Controller.prototype.deckSwitchHandler, this));
-    this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, TraktorS3.bind(TraktorS3.Controller.prototype.deckSwitchHandler, this));
+    this.registerInputButton(messageShort, "[Channel1]", "!switchDeck", 0x02, 0x02, TraktorS3.Controller.prototype.deckSwitchHandler.bind(this));
+    this.registerInputButton(messageShort, "[Channel2]", "!switchDeck", 0x05, 0x04, TraktorS3.Controller.prototype.deckSwitchHandler.bind(this));
+    this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, TraktorS3.Controller.prototype.deckSwitchHandler.bind(this));
+    this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, TraktorS3.Controller.prototype.deckSwitchHandler.bind(this));
 
     // Headphone buttons
-    this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x08, 0x01, TraktorS3.bind(TraktorS3.Controller.prototype.headphoneHandler, this));
-    this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x08, 0x02, TraktorS3.bind(TraktorS3.Controller.prototype.headphoneHandler, this));
-    this.registerInputButton(messageShort, "[Channel3]", "pfl", 0x07, 0x80, TraktorS3.bind(TraktorS3.Controller.prototype.headphoneHandler, this));
-    this.registerInputButton(messageShort, "[Channel4]", "pfl", 0x08, 0x04, TraktorS3.bind(TraktorS3.Controller.prototype.headphoneHandler, this));
+    this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x08, 0x01, TraktorS3.Controller.prototype.headphoneHandler.bind(this));
+    this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x08, 0x02, TraktorS3.Controller.prototype.headphoneHandler.bind(this));
+    this.registerInputButton(messageShort, "[Channel3]", "pfl", 0x07, 0x80, TraktorS3.Controller.prototype.headphoneHandler.bind(this));
+    this.registerInputButton(messageShort, "[Channel4]", "pfl", 0x08, 0x04, TraktorS3.Controller.prototype.headphoneHandler.bind(this));
 
     // EXT Button
-    this.registerInputButton(messageShort, "[Master]", "!extButton", 0x07, 0x04, TraktorS3.bind(TraktorS3.Controller.prototype.extModeHandler, this));
+    this.registerInputButton(messageShort, "[Master]", "!extButton", 0x07, 0x04, TraktorS3.Controller.prototype.extModeHandler.bind(this));
 
     this.fxController.registerInputs(messageShort, messageLong);
 
@@ -1721,7 +1714,7 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel4]_Effect1]", "parameter1", 0x35, 0xFFFF, this.parameterHandler);
 
     this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x0B, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[Master]", "gain", 0x17, 0xFFFF, TraktorS3.bind(TraktorS3.Controller.prototype.masterGainHandler, this));
+    this.registerInputScaler(messageLong, "[Master]", "gain", 0x17, 0xFFFF, TraktorS3.Controller.prototype.masterGainHandler.bind(this));
     this.registerInputScaler(messageLong, "[Master]", "headMix", 0x1D, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Master]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
 
@@ -1730,11 +1723,11 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
     for (ch in this.Channels) {
         const chanob = this.Channels[ch];
         engine.makeConnection(ch, "playposition",
-            TraktorS3.bind(TraktorS3.Channel.prototype.playpositionChanged, chanob));
+            TraktorS3.Channel.prototype.playpositionChanged.bind(chanob));
         engine.connectControl(ch, "track_loaded",
-            TraktorS3.bind(TraktorS3.Channel.prototype.trackLoadedHandler, chanob));
+            TraktorS3.Channel.prototype.trackLoadedHandler.bind(chanob));
         engine.connectControl(ch, "end_of_track",
-            TraktorS3.bind(TraktorS3.Channel.prototype.endOfTrackHandler, chanob));
+            TraktorS3.Channel.prototype.endOfTrackHandler.bind(chanob));
     }
 
     // Query the current values from the controller and set them. The packet
@@ -1981,19 +1974,19 @@ TraktorS3.Controller.prototype.registerOutputPackets = function() {
 
     engine.connectControl("[Microphone]", "pfl", this.pflOutput);
 
-    engine.connectControl("[Master]", "maximize_library", TraktorS3.bind(TraktorS3.Controller.prototype.maximizeLibraryOutput, this));
+    engine.connectControl("[Master]", "maximize_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
     // Master VuMeters
-    this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
-    this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
-    this.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS3.bind(TraktorS3.Controller.prototype.peakOutput, this));
-    this.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS3.bind(TraktorS3.Controller.prototype.peakOutput, this));
-    this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", TraktorS3.bind(TraktorS3.Controller.prototype.guiTickHandler, this));
+    this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
+    this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
+    this.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS3.Controller.prototype.peakOutput.bind(this));
+    this.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS3.Controller.prototype.peakOutput.bind(this));
+    this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
 
     // Sampler callbacks
     for (i = 1; i <= 8; ++i) {
-        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", TraktorS3.bind(TraktorS3.Controller.prototype.samplesOutput, this)));
-        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play_indicator", TraktorS3.bind(TraktorS3.Controller.prototype.samplesOutput, this)));
+        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", TraktorS3.Controller.prototype.samplesOutput.bind(this)));
+        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play_indicator", TraktorS3.Controller.prototype.samplesOutput.bind(this)));
     }
 };
 
