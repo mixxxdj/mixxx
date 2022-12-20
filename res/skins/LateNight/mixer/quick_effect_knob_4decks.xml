@@ -111,7 +111,11 @@
 
             </Children>
             <Connection>
-              <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
+              <ConfigKey><Variable name="QuickEffectGroup"/>,loaded_chain_preset</ConfigKey>
+              <Transform>
+                <IsEqual>0</IsEqual>
+                <Not/>
+              </Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Kill button + knob -->
