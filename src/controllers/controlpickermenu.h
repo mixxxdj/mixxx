@@ -88,6 +88,10 @@ class ControlPickerMenu : public QMenu {
             bool microphoneControls,
             bool auxControls,
             bool addReset = false);
+    void addLibraryControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu);
 
     int addAvailableControl(const ConfigKey& key, const QString& title, const QString& description);
 
