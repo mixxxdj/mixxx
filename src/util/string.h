@@ -85,7 +85,7 @@ inline QString convertWCStringToQString(
         DEBUG_ASSERT(len == 0);
         return QString();
     }
-    DEBUG_ASSERT(wcsnlen(wcs, len) == len);
+    DEBUG_ASSERT(wcsnlen_s(wcs, len) == len);
     const auto ilen = static_cast<int>(len);
     DEBUG_ASSERT(ilen >= 0); // unsigned -> signed
     switch (sizeof(wchar_t)) {
