@@ -1951,7 +1951,8 @@ if(ENGINEPRIME)
   set(LIBDJINTEROP_VERSION 0.16.0)
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
-  find_package(DjInterop ${LIBDJINTEROP_VERSION})
+  # Note: Version 0.17.0 is not yet compatible
+  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
     message(STATUS "Using existing system installation of libdjinterop")
