@@ -109,6 +109,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             &QAction::triggered,
             this,
             &AutoDJFeature::slotRemoveCrateFromAutoDj);
+
+    updateTitle();
 }
 
 AutoDJFeature::~AutoDJFeature() {
@@ -117,6 +119,10 @@ AutoDJFeature::~AutoDJFeature() {
 }
 
 QVariant AutoDJFeature::title() {
+    return m_title;
+}
+
+void AutoDJFeature::updateTitle() {
     QString title = tr("Auto DJ");
 
     PlaylistSummary summary;
@@ -127,7 +133,8 @@ QVariant AutoDJFeature::title() {
                                      summary.getTrackDurationText()));
     }
 
-    return title;
+    m_title = title;
+    emit featureIsLoading(this, false);
 }
 
 void AutoDJFeature::bindLibraryWidget(
@@ -343,6 +350,6 @@ void AutoDJFeature::slotPlaylistsChanged(const QSet<int>& playlistIds) {
     if (playlistIds.contains(m_iAutoDJPlaylistId)) {
         // If AutoDJ playlist was changed, notify that feature title has changed
         // since it contains duration of the AutoDJ playlist.
-        emit featureIsLoading(this, false);
+        updateTitle();
     }
 }

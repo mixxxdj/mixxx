@@ -84,6 +84,10 @@ class AutoDJFeature : public LibraryFeature {
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
+    QString m_title;
+
+    void updateTitle();
+
   private slots:
     // Add a crate to the auto-DJ queue.
     void slotAddCrateToAutoDj(int iCrateId);
