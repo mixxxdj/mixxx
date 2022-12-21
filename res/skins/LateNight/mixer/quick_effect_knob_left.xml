@@ -34,7 +34,7 @@
                   <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                  <ConfigKey><Variable name="QuickEffectGroup"/>,enabled</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -82,7 +82,7 @@
                   <Number>1</Number>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                  <ConfigKey><Variable name="QuickEffectGroup"/>,enabled</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
@@ -98,7 +98,11 @@
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
+      <ConfigKey><Variable name="QuickEffectGroup"/>,loaded_chain_preset</ConfigKey>
+      <Transform>
+        <IsEqual>0</IsEqual>
+        <Not/>
+      </Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
