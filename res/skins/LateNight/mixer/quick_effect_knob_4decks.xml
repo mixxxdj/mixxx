@@ -1,7 +1,6 @@
 <!DOCTYPE template>
 <Template>
   <SetVariable name="QuickEffectGroup">[QuickEffectRack1_<Variable name="Group"/>]</SetVariable>
-  <SetVariable name="QuickEffect">[QuickEffectRack1_<Variable name="Group"/>_Effect1]</SetVariable>
 
   <WidgetGroup>
     <ObjectName>AlignRight</ObjectName>
