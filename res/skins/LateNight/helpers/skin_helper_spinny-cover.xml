@@ -21,7 +21,7 @@ Controls:
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>2f,0f</Size>
+        <Size>3f,0f</Size>
         <Children>
 
           <WidgetGroup>
@@ -46,7 +46,7 @@ Controls:
             <Children>
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MaximumSize>0,0</MaximumSize>
+                <MaximumSize>1,0</MaximumSize>
                 <Children>
                   <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
@@ -55,8 +55,7 @@ Controls:
 
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>1,0</MinimumSize>
-                <MaximumSize>2,0</MaximumSize>
+                <MinimumSize>2,0</MinimumSize>
                 <Children>
                   <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
@@ -97,7 +96,6 @@ Controls:
               <!-- Hide small and big spinny/cover container -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>0,0</MinimumSize>
                 <MaximumSize>1,0</MaximumSize>
                 <Children>
                   <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
@@ -123,10 +121,9 @@ Controls:
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
                 <MinimumSize>3,0</MinimumSize>
-                <MaximumSize>3,0</MaximumSize>
                 <Children>
                   <WidgetGroup trigger="[LateNight],show_big_spinny_cover"><Size>0f,0f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[LateNight],show_small_spinny_cover"><Size>10,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_small_spinny_cover"><Size>0f,0f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>
 
