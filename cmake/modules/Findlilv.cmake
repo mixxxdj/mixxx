@@ -63,12 +63,15 @@ find_library(lilv_LIBRARY
 )
 mark_as_advanced(lilv_LIBRARY)
 
+if(DEFINED PC_lilv_VERSION AND NOT PC_lilv_VERSION STREQUAL "")
+  set(lilv_VERSION "${PC_lilv_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   lilv
-  DEFAULT_MSG
-  lilv_LIBRARY
-  lilv_INCLUDE_DIR
+  REQUIRED_VARS lilv_LIBRARY lilv_INCLUDE_DIR
+  VERSION_VAR lilv_VERSION
 )
 
 if(lilv_FOUND)
