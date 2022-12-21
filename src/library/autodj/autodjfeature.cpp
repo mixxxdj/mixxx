@@ -122,7 +122,9 @@ QVariant AutoDJFeature::title() {
     PlaylistSummary summary;
     if (m_pTrackCollection->playlists().readAutoDJPlaylistSummary(&summary) &&
             summary.getTrackCount() > 0) {
-        title.append(QString(" (%1)").arg(summary.getTrackDurationText()));
+        title.append(QString(" (%1) %2")
+                             .arg(QString::number(summary.getTrackCount()),
+                                     summary.getTrackDurationText()));
     }
 
     return title;
