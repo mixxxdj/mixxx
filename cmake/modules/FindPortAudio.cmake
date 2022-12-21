@@ -67,12 +67,15 @@ find_library(PortAudio_LIBRARY
 )
 mark_as_advanced(PortAudio_LIBRARY)
 
+if(DEFINED PC_PortAudio_VERSION AND NOT PC_PortAudio_VERSION STREQUAL "")
+  set(PortAudio_VERSION "${PC_PortAudio_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   PortAudio
-  DEFAULT_MSG
-  PortAudio_LIBRARY
-  PortAudio_INCLUDE_DIR
+  REQUIRED_VARS PortAudio_LIBRARY PortAudio_INCLUDE_DIR
+  VERSION_VAR PortAudio_VERSION
 )
 
 if(PortAudio_FOUND)
