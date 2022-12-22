@@ -160,7 +160,7 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
 
 void EngineBufferScaleRubberBand::deinterleaveAndProcess(
         const CSAMPLE* pBuffer, SINT frames, bool flush) {
-    DEBUG_ASSERT(frames <= static_cast<ptrdiff_t>(m_buffers[0].size()));
+    DEBUG_ASSERT(frames <= static_cast<SINT>(m_buffers[0].size()));
 
     SampleUtil::deinterleaveBuffer(
             m_buffers[0].data(), m_buffers[1].data(), pBuffer, frames);
