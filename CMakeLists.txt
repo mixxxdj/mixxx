@@ -1860,6 +1860,11 @@ endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
 
+# Create a list from CMAKE_PREFIX_PATH with an alternate separator
+# This is required to forward CMAKE_PREFIX_PATH in ExternalProject_Add()
+# using the LIST_SEPARATOR option
+string(REPLACE ";" "|" CMAKE_PREFIX_PATH_ALT_SEP "${CMAKE_PREFIX_PATH}")
+
 # KeyFinder
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
@@ -1886,12 +1891,14 @@ if(KEYFINDER)
         -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-        -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+        -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH_ALT_SEP}
+        -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
+      LIST_SEPARATOR |
     )
 
     # This is a bit of a hack to make sure that the include directory actually
@@ -1999,12 +2006,14 @@ else()
       -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-      -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
+      -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH_ALT_SEP}
+      -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
       -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
       -DBUILD_TESTING=OFF
     BUILD_COMMAND ${CMAKE_COMMAND} --build .
     BUILD_BYPRODUCTS <INSTALL_DIR>/${PortAudio_LIBRARIES}
     EXCLUDE_FROM_ALL TRUE
+    LIST_SEPARATOR |
   )
   add_dependencies(mixxx-lib portaudio)
   target_link_libraries(mixxx-lib PRIVATE
