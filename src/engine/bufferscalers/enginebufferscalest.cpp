@@ -115,6 +115,7 @@ void EngineBufferScaleST::clear() {
     if (SoundTouch::getVersionId() < 20302) {
         DEBUG_ASSERT(SoundTouch::getVersionId() >= 20101);
         // from SoundTouch 2.3.0 the initial offset is corrected internally
+        m_effectiveRate = m_dBaseRate * m_dTempoRatio;
         SampleUtil::clear(m_bufferBack.data(), m_bufferBack.size());
         m_pSoundTouch->putSamples(m_bufferBack.data(), kSeekOffsetFramesV20101);
     }
@@ -130,8 +131,7 @@ double EngineBufferScaleST::scaleBuffer(
         return 0.0;
     }
 
-    SINT total_received_frames = 0;
-
+    double readFramesProcessed = 0;
     SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
     bool last_read_failed = false;
@@ -140,14 +140,16 @@ double EngineBufferScaleST::scaleBuffer(
                 read, remaining_frames);
         DEBUG_ASSERT(remaining_frames >= received_frames);
         remaining_frames -= received_frames;
-        total_received_frames += received_frames;
+        readFramesProcessed += m_effectiveRate * received_frames;
         read += getOutputSignal().frames2samples(received_frames);
 
         if (remaining_frames > 0) {
+            // The requested setting becomes effective after all previous frames have been processed
+            m_effectiveRate = m_dBaseRate * m_dTempoRatio;
             SINT iAvailSamples = m_pReadAheadManager->getNextSamples(
                     // The value doesn't matter here. All that matters is we
                     // are going forward or backward.
-                    (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
+                    (m_bBackwards ? -1.0 : 1.0) * m_effectiveRate,
                     m_bufferBack.data(),
                     m_bufferBack.size());
             SINT iAvailFrames = getOutputSignal().samples2frames(iAvailSamples);
@@ -165,13 +167,8 @@ double EngineBufferScaleST::scaleBuffer(
         }
     }
 
-    // framesRead is interpreted as the total number of virtual sample frames
+    // readFramesProcessed is interpreted as the total number of frames
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
-    // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
-    // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
-    // (*m_dPitchAdjust) so these two cancel out.
-    double framesRead = m_dBaseRate * m_dTempoRatio * total_received_frames;
-
-    return framesRead;
+    return readFramesProcessed;
 }
