@@ -291,7 +291,9 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
                 if (m_bufferIntSize == 0) {
                     if (++read_failed_count > 1) {
-                        break;
+                        DEBUG_ASSERT(!"getNextSamples must never fail");
+                        SampleUtil::clear(m_bufferInt, samples_to_read);
+                        m_bufferIntSize = getOutputSignal().samples2frames(samples_to_read);
                     } else {
                         continue;
                     }
