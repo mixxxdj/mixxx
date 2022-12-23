@@ -154,8 +154,12 @@ double EngineBufferScaleST::scaleBuffer(
                 m_pSoundTouch->putSamples(buffer_back.data(), iAvailFrames);
             } else {
                 if (last_read_failed) {
-                    m_pSoundTouch->flush();
-                    break; // exit loop after failure
+                    DEBUG_ASSERT(!"getNextSamples must never fail");
+                    // Add silence that allows to Flush the last samples out of Soundtouch
+                    // m_pSoundTouch->flush(); must not be used, because it allocates a
+                    // temporary buffer in the heap which maybe locking
+                    SampleUtil::clear(m_bufferBack.data(), m_bufferBack.size());
+                    m_pSoundTouch->putSamples(m_bufferBack.data(), m_bufferBack.size());
                 }
                 last_read_failed = true;
             }
