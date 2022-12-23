@@ -17,19 +17,23 @@ using namespace soundtouch;
 namespace {
 
 // Due to filtering and oversampling, SoundTouch is some samples behind.
-// The value below was experimental identified using a saw signal and SoundTouch 1.8
-// at a speed of 1.0
-// 0.918 (upscaling 44.1 kHz to 48 kHz) will produce an additional offset of 3 Frames
-// 0.459 (upscaling 44.1 kHz to 96 kHz) will produce an additional offset of 18 Frames
-// (Rubberband does not suffer this issue)
-const SINT kSeekOffsetFrames = 519;
+// The value below was experimental identified using a saw signal and SoundTouch 2.1.1
+constexpr SINT kSeekOffsetFramesV20101 = 429;
+
+// From V 2.3.0 Soundtouch has no initial offset at unity, but it is to early with
+// lowered pitch and to early with raised pitch ~+-2000 farmes = 50 ms.
+// TODO() Compensate that. This is probably cause by the delayed adoption of pitch changes due
+// to the SoundTouch chunk size.
+
+constexpr SINT kBackBufferSize = 1024;
 
 }  // namespace
 
-EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
-    : m_pReadAheadManager(pReadAheadManager),
-      m_pSoundTouch(std::make_unique<soundtouch::SoundTouch>()),
-      m_bBackwards(false) {
+EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager* pReadAheadManager)
+        : m_pReadAheadManager(pReadAheadManager),
+          m_pSoundTouch(std::make_unique<soundtouch::SoundTouch>()),
+          m_bufferBack(kBackBufferSize),
+          m_bBackwards(false) {
     m_pSoundTouch->setChannels(getOutputSignal().getChannelCount());
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
@@ -37,7 +41,6 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     // Initialize the internal buffers to prevent re-allocations
     // in the real-time thread.
     onSampleRateChanged();
-
 }
 
 EngineBufferScaleST::~EngineBufferScaleST() {
@@ -90,31 +93,31 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
 }
 
 void EngineBufferScaleST::onSampleRateChanged() {
-    buffer_back.clear();
+    m_bufferBack.clear();
     if (!getOutputSignal().isValid()) {
         return;
     }
     m_pSoundTouch->setSampleRate(getOutputSignal().getSampleRate());
-    const auto bufferSize = getOutputSignal().frames2samples(kSeekOffsetFrames);
-    if (bufferSize > buffer_back.size()) {
-        // grow buffer
-        buffer_back = mixxx::SampleBuffer(bufferSize);
-    }
+
     // Setting the tempo to a very low value will force SoundTouch
     // to preallocate buffers large enough to (almost certainly)
     // avoid memory reallocations during playback.
     m_pSoundTouch->setTempo(0.1);
-    m_pSoundTouch->putSamples(buffer_back.data(), kSeekOffsetFrames);
-    m_pSoundTouch->clear();
+    clear();
     m_pSoundTouch->setTempo(m_dTempoRatio);
+    clear();
 }
 
 void EngineBufferScaleST::clear() {
     m_pSoundTouch->clear();
 
     // compensate seek offset for a rate of 1.0
-    SampleUtil::clear(buffer_back.data(), buffer_back.size());
-    m_pSoundTouch->putSamples(buffer_back.data(), kSeekOffsetFrames);
+    if (SoundTouch::getVersionId() < 20302) {
+        DEBUG_ASSERT(SoundTouch::getVersionId() >= 20101);
+        // from SoundTouch 2.3.0 the initial offset is corrected internally
+        SampleUtil::clear(m_bufferBack.data(), m_bufferBack.size());
+        m_pSoundTouch->putSamples(m_bufferBack.data(), kSeekOffsetFramesV20101);
+    }
 }
 
 double EngineBufferScaleST::scaleBuffer(
@@ -142,16 +145,16 @@ double EngineBufferScaleST::scaleBuffer(
 
         if (remaining_frames > 0) {
             SINT iAvailSamples = m_pReadAheadManager->getNextSamples(
-                        // The value doesn't matter here. All that matters is we
-                        // are going forward or backward.
-                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
-                        buffer_back.data(),
-                        buffer_back.size());
+                    // The value doesn't matter here. All that matters is we
+                    // are going forward or backward.
+                    (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
+                    m_bufferBack.data(),
+                    m_bufferBack.size());
             SINT iAvailFrames = getOutputSignal().samples2frames(iAvailSamples);
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
-                m_pSoundTouch->putSamples(buffer_back.data(), iAvailFrames);
+                m_pSoundTouch->putSamples(m_bufferBack.data(), iAvailFrames);
             } else {
                 if (last_read_failed) {
                     m_pSoundTouch->flush();
