@@ -75,7 +75,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     }
 
     // Sanity checks.
-    if (samples_from_reader < 0) {
+    VERIFY_OR_DEBUG_ASSERT(samples_from_reader >= 0) {
         qDebug() << "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
         return 0;
     }
@@ -152,12 +152,10 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         }
 
         // do crossfade from the current buffer into the new loop beginning
-        if (samples_from_reader != 0) { // avoid division by zero
-            SampleUtil::linearCrossfadeBuffersOut(
-                    pOutput,
-                    m_pCrossFadeBuffer,
-                    samples_from_reader);
-        }
+        SampleUtil::linearCrossfadeBuffersOut(
+                pOutput,
+                m_pCrossFadeBuffer,
+                samples_from_reader);
     }
 
     //qDebug() << "read" << m_currentPosition << samples_read;
