@@ -144,13 +144,15 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
 }
 
 void EngineBufferScaleRubberBand::deinterleaveAndProcess(
-        const CSAMPLE* pBuffer, SINT frames, bool flush) {
-
+        const CSAMPLE* pBuffer,
+        SINT frames) {
     SampleUtil::deinterleaveBuffer(
-            m_retrieve_buffer[0], m_retrieve_buffer[1], pBuffer, frames);
+            m_retrieve_buffer[0],
+            m_retrieve_buffer[1],
+            pBuffer,
+            frames);
 
-    m_pRubberBand->process((const float* const*)m_retrieve_buffer,
-                           frames, flush);
+    m_pRubberBand->process((const float* const*)m_retrieve_buffer, frames, false);
 }
 
 double EngineBufferScaleRubberBand::scaleBuffer(
@@ -168,7 +170,6 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
     bool last_read_failed = false;
-    bool break_out_after_retrieve_and_reset_rubberband = false;
     while (remaining_frames > 0) {
         // ReadAheadManager will eventually read the requested frames with
         // enough calls to retrieveAndDeinterleave because CachingReader returns
@@ -179,14 +180,6 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += getOutputSignal().frames2samples(received_frames);
-
-        if (break_out_after_retrieve_and_reset_rubberband) {
-            //qDebug() << "break_out_after_retrieve_and_reset_rubberband";
-            // If we break out early then we have flushed RubberBand and need to
-            // reset it.
-            m_pRubberBand->reset();
-            break;
-        }
 
         size_t iLenFramesRequired = m_pRubberBand->getSamplesRequired();
         if (iLenFramesRequired == 0) {
@@ -213,14 +206,17 @@ double EngineBufferScaleRubberBand::scaleBuffer(
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
-                deinterleaveAndProcess(m_buffer_back, iAvailFrames, false);
+                deinterleaveAndProcess(m_buffer_back, iAvailFrames);
             } else {
                 if (last_read_failed) {
+                    DEBUG_ASSERT(!"getNextSamples must never fail");
                     // Flush and break out after the next retrieval. If we are
                     // at EOF this serves to get the last samples out of
                     // RubberBand.
-                    deinterleaveAndProcess(m_buffer_back, 0, true);
-                    break_out_after_retrieve_and_reset_rubberband = true;
+                    SampleUtil::clear(
+                            m_buffer_back,
+                            getOutputSignal().frames2samples(iLenFramesRequired));
+                    deinterleaveAndProcess(m_buffer_back, iLenFramesRequired);
                 }
                 last_read_failed = true;
             }
