@@ -111,6 +111,8 @@ TraktorS3.DefaultBeatLoopLength = null; // 32
 TraktorS3.DefaultSyncEnabled = null; // true
 TraktorS3.DefaultQuantizeEnabled = null; // true
 TraktorS3.DefaultKeylockEnabled = null; // true
+// -1 for left, 0 for center/not assigned, 1 for right
+TraktorS3.DefaultCrossfaderAssignments = [null, null, null, null]; // [0, 0, 0, 0]
 
 // Set to true to output debug messages and debug light outputs.
 TraktorS3.DebugMode = false;
@@ -1631,6 +1633,14 @@ TraktorS3.Channel = class {
         }
         if (TraktorS3.DefaultKeylockEnabled !== null) {
             engine.setValue(group, "keylock", TraktorS3.DefaultKeylockEnabled);
+        }
+        // The visual order of the channels in Mixxx is 4, 2, 1, 3, but we want
+        // the crossfader assignments array to match the visual layout
+        const visualChannelIndex = {3: 0, 1: 1, 2: 2, 4: 3}[this.groupNumber];
+        if (TraktorS3.DefaultCrossfaderAssignments[visualChannelIndex] !== null) {
+            // This goes 0-2 for left, right, and center, but having the values
+            // in this script's config be -1, 0, and 1 makes much more sense
+            engine.setValue(group, "orientation", TraktorS3.DefaultCrossfaderAssignments[visualChannelIndex] + 1);
         }
     }
 
