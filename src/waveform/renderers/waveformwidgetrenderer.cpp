@@ -47,7 +47,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_pGainControlObject(nullptr),
           m_gain(1.0),
           m_pTrackSamplesControlObject(nullptr),
-          m_trackSamples(0.0),
+          m_trackSamples(0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
           m_playPos(-1) {
@@ -185,7 +185,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     // not ready to display need to wait until track initialization is done
     // draw only first is stack (background)
     int stackSize = m_rendererStack.size();
-    if (m_trackSamples <= 0.0 || m_playPos == -1) {
+    if (m_trackSamples <= 0 || m_playPos == -1) {
         if (stackSize) {
             m_rendererStack.at(0)->draw(painter, event);
         }
@@ -352,7 +352,7 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;
     //used to postpone first display until track sample is actually available
-    m_trackSamples = -1.0;
+    m_trackSamples = -1;
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->onSetTrack();
