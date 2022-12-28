@@ -170,7 +170,6 @@ class WaveformWidgetRenderer {
     double m_zoomFactor;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
-    double m_audioVisualRatio;
 
     int m_alphaBeatGrid;
 

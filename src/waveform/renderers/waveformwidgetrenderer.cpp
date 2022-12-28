@@ -36,7 +36,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_zoomFactor(1.0),
           m_visualSamplePerPixel(1.0),
           m_audioSamplePerPixel(1.0),
-          m_audioVisualRatio(1.0),
           m_alphaBeatGrid(90),
           // Really create some to manage those;
           m_visualPlayPosition(nullptr),
@@ -128,11 +127,9 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     if (pTrack) {
         ConstWaveformPointer pWaveform = pTrack->getWaveform();
         if (pWaveform) {
-            m_audioVisualRatio = pWaveform->getAudioVisualRatio();
+            m_audioSamplePerPixel = m_visualSamplePerPixel * pWaveform->getAudioVisualRatio();
         }
     }
-
-    m_audioSamplePerPixel = m_visualSamplePerPixel * m_audioVisualRatio;
 
     double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // truePlayPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
