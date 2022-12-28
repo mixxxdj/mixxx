@@ -32,17 +32,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    ConstWaveformPointer waveform = pTrack->getWaveform();
-    if (waveform.isNull()) {
+    ConstWaveformPointer pWaveform = pTrack->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
         return;
     }

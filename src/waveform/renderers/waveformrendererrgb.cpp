@@ -22,22 +22,22 @@ void WaveformRendererRGB::onSetup(const QDomNode& /* node */) {
 
 void WaveformRendererRGB::draw(QPainter* painter,
                                           QPaintEvent* /*event*/) {
-    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
+    if (!pTrackInfo) {
         return;
     }
 
-    ConstWaveformPointer waveform = trackInfo->getWaveform();
-    if (waveform.isNull()) {
+    ConstWaveformPointer pWaveform = pTrackInfo->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
         return;
     }

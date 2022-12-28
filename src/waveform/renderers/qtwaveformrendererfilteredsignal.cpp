@@ -102,17 +102,17 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
         return 0;
     }
 
-    ConstWaveformPointer waveform = pTrack->getWaveform();
-    if (waveform.isNull()) {
+    ConstWaveformPointer pWaveform = pTrack->getWaveform();
+    if (pWaveform.isNull()) {
         return 0;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return 0;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
         return 0;
     }

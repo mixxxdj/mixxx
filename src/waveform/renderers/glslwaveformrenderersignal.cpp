@@ -79,16 +79,16 @@ bool GLSLWaveformRendererSignal::loadShaders() {
 
 bool GLSLWaveformRendererSignal::loadTexture() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    ConstWaveformPointer waveform;
+    ConstWaveformPointer pWaveform;
     int dataSize = 0;
     const WaveformData* data = nullptr;
 
     if (trackInfo) {
-        waveform = trackInfo->getWaveform();
-        if (waveform) {
-            dataSize = waveform->getDataSize();
+        pWaveform = trackInfo->getWaveform();
+        if (pWaveform) {
+            dataSize = pWaveform->getDataSize();
             if (dataSize > 1) {
-                data = waveform->data();
+                data = pWaveform->data();
             }
         }
     }
@@ -114,11 +114,11 @@ bool GLSLWaveformRendererSignal::loadTexture() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    if (waveform != nullptr && data != nullptr) {
+    if (pWaveform != nullptr && data != nullptr) {
         // Waveform ensures that getTextureSize is a multiple of
         // getTextureStride so there is no rounding here.
-        int textureWidth = waveform->getTextureStride();
-        int textureHeight = waveform->getTextureSize() / waveform->getTextureStride();
+        int textureWidth = pWaveform->getTextureStride();
+        int textureHeight = pWaveform->getTextureSize() / pWaveform->getTextureStride();
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
                      GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -261,17 +261,17 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         return;
     }
 
-    ConstWaveformPointer waveform = trackInfo->getWaveform();
-    if (waveform.isNull()) {
+    ConstWaveformPointer pWaveform = trackInfo->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    int dataSize = waveform->getDataSize();
+    int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
         return;
     }
@@ -283,7 +283,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     // NOTE(vRince): completion can change during loadTexture
     // do not remove currenCompletion temp variable !
-    const int currentCompletion = waveform->getCompletion();
+    const int currentCompletion = pWaveform->getCompletion();
     if (m_textureRenderedWaveformCompletion < currentCompletion) {
         loadTexture();
         m_textureRenderedWaveformCompletion = currentCompletion;
@@ -329,8 +329,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->setUniformValue("framebufferSize", QVector2D(
             m_framebuffer->width(), m_framebuffer->height()));
         m_frameShaderProgram->setUniformValue("waveformLength", dataSize);
-        m_frameShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
-        m_frameShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
+        m_frameShaderProgram->setUniformValue("textureSize", pWaveform->getTextureSize());
+        m_frameShaderProgram->setUniformValue("textureStride", pWaveform->getTextureStride());
 
         m_frameShaderProgram->setUniformValue("firstVisualIndex", firstVisualIndex);
         m_frameShaderProgram->setUniformValue("lastVisualIndex", lastVisualIndex);
