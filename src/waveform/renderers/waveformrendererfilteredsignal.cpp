@@ -40,6 +40,11 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         return;
     }
 
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
+        return;
+    }
+
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
@@ -47,6 +52,11 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
+        return;
+    }
+
+    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
         return;
     }
 
@@ -62,8 +72,12 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            audioVisualRatio;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /

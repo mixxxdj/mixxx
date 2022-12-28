@@ -107,6 +107,11 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
         return 0;
     }
 
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
+        return 0;
+    }
+
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return 0;
@@ -117,8 +122,17 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
         return 0;
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
+        return 0;
+    }
+
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            audioVisualRatio;
 
     m_polygon[0].clear();
     m_polygon[1].clear();

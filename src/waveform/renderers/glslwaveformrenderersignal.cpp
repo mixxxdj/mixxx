@@ -266,6 +266,11 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         return;
     }
 
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
+        return;
+    }
+
     int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
@@ -273,6 +278,11 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
+        return;
+    }
+
+    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
         return;
     }
 
@@ -294,9 +304,10 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const auto firstVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getFirstDisplayedPosition() * dataSize / 2.0);
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio / 2.0);
     const auto lastVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getLastDisplayedPosition() * dataSize / 2.0);
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples / audioVisualRatio / 2.0);
 
     // const int firstIndex = int(firstVisualIndex+0.5);
     // firstVisualIndex = firstIndex - firstIndex%2;

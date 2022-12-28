@@ -37,6 +37,11 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
+        return;
+    }
+
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
@@ -47,10 +52,15 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
+    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
+        return;
+    }
+
     auto firstVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getFirstDisplayedPosition() * dataSize);
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples / audioVisualRatio);
     auto lastVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getLastDisplayedPosition() * dataSize);
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples / audioVisualRatio);
     const auto lineWidth = static_cast<GLfloat>(
             (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.5);
 
