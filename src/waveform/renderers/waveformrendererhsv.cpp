@@ -21,14 +21,10 @@ void WaveformRendererHSV::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
-void WaveformRendererHSV::draw(QPainter* painter,
-                                          QPaintEvent* /*event*/) {
-    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
-    if (!pTrackInfo) {
-        return;
-    }
-
-    ConstWaveformPointer pWaveform = pTrackInfo->getWaveform();
+void WaveformRendererHSV::draw(
+        QPainter* painter,
+        QPaintEvent* /*event*/) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }

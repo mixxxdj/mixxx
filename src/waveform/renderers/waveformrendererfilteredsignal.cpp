@@ -30,12 +30,7 @@ void WaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
 
 void WaveformRendererFilteredSignal::draw(QPainter* painter,
                                           QPaintEvent* /*event*/) {
-    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
-    if (!pTrackInfo) {
-        return;
-    }
-
-    ConstWaveformPointer pWaveform = pTrackInfo->getWaveform();
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }

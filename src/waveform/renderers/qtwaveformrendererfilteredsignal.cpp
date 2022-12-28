@@ -97,12 +97,7 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 int QtWaveformRendererFilteredSignal::buildPolygon() {
     // We have to check the track is present because it might have been unloaded
     // between the call to draw and the call to buildPolygon
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack) {
-        return 0;
-    }
-
-    ConstWaveformPointer pWaveform = pTrack->getWaveform();
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return 0;
     }

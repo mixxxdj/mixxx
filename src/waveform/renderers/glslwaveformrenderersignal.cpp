@@ -78,18 +78,14 @@ bool GLSLWaveformRendererSignal::loadShaders() {
 }
 
 bool GLSLWaveformRendererSignal::loadTexture() {
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    ConstWaveformPointer pWaveform;
     int dataSize = 0;
     const WaveformData* data = nullptr;
 
-    if (trackInfo) {
-        pWaveform = trackInfo->getWaveform();
-        if (pWaveform) {
-            dataSize = pWaveform->getDataSize();
-            if (dataSize > 1) {
-                data = pWaveform->data();
-            }
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform) {
+        dataSize = pWaveform->getDataSize();
+        if (dataSize > 1) {
+            data = pWaveform->data();
         }
     }
 
@@ -222,7 +218,7 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 
     slotWaveformUpdated();
 
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
     }
@@ -256,12 +252,7 @@ void GLSLWaveformRendererSignal::slotWaveformUpdated() {
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
-        return;
-    }
-
-    ConstWaveformPointer pWaveform = trackInfo->getWaveform();
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }
