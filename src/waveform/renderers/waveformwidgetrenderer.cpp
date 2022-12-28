@@ -42,7 +42,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_playPosVSample(0),
           m_totalVSamples(0),
           m_pRateRatioCO(nullptr),
-          m_rateRatio(1.0),
           m_pGainControlObject(nullptr),
           m_gain(1.0),
           m_pTrackSamplesControlObject(nullptr),
@@ -110,7 +109,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     }
 
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
-    m_rateRatio = m_pRateRatioCO->get();
+    double rateRatio = m_pRateRatioCO->get();
 
     // This gain adjustment compensates for an arbitrary /2 gain chop in
     // EnginePregain. See the comment there.
@@ -120,7 +119,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     // Allow waveform to spread one visual sample across a hundred pixels
     // NOTE: The hundred pixel limit is totally arbitrary. Theoretically,
     // there should be no limit to how far the waveforms can be zoomed in.
-    double visualSamplePerPixel = m_zoomFactor * m_rateRatio / m_scaleFactor;
+    double visualSamplePerPixel = m_zoomFactor * rateRatio / m_scaleFactor;
     m_visualSamplePerPixel = math_max(0.01, visualSamplePerPixel);
 
     TrackPointer pTrack = m_pTrack;
@@ -163,12 +162,12 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         m_playPos = -1; // disable renderers
     }
 
-    //qDebug() << "WaveformWidgetRenderer::onPreRender" <<
-    //        "m_group" << m_group <<
-    //        "m_trackSamples" << m_trackSamples <<
-    //        "m_playPos" << m_playPos <<
-    //        "m_rateRatio" << m_rate <<
-    //        "m_gain" << m_gain;
+    // qDebug() << "WaveformWidgetRenderer::onPreRender" <<
+    //         "m_group" << m_group <<
+    //         "m_trackSamples" << m_trackSamples <<
+    //         "m_playPos" << m_playPos <<
+    //         "rateRatio" << rateRatio <<
+    //         "m_gain" << m_gain;
 }
 
 void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
@@ -219,7 +218,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
             QString::number(m_playPos) + " [" +
                     QString::number(m_firstDisplayedPosition) + "-" +
                     QString::number(m_lastDisplayedPosition) + "]" +
-                    QString::number(m_rate) + " | " + QString::number(m_gain) +
+                    QString::number(rateRatio) + " | " + QString::number(m_gain) +
                     " | " + QString::number(m_rateDir) + " | " +
                     QString::number(m_zoomFactor));
 
