@@ -355,6 +355,13 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     }
 }
 
+ConstWaveformPointer WaveformWidgetRenderer::getWaveform() const {
+    if (m_pTrack) {
+        return m_pTrack->getWaveform();
+    }
+    return {};
+}
+
 WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) const {
     for (auto it = m_markPositions.constBegin(); it != m_markPositions.constEnd(); ++it) {
         WaveformMarkPointer pMark = it.key();

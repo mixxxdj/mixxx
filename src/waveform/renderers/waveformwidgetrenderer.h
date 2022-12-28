@@ -11,6 +11,7 @@
 #include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
@@ -39,9 +40,13 @@ class WaveformWidgetRenderer {
     const QString& getGroup() const {
         return m_group;
     }
+
     const TrackPointer& getTrackInfo() const {
         return m_pTrack;
     }
+
+    ConstWaveformPointer getWaveform() const;
+
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
 
