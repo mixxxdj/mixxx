@@ -813,6 +813,16 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_pInputProxyModel = pInputProxyModel;
     delete m_pInputTableModel;
     m_pInputTableModel = pInputModel;
+    connect(m_ui.inputControlSearch,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgPrefController::slotInputControlSearch);
+    connect(m_ui.inputControlSearchBtn,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefController::slotInputControlSearch);
+    // Trigger search when the model was recreated after hitting Apply
+    slotInputControlSearch();
 
     // Outputs tab
     ControllerOutputMappingTableModel* pOutputModel =
@@ -837,6 +847,30 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_pOutputProxyModel = pOutputProxyModel;
     delete m_pOutputTableModel;
     m_pOutputTableModel = pOutputModel;
+    connect(m_ui.outputControlSearch,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgPrefController::slotOutputControlSearch);
+    connect(m_ui.outputControlSearchBtn,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefController::slotOutputControlSearch);
+    // Trigger search when the model was recreated after hitting Apply
+    slotOutputControlSearch();
+}
+
+void DlgPrefController::slotInputControlSearch() {
+    VERIFY_OR_DEBUG_ASSERT(m_pInputProxyModel) {
+        return;
+    }
+    m_pInputProxyModel->search(m_ui.inputControlSearch->text());
+}
+
+void DlgPrefController::slotOutputControlSearch() {
+    VERIFY_OR_DEBUG_ASSERT(m_pOutputProxyModel) {
+        return;
+    }
+    m_pOutputProxyModel->search(m_ui.outputControlSearch->text());
 }
 
 void DlgPrefController::addInputMapping() {

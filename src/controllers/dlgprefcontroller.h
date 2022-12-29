@@ -50,6 +50,8 @@ class DlgPrefController : public DlgPreferencePage {
     /// Used to selected the current mapping in the combobox and display the
     /// mapping information.
     void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
+    void slotInputControlSearch();
+    void slotOutputControlSearch();
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
     void enableWizardAndIOTabs(bool enable);
