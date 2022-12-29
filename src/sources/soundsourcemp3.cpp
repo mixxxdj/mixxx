@@ -100,32 +100,30 @@ void logFrameHeader(QDebug logger, const mad_header& madHeader) {
            << "flags:" << formatHeaderFlags(madHeader.flags);
 }
 
-inline bool isRecoverableError(const mad_stream& madStream) {
-    return MAD_RECOVERABLE(madStream.error);
+inline bool isUnrecoverableError(mad_error error) {
+    return (MAD_ERROR_NONE != error) && !MAD_RECOVERABLE(error);
 }
 
-inline bool isUnrecoverableError(const mad_stream& madStream) {
-    return (MAD_ERROR_NONE != madStream.error) && !isRecoverableError(madStream);
-}
-
-inline bool isStreamValid(const mad_stream& madStream) {
-    return !isUnrecoverableError(madStream);
+inline bool hasUnrecoverableError(const mad_stream* pMadStream) {
+    if (pMadStream) {
+        return isUnrecoverableError(pMadStream->error);
+    }
+    return true;
 }
 
 bool decodeFrameHeader(
         mad_header* pMadHeader,
         mad_stream* pMadStream,
         bool skipId3Tag) {
-    DEBUG_ASSERT(pMadStream);
-    DEBUG_ASSERT(isStreamValid(*pMadStream));
+    DEBUG_ASSERT(!hasUnrecoverableError(pMadStream));
     if (mad_header_decode(pMadHeader, pMadStream)) {
         // Something went wrong when decoding the frame header...
+        DEBUG_ASSERT(pMadStream->error != MAD_ERROR_NONE);
         if (MAD_ERROR_BUFLEN == pMadStream->error) {
             // EOF
             return false;
         }
-        if (isUnrecoverableError(*pMadStream)) {
-            DEBUG_ASSERT(!isStreamValid(*pMadStream));
+        if (isUnrecoverableError(pMadStream->error)) {
             kLogger.warning() << "Unrecoverable MP3 header decoding error:"
                               << mad_stream_errorstr(pMadStream);
             return false;
@@ -135,28 +133,26 @@ bool decodeFrameHeader(
         // for debugging purposes.
         logFrameHeader(kLogger.debug(), *pMadHeader);
 #endif
-        if (isRecoverableError(*pMadStream)) {
-            if ((MAD_ERROR_LOSTSYNC == pMadStream->error) && skipId3Tag) {
-                long tagsize = id3_tag_query(pMadStream->this_frame,
-                        pMadStream->bufend - pMadStream->this_frame);
-                if (0 < tagsize) {
-                    // Skip ID3 tag data
-                    mad_stream_skip(pMadStream, tagsize);
-                    // Return immediately to suppress lost
-                    // synchronization warnings
-                    return false;
-                }
+        if ((MAD_ERROR_LOSTSYNC == pMadStream->error) && skipId3Tag) {
+            long tagsize = id3_tag_query(pMadStream->this_frame,
+                    pMadStream->bufend - pMadStream->this_frame);
+            if (0 < tagsize) {
+                // Skip ID3 tag data
+                mad_stream_skip(pMadStream, tagsize);
+                // Return immediately to suppress lost
+                // synchronization warnings
+                return false;
             }
-            // These recoverable errors occur for many MP3 files and might
-            // worry users when logged as a warning. The issue will become
-            // obsolete once we switched to FFmpeg for MP3 decoding.
-            kLogger.info() << "Recoverable MP3 header decoding error:"
-                           << mad_stream_errorstr(pMadStream);
-            logFrameHeader(kLogger.warning(), *pMadHeader);
-            return false;
         }
+        // These recoverable errors occur for many MP3 files and might
+        // worry users when logged as a warning. The issue will become
+        // obsolete once we switched to FFmpeg for MP3 decoding.
+        kLogger.info() << "Recoverable MP3 header decoding error:"
+                       << mad_stream_errorstr(pMadStream);
+        logFrameHeader(kLogger.warning(), *pMadHeader);
+        return false;
     }
-    DEBUG_ASSERT(isStreamValid(*pMadStream));
+    DEBUG_ASSERT(pMadStream->error == MAD_ERROR_NONE);
     return true;
 }
 
@@ -250,21 +246,20 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     auto maxChannelCount = audio::ChannelCount();
     do {
         if (!decodeFrameHeader(&madHeader, &m_madStream, true)) {
-            if (isStreamValid(m_madStream)) {
-                // Skip frame
-                continue;
-            } else {
+            if (isUnrecoverableError(m_madStream.error)) {
                 // Abort decoding
                 break;
+            } else {
+                // skip frame
+                continue;
             }
         }
 
         // Grab data from madHeader
         const unsigned int madSampleRate = madHeader.samplerate;
 
-        // TODO(XXX): Replace DEBUG_ASSERT with static_assert
         // MAD must not change its enum values!
-        DEBUG_ASSERT(MAD_UNITS_8000_HZ == 8000);
+        static_assert(MAD_UNITS_8000_HZ == 8000);
         const mad_units madUnits = static_cast<mad_units>(madSampleRate);
 
         const long madFrameLength = mad_timer_count(madHeader.duration, madUnits);
@@ -466,7 +461,7 @@ void SoundSourceMp3::restartDecoding(
         mad_synth_mute(&m_madSynth);
     }
 
-    if (decodeFrameHeader(&m_madFrame.header, &m_madStream, false) && isStreamValid(m_madStream)) {
+    if (decodeFrameHeader(&m_madFrame.header, &m_madStream, false)) {
         m_curFrameIndex = seekFrame.frameIndex;
     } else {
         // Failure -> Seek to EOF
@@ -604,7 +599,6 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 // Something went wrong when decoding the frame...
                 if (MAD_ERROR_BUFLEN == m_madStream.error) {
                     // Abort when reaching the end of the stream
-                    DEBUG_ASSERT(isUnrecoverableError(m_madStream));
                     if (m_madStream.next_frame != nullptr) {
                         // Decoding of the last MP3 frame fails if it is not padded
                         // with 0 bytes. MAD requires that the last frame ends with
@@ -638,32 +632,32 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                     }
                     break;
                 }
-                if (isUnrecoverableError(m_madStream)) {
+                if (isUnrecoverableError(m_madStream.error)) {
                     kLogger.warning() << "Unrecoverable MP3 frame decoding error:"
                                       << mad_stream_errorstr(&m_madStream);
                     // Abort decoding
                     break;
                 }
-                if (isRecoverableError(m_madStream)) {
-                    if (pMadThisFrame != m_madStream.this_frame) {
-                        if (!pSampleBuffer ||
-                                (m_madStream.error == MAD_ERROR_LOSTSYNC)) {
-                            // Don't bother the user with warnings from recoverable
-                            // errors while skipping decoded samples or that even
-                            // might occur for files that are perfectly ok.
-                            if (kLogger.debugEnabled()) {
-                                kLogger.debug()
-                                        << "Recoverable MP3 frame decoding error:"
-                                        << mad_stream_errorstr(&m_madStream);
-                            }
-                        } else {
-                            kLogger.info() << "Recoverable MP3 frame decoding error:"
-                                           << mad_stream_errorstr(&m_madStream);
+                if (pMadThisFrame != m_madStream.this_frame) {
+                    if (!pSampleBuffer ||
+                            (m_madStream.error == MAD_ERROR_LOSTSYNC)) {
+                        // Don't bother the user with warnings from recoverable
+                        // errors while skipping decoded samples or that even
+                        // might occur for files that are perfectly ok.
+                        if (kLogger.debugEnabled()) {
+                            kLogger.debug()
+                                    << "Recoverable MP3 frame decoding error:"
+                                    << mad_stream_errorstr(&m_madStream);
                         }
+                    } else {
+                        kLogger.info() << "Recoverable MP3 frame decoding error:"
+                                       << mad_stream_errorstr(&m_madStream);
                     }
-                    // Continue decoding
                 }
+                // Continue decoding
             }
+            DEBUG_ASSERT(!isUnrecoverableError(m_madStream.error));
+
             if (pMadThisFrame == m_madStream.this_frame) {
                 // Retry decoding, but only once for each position to
                 // prevent infinite loops when decoding corrupt files
@@ -683,8 +677,6 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                     break;
                 }
             }
-
-            DEBUG_ASSERT(isStreamValid(m_madStream));
 
 #ifndef QT_NO_DEBUG_OUTPUT
             const auto madFrameChannelCount =
