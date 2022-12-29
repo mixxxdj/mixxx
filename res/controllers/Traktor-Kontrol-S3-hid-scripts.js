@@ -2371,12 +2371,6 @@ TraktorS3.VanillaFxControl = class {
         // when the last FX Select button is released.
         this.individualFxChainAssigned = false;
 
-        // When non-null, the channel's super knob value will be set to this
-        // value when the quick effect chain has changed. This value is stored
-        // just before changing the quick effect chain because there's no built
-        // in way to preserve the value.
-        this.oldSuperKnobValues = [null, null, null, null];
-
         // These are the colors for each FX button, with 0 being the filter
         // button
         this.fxColors = {
@@ -2413,9 +2407,8 @@ TraktorS3.VanillaFxControl = class {
         this.controller.registerInputButton(messageShort, "[Channel2]", "!fxEnabled", 0x07, 0x20, this.fxEnableHandler.bind(this));
         this.controller.registerInputButton(messageShort, "[Channel4]", "!fxEnabled", 0x07, 0x40, this.fxEnableHandler.bind(this));
 
-        // We'll restore the old super knob values here when changing quick
-        // effect chains. This also changes the lighting of the five FX Select
-        // buttons and maybe also the FX Enable buttons.
+        // This changes the lighting of the five FX Select buttons and maybe
+        // also the FX Enable buttons
         engine.connectControl("[QuickEffectRack1_[Channel1]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
         engine.connectControl("[QuickEffectRack1_[Channel2]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
         engine.connectControl("[QuickEffectRack1_[Channel3]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
@@ -2500,22 +2493,7 @@ TraktorS3.VanillaFxControl = class {
         }
     }
 
-    quickEffectChainLoadHandler(_value, group, _key) {
-        // There's no built in way to change effect chains while preserving the
-        // super knob values, so we'll do this ourselves. The old super knob
-        // value is set in `this.setQuickEffectChain()`.
-        // FIXME: There needs to be a way in Mixxx to change the quick effect
-        //        chain without changing this value. You can hear the default
-        //        value poking through when changing to the same effect.
-        const channelNumber = parseInt(group[group.length - 3]);
-        if (this.oldSuperKnobValues[channelNumber - 1] !== null) {
-            engine.softTakeover(group, "super1", false);
-            engine.setValue(group, "super1", this.oldSuperKnobValues[channelNumber - 1]);
-            engine.softTakeover(group, "super1", true);
-
-            this.oldSuperKnobValues[channelNumber - 1] = null;
-        }
-
+    quickEffectChainLoadHandler(_value, _group, _key) {
         // All of the lights should be updated at this point
         this.lightFx();
     }
@@ -2529,14 +2507,12 @@ TraktorS3.VanillaFxControl = class {
      *   fxButtonIndex 0-5 will be mapped to quick effect chain presets 1-6.
      */
     setQuickEffectChain(channel, fxButtonIndex) {
-        // We can't immediately restore this value because it may take a buffer
-        // until the effect chain is actually changed. So instead we'll store
-        // the old value, and then restore it in
-        // `this.quickEffectChainLoadHandler()`.
-        const superValue = engine.getValue(`[QuickEffectRack1_[Channel${channel}]]`, "super1");
-        this.oldSuperKnobValues[channel - 1] = superValue;
-
-        engine.setValue(`[QuickEffectRack1_[Channel${channel}]]`, "loaded_chain_preset", fxButtonIndex + 1);
+        // The normal version of this resets the super knobs to the value it had
+        // when the chain preset was saved. We need the value to stay consistent
+        // with the knob on the controller.
+        engine.setValue(`[QuickEffectRack1_[Channel${channel}]]`,
+            "loaded_chain_preset_preserving_super_knob_value",
+            fxButtonIndex + 1);
     }
 
     // Output handling
