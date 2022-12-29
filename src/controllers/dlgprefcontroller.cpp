@@ -546,6 +546,16 @@ QUrl DlgPrefController::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
+void DlgPrefController::keyPressEvent(QKeyEvent* pEvent) {
+    // Filter Return/Enter keypress in control search boxes so it's not
+    // forwarded to the DlgPreferences button box' default button (Apply)
+    if ((pEvent->key() == Qt::Key_Return || pEvent->key() == Qt::Key_Enter) &&
+            (m_ui.inputControlSearch->hasFocus() || m_ui.inputControlSearch->hasFocus())) {
+        return;
+    }
+    return QWidget::keyPressEvent(pEvent);
+}
+
 void DlgPrefController::enableWizardAndIOTabs(bool enable) {
     // We always enable the Wizard button if this is a MIDI controller so we can
     // create a new mapping from scratch with 'No Mapping'
