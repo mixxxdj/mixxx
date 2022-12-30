@@ -767,12 +767,15 @@ bool SoundSourceMp3::copyLeftoverFrame() {
         // ensure the next frame's main_data_begin pointer is always accessible, MAD
         // requires MAD_BUFFER_GUARD (currently 8) bytes to be present in the buffer past
         // the end of the current frame in order to decode the frame."
+        unsigned char* pLeftoverBuffer = &*m_leftoverBuffer.begin();
+        if (pLeftoverBuffer == m_madStream.buffer) {
+            return false;
+        }
         const SINT remainingBytes = m_madStream.bufend - m_madStream.next_frame;
         DEBUG_ASSERT(remainingBytes <= kMaxBytesPerMp3Frame); // only last MP3 frame
         const SINT leftoverBytes = remainingBytes + MAD_BUFFER_GUARD;
         if ((remainingBytes > 0) && (leftoverBytes <= SINT(m_leftoverBuffer.size()))) {
             // Copy the data of the last MP3 frame into the leftover buffer...
-            unsigned char* pLeftoverBuffer = &*m_leftoverBuffer.begin();
             std::copy(m_madStream.next_frame,
                     m_madStream.next_frame + remainingBytes,
                     pLeftoverBuffer);
