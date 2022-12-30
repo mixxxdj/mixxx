@@ -589,7 +589,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             // of mad_frame_decode() has proven to be extremely tricky.
             // Don't change anything at the following lines of code
             // unless you know what you are doing!!!
-            unsigned char const* pMadThisFrame = m_madStream.this_frame;
+
+            // In addition to the error value we verify that the stream has been advanced
+            unsigned char const* pMadNextFrame = m_madStream.next_frame;
             if (mad_frame_decode(&m_madFrame, &m_madStream)) {
                 // Something went wrong when decoding the frame...
                 if (MAD_ERROR_BUFLEN == m_madStream.error) {
@@ -633,7 +635,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                     // Abort decoding
                     break;
                 }
-                if (pMadThisFrame != m_madStream.this_frame) {
+                if (pMadNextFrame != m_madStream.next_frame) {
+                    // stream has been advanced
                     if (!pSampleBuffer ||
                             (m_madStream.error == MAD_ERROR_LOSTSYNC)) {
                         // Don't bother the user with warnings from recoverable
@@ -653,7 +656,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             }
             DEBUG_ASSERT(!isUnrecoverableError(m_madStream.error));
 
-            if (pMadThisFrame == m_madStream.this_frame) {
+            if (pMadNextFrame == m_madStream.next_frame) {
+                // stream has not been advanced
                 // Retry decoding, but only once for each position to
                 // prevent infinite loops when decoding corrupt files
                 if (retryFrameIndex != m_curFrameIndex) {
@@ -661,7 +665,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                     if (kLogger.debugEnabled()) {
                         kLogger.debug()
                                 << "Retry decoding MP3 frame @"
-                                << m_curFrameIndex;
+                                << m_curFrameIndex
+                                << "error:"
+                                << mad_stream_errorstr(&m_madStream);
                     }
                     continue;
                 } else {
