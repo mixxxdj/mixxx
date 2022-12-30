@@ -248,14 +248,22 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("rate", tr("Playback Speed"),
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     speedMenu->addSeparator();
-    addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
-                             tr("Adjust speed faster (coarse)"), speedMenu);
-    addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
-                             tr("Adjust speed faster (fine)"), speedMenu);
-    addDeckAndSamplerControl("rate_perm_down", tr("Decrease Speed"),
-                             tr("Adjust speed slower (coarse)"), speedMenu);
-    addDeckAndSamplerControl("rate_perm_down_small", tr("Increase Speed (Fine)"),
-                             tr("Adjust speed slower (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_up",
+            tr("Increase Speed"),
+            tr("Adjust speed faster (coarse)"),
+            speedMenu);
+    addDeckAndSamplerControl("rate_perm_up_small",
+            tr("Increase Speed (Fine)"),
+            tr("Adjust speed faster (fine)"),
+            speedMenu);
+    addDeckAndSamplerControl("rate_perm_down",
+            tr("Decrease Speed"),
+            tr("Adjust speed slower (coarse)"),
+            speedMenu);
+    addDeckAndSamplerControl("rate_perm_down_small",
+            tr("Decrease Speed (Fine)"),
+            tr("Adjust speed slower (fine)"),
+            speedMenu);
     speedMenu->addSeparator();
     addDeckAndSamplerControl("rate_temp_up", tr("Temporarily Increase Speed"),
                              tr("Temporarily increase speed (coarse)"), speedMenu);
