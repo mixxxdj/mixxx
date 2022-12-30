@@ -213,16 +213,14 @@ QString ControllerOutputMappingTableModel::displayString(const QModelIndex& inde
     case MIDI_COLUMN_CHANNEL:
     case MIDI_COLUMN_OPCODE:
     case MIDI_COLUMN_CONTROL: {
-        QStyledItemDelegate* del =
-                qobject_cast<QStyledItemDelegate*>(m_pTableView->itemDelegate(index));
+        QStyledItemDelegate* del = getDelegateForIndex(index);
         VERIFY_OR_DEBUG_ASSERT(del) {
             return QString();
         }
         return del->displayText(data(index, Qt::DisplayRole), QLocale());
     }
     case MIDI_COLUMN_ACTION: {
-        QStyledItemDelegate* del =
-                qobject_cast<QStyledItemDelegate*>(m_pTableView->itemDelegate(index));
+        QStyledItemDelegate* del = getDelegateForIndex(index);
         VERIFY_OR_DEBUG_ASSERT(del) {
             return QString();
         }

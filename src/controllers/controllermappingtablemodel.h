@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QAbstractItemDelegate>
 #include <QAbstractTableModel>
 #include <QHash>
 #include <QModelIndex>
 #include <QSortFilterProxyModel>
+#include <QStyledItemDelegate>
 #include <QTableView>
 #include <QVariant>
 #include <QVector>
@@ -40,6 +40,17 @@ class ControllerMappingTableModel : public QAbstractTableModel {
     // m_pMidiMapping points to the MIDI mapping. If the mapping is an HID mapping,
     // m_pHidMapping points to the HID mapping.
     virtual void onMappingLoaded() = 0;
+
+    QStyledItemDelegate* getDelegateForIndex(const QModelIndex& index) const {
+        VERIFY_OR_DEBUG_ASSERT(m_pTableView) {
+            return nullptr;
+        }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        return qobject_cast<QStyledItemDelegate*>(m_pTableView->itemDelegateForIndex(index));
+#else
+        return qobject_cast<QStyledItemDelegate*>(m_pTableView->itemDelegate(index));
+#endif
+    }
 
     QVector<QHash<int, QVariant>> m_headerInfo;
     QTableView* m_pTableView;
