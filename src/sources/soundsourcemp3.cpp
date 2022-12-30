@@ -241,6 +241,12 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     auto maxChannelCount = audio::ChannelCount();
     do {
         if (!decodeFrameHeader(&madHeader, &m_madStream, true)) {
+            if (MAD_ERROR_BUFLEN == m_madStream.error) {
+                // try again with the copy and MAD_BUFFER_GUARD bytes
+                if (copyLeftoverFrame()) {
+                    continue;
+                }
+            }
             if (isUnrecoverableError(m_madStream.error)) {
                 // Abort decoding
                 break;
@@ -308,8 +314,9 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         m_curFrameIndex += madFrameLength;
 
         DEBUG_ASSERT(m_madStream.this_frame);
-        DEBUG_ASSERT(0 <= (m_madStream.this_frame - m_pFileData));
-    } while (quint64(m_madStream.this_frame - m_pFileData) < m_fileSize);
+        DEBUG_ASSERT(0 <= (m_madStream.this_frame - m_pFileData) ||
+                m_madStream.this_frame == &*m_leftoverBuffer.begin());
+    } while (m_madStream.next_frame < m_madStream.bufend);
 
     mad_header_finish(&madHeader);
 
@@ -471,7 +478,8 @@ void SoundSourceMp3::addSeekFrame(
             (m_seekFrameList.back().frameIndex < frameIndex));
     DEBUG_ASSERT(m_seekFrameList.empty() ||
             (nullptr == pInputData) ||
-            (0 < (pInputData - m_seekFrameList.back().pInputData)));
+            (0 < (pInputData - m_seekFrameList.back().pInputData)) ||
+            pInputData == &*m_leftoverBuffer.begin());
     SeekFrameType seekFrame;
     seekFrame.pInputData = pInputData;
     seekFrame.frameIndex = frameIndex;
