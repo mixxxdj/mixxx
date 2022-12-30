@@ -618,7 +618,14 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                             // ...append the required guard bytes...
                             std::fill(pLeftoverBuffer + remainingBytes, pLeftoverBuffer + leftoverBytes, 0);
                             // ...and retry decoding.
-                            mad_stream_buffer(&m_madStream, pLeftoverBuffer, leftoverBytes);
+                            // Note: We must not use mad_stream_buffer() here,
+                            // because this will clear the bit reservoir used
+                            // for VBR
+                            m_madStream.buffer = pLeftoverBuffer;
+                            m_madStream.bufend = pLeftoverBuffer + leftoverBytes;
+                            m_madStream.this_frame = pLeftoverBuffer;
+                            m_madStream.next_frame = pLeftoverBuffer;
+                            m_madStream.sync = 1;
                             m_madStream.error = MAD_ERROR_NONE;
                             continue;
                         }
