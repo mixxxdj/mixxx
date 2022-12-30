@@ -128,11 +128,6 @@ bool decodeFrameHeader(
                               << mad_stream_errorstr(pMadStream);
             return false;
         }
-#ifndef QT_NO_DEBUG_OUTPUT
-        // Logging of MP3 frame headers should only be enabled
-        // for debugging purposes.
-        logFrameHeader(kLogger.debug(), *pMadHeader);
-#endif
         if ((MAD_ERROR_LOSTSYNC == pMadStream->error) && skipId3Tag) {
             long tagsize = id3_tag_query(pMadStream->this_frame,
                     pMadStream->bufend - pMadStream->this_frame);
@@ -149,7 +144,7 @@ bool decodeFrameHeader(
         // obsolete once we switched to FFmpeg for MP3 decoding.
         kLogger.info() << "Recoverable MP3 header decoding error:"
                        << mad_stream_errorstr(pMadStream);
-        logFrameHeader(kLogger.warning(), *pMadHeader);
+        logFrameHeader(kLogger.info(), *pMadHeader);
         return false;
     }
     DEBUG_ASSERT(pMadStream->error == MAD_ERROR_NONE);
