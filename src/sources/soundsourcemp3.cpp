@@ -596,43 +596,12 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 // Something went wrong when decoding the frame...
                 if (MAD_ERROR_BUFLEN == m_madStream.error) {
                     // Abort when reaching the end of the stream
-                    if (m_madStream.next_frame != nullptr) {
-                        // Decoding of the last MP3 frame fails if it is not padded
-                        // with 0 bytes. MAD requires that the last frame ends with
-                        // at least MAD_BUFFER_GUARD of 0 bytes.
-                        // https://www.mars.org/pipermail/mad-dev/2001-May/000262.html
-                        // "The reason for MAD_BUFFER_GUARD has to do with the way decoding is performed.
-                        // In Layer III, Huffman decoding may inadvertently read a few bytes beyond the
-                        // end of the buffer in the case of certain invalid input. This is not detected
-                        // until after the fact. To prevent this from causing problems, and also to
-                        // ensure the next frame's main_data_begin pointer is always accessible, MAD
-                        // requires MAD_BUFFER_GUARD (currently 8) bytes to be present in the buffer past
-                        // the end of the current frame in order to decode the frame."
-                        const SINT remainingBytes = m_madStream.bufend - m_madStream.next_frame;
-                        DEBUG_ASSERT(remainingBytes <= kMaxBytesPerMp3Frame); // only last MP3 frame
-                        const SINT leftoverBytes = remainingBytes + MAD_BUFFER_GUARD;
-                        if ((remainingBytes > 0) && (leftoverBytes <= SINT(m_leftoverBuffer.size()))) {
-                            // Copy the data of the last MP3 frame into the leftover buffer...
-                            unsigned char* pLeftoverBuffer = &*m_leftoverBuffer.begin();
-                            std::copy(m_madStream.next_frame, m_madStream.next_frame + remainingBytes, pLeftoverBuffer);
-                            // ...append the required guard bytes...
-                            std::fill(pLeftoverBuffer + remainingBytes, pLeftoverBuffer + leftoverBytes, 0);
-                            // ...and retry decoding.
-                            // Note: We must not use mad_stream_buffer() here,
-                            // because this will clear the bit reservoir used
-                            // for VBR
-                            m_madStream.buffer = pLeftoverBuffer;
-                            m_madStream.bufend = pLeftoverBuffer + leftoverBytes;
-                            m_madStream.this_frame = pLeftoverBuffer;
-                            m_madStream.next_frame = pLeftoverBuffer;
-                            m_madStream.sync = 1;
-                            m_madStream.error = MAD_ERROR_NONE;
-                            continue;
-                        }
-                        if (m_curFrameIndex < frameIndexMax()) {
-                            kLogger.warning() << "Failed to decode the end of the MP3 stream"
-                                              << m_curFrameIndex << "<" << frameIndexMax();
-                        }
+                    if (copyLeftoverFrame()) {
+                        continue;
+                    }
+                    if (m_curFrameIndex < frameIndexMax()) {
+                        kLogger.warning() << "Failed to decode the end of the MP3 stream"
+                                          << m_curFrameIndex << "<" << frameIndexMax();
                     }
                     break;
                 }
@@ -783,6 +752,46 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
                     std::min(writableSampleFrames.writableLength(), getSignalInfo().frames2samples(numberOfFrames))));
+}
+
+bool SoundSourceMp3::copyLeftoverFrame() {
+    if (m_madStream.next_frame != nullptr) {
+        // Decoding of the last MP3 frame fails if it is not padded
+        // with 0 bytes. MAD requires that the last frame ends with
+        // at least MAD_BUFFER_GUARD of 0 bytes.
+        // https://www.mars.org/pipermail/mad-dev/2001-May/000262.html
+        // "The reason for MAD_BUFFER_GUARD has to do with the way decoding is performed.
+        // In Layer III, Huffman decoding may inadvertently read a few bytes beyond the
+        // end of the buffer in the case of certain invalid input. This is not detected
+        // until after the fact. To prevent this from causing problems, and also to
+        // ensure the next frame's main_data_begin pointer is always accessible, MAD
+        // requires MAD_BUFFER_GUARD (currently 8) bytes to be present in the buffer past
+        // the end of the current frame in order to decode the frame."
+        const SINT remainingBytes = m_madStream.bufend - m_madStream.next_frame;
+        DEBUG_ASSERT(remainingBytes <= kMaxBytesPerMp3Frame); // only last MP3 frame
+        const SINT leftoverBytes = remainingBytes + MAD_BUFFER_GUARD;
+        if ((remainingBytes > 0) && (leftoverBytes <= SINT(m_leftoverBuffer.size()))) {
+            // Copy the data of the last MP3 frame into the leftover buffer...
+            unsigned char* pLeftoverBuffer = &*m_leftoverBuffer.begin();
+            std::copy(m_madStream.next_frame,
+                    m_madStream.next_frame + remainingBytes,
+                    pLeftoverBuffer);
+            // ...append the required guard bytes...
+            std::fill(pLeftoverBuffer + remainingBytes, pLeftoverBuffer + leftoverBytes, 0);
+            // ...and retry decoding.
+            // Note: We must not use mad_stream_buffer() here,
+            // because this will clear the bit reservoir used
+            // for VBR
+            m_madStream.buffer = pLeftoverBuffer;
+            m_madStream.bufend = pLeftoverBuffer + leftoverBytes;
+            m_madStream.this_frame = pLeftoverBuffer;
+            m_madStream.next_frame = pLeftoverBuffer;
+            m_madStream.sync = 1;
+            m_madStream.error = MAD_ERROR_NONE;
+            return true;
+        }
+    }
+    return false;
 }
 
 } // namespace mixxx
