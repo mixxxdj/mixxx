@@ -297,7 +297,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Adjust speed slower (coarse)"),
             speedMenu);
     addDeckAndSamplerControl("rate_perm_down_small",
-            tr("Increase Speed (Fine)"),
+            tr("Decrease Speed (Fine)"),
             tr("Adjust speed slower (fine)"),
             speedMenu);
     speedMenu->addSeparator();
