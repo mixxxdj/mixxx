@@ -221,8 +221,8 @@ void WTrackMenu::createMenus() {
 void WTrackMenu::createActions() {
     const auto hideRemoveKeySequence =
             // TODO(XXX): Qt6 replace enum | with QKeyCombination
-            QKeySequence(static_cast<int>(kPropertiesShortcutModifier) |
-                    kPropertiesShortcutKey);
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
 
     if (featureIsEnabled(Feature::AutoDJ)) {
         m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
