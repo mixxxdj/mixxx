@@ -46,10 +46,13 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 QImage CoverArtUtils::extractEmbeddedCover(
         mixxx::FileAccess trackFileAccess) {
     QImage image;
+    // Both resetMissingTagMetadata = false/true have the same effect
+    constexpr auto resetMissingTagMetadata = false;
     SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
             std::move(trackFileAccess),
             nullptr,
-            &image);
+            &image,
+            resetMissingTagMetadata);
     return image;
 }
 
@@ -113,13 +116,18 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         // TODO(XXX) Sort instead so that we can fall-back if one fails to
         // open?
         foreach (const QFileInfo& file, covers) {
-            const QString coverBaseName = file.baseName();
+            const QString coverBaseName = file.completeBaseName();
             if (bestType > TRACK_BASENAME &&
-                    coverBaseName.compare(trackFile.baseName(),
+                    coverBaseName.compare(trackFile.completeBaseName(),
                             Qt::CaseInsensitive) == 0) {
                 bestInfo = &file;
                 // This is the best type (TRACK_BASENAME) so we know we're done.
                 break;
+            } else if (bestType > TRACK_BASENAME &&
+                    coverBaseName.compare(trackFile.fileName(),
+                            Qt::CaseInsensitive) == 0) {
+                bestType = TRACK_BASENAME;
+                bestInfo = &file;
             } else if (bestType > ALBUM_NAME &&
                     coverBaseName.compare(albumName,
                             Qt::CaseInsensitive) == 0) {

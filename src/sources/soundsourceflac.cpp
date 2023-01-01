@@ -581,6 +581,11 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     case FLAC__STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM:
         error = "STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM";
         break;
+#if FLAC_API_VERSION_CURRENT >= 12
+    case FLAC__STREAM_DECODER_ERROR_STATUS_BAD_METADATA:
+        error = "STREAM_DECODER_ERROR_STATUS_BAD_METADATA";
+        break;
+#endif
     }
     kLogger.warning()
             << "FLAC decoding error" << error

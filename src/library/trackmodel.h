@@ -50,6 +50,7 @@ class TrackModel {
         RemovePlaylist = 1u << 14u,
         RemoveCrate = 1u << 15u,
         RemoveFromDisk = 1u << 16u,
+        Analyze = 1u << 17u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
@@ -90,6 +91,7 @@ class TrackModel {
         SampleRate = 29,
         Color = 30,
         LastPlayedAt = 31,
+        PlaylistDateTimeAdded = 32,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,

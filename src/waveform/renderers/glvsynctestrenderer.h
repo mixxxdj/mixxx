@@ -3,12 +3,11 @@
 #include "waveform/renderers/glwaveformrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveform/renderers/waveformrenderersignalbase.h"
+#include "waveform/renderers/glwaveformrenderer.h"
 
 class ControlObject;
 
-class GLVSyncTestRenderer : public WaveformRendererSignalBase,
-                            public GLWaveformRenderer {
+class GLVSyncTestRenderer : public GLWaveformRenderer {
   public:
     explicit GLVSyncTestRenderer(
             WaveformWidgetRenderer* waveformWidgetRenderer);

@@ -10,6 +10,7 @@
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 
 class ControlProxy;
+class PollingControlProxy;
 class VinylControlManager;
 
 class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
@@ -54,6 +55,6 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
 
     std::shared_ptr<VinylControlManager> m_pVCManager;
     UserSettingsPointer config;
-    QList<ControlProxy*> m_COSpeeds;
+    QList<PollingControlProxy*> m_COSpeeds;
     ControlProxy* m_pNumDecks;
 };

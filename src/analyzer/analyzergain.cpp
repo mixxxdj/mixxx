@@ -1,15 +1,17 @@
+#include "analyzer/analyzergain.h"
+
 #include <replaygain.h>
+
 #include <QtDebug>
 
-#include "analyzer/analyzergain.h"
+#include "analyzer/analyzertrack.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
-        : m_rgSettings(pConfig),
-          m_iBufferSize(0) {
+        : m_rgSettings(pConfig) {
     m_pReplayGain = new ReplayGain();
 }
 
@@ -17,10 +19,10 @@ AnalyzerGain::~AnalyzerGain() {
     delete m_pReplayGain;
 }
 
-bool AnalyzerGain::initialize(TrackPointer tio,
+bool AnalyzerGain::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
-    if (m_rgSettings.isAnalyzerDisabled(1, tio) || totalSamples == 0) {
+        SINT totalSamples) {
+    if (m_rgSettings.isAnalyzerDisabled(1, tio.getTrack()) || totalSamples == 0) {
         qDebug() << "Skipping AnalyzerGain";
         return false;
     }
@@ -31,11 +33,11 @@ bool AnalyzerGain::initialize(TrackPointer tio,
 void AnalyzerGain::cleanup() {
 }
 
-bool AnalyzerGain::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT iLen) {
     ScopedTimer t("AnalyzerGain::process()");
 
-    int halfLength = static_cast<int>(iLen / 2);
-    if (halfLength > m_iBufferSize) {
+    SINT halfLength = static_cast<int>(iLen / 2);
+    if (halfLength > static_cast<SINT>(m_pLeftTempBuffer.size())) {
         m_pLeftTempBuffer.resize(halfLength);
         m_pRightTempBuffer.resize(halfLength);
     }

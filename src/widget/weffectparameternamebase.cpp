@@ -9,13 +9,22 @@
 
 namespace {
 const QString kMimeTextDelimiter = QStringLiteral("\n");
+// for rounding the value display to 2 decimals
+constexpr int kValDecimals = 100;
 } // anonymous namespace
 
 WEffectParameterNameBase::WEffectParameterNameBase(
         QWidget* pParent, EffectsManager* pEffectsManager)
-        : WLabel(pParent), m_pEffectsManager(pEffectsManager) {
+        : WLabel(pParent),
+          m_pEffectsManager(pEffectsManager),
+          m_text("") {
     setAcceptDrops(true);
     parameterUpdated();
+    // When the parameter value changed it is display briefly.
+    // Set up the timer that restores the parameter name.
+    m_displayNameResetTimer.setSingleShot(true);
+    m_displayNameResetTimer.setInterval(800);
+    m_displayNameResetTimer.callOnTimeout(this, [this]() { setText(m_text); });
 }
 
 void WEffectParameterNameBase::setEffectParameterSlot(
@@ -26,6 +35,14 @@ void WEffectParameterNameBase::setEffectParameterSlot(
                 &EffectParameterSlotBase::updated,
                 this,
                 &WEffectParameterNameBase::parameterUpdated);
+        if (qobject_cast<EffectKnobParameterSlot*>(m_pParameterSlot.data())) {
+            // Make connection to show parameter value instead of name briefly
+            // after value has changed.
+            connect(m_pParameterSlot.data(),
+                    &EffectParameterSlotBase::valueChanged,
+                    this,
+                    &WEffectParameterNameBase::showNewValue);
+        }
     }
     parameterUpdated();
 }
@@ -33,17 +50,25 @@ void WEffectParameterNameBase::setEffectParameterSlot(
 void WEffectParameterNameBase::parameterUpdated() {
     if (m_pParameterSlot) {
         if (!m_pParameterSlot->shortName().isEmpty()) {
-            setText(m_pParameterSlot->shortName());
+            m_text = m_pParameterSlot->shortName();
         } else {
-            setText(m_pParameterSlot->name());
+            m_text = m_pParameterSlot->name();
         }
         setBaseTooltip(QString("%1\n%2").arg(
                 m_pParameterSlot->name(),
                 m_pParameterSlot->description()));
     } else {
-        setText(kNoEffectString);
+        m_text = kNoEffectString;
         setBaseTooltip(tr("No effect loaded."));
     }
+    setText(m_text);
+}
+
+void WEffectParameterNameBase::showNewValue(double newValue) {
+    double newValRounded =
+            std::ceil(newValue * kValDecimals) / kValDecimals;
+    setText(QString::number(newValRounded));
+    m_displayNameResetTimer.start();
 }
 
 void WEffectParameterNameBase::mousePressEvent(QMouseEvent* event) {

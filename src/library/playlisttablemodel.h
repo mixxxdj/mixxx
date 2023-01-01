@@ -40,4 +40,5 @@ class PlaylistTableModel final : public TrackSetTableModel {
 
     int m_iPlaylistId;
     bool m_keepDeletedTracks;
+    QHash<int, QString> m_searchTexts;
 };

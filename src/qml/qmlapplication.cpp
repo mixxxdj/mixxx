@@ -46,10 +46,11 @@ QmlApplication::QmlApplication(
           m_pAppEngine(nullptr),
           m_fileWatcher({m_mainFilePath}) {
     m_pCoreServices->initialize(app);
-    SoundDeviceError result = m_pCoreServices->getSoundManager()->setupDevices();
-    if (result != SOUNDDEVICE_ERROR_OK) {
-        qCritical() << "Error setting up sound devices" << result;
-        exit(result);
+    SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
+    if (result != SoundDeviceStatus::Ok) {
+        const int reInt = static_cast<int>(result);
+        qCritical() << "Error setting up sound devices:" << reInt;
+        exit(reInt);
     }
 
     // FIXME: DlgPreferences has some initialization logic that must be executed

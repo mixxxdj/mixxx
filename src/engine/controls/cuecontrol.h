@@ -65,7 +65,7 @@ class HotcueControl : public QObject {
         Set = 1,
         /// Hotcue is currently active (this only applies to Saved Loop cues
         /// while their loop is enabled). This status can be used by skins or
-        /// controller mappings to highlight a the cue control that has saved the current loop,
+        /// controller mappings to highlight the cue control that has saved the current loop,
         /// because resizing or moving the loop will make persistent changes to
         /// the cue.
         Active = 2,
@@ -194,7 +194,7 @@ class CueControl : public EngineControl {
             UserSettingsPointer pConfig);
     ~CueControl() override;
 
-    void hintReader(HintVector* pHintList) override;
+    void hintReader(gsl::not_null<HintVector*> pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtIntroCue();
@@ -204,6 +204,9 @@ class CueControl : public EngineControl {
     SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+
+  signals:
+    void loopRemove();
 
   public slots:
     void slotLoopReset();
@@ -231,6 +234,8 @@ class CueControl : public EngineControl {
 
     void hotcueFocusColorNext(double v);
     void hotcueFocusColorPrev(double v);
+
+    void passthroughChanged(double v);
 
     void cueSet(double v);
     void cueClear(double v);
@@ -269,6 +274,9 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
+    void connectControls();
+    void disconnectControls();
+
     void attachCue(const CuePointer& pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
@@ -345,6 +353,8 @@ class CueControl : public EngineControl {
     ControlObject* m_pHotcueFocus;
     ControlObject* m_pHotcueFocusColorNext;
     ControlObject* m_pHotcueFocusColorPrev;
+
+    parented_ptr<ControlProxy> m_pPassthrough;
 
     QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
 

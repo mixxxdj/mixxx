@@ -15,8 +15,7 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handleGroup, EffectsManager* p
                   /*isTalkoverChannel*/ false,
                   /*isPrimaryDeck*/ false),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
-          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
-          m_wasActive(false) {
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)) {
     // Make input_configured read-only.
     m_pInputConfigured->setReadOnly();
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
@@ -32,15 +31,18 @@ EngineAux::~EngineAux() {
     delete m_pPregain;
 }
 
-bool EngineAux::isActive() {
+EngineChannel::ActiveState EngineAux::updateActiveState() {
     bool enabled = m_pInputConfigured->toBool();
     if (enabled && m_sampleBuffer) {
-        m_wasActive = true;
-    } else if (m_wasActive) {
-        m_vuMeter.reset();
-        m_wasActive = false;
+        m_active = true;
+        return ActiveState::Active;
     }
-    return m_wasActive;
+    if (m_active) {
+        m_vuMeter.reset();
+        m_active = false;
+        return ActiveState::WasActive;
+    }
+    return ActiveState::Inactive;
 }
 
 void EngineAux::onInputConfigured(const AudioInput& input) {
@@ -80,7 +82,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
             pEngineEffectsManager->processPreFaderInPlace(
                     m_group.handle(), m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
                     // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                    static_cast<unsigned int>(m_pSampleRate->get()));
+                    static_cast<unsigned int>(m_sampleRate.get()));
         }
         m_sampleBuffer = nullptr;
     } else {

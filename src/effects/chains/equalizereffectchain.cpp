@@ -2,22 +2,25 @@
 
 #include "effects/effectslot.h"
 
-EqualizerEffectChain::EqualizerEffectChain(const QString& group,
+EqualizerEffectChain::EqualizerEffectChain(
+        const ChannelHandleAndGroup& handleAndGroup,
         EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger)
-        : PerGroupEffectChain(group,
-                  formatEffectChainGroup(group),
+        : PerGroupEffectChain(
+                  handleAndGroup,
+                  formatEffectChainGroup(handleAndGroup.name()),
                   SignalProcessingStage::Prefader,
                   pEffectsManager,
                   pEffectsMessenger),
           m_pCOFilterWaveform(
-                  new ControlObject(ConfigKey(group, "filterWaveformEnable"))) {
+                  new ControlObject(ConfigKey(handleAndGroup.name(), "filterWaveformEnable"))) {
     // Add a single effect slot
-    addEffectSlot(formatEffectSlotGroup(group));
+    addEffectSlot(formatEffectSlotGroup(handleAndGroup.name()));
+    enableForInputChannel(handleAndGroup);
     m_effectSlots[0]->setEnabled(true);
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
-    setupLegacyAliasesForGroup(group);
+    setupLegacyAliasesForGroup(handleAndGroup.name());
 }
 
 void EqualizerEffectChain::setFilterWaveform(bool state) {

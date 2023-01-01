@@ -1,8 +1,10 @@
 #include "controllers/scripting/legacy/scriptconnection.h"
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
+#include "util/trace.h"
 
 void ScriptConnection::executeCallback(double value) const {
+    Trace executeCallbackTrace("JS %1 callback", key.item);
     const auto args = QJSValueList{
             value,
             key.group,

@@ -53,6 +53,7 @@ class DlgPrefController : public DlgPreferencePage {
     void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
+    void enableWizardAndIOTabs(bool enable);
 
     // Input mappings
     void addInputMapping();
@@ -77,7 +78,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingPathFromIndex(int index) const;
     QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
-    void saveMapping();
+    bool saveMapping();
     void initTableView(QTableView* pTable);
 
     /// Set dirty state (i.e. changes have been made).

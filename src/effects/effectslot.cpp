@@ -123,7 +123,7 @@ EffectSlot::EffectSlot(const QString& group,
     connect(m_pControlMetaParameter.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotEffectMetaParameter(value); });
+            [=, this](double value) { slotEffectMetaParameter(value); });
     m_pControlMetaParameter->set(0.0);
     m_pControlMetaParameter->setDefaultValue(0.0);
 
@@ -192,26 +192,11 @@ void EffectSlot::updateEngineState() {
     }
 }
 
-void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
-    //TODO: get actual configuration of engine
-    const mixxx::EngineParameters engineParameters(
-            mixxx::audio::SampleRate(96000),
-            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
-
-    if (isLoaded()) {
-        for (const auto& outputChannel :
-                m_pEffectsManager->registeredOutputChannels()) {
-            pStatesMap->insert(outputChannel.handle(),
-                    m_pEngineEffect->createState(engineParameters));
-        }
-    } else {
-        for (EffectState* pState : *pStatesMap) {
-            if (pState) {
-                delete pState;
-            }
-        }
-        pStatesMap->clear();
+void EffectSlot::initalizeInputChannel(ChannelHandle inputChannel) {
+    if (!m_pEngineEffect) {
+        return;
     }
+    m_pEngineEffect->initalizeInputChannel(inputChannel);
 };
 
 EffectManifestPointer EffectSlot::getManifest() const {

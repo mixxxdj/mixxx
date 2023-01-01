@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <memory>
 
+#include "analyzer/analyzertrack.h"
 #include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
@@ -23,6 +24,7 @@ class Library;
 class TrackModel;
 class WColorPickerAction;
 class WCoverArtMenu;
+class WFindOnWebMenu;
 class WSearchRelatedTracksMenu;
 
 /// A context menu for track(s).
@@ -51,10 +53,13 @@ class WTrackMenu : public QMenu {
         SearchRelated = 1 << 13,
         UpdateReplayGainFromPregain = 1 << 14,
         SelectInLibrary = 1 << 15,
+        Analyze = 1 << 16,
+        FindOnWeb = 1 << 17,
         TrackModelFeatures = Remove | HideUnhidePurge,
-        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
+        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
-                Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary
+                Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
+                FindOnWeb
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -103,11 +108,17 @@ class WTrackMenu : public QMenu {
     void slotClearHotCues();
     void slotClearIntroCue();
     void slotClearOutroCue();
-    void slotClearLoop();
+    void slotClearLoops();
     void slotClearKey();
     void slotClearReplayGain();
     void slotClearWaveform();
     void slotClearAllMetadata();
+
+    // Analysis
+    void slotAnalyze();
+    void slotReanalyze();
+    void slotReanalyzeWithFixedTempo();
+    void slotReanalyzeWithVariableTempo();
 
     // BPM
     void slotLockBpm();
@@ -180,7 +191,9 @@ class WTrackMenu : public QMenu {
     void updateSelectionCrates(QWidget* pWidget);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+    void addToAnalysis(AnalyzerTrack::Options options = AnalyzerTrack::Options());
 
+    void clearBeats();
     void lockBpm(bool lock);
 
     void loadSelectionToGroup(const QString& group, bool play = false);
@@ -216,10 +229,12 @@ class WTrackMenu : public QMenu {
     QMenu* m_pMetadataMenu{};
     QMenu* m_pMetadataUpdateExternalCollectionsMenu{};
     QMenu* m_pClearMetadataMenu{};
+    QMenu* m_pAnalyzeMenu{};
     QMenu* m_pBPMMenu{};
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
+    parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
     QMenu* m_pRemoveFromDiskMenu{};
 
     // Update ReplayGain from Track
@@ -272,6 +287,12 @@ class WTrackMenu : public QMenu {
     // Track color
     WColorPickerAction* m_pColorPickerAction{};
 
+    // Analysis actions
+    QAction* m_pAnalyzeAction{};
+    QAction* m_pReanalyzeAction{};
+    QAction* m_pReanalyzeConstBpmAction{};
+    QAction* m_pReanalyzeVarBpmAction{};
+
     // Clear track metadata actions
     QAction* m_pClearBeatsAction{};
     QAction* m_pClearPlayCountAction{};
@@ -280,7 +301,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pClearHotCuesAction{};
     QAction* m_pClearIntroCueAction{};
     QAction* m_pClearOutroCueAction{};
-    QAction* m_pClearLoopAction{};
+    QAction* m_pClearLoopsAction{};
     QAction* m_pClearWaveformAction{};
     QAction* m_pClearCommentAction{};
     QAction* m_pClearKeyAction{};

@@ -143,8 +143,8 @@ void BaseSqlTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::LastPlayedAt)] =
-            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
+            TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
+            fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -252,15 +252,17 @@ void BaseSqlTableModel::select() {
         if (idColumn < 0) {
             idColumn = sqlRecord.indexOf(m_idColumn);
         }
+
+        // TODO(XXX): Can we get rid of the hard-coded assumption that
+        // the the first column always contains the id?
+        DEBUG_ASSERT(idColumn == kIdColumn);
+
         VERIFY_OR_DEBUG_ASSERT(idColumn >= 0) {
             qCritical()
                     << "ID column not available in database query results:"
                     << m_idColumn;
             return;
         }
-        // TODO(XXX): Can we get rid of the hard-coded assumption that
-        // the the first column always contains the id?
-        DEBUG_ASSERT(idColumn == kIdColumn);
 
         TrackId trackId(sqlRecord.value(idColumn));
         trackIds.insert(trackId);
@@ -741,11 +743,10 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
-        VERIFY_OR_DEBUG_ASSERT(false) {
-            qWarning() << "Column"
-                       << columnNameForFieldIndex(column)
-                       << "is not editable!";
-        }
+        qWarning() << "Column"
+                   << columnNameForFieldIndex(column)
+                   << "is not editable!";
+        DEBUG_ASSERT(false);
         return false;
     }
     return true;

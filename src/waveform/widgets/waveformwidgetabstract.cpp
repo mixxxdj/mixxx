@@ -1,8 +1,7 @@
-#include "waveformwidgetabstract.h"
-
 #include <QWidget>
 #include <QtDebug>
 
+#include "nonglwaveformwidgetabstract.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)

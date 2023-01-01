@@ -172,10 +172,9 @@ EngineMaster::EngineMaster(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"));
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"),
-                                         true, false, true);
-    m_pKeylockEngine->set(pConfig->getValueString(
-            ConfigKey(group, "keylock_engine")).toDouble());
+    m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"), true, false, true);
+    m_pKeylockEngine->set(pConfig->getValue(ConfigKey(group, "keylock_engine"),
+            static_cast<double>(EngineBuffer::defaultKeylockEngine())));
 
     // TODO: Make this read only and make EngineMaster decide whether
     // processing the master mix is necessary.
@@ -291,7 +290,12 @@ void EngineMaster::processChannels(int iBufferSize) {
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
         // Skip inactive channels.
-        if (!pChannel || !pChannel->isActive()) {
+        VERIFY_OR_DEBUG_ASSERT(pChannel) {
+            continue;
+        }
+
+        EngineChannel::ActiveState activeState = pChannel->updateActiveState();
+        if (activeState == EngineChannel::ActiveState::Inactive) {
             continue;
         }
 
@@ -482,7 +486,10 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pTalkover,
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                busFeatures);
+                busFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
     }
 
     switch (m_pTalkoverDucking->getMode()) {
@@ -537,21 +544,30 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pOutputBusBuffers[EngineChannel::LEFT],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                busFeatures);
+                busFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderCenterHandle.handle(),
                 m_masterHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::CENTER],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                busFeatures);
+                busFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderRightHandle.handle(),
                 m_masterHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::RIGHT],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                busFeatures);
+                busFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
     }
 
     if (masterEnabled) {
@@ -782,7 +798,10 @@ void EngineMaster::applyMasterEffects() {
                 m_pMaster,
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                masterFeatures);
+                masterFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
     }
 }
 

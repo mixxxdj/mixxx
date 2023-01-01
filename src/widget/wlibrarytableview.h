@@ -59,6 +59,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   protected:
     void focusInEvent(QFocusEvent* event) override;
+    QModelIndex moveCursor(CursorAction cursorAction,
+            Qt::KeyboardModifiers modifiers) override;
     virtual QString getModelStateKey() const = 0;
 
   private:

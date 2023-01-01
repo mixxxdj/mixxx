@@ -2,7 +2,6 @@
 
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
-#include "mixxxmainwindow.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"

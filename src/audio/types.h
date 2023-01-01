@@ -92,7 +92,7 @@ class ChannelCount {
             : m_value(value) {
     }
 
-    // A limits checking c-tor fom int channel used in many
+    // A limits checking c-tor from int channel used in many
     // external libraries
     explicit ChannelCount(int value)
             : m_value(valueFromInt(value)) {
@@ -201,7 +201,7 @@ class Bitrate {
 
   public:
     static constexpr const char* unit() {
-        return "kbps";
+        return "kbit/s";
     }
 
     explicit constexpr Bitrate(

@@ -9,7 +9,6 @@
 WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManager* pEffectsManager)
         : QPushButton(parent),
           WBaseWidget(this),
-          m_iChainNumber(0),
           m_pEffectsManager(pEffectsManager),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pMenu(make_parented<QMenu>(new QMenu(this))) {
@@ -22,9 +21,13 @@ WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManag
 }
 
 void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& context) {
-    m_iChainNumber = EffectWidgetUtils::getEffectUnitNumberFromNode(node, context);
     m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
+    VERIFY_OR_DEBUG_ASSERT(m_pChain) {
+        SKIN_WARNING(node, context)
+                << "EffectChainPresetButton node could not attach to effect chain";
+        return;
+    }
     connect(m_pChain.get(),
             &EffectChain::chainPresetChanged,
             this,
@@ -50,7 +53,8 @@ void WEffectChainPresetButton::populateMenu() {
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         QString title = pChainPreset->name();
         if (title == m_pChain->presetName()) {
-            title = QStringLiteral("\u2713 ") + title;
+            title = QChar(0x2713) + // CHECK MARK
+                    QChar(' ') + title;
             chainIsPreset = true;
         }
         m_pMenu->addAction(title, this, [this, pChainPreset]() {
@@ -64,7 +68,7 @@ void WEffectChainPresetButton::populateMenu() {
         });
     }
     m_pMenu->addAction(tr("Save As New Preset..."), this, [this]() {
-        m_pChainPresetManager->savePreset(m_pChain);
+        m_pChainPresetManager->savePresetAndReload(m_pChain);
     });
 
     m_pMenu->addSeparator();

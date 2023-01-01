@@ -10,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/replaygain.h"
 #include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/color/rgbcolor.h"
 #include "util/memory.h"
 #include "util/parented_ptr.h"
@@ -36,6 +37,7 @@ class BaseTrackPlayer : public BasePlayer {
     ~BaseTrackPlayer() override = default;
 
     virtual TrackPointer getLoadedTrack() const = 0;
+    virtual void setupEqControls() = 0;
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
@@ -71,7 +73,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // connected. Delete me when EngineMaster supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
-    void setupEqControls();
+    void setupEqControls() final;
 
     // For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
@@ -116,6 +118,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     UserSettingsPointer m_pConfig;
     EngineMaster* m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
+    TrackId m_pPrevFailedTrackId;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;

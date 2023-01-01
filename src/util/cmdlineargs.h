@@ -39,6 +39,9 @@ class CmdlineArgs final {
     bool useColors() const {
         return m_useColors;
     }
+    bool getUseVuMeterGL() const {
+        return m_useVuMeterGL;
+    }
     bool getDebugAssertBreak() const { return m_debugAssertBreak; }
     bool getSettingsPathSet() const { return m_settingsPathSet; }
     mixxx::LogLevel getLogLevel() const { return m_logLevel; }
@@ -72,6 +75,7 @@ class CmdlineArgs final {
     bool m_controllerDebug;
     bool m_developer; // Developer Mode
     bool m_safeMode;
+    bool m_useVuMeterGL;
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
     double m_scaleFactor;

@@ -320,7 +320,7 @@ HerculesMk4.sync = function (midino, control, value, status, group) {
 };
 
 HerculesMk4.jogWheel = function (midino, control, value, status, group) {
-    // This function is called everytime the jog is moved
+    // This function is called every time the jog is moved
 
     var direction=(value == 0x01)? 1: -1;
 

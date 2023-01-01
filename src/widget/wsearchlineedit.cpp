@@ -69,7 +69,8 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig),
-          m_clearButton(make_parented<QToolButton>(this)) {
+          m_clearButton(make_parented<QToolButton>(this)),
+          m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
     setEditable(true);
@@ -207,6 +208,10 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Shortcuts") + ": \n" +
             tr("Ctrl+F") + "  " +
             tr("Focus", "Give search bar input focus") + "\n" +
+            tr("Return") + " " +
+            tr("Trigger search before search-as-you-type timeout or"
+               "jump to tracks view afterwards") +
+            "\n" +
             tr("Ctrl+Backspace") + "  " +
             tr("Clear input", "Clear the search bar input field") + "\n" +
             tr("Ctrl+Space") + "  " +
@@ -350,7 +355,12 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         if (findCurrentTextIndex() == -1) {
             slotSaveSearch();
         }
-        slotTriggerSearch();
+        // Jump to tracks if search signal was already emitted
+        if (!m_queryEmitted) {
+            slotTriggerSearch();
+        } else {
+            emit setLibraryFocus(FocusWidget::TracksTable);
+        }
         return;
     case Qt::Key_Space:
         // Open/close popup with Ctrl + space
@@ -449,13 +459,9 @@ void WSearchLineEdit::slotRestoreSearch(const QString& text) {
             << "slotRestoreSearch"
             << text;
 #endif // ENABLE_TRACE_LOG
-    if (text.isNull()) {
-        slotDisableSearch();
-    } else {
-        // we save the current search before we switch to a new text
-        slotSaveSearch();
-        enableSearch(text);
-    }
+    // we save the current search before we switch to a new text
+    slotSaveSearch();
+    enableSearch(text);
 }
 
 void WSearchLineEdit::slotTriggerSearch() {
@@ -467,6 +473,7 @@ void WSearchLineEdit::slotTriggerSearch() {
     DEBUG_ASSERT(isEnabled());
     m_debouncingTimer.stop();
     emit search(getSearchText());
+    m_queryEmitted = true;
 }
 
 /// saves the current query as selection
@@ -484,27 +491,19 @@ void WSearchLineEdit::slotSaveSearch() {
     if (cText.isEmpty() || !isEnabled()) {
         return;
     }
-    if (cIndex == -1) {
-        removeItem(-1);
-    }
 
-    // Check if the text is already listed
-    QSet<QString> querySet;
-    for (int index = 0; index < count(); index++) {
-        querySet.insert(itemText(index));
+    if (cIndex > 0) {
+        // If query exists and is not at the top, remove the original index
+        removeItem(cIndex);
     }
-    if (querySet.contains(cText)) {
-        // If query exists clear the box and use its index to set the currentIndex
-        int cIndex = findData(cText, Qt::DisplayRole);
-        setCurrentIndex(cIndex);
-        return;
-    } else {
-        // Else add it at the top
+    if (cIndex > 0 || cIndex == -1) {
+        // If the query doesn't exist yet or was not at top, insert it at the top
         insertItem(0, cText);
-        setCurrentIndex(0);
-        while (count() > kMaxSearchEntries) {
-            removeItem(kMaxSearchEntries);
-        }
+    }
+    setCurrentIndex(0);
+
+    while (count() > kMaxSearchEntries) {
+        removeItem(kMaxSearchEntries);
     }
 }
 
@@ -705,6 +704,7 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
             << "slotTextChanged"
             << text;
 #endif // ENABLE_TRACE_LOG
+    m_queryEmitted = false;
     m_debouncingTimer.stop();
     if (!isEnabled()) {
         setTextBlockSignals(kDisabledText);
