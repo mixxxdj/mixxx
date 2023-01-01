@@ -418,7 +418,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
     QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
             tr("Confirm Deletion"),
-            tr("Do you really want to delete this playlist?"),
+            tr("Do you really want to delete playlist <b>%1</b>?")
+                    .arg(m_playlistDao.getPlaylistName(playlistId)),
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
     if (btn == QMessageBox::No) {

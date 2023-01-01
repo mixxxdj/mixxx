@@ -413,7 +413,8 @@ void CrateFeature::slotDeleteCrate() {
         storePrevSiblingCrateId(crateId);
         QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
                 tr("Confirm Deletion"),
-                tr("Do you really want to delete this crate?"),
+                tr("Do you really want to delete crate <b>%1</b>?")
+                        .arg(crate.getName()),
                 QMessageBox::Yes | QMessageBox::No,
                 QMessageBox::No);
         if (btn == QMessageBox::Yes) {
