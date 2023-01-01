@@ -21,11 +21,11 @@ Controls:
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>3f,0f</Size>
+        <Size>30f,0f</Size>
         <Children>
 
           <WidgetGroup>
-            <Size>1f,0f</Size>
+            <Size>10f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
               <Transform><Not/></Transform>
@@ -34,7 +34,7 @@ Controls:
           </WidgetGroup>
 
           <WidgetGroup>
-            <Size>1f,0f</Size>
+            <Size>10f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <Transform><Not/></Transform>
@@ -46,19 +46,19 @@ Controls:
             <Children>
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MaximumSize>1,0</MaximumSize>
+                <MaximumSize>10,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>10f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>10f,0f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>
 
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>2,0</MinimumSize>
+                <MinimumSize>11,0</MinimumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>11f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>11f,0f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>
 
@@ -70,11 +70,11 @@ Controls:
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>3f,0f</Size>
+        <Size>30f,0f</Size>
         <Children>
 
           <WidgetGroup>
-            <Size>2f,0f</Size>
+            <Size>20f,0f</Size>
             <Connection>
               <ConfigKey>[LateNight],show_spinny_cover</ConfigKey>
               <Transform><Not/></Transform>
@@ -83,7 +83,7 @@ Controls:
           </WidgetGroup>
 
           <WidgetGroup>
-            <Size>1f,0f</Size>
+            <Size>10f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Skin],select_big_spinny_coverart</ConfigKey>
               <Transform><Not/></Transform>
@@ -96,11 +96,11 @@ Controls:
               <!-- Hide small and big spinny/cover container -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MaximumSize>1,0</MaximumSize>
+                <MaximumSize>10,0</MaximumSize>
                 <Children>
-                  <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[LateNight],show_small_spinny_cover"><Size>0f,0f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[LateNight],show_big_spinny_cover"><Size>0f,0f</Size></WidgetGroup>
+                  <WidgetGroup><Size>10f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_small_spinny_cover"><Size>10f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_big_spinny_cover"><Size>10f,0f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>
 
@@ -108,11 +108,11 @@ Controls:
                     hide big spinny/cover container -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>2,0</MinimumSize>
-                <MaximumSize>2,0</MaximumSize>
+                <MinimumSize>11,0</MinimumSize>
+                <MaximumSize>20,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],show_small_spinny_cover"><Size>0f,0f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[LateNight],show_big_spinny_cover"><Size>0f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_small_spinny_cover"><Size>20f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_big_spinny_cover"><Size>20f,0f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>
 
@@ -120,10 +120,10 @@ Controls:
                     hide small spinny/cover container -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>3,0</MinimumSize>
+                <MinimumSize>21,0</MinimumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],show_big_spinny_cover"><Size>0f,0f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[LateNight],show_small_spinny_cover"><Size>0f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_big_spinny_cover"><Size>30f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_small_spinny_cover"><Size>30f,0f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>
 
