@@ -20,6 +20,10 @@ constexpr SINT kMaxBytesPerMp3Frame = 1441;
 // mp3 supports 9 different sample rates
 constexpr int kSampleRateCount = 9;
 
+// Possible labels in the Mp3 Info Frame
+// constexpr char kVbrTag0[] = "Xing";
+// constexpr char kVbrTag1[] = "Info";
+
 int getIndexBySampleRate(audio::SampleRate sampleRate) {
     switch (sampleRate) {
     case 8000:
@@ -287,6 +291,33 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         if (!mp3InfoTagSkipped) {
             // We assume that the first frame contains the mp3 info frame
             // which needs to be skipped
+            // https://linux.m2osw.com/mp3-info-tag-specifications-rev0-lame-3100
+            // https://github.com/Iunusov/libmp3lame-CMAKE/blob/bb770fb6e4b4dfc963860380a5e7765c370aaef1/libmp3lame/VbrTag.c#L333
+            int mp3InfoFrameOffset = 0;
+            if (madHeader.flags & MAD_FLAG_LSF_EXT) {
+                // MPEG Version 2 (ISO/IEC 13818-3)
+                // or MPEG Version 2.5
+                if (madHeader.mode == MAD_MODE_SINGLE_CHANNEL) {
+                    mp3InfoFrameOffset = (9 + 4);
+                } else {
+                    mp3InfoFrameOffset = (17 + 4);
+                }
+            } else {
+                // MPEG Version 1 (ISO/IEC 11172-3)
+                if (madHeader.mode == MAD_MODE_SINGLE_CHANNEL) {
+                    mp3InfoFrameOffset = (17 + 4);
+                } else {
+                    mp3InfoFrameOffset = (32 + 4);
+                }
+            }
+
+            QString mp3InfoLabel =
+                    QString::fromLatin1(reinterpret_cast<const char*>(
+                            &m_madStream.this_frame[mp3InfoFrameOffset]));
+            kLogger.debug()
+                    << "Skipping MP3 Info Frame:"
+                    << mp3InfoLabel;
+
             mp3InfoTagSkipped = true;
             continue;
         }
