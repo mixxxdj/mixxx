@@ -15,6 +15,32 @@
             <Layout>vertical</Layout>
             <Size>100me,40me</Size>
             <Children>
+              
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:waveform.xml">
+                    <SetVariable name="ChanNum">1</SetVariable>
+                    <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+              
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:waveform.xml">
+                    <SetVariable name="ChanNum">2</SetVariable>
+                    <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
               <WidgetGroup>
                 <Layout>horizontal</Layout>
@@ -31,32 +57,6 @@
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:waveform.xml">
-                    <SetVariable name="ChanNum">1</SetVariable>
-                    <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
-                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:waveform.xml">
-                    <SetVariable name="ChanNum">2</SetVariable>
-                    <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
-                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
-                  </Template>
-                </Children>
               </WidgetGroup>
 
               <WidgetGroup>
