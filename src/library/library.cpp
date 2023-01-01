@@ -360,6 +360,10 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::renameItem,
             m_pSidebarModel,
             &SidebarModel::renameItem);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::deleteItem,
+            m_pSidebarModel,
+            &SidebarModel::deleteItem);
 
     connect(pSidebarWidget,
             &WLibrarySidebar::setLibraryFocus,

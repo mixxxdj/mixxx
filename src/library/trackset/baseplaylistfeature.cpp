@@ -73,6 +73,11 @@ void BasePlaylistFeature::initActions() {
             this,
             &BasePlaylistFeature::slotDuplicatePlaylist);
     m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
+    const auto removeKeySequence =
+            // TODO(XXX): Qt6 replace enum | with QKeyCombination
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
+    m_pDeletePlaylistAction->setShortcut(removeKeySequence);
     connect(m_pDeletePlaylistAction,
             &QAction::triggered,
             this,
@@ -395,6 +400,11 @@ int BasePlaylistFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
         }
     }
     return kInvalidPlaylistId;
+}
+
+void BasePlaylistFeature::deleteItem(const QModelIndex& index) {
+    m_lastRightClickedIndex = index;
+    slotDeletePlaylist();
 }
 
 void BasePlaylistFeature::slotDeletePlaylist() {

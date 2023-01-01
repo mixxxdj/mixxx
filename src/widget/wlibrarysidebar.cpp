@@ -271,6 +271,27 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         emit renameItem(selIndex);
         return;
     }
+    case kHideRemoveShortcutKey: { // Del / Cmd+Backspace deletes items
+        // Rename crate or playlist (internal, external, history
+        if (event->modifiers() != kHideRemoveShortcutModifier) {
+            return;
+        }
+        QModelIndexList selectedIndices = selectionModel()->selectedRows();
+        if (selectedIndices.isEmpty()) {
+            return;
+        }
+        // If an expanded item is selected let QTreeView collapse it
+        QModelIndex selIndex = selectedIndices.first();
+        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
+            qDebug() << "invalid sidebar index";
+            return;
+        }
+        if (isExpanded(selIndex)) {
+            return;
+        }
+        emit deleteItem(selIndex);
+        return;
+    }
     default:
         QTreeView::keyPressEvent(event);
     }

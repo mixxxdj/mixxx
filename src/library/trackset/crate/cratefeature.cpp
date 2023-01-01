@@ -82,6 +82,11 @@ void CrateFeature::initActions() {
             this,
             &CrateFeature::slotDuplicateCrate);
     m_pDeleteCrateAction = make_parented<QAction>(tr("Remove"), this);
+    const auto removeKeySequence =
+            // TODO(XXX): Qt6 replace enum | with QKeyCombination
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
+    m_pDeleteCrateAction->setShortcut(removeKeySequence);
     connect(m_pDeleteCrateAction.get(),
             &QAction::triggered,
             this,
@@ -400,6 +405,11 @@ void CrateFeature::slotCreateCrate() {
     if (crateId.isValid()) {
         activateCrate(crateId);
     }
+}
+
+void CrateFeature::deleteItem(const QModelIndex& index) {
+    m_lastRightClickedIndex = index;
+    slotDeleteCrate();
 }
 
 void CrateFeature::slotDeleteCrate() {

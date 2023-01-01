@@ -13,6 +13,7 @@ const Qt::Key kPropertiesShortcutKey = Qt::Key_Return;
 
 // Keyboard shortcut for hiding track and removing from Crate/Playlist/AutoDJ queue.
 // This is also used to display the shortcut in the track context menu.
+// Also used for the 'Remove' actions in the library sidebar.
 #ifdef Q_OS_MAC
 // Note: On macOS, CTRL corresponds to the Command key.
 const Qt::Modifier kHideRemoveShortcutModifier = Qt::CTRL;
