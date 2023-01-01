@@ -235,6 +235,18 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     quint64 sumBitrateFrames = 0; // nominator
     quint64 cntBitrateFrames = 0; // denominator
 
+    // Normally mp3 files starts with an extra frame of silence containing
+    // engoder infos called "LAME Tag". Since the early days of we skip the
+    // first frame uncoditionally, to not have these extra portion of silence
+    // in the track. This has the isseue that with files without this frame real
+    // samples are dropped.
+    // Since this issue exists since the early days of Mixxx the analysis data
+    // is affected by the offset. Fixing this without fixing the amalysis data
+    // will silently invalidate analysis, cues and loops.
+    // Note: A relates issue with not accurate seeks has been fixed in Mixxx 2.1.0 2015
+    // https://github.com/mixxxdj/mixxx/pull/411
+    bool mp3InfoTagSkipped = false;
+
     mad_header madHeader;
     mad_header_init(&madHeader);
 
@@ -269,6 +281,13 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
                               << madFrameLength
                               << "in:" << m_file.fileName();
             // Skip frame
+            continue;
+        }
+
+        if (!mp3InfoTagSkipped) {
+            // We assume that the first frame contains the mp3 info frame
+            // which needs to be skipped
+            mp3InfoTagSkipped = true;
             continue;
         }
 
@@ -463,12 +482,7 @@ void SoundSourceMp3::restartDecoding(
         mad_synth_mute(&m_madSynth);
     }
 
-    if (decodeFrameHeader(&m_madFrame.header, &m_madStream, false)) {
-        m_curFrameIndex = seekFrame.frameIndex;
-    } else {
-        // Failure -> Seek to EOF
-        m_curFrameIndex = frameIndexMax();
-    }
+    m_curFrameIndex = seekFrame.frameIndex;
 }
 
 void SoundSourceMp3::addSeekFrame(
