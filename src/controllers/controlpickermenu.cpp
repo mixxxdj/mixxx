@@ -297,7 +297,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Adjust speed slower (coarse)"),
             speedMenu);
     addDeckAndSamplerControl("rate_perm_down_small",
-            tr("Increase Speed (Fine)"),
+            tr("Decrease Speed (Fine)"),
             tr("Adjust speed slower (fine)"),
             speedMenu);
     speedMenu->addSeparator();
@@ -577,7 +577,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     loopMenu->addSeparator();
 
     addDeckControl("loop_in", tr("Loop In"), tr("Loop In button"), loopMenu);
+    addDeckControl("loop_in_goto", tr("Go To Loop In"), tr("Go to Loop In button"), loopMenu);
     addDeckControl("loop_out", tr("Loop Out"), tr("Loop Out button"), loopMenu);
+    addDeckControl("loop_out_goto", tr("Go To Loop Out"), tr("Go to Loop Out button"), loopMenu);
     addDeckControl("loop_exit", tr("Loop Exit"), tr("Loop Exit button"), loopMenu);
     addDeckControl("reloop_toggle",
             tr("Reloop/Exit Loop"),
