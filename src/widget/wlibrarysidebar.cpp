@@ -8,6 +8,7 @@
 
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
+#include "util/defs.h"
 #include "util/dnd.h"
 
 constexpr int expand_time = 250;
@@ -235,6 +236,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             qDebug() << "invalid sidebar index";
             return;
         }
+        // collapse knot
         if (isExpanded(selIndex)) {
             QTreeView::keyPressEvent(event);
             return;
@@ -251,6 +253,24 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         // Focus tracks table
         emit setLibraryFocus(FocusWidget::TracksTable);
         return;
+    case kRenameSidebarItemShortcutKey: { // F2
+        // Rename crate or playlist (internal, external, history
+        QModelIndexList selectedIndices = selectionModel()->selectedRows();
+        if (selectedIndices.isEmpty()) {
+            return;
+        }
+        // If an expanded item is selected let QTreeView collapse it
+        QModelIndex selIndex = selectedIndices.first();
+        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
+            qDebug() << "invalid sidebar index";
+            return;
+        }
+        if (isExpanded(selIndex)) {
+            return;
+        }
+        emit renameItem(selIndex);
+        return;
+    }
     default:
         QTreeView::keyPressEvent(event);
     }

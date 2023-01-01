@@ -23,6 +23,7 @@
 #include "track/track.h"
 #include "track/trackid.h"
 #include "util/assert.h"
+#include "util/defs.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -61,6 +62,7 @@ void BasePlaylistFeature::initActions() {
             &BasePlaylistFeature::slotCreatePlaylist);
 
     m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
+    m_pRenamePlaylistAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
@@ -220,6 +222,11 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
         return;
     }
     m_pSidebarWidget->selectChildIndex(m_lastRightClickedIndex);
+}
+
+void BasePlaylistFeature::renameItem(const QModelIndex& index) {
+    m_lastRightClickedIndex = index;
+    slotRenamePlaylist();
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {

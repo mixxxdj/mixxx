@@ -21,3 +21,5 @@ const Qt::Key kHideRemoveShortcutKey = Qt::Key_Backspace;
 const Qt::Modifier kHideRemoveShortcutModifier = static_cast<Qt::Modifier>(0);
 const Qt::Key kHideRemoveShortcutKey = Qt::Key_Delete;
 #endif
+
+const Qt::Key kRenameSidebarItemShortcutKey = Qt::Key_F2;

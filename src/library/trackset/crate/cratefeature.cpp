@@ -22,6 +22,7 @@
 #include "moc_cratefeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/defs.h"
 #include "util/dnd.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
@@ -70,6 +71,7 @@ void CrateFeature::initActions() {
             &CrateFeature::slotCreateCrate);
 
     m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
+    m_pRenameCrateAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenameCrateAction.get(),
             &QAction::triggered,
             this,
@@ -429,6 +431,11 @@ void CrateFeature::slotDeleteCrate() {
     qWarning() << "Failed to delete selected crate";
 }
 
+void CrateFeature::renameItem(const QModelIndex& index) {
+    m_lastRightClickedIndex = index;
+    slotRenameCrate();
+}
+
 void CrateFeature::slotRenameCrate() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
@@ -563,6 +570,7 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
                 m_pSidebarModel->getItem(index), crateSummary);
         m_pSidebarModel->triggerRepaint(index);
     }
+
     if (m_selectedTrackId.isValid()) {
         // Crates containing the currently selected track might
         // have been modified.
