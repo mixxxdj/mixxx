@@ -370,10 +370,11 @@ TraktorS3.Controller = class {
     }
 
     parameterHandler(field) {
+        const value = TraktorS3.normalize12BitValue(field.value);
         if (field.group === "[Channel4]" && this.channel4InputMode) {
-            engine.setParameter("[Microphone]", field.name, field.value / 4095);
+            engine.setParameter("[Microphone]", field.name, value);
         } else {
-            engine.setParameter(field.group, field.name, field.value / 4095);
+            engine.setParameter(field.group, field.name, value);
         }
     }
 
@@ -385,7 +386,8 @@ TraktorS3.Controller = class {
         // Only adjust if shift is held. This will still adjust the sound card
         // volume but it at least allows for control of Mixxx's master gain.
         if (this.anyShiftPressed()) {
-            engine.setParameter(field.group, field.name, field.value / 4095);
+            const value = TraktorS3.normalize12BitValue(field.value);
+            engine.setParameter(field.group, field.name, value);
         }
     }
 
@@ -1347,7 +1349,7 @@ TraktorS3.Deck = class {
 
     pitchSliderHandler(field) {
         // Adapt HID value to rate control range.
-        const value = -1.0 + ((field.value / 4095) * 2.0);
+        const value = -1.0 + (TraktorS3.normalize12BitValue(field.value) * 2.0);
         if (TraktorS3.PitchSliderRelativeMode) {
             if (this.pitchSliderLastValue === -1) {
                 this.pitchSliderLastValue = value;
@@ -1770,6 +1772,19 @@ TraktorS3.Channel = class {
     }
 };
 
+/**
+ * Normalize a 12-bit 0-4095 input value to a `[0, 1]` value, with a special
+ * mapping from 2047 to 0.5 as that would become 0.499878. This is important for
+ * FX and anything else where 0.5 has a special meaning (and where that number
+ * is checked for without an epsilon).
+ *
+ * @param {number} value An integer value in the range `[0 .. 4095]`.
+ * @returns {number} `value` normalized to `[0, 1]`.
+ */
+TraktorS3.normalize12BitValue = function(value) {
+    return value === 2047 ? 0.5 : value / 4095;
+};
+
 // Finds the shortest distance between two angles on the wheel, assuming
 // 0-8.0 angle value.
 TraktorS3.wheelSegmentDistance = function(segNum, angle) {
@@ -2036,7 +2051,7 @@ TraktorS3.FXControl = class {
     }
 
     fxKnobHandler(field) {
-        const value = field.value / 4095.;
+        const value = TraktorS3.normalize12BitValue(field.value);
         const fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
         const knobIdx = this.channelToIndex(field.group);
 
@@ -2429,7 +2444,7 @@ TraktorS3.VanillaFxControl = class {
             return;
         }
 
-        const value = field.value / 4095;
+        const value = TraktorS3.normalize12BitValue(field.value);
         engine.setParameter(`[QuickEffectRack1_${field.group}]`, "super1", value);
     }
 
