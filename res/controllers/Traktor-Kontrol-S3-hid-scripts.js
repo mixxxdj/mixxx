@@ -54,7 +54,7 @@ TraktorS3.VanillaFxModeDefaultToFilter = true;
 // When enabled, the FX Enable buttons will use the colors set in
 // `TraktorS3.ChannelColors` when the filter effect is selected. Disabling this
 // will use the Filter button's orange color instead.
-TraktorS3.VanillaFxModeChannelColors = true;
+TraktorS3.VanillaFxModeChannelColors = false;
 
 // The pitch slider can operate either in absolute or relative mode.
 // In absolute mode:
