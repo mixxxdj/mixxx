@@ -474,7 +474,9 @@ void WTrackTableView::slotShowHideTrackMenu(bool show) {
         return;
     }
     if (show) {
-        QContextMenuEvent event(QContextMenuEvent::Mouse, QCursor::pos());
+        QContextMenuEvent event(QContextMenuEvent::Mouse,
+                mapFromGlobal(QCursor::pos()),
+                QCursor::pos());
         contextMenuEvent(&event);
     } else {
         m_pTrackMenu->close();
