@@ -2417,7 +2417,7 @@ TraktorS3.VanillaFxControl = class {
         // button has been released, and holding down one FX button, assigning
         // that effect to a channel, holding down a second button, and releasing
         // both shouldn't change the global effect assignments.
-        if (TraktorS3.VanillaFxModeChannelColors && field.value === 1) {
+        if (field.value === 1) {
             this.pressedFxSelectButtons.push(fxNumber);
             if (this.pressedFxSelectButtons.length === 1) {
                 this.individualFxChainAssigned = false;
@@ -2559,7 +2559,7 @@ TraktorS3.VanillaFxControl = class {
         // between channels. We'll also fall back to the channel colors if the
         // user manually selected an out of bounds chain
         let ledColor = fxEnabled ? TraktorS3.LEDBrightValue : TraktorS3.LEDDimValue;
-        if (fxNumber >= 1 && fxNumber <= 5) {
+        if (!TraktorS3.VanillaFxModeChannelColors || (fxNumber >= 1 && fxNumber <= 5)) {
             ledColor += this.fxColors[fxNumber];
         } else {
             ledColor += this.controller.hid.LEDColors[TraktorS3.ChannelColors[channelGroup]];
