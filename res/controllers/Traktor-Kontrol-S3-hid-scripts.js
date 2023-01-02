@@ -2521,12 +2521,12 @@ TraktorS3.VanillaFxControl = class {
         }
 
         const lightButton = function(fxNumber) {
-            // By default the LED is off
-            let ledColor = 0;
-            if (activeFxSelectButtons.has(fxNumber)) {
-                ledColor = this.fxColors[fxNumber] + TraktorS3.LEDBrightValue;
-            } else if (this.pressedFxSelectButtons.indexOf(fxNumber) !== -1) {
-                ledColor = this.fxColors[fxNumber] + TraktorS3.LEDDimValue;
+            // By default the LED is dimly lit
+            let ledColor = this.fxColors[fxNumber];
+            if (activeFxSelectButtons.has(fxNumber) || this.pressedFxSelectButtons.indexOf(fxNumber) !== -1) {
+                ledColor += TraktorS3.LEDBrightValue;
+            } else {
+                ledColor += TraktorS3.LEDDimValue;
             }
 
             this.controller.hid.setOutput("[ChannelX]", `!fxButton${fxNumber}`, ledColor, !this.controller.batchingOutputs);
