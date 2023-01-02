@@ -462,9 +462,9 @@ void BrowseFeature::loadQuickLinks() {
 }
 
 QString BrowseFeature::extractNameFromPath(const QString& spath) {
-    QString path = spath.left(spath.count()-1);
-    int index = path.lastIndexOf("/");
-    QString name = (spath.count() > 1) ? path.mid(index+1) : spath;
+    const QString path = spath.left(spath.size() - 1);
+    const int index = path.lastIndexOf("/");
+    const QString name = (spath.size() > 1) ? path.mid(index + 1) : spath;
     return name;
 }
 
