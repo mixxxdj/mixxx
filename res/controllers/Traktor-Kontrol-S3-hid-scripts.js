@@ -1,3 +1,5 @@
+"use strict";
+
 ///////////////////////////////////////////////////////////////////////////////////
 //
 // Traktor Kontrol S3 HID controller script v2.00
@@ -167,7 +169,6 @@ TraktorS3.Controller = class {
             WHITE: 0x44
         };
 
-
         // FX 5 is the Filter
         this.fxLEDValue = {
             0: this.hid.LEDColors.PURPLE,
@@ -275,7 +276,7 @@ TraktorS3.Controller = class {
 
         this.hid.registerInputPacket(messageLong);
 
-        for (ch in this.Channels) {
+        for (const ch in this.Channels) {
             const chanob = this.Channels[ch];
             engine.makeConnection(ch, "playposition",
                 TraktorS3.Channel.prototype.playpositionChanged.bind(chanob));
@@ -302,8 +303,9 @@ TraktorS3.Controller = class {
 
         // NOTE: Soft takeovers must only be enabled after setting the initial
         //       value, or the above line won't have any effect
-        for (var ch = 1; ch <= 4; ch++) {
-            var group = "[Channel" + ch + "]";
+        for (let ch = 1; ch <= 4; ch++) {
+            const group = "[Channel" + ch + "]";
+
             if (!TraktorS3.PitchSliderRelativeMode) {
                 engine.softTakeover(group, "rate", true);
             }
@@ -312,17 +314,16 @@ TraktorS3.Controller = class {
             engine.softTakeover(group, "pregain", true);
             engine.softTakeover("[QuickEffectRack1_" + group + "]", "super1", true);
         }
+
         for (let unit = 1; unit <= 4; unit++) {
-            group = "[EffectRack1_EffectUnit" + unit + "]";
-            let key = "mix";
-            engine.softTakeover(group, key, true);
+            engine.softTakeover("[EffectRack1_EffectUnit" + unit + "]", "mix", true);
+
             for (let effect = 1; effect <= 4; effect++) {
-                group = "[EffectRack1_EffectUnit" + unit + "_Effect" + effect + "]";
-                key = "meta";
-                engine.softTakeover(group, key, true);
+                const group = "[EffectRack1_EffectUnit" + unit + "_Effect" + effect + "]";
+
+                engine.softTakeover(group, "meta", true);
                 for (let param = 1; param <= 4; param++) {
-                    key = "parameter" + param;
-                    engine.softTakeover(group, key, true);
+                    engine.softTakeover(group, "parameter" + param, true);
                 }
             }
         }
@@ -455,9 +456,8 @@ TraktorS3.Controller = class {
         const outputA = new HIDPacket("outputA", 0x80);
         const outputB = new HIDPacket("outputB", 0x81);
 
-        for (var idx in this.Decks) {
-            var deck = this.Decks[idx];
-            deck.registerOutputs(outputA, outputB);
+        for (const idx in this.Decks) {
+            this.Decks[idx].registerOutputs(outputA, outputB);
         }
 
         outputA.addOutput("[Channel1]", "!deck_A", 0x0A, "B");
@@ -492,7 +492,7 @@ TraktorS3.Controller = class {
             "[Channel4]": 0x2E
         };
         for (const ch in VuOffsets) {
-            for (var i = 0; i < 14; i++) {
+            for (let i = 0; i < 14; i++) {
                 outputB.addOutput(ch, "!" + "VuMeter" + i, VuOffsets[ch] + i, "B");
             }
         }
@@ -501,7 +501,7 @@ TraktorS3.Controller = class {
             "VuMeterL": 0x3D,
             "VuMeterR": 0x46
         };
-        for (i = 0; i < 8; i++) {
+        for (let i = 0; i < 8; i++) {
             outputB.addOutput("[Master]", "!" + "VuMeterL" + i, MasterVuOffsets.VuMeterL + i, "B");
             outputB.addOutput("[Master]", "!" + "VuMeterR" + i, MasterVuOffsets.VuMeterR + i, "B");
         }
@@ -516,14 +516,12 @@ TraktorS3.Controller = class {
 
         this.hid.registerOutputPacket(outputB);
 
-        for (idx in this.Decks) {
-            deck = this.Decks[idx];
-            deck.linkOutputs();
+        for (const idx in this.Decks) {
+            this.Decks[idx].linkOutputs();
         }
 
-        for (idx in this.Channels) {
-            const chan = this.Channels[idx];
-            chan.linkOutputs();
+        for (const idx in this.Channels) {
+            this.Channels[idx].linkOutputs();
         }
 
         engine.connectControl("[Microphone]", "pfl", this.pflOutput);
@@ -538,7 +536,7 @@ TraktorS3.Controller = class {
         this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
 
         // Sampler callbacks
-        for (i = 1; i <= 8; ++i) {
+        for (let i = 1; i <= 8; ++i) {
             this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", TraktorS3.Controller.prototype.samplesOutput.bind(this)));
             this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play_indicator", TraktorS3.Controller.prototype.samplesOutput.bind(this)));
         }
@@ -704,7 +702,7 @@ TraktorS3.Controller = class {
         }
         // Freeze the lights while we do this update so we don't spam HID.
         this.batchingOutputs = true;
-        for (var packetName in this.hid.OutputPackets) {
+        for (const packetName in this.hid.OutputPackets) {
             const packet = this.hid.OutputPackets[packetName];
             let deckGroupName = "deck1";
             if (group === "[Channel2]" || group === "[Channel4]") {
@@ -748,7 +746,7 @@ TraktorS3.Controller = class {
         this.batchingOutputs = false;
         // And now send them all.
         if (sendPackets) {
-            for (packetName in this.hid.OutputPackets) {
+            for (const packetName in this.hid.OutputPackets) {
                 this.hid.OutputPackets[packetName].send();
             }
         }
@@ -1051,7 +1049,7 @@ TraktorS3.Deck = class {
 
         // Hotcues mode
         if (this.padModeState === 0) {
-            var action = this.shiftPressed ? "_clear" : "_activate";
+            const action = this.shiftPressed ? "_clear" : "_activate";
             engine.setValue(this.activeChannel, "hotcue_" + padNumber + action, field.value);
             return;
         }
@@ -1064,30 +1062,18 @@ TraktorS3.Deck = class {
 
         const playing = engine.getValue("[Sampler" + sampler + "]", "play");
         if (this.shiftPressed) {
-            if (playing) {
-                action = "cue_default";
-            } else {
-                action = "eject";
-            }
+            const action = playing ? "cue_default" : "eject";
             engine.setValue("[Sampler" + sampler + "]", action, field.value);
             return;
         }
         const loaded = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
         if (loaded) {
             if (TraktorS3.SamplerModePressAndHold) {
-                if (field.value) {
-                    action = "cue_gotoandplay";
-                } else {
-                    action = "stop";
-                }
+                const action = field.value ? "cue_gotoandplay" : "stop";
                 engine.setValue("[Sampler" + sampler + "]", action, 1);
             } else {
                 if (field.value) {
-                    if (playing) {
-                        action = "stop";
-                    } else {
-                        action = "cue_gotoandplay";
-                    }
+                    const action = playing ? "stop" : "cue_gotoandplay";
                     engine.setValue("[Sampler" + sampler + "]", action, 1);
                 }
             }
@@ -1541,7 +1527,7 @@ TraktorS3.Deck = class {
         if (this.padModeState === 1) {
             this.colorOutput(0, "hotcues");
             this.colorOutput(1, "samples");
-            for (var i = 1; i <= 8; i++) {
+            for (let i = 1; i <= 8; i++) {
                 let idx = i;
                 if (this.group === "deck2" && TraktorS3.SixteenSamplers) {
                     idx += 8;
@@ -1552,7 +1538,7 @@ TraktorS3.Deck = class {
         } else {
             this.colorOutput(1, "hotcues");
             this.colorOutput(0, "samples");
-            for (i = 1; i <= 8; ++i) {
+            for (let i = 1; i <= 8; ++i) {
                 this.lightHotcue(i);
             }
         }
@@ -1848,23 +1834,21 @@ TraktorS3.FXControl = class {
     }
 
     registerInputs(messageShort, messageLong) {
-        // FX Buttons
-        const fxFn = TraktorS3.FXControl.prototype;
-        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x08, fxFn.fxSelectHandler.bind(this));
-        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x08, 0x10, fxFn.fxSelectHandler.bind(this));
-        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x08, 0x20, fxFn.fxSelectHandler.bind(this));
-        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, fxFn.fxSelectHandler.bind(this));
-        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx0", 0x08, 0x80, fxFn.fxSelectHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x08, this.fxSelectHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x08, 0x10, this.fxSelectHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x08, 0x20, this.fxSelectHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, this.fxSelectHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[ChannelX]", "!fx0", 0x08, 0x80, this.fxSelectHandler.bind(this));
 
-        this.controller.registerInputButton(messageShort, "[Channel3]", "!fxEnabled", 0x07, 0x08, fxFn.fxEnableHandler.bind(this));
-        this.controller.registerInputButton(messageShort, "[Channel1]", "!fxEnabled", 0x07, 0x10, fxFn.fxEnableHandler.bind(this));
-        this.controller.registerInputButton(messageShort, "[Channel2]", "!fxEnabled", 0x07, 0x20, fxFn.fxEnableHandler.bind(this));
-        this.controller.registerInputButton(messageShort, "[Channel4]", "!fxEnabled", 0x07, 0x40, fxFn.fxEnableHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[Channel3]", "!fxEnabled", 0x07, 0x08, this.fxEnableHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[Channel1]", "!fxEnabled", 0x07, 0x10, this.fxEnableHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[Channel2]", "!fxEnabled", 0x07, 0x20, this.fxEnableHandler.bind(this));
+        this.controller.registerInputButton(messageShort, "[Channel4]", "!fxEnabled", 0x07, 0x40, this.fxEnableHandler.bind(this));
 
-        this.controller.registerInputScaler(messageLong, "[Channel1]", "!fxKnob", 0x39, 0xFFFF, fxFn.fxKnobHandler.bind(this));
-        this.controller.registerInputScaler(messageLong, "[Channel2]", "!fxKnob", 0x3B, 0xFFFF, fxFn.fxKnobHandler.bind(this));
-        this.controller.registerInputScaler(messageLong, "[Channel3]", "!fxKnob", 0x37, 0xFFFF, fxFn.fxKnobHandler.bind(this));
-        this.controller.registerInputScaler(messageLong, "[Channel4]", "!fxKnob", 0x3D, 0xFFFF, fxFn.fxKnobHandler.bind(this));
+        this.controller.registerInputScaler(messageLong, "[Channel1]", "!fxKnob", 0x39, 0xFFFF, this.fxKnobHandler.bind(this));
+        this.controller.registerInputScaler(messageLong, "[Channel2]", "!fxKnob", 0x3B, 0xFFFF, this.fxKnobHandler.bind(this));
+        this.controller.registerInputScaler(messageLong, "[Channel3]", "!fxKnob", 0x37, 0xFFFF, this.fxKnobHandler.bind(this));
+        this.controller.registerInputScaler(messageLong, "[Channel4]", "!fxKnob", 0x3D, 0xFFFF, this.fxKnobHandler.bind(this));
     }
 
     channelToIndex(group) {
@@ -1921,20 +1905,17 @@ TraktorS3.FXControl = class {
         // Ignore next values for all knob actions. This is safe to do for all knobs
         // even if we're ignoring knobs that aren't active in the new state.
         for (let ch = 1; ch <= 4; ch++) {
-            var group = "[Channel" + ch + "]";
-            engine.softTakeoverIgnoreNextValue("[QuickEffectRack1_" + group + "]", "super1");
+            engine.softTakeoverIgnoreNextValue(`[QuickEffectRack1_[Channel${ch}]]`, "super1");
         }
+
         for (let unit = 1; unit <= 4; unit++) {
-            group = "[EffectRack1_EffectUnit" + unit + "]";
-            key = "mix";
-            engine.softTakeoverIgnoreNextValue(group, key);
+            engine.softTakeoverIgnoreNextValue(`[EffectRack1_EffectUnit${unit}]`, "mix");
+
             for (let effect = 1; effect <= 4; effect++) {
-                group = "[EffectRack1_EffectUnit" + unit + "_Effect" + effect + "]";
-                key = "meta";
-                engine.softTakeoverIgnoreNextValue(group, key);
+                const group = `[EffectRack1_EffectUnit${unit}_Effect${effect}]`;
+                engine.softTakeoverIgnoreNextValue(group, "meta");
                 for (let param = 1; param <= 4; param++) {
-                    var key = "parameter" + param;
-                    engine.softTakeoverIgnoreNextValue(group, key);
+                    engine.softTakeoverIgnoreNextValue(group, "parameter" + param);
                 }
             }
         }
@@ -1984,13 +1965,10 @@ TraktorS3.FXControl = class {
                 for (const key in this.enablePressed) {
                     if (this.enablePressed[key]) {
                         if (fxNumber === 0) {
-                            var fxGroup = "[QuickEffectRack1_" + key + "_Effect1]";
-                            var fxKey = "enabled";
+                            script.toggleControl(`[QuickEffectRack1_${key}_Effect1]`, "enabled");
                         } else {
-                            fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
-                            fxKey = "group_" + key + "_enable";
+                            script.toggleControl(`[EffectRack1_EffectUnit${fxNumber}]`, `group_${key}_enable`);
                         }
-                        script.toggleControl(fxGroup, fxKey);
                     }
                 }
             } else {
@@ -2046,17 +2024,13 @@ TraktorS3.FXControl = class {
                 this.changeState(this.STATE_FOCUS);
                 engine.setValue(fxGroupPrefix + "]", "focused_effect", buttonNumber);
             } else {
-                var group = fxGroupPrefix + "_Effect" + buttonNumber + "]";
-                var key = "enabled";
-                script.toggleControl(group, key);
+                script.toggleControl(`${fxGroupPrefix}_Effect${buttonNumber}]`, "enabled");
             }
             break;
-        case this.STATE_FOCUS:
-            var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
-            group = fxGroupPrefix + "_Effect" + focusedEffect + "]";
-            key = "button_parameter" + buttonNumber;
-            script.toggleControl(group, key);
-            break;
+        case this.STATE_FOCUS: {
+            const focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
+            script.toggleControl(`${fxGroupPrefix}_Effect${focusedEffect}]`, "button_parameter" + buttonNumber);
+        } break;
         }
         this.lightFx();
     }
@@ -2080,16 +2054,13 @@ TraktorS3.FXControl = class {
             if (knobIdx === 4) {
                 engine.setParameter(fxGroupPrefix + "]", "mix", value);
             } else {
-                var group = fxGroupPrefix + "_Effect" + knobIdx + "]";
-                engine.setParameter(group, "meta", value);
+                engine.setParameter(`${fxGroupPrefix}_Effect${knobIdx}]`, "meta", value);
             }
             break;
-        case this.STATE_FOCUS:
-            var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
-            group = fxGroupPrefix + "_Effect" + focusedEffect + "]";
-            var key = "parameter" + knobIdx;
-            engine.setParameter(group, key, value);
-            break;
+        case this.STATE_FOCUS: {
+            const focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
+            engine.setParameter(`${fxGroupPrefix}_Effect${focusedEffect}]`, "parameter" + knobIdx, value);
+        } break;
         }
     }
 
@@ -2150,13 +2121,8 @@ TraktorS3.FXControl = class {
                 status = this.LIGHT_DIM;
                 const pressed = this.firstPressedEnable();
                 if (pressed) {
-                    if (idx === 0) {
-                        var fxGroup = "[QuickEffectRack1_" + pressed + "_Effect1]";
-                        var fxKey = "enabled";
-                    } else {
-                        fxGroup = "[EffectRack1_EffectUnit" + idx + "]";
-                        fxKey = "group_" + pressed + "_enable";
-                    }
+                    const fxGroup = idx === 0 ? `[QuickEffectRack1_${pressed}_Effect1]` : `[EffectRack1_EffectUnit${idx}]`;
+                    const fxKey = idx === 0 ? "enabled" : `group_${pressed}_enable`;
                     if (engine.getParameter(fxGroup, fxKey)) {
                         status = this.LIGHT_BRIGHT;
                     } else {
@@ -2214,9 +2180,7 @@ TraktorS3.FXControl = class {
                 status = this.LIGHT_BRIGHT;
             } else {
                 for (let idx = 1; idx <= 4 && status === this.LIGHT_OFF; idx++) {
-                    var group = "[EffectRack1_EffectUnit" + idx + "]";
-                    var key = "group_" + channel + "_enable";
-                    if (engine.getParameter(group, key)) {
+                    if (engine.getParameter(`[EffectRack1_EffectUnit${idx}]`, `group_${channel}_enable`)) {
                         status = this.LIGHT_DIM;
                     }
                 }
@@ -2231,7 +2195,7 @@ TraktorS3.FXControl = class {
                 status = this.LIGHT_BRIGHT;
             } else {
                 // off if nothing loaded, dim if loaded, bright if enabled.
-                group = "[EffectRack1_EffectUnit" + this.activeFX + "_Effect" + buttonNumber + "]";
+                const group = "[EffectRack1_EffectUnit" + this.activeFX + "_Effect" + buttonNumber + "]";
                 if (engine.getParameter(group, "loaded")) {
                     status = this.LIGHT_DIM;
                 }
@@ -2248,8 +2212,8 @@ TraktorS3.FXControl = class {
             } else {
                 const fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
                 const focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
-                group = fxGroupPrefix + "_Effect" + focusedEffect + "]";
-                key = "button_parameter" + buttonNumber;
+                const group = `${fxGroupPrefix}_Effect${focusedEffect}]`;
+                const key = "button_parameter" + buttonNumber;
                 // Off if not loaded, dim if loaded, bright if enabled.
                 if (engine.getParameter(group, key + "_loaded")) {
                     status = this.LIGHT_DIM;
@@ -2336,12 +2300,12 @@ TraktorS3.debugLights = function() {
 TraktorS3.shutdown = function() {
     // Deactivate all LEDs
     let packet = Array(267);
-    for (var i = 0; i < packet.length; i++) {
+    for (let i = 0; i < packet.length; i++) {
         packet[i] = 0;
     }
     controller.send(packet, packet.length, 0x80);
     packet = Array(251);
-    for (i = 0; i < packet.length; i++) {
+    for (let i = 0; i < packet.length; i++) {
         packet[i] = 0;
     }
     controller.send(packet, packet.length, 0x81);
