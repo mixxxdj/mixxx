@@ -96,8 +96,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
             m_postGainNew = 1;
         } else {
-            // Determined by fitting a polynomial on the output. See TODO: link
-            // the PR here for a Jupyter notebook
+            // See https://github.com/mixxxdj/mixxx/pull/11177 for the Jupyter
+            // notebook used to derive this
             m_postGainNew = 1.0001784074555027f + (resonance * 0.9331585678097162f);
         }
 
