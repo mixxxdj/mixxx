@@ -96,7 +96,9 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // See https://github.com/mixxxdj/mixxx/pull/11177 for the Jupyter
         // notebook used to derive this
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
-            m_postGainNew = 0.8478175496499384f + (0.09022626934231257f * resonance);
+            // This for all intents and purposes is just 1.0, so let's just stick with that
+            // m_postGainNew = 0.9999999983339118f + (4.58745459575558e-13f * resonance);
+            m_postGainNew = 1.0;
         } else {
             m_postGainNew = 1.0001784074555027f + (0.9331585678097162f * resonance);
         }
