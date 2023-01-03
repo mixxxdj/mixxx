@@ -221,7 +221,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
     return QVariant();
 }
 
-QString ControllerInputMappingTableModel::displayString(const QModelIndex& index) const {
+QString ControllerInputMappingTableModel::getDisplayString(const QModelIndex& index) const {
     if (!m_pMidiMapping || !m_pTableView || !index.isValid()) {
         return QString();
     }

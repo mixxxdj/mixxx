@@ -120,7 +120,7 @@ bool ControllerMappingTableProxyModel::filterAcceptsRow(int sourceRow,
         int column = 0;
         while (column < columnCount()) {
             QModelIndex index = m_pModel->index(sourceRow, column, sourceParent);
-            QString strData = m_pModel->displayString(index);
+            QString strData = m_pModel->getDisplayString(index);
             if (!strData.isEmpty()) {
                 QString tokNoQuotes = token;
                 tokNoQuotes.remove('\"');

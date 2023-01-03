@@ -190,7 +190,7 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
     return QVariant();
 }
 
-QString ControllerOutputMappingTableModel::displayString(const QModelIndex& index) const {
+QString ControllerOutputMappingTableModel::getDisplayString(const QModelIndex& index) const {
     if (!m_pMidiMapping || !m_pTableView || !index.isValid()) {
         return QString();
     }

@@ -33,7 +33,7 @@ class ControllerMappingTableModel : public QAbstractTableModel {
                         int role = Qt::DisplayRole) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-    virtual QString displayString(const QModelIndex& index) const = 0;
+    virtual QString getDisplayString(const QModelIndex& index) const = 0;
 
   protected:
     // Called after a mapping is loaded. If the mapping is a MIDI mapping,
