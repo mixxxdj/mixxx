@@ -93,12 +93,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // Resonance correction for self oscillation ~4
         m_kacrNew = resonance * (-3.9364f * (kfc * kfc) + 1.8409f * kfc + 0.9968f);
 
+        // See https://github.com/mixxxdj/mixxx/pull/11177 for the Jupyter
+        // notebook used to derive this
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
-            m_postGainNew = 1;
+            m_postGainNew = 0.8478175496499384f + (0.09022626934231257f * resonance);
         } else {
-            // See https://github.com/mixxxdj/mixxx/pull/11177 for the Jupyter
-            // notebook used to derive this
-            m_postGainNew = 1.0001784074555027f + (resonance * 0.9331585678097162f);
+            m_postGainNew = 1.0001784074555027f + (0.9331585678097162f * resonance);
         }
 
         m_doRamping = true;
