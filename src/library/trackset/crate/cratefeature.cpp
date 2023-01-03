@@ -22,6 +22,7 @@
 #include "moc_cratefeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/defs.h"
 #include "util/dnd.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
@@ -70,6 +71,7 @@ void CrateFeature::initActions() {
             &CrateFeature::slotCreateCrate);
 
     m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
+    m_pRenameCrateAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenameCrateAction.get(),
             &QAction::triggered,
             this,
@@ -80,6 +82,11 @@ void CrateFeature::initActions() {
             this,
             &CrateFeature::slotDuplicateCrate);
     m_pDeleteCrateAction = make_parented<QAction>(tr("Remove"), this);
+    const auto removeKeySequence =
+            // TODO(XXX): Qt6 replace enum | with QKeyCombination
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
+    m_pDeleteCrateAction->setShortcut(removeKeySequence);
     connect(m_pDeleteCrateAction.get(),
             &QAction::triggered,
             this,
@@ -400,6 +407,11 @@ void CrateFeature::slotCreateCrate() {
     }
 }
 
+void CrateFeature::deleteItem(const QModelIndex& index) {
+    m_lastRightClickedIndex = index;
+    slotDeleteCrate();
+}
+
 void CrateFeature::slotDeleteCrate() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
@@ -413,7 +425,8 @@ void CrateFeature::slotDeleteCrate() {
         storePrevSiblingCrateId(crateId);
         QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
                 tr("Confirm Deletion"),
-                tr("Do you really want to delete this crate?"),
+                tr("Do you really want to delete crate <b>%1</b>?")
+                        .arg(crate.getName()),
                 QMessageBox::Yes | QMessageBox::No,
                 QMessageBox::No);
         if (btn == QMessageBox::Yes) {
@@ -426,6 +439,11 @@ void CrateFeature::slotDeleteCrate() {
         }
     }
     qWarning() << "Failed to delete selected crate";
+}
+
+void CrateFeature::renameItem(const QModelIndex& index) {
+    m_lastRightClickedIndex = index;
+    slotRenameCrate();
 }
 
 void CrateFeature::slotRenameCrate() {
@@ -562,6 +580,7 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
                 m_pSidebarModel->getItem(index), crateSummary);
         m_pSidebarModel->triggerRepaint(index);
     }
+
     if (m_selectedTrackId.isValid()) {
         // Crates containing the currently selected track might
         // have been modified.
