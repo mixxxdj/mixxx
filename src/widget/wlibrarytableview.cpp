@@ -57,7 +57,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 WLibraryTableView::~WLibraryTableView() {
 }
 
-
 void WLibraryTableView::moveSelection(int delta) {
     QAbstractItemModel* pModel = model();
 
@@ -260,4 +259,56 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
             scrollTo(currentIndex());
         }
     }
+}
+
+QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
+        Qt::KeyboardModifiers modifiers) {
+    // The up and down cursor keys should wrap the list around. This behavior
+    // also applies to the `[Library],MoveVertical` action that is usually bound
+    // to the library browse encoder on controllers. Otherwise browsing a
+    // key-sorted library list requires either a serious workout or the user
+    // needs to reach for the mouse or keyboard when moving between 12/C#m/E and
+    // 1/G#m/B.
+    QAbstractItemModel* pModel = model();
+    if (pModel &&
+            (cursorAction == QAbstractItemView::MoveUp ||
+                    cursorAction == QAbstractItemView::MoveDown)) {
+        // This is very similar to `moveSelection()`, except that it doesn't
+        // actually modify the selection
+        const QModelIndex current = currentIndex();
+        if (current.isValid()) {
+            const int row = currentIndex().row();
+            const int column = currentIndex().column();
+            if (cursorAction == QAbstractItemView::MoveDown) {
+                if (row + 1 < pModel->rowCount()) {
+                    return pModel->index(row + 1, column);
+                } else {
+                    return pModel->index(0, column);
+                }
+            } else {
+                if (row - 1 >= 0) {
+                    return pModel->index(row - 1, column);
+                } else {
+                    return pModel->index(pModel->rowCount() - 1, column);
+                }
+            }
+        } else {
+            // Selecting a hidden column doesn't work, so we'll need to find the
+            // first non-hidden column here
+            int column = 0;
+            while (isColumnHidden(column) && column < pModel->columnCount()) {
+                column++;
+            }
+
+            // If the cursor does not yet exist (because the view has not yet
+            // been interacted with) then this selects the first/last row
+            if (cursorAction == QAbstractItemView::MoveDown) {
+                return pModel->index(0, column);
+            } else {
+                return pModel->index(pModel->rowCount() - 1, column);
+            }
+        }
+    }
+
+    return QTableView::moveCursor(cursorAction, modifiers);
 }

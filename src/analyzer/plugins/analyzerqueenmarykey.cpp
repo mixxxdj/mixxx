@@ -61,8 +61,9 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
             windowSize, stepSize, [this](double* pWindow, size_t) {
                 int iKey = m_pKeyMode->process(pWindow);
 
-                VERIFY_OR_DEBUG_ASSERT(ChromaticKey_IsValid(iKey)) {
+                if (!ChromaticKey_IsValid(iKey)) {
                     qWarning() << "No valid key detected in analyzed window:" << iKey;
+                    DEBUG_ASSERT(!"iKey is invalid");
                     return false;
                 }
                 const auto key = static_cast<ChromaticKey>(iKey);
@@ -76,7 +77,7 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
             });
 }
 
-bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, SINT iLen) {
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     if (!m_pKeyMode) {
         return false;

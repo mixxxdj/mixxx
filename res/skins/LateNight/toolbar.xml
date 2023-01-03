@@ -182,6 +182,10 @@
                     </Connection>
                   </VuMeter>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Master],audio_latency_overload</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
               </WidgetGroup><!-- LatencyMeterBox -->
               <Label>
                 <ObjectName>LatencyLabel</ObjectName>

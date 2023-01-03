@@ -508,7 +508,7 @@ TraktorS2MK3.microphoneHandler = function (field) {
     } else {
         // Button is released, check if timer is still running
         if (TraktorS2MK3.microphonePressedTimer !== 0) {
-            // short klick -> permanent activation
+            // short click -> permanent activation
             TraktorS2MK3.microphonePressedTimer = 0;
         } else {
             engine.setValue("[Microphone]", "talkover", 0);

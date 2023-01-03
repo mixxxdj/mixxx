@@ -592,7 +592,7 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
 		}
 
-	} else { // en stop hace scratch siempre
+    } else { // stop scratching
 
 		if (!NumarkMixTrackPro.touch[deck-1]){
 
@@ -639,7 +639,7 @@ NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
 
 	} else {
 
-		// si esta en play y el modo scratch desactivado, al presionar el touch no hace nada
+		// if playing and scratch mode is disabled, do nothing on press
 		if (!NumarkMixTrackPro.scratchMode[deck-1] && engine.getValue(group, "play")) return;
 
 		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);

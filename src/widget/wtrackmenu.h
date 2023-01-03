@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <memory>
 
+#include "analyzer/analyzertrack.h"
 #include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
@@ -23,8 +24,8 @@ class Library;
 class TrackModel;
 class WColorPickerAction;
 class WCoverArtMenu;
-class WSearchRelatedTracksMenu;
 class WFindOnWebMenu;
+class WSearchRelatedTracksMenu;
 
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
@@ -116,6 +117,8 @@ class WTrackMenu : public QMenu {
     // Analysis
     void slotAnalyze();
     void slotReanalyze();
+    void slotReanalyzeWithFixedTempo();
+    void slotReanalyzeWithVariableTempo();
 
     // BPM
     void slotLockBpm();
@@ -188,7 +191,7 @@ class WTrackMenu : public QMenu {
     void updateSelectionCrates(QWidget* pWidget);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
-    void addToAnalysis();
+    void addToAnalysis(AnalyzerTrack::Options options = AnalyzerTrack::Options());
 
     void clearBeats();
     void lockBpm(bool lock);
@@ -231,7 +234,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
-    parented_ptr<WFindOnWebMenu> m_pFindOnMenu;
+    parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
     QMenu* m_pRemoveFromDiskMenu{};
 
     // Update ReplayGain from Track
@@ -287,6 +290,8 @@ class WTrackMenu : public QMenu {
     // Analysis actions
     QAction* m_pAnalyzeAction{};
     QAction* m_pReanalyzeAction{};
+    QAction* m_pReanalyzeConstBpmAction{};
+    QAction* m_pReanalyzeVarBpmAction{};
 
     // Clear track metadata actions
     QAction* m_pClearBeatsAction{};

@@ -40,7 +40,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_alphaBeatGrid(90),
           // Really create some to manage those;
           m_visualPlayPosition(nullptr),
-          m_playPos(-1),
           m_playPosVSample(0),
           m_totalVSamples(0),
           m_pRateRatioCO(nullptr),
@@ -50,7 +49,9 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_pTrackSamplesControlObject(nullptr),
           m_trackSamples(0.0),
           m_scaleFactor(1.0),
-          m_playMarkerPosition(s_defaultPlayMarkerPosition) {
+          m_playMarkerPosition(s_defaultPlayMarkerPosition),
+          m_passthroughEnabled(false),
+          m_playPos(-1) {
     //qDebug() << "WaveformWidgetRenderer";
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
@@ -104,6 +105,11 @@ bool WaveformWidgetRenderer::init() {
 }
 
 void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
+    if (m_passthroughEnabled) {
+        m_playPos = -1; // disables renderers in draw()
+        return;
+    }
+
     // For a valid track to render we need
     m_trackSamples = static_cast<int>(m_pTrackSamplesControlObject->get());
     if (m_trackSamples <= 0) {
@@ -183,11 +189,14 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     //timer.start();
 
     // not ready to display need to wait until track initialization is done
-    // draw only first is stack (background)
+    // draw only first in stack (background)
     int stackSize = m_rendererStack.size();
     if (m_trackSamples <= 0.0 || m_playPos == -1) {
         if (stackSize) {
             m_rendererStack.at(0)->draw(painter, event);
+        }
+        if (m_passthroughEnabled) {
+            drawPassthroughLabel(painter);
         }
         return;
     } else {
@@ -307,6 +316,44 @@ void WaveformWidgetRenderer::drawTriangle(QPainter* painter,
     painter->fillPath(triangle, fillColor);
 }
 
+void WaveformWidgetRenderer::drawPassthroughLabel(QPainter* painter) {
+    QFont font;
+    font.setFamily("Open Sans"); // default label font
+    // Make the label always fit
+    font.setPixelSize(math_min(25, int(m_height * 0.8)));
+    font.setWeight(75); // bold
+    font.setItalic(false);
+
+    QString label = QObject::tr("Passthrough");
+    QFontMetrics metrics(font);
+    QRect labelRect = metrics.boundingRect(label);
+    // Center label
+    labelRect.moveTo(
+            int(m_width / 2 - labelRect.width() / 2),
+            int(m_height / 2 - labelRect.height() / 2));
+
+    // Draw text
+    painter->setBrush(QBrush(QColor(0, 0, 0, 0)));
+    painter->setFont(font);
+    painter->setPen(m_passthroughLabelColor);
+    painter->drawText(labelRect, Qt::AlignCenter, label);
+}
+
+void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
+    m_passthroughEnabled = enabled;
+    // Nothing to do if passthrough is disabled
+    if (!enabled) {
+        return;
+    }
+    // If passthrough is activated while no track has been loaded previously mark
+    // the renderer state dirty in order trigger the render process. This is only
+    // required for the background renderer since that's the only one that'll
+    // be processed if passtrhough is active.
+    if (m_rendererStack.size()) {
+        m_rendererStack[0]->setDirty(true);
+    }
+}
+
 void WaveformWidgetRenderer::resize(int width, int height, float devicePixelRatio) {
     m_width = width;
     m_height = height;
@@ -338,6 +385,7 @@ void WaveformWidgetRenderer::setup(
         m_rendererStack[i]->setScaleFactor(m_scaleFactor);
         m_rendererStack[i]->setup(node, context);
     }
+    m_passthroughLabelColor = m_colors.getPassthroughLabelColor();
 }
 
 void WaveformWidgetRenderer::setZoom(double zoom) {
@@ -379,4 +427,16 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
         }
     }
     return nullptr;
+}
+
+CuePointer WaveformWidgetRenderer::getCuePointerFromIndex(int cueIndex) const {
+    if (cueIndex != Cue::kNoHotCue && m_pTrack) {
+        const QList<CuePointer> cueList = m_pTrack->getCuePoints();
+        for (const auto& pCue : cueList) {
+            if (pCue->getHotCue() == cueIndex) {
+                return pCue;
+            }
+        }
+    }
+    return {};
 }

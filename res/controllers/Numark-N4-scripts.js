@@ -286,14 +286,14 @@ NumarkN4.topContainer.prototype = new components.ComponentContainer();
 
 NumarkN4.MixerTemplate = function() {
     //channel will always be 0 it can be "hardcoded" into the components
-    this.deckChangeL = new components.Button ({
+    this.deckChangeL = new components.Button({
         midi: [0xB0, 0x50],
         input: function(_channel, _control, value, _status, _group) {
             this.output(value);
             //just "echos" the midi since the controller knows the deck its on itself but doesn't update the corresponding leds.
         },
     });
-    this.deckChangeR = new components.Button ({
+    this.deckChangeR = new components.Button({
         midi: [0xB0, 0x51],
         input: function(_channel, _control, value, _status, _group) {
             this.output(value);
@@ -581,7 +581,7 @@ NumarkN4.Deck = function(channel) {
             theDeck.blinkTimer=0;
             return; // return early so no new timer gets created.
         }
-        // this previouslyLoaded guard is needed because everytime a new track gets
+        // this previouslyLoaded guard is needed because every time a new track gets
         // loaded into a deck without previously ejecting, a new timer would get
         // spawned which conflicted with the old (still running) timers.
         if (!this.previouslyLoaded) {
@@ -641,7 +641,7 @@ NumarkN4.Deck = function(channel) {
         midi: [0xB0+channel, 0x01, 0xB0+channel, 0x37], //only specifying input MSB
         inKey: "rate",
         group: theDeck.group,
-        invert: false,
+        invert: true,
     });
     this.pitchLedHandler = engine.makeConnection(this.group, "rate", function(value) {
     // Turns on when rate slider is centered

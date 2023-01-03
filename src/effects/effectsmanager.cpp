@@ -127,34 +127,34 @@ EffectChainPointer EffectsManager::getStandardEffectChain(int unitNumber) const 
     return m_standardEffectChains.at(unitNumber);
 }
 
-void EffectsManager::addDeck(const QString& deckGroupName) {
-    addEqualizerEffectChain(deckGroupName);
-    addQuickEffectChain(deckGroupName);
+void EffectsManager::addDeck(const ChannelHandleAndGroup& deckHandleGroup) {
+    addEqualizerEffectChain(deckHandleGroup);
+    addQuickEffectChain(deckHandleGroup);
 }
 
-void EffectsManager::addEqualizerEffectChain(const QString& deckGroupName) {
+void EffectsManager::addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {
     VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChains.contains(
-            EqualizerEffectChain::formatEffectChainGroup(deckGroupName))) {
+            EqualizerEffectChain::formatEffectChainGroup(deckHandleGroup.name()))) {
         return;
     }
 
     auto pChainSlot = EqualizerEffectChainPointer(
-            new EqualizerEffectChain(deckGroupName, this, m_pMessenger));
+            new EqualizerEffectChain(deckHandleGroup, this, m_pMessenger));
 
-    m_equalizerEffectChains.insert(deckGroupName, pChainSlot);
+    m_equalizerEffectChains.insert(deckHandleGroup.name(), pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
-void EffectsManager::addQuickEffectChain(const QString& deckGroupName) {
+void EffectsManager::addQuickEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {
     VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChains.contains(
-            QuickEffectChain::formatEffectChainGroup(deckGroupName))) {
+            QuickEffectChain::formatEffectChainGroup(deckHandleGroup.name()))) {
         return;
     }
 
     auto pChainSlot = QuickEffectChainPointer(
-            new QuickEffectChain(deckGroupName, this, m_pMessenger));
+            new QuickEffectChain(deckHandleGroup, this, m_pMessenger));
 
-    m_quickEffectChains.insert(deckGroupName, pChainSlot);
+    m_quickEffectChains.insert(deckHandleGroup.name(), pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 

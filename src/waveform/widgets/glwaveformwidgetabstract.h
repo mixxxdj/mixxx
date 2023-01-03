@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QGLWidget>
-#include <QString>
 
 #include "waveform/renderers/glwaveformrenderer.h"
 #include "waveform/sharedglcontext.h"
@@ -9,10 +8,12 @@
 
 QT_FORWARD_DECLARE_CLASS(QString)
 
-/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & QGLWidget that has
-/// a GLWaveformRenderer member which requires initialization that must be
-/// deferred until Qt calls QGLWidget::initializeGL and cannot be done in the
-/// constructor.
+/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & QGLWidget. Its optional
+/// member GLWaveformRenderer* m_pGlRenderer can implement a virtual method
+/// onInitializeGL, which will be called from GLWaveformRenderer::initializeGL
+/// (which overrides QGLWidget::initializeGL). This can be used for initialization
+/// that must be deferred until the GL context has been initialized and that can't
+/// be done in the constructor.
 class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget {
   public:
     GLWaveformWidgetAbstract(const QString& group, QWidget* parent)

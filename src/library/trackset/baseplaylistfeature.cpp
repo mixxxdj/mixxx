@@ -1,5 +1,7 @@
 #include "library/trackset/baseplaylistfeature.h"
 
+#include <qlist.h>
+
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
@@ -19,6 +21,7 @@
 #include "library/treeitemmodel.h"
 #include "moc_baseplaylistfeature.cpp"
 #include "track/track.h"
+#include "track/trackid.h"
 #include "util/assert.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
@@ -652,7 +655,11 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
-            emit analyzeTracks(ids);
+            QList<AnalyzerScheduledTrack> tracks;
+            for (auto id : ids) {
+                tracks.append(id);
+            }
+            emit analyzeTracks(tracks);
         }
     }
 }

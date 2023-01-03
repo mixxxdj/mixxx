@@ -291,7 +291,7 @@
 
     const HotcueButton = function(options) {
         if (options.number === undefined) {
-            print("ERROR: No hotcue number specified for new HotcueButton.");
+            console.warn("ERROR: No hotcue number specified for new HotcueButton.");
             return;
         }
         if (options.colorMapper !== undefined || options.sendRGB !== undefined) {
@@ -324,7 +324,7 @@
             // Sends the color from the colorCode to the controller. This
             // method will not be called if no colorKey has been specified.
             if (colorCode === undefined || colorCode < 0 || colorCode > 0xFFFFFF) {
-                print("Ignoring invalid color code '" + colorCode + "' in outputColor()");
+                console.warn("Ignoring invalid color code '" + colorCode + "' in outputColor()");
                 return;
             }
 
@@ -359,7 +359,7 @@
     });
     const SamplerButton = function(options) {
         if (options.number === undefined) {
-            print("ERROR: No sampler number specified for new SamplerButton.");
+            console.warn("ERROR: No sampler number specified for new SamplerButton.");
             return;
         }
         this.volumeByVelocity = options.volumeByVelocity;
@@ -448,6 +448,7 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
+        softTakeover: true,
         input: function(channel, control, value, _status, _group) {
             if (this.MSB !== undefined) {
                 value = (this.MSB << 7) + value;
@@ -489,7 +490,7 @@
             }
         },
         connect: function() {
-            if (this.firstValueReceived && !this.relative) {
+            if (this.firstValueReceived && !this.relative && this.softTakeover) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
         },
@@ -520,7 +521,7 @@
     ComponentContainer.prototype = {
         forEachComponent: function(operation, recursive) {
             if (typeof operation !== "function") {
-                print("ERROR: ComponentContainer.forEachComponent requires a function argument");
+                console.warn("ERROR: ComponentContainer.forEachComponent requires a function argument");
                 return;
             }
             if (recursive === undefined) { recursive = true; }
@@ -546,7 +547,7 @@
         },
         forEachComponentContainer: function(operation, recursive) {
             if (typeof operation !== "function") {
-                print("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
+                console.warn("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
                 return;
             }
             if (recursive === undefined) { recursive = true; }
@@ -684,7 +685,7 @@
                 isFinite(deckNumbers)) {
             this.deckNumbers = [deckNumbers];
         } else {
-            print("ERROR! new Deck() called without specifying any deck numbers");
+            console.warn("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
         this.currentDeck = "[Channel" + this.deckNumbers[0] + "]";
@@ -724,6 +725,67 @@
             }
             this.setCurrentDeck("[Channel" + this.deckNumbers[index] + "]");
         }
+    });
+
+    const JogWheelBasic = function(options) {
+        Component.call(this, options);
+
+        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
+
+        if (!_.isInteger(this.deck)) {
+            console.warn("missing scratch deck");
+            return;
+        }
+        if (this.deck <= 0) {
+            console.warn("invalid deck number: " + this.deck);
+            return;
+        }
+        if (!_.isInteger(this.wheelResolution)) {
+            console.warn("missing jogwheel resolution");
+            return;
+        }
+        if (!_.isFinite(this.alpha)) {
+            console.warn("missing alpha scratch parameter value");
+            return;
+        }
+        if (!_.isFinite(this.beta)) {
+            this.beta = this.alpha / 32;
+        }
+        if (!_.isFinite(this.rpm)) {
+            this.rpm = 33 + 1/3;
+        }
+        if (this.group === undefined) {
+            this.group = "[Channel" + this.deck + "]";
+        }
+        this.inKey = "jog";
+    };
+
+    JogWheelBasic.prototype = new Component({
+        vinylMode: true,
+        isPress: Button.prototype.isPress,
+        inValueScale: function(value) {
+            // default implementation for converting signed ints
+            return value < 0x40 ? value : value - (this.max + 1);
+        },
+        inputWheel: function(_channel, _control, value, _status, _group) {
+            value = this.inValueScale(value);
+            if (engine.isScratching(this.deck)) {
+                engine.scratchTick(this.deck, value);
+            } else {
+                this.inSetValue(value);
+            }
+        },
+        inputTouch: function(channel, control, value, status, _group) {
+            if (this.isPress(channel, control, value, status) && this.vinylMode) {
+                engine.scratchEnable(this.deck,
+                    this.wheelResolution,
+                    this.rpm,
+                    this.alpha,
+                    this.beta);
+            } else {
+                engine.scratchDisable(this.deck);
+            }
+        },
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
@@ -833,7 +895,7 @@
                   isFinite(unitNumbers)) {
             this.unitNumbers = [unitNumbers];
         } else {
-            print("ERROR! new EffectUnit() called without specifying any unit numbers!");
+            console.warn("ERROR! new EffectUnit() called without specifying any unit numbers!");
             return;
         }
 
@@ -1178,6 +1240,7 @@
     exports.Encoder = Encoder;
     exports.ComponentContainer = ComponentContainer;
     exports.Deck = Deck;
+    exports.JogWheelBasic = JogWheelBasic;
     exports.EffectUnit = EffectUnit;
     global.components = exports;
 }(this));

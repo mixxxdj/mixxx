@@ -63,8 +63,8 @@ WSpinny::WSpinny(
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
           m_pPlayer(pPlayer),
-          m_pDlgCoverArt(new DlgCoverArtFullSize(parent, pPlayer)),
-          m_pCoverMenu(new WCoverArtMenu(this)) {
+          m_pCoverMenu(new WCoverArtMenu(this)),
+          m_pDlgCoverArt(new DlgCoverArtFullSize(this, pPlayer, m_pCoverMenu)) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
 #else
@@ -297,7 +297,7 @@ void WSpinny::slotCoverFound(
         mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
+    Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
     if (pRequestor == this &&
             m_loadedTrack &&
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {

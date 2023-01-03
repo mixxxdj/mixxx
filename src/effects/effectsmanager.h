@@ -26,7 +26,7 @@ class EffectsManager {
     virtual ~EffectsManager();
 
     void setup();
-    void addDeck(const QString& deckGroupName);
+    void addDeck(const ChannelHandleAndGroup& deckHandleGroup);
 
     EffectChainPointer getEffectChain(const QString& group) const;
     EqualizerEffectChainPointer getEqualizerEffectChain(
@@ -75,8 +75,8 @@ class EffectsManager {
     void addStandardEffectChains();
     void addOutputEffectChain();
 
-    void addEqualizerEffectChain(const QString& deckGroupName);
-    void addQuickEffectChain(const QString& deckGroupName);
+    void addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup);
+    void addQuickEffectChain(const ChannelHandleAndGroup& deckHandleGroup);
 
     void readEffectsXml();
     void saveEffectsXml();
