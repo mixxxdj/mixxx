@@ -77,3 +77,15 @@ Qt::ItemFlags ControllerMappingTableModel::flags(const QModelIndex& index) const
     Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
     return defaultFlags | Qt::ItemIsEditable;
 }
+
+ControllerMappingTableProxyModel::ControllerMappingTableProxyModel(
+        ControllerMappingTableModel* sourceModel) {
+    VERIFY_OR_DEBUG_ASSERT(sourceModel) {
+        return;
+    }
+    setSourceModel(sourceModel);
+    setSortRole(Qt::UserRole);
+}
+
+ControllerMappingTableProxyModel::~ControllerMappingTableProxyModel() {
+}

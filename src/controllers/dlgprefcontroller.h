@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QHash>
-#include <QSortFilterProxyModel>
 #include <memory>
 
 #include "controllers/controllerinputmappingtablemodel.h"
@@ -119,9 +118,9 @@ class DlgPrefController : public DlgPreferencePage {
     std::shared_ptr<LegacyControllerMapping> m_pMapping;
     QMap<QString, bool> m_pOverwriteMappings;
     ControllerInputMappingTableModel* m_pInputTableModel;
-    QSortFilterProxyModel* m_pInputProxyModel;
+    ControllerMappingTableProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
-    QSortFilterProxyModel* m_pOutputProxyModel;
+    ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
 };

@@ -4,6 +4,7 @@
 #include <QAbstractTableModel>
 #include <QHash>
 #include <QModelIndex>
+#include <QSortFilterProxyModel>
 #include <QVariant>
 #include <QVector>
 
@@ -39,4 +40,11 @@ class ControllerMappingTableModel : public QAbstractTableModel {
 
     QVector<QHash<int, QVariant>> m_headerInfo;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
+};
+
+class ControllerMappingTableProxyModel : public QSortFilterProxyModel {
+    Q_OBJECT
+  public:
+    explicit ControllerMappingTableProxyModel(ControllerMappingTableModel* sourceModel);
+    ~ControllerMappingTableProxyModel();
 };

@@ -790,19 +790,19 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     // copy but if someone did they might not expect it to change.
     m_pMapping = pMapping;
 
+    // Inputs tab
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this);
     pInputModel->setMapping(pMapping);
 
-    QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
-    pInputProxyModel->setSortRole(Qt::UserRole);
-    pInputProxyModel->setSourceModel(pInputModel);
+    ControllerMappingTableProxyModel* pInputProxyModel =
+            new ControllerMappingTableProxyModel(pInputModel);
     m_ui.m_pInputMappingTableView->setModel(pInputProxyModel);
 
     for (int i = 0; i < pInputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
             i, m_ui.m_pInputMappingTableView);
-        if (pDelegate != nullptr) {
+        if (pDelegate) {
             qDebug() << "Setting input delegate for column" << i << pDelegate;
             m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
@@ -814,19 +814,19 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     delete m_pInputTableModel;
     m_pInputTableModel = pInputModel;
 
+    // Outputs tab
     ControllerOutputMappingTableModel* pOutputModel =
             new ControllerOutputMappingTableModel(this);
     pOutputModel->setMapping(pMapping);
 
-    QSortFilterProxyModel* pOutputProxyModel = new QSortFilterProxyModel(this);
-    pOutputProxyModel->setSortRole(Qt::UserRole);
-    pOutputProxyModel->setSourceModel(pOutputModel);
+    ControllerMappingTableProxyModel* pOutputProxyModel =
+            new ControllerMappingTableProxyModel(pOutputModel);
     m_ui.m_pOutputMappingTableView->setModel(pOutputProxyModel);
 
     for (int i = 0; i < pOutputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pOutputModel->delegateForColumn(
             i, m_ui.m_pOutputMappingTableView);
-        if (pDelegate != nullptr) {
+        if (pDelegate) {
             qDebug() << "Setting output delegate for column" << i << pDelegate;
             m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
