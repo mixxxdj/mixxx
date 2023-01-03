@@ -117,8 +117,7 @@ bool ControllerMappingTableProxyModel::filterAcceptsRow(int sourceRow,
 
     for (const auto& token : std::as_const(tokens)) {
         bool tokenMatch = false;
-        int column = 0;
-        while (column < columnCount()) {
+        for (int column = 0; column < columnCount(); column++) {
             QModelIndex index = m_pModel->index(sourceRow, column, sourceParent);
             QString strData = m_pModel->getDisplayString(index);
             if (!strData.isEmpty()) {
@@ -132,7 +131,6 @@ bool ControllerMappingTableProxyModel::filterAcceptsRow(int sourceRow,
             if (tokenMatch) {
                 break;
             }
-            column++;
         }
     }
 
