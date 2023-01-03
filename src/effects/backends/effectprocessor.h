@@ -12,6 +12,7 @@
 #include "engine/engine.h"
 #include "util/sample.h"
 #include "util/types.h"
+#include "util/unique_ptr_vector.h"
 
 /// Effects are implemented as two separate classes, an EffectState subclass and
 /// an EffectProcessorImpl subclass. Separating state from the DSP code allows
@@ -246,5 +247,5 @@ class EffectProcessorImpl : public EffectProcessor {
 
   private:
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
-    ChannelHandleMap<std::vector<std::unique_ptr<EffectSpecificState>>> m_channelStateMatrix;
+    ChannelHandleMap<unique_ptr_vector<EffectSpecificState>> m_channelStateMatrix;
 };
