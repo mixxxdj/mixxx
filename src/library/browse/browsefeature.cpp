@@ -462,10 +462,7 @@ void BrowseFeature::loadQuickLinks() {
 }
 
 QString BrowseFeature::extractNameFromPath(const QString& spath) {
-    const QString path = spath.left(spath.size() - 1);
-    const int index = path.lastIndexOf("/");
-    const QString name = (spath.size() > 1) ? path.mid(index + 1) : spath;
-    return name;
+    return QFileInfo(spath).fileName();
 }
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {
