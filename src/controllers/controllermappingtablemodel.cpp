@@ -1,9 +1,11 @@
 #include "controllers/controllermappingtablemodel.h"
 
+#include "library/searchqueryparser.h"
 #include "moc_controllermappingtablemodel.cpp"
 
-ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
+ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent, QTableView* pTableView)
         : QAbstractTableModel(pParent),
+          m_pTableView(pTableView),
           m_pMidiMapping(nullptr) {
 }
 
@@ -79,13 +81,63 @@ Qt::ItemFlags ControllerMappingTableModel::flags(const QModelIndex& index) const
 }
 
 ControllerMappingTableProxyModel::ControllerMappingTableProxyModel(
-        ControllerMappingTableModel* sourceModel) {
+        ControllerMappingTableModel* sourceModel)
+        : m_currentSearch("") {
     VERIFY_OR_DEBUG_ASSERT(sourceModel) {
         return;
     }
     setSourceModel(sourceModel);
+    m_pModel = sourceModel;
     setSortRole(Qt::UserRole);
 }
 
 ControllerMappingTableProxyModel::~ControllerMappingTableProxyModel() {
+}
+
+void ControllerMappingTableProxyModel::search(const QString& searchText) {
+    m_currentSearch = searchText;
+    // This triggers the search, i.e. iterate over all rows with filterAcceptsRow(),
+    // no matter if the fxedFilterString was changed.
+    setFilterFixedString(searchText);
+}
+
+bool ControllerMappingTableProxyModel::filterAcceptsRow(int sourceRow,
+        const QModelIndex& sourceParent) const {
+    if (!m_pModel) {
+        return false;
+    }
+
+    const QString currSearch = m_currentSearch.trimmed();
+    if (currSearch.isEmpty()) {
+        return true;
+    }
+
+    QStringList tokens = SearchQueryParser::splitQueryIntoWords(currSearch);
+    tokens.removeDuplicates();
+
+    for (const auto& token : std::as_const(tokens)) {
+        bool tokenMatch = false;
+        int column = 0;
+        while (column < columnCount()) {
+            QModelIndex index = m_pModel->index(sourceRow, column, sourceParent);
+            QString strData = m_pModel->displayString(index);
+            if (!strData.isEmpty()) {
+                QString tokNoQuotes = token;
+                tokNoQuotes.remove('\"');
+                if (strData.contains(tokNoQuotes, Qt::CaseInsensitive)) {
+                    tokenMatch = true;
+                    tokens.removeOne(token);
+                }
+            }
+            if (tokenMatch) {
+                break;
+            }
+            column++;
+        }
+    }
+
+    if (tokens.length() > 0) {
+        return false;
+    }
+    return true;
 }

@@ -792,7 +792,7 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
 
     // Inputs tab
     ControllerInputMappingTableModel* pInputModel =
-            new ControllerInputMappingTableModel(this);
+            new ControllerInputMappingTableModel(this, m_ui.m_pInputMappingTableView);
     pInputModel->setMapping(pMapping);
 
     ControllerMappingTableProxyModel* pInputProxyModel =
@@ -816,7 +816,7 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
 
     // Outputs tab
     ControllerOutputMappingTableModel* pOutputModel =
-            new ControllerOutputMappingTableModel(this);
+            new ControllerOutputMappingTableModel(this, m_ui.m_pOutputMappingTableView);
     pOutputModel->setMapping(pMapping);
 
     ControllerMappingTableProxyModel* pOutputProxyModel =

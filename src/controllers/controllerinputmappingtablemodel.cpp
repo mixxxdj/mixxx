@@ -9,8 +9,9 @@
 #include "controllers/midi/midiutils.h"
 #include "moc_controllerinputmappingtablemodel.cpp"
 
-ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
-        : ControllerMappingTableModel(pParent) {
+ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent,
+        QTableView* pTableView)
+        : ControllerMappingTableModel(pParent, pTableView) {
 }
 
 ControllerInputMappingTableModel::~ControllerInputMappingTableModel() {
@@ -218,6 +219,49 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
         }
     }
     return QVariant();
+}
+
+QString ControllerInputMappingTableModel::displayString(const QModelIndex& index) const {
+    if (!m_pMidiMapping || !m_pTableView || !index.isValid()) {
+        return QString();
+    }
+
+    int row = index.row();
+    int column = index.column();
+    const MidiInputMapping& mapping = m_midiInputMappings.at(row);
+
+    switch (column) {
+    case MIDI_COLUMN_COMMENT: {
+        return mapping.description;
+    }
+    case MIDI_COLUMN_CHANNEL:
+    case MIDI_COLUMN_OPCODE:
+    case MIDI_COLUMN_CONTROL:
+    case MIDI_COLUMN_OPTIONS: {
+        QStyledItemDelegate* del =
+                qobject_cast<QStyledItemDelegate*>(m_pTableView->itemDelegate(index));
+        VERIFY_OR_DEBUG_ASSERT(del) {
+            return QString();
+        }
+        return del->displayText(data(index, Qt::DisplayRole), QLocale());
+    }
+    case MIDI_COLUMN_ACTION: {
+        QStyledItemDelegate* del =
+                qobject_cast<QStyledItemDelegate*>(m_pTableView->itemDelegate(index));
+        VERIFY_OR_DEBUG_ASSERT(del) {
+            return QString();
+        }
+        // Return both the raw ConfigKey group + key and the translated display
+        // string and the translated description from ControlPickerMenu.
+        // Note: this may contain duplicate key strings in case this is an
+        // untranslated script control
+        return data(index, Qt::UserRole).toString() + QStringLiteral(" ") +
+                del->displayText(
+                        QVariant::fromValue(mapping.control), QLocale());
+    }
+    default:
+        return QString();
+    }
 }
 
 bool ControllerInputMappingTableModel::setData(const QModelIndex& index,

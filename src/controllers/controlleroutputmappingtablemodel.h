@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QAbstractTableModel>
-#include <QVariant>
-#include <QModelIndex>
 #include <QAbstractItemDelegate>
+#include <QAbstractTableModel>
+#include <QModelIndex>
+#include <QTableView>
 
 #include "controllers/controllermappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
@@ -14,7 +14,7 @@
 class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:
-    ControllerOutputMappingTableModel(QObject* pParent);
+    ControllerOutputMappingTableModel(QObject* pParent, QTableView* pTableView);
     ~ControllerOutputMappingTableModel() override;
 
     // Apply the changes to the loaded mapping.
@@ -39,6 +39,7 @@ class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    QString displayString(const QModelIndex& index) const override;
     bool setData(const QModelIndex& index, const QVariant& value,
                  int role = Qt::EditRole) override;
 
