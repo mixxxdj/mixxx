@@ -115,6 +115,7 @@ class DlgPrefController : public DlgPreferencePage {
     const QString m_pUserDir;
     std::shared_ptr<ControllerManager> m_pControllerManager;
     Controller* m_pController;
+    ControlPickerMenu* m_pControlPickerMenu;
     DlgControllerLearning* m_pDlgControllerLearning;
     std::shared_ptr<LegacyControllerMapping> m_pMapping;
     QMap<QString, bool> m_pOverwriteMappings;

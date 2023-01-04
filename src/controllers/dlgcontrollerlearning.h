@@ -26,7 +26,9 @@ class DlgControllerLearning : public QDialog,
     Q_OBJECT
 
   public:
-    DlgControllerLearning(QWidget *parent, Controller *controller);
+    DlgControllerLearning(QWidget* parent,
+            Controller* controller,
+            ControlPickerMenu* pControlPickerMenu);
     virtual ~DlgControllerLearning();
 
   signals:
@@ -77,7 +79,7 @@ class DlgControllerLearning : public QDialog,
     void populateComboBox();
 
     Controller* m_pController;
-    ControlPickerMenu m_controlPickerMenu;
+    ControlPickerMenu* m_pControlPickerMenu;
     ConfigKey m_currentControl;
     bool m_messagesLearned;
     QTimer m_firstMessageTimer;

@@ -14,7 +14,7 @@
 class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:
-    ControllerOutputMappingTableModel(QObject* pParent);
+    ControllerOutputMappingTableModel(QObject* pParent, ControlPickerMenu* pControlPickerMenu);
     ~ControllerOutputMappingTableModel() override;
 
     // Apply the changes to the loaded mapping.

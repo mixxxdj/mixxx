@@ -2,8 +2,10 @@
 
 #include "moc_controllermappingtablemodel.cpp"
 
-ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
+ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent,
+        ControlPickerMenu* pControlPickerMenu)
         : QAbstractTableModel(pParent),
+          m_pControlPickerMenu(pControlPickerMenu),
           m_pMidiMapping(nullptr) {
 }
 
