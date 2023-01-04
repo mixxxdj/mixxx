@@ -65,6 +65,19 @@ DlgPreferences::DlgPreferences(
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
 
+    // Add '&' to default button labels to always have Alt shortcuts, indpependent
+    // of operating system.
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Help)->setText(tr("&Help"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::RestoreDefaults)->setText(tr("&Restore Defaults"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Apply)->setText(tr("&Apply"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Ok)->setText(tr("&Ok"));
+
     connect(buttonBox,
             QOverload<QAbstractButton*>::of(&QDialogButtonBox::clicked),
             this,
