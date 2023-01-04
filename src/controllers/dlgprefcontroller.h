@@ -110,6 +110,7 @@ class DlgPrefController : public DlgPreferencePage {
     const QString m_pUserDir;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
+    ControlPickerMenu* m_pControlPickerMenu;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
     QMap<QString, bool> m_pOverwritePresets;
