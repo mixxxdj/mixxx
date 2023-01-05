@@ -1,10 +1,7 @@
 #include "library/basetracktablemodel.h"
 
-#include <QScreen>
-// for hack to get primary screen instead of view widget's screen
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QGuiApplication>
-#endif
+#include <QScreen>
 
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
@@ -515,14 +512,7 @@ bool BaseTrackTableModel::setData(
 QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         const QModelIndex& index) const {
     // Determine height of the cover art image depending on the screen size
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    auto* pTableView = qobject_cast<WTrackTableView*>(parent());
-    VERIFY_OR_DEBUG_ASSERT(pTableView) {
-        return QVariant();
-    }
-    QScreen* pViewScreen = pTableView->screen();
-#else
-    // Ugly hack assuming that the view is on whatever Qt considers the primary screen.
+    // Assuming that the view is on whatever Qt considers the primary screen.
     QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
     VERIFY_OR_DEBUG_ASSERT(app) {
         qWarning() << "Unable to get application's QGuiApplication instance, "
@@ -530,7 +520,7 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         return QVariant();
     }
     QScreen* pViewScreen = app->primaryScreen();
-#endif
+
     unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
             pViewScreen->availableGeometry().height() *
             kRelativeHeightOfCoverartToolTip);

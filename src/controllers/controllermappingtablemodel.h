@@ -9,6 +9,7 @@
 #include <QVariant>
 #include <QVector>
 
+#include "controllers/controlpickermenu.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
@@ -16,7 +17,9 @@
 class ControllerMappingTableModel : public QAbstractTableModel {
     Q_OBJECT
   public:
-    ControllerMappingTableModel(QObject* pParent, QTableView* pTableView);
+    ControllerMappingTableModel(QObject* pParent,
+            ControlPickerMenu* pControlPickerMenu,
+            QTableView* pTableView);
     ~ControllerMappingTableModel() override;
 
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping);
@@ -53,6 +56,7 @@ class ControllerMappingTableModel : public QAbstractTableModel {
     }
 
     QVector<QHash<int, QVariant>> m_headerInfo;
+    ControlPickerMenu* m_pControlPickerMenu;
     QTableView* m_pTableView;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
 };

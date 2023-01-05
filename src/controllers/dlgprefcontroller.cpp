@@ -51,6 +51,8 @@ DlgPrefController::DlgPrefController(
     // Create text color for the file and wiki links
     createLinkColor();
 
+    m_pControlPickerMenu = new ControlPickerMenu(this);
+
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
@@ -173,7 +175,8 @@ void DlgPrefController::showLearningWizard() {
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
-    m_pDlgControllerLearning = new DlgControllerLearning(this, m_pController);
+    m_pDlgControllerLearning =
+            new DlgControllerLearning(this, m_pController, m_pControlPickerMenu);
     m_pDlgControllerLearning->show();
     ControllerLearningEventFilter* pControllerLearning =
             m_pControllerManager->getControllerLearningEventFilter();
@@ -802,7 +805,9 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
 
     // Inputs tab
     ControllerInputMappingTableModel* pInputModel =
-            new ControllerInputMappingTableModel(this, m_ui.m_pInputMappingTableView);
+            new ControllerInputMappingTableModel(this,
+                    m_pControlPickerMenu,
+                    m_ui.m_pInputMappingTableView);
     pInputModel->setMapping(pMapping);
 
     ControllerMappingTableProxyModel* pInputProxyModel =
@@ -836,7 +841,9 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
 
     // Outputs tab
     ControllerOutputMappingTableModel* pOutputModel =
-            new ControllerOutputMappingTableModel(this, m_ui.m_pOutputMappingTableView);
+            new ControllerOutputMappingTableModel(this,
+                    m_pControlPickerMenu,
+                    m_ui.m_pOutputMappingTableView);
     pOutputModel->setMapping(pMapping);
 
     ControllerMappingTableProxyModel* pOutputProxyModel =

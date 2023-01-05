@@ -10,8 +10,9 @@
 #include "moc_controllerinputmappingtablemodel.cpp"
 
 ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent,
+        ControlPickerMenu* pControlPickerMenu,
         QTableView* pTableView)
-        : ControllerMappingTableModel(pParent, pTableView) {
+        : ControllerMappingTableModel(pParent, pControlPickerMenu, pTableView) {
 }
 
 ControllerInputMappingTableModel::~ControllerInputMappingTableModel() {
@@ -144,7 +145,7 @@ QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
             case MIDI_COLUMN_OPTIONS:
                 return new MidiOptionsDelegate(pParent);
             case MIDI_COLUMN_ACTION:
-                pControlDelegate = new ControlDelegate(this);
+                pControlDelegate = new ControlDelegate(this, m_pControlPickerMenu);
                 pControlDelegate->setMidiOptionsColumn(MIDI_COLUMN_OPTIONS);
                 return pControlDelegate;
         }

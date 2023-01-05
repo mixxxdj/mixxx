@@ -3,8 +3,11 @@
 #include "library/searchqueryparser.h"
 #include "moc_controllermappingtablemodel.cpp"
 
-ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent, QTableView* pTableView)
+ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent,
+        ControlPickerMenu* pControlPickerMenu,
+        QTableView* pTableView)
         : QAbstractTableModel(pParent),
+          m_pControlPickerMenu(pControlPickerMenu),
           m_pTableView(pTableView),
           m_pMidiMapping(nullptr) {
 }

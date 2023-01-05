@@ -9,8 +9,9 @@
 #include "moc_controlleroutputmappingtablemodel.cpp"
 
 ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent,
+        ControlPickerMenu* pControlPickerMenu,
         QTableView* pTableView)
-        : ControllerMappingTableModel(pParent, pTableView) {
+        : ControllerMappingTableModel(pParent, pControlPickerMenu, pTableView) {
 }
 
 ControllerOutputMappingTableModel::~ControllerOutputMappingTableModel() {
@@ -113,7 +114,7 @@ QAbstractItemDelegate* ControllerOutputMappingTableModel::delegateForColumn(
             case MIDI_COLUMN_OFF:
                 return new MidiByteDelegate(pParent);
             case MIDI_COLUMN_ACTION:
-                return new ControlDelegate(this);
+                return new ControlDelegate(this, m_pControlPickerMenu);
         }
     }
     return nullptr;

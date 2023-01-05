@@ -14,7 +14,9 @@
 class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:
-    ControllerInputMappingTableModel(QObject* pParent, QTableView* pTableView);
+    ControllerInputMappingTableModel(QObject* pParent,
+            ControlPickerMenu* pControlPickerMenu,
+            QTableView* pTableView);
     ~ControllerInputMappingTableModel() override;
 
     // Apply the changes to the loaded mapping.
