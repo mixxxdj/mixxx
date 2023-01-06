@@ -177,6 +177,8 @@ void EffectsManager::readEffectsXml() {
     }
     file.close();
 
+    // Note: QuickEffect chains are created only for existing main decks
+    // thus only for those the configured presets are requested
     QStringList deckStrings;
     for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
         deckStrings << it.key();

@@ -302,10 +302,7 @@ void DlgPrefEQ::populateDeckQuickEffectBoxList(
         QString deckGroupName = PlayerManager::groupForDeck(deck);
         QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
         EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
-
-        // Add empty item at the top: no effect
-        box->addItem(kNoEffectString);
-        int i = 1;
+        int i = 0;
         for (const auto& pChainPreset : presetList) {
             box->addItem(pChainPreset->name());
             if (pChain->presetName() == pChainPreset->name()) {
@@ -492,8 +489,8 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
     EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
     QList<EffectChainPresetPointer> presetList =
             m_pChainPresetManager->getQuickEffectPresetsSorted();
-    if (pChain && effectIndex > 0 && effectIndex <= presetList.size()) {
-        pChain->loadChainPreset(presetList[effectIndex - 1]);
+    if (pChain && effectIndex >= 0 && effectIndex < presetList.size()) {
+        pChain->loadChainPreset(presetList[effectIndex]);
     }
 }
 
