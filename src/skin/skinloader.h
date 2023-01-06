@@ -8,6 +8,7 @@
 
 #include "preferences/usersettings.h"
 #include "skin/skin.h"
+#include "util/parented_ptr.h"
 
 class ControlProxy;
 class ControlPushButton;
@@ -45,18 +46,18 @@ class SkinLoader : public QObject {
     bool m_spinnyCoverControlsCreated;
     void setupSpinnyCoverControls();
     void updateSpinnyCoverControls();
-    ControlPushButton* m_pShowSpinny;
-    ControlPushButton* m_pShowCover;
-    ControlPushButton* m_pShowSpinnyAndOrCover;
-    ControlPushButton* m_pSelectBigSpinnyCover;
-    ControlPushButton* m_pShowSmallSpinnyCover;
-    ControlPushButton* m_pShowBigSpinnyCover;
+    std::unique_ptr<ControlPushButton> m_pShowSpinny;
+    std::unique_ptr<ControlPushButton> m_pShowCover;
+    std::unique_ptr<ControlPushButton> m_pShowSpinnyAndOrCover;
+    std::unique_ptr<ControlPushButton> m_pSelectBigSpinnyCover;
+    std::unique_ptr<ControlPushButton> m_pShowSmallSpinnyCover;
+    std::unique_ptr<ControlPushButton> m_pShowBigSpinnyCover;
 
     bool m_micDuckingControlsCreated;
     void setupMicDuckingControls();
     void updateDuckingControl();
-    ControlPushButton* m_pShowDuckingControls;
-    ControlProxy* m_pNumMics;
+    std::unique_ptr<ControlPushButton> m_pShowDuckingControls;
+    parented_ptr<ControlProxy> m_pNumMics;
     int m_numMicsEnabled;
     QList<ControlProxy*> m_pMicConfiguredControls;
 };

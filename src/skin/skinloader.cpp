@@ -33,14 +33,6 @@ SkinLoader::SkinLoader(UserSettingsPointer pConfig)
 
 SkinLoader::~SkinLoader() {
     LegacySkinParser::clearSharedGroupStrings();
-    delete m_pShowSpinny;
-    delete m_pShowCover;
-    delete m_pSelectBigSpinnyCover;
-    delete m_pShowSpinnyAndOrCover;
-    delete m_pShowSmallSpinnyCover;
-    delete m_pShowBigSpinnyCover;
-    delete m_pShowDuckingControls;
-    m_pMicConfiguredControls.clear();
 }
 
 QList<SkinPointer> SkinLoader::getSkins() const {
@@ -238,39 +230,41 @@ void SkinLoader::setupSpinnyCoverControls() {
         return;
     }
     // Spinnies and deck cover art toggles
-    m_pShowSpinny = new ControlPushButton(ConfigKey("[Skin]", "show_spinnies"), true);
+    m_pShowSpinny = std::make_unique<ControlPushButton>(ConfigKey("[Skin]", "show_spinnies"), true);
     m_pShowSpinny->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pShowCover = new ControlPushButton(ConfigKey("[Skin]", "show_coverart"), true);
+    m_pShowCover = std::make_unique<ControlPushButton>(ConfigKey("[Skin]", "show_coverart"), true);
     m_pShowCover->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pSelectBigSpinnyCover = new ControlPushButton(
+    m_pSelectBigSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "select_big_spinny_or_cover"), true);
     m_pSelectBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
 
     // This is 1 if [Skin], show_spinnies == 1 OR [Skin],show_coverart == 1
-    m_pShowSpinnyAndOrCover = new ControlPushButton(ConfigKey("[Skin]", "show_spinny_or_cover"));
+    m_pShowSpinnyAndOrCover = std::make_unique<ControlPushButton>(
+            ConfigKey("[Skin]", "show_spinny_or_cover"));
     m_pShowSpinnyAndOrCover->setButtonMode(ControlPushButton::TOGGLE);
     m_pShowSpinnyAndOrCover->setReadOnly();
     // This is 1 if [Skin],show_spinny_cover == 1 AND [Skin],select_big_spinny_coverart == 0
-    m_pShowSmallSpinnyCover = new ControlPushButton(
+    m_pShowSmallSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_small_spinny_or_cover"));
     m_pShowSmallSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
     m_pShowSmallSpinnyCover->setReadOnly();
     // This is 1 if [Skin],show_spinny_cover == 1 AND [Skin],select_big_spinny_coverart == 1
-    m_pShowBigSpinnyCover = new ControlPushButton(ConfigKey("[Skin]", "show_big_spinny_or_cover"));
+    m_pShowBigSpinnyCover = std::make_unique<ControlPushButton>(
+            ConfigKey("[Skin]", "show_big_spinny_or_cover"));
     m_pShowBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
     m_pShowBigSpinnyCover->setReadOnly();
 
-    connect(m_pShowSpinny,
+    connect(m_pShowSpinny.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &SkinLoader::updateSpinnyCoverControls);
+    connect(m_pShowCover.get(),
             &ControlObject::valueChanged,
             this,
             &SkinLoader::updateSpinnyCoverControls);
-    connect(m_pShowCover,
-            &ControlObject::valueChanged,
-            this,
-            &SkinLoader::updateSpinnyCoverControls);
-    connect(m_pSelectBigSpinnyCover,
+    connect(m_pSelectBigSpinnyCover.get(),
             &ControlObject::valueChanged,
             this,
             &SkinLoader::updateSpinnyCoverControls);
@@ -303,11 +297,12 @@ void SkinLoader::setupMicDuckingControls() {
         return;
     }
     // This is 1 if at least one microphone device is configured
-    m_pShowDuckingControls = new ControlPushButton(ConfigKey("[Skin]", "show_ducking_controls"));
+    m_pShowDuckingControls = std::make_unique<ControlPushButton>(
+            ConfigKey("[Skin]", "show_ducking_controls"));
     m_pShowDuckingControls->setButtonMode(ControlPushButton::TOGGLE);
     m_pShowDuckingControls->setReadOnly();
 
-    m_pNumMics = new ControlProxy("[Master]", "num_microphones", this);
+    m_pNumMics = make_parented<ControlProxy>("[Master]", "num_microphones", this);
     m_pNumMics->connectValueChanged(this, &SkinLoader::slotNumMicsChanged);
 
     m_micDuckingControlsCreated = true;
