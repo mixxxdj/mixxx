@@ -1533,8 +1533,16 @@ double WOverview::samplePositionToSeconds(double sample) {
     }
 
     double trackTime = sample /
+<<<<<<< HEAD
             (m_trackSampleRateControl.get() * mixxx::kEngineChannelOutputCount);
     return trackTime / rate;
+||||||| parent of 34842c5d70 (WOverview: make ControlProxies parented_ptr, use PollingControlProxy)
+            (m_trackSampleRateControl->get() * mixxx::kEngineChannelOutputCount);
+    return trackTime / m_pRateRatioControl->get();
+=======
+            (m_trackSampleRateControl.get() * mixxx::kEngineChannelOutputCount);
+    return trackTime / m_pRateRatioControl->get();
+>>>>>>> 34842c5d70 (WOverview: make ControlProxies parented_ptr, use PollingControlProxy)
 }
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {

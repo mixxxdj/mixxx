@@ -5,6 +5,8 @@
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
+#include "control/pollingcontrolproxy.h"
+#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
