@@ -5,6 +5,8 @@
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
+#include "control/pollingcontrolproxy.h"
+#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
@@ -122,7 +124,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     double getTrackSamples() const {
         if (m_trackLoaded) {
-            return m_trackSamplesControl->get();
+            return m_trackSamplesControl.get();
         } else {
             // Ignore the value, because the engine can still have the old track
             // during loading
@@ -178,9 +180,12 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     parented_ptr<ControlProxy> m_endOfTrackControl;
     parented_ptr<ControlProxy> m_pRateRatioControl;
-    parented_ptr<ControlProxy> m_trackSampleRateControl;
-    parented_ptr<ControlProxy> m_trackSamplesControl;
-    parented_ptr<ControlProxy> m_playpositionControl;
+    PollingControlProxy m_trackSampleRateControl;
+    PollingControlProxy m_trackSamplesControl;
+    PollingControlProxy m_playpositionControl;
+    // parented_ptr<ControlProxy> m_trackSampleRateControl;
+    // parented_ptr<ControlProxy> m_trackSamplesControl;
+    // parented_ptr<ControlProxy> m_playpositionControl;
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
     parented_ptr<ControlProxy> m_pMinuteMarkersControl;
