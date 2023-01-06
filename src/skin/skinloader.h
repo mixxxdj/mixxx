@@ -33,6 +33,9 @@ class SkinLoader : public QObject {
     QList<QDir> getSkinSearchPaths() const;
     QList<SkinPointer> getSkins() const;
 
+  private slots:
+    void slotNumMicsChanged(double numMics);
+
   private:
     QString pickResizableSkin(const QString& oldSkin) const;
     SkinPointer skinFromDirectory(const QDir& dir) const;
@@ -48,6 +51,14 @@ class SkinLoader : public QObject {
     ControlPushButton* m_pSelectBigSpinnyCover;
     ControlPushButton* m_pShowSmallSpinnyCover;
     ControlPushButton* m_pShowBigSpinnyCover;
+
+    bool m_micDuckingControlsCreated;
+    void setupMicDuckingControls();
+    void updateDuckingControl();
+    ControlPushButton* m_pShowDuckingControls;
+    ControlProxy* m_pNumMics;
+    int m_numMicsEnabled;
+    QList<ControlProxy*> m_pMicConfiguredControls;
 };
 
 } // namespace skin

@@ -26,7 +26,9 @@ using legacy::LegacySkin;
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_spinnyCoverControlsCreated(false) {
+          m_spinnyCoverControlsCreated(false),
+          m_micDuckingControlsCreated(false),
+          m_numMicsEnabled(1) {
 }
 
 SkinLoader::~SkinLoader() {
@@ -37,6 +39,8 @@ SkinLoader::~SkinLoader() {
     delete m_pShowSpinnyAndOrCover;
     delete m_pShowSmallSpinnyCover;
     delete m_pShowBigSpinnyCover;
+    delete m_pShowDuckingControls;
+    m_pMicConfiguredControls.clear();
 }
 
 QList<SkinPointer> SkinLoader::getSkins() const {
@@ -156,6 +160,9 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
     // This creates some common GUI controls and some 'meta' controls that allow to
     // keep LateNight's xml structure for cover/spinnies and the ducking GUI simple.
     setupSpinnyCoverControls();
+    // PlayerManager created all devices, but SoundManager will setup devices after
+    // the skin was loaded.
+    setupMicDuckingControls();
 
     QWidget* pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
 
@@ -291,5 +298,52 @@ void SkinLoader::updateSpinnyCoverControls() {
                     : 0.0);
 }
 
+void SkinLoader::setupMicDuckingControls() {
+    if (m_micDuckingControlsCreated) {
+        return;
+    }
+    // This is 1 if at least one microphone device is configured
+    m_pShowDuckingControls = new ControlPushButton(ConfigKey("[Skin]", "show_ducking_controls"));
+    m_pShowDuckingControls->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowDuckingControls->setReadOnly();
+
+    m_pNumMics = new ControlProxy("[Master]", "num_microphones", this);
+    m_pNumMics->connectValueChanged(this, &SkinLoader::slotNumMicsChanged);
+
+    m_micDuckingControlsCreated = true;
+    slotNumMicsChanged(m_pNumMics->get());
+}
+
+void SkinLoader::slotNumMicsChanged(double dNumMics) {
+    int numMics = static_cast<int>(dNumMics);
+
+    if (numMics <= m_numMicsEnabled) {
+        return;
+    }
+
+    for (int micNum = m_numMicsEnabled; micNum <= numMics; ++micNum) {
+        QString micGroup = PlayerManager::groupForMicrophone(micNum - 1);
+        ControlProxy* pMicEnabled = new ControlProxy(micGroup, "input_configured", this);
+        m_pMicConfiguredControls.push_back(pMicEnabled);
+        pMicEnabled->connectValueChanged(this, &SkinLoader::updateDuckingControl);
+    }
+    m_numMicsEnabled = numMics;
+
+    updateDuckingControl();
+}
+
+void SkinLoader::updateDuckingControl() {
+    if (!m_micDuckingControlsCreated) {
+        return;
+    }
+    double atLeastOneMicConfigured = 0.0;
+    for (auto* pMicCon : qAsConst(m_pMicConfiguredControls)) {
+        if (pMicCon->toBool()) {
+            atLeastOneMicConfigured = 1.0;
+            break;
+        }
+    }
+    m_pShowDuckingControls->setAndConfirm(atLeastOneMicConfigured);
+}
 } // namespace skin
 } // namespace mixxx

@@ -395,12 +395,6 @@
       <SizePolicy>me,me</SizePolicy>
       <Children>
 
-    <!-- Some helpers to show widgets and switch layouts
-        depending on the skin configuration.
-        Apparently putting those here keeps i.e. the spinny
-        config when [Master],maximize_library is toggled. -->
-        <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
-
         <Template src="skin:toolbar.xml"/>
 
         <!-- regular/maximized library  |  skin settings menu -->
