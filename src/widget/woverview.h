@@ -18,6 +18,7 @@
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
+#include "control/pollingcontrolproxy.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -134,14 +135,15 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
-    ControlProxy* m_endOfTrackControl;
+    parented_ptr<ControlProxy> m_pEndOfTrackControl;
     bool m_endOfTrack;
     bool m_bPassthroughEnabled;
-    ControlProxy* m_pRateRatioControl;
-    ControlProxy* m_trackSampleRateControl;
-    ControlProxy* m_trackSamplesControl;
-    ControlProxy* m_playpositionControl;
-    ControlProxy* m_pPassthroughControl;
+    parented_ptr<ControlProxy> m_pRateRatioControl;
+    PollingControlProxy m_playpositionControl;
+    PollingControlProxy m_trackSampleRateControl;
+    PollingControlProxy m_trackSamplesControl;
+    parented_ptr<ControlProxy> m_pPassthroughControl;
+    parented_ptr<ControlProxy> m_pEndOfTrackBlinkTimer;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
