@@ -161,9 +161,9 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPosSeconds;
     // True if pick-up is dragged. Only used when m_bEventWhileDrag is false
     bool m_bLeftClickDragging;
-    // Internal storage of slider position in pixels
-    int m_iPickupPos;
     // position of the overlay shadow
+    int m_iPickupPos;
+    // Internal storage of slider position in pixels
     int m_iPlayPos;
     bool m_bTimeRulerActive;
     Qt::Orientation m_orientation;
