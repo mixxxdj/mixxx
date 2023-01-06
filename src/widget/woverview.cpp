@@ -51,6 +51,7 @@ WOverview::WOverview(
           m_diffGain(0),
           m_devicePixelRatio(1.0),
           m_endOfTrack(false),
+          m_drawEndOfTrack(false),
           m_bPassthroughEnabled(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
           m_bShowCueTimes(true),
@@ -58,6 +59,7 @@ WOverview::WOverview(
           m_bLeftClickDragging(false),
           m_iPickupPos(0),
           m_iPlayPos(0),
+          m_endOfTrackWarningTime(30), // irrelevant, value is fetched when required
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
           m_dragMarginH(kDragOutsideLimitX),
@@ -76,10 +78,18 @@ WOverview::WOverview(
                   QStringLiteral("track_samples")),
           m_playpositionControl(
                   m_group,
-                  QStringLiteral("playposition")) {
+                  QStringLiteral("playposition")),
+          m_pTimeRemainingControl(
+                  m_group,
+                  QStringLiteral("time_remaining")) {
+    // "end of track" controls
     m_endOfTrackControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("end_of_track"), this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
+    m_pEndOfTrackBlinkTimer = make_parented<ControlProxy>("[Master]", "indicator_500millis", this);
+    m_pEndOfTrackBlinkTimer->connectValueChanged(
+            this, &WOverview::onEndOfTrackBlinkTimerChange);
+
     m_pRateRatioControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("rate_ratio"), this, ControlFlag::NoAssertIfMissing);
     // Needed to recalculate range durations when rate slider is moved without the deck playing
@@ -403,6 +413,12 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
         connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
+
+        // TODO(ronso0) To apply changed eot time asap, fetch it in paintEvent(),
+        // or make WaveformWidgetFactory emit a signal when the eot time changed
+        // and hook up to that.
+        m_endOfTrackWarningTime =
+                WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -413,6 +429,11 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 void WOverview::onEndOfTrackChange(double v) {
     //qDebug() << "WOverview::onEndOfTrackChange()" << v;
     m_endOfTrack = v > 0.0;
+    // Note that this is needed for making the eot background and frame occur
+    // simultaneoulsy, but this may cause the frame's first blink period being
+    // notably shorter than 1 second since "end_of_track" is not activated in sync
+    // with the 500 ms timer's 'on' period. Maybe use a dedicated timer.
+    m_drawEndOfTrack = v > 0.0;
     update();
 }
 
@@ -471,6 +492,30 @@ void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
 
 void WOverview::slotScalingChanged() {
     update();
+}
+
+void WOverview::onEndOfTrackBlinkTimerChange(double v) {
+    if (!m_endOfTrack) {
+        return;
+    }
+
+    bool currDrawEndOfTrack = m_drawEndOfTrack;
+    if (m_pTimeRemainingControl.get() > m_endOfTrackWarningTime / 2) {
+        // In the first half of the eot range we blink when [Master],indicator_500millis
+        // is set 1 = on/off every 1000 ms
+        if (v > 0) {
+            m_drawEndOfTrack = !m_drawEndOfTrack;
+        }
+    } else {
+        // In the second half, blinking is synchronized to indicator_500millis
+        // = on/off every 500 ms
+        m_drawEndOfTrack = !m_drawEndOfTrack;
+    }
+
+    // Only update if m_drawEndOfTrack changed
+    if (currDrawEndOfTrack != m_drawEndOfTrack) {
+        update();
+    }
 }
 
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
@@ -726,6 +771,8 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
 }
 
 void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
+    // TEST: Also blink the background?
+    // if (m_drawEndOfTrack) {
     if (m_endOfTrack) {
         PainterScope painterScope(pPainter);
         pPainter->setOpacity(0.3);
@@ -879,7 +926,7 @@ void WOverview::drawPlayPosition(QPainter* pPainter) {
 }
 
 void WOverview::drawEndOfTrackFrame(QPainter* pPainter) {
-    if (m_endOfTrack) {
+    if (m_drawEndOfTrack) {
         PainterScope painterScope(pPainter);
         pPainter->setOpacity(0.8);
         pPainter->setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
@@ -1533,16 +1580,8 @@ double WOverview::samplePositionToSeconds(double sample) {
     }
 
     double trackTime = sample /
-<<<<<<< HEAD
             (m_trackSampleRateControl.get() * mixxx::kEngineChannelOutputCount);
     return trackTime / rate;
-||||||| parent of 34842c5d70 (WOverview: make ControlProxies parented_ptr, use PollingControlProxy)
-            (m_trackSampleRateControl->get() * mixxx::kEngineChannelOutputCount);
-    return trackTime / m_pRateRatioControl->get();
-=======
-            (m_trackSampleRateControl.get() * mixxx::kEngineChannelOutputCount);
-    return trackTime / m_pRateRatioControl->get();
->>>>>>> 34842c5d70 (WOverview: make ControlProxies parented_ptr, use PollingControlProxy)
 }
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {
