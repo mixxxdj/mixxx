@@ -46,8 +46,8 @@ class SkinLoader : public QObject {
     bool m_spinnyCoverControlsCreated;
     void setupSpinnyCoverControls();
     void updateSpinnyCoverControls();
-    std::unique_ptr<ControlPushButton> m_pShowSpinny;
-    std::unique_ptr<ControlPushButton> m_pShowCover;
+    parented_ptr<ControlProxy> m_pShowSpinny;
+    parented_ptr<ControlProxy> m_pShowCover;
     std::unique_ptr<ControlPushButton> m_pShowSpinnyAndOrCover;
     std::unique_ptr<ControlPushButton> m_pSelectBigSpinnyCover;
     std::unique_ptr<ControlPushButton> m_pShowSmallSpinnyCover;

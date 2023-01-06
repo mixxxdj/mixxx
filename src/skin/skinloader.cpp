@@ -149,8 +149,9 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         return nullptr;
     }
 
-    // This creates some common GUI controls and some 'meta' controls that allow to
-    // keep LateNight's xml structure for cover/spinnies and the ducking GUI simple.
+    // This hooks up to and also creates some common GUI controls and some 'meta'
+    // controls that allow to keep LateNight's xml structure (for cover/spinnies
+    // and for the ducking GUI) simple.
     setupSpinnyCoverControls();
     // PlayerManager created all devices, but SoundManager will setup devices after
     // the skin was loaded.
@@ -230,12 +231,8 @@ void SkinLoader::setupSpinnyCoverControls() {
         return;
     }
     // Spinnies and deck cover art toggles
-    m_pShowSpinny = std::make_unique<ControlPushButton>(ConfigKey("[Skin]", "show_spinnies"), true);
-    m_pShowSpinny->setButtonMode(ControlPushButton::TOGGLE);
-
-    m_pShowCover = std::make_unique<ControlPushButton>(ConfigKey("[Skin]", "show_coverart"), true);
-    m_pShowCover->setButtonMode(ControlPushButton::TOGGLE);
-
+    m_pShowSpinny = make_parented<ControlProxy>("[Skin]", "show_spinnies", this);
+    m_pShowCover = make_parented<ControlProxy>("[Skin]", "show_coverart", this);
     m_pSelectBigSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "select_big_spinny_or_cover"), true);
     m_pSelectBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
@@ -256,14 +253,8 @@ void SkinLoader::setupSpinnyCoverControls() {
     m_pShowBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
     m_pShowBigSpinnyCover->setReadOnly();
 
-    connect(m_pShowSpinny.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &SkinLoader::updateSpinnyCoverControls);
-    connect(m_pShowCover.get(),
-            &ControlObject::valueChanged,
-            this,
-            &SkinLoader::updateSpinnyCoverControls);
+    m_pShowSpinny->connectValueChanged(this, &SkinLoader::updateSpinnyCoverControls);
+    m_pShowCover->connectValueChanged(this, &SkinLoader::updateSpinnyCoverControls);
     connect(m_pSelectBigSpinnyCover.get(),
             &ControlObject::valueChanged,
             this,
