@@ -2,16 +2,21 @@
 
 #include <QDir>
 #include <QList>
+#include <QObject>
 #include <QSet>
 #include <QWidget>
 
 #include "preferences/usersettings.h"
 #include "skin/skin.h"
 
+class ControlProxy;
+class ControlPushButton;
+
 namespace mixxx {
 namespace skin {
 
-class SkinLoader {
+class SkinLoader : public QObject {
+    Q_OBJECT
   public:
     SkinLoader(UserSettingsPointer pConfig);
     virtual ~SkinLoader();
@@ -33,6 +38,16 @@ class SkinLoader {
     SkinPointer skinFromDirectory(const QDir& dir) const;
 
     UserSettingsPointer m_pConfig;
+
+    bool m_spinnyCoverControlsCreated;
+    void setupSpinnyCoverControls();
+    void updateSpinnyCoverControls();
+    ControlPushButton* m_pShowSpinny;
+    ControlPushButton* m_pShowCover;
+    ControlPushButton* m_pShowSpinnyAndOrCover;
+    ControlPushButton* m_pSelectBigSpinnyCover;
+    ControlPushButton* m_pShowSmallSpinnyCover;
+    ControlPushButton* m_pShowBigSpinnyCover;
 };
 
 } // namespace skin

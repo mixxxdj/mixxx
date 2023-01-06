@@ -5,6 +5,8 @@
 #include <QString>
 #include <QtDebug>
 
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "effects/effectsmanager.h"
 #include "library/library.h"
@@ -22,12 +24,19 @@ namespace skin {
 
 using legacy::LegacySkin;
 
-SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
-        m_pConfig(pConfig) {
+SkinLoader::SkinLoader(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig),
+          m_spinnyCoverControlsCreated(false) {
 }
 
 SkinLoader::~SkinLoader() {
     LegacySkinParser::clearSharedGroupStrings();
+    delete m_pShowSpinny;
+    delete m_pShowCover;
+    delete m_pSelectBigSpinnyCover;
+    delete m_pShowSpinnyAndOrCover;
+    delete m_pShowSmallSpinnyCover;
+    delete m_pShowBigSpinnyCover;
 }
 
 QList<SkinPointer> SkinLoader::getSkins() const {
@@ -144,6 +153,10 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         return nullptr;
     }
 
+    // This creates some common GUI controls and some 'meta' controls that allow to
+    // keep LateNight's xml structure for cover/spinnies and the ducking GUI simple.
+    setupSpinnyCoverControls();
+
     QWidget* pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
 
     // If the skin exists but failed to load, try to fall back to the default skin.
@@ -211,6 +224,71 @@ SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
     }
 
     return nullptr;
+}
+
+void SkinLoader::setupSpinnyCoverControls() {
+    if (m_spinnyCoverControlsCreated) {
+        return;
+    }
+    // Spinnies and deck cover art toggles
+    m_pShowSpinny = new ControlPushButton(ConfigKey("[Skin]", "show_spinnies"), true);
+    m_pShowSpinny->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_pShowCover = new ControlPushButton(ConfigKey("[Skin]", "show_coverart"), true);
+    m_pShowCover->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_pSelectBigSpinnyCover = new ControlPushButton(
+            ConfigKey("[Skin]", "select_big_spinny_or_cover"), true);
+    m_pSelectBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+
+    // This is 1 if [Skin], show_spinnies == 1 OR [Skin],show_coverart == 1
+    m_pShowSpinnyAndOrCover = new ControlPushButton(ConfigKey("[Skin]", "show_spinny_or_cover"));
+    m_pShowSpinnyAndOrCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowSpinnyAndOrCover->setReadOnly();
+    // This is 1 if [Skin],show_spinny_cover == 1 AND [Skin],select_big_spinny_coverart == 0
+    m_pShowSmallSpinnyCover = new ControlPushButton(
+            ConfigKey("[Skin]", "show_small_spinny_or_cover"));
+    m_pShowSmallSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowSmallSpinnyCover->setReadOnly();
+    // This is 1 if [Skin],show_spinny_cover == 1 AND [Skin],select_big_spinny_coverart == 1
+    m_pShowBigSpinnyCover = new ControlPushButton(ConfigKey("[Skin]", "show_big_spinny_or_cover"));
+    m_pShowBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowBigSpinnyCover->setReadOnly();
+
+    connect(m_pShowSpinny,
+            &ControlObject::valueChanged,
+            this,
+            &SkinLoader::updateSpinnyCoverControls);
+    connect(m_pShowCover,
+            &ControlObject::valueChanged,
+            this,
+            &SkinLoader::updateSpinnyCoverControls);
+    connect(m_pSelectBigSpinnyCover,
+            &ControlObject::valueChanged,
+            this,
+            &SkinLoader::updateSpinnyCoverControls);
+
+    m_spinnyCoverControlsCreated = true;
+    updateSpinnyCoverControls();
+}
+
+void SkinLoader::updateSpinnyCoverControls() {
+    if (!m_spinnyCoverControlsCreated) {
+        return;
+    }
+    m_pShowSpinnyAndOrCover->setAndConfirm(
+            (m_pShowSpinny->toBool() || m_pShowCover->toBool())
+                    ? 1.0
+                    : 0.0);
+    m_pShowSmallSpinnyCover->setAndConfirm(
+            (m_pShowSpinnyAndOrCover->toBool() && !m_pSelectBigSpinnyCover->toBool())
+                    ? 1.0
+                    : 0.0);
+    m_pShowBigSpinnyCover->setAndConfirm(
+            (m_pShowSpinnyAndOrCover->toBool() &&
+                    m_pSelectBigSpinnyCover->toBool())
+                    ? 1.0
+                    : 0.0);
 }
 
 } // namespace skin
