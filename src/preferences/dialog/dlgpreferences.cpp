@@ -46,7 +46,6 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "skin/skinloader.h"
 #include "util/color/color.h"
 #include "util/widgethelper.h"
 

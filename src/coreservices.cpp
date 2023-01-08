@@ -454,6 +454,8 @@ void CoreServices::initialize(QApplication* pApp) {
             {ConfigKey("[EffectRack1]", "show"), true, true},
             {ConfigKey("[Skin]", "show_4effectunits"), true, false},
             {ConfigKey("[Master]", "show_mixer"), true, true},
+            {ConfigKey("[Skin]", "show_spinnies"), true, true},
+            {ConfigKey("[Skin]", "show_coverart"), true, true},
     };
     m_uiControls.reserve(uiControls.size());
     for (const auto& row : uiControls) {
