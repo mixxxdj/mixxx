@@ -238,6 +238,7 @@ class WaveformWidgetFactory : public QObject,
     void swapSpinnies();
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
+    void endOfTrackTimeChanged(int time);
 
     void overviewScalingChanged();
     void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
