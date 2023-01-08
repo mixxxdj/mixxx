@@ -100,6 +100,15 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             // m_postGainNew = 0.9999999983339118f + (4.58745459575558e-13f * resonance);
             m_postGainNew = 1.0;
         } else {
+            // Analyzing this filter as a linear system will show a small dip in
+            // passband/DC gain when the cutoff frequency is around 10 kHz:
+            // https://github.com/mixxxdj/mixxx/pull/11177#issuecomment-1374833386
+            //
+            // In practice this is either not a noticeable issue when running
+            // music through the filter, or it might even be desirable as it
+            // keeps the overall gain increase a bit lower when the resonance is
+            // turned up and the cutoff frequency is around 10 kHz. This may be
+            // worth more experimentation in the future.
             m_postGainNew = 1.0001784074555027f + (0.9331585678097162f * resonance);
         }
 
