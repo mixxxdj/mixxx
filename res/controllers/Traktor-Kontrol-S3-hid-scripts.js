@@ -2489,9 +2489,11 @@ TraktorS3.VanillaFxControl = class {
         // The normal version of this resets the super knobs to the value it had
         // when the chain preset was saved. We need the value to stay consistent
         // with the knob on the controller.
+        // NOTE: The first preset is now the ---/no preset option, and this is 1-indexed
+        //       https://github.com/mixxxdj/mixxx/pull/10859
         engine.setValue(`[QuickEffectRack1_[Channel${channel}]]`,
             "loaded_chain_preset_preserving_super_knob_value",
-            fxButtonIndex + 1);
+            fxButtonIndex + 2);
     }
 
     // Output handling
@@ -2516,7 +2518,8 @@ TraktorS3.VanillaFxControl = class {
         // chain.
         const activeFxSelectButtons = new Set();
         for (let channel = 1; channel <= 4; channel++) {
-            const fxNumber = engine.getValue(`[QuickEffectRack1_[Channel${channel}]]`, "loaded_chain_preset") - 1;
+            // NOTE: The first preset is now the ---/no preset option, and this is 1-indexed
+            const fxNumber = engine.getValue(`[QuickEffectRack1_[Channel${channel}]]`, "loaded_chain_preset") - 2;
             activeFxSelectButtons.add(fxNumber);
         }
 
@@ -2545,7 +2548,8 @@ TraktorS3.VanillaFxControl = class {
         const channelGroup = `[Channel${channelNumber}]`;
         const quickEffectChainGroup = `[QuickEffectRack1_${channelGroup}]`;
 
-        const fxNumber = engine.getValue(quickEffectChainGroup, "loaded_chain_preset") - 1;
+        // NOTE: The first preset is now the ---/no preset option, and this is 1-indexed
+        const fxNumber = engine.getValue(quickEffectChainGroup, "loaded_chain_preset") - 2;
         // We don't need to query this from the engine when this is called as
         // part of a connection
         const fxEnabled = (enabled !== undefined && enabled !== null)
