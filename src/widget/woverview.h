@@ -65,6 +65,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void onPassthroughChange(double v);
     void onEndOfTrackBlinkTimerChange(double v);
     void receiveCuesUpdated();
+    void setEndOfTrackTime(int time);
 
     void slotWaveformSummaryUpdated();
     void slotCueMenuPopupAboutToHide();
