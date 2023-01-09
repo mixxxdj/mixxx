@@ -17,7 +17,7 @@ class LV2Manifest : public EffectManifest {
         HAS_REQUIRED_FEATURES
     };
 
-    LV2Manifest(const LilvPlugin* plug, QHash<QString, LilvNode*>& properties);
+    LV2Manifest(LilvWorld* world, const LilvPlugin* plug, QHash<QString, LilvNode*>& properties);
 
     QList<int> getAudioPortIndices();
     QList<int> getControlPortIndices();

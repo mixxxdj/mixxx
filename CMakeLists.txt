@@ -2741,8 +2741,8 @@ endif()
 find_package(lilv)
 default_option(LILV "Lilv (LV2) support" "lilv_FOUND")
 if(LILV)
-  if(NOT TARGET lilv::lilv)
-    message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
+  if(NOT lilv_FOUND)
+    message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and LV2 libraries and development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
     src/effects/backends/lv2/lv2backend.cpp
