@@ -143,6 +143,23 @@ DlgPrefController::DlgPrefController(
             &QAbstractButton::clicked,
             this,
             &DlgPrefController::clearAllOutputMappings);
+
+    connect(m_ui.inputControlSearch,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgPrefController::slotInputControlSearch);
+    connect(m_ui.inputControlSearchBtn,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefController::slotInputControlSearch);
+    connect(m_ui.outputControlSearch,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgPrefController::slotOutputControlSearch);
+    connect(m_ui.outputControlSearchBtn,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefController::slotOutputControlSearch);
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -828,14 +845,6 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_pInputProxyModel = pInputProxyModel;
     delete m_pInputTableModel;
     m_pInputTableModel = pInputModel;
-    connect(m_ui.inputControlSearch,
-            &QLineEdit::returnPressed,
-            this,
-            &DlgPrefController::slotInputControlSearch);
-    connect(m_ui.inputControlSearchBtn,
-            &QPushButton::clicked,
-            this,
-            &DlgPrefController::slotInputControlSearch);
     // Trigger search when the model was recreated after hitting Apply
     slotInputControlSearch();
 
@@ -864,14 +873,6 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_pOutputProxyModel = pOutputProxyModel;
     delete m_pOutputTableModel;
     m_pOutputTableModel = pOutputModel;
-    connect(m_ui.outputControlSearch,
-            &QLineEdit::returnPressed,
-            this,
-            &DlgPrefController::slotOutputControlSearch);
-    connect(m_ui.outputControlSearchBtn,
-            &QPushButton::clicked,
-            this,
-            &DlgPrefController::slotOutputControlSearch);
     // Trigger search when the model was recreated after hitting Apply
     slotOutputControlSearch();
 }
