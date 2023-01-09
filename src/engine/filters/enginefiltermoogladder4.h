@@ -93,11 +93,23 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // Resonance correction for self oscillation ~4
         m_kacrNew = resonance * (-3.9364f * (kfc * kfc) + 1.8409f * kfc + 0.9968f);
 
+        // See https://github.com/mixxxdj/mixxx/pull/11177 for the Jupyter
+        // notebook used to derive this
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
-            m_postGainNew = 1;
+            // This for all intents and purposes is just 1.0, so let's just stick with that
+            // m_postGainNew = 0.9999999983339118f + (4.58745459575558e-13f * resonance);
+            m_postGainNew = 1.0;
         } else {
-            m_postGainNew = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
-                    * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
+            // Analyzing this filter as a linear system will show a small dip in
+            // passband/DC gain when the cutoff frequency is around 10 kHz:
+            // https://github.com/mixxxdj/mixxx/pull/11177#issuecomment-1374833386
+            //
+            // In practice this is either not a noticeable issue when running
+            // music through the filter, or it might even be desirable as it
+            // keeps the overall gain increase a bit lower when the resonance is
+            // turned up and the cutoff frequency is around 10 kHz. This may be
+            // worth more experimentation in the future.
+            m_postGainNew = 1.0001784074555027f + (0.9331585678097162f * resonance);
         }
 
         m_doRamping = true;
