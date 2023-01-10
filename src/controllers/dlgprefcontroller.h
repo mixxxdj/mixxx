@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QHash>
-#include <QSortFilterProxyModel>
 #include <memory>
 
 #include "controllers/controllerinputmappingtablemodel.h"
@@ -29,6 +28,7 @@ class DlgPrefController : public DlgPreferencePage {
     virtual ~DlgPrefController();
 
     QUrl helpUrl() const override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
@@ -51,6 +51,8 @@ class DlgPrefController : public DlgPreferencePage {
     /// Used to selected the current mapping in the combobox and display the
     /// mapping information.
     void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
+    void slotInputControlSearch();
+    void slotOutputControlSearch();
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
     void enableWizardAndIOTabs(bool enable);
@@ -120,9 +122,9 @@ class DlgPrefController : public DlgPreferencePage {
     std::shared_ptr<LegacyControllerMapping> m_pMapping;
     QMap<QString, bool> m_pOverwriteMappings;
     ControllerInputMappingTableModel* m_pInputTableModel;
-    QSortFilterProxyModel* m_pInputProxyModel;
+    ControllerMappingTableProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
-    QSortFilterProxyModel* m_pOutputProxyModel;
+    ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
 };
