@@ -21,7 +21,9 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
         UserSettingsPointer pConfig)
         : QTableView(parent),
           m_pConfig(pConfig),
-          m_modelStateCache(kModelCacheSize) {
+          m_modelStateCache(kModelCacheSize),
+          m_prevRow(0),
+          m_prevColumn(0) {
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
@@ -171,6 +173,46 @@ bool WLibraryTableView::restoreTrackModelState(
     // reinsert the state into the cache
     m_modelStateCache.insert(key, state, 1);
     return true;
+}
+
+void WLibraryTableView::saveCurrentIndex() {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (!pSelectionModel) {
+        return;
+    }
+    QModelIndexList indices = pSelectionModel->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    m_prevRow = indices.first().row();
+    m_prevColumn = currentIndex().isValid() ? currentIndex().column() : columnAt(0);
+}
+
+void WLibraryTableView::restoreCurrentIndex() {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (!pSelectionModel) {
+        return;
+    }
+    if (model()->rowCount() == 0 || m_prevRow < 0 || m_prevColumn < 0) {
+        // nothing to select
+        return;
+    }
+    if (model()->rowCount() < m_prevRow + 1) {
+        // select last row
+        m_prevRow = model()->rowCount() - 1;
+    }
+    if (isColumnHidden(m_prevColumn)) {
+        // select first column
+        m_prevColumn = columnAt(0);
+    }
+    QModelIndex idx = model()->index(m_prevRow, m_prevColumn);
+    if (idx.isValid()) {
+        pSelectionModel->setCurrentIndex(idx, QItemSelectionModel::NoUpdate);
+        scrollTo(idx);
+    }
+    m_prevRow = 0;
+    m_prevColumn = 0;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
