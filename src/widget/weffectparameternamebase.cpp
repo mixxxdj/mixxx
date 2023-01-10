@@ -81,7 +81,7 @@ void WEffectParameterNameBase::parameterUpdated() {
     optimumWidth = math_max(
             optimumWidth,
             metrics.size(0, m_text).width());
-    setMinimumWidth(optimumWidth + 6);
+    setMinimumWidth(optimumWidth);
     qDebug() << optimumWidth << m_text << "|";
     setText(m_text);
     m_parameterUpdated = true;
