@@ -46,6 +46,8 @@ void WEffectParameterNameBase::setEffectParameterSlot(
 }
 
 void WEffectParameterNameBase::parameterUpdated() {
+    int optimumWidth = 0;
+    QFontMetrics metrics(font());
     if (m_pParameterSlot) {
         if (!m_pParameterSlot->shortName().isEmpty()) {
             m_text = m_pParameterSlot->shortName();
@@ -58,6 +60,16 @@ void WEffectParameterNameBase::parameterUpdated() {
         EffectManifestParameterPointer pManifest = m_pParameterSlot->getManifest();
         if (!pManifest.isNull()) {
             m_unitString = m_pParameterSlot->getManifest()->unitString();
+            double maxValue = m_pParameterSlot->getManifest()->getMaximum();
+            double minValue = m_pParameterSlot->getManifest()->getMaximum();
+            QString maxValueString = QString::number(maxValue - 0.01) + QChar(' ') + m_unitString;
+            QString minValueString = QString::number(minValue + 0.01) + QChar(' ') + m_unitString;
+            optimumWidth = math_max(
+                    metrics.size(0, maxValueString).width(),
+                    metrics.size(0, minValueString).width());
+
+            qDebug() << minValueString << maxValueString << "|";
+
         } else {
             m_unitString = QString();
         }
@@ -66,6 +78,11 @@ void WEffectParameterNameBase::parameterUpdated() {
         m_text = kNoEffectString;
         setBaseTooltip(tr("No effect loaded."));
     }
+    optimumWidth = math_max(
+            optimumWidth,
+            metrics.size(0, m_text).width());
+    setMinimumWidth(optimumWidth + 6);
+    qDebug() << optimumWidth << m_text << "|";
     setText(m_text);
     m_parameterUpdated = true;
 }
