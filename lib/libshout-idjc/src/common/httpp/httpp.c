@@ -33,6 +33,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#ifndef _MSC_VER
+#include <strings.h>
+#endif
 #include <ctype.h>
 
 #include <avl/avl.h>
