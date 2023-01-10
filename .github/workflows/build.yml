@@ -418,7 +418,8 @@ jobs:
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
       - name: "Upload GitHub Actions artifacts"
-        uses: actions/upload-artifact@v3.1.0
+        if: matrix.artifacts_path != null
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
