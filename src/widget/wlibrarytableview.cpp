@@ -20,10 +20,10 @@ constexpr int kModelCacheSize = 1000;
 WLibraryTableView::WLibraryTableView(QWidget* parent,
         UserSettingsPointer pConfig)
         : QTableView(parent),
-          m_pConfig(pConfig),
-          m_modelStateCache(kModelCacheSize),
           m_prevRow(0),
-          m_prevColumn(0) {
+          m_prevColumn(0),
+          m_pConfig(pConfig),
+          m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.

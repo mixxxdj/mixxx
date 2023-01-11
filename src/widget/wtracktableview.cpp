@@ -521,15 +521,12 @@ void WTrackTableView::onSearch(const QString& text) {
                 trackModel->currentSearch(), text);
         QList<TrackId> selectedTracks = getSelectedTrackIds();
         TrackId prevTrack = getCurrentTrackId();
-        int prevColumn = 0;
-        if (currentIndex().isValid()) {
-            prevColumn = currentIndex().column();
-        }
+        saveCurrentIndex();
         trackModel->search(text);
         if (queryIsLessSpecific) {
             // If the user removed query terms, we try to select the same
             // tracks as before
-            setCurrentTrackId(prevTrack, prevColumn);
+            setCurrentTrackId(prevTrack, m_prevColumn);
             setSelectedTracks(selectedTracks);
         } else {
             // The user created a more specific search query, try to restore a
@@ -537,7 +534,11 @@ void WTrackTableView::onSearch(const QString& text) {
             if (!restoreCurrentViewState()) {
                 // We found no saved state for this query, try to select the
                 // tracks last active, if they are part of the result set
-                setCurrentTrackId(prevTrack, prevColumn);
+                if (!setCurrentTrackId(prevTrack, m_prevColumn)) {
+                    // if the last focused track is not present try to focus the
+                    // respective index and scroll there
+                    restoreCurrentIndex();
+                }
                 setSelectedTracks(selectedTracks);
             }
         }

@@ -70,10 +70,10 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
             Qt::KeyboardModifiers modifiers) override;
     virtual QString getModelStateKey() const = 0;
 
+    int m_prevRow;
+    int m_prevColumn;
+
   private:
     const UserSettingsPointer m_pConfig;
     QCache<QString, ModelState> m_modelStateCache;
-
-    int m_prevRow;
-    int m_prevColumn;
 };
