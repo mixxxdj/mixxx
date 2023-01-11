@@ -6,6 +6,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read #  to fetch code (actions/checkout)
+
 jobs:
   pre-commit:
     name: Detecting code style issues
@@ -58,16 +61,18 @@ jobs:
         run: |
           git diff-index -p HEAD > "${PATCH_FILE}"
           [ -s "${PATCH_FILE}" ] && echo "UPLOAD_PATCH_FILE=${PATCH_FILE}" >> "${GITHUB_ENV}"
+        shell: bash
         env:
           PATCH_FILE: pre-commit.patch
 
       - name: "Upload patch artifact"
         if: failure() && env.UPLOAD_PATCH_FILE != null
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: ${{ env.UPLOAD_PATCH_FILE }}
           path: ${{ env.UPLOAD_PATCH_FILE }}
 
       # AppStream metadata has been generated/updated by a pre-commit hook
       - name: "Validate AppStream metadata"
+        if: runner.os == 'Linux'
         run: appstreamcli validate res/linux/org.mixxx.Mixxx.metainfo.xml

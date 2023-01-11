@@ -52,7 +52,7 @@
       <attribute persist="true" config_key="[Skin],show_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
+      <attribute persist="true" config_key="[Skin],select_big_spinny_or_cover">0</attribute>
       <!-- ToDo: deck-independent vinyl controls? -->
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <!-- Deck variant that is shown as soon as the mixer is hidden.
@@ -394,13 +394,6 @@
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
-
-    <!-- Some helpers to show widgets and switch layouts
-        depending on the skin configuration.
-        Apparently putting those here keeps i.e. the spinny
-        config when [Master],maximize_library is toggled. -->
-        <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
-        <Template src="skin:/helpers/skin_helper_spinny-cover.xml"/>
 
         <Template src="skin:toolbar.xml"/>
 

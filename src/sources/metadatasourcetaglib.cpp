@@ -320,11 +320,25 @@ class MpegTagSaver : public TagSaver {
     }
 
     bool saveModifiedTags() override {
+        DEBUG_ASSERT(hasModifiedTags());
+#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION < 12)
         // NOTE(uklotzde, 2016-08-28): Only save the tags that have
         // actually been modified! Otherwise TagLib 1.11 adds unwanted
         // ID3v1 tags, even if the file does not already contain those
         // legacy tags.
         return m_file.save(m_modifiedTagsBitmask);
+#else
+        // Keep ID3v1 tag synchronized if it already exists in the file
+        const auto duplicateTags =
+                m_file.hasID3v1Tag()
+                ? TagLib::File::DuplicateTags::Duplicate
+                : TagLib::File::DuplicateTags::DoNotDuplicate;
+        return m_file.save(
+                m_modifiedTagsBitmask,
+                TagLib::File::StripTags::StripNone,
+                TagLib::ID3v2::Version::v4,
+                duplicateTags);
+#endif
     }
 
   private:

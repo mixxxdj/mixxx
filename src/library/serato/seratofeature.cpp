@@ -1007,6 +1007,7 @@ void SeratoFeature::activate() {
 
     emit enableCoverArtDisplay(true);
     emit switchToView("SERATOHOME");
+    emit disableSearch();
 }
 
 void SeratoFeature::activateChild(const QModelIndex& index) {

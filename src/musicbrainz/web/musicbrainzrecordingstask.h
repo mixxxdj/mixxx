@@ -18,7 +18,7 @@ class MusicBrainzRecordingsTask : public network::WebTask {
   public:
     MusicBrainzRecordingsTask(
             QNetworkAccessManager* networkAccessManager,
-            QList<QUuid>&& recordingIds,
+            const QList<QUuid>& recordingIds,
             QObject* parent = nullptr);
     ~MusicBrainzRecordingsTask() override = default;
 
@@ -31,12 +31,17 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             const QString& errorMessage);
     void currentRecordingFetchedFromMusicBrainz();
 
+  protected:
+    void onNetworkError(
+            QNetworkReply* finishedNetworkReply,
+            network::HttpStatusCode statusCode) override;
+
   private:
     QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
     void doNetworkReplyFinished(
-            QNetworkReply* finishedNetworkReply,
+            QNetworkReply* pFinishedNetworkReply,
             network::HttpStatusCode statusCode) override;
 
     void emitSucceeded(

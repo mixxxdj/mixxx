@@ -474,7 +474,9 @@ void WTrackTableView::slotShowHideTrackMenu(bool show) {
         return;
     }
     if (show) {
-        QContextMenuEvent event(QContextMenuEvent::Mouse, QCursor::pos());
+        QContextMenuEvent event(QContextMenuEvent::Mouse,
+                mapFromGlobal(QCursor::pos()),
+                QCursor::pos());
         contextMenuEvent(&event);
     } else {
         m_pTrackMenu->close();
@@ -818,35 +820,6 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             hideOrRemoveSelectedTracks();
             return;
         }
-    } break;
-    case Qt::Key_Home: { // Jump to first row
-        if (model()->rowCount() == 0) {
-            return;
-        }
-        int currCol = 0;
-        QModelIndex currIdx = currentIndex();
-        if (currIdx.isValid()) {
-            currCol = currIdx.column();
-        }
-        QModelIndex newIdx = model()->index(0, currCol);
-        selectionModel()->setCurrentIndex(newIdx,
-                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
-        scrollTo(newIdx);
-    } break;
-    case Qt::Key_End: { // Jump to last row
-        const int lastRow = model()->rowCount() - 1;
-        if (lastRow == -1) {
-            return;
-        }
-        int currCol = 0;
-        QModelIndex currIdx = currentIndex();
-        if (currIdx.isValid()) {
-            currCol = currIdx.column();
-        }
-        QModelIndex newIdx = model()->index(lastRow, currCol);
-        selectionModel()->setCurrentIndex(newIdx,
-                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
-        scrollTo(newIdx);
     } break;
     default:
         QTableView::keyPressEvent(event);

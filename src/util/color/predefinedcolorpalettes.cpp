@@ -4,9 +4,9 @@ namespace {
 
 // Default Mixxx Hotcue Color Palette
 constexpr mixxx::RgbColor kColorMixxxRed(0xC50A08);
-constexpr mixxx::RgbColor kColorMixxxYellow(0x32BE44);
-constexpr mixxx::RgbColor kColorMixxxGreen(0x42D4F4);
-constexpr mixxx::RgbColor kColorMixxxCeleste(0xF8D200);
+constexpr mixxx::RgbColor kColorMixxxGreen(0x32BE44);
+constexpr mixxx::RgbColor kColorMixxxCeleste(0x42D4F4);
+constexpr mixxx::RgbColor kColorMixxxYellow(0xF8D200);
 constexpr mixxx::RgbColor kColorMixxxBlue(0x0044FF);
 constexpr mixxx::RgbColor kColorMixxxPurple(0xAF00CC);
 constexpr mixxx::RgbColor kColorMixxxPink(0xFCA6D7);
@@ -157,9 +157,9 @@ const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPalette =
                 QStringLiteral("Mixxx Hotcue Colors"),
                 {
                         kColorMixxxRed,
-                        kColorMixxxYellow,
                         kColorMixxxGreen,
                         kColorMixxxCeleste,
+                        kColorMixxxYellow,
                         kColorMixxxBlue,
                         kColorMixxxPurple,
                         kColorMixxxPink,

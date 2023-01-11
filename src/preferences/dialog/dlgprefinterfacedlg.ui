@@ -45,6 +45,7 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
+
       <item row="0" column="0">
        <widget class="QLabel" name="lableSkin_2">
         <property name="enabled">
@@ -77,6 +78,7 @@
         </property>
        </widget>
       </item>
+
       <item row="3" column="0" rowspan="2">
        <widget class="QLabel" name="labelColorScheme">
         <property name="enabled">
@@ -112,6 +114,7 @@
         </property>
        </widget>
       </item>
+
       <item row="5" column="1" colspan="2">
        <widget class="QLabel" name="skinDescriptionText">
         <property name="sizePolicy">
@@ -131,6 +134,7 @@
         </property>
        </widget>
       </item>
+
       <item row="6" column="1" colspan="2">
        <widget class="QLabel" name="warningLabel">
         <property name="text">
@@ -141,6 +145,7 @@
         </property>
        </widget>
       </item>
+
       <item row="7" column="1">
        <widget class="QLabel" name="skinPreviewLabel">
         <property name="text">
@@ -148,6 +153,7 @@
         </property>
        </widget>
       </item>
+
       <item row="8" column="0">
        <spacer name="verticalSpacer1">
         <property name="orientation">
@@ -161,6 +167,20 @@
         </property>
        </spacer>
       </item>
+      <item row="8" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+
       <item row="9" column="0">
        <widget class="QLabel" name="textLabelLocale">
         <property name="text">
@@ -178,6 +198,7 @@
         </property>
        </widget>
       </item>
+
       <item row="10" column="0">
        <widget class="QLabel" name="labelScaleFactor">
         <property name="text">
@@ -185,6 +206,46 @@
         </property>
        </widget>
       </item>
+      <item row="10" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxScaleFactor">
+          <property name="toolTip">
+           <string>Change the size of text, buttons, and other items.</string>
+          </property>
+          <property name="suffix">
+           <string notr="true"> %</string>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="minimum">
+           <double>50.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>400.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>25.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+
       <item row="11" column="0">
        <widget class="QLabel" name="labelFullscreenOption">
         <property name="text">
@@ -202,6 +263,7 @@
         </property>
        </widget>
       </item>
+
       <item row="12" column="0">
        <widget class="QLabel" name="labelTooltips">
         <property name="enabled">
@@ -255,6 +317,7 @@
         </item>
        </layout>
       </item>
+
       <item row="13" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
@@ -265,58 +328,7 @@
       <item row="13" column="1" colspan="2">
        <widget class="QComboBox" name="comboBoxScreensaver"/>
       </item>
-      <item row="8" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="10" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QDoubleSpinBox" name="spinBoxScaleFactor">
-          <property name="toolTip">
-           <string>Change the size of text, buttons, and other items.</string>
-          </property>
-          <property name="suffix">
-           <string notr="true"> %</string>
-          </property>
-          <property name="decimals">
-           <number>0</number>
-          </property>
-          <property name="minimum">
-           <double>50.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>400.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>25.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
+
      </layout>
     </widget>
    </item>
@@ -327,6 +339,7 @@
   <tabstop>ComboBoxSkinconf</tabstop>
   <tabstop>ComboBoxSchemeconf</tabstop>
   <tabstop>ComboBoxLocale</tabstop>
+  <tabstop>spinBoxScaleFactor</tabstop>
   <tabstop>checkBoxStartFullScreen</tabstop>
   <tabstop>radioButtonTooltipsOff</tabstop>
   <tabstop>radioButtonTooltipsLibrary</tabstop>

@@ -133,6 +133,9 @@ void WMainMenuBar::initialize() {
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
     auto* pLibraryRescan = new QAction(rescanTitle, this);
+    pLibraryRescan->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_Rescan"),
+            tr("Ctrl+Shift+L"))));
     pLibraryRescan->setStatusTip(rescanText);
     pLibraryRescan->setWhatsThis(buildWhatsThis(rescanTitle, rescanText));
     pLibraryRescan->setCheckable(false);

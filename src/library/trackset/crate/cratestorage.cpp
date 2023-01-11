@@ -478,20 +478,21 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(
 CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
         const QList<TrackId>& trackIds) const {
     FwdSqlQuery query(m_database,
-            QStringLiteral("SELECT *, "
-                           "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
-                           "%1.%5 in (%9)) AS %6, "
-                           "0 as %7 FROM %2 ORDER BY %8")
-                    .arg(
-                            CRATE_TRACKS_TABLE,
-                            CRATE_TABLE,
-                            CRATETABLE_ID,
-                            CRATETRACKSTABLE_CRATEID,
-                            CRATETRACKSTABLE_TRACKID,
-                            CRATESUMMARY_TRACK_COUNT,
-                            CRATESUMMARY_TRACK_DURATION,
-                            CRATETABLE_NAME,
-                            joinSqlStringList(trackIds)));
+            mixxx::DbConnection::collateLexicographically(
+                    QStringLiteral("SELECT *, "
+                                   "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
+                                   "%1.%5 in (%9)) AS %6, "
+                                   "0 as %7 FROM %2 ORDER BY %8")
+                            .arg(
+                                    CRATE_TRACKS_TABLE,
+                                    CRATE_TABLE,
+                                    CRATETABLE_ID,
+                                    CRATETRACKSTABLE_CRATEID,
+                                    CRATETRACKSTABLE_TRACKID,
+                                    CRATESUMMARY_TRACK_COUNT,
+                                    CRATESUMMARY_TRACK_DURATION,
+                                    CRATETABLE_NAME,
+                                    joinSqlStringList(trackIds))));
 
     if (query.execPrepared()) {
         return CrateSummarySelectResult(std::move(query));

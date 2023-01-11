@@ -19,7 +19,7 @@ Variables:
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>
     <EffectUnitGroup><Variable name="FxUnit"/></EffectUnitGroup>
-    <Effect><Variable name="FxNum"/></Effect>
+    <Effect>1</Effect>
     <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
     <State>
       <Number>0</Number>

@@ -59,6 +59,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
     virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
     void slotCreatePlaylist();
+    void renameItem(const QModelIndex& index) override;
+    void deleteItem(const QModelIndex& index) override;
 
   protected slots:
     void slotDeletePlaylist();
