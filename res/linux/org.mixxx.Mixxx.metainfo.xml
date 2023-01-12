@@ -96,6 +96,10 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.5.0" type="development" date="2022-11-23" timestamp="1669217482">
+      <description>
+</description>
+    </release>
     <release version="2.4.0" type="development" date="2022-11-23" timestamp="1669217482">
       <description>
  <p>
