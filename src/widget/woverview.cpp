@@ -70,8 +70,8 @@ WOverview::WOverview(
     m_pEndOfTrackBlinkTimer = make_parented<ControlProxy>("[Master]", "indicator_500millis", this);
     m_pEndOfTrackBlinkTimer->connectValueChanged(
             this, &WOverview::onEndOfTrackBlinkTimerChange);
-    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
-    connect(waveformWidgetFactory,
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::endOfTrackTimeChanged,
             this,
             &WOverview::setEndOfTrackTime);
@@ -726,16 +726,16 @@ void WOverview::drawAxis(QPainter* pPainter) {
 }
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
-    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
+    WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
     if (!m_waveformSourceImage.isNull()) {
         PainterScope painterScope(pPainter);
         float diffGain;
-        bool normalize = widgetFactory->isOverviewNormalized();
+        bool normalize = pWidgetFactory->isOverviewNormalized();
         if (normalize && m_pixmapDone && m_waveformPeak > 1) {
             diffGain = 255 - m_waveformPeak - 1;
         } else {
             const auto visualGain = static_cast<float>(
-                    widgetFactory->getVisualGain(WaveformWidgetFactory::All));
+                    pWidgetFactory->getVisualGain(WaveformWidgetFactory::All));
             diffGain = 255.0f - (255.0f / visualGain);
         }
 
