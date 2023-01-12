@@ -118,7 +118,12 @@ void DlgPrefEffects::slotUpdate() {
 
     loadChainPresetLists();
 
-    bool effectAdoptMetaknobValue = m_pConfig->getValue(
+    const bool effectAdoptSuperknobValue = m_pConfig->getValue(
+            ConfigKey("[Effects]", "AdoptSuperknobValue"), false);
+    radioButtonKeepSuperknobPosition->setChecked(effectAdoptSuperknobValue);
+    radioButtonSuperknobLoadDefault->setChecked(!effectAdoptSuperknobValue);
+
+    const bool effectAdoptMetaknobValue = m_pConfig->getValue(
             ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
     radioButtonKeepMetaknobPosition->setChecked(effectAdoptMetaknobValue);
     radioButtonMetaknobLoadDefault->setChecked(!effectAdoptMetaknobValue);
@@ -128,6 +133,8 @@ void DlgPrefEffects::slotApply() {
     m_pVisibleEffectsList->setList(m_pVisibleEffectsModel->getList());
     saveChainPresetLists();
 
+    m_pConfig->set(ConfigKey("[Effects]", "AdoptSuperknobValue"),
+            ConfigValue(radioButtonKeepSuperknobPosition->isChecked()));
     m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobValue"),
             ConfigValue(radioButtonKeepMetaknobPosition->isChecked()));
 }
@@ -141,6 +148,7 @@ void DlgPrefEffects::saveChainPresetLists() {
 }
 
 void DlgPrefEffects::slotResetToDefaults() {
+    radioButtonSuperknobLoadDefault->setChecked(true);
     radioButtonKeepMetaknobPosition->setChecked(true);
     m_pChainPresetManager->resetToDefaults();
 
