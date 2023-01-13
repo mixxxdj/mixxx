@@ -24,15 +24,7 @@ var TraktorS3 = {};
 //   buttons toggle the enabled/bypass status of those quick effect chains. This
 //   emulates the intended behavior of the Mixer FX section on the Traktor
 //   Kontrol S3. The Filter button is bound to the first preset in the list, and
-//   the FX 1-4 buttons are bound to presets 2-5.  For consistency you should
-//   make sure that the default quick effect chain in Settings -> Equalizers is
-//   set to the first chain so that pressing the Filter button returns you to
-//   the default quick effect chain. The super knob's value is preserved when
-//   changing between quick effect chain presets.
-//
-//   The intended use case is to set quick effect chain preset 0 to either the
-//   Filter or Moog Filter effect, and presets 1-5 to a chain that contains that
-//   same filter and an additional effect.
+//   the FX 1-4 buttons are bound to presets 2-5.
 //
 //   Pressing one of the five FX/Filter buttons switches every channel's quick
 //   effect chain to the corresponding preset. Holding one of the buttons down
@@ -40,6 +32,16 @@ var TraktorS3 = {};
 //   the chain to just that channel. When the Filter Enable button is not
 //   enabled then channel will behave the same as if the first Filter quick
 //   effect chain preset was used.
+//
+//   The mode works best with the following configuration:
+//
+//   - The 'Keep superknob position' option in the Effects preferences page
+//     should be enabled.
+//   - The very first quick effect preset in the quick effect presets list
+//     should be set to the Moog Filter preset or another filter preset.
+//   - The next four quick effect presets should contain that exact same filter
+//     effect, plus another effect. Delays, reverbs, flangers, trance gates, and
+//     white noise are some examples of effects that would work well here.
 //
 // - Another mode that exposes all of Mixxx's effect controls at the expense of
 //   being more complex to use. See the manual for the full key binding scheme.
@@ -2485,7 +2487,8 @@ TraktorS3.VanillaFxControl = class {
     }
 
     /**
-     * Set the quick effect chain preset for a channel. This preserves the current super knob value
+     * Set the quick effect chain preset for a channel in accordance to one of
+     * the five effect buttons.
      *
      * @param {number} channel The channel number, in 1-4.
      * @param {number} fxButtonIndex The index of the FX button, 0 being the
@@ -2493,11 +2496,10 @@ TraktorS3.VanillaFxControl = class {
      *   fxButtonIndex 0-5 will be mapped to quick effect chain presets 1-6.
      */
     setQuickEffectChain(channel, fxButtonIndex) {
-        // The normal version of this resets the super knobs to the value it had
-        // when the chain preset was saved. We need the value to stay consistent
-        // with the knob on the controller.
+        // The 'Keep superknob position' option should be enabled for this to
+        // work as intended
         engine.setValue(`[QuickEffectRack1_[Channel${channel}]]`,
-            "loaded_chain_preset_preserving_super_knob_value",
+            "loaded_chain_preset",
             fxButtonIndex + this.effectChainOffset);
     }
 

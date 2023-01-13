@@ -104,12 +104,6 @@ EffectChain::EffectChain(const QString& group,
             this,
             &EffectChain::slotControlLoadedChainPresetRequest);
 
-    m_pControlLoadedChainPresetPreservingSuperKnobValue = std::make_unique<ControlObject>(
-            ConfigKey(m_group, "loaded_chain_preset_preserving_super_knob_value"), false);
-    m_pControlLoadedChainPresetPreservingSuperKnobValue->connectValueChangeRequest(
-            this,
-            &EffectChain::slotControlLoadedChainPresetRequestPreservingSuperKnobValue);
-
     m_pControlNextChainPreset = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "next_chain_preset"));
     connect(m_pControlNextChainPreset.get(),
@@ -353,16 +347,6 @@ void EffectChain::slotControlLoadedChainPresetRequest(double value) {
     }
     // loadChainPreset calls setAndConfirm
     loadChainPreset(presetAtIndex(index));
-}
-
-void EffectChain::slotControlLoadedChainPresetRequestPreservingSuperKnobValue(double value) {
-    // Loading a chain preset sets the super knob's value to the value it was at
-    // when the chain preset was saved. It may be desirable to keep the knob's
-    // value as is, for instance when changing between multiple presets that
-    // contain a filter and an additional additional effect.
-    const double old_value = m_pControlChainSuperParameter->get();
-    slotControlLoadedChainPresetRequest(value);
-    slotControlChainSuperParameter(old_value, true);
 }
 
 void EffectChain::setControlLoadedPresetIndex(uint index) {
