@@ -187,13 +187,13 @@ void WLibraryTableView::saveCurrentIndex() {
     m_prevColumn = currentIndex().isValid() ? currentIndex().column() : columnAt(0);
 }
 
-void WLibraryTableView::restoreCurrentIndex(const std::optional<QModelIndex>& index) {
+void WLibraryTableView::restoreCurrentIndex(const QModelIndex& index) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     if (!pSelectionModel) {
         return;
     }
-    int row = index ? index->row() : m_prevRow;
-    int col = index ? index->column() : m_prevColumn;
+    int row = index.isValid() ? index.row() : m_prevRow;
+    int col = index.isValid() ? index.column() : m_prevColumn;
     if (model()->rowCount() == 0 || row < 0 || col < 0) {
         // nothing to select
         return;

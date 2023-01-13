@@ -50,7 +50,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     /// navigation after selected tracks have been manually removed from the view
     /// via hide, remove or purge
     /// @param optional: index, otherwise row/column member vars are used
-    void restoreCurrentIndex(const std::optional<QModelIndex>& index = std::nullopt);
+    void restoreCurrentIndex(const QModelIndex& index = QModelIndex());
 
   signals:
     void loadTrack(TrackPointer pTrack);
