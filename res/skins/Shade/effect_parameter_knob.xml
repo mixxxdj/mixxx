@@ -30,6 +30,8 @@
             qproperty-alignment: AlignCenter;
           }
         </Style>
+        <Elide>right</Elide>
+        <Alignment>center</Alignment>
         <ObjectName>KnobLabel</ObjectName>
         <EffectRack>1</EffectRack>
         <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
