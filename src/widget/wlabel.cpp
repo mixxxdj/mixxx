@@ -95,11 +95,9 @@ void WLabel::setText(const QString& text) {
     if (m_elideMode != Qt::ElideNone) {
         QFontMetrics metrics(font());
         // Measure the text for label width
-        // it turns out, that "-2" is required to make the text actually fit
-        // (Tested on Ubuntu Trusty)
         // TODO(lp#:1434865): Fix elide width calculation for cases where
         // this text is next to an expanding widget.
-        QString elidedText = metrics.elidedText(m_longText, m_elideMode, width() - 2);
+        QString elidedText = metrics.elidedText(m_longText, m_elideMode, width() - frameWidth());
         QLabel::setText(elidedText);
     } else {
         QLabel::setText(m_longText);
