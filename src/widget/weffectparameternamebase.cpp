@@ -60,10 +60,13 @@ void WEffectParameterNameBase::parameterUpdated() {
         EffectManifestParameterPointer pManifest = m_pParameterSlot->getManifest();
         if (!pManifest.isNull()) {
             m_unitString = m_pParameterSlot->getManifest()->unitString();
+            if (!m_unitString.isEmpty()) {
+                m_unitString.prepend(QChar(' '));
+            }
             double maxValue = m_pParameterSlot->getManifest()->getMaximum();
             double minValue = m_pParameterSlot->getManifest()->getMaximum();
-            QString maxValueString = QString::number(maxValue - 0.01) + QChar(' ') + m_unitString;
-            QString minValueString = QString::number(minValue + 0.01) + QChar(' ') + m_unitString;
+            QString maxValueString = QString::number(maxValue - 0.01) + m_unitString;
+            QString minValueString = QString::number(minValue + 0.01) + m_unitString;
             optimumWidth = math_max(
                     metrics.size(0, maxValueString).width(),
                     metrics.size(0, minValueString).width());
@@ -103,11 +106,7 @@ void WEffectParameterNameBase::showNewValue(double newValue) {
     }
     double dispVal = round(newValue * tenPowDecimals) / tenPowDecimals;
 
-    if (m_unitString.isEmpty()) {
-        setText(QString::number(dispVal));
-    } else {
-        setText(QString::number(dispVal) + QChar(' ') + m_unitString);
-    }
+    setText(QString::number(dispVal) + m_unitString);
     m_displayNameResetTimer.start();
 }
 
