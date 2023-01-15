@@ -12,7 +12,8 @@ WLabel::WLabel(QWidget* pParent)
           m_longText(),
           m_elideMode(Qt::ElideNone),
           m_scaleFactor(1.0),
-          m_highlight(0) {
+          m_highlight(0),
+          m_widthHint(0) {
 }
 
 void WLabel::setup(const QDomNode& node, const SkinContext& context) {
@@ -95,8 +96,7 @@ void WLabel::setText(const QString& text) {
     if (m_elideMode != Qt::ElideNone) {
         QFontMetrics metrics(font());
         // Measure the text for label width
-        // TODO(lp#:1434865): Fix elide width calculation for cases where
-        // this text is next to an expanding widget.
+        m_widthHint = metrics.size(0, m_longText).width() + frameWidth();
         QString elidedText = metrics.elidedText(m_longText, m_elideMode, width() - frameWidth());
         QLabel::setText(elidedText);
     } else {
@@ -143,4 +143,13 @@ void WLabel::setHighlight(int highlight) {
     }
     m_highlight = highlight;
     emit highlightChanged(m_highlight);
+}
+
+QSize WLabel::sizeHint() const {
+    // make sure the sizeHint fits for the entire string.
+    QSize size = QLabel::sizeHint();
+    if (m_elideMode != Qt::ElideNone) {
+        size.setWidth(m_widthHint);
+    }
+    return size;
 }
