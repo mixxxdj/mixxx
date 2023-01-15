@@ -14,7 +14,8 @@ const QString kMimeTextDelimiter = QStringLiteral("\n");
 WEffectParameterNameBase::WEffectParameterNameBase(
         QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
-          m_pEffectsManager(pEffectsManager) {
+          m_pEffectsManager(pEffectsManager),
+          m_widthHint(0) {
     setAcceptDrops(true);
     setCursor(Qt::OpenHandCursor);
     parameterUpdated();
@@ -84,8 +85,7 @@ void WEffectParameterNameBase::parameterUpdated() {
     optimumWidth = math_max(
             optimumWidth,
             metrics.size(0, m_text).width());
-    setMinimumWidth(optimumWidth);
-    qDebug() << optimumWidth << m_text << "|";
+    m_widthHint = optimumWidth;
     setText(m_text);
     m_parameterUpdated = true;
 }
@@ -163,4 +163,11 @@ const QString WEffectParameterNameBase::mimeTextIdentifier() const {
     return QStringLiteral("Mixxx effect parameter ") +
             QString::number(
                     static_cast<int>(m_pParameterSlot->parameterType()));
+}
+
+QSize WEffectParameterNameBase::sizeHint() const {
+    // make sure the sizeHint is not changing because of the label or value string
+    QSize size = WLabel::sizeHint();
+    size.setWidth(m_widthHint);
+    return size;
 }
