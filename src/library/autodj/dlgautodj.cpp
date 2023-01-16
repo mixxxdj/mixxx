@@ -33,7 +33,12 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
                   /*no sorting*/ false)),
           m_bShowButtonText(parent->getShowButtonText()),
           m_pAutoDJTableModel(nullptr),
-          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
+          m_pTrackCollection(nullptr) {
+    TrackCollectionManager* pTrackCollectionManager = pLibrary->trackCollectionManager();
+    DEBUG_ASSERT(pTrackCollectionManager != nullptr);
+    m_pTrackCollection = pTrackCollectionManager->internalCollection();
+    DEBUG_ASSERT(m_pTrackCollection != nullptr);
+
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -55,9 +60,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             this,
             &DlgAutoDJ::updateSelectionInfo);
 
-    connect(&pLibrary->trackCollectionManager()
-                     ->internalCollection()
-                     ->getPlaylistDAO(),
+    connect(&m_pTrackCollection->getPlaylistDAO(),
             &PlaylistDAO::tracksChanged,
             this,
             &DlgAutoDJ::updateTotalInfo);
