@@ -96,15 +96,7 @@ class PlaylistStorage : public virtual /*implements*/ SqlStorage {
     void connectDatabase(const QSqlDatabase& database) override;
     void disconnectDatabase() override;
 
-    /////////////////////////////////////////////////////////////////////////
-    // Playlist read operations (read-only, const)
-    /////////////////////////////////////////////////////////////////////////
-
     uint countPlaylists(PlaylistDAO::HiddenType type) const;
-
-    /////////////////////////////////////////////////////////////////////////
-    // PlaylistSummary view operations (read-only, const)
-    /////////////////////////////////////////////////////////////////////////
 
     PlaylistSummarySelectResult selectPlaylistSummaries(PlaylistDAO::HiddenType type) const;
 
