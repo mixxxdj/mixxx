@@ -97,10 +97,12 @@ class Translations {
         const bool success = pTranslator->load(
                 locale, translation, QStringLiteral("_"), translationsPath);
         if (!success) {
-            ((warnOnFailure) ? qWarning() : qDebug())
-                    << "Failed to load" << translation << "translations for locale"
-                    << locale.name()
-                    << "from" << translationsPath;
+            if (warnOnFailure) {
+                qWarning()
+                        << "Failed to load" << translation << "translations for locale"
+                        << locale.name()
+                        << "from" << translationsPath;
+            }
             delete pTranslator;
             return false;
         }
