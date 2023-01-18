@@ -59,6 +59,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   private:
     void initializeDirList();
     void setLibraryFont(const QFont& font);
+    void updateSearchLineEditHistoryOptions();
 
     QStandardItemModel m_dirListModel;
     UserSettingsPointer m_pConfig;
