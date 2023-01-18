@@ -63,8 +63,8 @@ constexpr int WSearchLineEdit::kMaxSearchEntries;
 
 //static
 int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
-bool WSearchLineEdit::s_completionsEnabled = kEnableCompletionsByDefault;
-bool WSearchLineEdit::s_historyShortcutsEnabled = kEnableHistoryShortcutsByDefault;
+bool WSearchLineEdit::s_completionsEnabled = kCompletionsEnabledDefault;
+bool WSearchLineEdit::s_historyShortcutsEnabled = kHistoryShortcutsEnabledDefault;
 
 //static
 void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {

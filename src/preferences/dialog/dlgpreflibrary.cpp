@@ -90,7 +90,7 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
-    searchHistoryOptionsChanged();
+    updateSearchLineEditHistoryOptions();
 
     connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
@@ -212,9 +212,9 @@ void DlgPrefLibrary::slotResetToDefaults() {
     setLibraryFont(QApplication::font());
     searchDebouncingTimeoutSpinBox->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
-    checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kEnableCompletionsByDefault);
+    checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kCompletionsEnabledDefault);
     checkBoxEnableSearchHistoryShortcuts->setChecked(
-            WSearchLineEdit::kEnableHistoryShortcutsByDefault);
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -274,10 +274,10 @@ void DlgPrefLibrary::slotUpdate() {
 
     checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
             kEnableSearchCompletionsConfigKey,
-            WSearchLineEdit::kEnableCompletionsByDefault));
+            WSearchLineEdit::kCompletionsEnabledDefault));
     checkBoxEnableSearchHistoryShortcuts->setChecked(m_pConfig->getValue(
             kEnableSearchHistoryShortcutsConfigKey,
-            WSearchLineEdit::kEnableHistoryShortcutsByDefault));
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -429,7 +429,7 @@ void DlgPrefLibrary::slotApply() {
             ConfigValue(checkBoxEnableSearchCompletions->isChecked()));
     m_pConfig->set(kEnableSearchHistoryShortcutsConfigKey,
             ConfigValue(checkBoxEnableSearchHistoryShortcuts->isChecked()));
-    searchHistoryOptionsChanged();
+    updateSearchLineEditHistoryOptions();
 
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
@@ -513,13 +513,13 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 }
 
-void DlgPrefLibrary::searchHistoryOptionsChanged() {
+void DlgPrefLibrary::updateSearchLineEditHistoryOptions() {
     WSearchLineEdit::setSearchCompletionsEnabled(m_pConfig->getValue<bool>(
             kEnableSearchCompletionsConfigKey,
-            WSearchLineEdit::kEnableCompletionsByDefault));
+            WSearchLineEdit::kCompletionsEnabledDefault));
     WSearchLineEdit::setSearchHistoryShortcutsEnabled(m_pConfig->getValue<bool>(
             kEnableSearchHistoryShortcutsConfigKey,
-            WSearchLineEdit::kEnableHistoryShortcutsByDefault));
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
