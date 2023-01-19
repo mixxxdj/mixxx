@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <memory>
 
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
@@ -14,7 +15,6 @@ class QuantizeControl : public EngineControl {
     Q_OBJECT
   public:
     QuantizeControl(const QString& group, UserSettingsPointer pConfig);
-    ~QuantizeControl() override;
 
     void setFrameInfo(mixxx::audio::FramePos currentPosition,
             mixxx::audio::FramePos trackEndPosition,
@@ -30,10 +30,10 @@ class QuantizeControl : public EngineControl {
     void updateClosestBeat(mixxx::audio::FramePos position);
     void playPosChanged(mixxx::audio::FramePos position);
 
-    ControlPushButton* m_pCOQuantizeEnabled;
-    ControlObject* m_pCONextBeat;
-    ControlObject* m_pCOPrevBeat;
-    ControlObject* m_pCOClosestBeat;
+    std::unique_ptr<ControlPushButton> m_pCOQuantizeEnabled;
+    std::unique_ptr<ControlObject> m_pCONextBeat;
+    std::unique_ptr<ControlObject> m_pCOPrevBeat;
+    std::unique_ptr<ControlObject> m_pCOClosestBeat;
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;

@@ -13,21 +13,14 @@ QuantizeControl::QuantizeControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           // Turn quantize OFF by default. See Bug #898213
-          m_pCOQuantizeEnabled(new ControlPushButton(ConfigKey(group, "quantize"), true)),
-          m_pCONextBeat(new ControlObject(ConfigKey(group, "beat_next"))),
-          m_pCOPrevBeat(new ControlObject(ConfigKey(group, "beat_prev"))),
-          m_pCOClosestBeat(new ControlObject(ConfigKey(group, "beat_closest"))) {
+          m_pCOQuantizeEnabled(std::make_unique<ControlPushButton>(ConfigKey(group, "quantize"), true)),
+          m_pCONextBeat(std::make_unique<ControlObject>(ConfigKey(group, "beat_next"))),
+          m_pCOPrevBeat(std::make_unique<ControlObject>(ConfigKey(group, "beat_prev"))),
+          m_pCOClosestBeat(std::make_unique<ControlObject>(ConfigKey(group, "beat_closest"))) {
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pCONextBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
     m_pCOPrevBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
     m_pCOClosestBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
-}
-
-QuantizeControl::~QuantizeControl() {
-    delete m_pCOQuantizeEnabled;
-    delete m_pCONextBeat;
-    delete m_pCOPrevBeat;
-    delete m_pCOClosestBeat;
 }
 
 void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
