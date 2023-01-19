@@ -11,15 +11,15 @@
 
 QuantizeControl::QuantizeControl(const QString& group,
         UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig) {
-    // Turn quantize OFF by default. See Bug #898213
-    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);
+        : EngineControl(group, pConfig),
+          // Turn quantize OFF by default. See Bug #898213
+          m_pCOQuantizeEnabled(new ControlPushButton(ConfigKey(group, "quantize"), true)),
+          m_pCONextBeat(new ControlObject(ConfigKey(group, "beat_next"))),
+          m_pCOPrevBeat(new ControlObject(ConfigKey(group, "beat_prev"))),
+          m_pCOClosestBeat(new ControlObject(ConfigKey(group, "beat_closest"))) {
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pCONextBeat = new ControlObject(ConfigKey(group, "beat_next"));
     m_pCONextBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
-    m_pCOPrevBeat = new ControlObject(ConfigKey(group, "beat_prev"));
     m_pCOPrevBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
-    m_pCOClosestBeat = new ControlObject(ConfigKey(group, "beat_closest"));
     m_pCOClosestBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
 }
 
