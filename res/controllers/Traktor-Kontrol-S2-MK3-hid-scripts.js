@@ -936,6 +936,8 @@ TraktorS2MK3.lightDeck = function (switchOff) {
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton2", softLight, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton3", softLight, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton4", softLight, false);
+    // Set FX button LED state according to active quick effects on start-up
+    if (!switchOff) TraktorS2MK3.fxOutputHandler();
 
     TraktorS2MK3.controller.setOutput("[Channel1]", "reverse", softLight, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "reverse", softLight, false);
