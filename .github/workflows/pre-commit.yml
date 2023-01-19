@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     # The Dockerfile for this container can be found at:
     # https://github.com/Holzhaus/mixxx-ci-docker
-    container: holzhaus/mixxx-ci:20220805
+    container: holzhaus/mixxx-ci:20220930
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v3

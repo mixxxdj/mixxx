@@ -88,11 +88,8 @@ Rectangle {
                     height: parent.height / 2
                     color: Theme.deckTextColor
                 }
-
             }
-
         }
-
     }
 
     Skin.EmbeddedText {
@@ -181,7 +178,6 @@ Rectangle {
             group: root.group
             key: "bpm"
         }
-
     }
 
     Skin.EmbeddedText {
@@ -202,7 +198,6 @@ Rectangle {
             group: root.group
             key: "rate_ratio"
         }
-
     }
 
     gradient: Gradient {
@@ -223,7 +218,5 @@ Rectangle {
             position: 1
             color: Theme.deckBackgroundColor
         }
-
     }
-
 }
