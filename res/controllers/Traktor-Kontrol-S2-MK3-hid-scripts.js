@@ -19,7 +19,6 @@
 var TraktorS2MK3 = new function () {
     this.controller = new HIDController();
     this.shiftPressed = { "[Channel1]": false, "[Channel2]": false };
-    this.fxButtonActive = { "[Channel1]": 0, "[Channel2]": 0 };
     this.padModeState = { "[Channel1]": 0, "[Channel2]": 0 }; // 0 = Hotcues Mode, 1 = Samples Mode
 
     // Knob encoder states (hold values between 0x0 and 0xF)
@@ -592,7 +591,6 @@ TraktorS2MK3.fxHandler = function (field) {
         return;
     }
 
-    const fxButtonCount = 4;
     const availableGroups = [ "[Channel1]", "[Channel2]" ];
     var targetGroups = [];
     var fxNumber = parseInt(field.id[field.id.length - 1]);
@@ -606,17 +604,27 @@ TraktorS2MK3.fxHandler = function (field) {
     if (targetGroups.length === 0) targetGroups = availableGroups;
 
     for (let group of targetGroups) {
-        TraktorS2MK3.fxButtonActive[group] = fxNumber;
-        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", TraktorS2MK3.fxButtonActive[group]);
+        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxNumber);
+    }
+};
+
+TraktorS2MK3.fxOutputHandler = function (value, group, key) {
+    const fxButtonCount = 4;
+    const availableGroups = [ "[Channel1]", "[Channel2]" ];
+
+    var activeFx = {};
+    for (let group of availableGroups) {
+        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset");
     }
 
-    // There is no way on the controller to indicate which deck the effect applies to, but we'll keep all active buttons lit.
+    /* There is no way on the controller to indicate which deck the effect applies *
+     * to, but keeping both lit indicates that different effects are in use.       */
     for (let fxButton = 1; fxButton <= fxButtonCount; ++fxButton) {
         let active = false;
         for (let group of availableGroups) {
-            active = active || TraktorS2MK3.fxButtonActive[group] === fxButton;
+            active = active || activeFx[group] === fxButton;
         }
-        TraktorS2MK3.outputHandler(active, field.group, "fxButton" + fxButton);
+        TraktorS2MK3.outputHandler(active, "[ChannelX]", "fxButton" + fxButton);
     }
 };
 
@@ -767,6 +775,11 @@ TraktorS2MK3.registerOutputPackets = function () {
     for (i = 1; i <= 16; ++i) {
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", this.samplesOutputHandler));
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", this.samplesOutputHandler));
+    }
+
+    this.fxCallbacks = [];
+    for (let group of [ "[Channel1]", "[Channel2]" ]) {
+        this.fxCallbacks.push(engine.makeConnection(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", this.fxOutputHandler));
     }
 
     TraktorS2MK3.lightDeck(false);
