@@ -1,15 +1,13 @@
 #pragma once
 
 #include <QObject>
-#include <memory>
 
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
-
-class ControlObject;
-class ControlPushButton;
 
 class QuantizeControl : public EngineControl {
     Q_OBJECT
@@ -30,10 +28,10 @@ class QuantizeControl : public EngineControl {
     void updateClosestBeat(mixxx::audio::FramePos position);
     void playPosChanged(mixxx::audio::FramePos position);
 
-    std::unique_ptr<ControlPushButton> m_pCOQuantizeEnabled;
-    std::unique_ptr<ControlObject> m_pCONextBeat;
-    std::unique_ptr<ControlObject> m_pCOPrevBeat;
-    std::unique_ptr<ControlObject> m_pCOClosestBeat;
+    ControlPushButton m_COQuantizeEnabled;
+    ControlObject m_CONextBeat;
+    ControlObject m_COPrevBeat;
+    ControlObject m_COClosestBeat;
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
