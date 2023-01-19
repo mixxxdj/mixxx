@@ -608,7 +608,7 @@ TraktorS2MK3.fxHandler = function (field) {
     }
 };
 
-TraktorS2MK3.fxOutputHandler = function (value, group, key) {
+TraktorS2MK3.fxOutputHandler = function () {
     const fxButtonCount = 4;
     const availableGroups = [ "[Channel1]", "[Channel2]" ];
 
