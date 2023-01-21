@@ -20,6 +20,10 @@ extern const ConfigKey kTrackDoubleClickActionConfigKey;
 
 extern const ConfigKey kSearchDebouncingTimeoutMillisConfigKey;
 
+extern const ConfigKey kEnableSearchCompletionsConfigKey;
+
+extern const ConfigKey kEnableSearchHistoryShortcutsConfigKey;
+
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
 extern const ConfigKey kHistoryMinTracksToKeepConfigKey;

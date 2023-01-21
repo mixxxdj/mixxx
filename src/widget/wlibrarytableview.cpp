@@ -20,6 +20,8 @@ constexpr int kModelCacheSize = 1000;
 WLibraryTableView::WLibraryTableView(QWidget* parent,
         UserSettingsPointer pConfig)
         : QTableView(parent),
+          m_prevRow(0),
+          m_prevColumn(0),
           m_pConfig(pConfig),
           m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
@@ -164,13 +166,53 @@ bool WLibraryTableView::restoreTrackModelState(
     }
 
     QModelIndex currIndex = state->currentIndex;
-    if (currIndex.isValid()) {
-        selection->setCurrentIndex(currIndex, QItemSelectionModel::NoUpdate);
-    }
+    restoreCurrentIndex(currIndex);
 
     // reinsert the state into the cache
     m_modelStateCache.insert(key, state, 1);
     return true;
+}
+
+void WLibraryTableView::saveCurrentIndex() {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (!pSelectionModel) {
+        return;
+    }
+    QModelIndexList indices = pSelectionModel->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    m_prevRow = indices.first().row();
+    m_prevColumn = currentIndex().isValid() ? currentIndex().column() : columnAt(0);
+}
+
+void WLibraryTableView::restoreCurrentIndex(const QModelIndex& index) {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (!pSelectionModel) {
+        return;
+    }
+    int row = index.isValid() ? index.row() : m_prevRow;
+    int col = index.isValid() ? index.column() : m_prevColumn;
+    if (model()->rowCount() == 0 || row < 0 || col < 0) {
+        // nothing to select
+        return;
+    }
+    if (model()->rowCount() < row + 1) {
+        // select last row
+        row = model()->rowCount() - 1;
+    }
+    if (isColumnHidden(col)) {
+        // select first column
+        col = columnAt(0);
+    }
+    QModelIndex idx = model()->index(row, col);
+    if (idx.isValid()) {
+        pSelectionModel->setCurrentIndex(idx, QItemSelectionModel::NoUpdate);
+        scrollTo(idx);
+    }
+    m_prevRow = 0;
+    m_prevColumn = 0;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {

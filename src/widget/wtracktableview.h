@@ -75,6 +75,9 @@ class WTrackTableView : public WLibraryTableView {
     bool slotRestoreCurrentViewState() {
         return restoreCurrentViewState();
     };
+    void slotrestoreCurrentIndex() {
+        restoreCurrentIndex();
+    }
     void slotSelectTrack(const TrackId&);
 
   private slots:
