@@ -70,7 +70,7 @@ class Translations {
 
         // Load Qt translations for this locale from the system translation
         // path. This is the lowest precedence QTranslator.
-        installTranslations(pApp,
+        bool qtFound = installTranslations(pApp,
                 locale,
                 QStringLiteral("qt"),
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -78,13 +78,13 @@ class Translations {
 #else
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath),
 #endif
-                true);
+                false);
 
-        // Load Qt translations for this locale from the Mixxx translations
-        // folder.
-        // Depending on the OS, this might not be necessary, so we don't warn
-        // on failure here.
-        installTranslations(pApp, locale, QStringLiteral("qt"), translationsPath, false);
+        if (!qtFound) {
+            // Alternative, load Qt translations for this locale from the Mixxx translations
+            // folder.
+            installTranslations(pApp, locale, QStringLiteral("qt"), translationsPath, true);
+        }
 
         // Load Mixxx specific translations for this locale from the Mixxx
         // translations folder.
@@ -102,10 +102,12 @@ class Translations {
         const bool success = pTranslator->load(
                 locale, translation, QStringLiteral("_"), translationsPath);
         if (!success) {
-            ((warnOnFailure) ? qWarning() : qDebug())
-                    << "Failed to load" << translation << "translations for locale"
-                    << locale.name()
-                    << "from" << translationsPath;
+            if (warnOnFailure) {
+                qWarning()
+                        << "Failed to load" << translation << "translations for locale"
+                        << locale.name()
+                        << "from" << translationsPath;
+            }
             delete pTranslator;
             return false;
         }
