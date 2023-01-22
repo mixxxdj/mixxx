@@ -181,6 +181,7 @@ TraktorS2MK1.registerInputPackets = function() {
     InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x0A, "B", 0x08);
     InputReport0x01.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0A, "B", 0x04);
 
+    // maximize the library on browse encoder press
     InputReport0x01.addControl("[Master]", "maximize_library", 0x0E, "B", 0x08, false, this.toggleButton);
 
     engine.makeConnection("[EffectRack1_EffectUnit1]", "show_parameters", TraktorS2MK1.onShowParametersChange);
