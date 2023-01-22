@@ -40,6 +40,28 @@ namespace {
 
 QAtomicInt sTableNumber;
 
+const QString kTrackId = QStringLiteral(CLM_TRACK_ID);
+const QString kViewOrder = QStringLiteral(CLM_VIEW_ORDER);
+const QString KArtist = QStringLiteral(CLM_ARTIST);
+const QString KTitel = QStringLiteral(CLM_TITLE);
+const QString kDuration = QStringLiteral(CLM_DURATION);
+const QString kUri = QStringLiteral(CLM_URI);
+const QString kAlbum = QStringLiteral(CLM_ALBUM);
+const QString kAlbumArtist = QStringLiteral(CLM_ALBUM_ARTIST);
+const QString kYear = QStringLiteral(CLM_YEAR);
+const QString kRating = QStringLiteral(CLM_RATING);
+const QString kGenre = QStringLiteral(CLM_GENRE);
+const QString kGrouping = QStringLiteral(CLM_GROUPING);
+const QString kTracknumber = QStringLiteral(CLM_TRACKNUMBER);
+const QString kDateadded = QStringLiteral(CLM_DATEADDED);
+const QString kBpm = QStringLiteral(CLM_BPM);
+const QString kBitrate = QStringLiteral(CLM_BITRATE);
+const QString kComment = QStringLiteral(CLM_COMMENT);
+const QString kPlaycount = QStringLiteral(CLM_PLAYCOUNT);
+const QString kComposer = QStringLiteral(CLM_COMPOSER);
+const QString kPreview = QStringLiteral(CLM_PREVIEW);
+const QString kCrate = QStringLiteral(CLM_CRATE);
+
 } // namespace
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection)
@@ -188,32 +210,32 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         }
     }
 
-    const QString idColumn = CLM_TRACK_ID;
+    const QString idColumn = kTrackId;
 
     QStringList tableColumns = {
-            CLM_TRACK_ID,
-            CLM_VIEW_ORDER,
-            CLM_PREVIEW}; // 3
+            kTrackId,
+            kViewOrder,
+            kPreview}; // 3
 
     QStringList trackSourceColumns = {
-            CLM_TRACK_ID, // 0
-            CLM_ARTIST,
-            CLM_TITLE,
-            CLM_DURATION,
-            CLM_URI,
-            CLM_ALBUM,
-            CLM_ALBUM_ARTIST,
-            CLM_YEAR,
-            CLM_RATING,
-            CLM_GENRE,
-            CLM_GROUPING,
-            CLM_TRACKNUMBER,
-            CLM_DATEADDED,
-            CLM_BPM,
-            CLM_BITRATE,
-            CLM_COMMENT,
-            CLM_PLAYCOUNT,
-            CLM_COMPOSER};
+            kTrackId, // 0
+            KArtist,
+            KTitel,
+            kDuration,
+            kUri,
+            kAlbum,
+            kAlbumArtist,
+            kYear,
+            kRating,
+            kGenre,
+            kGrouping,
+            kTracknumber,
+            kDateadded,
+            kBpm,
+            kBitrate,
+            kComment,
+            kPlaycount,
+            kComposer};
     QStringList searchColumns = {
             KArtist,
             kAlbum,
