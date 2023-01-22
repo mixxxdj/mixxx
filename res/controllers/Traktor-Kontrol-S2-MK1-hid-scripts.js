@@ -530,7 +530,7 @@ TraktorS2MK1.shift = function(field) {
     var shiftPressed = field.value > 0;
     TraktorS2MK1.shiftPressed[field.group] = shiftPressed;
     TraktorS2MK1.controller.setOutput(field.group, "!shift",
-        shiftPressed ? ButtonBrightnessOn : ButtonBrightnessOff, field.group, "!shift",
+        shiftPressed ? ButtonBrightnessOn : ButtonBrightnessOff,
         !TraktorS2MK1.batchingLEDUpdate);
 };
 
