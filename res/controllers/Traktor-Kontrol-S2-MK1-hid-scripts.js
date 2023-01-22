@@ -1023,7 +1023,7 @@ TraktorS2MK1.effectFocusButton = function(field) {
             TraktorS2MK1.effectFocusChooseModeActive[field.group] = false;
             TraktorS2MK1.connectEffectButtonLEDs(field.group);
         } else if (showParameters && !TraktorS2MK1.effectFocusButtonPressedWhenParametersHidden[field.group]) {
-            engine.setValue(this.group, "show_parameters", 0);
+            engine.setValue(field.group, "show_parameters", 0);
         }
 
         TraktorS2MK1.effectFocusButtonPressedWhenParametersHidden[field.group] = false;
