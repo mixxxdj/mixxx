@@ -779,7 +779,7 @@ class HIDPacket {
      *              - H       unsigned short    (Uint16 Little-Endian)
      *              - i       signed integer    (Int32  Little-Endian)
      *              - I       unsigned integer  (Uint32 Little-Endian)
-     * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
+     * @param {number} [bitmask=undefined] A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      * @param {fieldChangeCallback} [callback=undefined] Callback function for the control
      */
