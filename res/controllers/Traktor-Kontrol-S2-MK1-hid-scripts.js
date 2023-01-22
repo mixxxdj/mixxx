@@ -537,7 +537,7 @@ TraktorS2MK1.shift = function(field) {
 
 TraktorS2MK1.loadTrackButton = function(field) {
     if (TraktorS2MK1.shiftPressed[field.group]) {
-        engine.setValue(field.group, "CloneFromDeck", field.value);
+        engine.setValue(field.group, "CloneFromDeck", 0);
     } else {
         engine.setValue(field.group, "LoadSelectedTrack", field.value);
     }
