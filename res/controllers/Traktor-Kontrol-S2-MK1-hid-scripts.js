@@ -59,7 +59,7 @@ var TraktorS2MK1 = new function() {
         "[Channel2]": 0
     };
 
-    this.topEncoderPressed = {
+    this.gainEncoderPressed = {
         "[Channel1]": false,
         "[Channel2]": false
     };
@@ -130,7 +130,7 @@ TraktorS2MK1.registerInputPackets = function() {
     // An exclamation point indicates a specially-handled function.  Everything else is a standard
     // Mixxx control object name.
 
-    InputReport0x01.addControl("[Channel1]", "!top_encoder_press", 0x0E, "B", 0x01, false, this.topEncoderPress);
+    InputReport0x01.addControl("[Channel1]", "!gain_encoder_press", 0x0E, "B", 0x01, false, this.gainEncoderPress);
     InputReport0x01.addControl("[Channel1]", "!shift", 0x0D, "B", 0x80, false, this.shift);
     InputReport0x01.addControl("[Channel1]", "!sync_enabled", 0x0D, "B", 0x40, false, this.syncButton);
     InputReport0x01.addControl("[Channel1]", "!cue_default", 0x0D, "B", 0x20, false, this.cueButton);
@@ -153,7 +153,7 @@ TraktorS2MK1.registerInputPackets = function() {
     InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "!effectbutton2", 0x09, "B", 0x02, false, this.effectButton);
     InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "!effectbutton3", 0x09, "B", 0x01, false, this.effectButton);
 
-    InputReport0x01.addControl("[Channel2]", "!top_encoder_press", 0x0E, "B", 0x10, false, this.topEncoderPress);
+    InputReport0x01.addControl("[Channel2]", "!gain_encoder_press", 0x0E, "B", 0x10, false, this.gainEncoderPress);
     InputReport0x01.addControl("[Channel2]", "!shift", 0x0C, "B", 0x80, false, this.shift);
     InputReport0x01.addControl("[Channel2]", "!sync_enabled", 0x0C, "B", 0x40, false, this.syncButton);
     InputReport0x01.addControl("[Channel2]", "!cue_default", 0x0C, "B", 0x20, false, this.cueButton);
@@ -214,14 +214,14 @@ TraktorS2MK1.registerInputPackets = function() {
     InputReport0x02.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x11, "H");
     InputReport0x02.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x25, "H");
     InputReport0x02.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x27, "H");
-    InputReport0x02.addControl("[Channel1]", "pregain", 0x01, "B", 0x0F, false, this.topEncoder);
+    InputReport0x02.addControl("[Channel1]", "pregain", 0x01, "B", 0x0F, false, this.gainEncoder);
     InputReport0x02.addControl("[Channel1]", "!jog_touch", 0x0D, "H", 0xFFFF, false, this.jogTouch);
 
     InputReport0x02.addControl("[Channel2]", "volume", 0x2D, "H");
     InputReport0x02.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x21, "H");
     InputReport0x02.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x23, "H");
     InputReport0x02.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x29, "H");
-    InputReport0x02.addControl("[Channel2]", "pregain", 0x03, "B", 0x0F, false, this.topEncoder);
+    InputReport0x02.addControl("[Channel2]", "pregain", 0x03, "B", 0x0F, false, this.gainEncoder);
     InputReport0x02.addControl("[Channel2]", "!jog_touch", 0x1D, "H", 0xFFFF, false, this.jogTouch);
 
     InputReport0x02.addControl("[Master]", "crossfader", 0x2F, "H");
@@ -1122,7 +1122,7 @@ TraktorS2MK1.encoderDirection = function(newValue, oldValue) {
     return direction;
 };
 
-TraktorS2MK1.topEncoder = function(field) {
+TraktorS2MK1.gainEncoder = function(field) {
     var delta = 0.03333 * TraktorS2MK1.encoderDirection(field.value, TraktorS2MK1.previousPregain[field.group]);
     TraktorS2MK1.previousPregain[field.group] = field.value;
 
@@ -1131,7 +1131,7 @@ TraktorS2MK1.topEncoder = function(field) {
         engine.setParameter(field.group, "pregain", currentPregain + delta);
     } else {
         var quickEffectGroup = "[QuickEffectRack1_" + field.group + "]";
-        if (TraktorS2MK1.topEncoderPressed[field.group]) {
+        if (TraktorS2MK1.gainEncoderPressed[field.group]) {
             script.triggerControl(quickEffectGroup, delta > 0 ? "next_chain" : "prev_chain");
         } else {
             var currentQuickEffectSuperKnob = engine.getParameter(quickEffectGroup, "super1");
@@ -1140,16 +1140,16 @@ TraktorS2MK1.topEncoder = function(field) {
     }
 };
 
-TraktorS2MK1.topEncoderPress = function(field) {
+TraktorS2MK1.gainEncoderPress = function(field) {
     if (field.value > 0) {
-        TraktorS2MK1.topEncoderPressed[field.group] = true;
+        TraktorS2MK1.gainEncoderPressed[field.group] = true;
         if (TraktorS2MK1.shiftPressed[field.group]) {
             script.triggerControl(field.group, "pregain_set_default");
         } else {
             script.triggerControl("[QuickEffectRack1_" + field.group + "]", "super1_set_default");
         }
     } else {
-        TraktorS2MK1.topEncoderPressed[field.group] = false;
+        TraktorS2MK1.gainEncoderPressed[field.group] = false;
     }
 };
 
