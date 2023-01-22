@@ -4,7 +4,7 @@
         <name>Native Instruments Traktor Kontrol S2 Mk1</name>
         <author>leifhelm</author>
         <description>Native Instruments Traktor Kontrol S2 MK1</description>
-        <!-- <manual>native_instruments_traktor_kontrol_s2_mk2</manual> -->
+        <manual>native_instruments_traktor_kontrol_s2_mk1</manual>
         <devices>
             <product protocol="hid" vendor_id="0x17cc" product_id="0x1101"/>
         </devices>
