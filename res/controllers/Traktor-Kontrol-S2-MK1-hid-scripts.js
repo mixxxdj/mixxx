@@ -120,8 +120,8 @@ var TraktorS2MK1 = new function() {
 };
 
 TraktorS2MK1.registerInputPackets = function() {
-    var InputReport0x01 = new HIDPacket("InputReport_0x01", 0x01, this.inputReport0x01Callback);
-    var InputReport0x02 = new HIDPacket("InputReport_0x02", 0x02, this.inputReport0x02Callback);
+    var InputReport0x01 = new HIDPacket("InputReport0x01", 0x01, this.inputReport0x01Callback);
+    var InputReport0x02 = new HIDPacket("InputReport0x02", 0x02, this.inputReport0x02Callback);
 
     // Values in input report 0x01 are all buttons, except the jog wheels.
     // An exclamation point indicates a specially-handled function.  Everything else is a standard
@@ -278,7 +278,7 @@ TraktorS2MK1.registerInputPackets = function() {
 };
 
 TraktorS2MK1.registerOutputPackets = function() {
-    var OutputReport0x80 = new HIDPacket("OutputReport_0x80", 0x80);
+    var OutputReport0x80 = new HIDPacket("OutputReport0x80", 0x80);
 
     OutputReport0x80.addOutput("[Channel1]", "track_loaded", 0x1F, "B");
     OutputReport0x80.addOutput("[Channel2]", "track_loaded", 0x1E, "B");
@@ -1348,7 +1348,7 @@ TraktorS2MK1.onVuMeterChanged = function(value, group, _key) {
             TraktorS2MK1.controller.setOutput(group, key, 0x00, false);
         }
     }
-    TraktorS2MK1.controller.OutputPackets["OutputReport_0x80"].send();
+    TraktorS2MK1.controller.OutputPackets.OutputReport0x80.send();
 };
 
 TraktorS2MK1.onLoopEnabledChanged = function(value, group, _key) {
