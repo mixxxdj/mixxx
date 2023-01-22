@@ -123,112 +123,112 @@ var TraktorS2MK1 = new function() {
 };
 
 TraktorS2MK1.registerInputPackets = function() {
-    var MessageShort = new HIDPacket("shortmessage", 0x01, this.shortMessageCallback);
-    var MessageLong = new HIDPacket("longmessage", 0x02, this.longMessageCallback);
+    var InputReport0x01 = new HIDPacket("InputReport_0x01", 0x01, this.inputReport0x01Callback);
+    var InputReport0x02 = new HIDPacket("InputReport_0x02", 0x02, this.inputReport0x02Callback);
 
-    // Values in the short message are all buttons, except the jog wheels.
+    // Values in input report 0x01 are all buttons, except the jog wheels.
     // An exclamation point indicates a specially-handled function.  Everything else is a standard
     // Mixxx control object name.
 
-    MessageShort.addControl("[Channel1]", "!top_encoder_press", 0x0E, "B", 0x01, false, this.topEncoderPress);
-    MessageShort.addControl("[Channel1]", "!shift", 0x0D, "B", 0x80, false, this.shift);
-    MessageShort.addControl("[Channel1]", "!sync_enabled", 0x0D, "B", 0x40, false, this.syncButton);
-    MessageShort.addControl("[Channel1]", "!cue_default", 0x0D, "B", 0x20, false, this.cueButton);
-    MessageShort.addControl("[Channel1]", "!play", 0x0D, "B", 0x10, false, this.playButton);
-    MessageShort.addControl("[Channel1]", "!pad1", 0x0D, "B", 0x08, false, this.padButton);
-    MessageShort.addControl("[Channel1]", "!pad2", 0x0D, "B", 0x04, false, this.padButton);
-    MessageShort.addControl("[Channel1]", "!pad3", 0x0D, "B", 0x02, false, this.padButton);
-    MessageShort.addControl("[Channel1]", "!pad4", 0x0D, "B", 0x01, false, this.padButton);
-    MessageShort.addControl("[Channel1]", "!loop_in", 0x09, "B", 0x40, false, this.loopInButton);
-    MessageShort.addControl("[Channel1]", "!loop_out", 0x09, "B", 0x20, false, this.loopOutButton);
-    MessageShort.addControl("[Channel1]", "!remix_button", 0x0B, "B", 0x02, false, this.samplerModeButton);
-    MessageShort.addControl("[Channel1]", "!flux_button", 0x09, "B", 0x10, false, this.introOutroModeButton);
-    MessageShort.addControl("[Channel1]", "!left_encoder_press", 0x0E, "B", 0x02, false, this.leftEncoderPress);
-    MessageShort.addControl("[Channel1]", "!right_encoder_press", 0x0E, "B", 0x04, false, this.rightEncoderPress);
-    MessageShort.addControl("[Channel1]", "!jog_wheel", 0x01, "I", 0xFFFFFFFF, false, this.jogMove);
-    MessageShort.addControl("[Channel1]", "!load_track", 0x0B, "B", 0x08, false, this.loadTrackButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effect_focus_button",
+    InputReport0x01.addControl("[Channel1]", "!top_encoder_press", 0x0E, "B", 0x01, false, this.topEncoderPress);
+    InputReport0x01.addControl("[Channel1]", "!shift", 0x0D, "B", 0x80, false, this.shift);
+    InputReport0x01.addControl("[Channel1]", "!sync_enabled", 0x0D, "B", 0x40, false, this.syncButton);
+    InputReport0x01.addControl("[Channel1]", "!cue_default", 0x0D, "B", 0x20, false, this.cueButton);
+    InputReport0x01.addControl("[Channel1]", "!play", 0x0D, "B", 0x10, false, this.playButton);
+    InputReport0x01.addControl("[Channel1]", "!pad1", 0x0D, "B", 0x08, false, this.padButton);
+    InputReport0x01.addControl("[Channel1]", "!pad2", 0x0D, "B", 0x04, false, this.padButton);
+    InputReport0x01.addControl("[Channel1]", "!pad3", 0x0D, "B", 0x02, false, this.padButton);
+    InputReport0x01.addControl("[Channel1]", "!pad4", 0x0D, "B", 0x01, false, this.padButton);
+    InputReport0x01.addControl("[Channel1]", "!loop_in", 0x09, "B", 0x40, false, this.loopInButton);
+    InputReport0x01.addControl("[Channel1]", "!loop_out", 0x09, "B", 0x20, false, this.loopOutButton);
+    InputReport0x01.addControl("[Channel1]", "!remix_button", 0x0B, "B", 0x02, false, this.samplerModeButton);
+    InputReport0x01.addControl("[Channel1]", "!flux_button", 0x09, "B", 0x10, false, this.introOutroModeButton);
+    InputReport0x01.addControl("[Channel1]", "!left_encoder_press", 0x0E, "B", 0x02, false, this.leftEncoderPress);
+    InputReport0x01.addControl("[Channel1]", "!right_encoder_press", 0x0E, "B", 0x04, false, this.rightEncoderPress);
+    InputReport0x01.addControl("[Channel1]", "!jog_wheel", 0x01, "I", 0xFFFFFFFF, false, this.jogMove);
+    InputReport0x01.addControl("[Channel1]", "!load_track", 0x0B, "B", 0x08, false, this.loadTrackButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "!effect_focus_button",
         0x09, "B", 0x08, false, this.effectFocusButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effectbutton1", 0x09, "B", 0x04, false, this.effectButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effectbutton2", 0x09, "B", 0x02, false, this.effectButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effectbutton3", 0x09, "B", 0x01, false, this.effectButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "!effectbutton1", 0x09, "B", 0x04, false, this.effectButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "!effectbutton2", 0x09, "B", 0x02, false, this.effectButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "!effectbutton3", 0x09, "B", 0x01, false, this.effectButton);
 
-    MessageShort.addControl("[Channel2]", "!top_encoder_press", 0x0E, "B", 0x10, false, this.topEncoderPress);
-    MessageShort.addControl("[Channel2]", "!shift", 0x0C, "B", 0x80, false, this.shift);
-    MessageShort.addControl("[Channel2]", "!sync_enabled", 0x0C, "B", 0x40, false, this.syncButton);
-    MessageShort.addControl("[Channel2]", "!cue_default", 0x0C, "B", 0x20, false, this.cueButton);
-    MessageShort.addControl("[Channel2]", "!play", 0x0C, "B", 0x10, false, this.playButton);
-    MessageShort.addControl("[Channel2]", "!pad1", 0x0C, "B", 0x08, false, this.padButton);
-    MessageShort.addControl("[Channel2]", "!pad2", 0x0C, "B", 0x04, false, this.padButton);
-    MessageShort.addControl("[Channel2]", "!pad3", 0x0C, "B", 0x02, false, this.padButton);
-    MessageShort.addControl("[Channel2]", "!pad4", 0x0C, "B", 0x01, false, this.padButton);
-    MessageShort.addControl("[Channel2]", "!loop_in", 0x0B, "B", 0x40, false, this.loopInButton);
-    MessageShort.addControl("[Channel2]", "!loop_out", 0x0B, "B", 0x20, false, this.loopOutButton);
-    MessageShort.addControl("[Channel2]", "!remix_button", 0x0B, "B", 0x01, false, this.samplerModeButton);
-    MessageShort.addControl("[Channel2]", "!flux_button", 0x0B, "B", 0x10, false, this.introOutroModeButton);
-    MessageShort.addControl("[Channel2]", "!left_encoder_press", 0x0E, "B", 0x20, false, this.leftEncoderPress);
-    MessageShort.addControl("[Channel2]", "!right_encoder_press", 0x0E, "B", 0x40, false, this.rightEncoderPress);
-    MessageShort.addControl("[Channel2]", "!jog_wheel", 0x05, "I", 0xFFFFFFFF, false, this.jogMove);
-    MessageShort.addControl("[Channel2]", "!load_track", 0x0B, "B", 0x04, false, this.loadTrackButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effect_focus_button",
+    InputReport0x01.addControl("[Channel2]", "!top_encoder_press", 0x0E, "B", 0x10, false, this.topEncoderPress);
+    InputReport0x01.addControl("[Channel2]", "!shift", 0x0C, "B", 0x80, false, this.shift);
+    InputReport0x01.addControl("[Channel2]", "!sync_enabled", 0x0C, "B", 0x40, false, this.syncButton);
+    InputReport0x01.addControl("[Channel2]", "!cue_default", 0x0C, "B", 0x20, false, this.cueButton);
+    InputReport0x01.addControl("[Channel2]", "!play", 0x0C, "B", 0x10, false, this.playButton);
+    InputReport0x01.addControl("[Channel2]", "!pad1", 0x0C, "B", 0x08, false, this.padButton);
+    InputReport0x01.addControl("[Channel2]", "!pad2", 0x0C, "B", 0x04, false, this.padButton);
+    InputReport0x01.addControl("[Channel2]", "!pad3", 0x0C, "B", 0x02, false, this.padButton);
+    InputReport0x01.addControl("[Channel2]", "!pad4", 0x0C, "B", 0x01, false, this.padButton);
+    InputReport0x01.addControl("[Channel2]", "!loop_in", 0x0B, "B", 0x40, false, this.loopInButton);
+    InputReport0x01.addControl("[Channel2]", "!loop_out", 0x0B, "B", 0x20, false, this.loopOutButton);
+    InputReport0x01.addControl("[Channel2]", "!remix_button", 0x0B, "B", 0x01, false, this.samplerModeButton);
+    InputReport0x01.addControl("[Channel2]", "!flux_button", 0x0B, "B", 0x10, false, this.introOutroModeButton);
+    InputReport0x01.addControl("[Channel2]", "!left_encoder_press", 0x0E, "B", 0x20, false, this.leftEncoderPress);
+    InputReport0x01.addControl("[Channel2]", "!right_encoder_press", 0x0E, "B", 0x40, false, this.rightEncoderPress);
+    InputReport0x01.addControl("[Channel2]", "!jog_wheel", 0x05, "I", 0xFFFFFFFF, false, this.jogMove);
+    InputReport0x01.addControl("[Channel2]", "!load_track", 0x0B, "B", 0x04, false, this.loadTrackButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit2]", "!effect_focus_button",
         0x0A, "B", 0x80, false, this.effectFocusButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effectbutton1", 0xA, "B", 0x40, false, this.effectButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effectbutton2", 0xA, "B", 0x20, false, this.effectButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effectbutton3", 0xA, "B", 0x10, false, this.effectButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit2]", "!effectbutton1", 0xA, "B", 0x40, false, this.effectButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit2]", "!effectbutton2", 0xA, "B", 0x20, false, this.effectButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit2]", "!effectbutton3", 0xA, "B", 0x10, false, this.effectButton);
 
-    MessageShort.addControl("[Channel1]", "!pfl", 0x09, "B", 0x80, false, this.pflButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x0A, "B", 0x02);
-    MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x0A, "B", 0x01);
+    InputReport0x01.addControl("[Channel1]", "!pfl", 0x09, "B", 0x80, false, this.pflButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x0A, "B", 0x02);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x0A, "B", 0x01);
 
-    MessageShort.addControl("[Channel2]", "!pfl", 0x0B, "B", 0x80, false, this.pflButton);
-    MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x0A, "B", 0x08);
-    MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0A, "B", 0x04);
+    InputReport0x01.addControl("[Channel2]", "!pfl", 0x0B, "B", 0x80, false, this.pflButton);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x0A, "B", 0x08);
+    InputReport0x01.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0A, "B", 0x04);
 
-    MessageShort.addControl("[Master]", "maximize_library", 0x0E, "B", 0x08, false, this.toggleButton);
+    InputReport0x01.addControl("[Master]", "maximize_library", 0x0E, "B", 0x08, false, this.toggleButton);
 
     engine.makeConnection("[EffectRack1_EffectUnit1]", "show_parameters", TraktorS2MK1.onShowParametersChange);
     engine.makeConnection("[EffectRack1_EffectUnit2]", "show_parameters", TraktorS2MK1.onShowParametersChange);
 
-    this.controller.registerInputPacket(MessageShort);
+    this.controller.registerInputPacket(InputReport0x01);
 
-    // Most items in the long message are controls that go from 0-4096.
+    // Most items in the input report 0x02 are controls that go from 0-4096.
     // There are also some 4 bit encoders.
-    MessageLong.addControl("[Channel1]", "rate", 0x0F, "H");
-    MessageLong.addControl("[Channel2]", "rate", 0x1F, "H");
-    MessageLong.addControl("[Channel1]", "!left_encoder", 0x01, "B", 0xF0, false, this.leftEncoder);
-    MessageLong.addControl("[Channel1]", "!right_encoder", 0x02, "B", 0x0F, false, this.rightEncoder);
-    MessageLong.addControl("[Channel2]", "!left_encoder", 0x03, "B", 0xF0, false, this.leftEncoder);
-    MessageLong.addControl("[Channel2]", "!right_encoder", 0x04, "B", 0x0F, false, this.rightEncoder);
+    InputReport0x02.addControl("[Channel1]", "rate", 0x0F, "H");
+    InputReport0x02.addControl("[Channel2]", "rate", 0x1F, "H");
+    InputReport0x02.addControl("[Channel1]", "!left_encoder", 0x01, "B", 0xF0, false, this.leftEncoder);
+    InputReport0x02.addControl("[Channel1]", "!right_encoder", 0x02, "B", 0x0F, false, this.rightEncoder);
+    InputReport0x02.addControl("[Channel2]", "!left_encoder", 0x03, "B", 0xF0, false, this.leftEncoder);
+    InputReport0x02.addControl("[Channel2]", "!right_encoder", 0x04, "B", 0x0F, false, this.rightEncoder);
 
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "mix", 0x0B, "H");
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob1", 0x09, "H", 0xFFFF, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob2", 0x07, "H", 0xFFFF, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob3", 0x05, "H", 0xFFFF, false, this.effectKnob);
+    InputReport0x02.addControl("[EffectRack1_EffectUnit1]", "mix", 0x0B, "H");
+    InputReport0x02.addControl("[EffectRack1_EffectUnit1]", "!effectknob1", 0x09, "H", 0xFFFF, false, this.effectKnob);
+    InputReport0x02.addControl("[EffectRack1_EffectUnit1]", "!effectknob2", 0x07, "H", 0xFFFF, false, this.effectKnob);
+    InputReport0x02.addControl("[EffectRack1_EffectUnit1]", "!effectknob3", 0x05, "H", 0xFFFF, false, this.effectKnob);
 
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "mix", 0x1B, "H");
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob1", 0x19, "H", 0xFFFF, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x17, "H", 0xFFFF, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x15, "H", 0xFFFF, false, this.effectKnob);
+    InputReport0x02.addControl("[EffectRack1_EffectUnit2]", "mix", 0x1B, "H");
+    InputReport0x02.addControl("[EffectRack1_EffectUnit2]", "!effectknob1", 0x19, "H", 0xFFFF, false, this.effectKnob);
+    InputReport0x02.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x17, "H", 0xFFFF, false, this.effectKnob);
+    InputReport0x02.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x15, "H", 0xFFFF, false, this.effectKnob);
 
-    MessageLong.addControl("[Channel1]", "volume", 0x2B, "H");
-    MessageLong.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x11, "H");
-    MessageLong.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x25, "H");
-    MessageLong.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x27, "H");
-    MessageLong.addControl("[Channel1]", "pregain", 0x01, "B", 0x0F, false, this.topEncoder);
-    MessageLong.addControl("[Channel1]", "!jog_touch", 0x0D, "H", 0xFFFF, false, this.jogTouch);
+    InputReport0x02.addControl("[Channel1]", "volume", 0x2B, "H");
+    InputReport0x02.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x11, "H");
+    InputReport0x02.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x25, "H");
+    InputReport0x02.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x27, "H");
+    InputReport0x02.addControl("[Channel1]", "pregain", 0x01, "B", 0x0F, false, this.topEncoder);
+    InputReport0x02.addControl("[Channel1]", "!jog_touch", 0x0D, "H", 0xFFFF, false, this.jogTouch);
 
-    MessageLong.addControl("[Channel2]", "volume", 0x2D, "H");
-    MessageLong.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x21, "H");
-    MessageLong.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x23, "H");
-    MessageLong.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x29, "H");
-    MessageLong.addControl("[Channel2]", "pregain", 0x03, "B", 0x0F, false, this.topEncoder);
-    MessageLong.addControl("[Channel2]", "!jog_touch", 0x1D, "H", 0xFFFF, false, this.jogTouch);
+    InputReport0x02.addControl("[Channel2]", "volume", 0x2D, "H");
+    InputReport0x02.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x21, "H");
+    InputReport0x02.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x23, "H");
+    InputReport0x02.addControl("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x29, "H");
+    InputReport0x02.addControl("[Channel2]", "pregain", 0x03, "B", 0x0F, false, this.topEncoder);
+    InputReport0x02.addControl("[Channel2]", "!jog_touch", 0x1D, "H", 0xFFFF, false, this.jogTouch);
 
-    MessageLong.addControl("[Master]", "crossfader", 0x2F, "H");
-    MessageLong.addControl("[Master]", "headMix", 0x31, "H");
-    MessageLong.addControl("[Master]", "!samplerGain", 0x13, "H");
-    MessageLong.setCallback("[Master]", "!samplerGain", this.samplerGainKnob);
-    MessageLong.addControl("[Playlist]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoder);
+    InputReport0x02.addControl("[Master]", "crossfader", 0x2F, "H");
+    InputReport0x02.addControl("[Master]", "headMix", 0x31, "H");
+    InputReport0x02.addControl("[Master]", "!samplerGain", 0x13, "H");
+    InputReport0x02.setCallback("[Master]", "!samplerGain", this.samplerGainKnob);
+    InputReport0x02.addControl("[Playlist]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoder);
 
     // Soft takeover for knobs
     engine.softTakeover("[Channel1]", "rate", true);
@@ -276,14 +276,14 @@ TraktorS2MK1.registerInputPackets = function() {
     this.controller.setScaler("mix", this.scalerParameter);
 
     // Register packet
-    this.controller.registerInputPacket(MessageLong);
+    this.controller.registerInputPacket(InputReport0x02);
 };
 
 TraktorS2MK1.registerOutputPackets = function() {
-    var Output = new HIDPacket("output", 0x80);
+    var OutputReport0x80 = new HIDPacket("OutputReport_0x80", 0x80);
 
-    Output.addOutput("[Channel1]", "track_loaded", 0x1F, "B");
-    Output.addOutput("[Channel2]", "track_loaded", 0x1E, "B");
+    OutputReport0x80.addOutput("[Channel1]", "track_loaded", 0x1F, "B");
+    OutputReport0x80.addOutput("[Channel2]", "track_loaded", 0x1E, "B");
 
     var VuOffsets = {
         "[Channel1]": 0x15,
@@ -291,78 +291,78 @@ TraktorS2MK1.registerOutputPackets = function() {
     };
     for (var ch in VuOffsets) {
         for (var i = 0; i <= 0x03; i++) {
-            Output.addOutput(ch, "!" + "VuMeter" + i, VuOffsets[ch] + i, "B");
+            OutputReport0x80.addOutput(ch, "!" + "VuMeter" + i, VuOffsets[ch] + i, "B");
         }
     }
 
-    Output.addOutput("[Channel1]", "PeakIndicator", 0x01, "B");
-    Output.addOutput("[Channel2]", "PeakIndicator", 0x25, "B");
+    OutputReport0x80.addOutput("[Channel1]", "PeakIndicator", 0x01, "B");
+    OutputReport0x80.addOutput("[Channel2]", "PeakIndicator", 0x25, "B");
 
-    Output.addOutput("[Channel1]", "!flux_button", 0x06, "B");
-    Output.addOutput("[Channel1]", "loop_in", 0x02, "B");
-    Output.addOutput("[Channel1]", "loop_out", 0x05, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!flux_button", 0x06, "B");
+    OutputReport0x80.addOutput("[Channel1]", "loop_in", 0x02, "B");
+    OutputReport0x80.addOutput("[Channel1]", "loop_out", 0x05, "B");
 
-    Output.addOutput("[Channel2]", "!flux_button", 0x26, "B");
-    Output.addOutput("[Channel2]", "loop_in", 0x22, "B");
-    Output.addOutput("[Channel2]", "loop_out", 0x21, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!flux_button", 0x26, "B");
+    OutputReport0x80.addOutput("[Channel2]", "loop_in", 0x22, "B");
+    OutputReport0x80.addOutput("[Channel2]", "loop_out", 0x21, "B");
 
-    Output.addOutput("[Channel1]", "pfl", 0x20, "B");
-    Output.addOutput("[Master]", "!warninglight", 0x31, "B");
-    Output.addOutput("[Channel2]", "pfl", 0x1D, "B");
+    OutputReport0x80.addOutput("[Channel1]", "pfl", 0x20, "B");
+    OutputReport0x80.addOutput("[Master]", "!warninglight", 0x31, "B");
+    OutputReport0x80.addOutput("[Channel2]", "pfl", 0x1D, "B");
 
-    Output.addOutput("[EffectRack1_EffectUnit1]", "!effect_focus_button", 0x1C, "B");
-    Output.addOutput("[EffectRack1_EffectUnit1]", "!effectbutton1", 0x1B, "B");
-    Output.addOutput("[EffectRack1_EffectUnit1]", "!effectbutton2", 0x1A, "B");
-    Output.addOutput("[EffectRack1_EffectUnit1]", "!effectbutton3", 0x19, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit1]", "!effect_focus_button", 0x1C, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit1]", "!effectbutton1", 0x1B, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit1]", "!effectbutton2", 0x1A, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit1]", "!effectbutton3", 0x19, "B");
 
-    Output.addOutput("[EffectRack1_EffectUnit2]", "!effect_focus_button", 0x39, "B");
-    Output.addOutput("[EffectRack1_EffectUnit2]", "!effectbutton1", 0x38, "B");
-    Output.addOutput("[EffectRack1_EffectUnit2]", "!effectbutton2", 0x37, "B");
-    Output.addOutput("[EffectRack1_EffectUnit2]", "!effectbutton3", 0x36, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "!effect_focus_button", 0x39, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "!effectbutton1", 0x38, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "!effectbutton2", 0x37, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "!effectbutton3", 0x36, "B");
 
-    Output.addOutput("[Channel1]", "!remix_button", 0x35, "B");
-    Output.addOutput("[Channel2]", "!remix_button", 0x34, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!remix_button", 0x35, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!remix_button", 0x34, "B");
 
-    Output.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x3D, "B");
-    Output.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x3C, "B");
-    Output.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x3B, "B");
-    Output.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x3A, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x3D, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x3C, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x3B, "B");
+    OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x3A, "B");
 
-    Output.addOutput("[Channel1]", "!shift", 0x08, "B");
-    Output.addOutput("[Channel1]", "sync_enabled", 0x04, "B");
-    Output.addOutput("[Channel1]", "cue_indicator", 0x07, "B");
-    Output.addOutput("[Channel1]", "play_indicator", 0x03, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!shift", 0x08, "B");
+    OutputReport0x80.addOutput("[Channel1]", "sync_enabled", 0x04, "B");
+    OutputReport0x80.addOutput("[Channel1]", "cue_indicator", 0x07, "B");
+    OutputReport0x80.addOutput("[Channel1]", "play_indicator", 0x03, "B");
 
-    Output.addOutput("[Channel1]", "!pad_1_G", 0x0C, "B");
-    Output.addOutput("[Channel1]", "!pad_1_B", 0x10, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!pad_1_G", 0x0C, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!pad_1_B", 0x10, "B");
 
-    Output.addOutput("[Channel1]", "!pad_2_G", 0x0B, "B");
-    Output.addOutput("[Channel1]", "!pad_2_B", 0x0F, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!pad_2_G", 0x0B, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!pad_2_B", 0x0F, "B");
 
-    Output.addOutput("[Channel1]", "!pad_3_G", 0x0A, "B");
-    Output.addOutput("[Channel1]", "!pad_3_B", 0x0E, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!pad_3_G", 0x0A, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!pad_3_B", 0x0E, "B");
 
-    Output.addOutput("[Channel1]", "!pad_4_G", 0x09, "B");
-    Output.addOutput("[Channel1]", "!pad_4_B", 0x0D, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!pad_4_G", 0x09, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!pad_4_B", 0x0D, "B");
 
-    Output.addOutput("[Channel2]", "!shift", 0x28, "B");
-    Output.addOutput("[Channel2]", "sync_enabled", 0x24, "B");
-    Output.addOutput("[Channel2]", "cue_indicator", 0x27, "B");
-    Output.addOutput("[Channel2]", "play_indicator", 0x23, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!shift", 0x28, "B");
+    OutputReport0x80.addOutput("[Channel2]", "sync_enabled", 0x24, "B");
+    OutputReport0x80.addOutput("[Channel2]", "cue_indicator", 0x27, "B");
+    OutputReport0x80.addOutput("[Channel2]", "play_indicator", 0x23, "B");
 
-    Output.addOutput("[Channel2]", "!pad_1_G", 0x2C, "B");
-    Output.addOutput("[Channel2]", "!pad_1_B", 0x30, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!pad_1_G", 0x2C, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!pad_1_B", 0x30, "B");
 
-    Output.addOutput("[Channel2]", "!pad_2_G", 0x2B, "B");
-    Output.addOutput("[Channel2]", "!pad_2_B", 0x2F, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!pad_2_G", 0x2B, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!pad_2_B", 0x2F, "B");
 
-    Output.addOutput("[Channel2]", "!pad_3_G", 0x2A, "B");
-    Output.addOutput("[Channel2]", "!pad_3_B", 0x2E, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!pad_3_G", 0x2A, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!pad_3_B", 0x2E, "B");
 
-    Output.addOutput("[Channel2]", "!pad_4_G", 0x29, "B");
-    Output.addOutput("[Channel2]", "!pad_4_B", 0x2D, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!pad_4_G", 0x29, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!pad_4_B", 0x2D, "B");
 
-    this.controller.registerOutputPacket(Output);
+    this.controller.registerOutputPacket(OutputReport0x80);
 
     // Link up control objects to their outputs
     TraktorS2MK1.linkDeckOutputs("sync_enabled", TraktorS2MK1.outputCallback);
@@ -496,8 +496,8 @@ TraktorS2MK1.incomingData = function(data, length) {
     TraktorS2MK1.controller.parsePacket(data, length);
 };
 
-// The short message handles buttons and jog wheels.
-TraktorS2MK1.shortMessageCallback = function(packet, data) {
+// The input report 0x01 handles buttons and jog wheels.
+TraktorS2MK1.inputReport0x01Callback = function(packet, data) {
     for (var name in data) {
         var field = data[name];
         if (field.name === "!jog_wheel") {
@@ -509,8 +509,8 @@ TraktorS2MK1.shortMessageCallback = function(packet, data) {
     }
 };
 
-// There are no buttons handled by the long message, so this is a little simpler.
-TraktorS2MK1.longMessageCallback = function(packet, data) {
+// There are no buttons handled by input report 0x02, so this is a little simpler.
+TraktorS2MK1.inputReport0x02Callback = function(packet, data) {
     for (var name in data) {
         var field = data[name];
         TraktorS2MK1.controller.processControl(field);
@@ -1352,7 +1352,7 @@ TraktorS2MK1.onVuMeterChanged = function(value, group, _key) {
             TraktorS2MK1.controller.setOutput(group, key, 0x00, false);
         }
     }
-    TraktorS2MK1.controller.OutputPackets["output"].send();
+    TraktorS2MK1.controller.OutputPackets["OutputReport_0x80"].send();
 };
 
 TraktorS2MK1.onLoopEnabledChanged = function(value, group, _key) {
