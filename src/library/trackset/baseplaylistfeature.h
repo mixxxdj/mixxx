@@ -73,6 +73,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotImportPlaylist();
     void slotImportPlaylistFile(const QString& playlist_file);
     void slotCreateImportPlaylist();
+    void slotCreateImportPlaylistDirect(const QString& playlistFiles);
+
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();

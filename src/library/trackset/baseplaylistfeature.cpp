@@ -194,7 +194,7 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
-    //qDebug() << "BasePlaylistFeature::activateChild()" << index;
+    // qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
     if (playlistId == kInvalidPlaylistId) {
         // This happens if user clicks on group nodes
@@ -212,7 +212,7 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
+    // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
@@ -408,7 +408,7 @@ void BasePlaylistFeature::deleteItem(const QModelIndex& index) {
 }
 
 void BasePlaylistFeature::slotDeletePlaylist() {
-    //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -456,7 +456,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 }
 
 void BasePlaylistFeature::slotImportPlaylist() {
-    //qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
     const QString playlistFile = getPlaylistFile();
     if (playlistFile.isEmpty()) {
         return;
@@ -534,6 +534,27 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         slotImportPlaylistFile(playlistFile);
     }
     activatePlaylist(lastPlaylistId);
+}
+
+void BasePlaylistFeature::slotCreateImportPlaylistDirect(const QString& playlistFile) {
+    const QFileInfo fileInfo(playlistFile);
+    const QString baseName = fileInfo.baseName();
+    QString name;
+
+    bool validNameGiven = false;
+    int i = 0;
+    while (!validNameGiven) {
+        name = baseName;
+        if (i != 0) {
+            name += QString::number(i);
+        }
+
+        // Check name
+        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+
+        validNameGiven = (existingId == kInvalidPlaylistId);
+        ++i;
+    }
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {
@@ -643,22 +664,22 @@ void BasePlaylistFeature::slotExportTrackFiles() {
 }
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
-    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void BasePlaylistFeature::slotAddToAutoDJTop() {
-    //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
 void BasePlaylistFeature::slotAddToAutoDJReplace() {
-    //qDebug() << "slotAddToAutoDJReplace() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotAddToAutoDJReplace() row:" << m_lastRightClickedIndex.data();
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
 void BasePlaylistFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
-    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
@@ -731,8 +752,8 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
 }
 
 /**
-  * Clears the child model dynamically, but the invisible root item remains
-  */
+ * Clears the child model dynamically, but the invisible root item remains
+ */
 void BasePlaylistFeature::clearChildModel() {
     m_pSidebarModel->removeRows(0, m_pSidebarModel->rowCount());
 }
