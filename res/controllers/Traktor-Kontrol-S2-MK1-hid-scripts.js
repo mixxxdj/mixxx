@@ -191,7 +191,7 @@ TraktorS2MK1.registerInputPackets = function() {
 
     this.controller.registerInputPacket(InputReport0x01);
 
-    // Most items in the input report 0x02 are controls that go from 0-4096.
+    // Most items in the input report 0x02 are controls that go from 0-4095.
     // There are also some 4 bit encoders.
     InputReport0x02.addControl("[Channel1]", "rate", 0x0F, "H");
     InputReport0x02.addControl("[Channel2]", "rate", 0x1F, "H");
@@ -519,7 +519,7 @@ TraktorS2MK1.inputReport0x02Callback = function(packet, data) {
 
 TraktorS2MK1.samplerGainKnob = function(field) {
     for (var i = 1; i <= 8; i++) {
-        engine.setParameter("[Sampler" + i + "]", "pregain", field.value / 4096);
+        engine.setParameter("[Sampler" + i + "]", "pregain", field.value / 4095);
     }
 };
 
@@ -1043,11 +1043,11 @@ TraktorS2MK1.effectKnob = function(field) {
     if (focusedEffect > 0) {
         engine.setParameter(effectUnitGroup.slice(0, -1) + "_Effect" + focusedEffect + "]",
             "parameter" + knobNumber,
-            field.value / 4096);
+            field.value / 4095);
     } else {
         engine.setParameter(effectUnitGroup.slice(0, -1) + "_Effect" + knobNumber + "]",
             "meta",
-            field.value / 4096);
+            field.value / 4095);
     }
 };
 
