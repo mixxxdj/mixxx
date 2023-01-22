@@ -29,9 +29,6 @@ var ShiftCueButtonAction = "REWIND";
 var ButtonBrightnessOff = 0x00;
 var ButtonBrightnessOn = 0x1F;
 
-// KNOWN ISSUES:
-// * The effect button LEDs briefly flicker when pressing the effect focus button.
-
 // eslint definitions
 var TraktorS2MK1 = new function() {
     this.controller = new HIDController();
@@ -768,8 +765,6 @@ TraktorS2MK1.setPadMode = function(group, padMode) {
         for (var i = 1; i <= 4; i++) {
             TraktorS2MK1.padConnections[group].push(
                 engine.makeConnection(group, "hotcue_" + i + "_enabled", TraktorS2MK1.outputHotcueCallback));
-            // TraktorS2MK1.padConnections[group].push(
-            //     engine.makeConnection(group, "hotcue_" + i + "_color", TraktorS2MK1.outputHotcueCallback));
         }
     } else if (padMode === TraktorS2MK1.padModes.introOutro) {
         for (i = 1; i <= 4; i++) {
