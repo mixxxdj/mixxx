@@ -141,8 +141,8 @@ TraktorS2MK1.registerInputPackets = function() {
     InputReport0x01.addControl("[Channel1]", "!pad4", 0x0D, "B", 0x01, false, this.padButton);
     InputReport0x01.addControl("[Channel1]", "!loop_in", 0x09, "B", 0x40, false, this.loopInButton);
     InputReport0x01.addControl("[Channel1]", "!loop_out", 0x09, "B", 0x20, false, this.loopOutButton);
-    InputReport0x01.addControl("[Channel1]", "!remix_button", 0x0B, "B", 0x02, false, this.samplerModeButton);
-    InputReport0x01.addControl("[Channel1]", "!flux_button", 0x09, "B", 0x10, false, this.introOutroModeButton);
+    InputReport0x01.addControl("[Channel1]", "!samples_button", 0x0B, "B", 0x02, false, this.samplerModeButton);
+    InputReport0x01.addControl("[Channel1]", "!reset_button", 0x09, "B", 0x10, false, this.introOutroModeButton);
     InputReport0x01.addControl("[Channel1]", "!left_encoder_press", 0x0E, "B", 0x02, false, this.leftEncoderPress);
     InputReport0x01.addControl("[Channel1]", "!right_encoder_press", 0x0E, "B", 0x04, false, this.rightEncoderPress);
     InputReport0x01.addControl("[Channel1]", "!jog_wheel", 0x01, "I", 0xFFFFFFFF, false, this.jogMove);
@@ -164,8 +164,8 @@ TraktorS2MK1.registerInputPackets = function() {
     InputReport0x01.addControl("[Channel2]", "!pad4", 0x0C, "B", 0x01, false, this.padButton);
     InputReport0x01.addControl("[Channel2]", "!loop_in", 0x0B, "B", 0x40, false, this.loopInButton);
     InputReport0x01.addControl("[Channel2]", "!loop_out", 0x0B, "B", 0x20, false, this.loopOutButton);
-    InputReport0x01.addControl("[Channel2]", "!remix_button", 0x0B, "B", 0x01, false, this.samplerModeButton);
-    InputReport0x01.addControl("[Channel2]", "!flux_button", 0x0B, "B", 0x10, false, this.introOutroModeButton);
+    InputReport0x01.addControl("[Channel2]", "!samples_button", 0x0B, "B", 0x01, false, this.samplerModeButton);
+    InputReport0x01.addControl("[Channel2]", "!reset_button", 0x0B, "B", 0x10, false, this.introOutroModeButton);
     InputReport0x01.addControl("[Channel2]", "!left_encoder_press", 0x0E, "B", 0x20, false, this.leftEncoderPress);
     InputReport0x01.addControl("[Channel2]", "!right_encoder_press", 0x0E, "B", 0x40, false, this.rightEncoderPress);
     InputReport0x01.addControl("[Channel2]", "!jog_wheel", 0x05, "I", 0xFFFFFFFF, false, this.jogMove);
@@ -298,11 +298,11 @@ TraktorS2MK1.registerOutputPackets = function() {
     OutputReport0x80.addOutput("[Channel1]", "PeakIndicator", 0x01, "B");
     OutputReport0x80.addOutput("[Channel2]", "PeakIndicator", 0x25, "B");
 
-    OutputReport0x80.addOutput("[Channel1]", "!flux_button", 0x06, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!reset_button", 0x06, "B");
     OutputReport0x80.addOutput("[Channel1]", "loop_in", 0x02, "B");
     OutputReport0x80.addOutput("[Channel1]", "loop_out", 0x05, "B");
 
-    OutputReport0x80.addOutput("[Channel2]", "!flux_button", 0x26, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!reset_button", 0x26, "B");
     OutputReport0x80.addOutput("[Channel2]", "loop_in", 0x22, "B");
     OutputReport0x80.addOutput("[Channel2]", "loop_out", 0x21, "B");
 
@@ -320,8 +320,8 @@ TraktorS2MK1.registerOutputPackets = function() {
     OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "!effectbutton2", 0x37, "B");
     OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "!effectbutton3", 0x36, "B");
 
-    OutputReport0x80.addOutput("[Channel1]", "!remix_button", 0x35, "B");
-    OutputReport0x80.addOutput("[Channel2]", "!remix_button", 0x34, "B");
+    OutputReport0x80.addOutput("[Channel1]", "!samples_button", 0x35, "B");
+    OutputReport0x80.addOutput("[Channel2]", "!samples_button", 0x34, "B");
 
     OutputReport0x80.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x3D, "B");
     OutputReport0x80.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x3C, "B");
@@ -437,8 +437,8 @@ TraktorS2MK1.lightDeck = function(group) {
         // These outputs show state managed by this script and do not react to ControlObject changes,
         // so manually set them here.
         TraktorS2MK1.outputCallback(0, group, "!shift");
-        TraktorS2MK1.outputCallback(0, group, "!flux_button");
-        TraktorS2MK1.outputCallback(0, group, "!remix_button");
+        TraktorS2MK1.outputCallback(0, group, "!reset_button");
+        TraktorS2MK1.outputCallback(0, group, "!samples_button");
     }
 
     this.batchingLEDUpdate = false;
@@ -886,11 +886,11 @@ TraktorS2MK1.samplerModeButton = function(field) {
     var padMode = TraktorS2MK1.currentPadMode[field.group];
     if (padMode !== TraktorS2MK1.padModes.sampler) {
         TraktorS2MK1.setPadMode(field.group, TraktorS2MK1.padModes.sampler);
-        TraktorS2MK1.controller.setOutput(field.group, "!remix_button", ButtonBrightnessOn, false);
-        TraktorS2MK1.controller.setOutput(field.group, "!flux_button", ButtonBrightnessOff, !TraktorS2MK1.batchingLEDUpdate);
+        TraktorS2MK1.controller.setOutput(field.group, "!samples_button", ButtonBrightnessOn, false);
+        TraktorS2MK1.controller.setOutput(field.group, "!reset_button", ButtonBrightnessOff, !TraktorS2MK1.batchingLEDUpdate);
     } else {
         TraktorS2MK1.setPadMode(field.group, TraktorS2MK1.padModes.hotcue);
-        TraktorS2MK1.controller.setOutput(field.group, "!remix_button", ButtonBrightnessOff, !TraktorS2MK1.batchingLEDUpdate);
+        TraktorS2MK1.controller.setOutput(field.group, "!samples_button", ButtonBrightnessOff, !TraktorS2MK1.batchingLEDUpdate);
     }
 };
 
@@ -901,11 +901,11 @@ TraktorS2MK1.introOutroModeButton = function(field) {
     var padMode = TraktorS2MK1.currentPadMode[field.group];
     if (padMode !== TraktorS2MK1.padModes.introOutro) {
         TraktorS2MK1.setPadMode(field.group, TraktorS2MK1.padModes.introOutro);
-        TraktorS2MK1.controller.setOutput(field.group, "!flux_button", ButtonBrightnessOn, false);
-        TraktorS2MK1.controller.setOutput(field.group, "!remix_button", ButtonBrightnessOff, !TraktorS2MK1.batchingLEDUpdate);
+        TraktorS2MK1.controller.setOutput(field.group, "!reset_button", ButtonBrightnessOn, false);
+        TraktorS2MK1.controller.setOutput(field.group, "!samples_button", ButtonBrightnessOff, !TraktorS2MK1.batchingLEDUpdate);
     } else {
         TraktorS2MK1.setPadMode(field.group, TraktorS2MK1.padModes.hotcue);
-        TraktorS2MK1.controller.setOutput(field.group, "!flux_button", ButtonBrightnessOff, !TraktorS2MK1.batchingLEDUpdate);
+        TraktorS2MK1.controller.setOutput(field.group, "!reset_button", ButtonBrightnessOff, !TraktorS2MK1.batchingLEDUpdate);
     }
 };
 
