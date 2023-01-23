@@ -109,10 +109,10 @@ namespace mixxx {
 // Function to check if a given file is a playlist
 bool isPlaylist(QString fileName) {
     // Create a list of known playlist file extensions
-    QStringList playlistExtensions;
-    playlistExtensions << "m3u"
-                       << "m3u8"
-                       << "pls";
+    const QStringList playlistExtensions = {
+            QStringLiteral("m3u"),
+            QStringLiteral("m3u8"),
+            QStringLiteral("pls")};
 
     // Get file information using the given file name
     QFileInfo fileInfo(fileName);
