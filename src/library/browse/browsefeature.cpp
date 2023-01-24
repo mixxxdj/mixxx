@@ -204,6 +204,7 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
+    m_pLastRightClickedItem = nullptr;
     QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
     m_childModel.removeRow(index, parent);
 
@@ -387,6 +388,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         return;
     }
 
+    m_pLastRightClickedItem = nullptr;
     // Before we populate the subtree, we need to delete old subtrees
     m_childModel.removeRows(0, item->childRows(), index);
 
