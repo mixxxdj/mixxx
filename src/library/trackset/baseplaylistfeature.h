@@ -21,8 +21,6 @@ class TrackCollectionManager;
 class TreeItem;
 class WLibrarySidebar;
 
-constexpr int kInvalidPlaylistId = -1;
-
 class BasePlaylistFeature : public BaseTrackSetFeature {
     Q_OBJECT
 

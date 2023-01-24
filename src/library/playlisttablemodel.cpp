@@ -18,7 +18,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
         const char* settingsNamespace,
         bool keepDeletedTracks)
         : TrackSetTableModel(parent, pTrackCollectionManager, settingsNamespace),
-          m_iPlaylistId(-1),
+          m_iPlaylistId(kInvalidPlaylistId),
           m_keepDeletedTracks(keepDeletedTracks) {
     connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
             &PlaylistDAO::tracksChanged,
@@ -129,7 +129,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     }
     // Store search text
     QString currSearch = currentSearch();
-    if (m_iPlaylistId != -1 && !currSearch.trimmed().isEmpty()) {
+    if (m_iPlaylistId != kInvalidPlaylistId && !currSearch.trimmed().isEmpty()) {
         m_searchTexts.insert(m_iPlaylistId, currSearch);
     }
 

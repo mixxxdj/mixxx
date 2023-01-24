@@ -62,7 +62,7 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return -1;
+        return kInvalidPlaylistId;
     }
 
     //Get the id of the last playlist.
@@ -83,7 +83,7 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return -1;
+        return kInvalidPlaylistId;
     }
 
     int playlistId = query.lastInsertId().toInt();
@@ -97,10 +97,10 @@ int PlaylistDAO::createUniquePlaylist(QString* pName, const HiddenType hidden) {
     int playlistId = getPlaylistIdFromName(*pName);
     int i = 1;
 
-    if (playlistId != -1) {
+    if (playlistId != kInvalidPlaylistId) {
         // Calculate a unique name
         *pName += "(%1)";
-        while (playlistId != -1) {
+        while (playlistId != kInvalidPlaylistId) {
             i++;
             playlistId = getPlaylistIdFromName(pName->arg(i));
         }
@@ -165,7 +165,7 @@ int PlaylistDAO::getPlaylistIdFromName(const QString& name) const {
     } else {
         LOG_FAILED_QUERY(query);
     }
-    return -1;
+    return kInvalidPlaylistId;
 }
 
 void PlaylistDAO::deletePlaylist(const int playlistId) {
@@ -441,7 +441,7 @@ int PlaylistDAO::getPlaylistId(const int index) const {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return -1;
+        return kInvalidPlaylistId;
     }
 
     int currentRow = 0;
@@ -451,7 +451,7 @@ int PlaylistDAO::getPlaylistId(const int index) const {
             return id;
         }
     }
-    return -1;
+    return kInvalidPlaylistId;
 }
 
 PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) const {
@@ -765,15 +765,14 @@ int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hid
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return -1;
+        return kInvalidPlaylistId;
     }
 
     // Get the id of the highest playlist
-    int previousPlaylistId = -1;
     if (query.next()) {
-        previousPlaylistId = query.value(query.record().indexOf("id")).toInt();
+        return query.value(query.record().indexOf("id")).toInt();
     }
-    return previousPlaylistId;
+    return kInvalidPlaylistId;
 }
 
 bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targetPlaylistID) {
@@ -1196,7 +1195,7 @@ void PlaylistDAO::setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor) {
 
 void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJSendLoc loc) {
     int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
-    if (iAutoDJPlaylistId == -1) {
+    if (iAutoDJPlaylistId == kInvalidPlaylistId) {
         return;
     }
 

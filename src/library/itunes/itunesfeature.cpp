@@ -710,7 +710,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
     //qDebug() << "Parse Playlist";
 
     QString playlistname;
-    int playlist_id = -1;
+    int playlist_id = kInvalidPlaylistId;
     int playlist_position = -1;
     int track_reference = -1;
     //indicates that we haven't found the <

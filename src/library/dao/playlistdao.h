@@ -28,6 +28,8 @@ const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_ad
 
 class AutoDJProcessor;
 
+constexpr int kInvalidPlaylistId = -1;
+
 class PlaylistDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
