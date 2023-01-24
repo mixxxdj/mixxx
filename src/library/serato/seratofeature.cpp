@@ -851,38 +851,37 @@ SeratoFeature::SeratoFeature(
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_icon(":/images/library/ic_library_serato.svg") {
-    QStringList columns;
-    columns << LIBRARYTABLE_ID
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_GROUPING
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_SAMPLERATE
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_KEY
-            << LIBRARYTABLE_TRACKNUMBER
-            << TRACKLOCATIONSTABLE_LOCATION
-            << LIBRARYTABLE_BPM_LOCK;
-
-    QStringList searchColumns;
-    searchColumns
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_TRACKNUMBER
-            << TRACKLOCATIONSTABLE_LOCATION
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_KEY;
+    QString idColumn = LIBRARYTABLE_ID;
+    QStringList columns = {
+            LIBRARYTABLE_ID,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_GROUPING,
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BITRATE,
+            LIBRARYTABLE_SAMPLERATE,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_KEY,
+            LIBRARYTABLE_TRACKNUMBER,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_BPM_LOCK};
+    QStringList searchColumns = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_TRACKNUMBER,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BITRATE,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_KEY};
 
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection,

@@ -189,32 +189,30 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
 
     const QString idColumn = CLM_TRACK_ID;
 
-    QStringList tableColumns;
-    tableColumns
-         << CLM_TRACK_ID // 0
-         << CLM_VIEW_ORDER
-         << CLM_PREVIEW; // 3
+    QStringList tableColumns = {
+            CLM_TRACK_ID,
+            CLM_VIEW_ORDER,
+            CLM_PREVIEW}; // 3
 
-    QStringList trackSourceColumns;
-    trackSourceColumns
-         << CLM_TRACK_ID // 0
-         << CLM_ARTIST
-         << CLM_TITLE
-         << CLM_DURATION
-         << CLM_URI
-         << CLM_ALBUM
-         << CLM_ALBUM_ARTIST
-         << CLM_YEAR
-         << CLM_RATING
-         << CLM_GENRE
-         << CLM_GROUPING
-         << CLM_TRACKNUMBER
-         << CLM_DATEADDED
-         << CLM_BPM
-         << CLM_BITRATE
-         << CLM_COMMENT
-         << CLM_PLAYCOUNT
-         << CLM_COMPOSER;
+    QStringList trackSourceColumns = {
+            CLM_TRACK_ID, // 0
+            CLM_ARTIST,
+            CLM_TITLE,
+            CLM_DURATION,
+            CLM_URI,
+            CLM_ALBUM,
+            CLM_ALBUM_ARTIST,
+            CLM_YEAR,
+            CLM_RATING,
+            CLM_GENRE,
+            CLM_GROUPING,
+            CLM_TRACKNUMBER,
+            CLM_DATEADDED,
+            CLM_BPM,
+            CLM_BITRATE,
+            CLM_COMMENT,
+            CLM_PLAYCOUNT,
+            CLM_COMPOSER};
 
     QSharedPointer<BaseTrackCache> trackSource(
             new BaseTrackCache(m_pTrackCollectionManager->internalCollection(),

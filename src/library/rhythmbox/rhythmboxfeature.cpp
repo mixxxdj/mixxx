@@ -20,27 +20,27 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
           m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
-    QStringList columns;
-    columns << "id"
-            << "artist"
-            << "title"
-            << "album"
-            << "year"
-            << "genre"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "rating"
-            << "duration"
-            << "bitrate"
-            << "bpm";
-    QStringList searchColumns;
-    searchColumns << "artist"
-                  << "album"
-                  << "location"
-                  << "comment"
-                  << "title"
-                  << "genre";
+    QStringList columns = {
+            "id",
+            "artist",
+            "title",
+            "album",
+            "year",
+            "genre",
+            "tracknumber",
+            "location",
+            "comment",
+            "rating",
+            "duration",
+            "bitrate",
+            "bpm"};
+    QStringList searchColumns = {
+            "artist",
+            "album",
+            "location",
+            "comment",
+            "title",
+            "genre"};
 
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection,

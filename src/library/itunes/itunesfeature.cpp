@@ -68,22 +68,22 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
           m_icon(":/images/library/ic_library_itunes.svg") {
     QString tableName = "itunes_library";
     QString idColumn = "id";
-    QStringList columns;
-    columns << "id"
-            << "artist"
-            << "title"
-            << "album"
-            << "album_artist"
-            << "year"
-            << "genre"
-            << "grouping"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "rating";
+    QStringList columns = {
+            "id",
+            "artist",
+            "title",
+            "album",
+            "album_artist",
+            "year",
+            "genre",
+            "grouping",
+            "tracknumber",
+            "location",
+            "comment",
+            "duration",
+            "bitrate",
+            "bpm",
+            "rating"};
 
     m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
             m_pLibrary->trackCollections()->internalCollection(),
