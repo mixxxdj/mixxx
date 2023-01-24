@@ -52,6 +52,18 @@ BasePlaylistFeature::BasePlaylistFeature(
     pModel->setParent(this);
 
     initActions();
+    connectPlaylistDAO();
+    connect(m_pLibrary,
+            &Library::trackSelected,
+            this,
+            [this](const TrackPointer& pTrack) {
+                const auto trackId = pTrack ? pTrack->getId() : TrackId{};
+                slotTrackSelected(trackId);
+            });
+    connect(m_pLibrary,
+            &Library::switchToView,
+            this,
+            &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
 void BasePlaylistFeature::initActions() {
@@ -130,7 +142,9 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotExportTrackFiles);
+}
 
+void BasePlaylistFeature::connectPlaylistDAO() {
     connect(&m_playlistDao,
             &PlaylistDAO::added,
             this,
@@ -151,18 +165,6 @@ void BasePlaylistFeature::initActions() {
             &PlaylistDAO::renamed,
             this,
             &BasePlaylistFeature::slotPlaylistTableRenamed);
-
-    connect(m_pLibrary,
-            &Library::trackSelected,
-            this,
-            [this](const TrackPointer& pTrack) {
-                const auto trackId = pTrack ? pTrack->getId() : TrackId{};
-                slotTrackSelected(trackId);
-            });
-    connect(m_pLibrary,
-            &Library::switchToView,
-            this,
-            &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
 int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
