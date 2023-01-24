@@ -1468,6 +1468,8 @@ void RekordboxFeature::onRekordboxDevicesFound() {
         foundDevices.emplace_back(pDeviceFound);
     }
 
+    clearLastRightClickedIndex();
+
     TreeItem* root = m_childModel.getRootItem();
     QSqlDatabase database = m_pTrackCollection->database();
 

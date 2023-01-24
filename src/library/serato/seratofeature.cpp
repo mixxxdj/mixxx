@@ -1069,6 +1069,8 @@ void SeratoFeature::onSeratoDatabasesFound() {
         foundDatabases.emplace_back(pDatabaseFound);
     }
 
+    clearLastRightClickedIndex();
+
     TreeItem* root = m_childModel.getRootItem();
     QSqlDatabase database = m_pTrackCollection->database();
 
