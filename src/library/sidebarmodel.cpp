@@ -290,8 +290,8 @@ void SidebarModel::slotPressedUntilClickedTimeout() {
     }
 }
 
-/// Connected to WLibrarySidebar::pressed signal, called after left click,
-/// right click and selection change via keyboard or controller
+/// Connected to WLibrarySidebar::pressed signal, called after left click and
+/// selection change via keyboard or controller
 void SidebarModel::pressed(const QModelIndex& index) {
     stopPressedUntilClickedTimer();
     if (index.isValid()) {

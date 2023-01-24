@@ -34,8 +34,13 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
-    QModelIndex clickedItem = indexAt(event->pos());
-    emit rightClicked(event->globalPos(), clickedItem);
+    const QModelIndex clickedIndex = indexAt(event->pos());
+    if (!clickedIndex.isValid()) {
+        return;
+    }
+    // Use this instead of setCurrentIndex() to keep current selection
+    selectionModel()->setCurrentIndex(clickedIndex, QItemSelectionModel::NoUpdate);
+    emit rightClicked(event->globalPos(), clickedIndex);
     //}
 }
 
@@ -201,8 +206,12 @@ bool WLibrarySidebar::isLeafNodeSelected() {
 /// Invoked by actual keypresses (requires widget focus) and emulated keypresses
 /// sent by LibraryControl
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
+    // TODO(XXX) Should first keyEvent ensure previous item has focus? I.e. if the selected
+    // item is not focused, require second press to perform the desired action.
+
     switch (event->key()) {
     case Qt::Key_Return:
+        focusSelectedIndex();
         toggleSelectedItem();
         return;
     case Qt::Key_Down:
@@ -211,6 +220,8 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     case Qt::Key_PageUp:
     case Qt::Key_End:
     case Qt::Key_Home: {
+        // make the selected item the navigation starting point
+        focusSelectedIndex();
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
         // After the selection changed force-activate (click) the newly selected
@@ -303,6 +314,20 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     }
 }
 
+void WLibrarySidebar::mousePressEvent(QMouseEvent* event) {
+    // handle right click only in contextMenuEvent() to not select the clicked index
+    if (event->buttons().testFlag(Qt::RightButton)) {
+        return;
+    }
+    QTreeView::mousePressEvent(event);
+}
+
+void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
+    // Clear the current index, i.e. remove the focus indicator
+    selectionModel()->clearCurrentIndex();
+    QTreeView::focusInEvent(event);
+}
+
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
     //qDebug() << "WLibrarySidebar::selectIndex" << index;
     if (!index.isValid()) {
@@ -349,6 +374,25 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem
         parentIndex = parentIndex.parent();
     }
     scrollTo(translated, EnsureVisible);
+}
+
+/// Refocus the selected item after right-click
+void WLibrarySidebar::focusSelectedIndex() {
+    // After the context menu was activated (and closed, with or without clicking
+    // an action), the currentIndex is the right-clicked item.
+    // If if the currentIndex is not selected, make the selection the currentIndex
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (selectedIndices.isEmpty()) {
+        // QTreeView will handle this, i.e. select an index in keyPressEvent()
+        return;
+    }
+    QModelIndex selIndex = selectedIndices.first();
+    VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
+        return;
+    }
+    if (selIndex != selectionModel()->currentIndex()) {
+        setCurrentIndex(selIndex);
+    }
 }
 
 bool WLibrarySidebar::event(QEvent* pEvent) {
