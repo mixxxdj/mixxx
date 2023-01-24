@@ -164,11 +164,11 @@ void CrateFeature::connectLibrary(Library* pLibrary) {
 }
 
 void CrateFeature::connectTrackCollection() {
-    connect(m_pTrackCollection,
+    connect(m_pTrackCollection, // created new, duplicated or imported playlist to new crate
             &TrackCollection::crateInserted,
             this,
             &CrateFeature::slotCrateTableChanged);
-    connect(m_pTrackCollection,
+    connect(m_pTrackCollection, // renamed, un/locked, toggled AutoDJ source
             &TrackCollection::crateUpdated,
             this,
             &CrateFeature::slotCrateTableChanged);
@@ -176,7 +176,7 @@ void CrateFeature::connectTrackCollection() {
             &TrackCollection::crateDeleted,
             this,
             &CrateFeature::slotCrateTableChanged);
-    connect(m_pTrackCollection,
+    connect(m_pTrackCollection, // crate tracks hidden, unhidden or purged
             &TrackCollection::crateTracksChanged,
             this,
             &CrateFeature::slotCrateContentChanged);
@@ -723,10 +723,10 @@ void CrateFeature::slotAnalyzeCrate() {
 }
 
 void CrateFeature::slotExportPlaylist() {
-    CrateId crateId = m_crateTableModel.selectedCrate();
+    CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
     Crate crate;
     if (m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
-        qDebug() << "Exporting crate" << crate;
+        qDebug() << "Exporting crate" << crateId << crate;
     } else {
         qDebug() << "Failed to export crate" << crateId;
     }
@@ -768,7 +768,7 @@ void CrateFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
             new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
-    pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
+    pCrateTableModel->selectCrate(crateId);
     pCrateTableModel->select();
 
     if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
@@ -780,8 +780,8 @@ void CrateFeature::slotExportPlaylist() {
         QList<QString> playlistItems;
         int rows = pCrateTableModel->rowCount();
         for (int i = 0; i < rows; ++i) {
-            QModelIndex index = m_crateTableModel.index(i, 0);
-            playlistItems << m_crateTableModel.getTrackLocation(index);
+            QModelIndex index = pCrateTableModel->index(i, 0);
+            playlistItems << pCrateTableModel->getTrackLocation(index);
         }
         exportPlaylistItemsIntoFile(
                 fileLocation,
@@ -810,6 +810,7 @@ void CrateFeature::slotExportTrackFiles() {
 
 void CrateFeature::storePrevSiblingCrateId(CrateId crateId) {
     QModelIndex actIndex = indexFromCrateId(crateId);
+    m_prevSiblingCrate = CrateId();
     for (int i = (actIndex.row() + 1); i >= (actIndex.row() - 1); i -= 2) {
         QModelIndex newIndex = actIndex.sibling(i, actIndex.column());
         if (newIndex.isValid()) {

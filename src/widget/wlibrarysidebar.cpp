@@ -173,7 +173,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
 }
 
 void WLibrarySidebar::toggleSelectedItem() {
-    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
         QModelIndex index = selectedIndices.at(0);
         // Activate the item so its content shows in the main library.
@@ -184,7 +184,7 @@ void WLibrarySidebar::toggleSelectedItem() {
 }
 
 bool WLibrarySidebar::isLeafNodeSelected() {
-    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
         QModelIndex index = selectedIndices.at(0);
         if(!index.model()->hasChildren(index)) {
@@ -198,6 +198,8 @@ bool WLibrarySidebar::isLeafNodeSelected() {
     return false;
 }
 
+/// Invoked by actual keypresses (requires widget focus) and emulated keypresses
+/// sent by LibraryControl
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case Qt::Key_Return:
@@ -254,25 +256,25 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         emit setLibraryFocus(FocusWidget::TracksTable);
         return;
     case kRenameSidebarItemShortcutKey: { // F2
-        // Rename crate or playlist (internal, external, history
+        // Rename crate or playlist (internal, external, history)
         QModelIndexList selectedIndices = selectionModel()->selectedRows();
         if (selectedIndices.isEmpty()) {
             return;
         }
-        // If an expanded item is selected let QTreeView collapse it
         QModelIndex selIndex = selectedIndices.first();
         VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
             qDebug() << "invalid sidebar index";
             return;
         }
         if (isExpanded(selIndex)) {
+            // Root views / knots can not be renamed
             return;
         }
         emit renameItem(selIndex);
         return;
     }
-    case kHideRemoveShortcutKey: { // Del / Cmd+Backspace deletes items
-        // Rename crate or playlist (internal, external, history
+    case kHideRemoveShortcutKey: { // Del (macOS: Cmd+Backspace)
+        // Delete crate or playlist (internal, external, history)
         if (event->modifiers() != kHideRemoveShortcutModifier) {
             return;
         }
@@ -280,13 +282,13 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         if (selectedIndices.isEmpty()) {
             return;
         }
-        // If an expanded item is selected let QTreeView collapse it
         QModelIndex selIndex = selectedIndices.first();
         VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
             qDebug() << "invalid sidebar index";
             return;
         }
         if (isExpanded(selIndex)) {
+            // Root views / knots can not be deleted
             return;
         }
         emit deleteItem(selIndex);

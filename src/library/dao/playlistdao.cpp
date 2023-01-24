@@ -754,8 +754,6 @@ void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc l
 }
 
 int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const {
-    // Find out the highest position existing in the playlist so we know what
-    // position this track should have.
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "SELECT max(id) as id FROM Playlists "

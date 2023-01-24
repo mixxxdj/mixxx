@@ -66,14 +66,8 @@ SetlogFeature::SetlogFeature(
 }
 
 SetlogFeature::~SetlogFeature() {
-    // If the history playlist we created doesn't have any tracks in it then
-    // delete it so we don't end up with tons of empty playlists. This is mostly
-    // for developers since they regularly open Mixxx without loading a track.
-    if (m_playlistId != kInvalidPlaylistId &&
-            m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
-        m_playlistDao.deletePlaylist(m_playlistId);
-    }
-    // Also clean history up when shutting down in case the track threshold changed
+    // Clean up history when shutting down in case the track threshold changed,
+    // incl. potentially empty current playlist
     deleteAllUnlockedPlaylistsWithFewerTracks();
 }
 
@@ -212,6 +206,8 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                         .toDateTime();
 
         // Create the TreeItem whose parent is the invisible root item
+        // Show only [kNumToplevelHistoryEntries -1] recent playlists at the top
+        // level before grouping them by year.
         if (row >= kNumToplevelHistoryEntries) {
             int yearCreated = dateCreated.date().year();
 
@@ -280,6 +276,7 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
     }
 }
 
+/// Invoked on startup to create new current playlist and by "Finish current and start new"
 void SetlogFeature::slotGetNewPlaylist() {
     //qDebug() << "slotGetNewPlaylist() successfully triggered !";
 

@@ -190,7 +190,7 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (index.isValid() && m_pSidebarWidget) {
+    if (index.isValid()) {
         m_pSidebarWidget->selectChildIndex(index, select);
     }
 }
@@ -246,7 +246,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
     if (locked) {
         qDebug() << "Skipping playlist rename because playlist" << playlistId
-                 << "is locked.";
+                 << oldName << "is locked.";
         return;
     }
     QString newName;
@@ -585,7 +585,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
                     "mixxx.db.model.playlist_export"));
 
     emit saveModelState();
-    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setTableModel(playlistId);
     pPlaylistTableModel->setSort(
             pPlaylistTableModel->fieldIndex(
                     ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
@@ -621,13 +621,17 @@ void BasePlaylistFeature::slotExportPlaylist() {
 }
 
 void BasePlaylistFeature::slotExportTrackFiles() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this,
                     m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export"));
 
     emit saveModelState();
-    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setTableModel(playlistId);
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
                                          ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
@@ -732,9 +736,7 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
     }
 }
 
-/**
-  * Clears the child model dynamically, but the invisible root item remains
-  */
+/// Clears the child model dynamically, but the invisible root item remains
 void BasePlaylistFeature::clearChildModel() {
     m_lastRightClickedIndex = QModelIndex();
     m_pSidebarModel->removeRows(0, m_pSidebarModel->rowCount());
