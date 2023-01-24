@@ -669,6 +669,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 }
 
 // This function is executed in a separate thread other than the main thread
+// The returned list owns the pointers, but we can't use a unique_ptr because
+// the result is passed by a const reference
 QList<TreeItem*> findSeratoDatabases() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -1062,9 +1064,12 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
 }
 
 void SeratoFeature::onSeratoDatabasesFound() {
-    QList<TreeItem*> foundDatabases = m_databasesFuture.result();
-    TreeItem* root = m_childModel.getRootItem();
+    std::vector<std::unique_ptr<TreeItem>> foundDatabases;
+    for (const auto& pDatabaseFound : m_databasesFuture.result()) {
+        foundDatabases.emplace_back(pDatabaseFound);
+    }
 
+    TreeItem* root = m_childModel.getRootItem();
     QSqlDatabase database = m_pTrackCollection->database();
 
     if (foundDatabases.size() == 0) {
@@ -1079,44 +1084,37 @@ void SeratoFeature::onSeratoDatabasesFound() {
             TreeItem* child = root->child(databaseIndex);
             bool removeChild = true;
 
-            for (int foundDatabaseIndex = 0; foundDatabaseIndex < foundDatabases.size(); foundDatabaseIndex++) {
-                TreeItem* databaseFound = foundDatabases[foundDatabaseIndex];
-
-                if (databaseFound->getLabel() == child->getLabel()) {
+            for (const auto& pDatabaseFound : foundDatabases) {
+                if (pDatabaseFound->getLabel() == child->getLabel()) {
                     removeChild = false;
                     break;
                 }
             }
-
             if (removeChild) {
                 // Device has since been unmounted, cleanup DB
-
                 m_childModel.removeRows(databaseIndex, 1);
             }
         }
 
-        QList<TreeItem*> childrenToAdd;
+        std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
 
-        for (int foundDatabaseIndex = 0; foundDatabaseIndex < foundDatabases.size(); foundDatabaseIndex++) {
-            TreeItem* databaseFound = foundDatabases[foundDatabaseIndex];
+        for (auto&& pDatabaseFound : foundDatabases) {
             bool addNewChild = true;
-
             for (int databaseIndex = 0; databaseIndex < root->childRows(); databaseIndex++) {
                 TreeItem* child = root->child(databaseIndex);
-
-                if (databaseFound->getLabel() == child->getLabel()) {
+                if (pDatabaseFound->getLabel() == child->getLabel()) {
                     // This database already exists in the TreeModel, don't add or parse is again
                     addNewChild = false;
+                    break;
                 }
             }
-
             if (addNewChild) {
-                childrenToAdd << databaseFound;
+                childrenToAdd.push_back(std::move(pDatabaseFound));
             }
         }
 
         if (!childrenToAdd.empty()) {
-            m_childModel.insertTreeItemRows(childrenToAdd, 0);
+            m_childModel.insertTreeItemRows(std::move(childrenToAdd), 0);
         }
     }
 

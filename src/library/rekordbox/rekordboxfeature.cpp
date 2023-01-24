@@ -162,6 +162,8 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 }
 
 // This function is executed in a separate thread other than the main thread
+// The returned list owns the pointers, but we can't use a unique_ptr because
+// the result is passed by a const reference
 QList<TreeItem*> findRekordboxDevices() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -192,10 +194,10 @@ QList<TreeItem*> findRekordboxDevices() {
             QList<QString> data;
             data << drive.filePath();
             data << IS_RECORDBOX_DEVICE;
-            TreeItem* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     std::move(displayPath),
                     QVariant(data));
-            foundDevices << foundDevice;
+            foundDevices << pFoundDevice;
         }
     }
 #elif defined(__LINUX__)
@@ -223,10 +225,10 @@ QList<TreeItem*> findRekordboxDevices() {
             QList<QString> data;
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-            TreeItem* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     device.fileName(),
                     QVariant(data));
-            foundDevices << foundDevice;
+            foundDevices << pFoundDevice;
         }
     }
 #else // __APPLE__
@@ -239,10 +241,10 @@ QList<TreeItem*> findRekordboxDevices() {
             QList<QString> data;
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-            auto* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     device.fileName(),
                     QVariant(data));
-            foundDevices << foundDevice;
+            foundDevices << pFoundDevice;
         }
     }
 #endif
@@ -1315,14 +1317,14 @@ RekordboxFeature::~RekordboxFeature() {
     transaction.commit();
 }
 
-void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
+void RekordboxFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
         KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(formatRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
-    libraryWidget->registerView("REKORDBOXHOME", edit);
+    parented_ptr<WLibraryTextBrowser> pEdit = make_parented<WLibraryTextBrowser>(pLibraryWidget);
+    pEdit->setHtml(formatRootViewHtml());
+    pEdit->setOpenLinks(false);
+    connect(pEdit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
+    pLibraryWidget->registerView("REKORDBOXHOME", pEdit);
 }
 
 void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
@@ -1461,9 +1463,12 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 }
 
 void RekordboxFeature::onRekordboxDevicesFound() {
-    QList<TreeItem*> foundDevices = m_devicesFuture.result();
-    TreeItem* root = m_childModel.getRootItem();
+    std::vector<std::unique_ptr<TreeItem>> foundDevices;
+    for (const auto& pDeviceFound : m_devicesFuture.result()) {
+        foundDevices.emplace_back(pDeviceFound);
+    }
 
+    TreeItem* root = m_childModel.getRootItem();
     QSqlDatabase database = m_pTrackCollection->database();
 
     if (foundDevices.size() == 0) {
@@ -1490,10 +1495,8 @@ void RekordboxFeature::onRekordboxDevicesFound() {
             TreeItem* child = root->child(deviceIndex);
             bool removeChild = true;
 
-            for (int foundDeviceIndex = 0; foundDeviceIndex < foundDevices.size(); foundDeviceIndex++) {
-                TreeItem* deviceFound = foundDevices[foundDeviceIndex];
-
-                if (deviceFound->getLabel() == child->getLabel()) {
+            for (const auto& pDeviceFound : foundDevices) {
+                if (pDeviceFound->getLabel() == child->getLabel()) {
                     removeChild = false;
                     break;
                 }
@@ -1507,28 +1510,26 @@ void RekordboxFeature::onRekordboxDevicesFound() {
             }
         }
 
-        QList<TreeItem*> childrenToAdd;
+        std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
 
-        for (int foundDeviceIndex = 0; foundDeviceIndex < foundDevices.size(); foundDeviceIndex++) {
-            TreeItem* deviceFound = foundDevices[foundDeviceIndex];
+        for (auto&& pDeviceFound : foundDevices) {
             bool addNewChild = true;
-
             for (int deviceIndex = 0; deviceIndex < root->childRows(); deviceIndex++) {
                 TreeItem* child = root->child(deviceIndex);
 
-                if (deviceFound->getLabel() == child->getLabel()) {
+                if (pDeviceFound->getLabel() == child->getLabel()) {
                     // This device already exists in the TreeModel, don't add or parse is again
                     addNewChild = false;
                 }
             }
 
             if (addNewChild) {
-                childrenToAdd << deviceFound;
+                childrenToAdd.push_back(std::move(pDeviceFound));
             }
         }
 
         if (!childrenToAdd.empty()) {
-            m_childModel.insertTreeItemRows(childrenToAdd, 0);
+            m_childModel.insertTreeItemRows(std::move(childrenToAdd), 0);
         }
     }
 
