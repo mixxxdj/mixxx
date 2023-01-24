@@ -125,6 +125,29 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
     return !locked && formatSupported;
 }
 
+void PlaylistFeature::importPlaylistFile(const QString& playlistFile) {
+    qWarning() << "Reached playlistfeature";
+    qWarning() << playlistFile;
+    const QFileInfo fileInfo(playlistFile);
+    const QString baseName = fileInfo.baseName();
+    QString name;
+
+    bool validNameGiven = false;
+    int i = 0;
+    while (!validNameGiven) {
+        name = baseName;
+        if (i != 0) {
+            name += QString::number(i);
+        }
+
+        // Check name
+        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+
+        validNameGiven = (existingId == kInvalidPlaylistId);
+        ++i;
+    }
+}
+
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
     QSqlDatabase database =
             m_pLibrary->trackCollectionManager()->internalCollection()->database();

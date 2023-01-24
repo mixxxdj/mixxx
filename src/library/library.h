@@ -95,6 +95,7 @@ class Library: public QObject {
     static const int kDefaultRowHeightPx;
 
     void setFont(const QFont& font);
+    void importPlaylistFile(const QString& playlistFile);
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
 

@@ -30,6 +30,7 @@ class PlaylistFeature : public BasePlaylistFeature {
             const QList<QUrl>& urls,
             QObject* pSource) override;
     bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
+    void importPlaylistFile(const QString& playlistFile);
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;

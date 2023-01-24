@@ -20,6 +20,7 @@
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "moc_baseplaylistfeature.cpp"
+#include "playlistfeature.h"
 #include "track/track.h"
 #include "track/trackid.h"
 #include "util/assert.h"
@@ -536,25 +537,10 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     activatePlaylist(lastPlaylistId);
 }
 
-void BasePlaylistFeature::slotCreateImportPlaylistDirect(const QString& playlistFile) {
-    const QFileInfo fileInfo(playlistFile);
-    const QString baseName = fileInfo.baseName();
-    QString name;
-
-    bool validNameGiven = false;
-    int i = 0;
-    while (!validNameGiven) {
-        name = baseName;
-        if (i != 0) {
-            name += QString::number(i);
-        }
-
-        // Check name
-        int existingId = m_playlistDao.getPlaylistIdFromName(name);
-
-        validNameGiven = (existingId == kInvalidPlaylistId);
-        ++i;
-    }
+void Library::importPlaylistFile(const QString& playlistFile) {
+    qWarning() << "Reached basePlaylistfeature";
+    qWarning() << playlistFile;
+    m_pPlaylistFeature->importPlaylistFile(playlistFile);
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {

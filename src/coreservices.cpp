@@ -493,7 +493,7 @@ void CoreServices::initialize(QApplication* pApp) {
             qWarning() << "Detected Playlist file!!";
             const QString playlistFile = musicFiles.at(i);
             qWarning() << playlistFile;
-            BasePlaylistFeature::slotCreateImportPlaylistDirect(playlistFile);
+            m_pLibrary->importPlaylistFile(playlistFile);
         }
     }
 
