@@ -34,9 +34,6 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
             << "duration"
             << "bitrate"
             << "bpm";
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection,
-                    tableName, idColumn, columns, false));
     QStringList searchColumns;
     searchColumns << "artist"
                   << "album"
@@ -44,7 +41,14 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
                   << "comment"
                   << "title"
                   << "genre";
-    m_trackSource->setSearchColumns(searchColumns);
+
+    m_trackSource = QSharedPointer<BaseTrackCache>(
+            new BaseTrackCache(m_pTrackCollection,
+                    tableName,
+                    std::move(idColumn),
+                    std::move(columns),
+                    false));
+    m_trackSource->setSearchColumns(std::move(searchColumns));
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
         this, pLibrary->trackCollections(),

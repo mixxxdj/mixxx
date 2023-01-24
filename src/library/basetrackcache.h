@@ -43,10 +43,10 @@ class BaseTrackCache : public QObject {
     /// The order of the `columns` list parameter defines the initial/default
     /// order of columns in the library view.
     BaseTrackCache(TrackCollection* pTrackCollection,
-                   const QString& tableName,
-                   const QString& idColumn,
-                   const QStringList& columns,
-                   bool isCaching);
+            QString tableName,
+            QString idColumn,
+            QStringList columns,
+            bool isCaching);
     ~BaseTrackCache() override;
 
     // Rebuild the BaseTrackCache index from the SQL table. This can be
@@ -73,7 +73,7 @@ class BaseTrackCache : public QObject {
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
     virtual void ensureCached(const QSet<TrackId>& trackIds);
-    virtual void setSearchColumns(const QStringList& columns);
+    virtual void setSearchColumns(QStringList columns);
 
   signals:
     void tracksChanged(const QSet<TrackId>& trackIds);

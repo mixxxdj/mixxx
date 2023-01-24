@@ -85,9 +85,12 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             << "bpm"
             << "rating";
 
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pLibrary->trackCollections()->internalCollection(), tableName, idColumn,
-                               columns, false));
+    m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
+            m_pLibrary->trackCollections()->internalCollection(),
+            std::move(tableName),
+            std::move(idColumn),
+            std::move(columns),
+            false));
     m_pITunesTrackModel = new BaseExternalTrackModel(
         this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes",
@@ -122,13 +125,15 @@ ITunesFeature::~ITunesFeature() {
     delete m_pITunesPlaylistModel;
 }
 
-BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-        this, m_pLibrary->trackCollections(),
-        "mixxx.db.model.itunes_playlist",
-        "itunes_playlists",
-        "itunes_playlist_tracks",
-        m_trackSource);
+std::unique_ptr<BaseSqlTableModel>
+ITunesFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    std::unique_ptr<BaseExternalPlaylistModel> pModel =
+            std::make_unique<BaseExternalPlaylistModel>(this,
+                    m_pLibrary->trackCollections(),
+                    "mixxx.db.model.itunes_playlist",
+                    "itunes_playlists",
+                    "itunes_playlist_tracks",
+                    m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }

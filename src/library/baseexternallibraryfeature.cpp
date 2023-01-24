@@ -132,8 +132,8 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
 
     DEBUG_ASSERT(pPlaylist);
     *pPlaylist = m_lastRightClickedIndex.data().toString();
-    QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-            getPlaylistModelForPlaylist(*pPlaylist));
+    std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
+            createPlaylistModelForPlaylist(*pPlaylist));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
         qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "

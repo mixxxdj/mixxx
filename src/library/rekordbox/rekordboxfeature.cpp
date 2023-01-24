@@ -1250,8 +1250,7 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_KEY
             << LIBRARYTABLE_COLOR
             << REKORDBOX_ANALYZE_PATH;
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns, false));
+
     QStringList searchColumns;
     searchColumns
             << LIBRARYTABLE_ARTIST
@@ -1266,9 +1265,17 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_BITRATE
             << LIBRARYTABLE_BPM
             << LIBRARYTABLE_KEY;
+
+    m_trackSource = QSharedPointer<BaseTrackCache>(
+            new BaseTrackCache(m_pTrackCollection,
+                    tableName,
+                    std::move(idColumn),
+                    std::move(columns),
+                    false));
     m_trackSource->setSearchColumns(searchColumns);
 
-    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
+    m_pRekordboxPlaylistModel = make_parented<RekordboxPlaylistModel>(
+            this, pLibrary->trackCollections(), m_trackSource);
 
     m_title = tr("Rekordbox");
 
@@ -1308,8 +1315,6 @@ RekordboxFeature::~RekordboxFeature() {
     dropTable(database, kRekordboxPlaylistsTable);
     dropTable(database, kRekordboxLibraryTable);
     transaction.commit();
-
-    delete m_pRekordboxPlaylistModel;
 }
 
 void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
@@ -1330,10 +1335,13 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
-    model->setPlaylist(playlist);
-    return model;
+std::unique_ptr<BaseSqlTableModel>
+RekordboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    std::unique_ptr<RekordboxPlaylistModel> pModel =
+            std::make_unique<RekordboxPlaylistModel>(
+                    this, m_pLibrary->trackCollections(), m_trackSource);
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 QVariant RekordboxFeature::title() {

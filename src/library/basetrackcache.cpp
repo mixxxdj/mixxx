@@ -17,15 +17,15 @@ constexpr bool sDebug = false;
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
-                               const QString& tableName,
-                               const QString& idColumn,
-                               const QStringList& columns,
-                               bool isCaching)
-        : m_tableName(tableName),
-          m_idColumn(idColumn),
+        QString tableName,
+        QString idColumn,
+        QStringList columns,
+        bool isCaching)
+        : m_tableName(std::move(tableName)),
+          m_idColumn(std::move(idColumn)),
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
-          m_columnCache(columns),
+          m_columnCache(std::move(columns)),
           m_pQueryParser(new SearchQueryParser(pTrackCollection)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
@@ -125,8 +125,8 @@ void BaseTrackCache::ensureCached(const QSet<TrackId>& trackIds) {
     updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::setSearchColumns(const QStringList& columns) {
-    m_searchColumns = columns;
+void BaseTrackCache::setSearchColumns(QStringList columns) {
+    m_searchColumns = std::move(columns);
 }
 
 const TrackPointer& BaseTrackCache::getRecentTrack(TrackId trackId) const {

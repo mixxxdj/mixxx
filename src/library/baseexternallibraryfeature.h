@@ -3,9 +3,10 @@
 #include <QAction>
 #include <QModelIndex>
 #include <QPointer>
+#include <memory>
 
-#include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
+#include "library/libraryfeature.h"
 #include "util/parented_ptr.h"
 
 class BaseSqlTableModel;
@@ -26,9 +27,10 @@ class BaseExternalLibraryFeature : public LibraryFeature {
 
   protected:
     // Must be implemented by external Libraries copied to Mixxx DB
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) {
+    virtual std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
+            const QString& playlist) {
         Q_UNUSED(playlist);
-        return nullptr;
+        return {};
     }
     // Must be implemented by external Libraries not copied to Mixxx DB
     virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
