@@ -10,8 +10,11 @@
 
 // ==== Jog Wheel Touch Calibration ====
 // Set the threshold for scratching for each jog wheel.
-// Bigger values mean more force. The unpressed value is around 3122.
-// The fully pressed value is around 3728.
+// If it is always scratching increase the value
+// If it never scratches decrease the value
+// Bigger values mean more force necessary for it to scratch.
+// The unpressed value is around 3100.
+// The fully pressed value is around 3700.
 var JogWheelTouchThreshold = {
     "[Channel1]": 3328,
     "[Channel2]": 3328,
