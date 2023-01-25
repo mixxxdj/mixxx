@@ -1355,3 +1355,110 @@ TraktorS2MK1.onLoopEnabledChanged = function(value, group, _key) {
     TraktorS2MK1.outputCallbackLoop(value, group, "loop_in");
     TraktorS2MK1.outputCallbackLoop(value, group, "loop_out");
 };
+
+// # Feature Report Description
+//
+// Feature Report `208` (`0xd0`)
+// | Byte   | Endianness | Description                                               |
+// |--------|------------|-----------------------------------------------------------|
+// | 0      | -          | Always `d0`                                               |
+// | 1..12  | -          | I don't know/always `01 00 00 00 10 00 f0 0f 10 00 f0 0f` |
+// | 13..14 | LE         | Channel 1 volume fader bottom                             |
+// | 15..16 | LE         | Channel 1 volume fader top                                |
+// | 17..18 | LE         | Channel 2 volume fader bottom                             |
+// | 19..20 | LE         | Channel 2 volume fader top                                |
+// | 21..22 | LE         | Crossfader left                                           |
+// | 23..24 | LE         | Crossfader right                                          |
+// | 25..32 | -          | Padding (`ff`)                                            |
+
+// Feature Report `209` (`0xd1`)
+// | Byte   | Endianness | Description                      |
+// |--------|------------|----------------------------------|
+// | 0      | -          | Always `d1`                      |
+// | 1..2   | LE         | Channel 1 FX dry/wet knob left   |
+// | 3..4   | LE         | Channel 1 FX dry/wet knob center |
+// | 5..6   | LE         | Channel 1 FX dry/wet knob right  |
+// | 7..8   | LE         | Channel 1 FX 1 knob left         |
+// | 9..10  | LE         | Channel 1 FX 1 knob center       |
+// | 11.12  | LE         | Channel 1 FX 1 knob right        |
+// | 13..14 | LE         | Channel 1 FX 2 knob left         |
+// | 15..16 | LE         | Channel 1 FX 2 knob center       |
+// | 17..18 | LE         | Channel 1 FX 2 knob right        |
+// | 19..20 | LE         | Channel 1 FX 3 knob left         |
+// | 21..22 | LE         | Channel 1 FX 3 knob center       |
+// | 23..24 | LE         | Channel 2 FX 3 knob right        |
+// | 25..26 | LE         | Channel 1 EQ hi knob left        |
+// | 27..28 | LE         | Channel 1 EQ hi knob center      |
+// | 29..30 | LE         | Channel 1 EQ hi knob right       |
+// | 31..32 | LE         | Channel 1 EQ mid knob left       |
+
+// Feature Report `210` (`0xd2`)
+// | Byte   | Endianness | Description                  |
+// |--------|------------|------------------------------|
+// | 0      | -          | Always `d2`                  |
+// | 1..2   | LE         | Channel 1 EQ mid knob center |
+// | 3..4   | LE         | Channel 1 EQ mid knob right  |
+// | 5..6   | LE         | Channel 1 EQ low knob left   |
+// | 7..8   | LE         | Channel 1 EQ low knob center |
+// | 9..10  | LE         | Channel 1 EQ low knob right  |
+// | 11..12 | LE         | Channel 2 EQ hi knob left    |
+// | 13..14 | LE         | Channel 2 EQ hi knob center  |
+// | 15..16 | LE         | Channel 2 EQ hi knob right   |
+// | 17..18 | LE         | Channel 2 EQ mid knob left   |
+// | 19..20 | LE         | Channel 2 EQ mid knob center |
+// | 21..22 | LE         | Channel 2 EQ mid knob right  |
+// | 23..24 | LE         | Channel 2 EQ low knob left   |
+// | 25..26 | LE         | Channel 2 EQ low knob center |
+// | 27..28 | LE         | Channel 2 EQ low knob right  |
+// | 29..30 | LE         | Sample knob left             |
+// | 31..32 | LE         | Sample knob center           |
+
+// Feature Report `211` (`0xd3`)
+// | Byte   | Endianness | Description                      |
+// |--------|------------|----------------------------------|
+// | 0      | -          | Always `d3`                      |
+// | 1..2   | LE         | Sample knob right                |
+// | 3..4   | LE         | Channel 2 FX dry/wet knob left   |
+// | 5..6   | LE         | Channel 2 FX dry/wet knob center |
+// | 7..8   | LE         | Channel 2 FX dry/wet knob right  |
+// | 9..10  | LE         | Channel 2 FX 1 knob left         |
+// | 11..12 | LE         | Channel 2 FX 1 knob center       |
+// | 13..14 | LE         | Channel 2 FX 1 knob right        |
+// | 15..16 | LE         | Channel 2 FX 2 knob left         |
+// | 17..18 | LE         | Channel 2 FX 2 knob center       |
+// | 19..20 | LE         | Channel 2 FX 2 knob right        |
+// | 21..22 | LE         | Channel 2 FX 3 knob left         |
+// | 23..24 | LE         | Channel 2 FX 3 knob center       |
+// | 25..26 | LE         | Channel 2 FX 3 knob right        |
+// | 27..32 | -          | Padding (`ff`)                   |
+
+// Feature Report `212` (`0xd4`)
+// | Byte   | Endianness | Description                                               |
+// |--------|------------|-----------------------------------------------------------|
+// | 0      | -          | Always `d4`                                               |
+// | 1..2   | BE         | Left jogwheel unpressed                                   |
+// | 3..4   | BE         | Left jogwheel pressed                                     |
+// | 5..6   | BE         | Right jogwheel unpressed                                  |
+// | 7..8   | BE         | Right jogwheel pressed                                    |
+// | 9      | -          | Left jogwhell calibration type (`00` user, `ff` factory)  |
+// | 10     | -          | Right jogwhell calibration type (`00` user, `ff` factory) |
+// | 11..32 | -          | Padding (`ff`)                                            |
+
+// Feature Report `215` (`0xd7`) contains the factory calibration data for jogwheels:
+
+// Restore of both jogwheels to factory settings:
+// Read 215:  `d7 00 00 00 00 4e c2 26 82 0c 1b 0d b2 0c 9a 0e 16 2a ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff`
+// Write 212: `d4 0c 1b 0c e6 0c 9a 0d 58 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff`
+
+// | Byte   | Endianness | Description                  |
+// |--------|------------|------------------------------|
+// | 0      | -          | Always `d7`                  |
+// | 1..8   | -          | I don't know                 |
+// | 9..10  | BE         | Left jogwheel unpressed      |
+// | 11..12 | BE         | Left jogwheel fully pressed  |
+// | 13..14 | BE         | Right jogwheel unpressed     |
+// | 15..16 | BE         | Right jogwheel fully pressed |
+// | 17     | -          | `42` i guess                 |
+// | 18..32 | -          | Padding (`ff`)               |
+
+// `212`'s unpressed seems to be the same as unpressed. `212`'s pressed is `(pressed + unpressed) / 2`.
