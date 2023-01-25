@@ -220,7 +220,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         // which offers the best response time without additional jitter due to two
         // successive callback without the expected pause.
         framesPerBuffer = paFramesPerBufferUnspecified;
-        qDebug() << "Using JACK server's frames per buffer";
+        qDebug() << "Using JACK server's frames per period";
     } else {
         qDebug() << "framesPerBuffer:" << framesPerBuffer;
     }
