@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "audio/signalinfo.h"
 #include "track/beatsimporter.h"
 #include "track/cueinfoimporter.h"
@@ -99,7 +101,7 @@ class SeratoTags final {
         m_seratoBeatGrid.setBeats(pBeats, signalInfo, duration, timingOffset);
     }
 
-    RgbColor::optional_t getTrackColor() const;
+    std::optional<RgbColor::optional_t> getTrackColor() const;
     void setTrackColor(RgbColor::optional_t color);
 
     bool isBpmLocked() const;
