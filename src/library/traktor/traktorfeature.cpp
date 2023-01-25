@@ -97,8 +97,8 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
             tableName,
             std::move(idColumn),
             std::move(columns),
+            std::move(searchColumns),
             false));
-    m_trackSource->setSearchColumns(std::move(searchColumns));
 
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(this, pLibrary->trackCollections(), m_trackSource);

@@ -34,6 +34,7 @@
 #define CLM_PLAYCOUNT "timesplayed"
 #define CLM_COMPOSER "composer"
 #define CLM_PREVIEW "preview"
+#define CLM_CRATE "crate"
 
 namespace {
 
@@ -213,12 +214,22 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             CLM_COMMENT,
             CLM_PLAYCOUNT,
             CLM_COMPOSER};
+    QStringList searchColumns = {
+            KArtist,
+            kAlbum,
+            kAlbumArtist,
+            kUri,
+            kGrouping,
+            kComment,
+            KTitel,
+            kGenre};
 
     QSharedPointer<BaseTrackCache> trackSource(
             new BaseTrackCache(m_pTrackCollectionManager->internalCollection(),
                     m_tempTableName,
                     idColumn,
                     std::move(trackSourceColumns),
+                    std::move(searchColumns),
                     false));
 
     setTable(m_tempTableName, idColumn, std::move(tableColumns), trackSource);

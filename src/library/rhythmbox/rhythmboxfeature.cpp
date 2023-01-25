@@ -47,8 +47,8 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
                     tableName,
                     std::move(idColumn),
                     std::move(columns),
+                    std::move(searchColumns),
                     false));
-    m_trackSource->setSearchColumns(std::move(searchColumns));
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
         this, pLibrary->trackCollections(),

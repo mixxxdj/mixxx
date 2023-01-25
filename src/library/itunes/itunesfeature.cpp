@@ -84,12 +84,22 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             "bitrate",
             "bpm",
             "rating"};
+    QStringList searchColumns = {
+            "artist",
+            "album",
+            "album_artist",
+            "location",
+            "grouping",
+            "comment",
+            "title",
+            "genre"};
 
     m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
             m_pLibrary->trackCollections()->internalCollection(),
             std::move(tableName),
             std::move(idColumn),
             std::move(columns),
+            std::move(searchColumns),
             false));
     m_pITunesTrackModel = new BaseExternalTrackModel(
         this, m_pLibrary->trackCollections(),

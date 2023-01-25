@@ -46,6 +46,7 @@ class BaseTrackCache : public QObject {
             QString tableName,
             QString idColumn,
             QStringList columns,
+            QStringList searchColumns,
             bool isCaching);
     ~BaseTrackCache() override;
 
@@ -73,7 +74,6 @@ class BaseTrackCache : public QObject {
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
     virtual void ensureCached(const QSet<TrackId>& trackIds);
-    virtual void setSearchColumns(QStringList columns);
 
   signals:
     void tracksChanged(const QSet<TrackId>& trackIds);

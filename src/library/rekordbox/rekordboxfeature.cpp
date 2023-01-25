@@ -1270,9 +1270,8 @@ RekordboxFeature::RekordboxFeature(
                     tableName,
                     std::move(idColumn),
                     std::move(columns),
+                    std::move(searchColumns),
                     false));
-    m_trackSource->setSearchColumns(searchColumns);
-
     m_pRekordboxPlaylistModel = make_parented<RekordboxPlaylistModel>(
             this, pLibrary->trackCollections(), m_trackSource);
 

@@ -20,6 +20,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
         QString tableName,
         QString idColumn,
         QStringList columns,
+        QStringList searchColumns,
         bool isCaching)
         : m_tableName(std::move(tableName)),
           m_idColumn(std::move(idColumn)),
@@ -27,19 +28,10 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_columnsJoined(columns.join(",")),
           m_columnCache(std::move(columns)),
           m_pQueryParser(new SearchQueryParser(pTrackCollection)),
+          m_searchColumns(std::move(searchColumns)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_database(pTrackCollection->database()) {
-    m_searchColumns << "artist"
-                    << "album"
-                    << "album_artist"
-                    << "location"
-                    << "grouping"
-                    << "comment"
-                    << "title"
-                    << "genre"
-                    << "crate";
-
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
     m_searchColumnIndices.resize(m_searchColumns.size());
@@ -123,10 +115,6 @@ void BaseTrackCache::ensureCached(TrackId trackId) {
 
 void BaseTrackCache::ensureCached(const QSet<TrackId>& trackIds) {
     updateTracksInIndex(trackIds);
-}
-
-void BaseTrackCache::setSearchColumns(QStringList columns) {
-    m_searchColumns = std::move(columns);
 }
 
 const TrackPointer& BaseTrackCache::getRecentTrack(TrackId trackId) const {
