@@ -93,10 +93,10 @@ TraktorS3.SixteenSamplers = false;
 // PURPLE, FUCHSIA, MAGENTA, AZALEA, SALMON, WHITE
 // Some colors may look odd because of how they are encoded inside the controller.
 TraktorS3.ChannelColors = {
-    "[Channel1]": "BLUE",
-    "[Channel2]": "BLUE",
-    "[Channel3]": "CARROT",
-    "[Channel4]": "CARROT"
+    "[Channel1]": "CARROT",
+    "[Channel2]": "CARROT",
+    "[Channel3]": "BLUE",
+    "[Channel4]": "BLUE"
 };
 
 // Each color has four brightnesses, so these values can be between 0 and 3.
