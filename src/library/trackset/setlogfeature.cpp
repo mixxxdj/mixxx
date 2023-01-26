@@ -40,10 +40,21 @@ SetlogFeature::SetlogFeature(
                   QStringLiteral("SETLOGHOME"),
                   QStringLiteral("history")),
           m_playlistId(kInvalidPlaylistId),
+          m_placeholderId(kInvalidPlaylistId),
           m_pLibrary(pLibrary),
           m_pConfig(pConfig) {
     // remove unneeded entries
     deleteAllUnlockedPlaylistsWithFewerTracks();
+
+    // Create empty placeholder playlist for YEAR items
+    QString placeholderName = "historyPlaceholder";
+    m_placeholderId = m_playlistDao.createUniquePlaylist(&placeholderName,
+            PlaylistDAO::PLHT_UNKNOWN);
+    VERIFY_OR_DEBUG_ASSERT(m_placeholderId != kInvalidPlaylistId) {
+        qWarning() << "Failed to create empty History placeholder playlist!";
+    }
+    // just to be safe
+    m_playlistDao.setPlaylistLocked(m_placeholderId, true);
 
     //construct child model
     m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
@@ -67,7 +78,7 @@ SetlogFeature::SetlogFeature(
 
 SetlogFeature::~SetlogFeature() {
     // Clean up history when shutting down in case the track threshold changed,
-    // incl. potentially empty current playlist
+    // incl. the empty placeholder playlist and potentially empty current playlist
     deleteAllUnlockedPlaylistsWithFewerTracks();
 }
 
@@ -127,7 +138,8 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     int playlistId = playlistIdFromIndex(index);
     // not a real entry
-    if (playlistId == kInvalidPlaylistId) {
+    if (playlistId == kInvalidPlaylistId || playlistId == m_placeholderId) {
+        // TODO(ronso0) allow deleting all playlist in YEAR group
         return;
     }
 
@@ -217,7 +229,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                 pGroupItem = i.value();
             } else {
                 auto pNewGroupItem = std::make_unique<TreeItem>(
-                        QString::number(yearCreated), kInvalidPlaylistId);
+                        QString::number(yearCreated), m_placeholderId);
                 pGroupItem = pNewGroupItem.get();
                 groups.insert(yearCreated, pGroupItem);
                 itemList.push_back(std::move(pNewGroupItem));

@@ -199,8 +199,9 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
     if (playlistId == kInvalidPlaylistId) {
-        // This happens if user clicks on group nodes
-        // like the year folder in the history feature
+        // This happens if user clicks on group nodes.
+        // Doesn't apply to YEAR nodes in the history feature, they are linked to
+        // a dummy playlist.
         return;
     }
     m_lastClickedIndex = index;

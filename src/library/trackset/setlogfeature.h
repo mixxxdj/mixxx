@@ -52,6 +52,8 @@ class SetlogFeature : public BasePlaylistFeature {
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pStartNewPlaylist;
     int m_playlistId;
+    int m_placeholderId;
+
     QPointer<WLibrary> m_libraryWidget;
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
