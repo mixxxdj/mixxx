@@ -97,6 +97,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QModelIndex indexFromPlaylistId(int playlistId);
 
     PlaylistDAO& m_playlistDao;
+    QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 

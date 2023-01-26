@@ -295,12 +295,19 @@ TreeItemModel* CrateFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
 
+void CrateFeature::activate() {
+    m_lastClickedIndex = QModelIndex();
+    BaseTrackSetFeature::activate();
+}
+
 void CrateFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "CrateFeature::activateChild()" << index;
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
     }
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
@@ -317,13 +324,14 @@ bool CrateFeature::activateCrate(CrateId crateId) {
         return false;
     }
     emit saveModelState();
-    m_lastRightClickedIndex = index;
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = QModelIndex();
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
     emit enableCoverArtDisplay(true);
     // Update selection
-    emit featureSelect(this, m_lastRightClickedIndex);
-    activateChild(m_lastRightClickedIndex);
+    emit featureSelect(this, m_lastClickedIndex);
+    activateChild(m_lastClickedIndex);
     return true;
 }
 

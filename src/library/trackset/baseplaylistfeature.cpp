@@ -203,6 +203,8 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
         // like the year folder in the history feature
         return;
     }
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
@@ -218,17 +220,18 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_lastRightClickedIndex = index;
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
     // Update selection
-    emit featureSelect(this, m_lastRightClickedIndex);
+    emit featureSelect(this, m_lastClickedIndex);
     if (!m_pSidebarWidget) {
         return;
     }
-    m_pSidebarWidget->selectChildIndex(m_lastRightClickedIndex);
+    m_pSidebarWidget->selectChildIndex(m_lastClickedIndex);
 }
 
 void BasePlaylistFeature::renameItem(const QModelIndex& index) {

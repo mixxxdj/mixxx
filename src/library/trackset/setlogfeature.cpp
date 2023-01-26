@@ -481,19 +481,26 @@ void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newN
 }
 
 void SetlogFeature::activate() {
+    // The root item was clicked, so actuvate the current playlist.
+    m_lastClickedIndex = QModelIndex();
     activatePlaylist(m_playlistId);
 }
 
 void SetlogFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != kInvalidPlaylistId && index.isValid()) {
+    if (index.isValid()) {
+        emit saveModelState();
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
         emit enableCoverArtDisplay(true);
-        // Update selection only, if it is not the current playlist
-        // since we want the root item to be the current playlist as well
-        if (playlistId != m_playlistId) {
+        // Update sidebar selection only if this is a child, incl. current playlist.
+        // indexFromPlaylistId() can't be used because, in case the root item was
+        // selected, that would switch to the 'current' child.
+        if (m_lastClickedIndex.isValid()) {
             emit featureSelect(this, index);
             activateChild(index);
         }
@@ -501,6 +508,6 @@ void SetlogFeature::activatePlaylist(int playlistId) {
 }
 
 QString SetlogFeature::getRootViewHtml() const {
-    // Instead of the help text, the history shows the current entry instead
+    // Instead of the help text, the history shows the current playlist
     return QString();
 }
