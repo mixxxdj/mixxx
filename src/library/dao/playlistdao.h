@@ -114,6 +114,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
     int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;
+    // Get the following playlist of currentPlaylistId with the HiddenType
+    // hidden. Returns -1 if no such playlist exists.
+    int getNextPlaylist(const int currentPlaylistId, HiddenType hidden) const;
     // Append all the tracks in the source playlist to the target playlist.
     bool copyPlaylistTracks(const int sourcePlaylistID, const int targetPlaylistID);
     // Returns the number of tracks in the given playlist.

@@ -810,6 +810,26 @@ int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hid
     return kInvalidPlaylistId;
 }
 
+int PlaylistDAO::getNextPlaylist(const int currentPlaylistId, HiddenType hidden) const {
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT max(id) as id FROM Playlists "
+            "WHERE id > :id AND hidden = :hidden"));
+    query.bindValue(":id", currentPlaylistId);
+    query.bindValue(":hidden", hidden);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return kInvalidPlaylistId;
+    }
+
+    // Get the id of the lowest playlist
+    if (query.next()) {
+        return query.value(query.record().indexOf("id")).toInt();
+    }
+    return kInvalidPlaylistId;
+}
+
 bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targetPlaylistID) {
     // Start the transaction
     ScopedTransaction transaction(m_database);
