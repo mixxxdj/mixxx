@@ -148,7 +148,7 @@ void BasePlaylistFeature::connectPlaylistDAO() {
     connect(&m_playlistDao,
             &PlaylistDAO::added,
             this,
-            &BasePlaylistFeature::slotPlaylistTableChangedAndSelect);
+            &BasePlaylistFeature::slotPlaylistTableChangedAndScrollTo);
     connect(&m_playlistDao,
             &PlaylistDAO::lockChanged,
             this,
@@ -327,7 +327,9 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
     if (newPlaylistId != kInvalidPlaylistId &&
             m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
-        activatePlaylist(newPlaylistId);
+        // Note: this assumes the sidebar model was already updated by slotPlaylisttableChanged
+        // and the sidebar scrolled to the new playlist
+        activatePlaylist(oldPlaylistId);
     }
 }
 
@@ -377,9 +379,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 
     int playlistId = m_playlistDao.createPlaylist(name);
 
-    if (playlistId != kInvalidPlaylistId) {
-        activatePlaylist(playlistId);
-    } else {
+    if (playlistId == kInvalidPlaylistId) {
         QMessageBox::warning(nullptr,
                 tr("Playlist Creation Failed"),
                 tr("An unknown error occurred while creating playlist: ") + name);

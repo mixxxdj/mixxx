@@ -403,7 +403,8 @@ void CrateFeature::slotCreateCrate() {
             CrateFeatureHelper(m_pTrackCollection, m_pConfig)
                     .createEmptyCrate();
     if (crateId.isValid()) {
-        activateCrate(crateId);
+        // expand Crates and scroll to new crate
+        m_pSidebarWidget->selectChildIndex(indexFromCrateId(crateId), false);
     }
 }
 
@@ -492,11 +493,14 @@ void CrateFeature::slotRenameCrate() {
 void CrateFeature::slotDuplicateCrate() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
-        CrateId crateId =
+        CrateId newCrateId =
                 CrateFeatureHelper(m_pTrackCollection, m_pConfig)
                         .duplicateCrate(crate);
-        if (crateId.isValid()) {
-            activateCrate(crateId);
+        if (newCrateId.isValid()) {
+            qDebug() << "Duplicate crate" << crate << ", new crate:" << newCrateId;
+            // expand Crates and scroll to new crate
+            m_pSidebarWidget->selectChildIndex(indexFromCrateId(newCrateId), false);
+            activateCrate(crate.getId());
         }
     } else {
         qDebug() << "Failed to duplicate selected crate";
