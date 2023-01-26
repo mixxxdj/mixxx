@@ -203,6 +203,40 @@ bool WLibrarySidebar::isLeafNodeSelected() {
     return false;
 }
 
+bool WLibrarySidebar::isChildIndexSelected(const QModelIndex& index) {
+    // qDebug() << "WLibrarySidebar::isChildIndexSelected" << index;
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (selectedIndices.size() <= 0) {
+        // qWarning() << " >> no selection";
+        return false;
+    }
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
+        // qDebug() << " >> model() is not SidebarModel";
+        return false;
+    }
+    QModelIndex translated = sidebarModel->translateChildIndex(index);
+    if (!translated.isValid()) {
+        // qDebug() << " >> index can't be translated";
+        return false;
+    }
+    return translated == selectedIndices.first();
+}
+
+bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
+    // qDebug() << "WLibrarySidebar::isFeatureRootIndexSelected";
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (selectedIndices.size() <= 0) {
+        return false;
+    }
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
+        return false;
+    }
+    const QModelIndex rootIndex = sidebarModel->getFeatureRootIndex(pFeature);
+    return rootIndex == selectedIndices.first();
+}
+
 /// Invoked by actual keypresses (requires widget focus) and emulated keypresses
 /// sent by LibraryControl
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {

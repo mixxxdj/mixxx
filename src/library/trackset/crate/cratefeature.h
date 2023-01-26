@@ -96,6 +96,7 @@ class CrateFeature : public BaseTrackSetFeature {
     CrateId crateIdFromIndex(const QModelIndex& index) const;
     QModelIndex indexFromCrateId(CrateId crateId) const;
 
+    bool isChildIndexSelectedInSidebar(const QModelIndex& index);
     bool readLastRightClickedCrate(Crate* pCrate) const;
 
     QString formatRootViewHtml() const;

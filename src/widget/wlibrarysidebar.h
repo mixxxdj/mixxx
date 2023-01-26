@@ -14,6 +14,8 @@
 #include "library/library_decl.h"
 #include "widget/wbasewidget.h"
 
+class LibraryFeature;
+
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT
   public:
@@ -29,6 +31,8 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void timerEvent(QTimerEvent* event) override;
     void toggleSelectedItem();
     bool isLeafNodeSelected();
+    bool isChildIndexSelected(const QModelIndex& index);
+    bool isFeatureRootIndexSelected(LibraryFeature* pFeature);
 
   public slots:
     void selectIndex(const QModelIndex&);

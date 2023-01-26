@@ -45,6 +45,7 @@ class SidebarModel : public QAbstractItemModel {
     QModelIndex translateChildIndex(const QModelIndex& index) {
         return translateIndex(index, index.model());
     }
+    QModelIndex getFeatureRootIndex(LibraryFeature* pFeature);
 
   public slots:
     void pressed(const QModelIndex& index);

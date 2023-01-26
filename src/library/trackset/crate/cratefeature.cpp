@@ -348,6 +348,10 @@ bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
     return true;
 }
 
+bool CrateFeature::isChildIndexSelectedInSidebar(const QModelIndex& index) {
+    return m_pSidebarWidget && m_pSidebarWidget->isChildIndexSelected(index);
+}
+
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);

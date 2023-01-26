@@ -95,6 +95,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
+    bool isChildIndexSelectedInSidebar(const QModelIndex& index);
 
     PlaylistDAO& m_playlistDao;
     QModelIndex m_lastClickedIndex;

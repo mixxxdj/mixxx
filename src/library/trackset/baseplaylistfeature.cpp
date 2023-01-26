@@ -782,6 +782,10 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     return QModelIndex();
 }
 
+bool BasePlaylistFeature::isChildIndexSelectedInSidebar(const QModelIndex& index) {
+    return m_pSidebarWidget && m_pSidebarWidget->isChildIndexSelected(index);
+};
+
 void BasePlaylistFeature::slotTrackSelected(TrackId trackId) {
     m_selectedTrackId = trackId;
     m_playlistDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);

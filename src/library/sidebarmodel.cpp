@@ -138,6 +138,18 @@ QModelIndex SidebarModel::index(int row, int column,
     return createIndex(row, column, const_cast<SidebarModel*>(this));
 }
 
+QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
+    // qDebug() << "SidebarModel::getFeatureRootIndex for" << pFeature->title().toString();
+    QModelIndex ind;
+    for (int i = 0; i < m_sFeatures.size(); ++i) {
+        if (m_sFeatures[i] == pFeature) {
+            ind = index(i, 0);
+            break;
+        }
+    }
+    return ind;
+}
+
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
     //qDebug() << "SidebarModel::parent index=" << index.getData();
     if (index.isValid()) {
