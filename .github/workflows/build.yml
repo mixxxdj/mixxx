@@ -329,7 +329,7 @@ jobs:
 
       - name: "[Windows] Sign Package"
         if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
-        run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
+        run: signtool sign /tr http://timestamp.sectigo.com /td sha256 /fd sha256 /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
         working-directory: build
 
       - name: "Prepare for deployment"
