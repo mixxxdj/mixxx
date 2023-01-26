@@ -1257,15 +1257,10 @@ RekordboxFeature::RekordboxFeature(
             LIBRARYTABLE_ARTIST,
             LIBRARYTABLE_TITLE,
             LIBRARYTABLE_ALBUM,
-            LIBRARYTABLE_YEAR,
             LIBRARYTABLE_GENRE,
             LIBRARYTABLE_TRACKNUMBER,
             TRACKLOCATIONSTABLE_LOCATION,
-            LIBRARYTABLE_COMMENT,
-            LIBRARYTABLE_DURATION,
-            LIBRARYTABLE_BITRATE,
-            LIBRARYTABLE_BPM,
-            LIBRARYTABLE_KEY};
+            LIBRARYTABLE_COMMENT};
 
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection,
