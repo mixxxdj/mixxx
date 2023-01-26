@@ -44,6 +44,14 @@ class Translations {
             }
             QLocale::setDefault(customLocale);
         }
+#if defined(__APPLE__) && (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
+        else {
+            // Workaround https://github.com/mixxxdj/mixxx/issues/11195 and
+            // QTBUG-90971 fixed in Qt 6.2
+            const auto sysLocale = QLocale::system();
+            QLocale::setDefault(QLocale(sysLocale.language(), sysLocale.country()));
+        }
+#endif
 
         // Constructs a QLocale object initialized with the default locale. If
         // no default locale was set using setDefault(), this locale will be
