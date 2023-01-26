@@ -47,7 +47,8 @@ class Translations {
         else {
             // Workaround https://github.com/mixxxdj/mixxx/issues/11195 and
             // QTBUG-90971 fixed in Qt 6.2
-            QLocale::setDefault(QLocale(QLocale::system().name()));
+            const auto sysLocale = QLocale::system();
+            QLocale::setDefault(QLocale(sysLocale.language(), sysLocale.country()));
         }
 #endif
 
