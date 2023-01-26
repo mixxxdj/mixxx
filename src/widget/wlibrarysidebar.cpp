@@ -336,10 +336,6 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             qDebug() << "invalid sidebar index";
             return;
         }
-        if (isExpanded(selIndex)) {
-            // Root views / knots can not be deleted
-            return;
-        }
         emit deleteItem(selIndex);
         return;
     }

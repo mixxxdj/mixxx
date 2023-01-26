@@ -72,6 +72,12 @@ SetlogFeature::SetlogFeature(
             this,
             &SetlogFeature::slotGetNewPlaylist);
 
+    m_pDeleteAllChildPlaylists = new QAction(tr("Delete all child playlists"), this);
+    connect(m_pDeleteAllChildPlaylists,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotDeleteAllChildPlaylists);
+
     // initialized in a new generic slot(get new history playlist purpose)
     slotGetNewPlaylist();
 }
@@ -116,9 +122,13 @@ void SetlogFeature::slotDeletePlaylist() {
     if (playlistId == m_playlistId) {
         // the current setlog must not be deleted
         return;
+    } else if (playlistId == m_placeholderId) {
+        // this is a YEAR node
+        slotDeleteAllChildPlaylists();
+    } else {
+        // regular setlog, call the base implementation
+        BasePlaylistFeature::slotDeletePlaylist();
     }
-    // regular setlog, call the base implementation
-    BasePlaylistFeature::slotDeletePlaylist();
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -138,8 +148,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     int playlistId = playlistIdFromIndex(index);
     // not a real entry
-    if (playlistId == kInvalidPlaylistId || playlistId == m_placeholderId) {
-        // TODO(ronso0) allow deleting all playlist in YEAR group
+    if (playlistId == kInvalidPlaylistId) {
         return;
     }
 
@@ -151,28 +160,42 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
-    //menu.addAction(m_pCreatePlaylistAction);
-    //menu.addSeparator();
-    menu.addAction(m_pAddToAutoDJAction);
-    menu.addAction(m_pAddToAutoDJTopAction);
-    menu.addSeparator();
-    menu.addAction(m_pRenamePlaylistAction);
-    if (playlistId != m_playlistId) {
-        // Todays playlist should not be locked or deleted
-        menu.addAction(m_pDeletePlaylistAction);
-        menu.addAction(m_pLockPlaylistAction);
+    if (playlistId == m_placeholderId) {
+        // this is a YEAR item
+        menu.addAction(m_pDeleteAllChildPlaylists);
+        // TODO(ronso0) Allow un/locking all child playlists?
+        // This is handy if you want to either bulk-secure setlogs, or prepare
+        // further cleanup / rename
+    } else {
+        // this is a playlist
+        bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+        m_pDeletePlaylistAction->setEnabled(!locked);
+        m_pRenamePlaylistAction->setEnabled(!locked);
+        m_pJoinWithPreviousAction->setEnabled(!locked);
+
+        m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
+        menu.addAction(m_pAddToAutoDJAction);
+        menu.addAction(m_pAddToAutoDJTopAction);
+        menu.addSeparator();
+        menu.addAction(m_pRenamePlaylistAction);
+        if (playlistId != m_playlistId) {
+            // Todays playlist should not be locked or deleted
+            menu.addAction(m_pDeletePlaylistAction);
+            menu.addAction(m_pLockPlaylistAction);
+        }
+        if (index.sibling(index.row() + 1, index.column()).isValid()) {
+            // The very first (oldest) setlog cannot be joint
+            menu.addAction(m_pJoinWithPreviousAction);
+        }
+        if (playlistId == m_playlistId) {
+            // Todays playlists can change !
+            m_pStartNewPlaylist->setEnabled(
+                    m_playlistDao.tracksInPlaylist(m_playlistId) > 0);
+            menu.addAction(m_pStartNewPlaylist);
+        }
+        menu.addSeparator();
+        menu.addAction(m_pExportPlaylistAction);
     }
-    if (index.sibling(index.row() + 1, index.column()).isValid()) {
-        // The very first setlog cannot be joint
-        menu.addAction(m_pJoinWithPreviousAction);
-    }
-    if (playlistId == m_playlistId) {
-        // Todays playlists can change !
-        m_pStartNewPlaylist->setEnabled(m_playlistDao.tracksInPlaylist(m_playlistId) > 0);
-        menu.addAction(m_pStartNewPlaylist);
-    }
-    menu.addSeparator();
-    menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -379,6 +402,54 @@ void SetlogFeature::slotJoinWithPrevious() {
             }
         }
     }
+}
+
+void SetlogFeature::slotDeleteAllChildPlaylists() {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+    qWarning() << "slotDeleteAllChildPlaylists of" << m_lastRightClickedIndex.data().toString();
+    // Ask for confirmation: "Delete all playlists in this group, including locked?"
+    TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+    if (!item) {
+        return;
+    }
+    const QList<TreeItem*> yearChildren = item->children();
+    if (yearChildren.isEmpty()) {
+        return;
+    }
+
+    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+            tr("Confirm Deletion"),
+            tr("Do you really want to delete all playlist in <b>%1</b>?<br><br>"
+               "Note: this also includes locked playlists!")
+                    .arg(m_lastRightClickedIndex.data().toString()),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn == QMessageBox::No) {
+        return;
+    }
+    // Double-check, this is a weighty decision
+    btn = QMessageBox::warning(nullptr,
+            tr("Confirm Deletion"),
+            tr("Deleting all playlist in <b>%1</b> including locked playlists.<br><br>"
+               "<b>Are you sure?</b>")
+                    .arg(m_lastRightClickedIndex.data().toString()),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn == QMessageBox::No) {
+        return;
+    }
+
+    QStringList ids;
+    for (auto* child : qAsConst(yearChildren)) {
+        bool ok = false;
+        int childId = child->getData().toInt(&ok);
+        if (ok && childId != kInvalidPlaylistId) {
+            ids.append(child->getData().toString());
+        }
+    }
+    m_playlistDao.deletePlaylists(ids, PlaylistDAO::PLHT_SET_LOG);
 }
 
 void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {

@@ -227,6 +227,33 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
+int PlaylistDAO::deletePlaylists(const QStringList& idStringList, PlaylistDAO::HiddenType type) {
+    if (idStringList.isEmpty()) {
+        return 0;
+    }
+    QString idString = idStringList.join(",");
+
+    qInfo() << "Deleting" << idStringList.size() << "playlists of type" << type;
+
+    // delete tracks assigned to these playlists
+    auto deleteTracks = FwdSqlQuery(m_database,
+            QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
+                    .arg(idString));
+    if (!deleteTracks.execPrepared()) {
+        return -1;
+    }
+
+    // delete the playlists
+    auto deletePlaylists = FwdSqlQuery(m_database,
+            QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
+    if (!deletePlaylists.execPrepared()) {
+        return -1;
+    }
+
+    emit deleted(-1);
+    return idStringList.length();
+}
+
 int PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
         PlaylistDAO::HiddenType type, int minNumberOfTracks) {
     VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
@@ -250,28 +277,10 @@ int PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
     while (query.next()) {
         idStringList.append(query.value(0).toString());
     }
-    if (idStringList.isEmpty()) {
-        return 0;
-    }
-    QString idString = idStringList.join(",");
-
-    qInfo() << "Deleting" << idStringList.size() << "playlists of type" << type
+    qInfo() << "Prepared deletion of" << idStringList.size() << "playlists of type" << type
             << "that contain fewer than" << minNumberOfTracks << "tracks";
 
-    auto deleteTracks = FwdSqlQuery(m_database,
-            QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
-                    .arg(idString));
-    if (!deleteTracks.execPrepared()) {
-        return -1;
-    }
-
-    auto deletePlaylists = FwdSqlQuery(m_database,
-            QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
-    if (!deletePlaylists.execPrepared()) {
-        return -1;
-    }
-
-    return idStringList.length();
+    return deletePlaylists(idStringList, type);
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {

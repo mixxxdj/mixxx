@@ -42,6 +42,7 @@ class SetlogFeature : public BasePlaylistFeature {
     void slotPlaylistContentChanged(QSet<int> playlistIds) override;
     void slotPlaylistTableLockChanged(int playlistId) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
+    void slotDeleteAllChildPlaylists();
 
   private:
     void deleteAllUnlockedPlaylistsWithFewerTracks();
@@ -51,6 +52,8 @@ class SetlogFeature : public BasePlaylistFeature {
     std::list<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pStartNewPlaylist;
+    QAction* m_pDeleteAllChildPlaylists;
+
     int m_playlistId;
     int m_placeholderId;
 
