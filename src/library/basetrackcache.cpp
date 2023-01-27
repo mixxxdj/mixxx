@@ -32,12 +32,6 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_database(pTrackCollection->database()) {
-    // Convert all the search column names to their field indexes because we use
-    // them a bunch.
-    m_searchColumnIndices.resize(m_searchColumns.size());
-    for (int i = 0; i < m_searchColumns.size(); ++i) {
-        m_searchColumnIndices[i] = m_columnCache.fieldIndex(m_searchColumns[i]);
-    }
 }
 
 BaseTrackCache::~BaseTrackCache() {
