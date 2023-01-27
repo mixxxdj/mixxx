@@ -54,6 +54,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
         slotPlaylistTableChanged(playlistId);
         selectPlaylistInSidebar(playlistId, false);
     };
+    virtual void slotPlaylistTableLockChanged(int playlistId) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
     virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
     void slotCreatePlaylist();

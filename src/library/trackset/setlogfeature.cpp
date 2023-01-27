@@ -459,30 +459,24 @@ void SetlogFeature::reloadChildModel(int playlistId) {
 
 void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     for (const auto playlistId : qAsConst(playlistIds)) {
-        enum PlaylistDAO::HiddenType type =
-                m_playlistDao.getHiddenType(playlistId);
-        if (type == PlaylistDAO::PLHT_SET_LOG ||
-                type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
             updateChildModel(playlistId);
         }
+    }
+}
+
+void SetlogFeature::slotPlaylistTableLockChanged(int playlistId) {
+    // qDebug() << "slotPlaylistTableLockChanged() playlistId:" << playlistId;
+    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+        updateChildModel(playlistId);
     }
 }
 
 void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
-        if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            if (playlistId == m_pPlaylistTableModel->getPlaylist()) {
-                activatePlaylist(playlistId);
-            } else if (m_pSidebarWidget) {
-                m_pSidebarWidget->selectChildIndex(indexFromPlaylistId(playlistId), false);
-            }
-        }
+    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+        updateChildModel(playlistId);
     }
 }
 

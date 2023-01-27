@@ -152,7 +152,7 @@ void BasePlaylistFeature::connectPlaylistDAO() {
     connect(&m_playlistDao,
             &PlaylistDAO::lockChanged,
             this,
-            &BasePlaylistFeature::slotPlaylistTableChangedAndScrollTo);
+            &BasePlaylistFeature::slotPlaylistTableLockChanged);
     connect(&m_playlistDao,
             &PlaylistDAO::deleted,
             this,
@@ -737,16 +737,26 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 void BasePlaylistFeature::updateChildModel(int playlistId) {
+    // qDebug() << "BasePlaylistFeature::updateChildModel:" << playlistId;
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
     QString playlistLabel = fetchPlaylistLabel(playlistId);
-
     QVariant variantId = QVariant(playlistId);
 
     for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
         QModelIndex index = m_pSidebarModel->index(row, 0);
         TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
-        if (!pTreeItem->hasChildren() && // leaf node
-                pTreeItem->getData() == variantId) {
+        if (pTreeItem->hasChildren()) {
+            for (TreeItem* pChild : qAsConst(pTreeItem->children())) {
+                if (pChild->getData() == variantId) {
+                    pTreeItem = pChild;
+                    break;
+                }
+            }
+        }
+        if (pTreeItem->getData() == variantId) {
             pTreeItem->setLabel(playlistLabel);
             decorateChild(pTreeItem, playlistId);
         }
