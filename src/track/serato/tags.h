@@ -101,6 +101,17 @@ class SeratoTags final {
         m_seratoBeatGrid.setBeats(pBeats, signalInfo, duration, timingOffset);
     }
 
+    /// Return the track color.
+    ///
+    /// If no Serato tags are present in the file or if tags contain no
+    /// information about the track color (which should never happen when
+    /// writing the tags with Serato DJ software), then the outer optional will
+    /// be `nullopt`. This means that the track color should be left unchanged
+    /// on metadata reimport.
+    ///
+    /// In all other cases, the track color has been specified in the Serato
+    /// tags successfully, and the inner optional value can be used as new
+    /// track color when (re-)importing metadata.
     std::optional<RgbColor::optional_t> getTrackColor() const;
     void setTrackColor(RgbColor::optional_t color);
 
