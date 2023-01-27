@@ -7,7 +7,6 @@
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
-#include "library/proxytrackmodel.h"
 
 class RecordingManager;
 
