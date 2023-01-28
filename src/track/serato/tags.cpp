@@ -2,6 +2,8 @@
 
 #include <mp3guessenc.h>
 
+#include <optional>
+
 #include "sources/soundsourceproxy.h"
 #if defined(__COREAUDIO__)
 #include "sources/soundsourcecoreaudio.h"
@@ -38,18 +40,6 @@ QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
 constexpr int kFirstLoopIndex = mixxx::kFirstHotCueIndex + 8;
 constexpr int kNumCuesInMarkersTag = 5;
 
-mixxx::RgbColor getColorFromOtherPalette(
-        const ColorPalette& source,
-        const ColorPalette& dest,
-        mixxx::RgbColor color) {
-    DEBUG_ASSERT(source.size() == dest.size());
-    int sourceIndex = source.indexOf(color);
-    if (sourceIndex >= 0 && sourceIndex < dest.size()) {
-        return dest.at(sourceIndex);
-    }
-    return color;
-}
-
 std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
     VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueIndex()) {
         qWarning() << "SeratoTags::getCues: Cue without number found!";
@@ -84,76 +74,6 @@ std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
 } // namespace
 
 namespace mixxx {
-
-/// Serato stores Track colors differently from how they are displayed in
-/// the library column. Instead of the color from the library view, the
-/// value from the color picker is stored instead (which is different).
-/// To make sure that the track looks the same in both Mixxx' and Serato's
-/// libraries, we need to convert between the two values.
-///
-/// See this for details:
-/// https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
-RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
-    if (color == 0xFFFFFF) {
-        return RgbColor::nullopt();
-    }
-
-    if (color == 0x999999) {
-        return RgbColor::optional(0x090909);
-    }
-
-    if (color == 0x000000) {
-        return RgbColor::optional(0x333333);
-    }
-
-    RgbColor::code_t colorCode = color;
-    colorCode = (colorCode < 0x666666) ? colorCode + 0x99999A : colorCode - 0x666666;
-    return RgbColor::optional(colorCode);
-}
-
-RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
-    if (!color) {
-        return RgbColor(0xFFFFFF);
-    }
-
-    RgbColor::code_t colorCode = *color;
-
-    if (colorCode == 0x090909) {
-        return RgbColor(0x999999);
-    }
-
-    if (colorCode == 0x333333) {
-        return RgbColor(0x000000);
-    }
-
-    // Special case: 0x999999 and 0x99999a are not representable as Serato
-    // track color We'll just modify them a little, so that the look the
-    // same in Serato.
-    if (colorCode == 0x999999) {
-        return RgbColor(0x999998);
-    }
-
-    if (colorCode == 0x99999a) {
-        return RgbColor(0x99999b);
-    }
-
-    colorCode = (colorCode < 0x99999A) ? colorCode + 0x666666 : colorCode - 0x99999A;
-    return RgbColor(colorCode);
-}
-
-RgbColor SeratoTags::storedToDisplayedSeratoDJProCueColor(RgbColor color) {
-    return getColorFromOtherPalette(
-            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
-            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
-            color);
-}
-
-RgbColor SeratoTags::displayedToStoredSeratoDJProCueColor(RgbColor color) {
-    return getColorFromOtherPalette(
-            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
-            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
-            color);
-}
 
 double SeratoTags::guessTimingOffsetMillis(
         const QString& filePath,
@@ -290,12 +210,6 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
 
         CueInfo newCueInfo(cueInfo);
         newCueInfo.setHotCueIndex(index);
-
-        RgbColor::optional_t color = cueInfo.getColor();
-        if (color) {
-            // TODO: Make this conversion configurable
-            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
-        }
         cueMap.insert(*index, newCueInfo);
     };
 
@@ -335,12 +249,7 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
         newCueInfo.setHotCueIndex(index);
         newCueInfo.setFlags(cueInfo.flags());
-
-        RgbColor::optional_t color = cueInfo.getColor();
-        if (color) {
-            // TODO: Make this conversion configurable
-            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
-        }
+        newCueInfo.setColor(cueInfo.getColor());
         cueMap.insert(*index, newCueInfo);
 
         // This cue is set in the "Serato Markers_" tag, so remove it from the
@@ -374,13 +283,6 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
         }
 
         CueInfo newCueInfo(cueInfo);
-        RgbColor color = kDefaultCueColor;
-        if (cueInfo.getColor()) {
-            // TODO: Make this conversion configurable
-            color = displayedToStoredSeratoDJProCueColor(*cueInfo.getColor());
-        }
-        newCueInfo.setColor(color);
-
         if (!cueInfo.getStartPositionMillis()) {
             continue;
         }
@@ -428,24 +330,24 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
 }
 
 std::optional<RgbColor::optional_t> SeratoTags::getTrackColor() const {
-    RgbColor::optional_t color = m_seratoMarkers.getTrackColor();
+    std::optional<mixxx::SeratoStoredTrackColor> pStoredColor = m_seratoMarkers.getTrackColor();
 
-    if (!color) {
+    if (!pStoredColor) {
         // Markers_ is empty, but we may have a color in Markers2
-        color = m_seratoMarkers2.getTrackColor();
+        pStoredColor = m_seratoMarkers2.getTrackColor();
     }
 
-    if (!color) {
+    if (!pStoredColor) {
         return std::nullopt;
     }
 
-    return std::optional<RgbColor::optional_t>{SeratoTags::storedToDisplayedTrackColor(*color)};
+    return pStoredColor->toDisplayedColor();
 }
 
 void SeratoTags::setTrackColor(RgbColor::optional_t color) {
-    mixxx::RgbColor rgbColor = SeratoTags::displayedToStoredTrackColor(color);
-    m_seratoMarkers.setTrackColor(rgbColor);
-    m_seratoMarkers2.setTrackColor(rgbColor);
+    auto storedColor = SeratoStoredTrackColor::fromDisplayedColor(color);
+    m_seratoMarkers.setTrackColor(storedColor);
+    m_seratoMarkers2.setTrackColor(storedColor);
 }
 
 bool SeratoTags::isBpmLocked() const {

@@ -111,7 +111,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& dat
         return nullptr;
     }
 
-    RgbColor color = RgbColor(qRgb(
+    const auto color = SeratoStoredTrackColor(qRgb(
             static_cast<quint8>(data.at(1)),
             static_cast<quint8>(data.at(2)),
             static_cast<quint8>(data.at(3))));
@@ -128,9 +128,9 @@ QByteArray SeratoMarkers2ColorEntry::dump() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << static_cast<quint8>('\x00')
-           << static_cast<quint8>(qRed(m_color))
-           << static_cast<quint8>(qGreen(m_color))
-           << static_cast<quint8>(qBlue(m_color));
+           << static_cast<quint8>(qRed(m_color.toQRgb()))
+           << static_cast<quint8>(qGreen(m_color.toQRgb()))
+           << static_cast<quint8>(qBlue(m_color.toQRgb()));
 
     return data;
 }
@@ -180,7 +180,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
     }
 
     stream >> rawRgbRed >> rawRgbGreen >> rawRgbBlue >> unknownField3;
-    RgbColor color = RgbColor(qRgb(rawRgbRed, rawRgbGreen, rawRgbBlue));
+    const auto color = SeratoStoredHotcueColor(qRgb(rawRgbRed, rawRgbGreen, rawRgbBlue));
 
     // Unknown field(s), make sure it's 0 in case it's a
     // null-terminated string
@@ -220,9 +220,9 @@ QByteArray SeratoMarkers2CueEntry::dump() const {
            << m_index
            << m_position
            << static_cast<quint8>('\x00')
-           << static_cast<quint8>(qRed(m_color))
-           << static_cast<quint8>(qGreen(m_color))
-           << static_cast<quint8>(qBlue(m_color))
+           << static_cast<quint8>(qRed(m_color.toQRgb()))
+           << static_cast<quint8>(qGreen(m_color.toQRgb()))
+           << static_cast<quint8>(qBlue(m_color.toQRgb()))
            << static_cast<quint8>('\x00')
            << static_cast<quint8>('\x00');
 
@@ -288,7 +288,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
     }
 
     stream >> colorRed >> colorGreen >> colorBlue;
-    RgbColor color(qRgb(colorRed, colorGreen, colorBlue));
+    const auto color = SeratoStoredHotcueColor(qRgb(colorRed, colorGreen, colorBlue));
 
     stream >> unknownField4;
     // Unknown field, make sure it's 0 in case it's a
@@ -334,9 +334,9 @@ QByteArray SeratoMarkers2LoopEntry::dump() const {
 
     stream.writeRawData("\xff\xff\xff\xff\x00", 5);
 
-    stream << static_cast<quint8>(qRed(m_color))
-           << static_cast<quint8>(qGreen(m_color))
-           << static_cast<quint8>(qBlue(m_color))
+    stream << static_cast<quint8>(qRed(m_color.toQRgb()))
+           << static_cast<quint8>(qGreen(m_color.toQRgb()))
+           << static_cast<quint8>(qBlue(m_color.toQRgb()))
            << static_cast<quint8>('\x00')
            << static_cast<quint8>(m_locked);
 
@@ -620,7 +620,7 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 std::nullopt,
                 pCueEntry->getIndex(),
                 pCueEntry->getLabel(),
-                pCueEntry->getColor(),
+                pCueEntry->getColor().toDisplayedColor(),
                 CueFlag::None);
         cueInfos.append(cueInfo);
     }
@@ -669,9 +669,6 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
         VERIFY_OR_DEBUG_ASSERT(hotcueIndex >= kFirstHotCueIndex) {
             continue;
         }
-        VERIFY_OR_DEBUG_ASSERT(cueInfo.getColor()) {
-            continue;
-        }
         VERIFY_OR_DEBUG_ASSERT(cueInfo.getStartPositionMillis()) {
             continue;
         }
@@ -707,7 +704,7 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
         auto pEntry = std::make_shared<SeratoMarkers2CueEntry>(
                 *cueInfo.getHotCueIndex(),
                 *cueInfo.getStartPositionMillis(),
-                *cueInfo.getColor(),
+                SeratoStoredHotcueColor::fromDisplayedColor(cueInfo.getColor()),
                 cueInfo.getLabel());
         newEntries.append(pEntry);
     }
@@ -719,7 +716,7 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
                 *cueInfo.getHotCueIndex(),
                 *cueInfo.getStartPositionMillis(),
                 *cueInfo.getEndPositionMillis(),
-                SeratoTags::kFixedLoopColor,
+                SeratoStoredHotcueColor(SeratoStoredColor::kFixedLoopColor),
                 cueInfo.isLocked(),
                 cueInfo.getLabel());
         newEntries.append(pEntry);
@@ -803,7 +800,7 @@ QByteArray SeratoMarkers2::dumpFLAC() const {
     return data;
 }
 
-RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
+std::optional<SeratoStoredTrackColor> SeratoMarkers2::getTrackColor() const {
     kLogger.info() << "Reading track color from 'Serato Markers2' tag data...";
 
     for (const auto& pEntry : qAsConst(m_entries)) {
@@ -816,13 +813,13 @@ RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
         }
 
         const auto pColorEntry = std::static_pointer_cast<SeratoMarkers2ColorEntry>(pEntry);
-        return RgbColor::optional(pColorEntry->getColor());
+        return pColorEntry->getColor();
     }
 
     return std::nullopt;
 }
 
-void SeratoMarkers2::setTrackColor(RgbColor color) {
+void SeratoMarkers2::setTrackColor(SeratoStoredTrackColor color) {
     QList<SeratoMarkers2EntryPointer> newEntries;
 
     // Append COLOR entry

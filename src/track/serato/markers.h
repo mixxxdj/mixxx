@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QByteArray>
-#include <QColor>
 #include <QDataStream>
 #include <QList>
 #include <memory>
+#include <optional>
 
 #include "track/cueinfo.h"
+#include "track/serato/color.h"
 #include "track/taglib/trackmetadata_file.h"
 #include "util/types.h"
 
@@ -33,7 +34,7 @@ class SeratoMarkersEntry {
             int startPosition,
             bool hasEndPosition,
             int endPosition,
-            RgbColor color,
+            SeratoStoredHotcueColor color,
             quint8 type,
             bool isLocked)
             : m_color(color),
@@ -71,7 +72,7 @@ class SeratoMarkersEntry {
         return typeId;
     }
 
-    RgbColor getColor() const {
+    SeratoStoredHotcueColor getColor() const {
         return m_color;
     }
 
@@ -96,7 +97,7 @@ class SeratoMarkersEntry {
     }
 
   private:
-    RgbColor m_color;
+    SeratoStoredHotcueColor m_color;
     bool m_hasStartPosition;
     bool m_hasEndPosition;
     ;
@@ -152,7 +153,7 @@ class SeratoMarkers final {
     QByteArray dump(taglib::FileType fileType) const;
 
     bool isEmpty() const {
-        return m_entries.isEmpty() && !m_trackColor;
+        return m_entries.isEmpty() && !m_pTrackColor;
     }
 
     const QList<SeratoMarkersEntryPointer>& getEntries() const {
@@ -164,14 +165,11 @@ class SeratoMarkers final {
 
     /// Always returns a color if the tag is present (i.e. `isEmpty()` is
     /// false).
-    ///
-    /// Note that the color returned by this function needs to be converted
-    /// into a display color using `SeratoTags::storedToDisplayedTrackColor()`.
-    RgbColor::optional_t getTrackColor() const {
-        return m_trackColor;
+    const std::optional<SeratoStoredTrackColor>& getTrackColor() const {
+        return m_pTrackColor;
     }
-    void setTrackColor(RgbColor::optional_t color) {
-        m_trackColor = color;
+    void setTrackColor(SeratoStoredTrackColor color) {
+        m_pTrackColor = color;
     }
 
     QList<CueInfo> getCues() const;
@@ -189,7 +187,7 @@ class SeratoMarkers final {
     QByteArray dumpMP4() const;
 
     QList<SeratoMarkersEntryPointer> m_entries;
-    RgbColor::optional_t m_trackColor;
+    std::optional<SeratoStoredTrackColor> m_pTrackColor;
 };
 
 inline bool operator==(const SeratoMarkers& lhs, const SeratoMarkers& rhs) {

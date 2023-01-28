@@ -19,7 +19,7 @@ class SeratoMarkersTest : public testing::Test {
             quint32 startPosition,
             bool hasEndPosition,
             quint32 endPosition,
-            mixxx::RgbColor color,
+            mixxx::SeratoStoredTrackColor color,
             mixxx::SeratoMarkersEntry::TypeId typeId,
             bool isLocked) {
         const mixxx::SeratoMarkersEntryPointer pEntry =
@@ -94,7 +94,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             0x7f7f7f7f,
             false,
             0x7f7f7f7f,
-            mixxx::RgbColor(0x000000),
+            mixxx::SeratoStoredTrackColor(0x000000),
             mixxx::SeratoMarkersEntry::TypeId::Unknown,
             false);
     parseEntry(QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f"
@@ -105,7 +105,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             0,
             false,
             0x7f7f7f7f,
-            mixxx::RgbColor(0xcc0000),
+            mixxx::SeratoStoredTrackColor(0xcc0000),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(QByteArray("\x00\x00\x0d\x2a\x58\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f"
@@ -116,7 +116,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             218456,
             false,
             0x7f7f7f7f,
-            mixxx::RgbColor(0xcc8800),
+            mixxx::SeratoStoredTrackColor(0xcc8800),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(QByteArray("\x00\x00\x03\x54\x64\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f"
@@ -127,7 +127,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             60004,
             false,
             0x7f7f7f7f,
-            mixxx::RgbColor(0x0000cc),
+            mixxx::SeratoStoredTrackColor(0x0000cc),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(QByteArray("\x00\x00\x00\x00\x6c\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f"
@@ -138,7 +138,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             108,
             false,
             0x7f7f7f7f,
-            mixxx::RgbColor(0xcccc00),
+            mixxx::SeratoStoredTrackColor(0xcccc00),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(QByteArray("\x00\x00\x00\x07\x77\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f"
@@ -149,7 +149,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             1015,
             false,
             0x7f7f7f7f,
-            mixxx::RgbColor(0x00cc00),
+            mixxx::SeratoStoredTrackColor(0x00cc00),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f"
@@ -160,7 +160,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             0x7f7f7f7f,
             false,
             0x7f7f7f7f,
-            mixxx::RgbColor(0x000000),
+            mixxx::SeratoStoredTrackColor(0x000000),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f"
@@ -171,7 +171,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             0x7f7f7f7f,
             false,
             0x7f7f7f7f,
-            mixxx::RgbColor(0x000000),
+            mixxx::SeratoStoredTrackColor(0x000000),
             mixxx::SeratoMarkersEntry::TypeId::Loop,
             false);
 }
