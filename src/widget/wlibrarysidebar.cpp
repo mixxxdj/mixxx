@@ -224,6 +224,10 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             qDebug() << "invalid sidebar index";
             return;
         }
+        // Ensure the new selection is visible even if it was already selected/
+        // focused, like when the topmost item was selected but out of sight and
+        // we pressed Up, Home or PageUp.
+        scrollTo(selIndex);
         emit pressed(selIndex);
         return;
     }
