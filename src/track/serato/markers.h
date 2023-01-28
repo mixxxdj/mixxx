@@ -162,6 +162,11 @@ class SeratoMarkers final {
         m_entries = entries;
     }
 
+    /// Always returns a color if the tag is present (i.e. `isEmpty()` is
+    /// false).
+    ///
+    /// Note that the color returned by this function needs to be converted
+    /// into a display color using `SeratoTags::storedToDisplayedTrackColor()`.
     RgbColor::optional_t getTrackColor() const {
         return m_trackColor;
     }

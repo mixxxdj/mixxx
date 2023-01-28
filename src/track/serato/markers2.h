@@ -430,6 +430,12 @@ class SeratoMarkers2 final {
     QList<CueInfo> getCues() const;
     void setCues(const QList<CueInfo>& cueInfos);
 
+    /// Returns a color if the tag is present and contains a `COLOR` entry.
+    /// Usually, such an entry should always exist, even if the track has no
+    /// color assigned to it in Serato (in that case the color is `0xFFFFFF`).
+    ///
+    /// Note that the color returned by this function needs to be converted
+    /// into a display color using `SeratoTags::storedToDisplayedTrackColor()`.
     RgbColor::optional_t getTrackColor() const;
     void setTrackColor(RgbColor color);
 
