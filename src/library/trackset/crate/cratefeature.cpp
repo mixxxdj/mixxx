@@ -331,7 +331,6 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     emit enableCoverArtDisplay(true);
     // Update selection
     emit featureSelect(this, m_lastClickedIndex);
-    activateChild(m_lastClickedIndex);
     return true;
 }
 
