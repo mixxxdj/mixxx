@@ -630,11 +630,22 @@ void CrateFeature::slotImportPlaylist() {
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
-    slotImportPlaylistFile(playlistFile);
+    CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
+    Crate crate;
+    if (m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
+        qDebug() << "Importing playlist file" << playlistFile << "into crate"
+                 << crateId << crate;
+    } else {
+        qDebug() << "Importing playlist file" << playlistFile << "into crate"
+                 << crateId << crate << "failed!";
+        return;
+    }
+
+    slotImportPlaylistFile(playlistFile, crateId);
     activateChild(m_lastRightClickedIndex);
 }
 
-void CrateFeature::slotImportPlaylistFile(const QString& playlistFile) {
+void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId crateId) {
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
@@ -645,7 +656,14 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile) {
     if (locations.empty()) {
         return;
     }
-    m_crateTableModel.addTracks(QModelIndex(), locations);
+
+    // Create a new table model since the main one might have another crate
+    // selected which is not the crate that received the right-click.
+    QScopedPointer<CrateTableModel> pCrateTableModel(
+            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+    pCrateTableModel->selectCrate(crateId);
+    pCrateTableModel->select();
+    pCrateTableModel->addTracks(QModelIndex(), locations);
 }
 
 void CrateFeature::slotCreateImportCrate() {
@@ -663,7 +681,7 @@ void CrateFeature::slotCreateImportCrate() {
 
     CrateId lastCrateId;
 
-    // For each selected file
+    // For each selected file create a new crate
     for (const QString& playlistFile : playlistFiles) {
         const QFileInfo fileInfo(playlistFile);
 
@@ -687,9 +705,7 @@ void CrateFeature::slotCreateImportCrate() {
             }
         }
 
-        if (m_pTrackCollection->insertCrate(crate, &lastCrateId)) {
-            m_crateTableModel.selectCrate(lastCrateId);
-        } else {
+        if (!m_pTrackCollection->insertCrate(crate, &lastCrateId)) {
             QMessageBox::warning(nullptr,
                     tr("Crate Creation Failed"),
                     tr("An unknown error occurred while creating crate: ") +
@@ -697,7 +713,7 @@ void CrateFeature::slotCreateImportCrate() {
             return;
         }
 
-        slotImportPlaylistFile(playlistFile);
+        slotImportPlaylistFile(playlistFile, lastCrateId);
     }
     activateCrate(lastCrateId);
 }
@@ -729,6 +745,7 @@ void CrateFeature::slotExportPlaylist() {
         qDebug() << "Exporting crate" << crateId << crate;
     } else {
         qDebug() << "Failed to export crate" << crateId;
+        return;
     }
 
     QString lastCrateDirectory = m_pConfig->getValue(

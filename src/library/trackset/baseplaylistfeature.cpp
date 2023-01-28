@@ -463,6 +463,10 @@ void BasePlaylistFeature::slotImportPlaylist() {
     if (playlistFile.isEmpty()) {
         return;
     }
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
 
     // Update the import/export playlist directory
     QString fileDirectory(playlistFile);
@@ -470,19 +474,35 @@ void BasePlaylistFeature::slotImportPlaylist() {
     m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
             ConfigValue(fileDirectory));
 
-    slotImportPlaylistFile(playlistFile);
-    activateChild(m_lastRightClickedIndex);
+    slotImportPlaylistFile(playlistFile, playlistId);
 }
 
-void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlist_file) {
+void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
+        int playlistId) {
+    if (playlistFile.isEmpty()) {
+        return;
+    }
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    QList<QString> locations = Parser::parse(playlist_file);
+    // Create a new table model since the main one might have another playlist
+    // selected which is not the playlist that received the right-click.
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+            new PlaylistTableModel(this,
+                    m_pLibrary->trackCollectionManager(),
+                    "mixxx.db.model.playlist_export"));
+    pPlaylistTableModel->setTableModel(playlistId);
+    pPlaylistTableModel->setSort(
+            pPlaylistTableModel->fieldIndex(
+                    ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
+    pPlaylistTableModel->select();
+
+    QList<QString> locations = Parser::parse(playlistFile);
     // Iterate over the List that holds locations of playlist entries
-    m_pPlaylistTableModel->addTracks(QModelIndex(), locations);
+    pPlaylistTableModel->addTracks(QModelIndex(), locations);
 }
 
 void BasePlaylistFeature::slotCreateImportPlaylist() {
@@ -523,17 +543,14 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         }
 
         lastPlaylistId = m_playlistDao.createPlaylist(name);
-        if (lastPlaylistId != kInvalidPlaylistId) {
-            emit saveModelState();
-            m_pPlaylistTableModel->setTableModel(lastPlaylistId);
-        } else {
+        if (lastPlaylistId == kInvalidPlaylistId) {
             QMessageBox::warning(nullptr,
                     tr("Playlist Creation Failed"),
                     tr("An unknown error occurred while creating playlist: ") + name);
             return;
         }
 
-        slotImportPlaylistFile(playlistFile);
+        slotImportPlaylistFile(playlistFile, lastPlaylistId);
     }
     activatePlaylist(lastPlaylistId);
 }
