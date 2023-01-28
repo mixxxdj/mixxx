@@ -305,9 +305,10 @@ void SetlogFeature::slotGetNewPlaylist() {
         m_recentTracks.clear();
     }
 
-    reloadChildModel(m_playlistId); // For moving selection
-    emit showTrackModel(m_pPlaylistTableModel);
-    activatePlaylist(m_playlistId);
+    // reload child model again because the 'added' signal fired by PlaylistDAO
+    // might have triggered slotPlaylistTableChanged() before m_playlistId was set,
+    // which causes the wrong playlist being decorated as 'current'
+    slotPlaylistTableChanged(m_playlistId);
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
