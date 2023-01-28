@@ -278,8 +278,29 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
             type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        // Store current selection
+        int selectedPlaylistId = kInvalidPlaylistId;
+        if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+            if (playlistId == playlistIdFromIndex(m_lastClickedIndex) &&
+                    type == PlaylistDAO::PLHT_UNKNOWN) {
+                // if the selected playlist was deleted, find a sibling to select
+                selectedPlaylistId = getSiblingPlaylistIdOf(m_lastClickedIndex);
+            } else {
+                // just restore the current selection
+                selectedPlaylistId = playlistIdFromIndex(m_lastClickedIndex);
+            }
+        }
+
         clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+        QModelIndex newIndex = constructChildModel(selectedPlaylistId);
+        if (newIndex.isValid()) {
+            // If a child index was selected and we got a new valid index select that.
+            // Else (root item was selected or for some reason no index could be created)
+            // there's nothing to do: either no child was selected earlier, or the root
+            // was selected and will remain selected after the child model was rebuilt.
+            activateChild(newIndex);
+            emit featureSelect(this, newIndex);
+        }
     }
 }
 

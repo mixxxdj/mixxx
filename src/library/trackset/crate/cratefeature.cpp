@@ -301,13 +301,14 @@ void CrateFeature::activate() {
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
-    //qDebug() << "CrateFeature::activateChild()" << index;
+    qDebug() << "   CrateFeature::activateChild()" << index;
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
     }
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
+    m_prevSiblingCrate = CrateId();
     emit saveModelState();
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
@@ -323,9 +324,10 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return false;
     }
-    emit saveModelState();
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
+    m_prevSiblingCrate = CrateId();
+    emit saveModelState();
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
     emit enableCoverArtDisplay(true);
@@ -434,7 +436,11 @@ void CrateFeature::slotDeleteCrate() {
         CrateId crateId = crate.getId();
         // Store sibling id to restore selection after crate was deleted
         // to avoid the scroll position being reset to Crate root item.
-        storePrevSiblingCrateId(crateId);
+        m_prevSiblingCrate = CrateId();
+        if (isChildIndexSelectedInSidebar(m_lastRightClickedIndex)) {
+            storePrevSiblingCrateId(crateId);
+        }
+
         QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
                 tr("Confirm Deletion"),
                 tr("Do you really want to delete crate <b>%1</b>?")
@@ -509,13 +515,10 @@ void CrateFeature::slotDuplicateCrate() {
                         .duplicateCrate(crate);
         if (newCrateId.isValid()) {
             qDebug() << "Duplicate crate" << crate << ", new crate:" << newCrateId;
-            // expand Crates and scroll to new crate
-            m_pSidebarWidget->selectChildIndex(indexFromCrateId(newCrateId), false);
-            activateCrate(crate.getId());
+            return;
         }
-    } else {
-        qDebug() << "Failed to duplicate selected crate";
     }
+    qDebug() << "Failed to duplicate selected crate";
 }
 
 void CrateFeature::slotToggleCrateLock() {
@@ -856,15 +859,14 @@ void CrateFeature::storePrevSiblingCrateId(CrateId crateId) {
 }
 
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {
-    if (m_lastRightClickedIndex.isValid() &&
-            (crateIdFromIndex(m_lastRightClickedIndex) == crateId)) {
-        // Try to restore previous selection
-        m_lastRightClickedIndex = rebuildChildModel(crateId);
-        if (m_lastRightClickedIndex.isValid()) {
-            // Select last active crate
-            activateCrate(crateId);
-        } else if (m_prevSiblingCrate.isValid()) {
-            // Select neighbour of deleted crate
+    Q_UNUSED(crateId);
+    if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+        // If the previously selected crate was loaded to the tracks table and
+        // selected in the sidebar try to activate that or a sibling
+        rebuildChildModel();
+        if (!activateCrate(m_crateTableModel.selectedCrate())) {
+            // probably last clicked crate was deleted, try to
+            // select the stored sibling
             activateCrate(m_prevSiblingCrate);
         }
     } else {

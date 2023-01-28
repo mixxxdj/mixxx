@@ -233,6 +233,8 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     int idColumn = record.indexOf("id");
     int createdColumn = record.indexOf("date_created");
 
+    // Nice to have: restore previous expanded/collapsed state of YEAR items
+    clearChildModel();
     QMap<int, TreeItem*> groups;
     std::vector<std::unique_ptr<TreeItem>> itemList;
     // Generous estimate (number of years the db is used ;))
@@ -253,16 +255,20 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                         .toDateTime();
 
         // Create the TreeItem whose parent is the invisible root item
-        // Show only [kNumToplevelHistoryEntries -1] recent playlists at the top
-        // level before grouping them by year.
+        // Show only [kNumToplevelHistoryEntries] recent playlists at the top level
+        // before grouping them by year.
         if (row >= kNumToplevelHistoryEntries) {
+            // group by year
             int yearCreated = dateCreated.date().year();
 
             auto i = groups.find(yearCreated);
             TreeItem* pGroupItem;
-            if (i != groups.end()) {
+            if (i != groups.end() && i.key() == yearCreated) {
+                // get YEAR item the playlist will sorted into
                 pGroupItem = i.value();
             } else {
+                // create YEAR item the playlist will sorted into
+                // store id of empty placeholder playlist
                 auto pNewGroupItem = std::make_unique<TreeItem>(
                         QString::number(yearCreated), m_placeholderId);
                 pGroupItem = pNewGroupItem.get();
@@ -274,6 +280,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
             decorateChild(pItem, id);
         } else {
+            // add most recent top-level playlist
             auto pItem = std::make_unique<TreeItem>(name, id);
             pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
             decorateChild(pItem.get(), id);
@@ -285,10 +292,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_pSidebarModel->insertTreeItemRows(std::move(itemList), 0);
 
-    if (selectedId) {
-        return indexFromPlaylistId(selectedId);
-    }
-    return QModelIndex();
+    return indexFromPlaylistId(selectedId);
 }
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
@@ -405,11 +409,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                          << " previous:" << previousPlaylistId;
                 if (m_playlistDao.copyPlaylistTracks(
                             currentPlaylistId, previousPlaylistId)) {
-                    m_lastRightClickedIndex = constructChildModel(previousPlaylistId);
                     m_playlistDao.deletePlaylist(currentPlaylistId);
-                    reloadChildModel(previousPlaylistId); // For moving selection
-                    emit showTrackModel(m_pPlaylistTableModel);
-                    activatePlaylist(previousPlaylistId);
                 }
             }
         }
@@ -582,16 +582,65 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 }
 
 void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
-    reloadChildModel(playlistId);
-}
-
-void SetlogFeature::reloadChildModel(int playlistId) {
     //qDebug() << "updateChildModel() playlistId:" << playlistId;
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+    if (type != PlaylistDAO::PLHT_SET_LOG &&
+            type != PlaylistDAO::PLHT_UNKNOWN) { // deleted Playlist
+        return;
+    }
+
+    // save currently selected History sidebar item (if any)
+    int selectedYearIndexRow = -1;
+    int selectedPlaylistId = kInvalidPlaylistId;
+    bool rootWasSelected = false;
+    if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+        // a child index was selected (actual playlist or YEAR item)
+        int lastClickedPlaylistId = m_pPlaylistTableModel->getPlaylist();
+        if (lastClickedPlaylistId == m_placeholderId) {
+            // a YEAR item was selected
+            selectedYearIndexRow = m_lastClickedIndex.row();
+        } else if (playlistId == lastClickedPlaylistId &&
+                type == PlaylistDAO::PLHT_UNKNOWN) {
+            // selected playlist was deleted, find a sibling.
+            // prev/next works here because history playlists are always
+            // sorted by date of creation.
+            selectedPlaylistId = m_playlistDao.getPreviousPlaylist(
+                    lastClickedPlaylistId,
+                    PlaylistDAO::PLHT_SET_LOG);
+            if (selectedPlaylistId == kInvalidPlaylistId) {
+                // no previous playlist, try to get the next playlist
+                selectedPlaylistId = m_playlistDao.getNextPlaylist(
+                        lastClickedPlaylistId,
+                        PlaylistDAO::PLHT_SET_LOG);
+            }
+        } else {
+            selectedPlaylistId = lastClickedPlaylistId;
+        }
+    } else {
+        rootWasSelected = m_pSidebarWidget &&
+                m_pSidebarWidget->isFeatureRootIndexSelected(this);
+    }
+
+    QModelIndex newIndex = constructChildModel(selectedPlaylistId);
+
+    // restore selection
+    if (selectedYearIndexRow != -1) {
+        // if row is valid this means newIndex is invalid anyway
+        newIndex = m_pSidebarModel->index(selectedYearIndexRow, 0);
+        if (!newIndex.isValid()) {
+            // seems like we deleted the oldest (bottom) YEAR node while it was
+            // selected. Try to pick the row above
+            newIndex = m_pSidebarModel->index(selectedYearIndexRow - 1, 0);
+        }
+    }
+    if (newIndex.isValid()) {
+        emit featureSelect(this, newIndex);
+        activateChild(newIndex);
+        return;
+    } else if (rootWasSelected) {
+        // calling featureSelect with invalid index will select the root item
+        emit featureSelect(this, newIndex);
+        activate(); // to reload the new current playlist
     }
 }
 
@@ -620,7 +669,7 @@ void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newN
 
 void SetlogFeature::activate() {
     // The root item was clicked, so actuvate the current playlist.
-    m_lastClickedIndex = QModelIndex();
+    m_lastClickedIndex = m_pSidebarModel->getRootIndex();
     activatePlaylist(m_playlistId);
 }
 
@@ -630,18 +679,25 @@ void SetlogFeature::activatePlaylist(int playlistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (index.isValid()) {
-        emit saveModelState();
-        m_pPlaylistTableModel->setTableModel(playlistId);
-        emit showTrackModel(m_pPlaylistTableModel);
-        emit enableCoverArtDisplay(true);
-        // Update sidebar selection only if this is a child, incl. current playlist.
-        // indexFromPlaylistId() can't be used because, in case the root item was
-        // selected, that would switch to the 'current' child.
-        if (m_lastClickedIndex.isValid()) {
-            emit featureSelect(this, index);
-            activateChild(index);
-        }
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
+        return;
+    }
+    emit saveModelState();
+    m_pPlaylistTableModel->setTableModel(playlistId);
+    emit showTrackModel(m_pPlaylistTableModel);
+    emit enableCoverArtDisplay(true);
+    // Update sidebar selection only if this is a child, incl. current playlist.
+    // indexFromPlaylistId() can't be used because, in case the root item was
+    // selected, that would switch to the 'current' child.
+    if (m_lastClickedIndex != m_pSidebarModel->getRootIndex()) {
+        m_lastClickedIndex = index;
+        emit featureSelect(this, index);
+        // redundant
+        // activateChild(index);
+
+        // TODO(ronso0) Disable search for YEAR items
+        // emit disableSearch();
+        // emit enableCoverArtDisplay(false);
     }
 }
 

@@ -325,11 +325,8 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
     int newPlaylistId = m_playlistDao.createPlaylist(name);
 
-    if (newPlaylistId != kInvalidPlaylistId &&
-            m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
-        // Note: this assumes the sidebar model was already updated by slotPlaylisttableChanged
-        // and the sidebar scrolled to the new playlist
-        activatePlaylist(oldPlaylistId);
+    if (newPlaylistId != kInvalidPlaylistId) {
+        m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId);
     }
 }
 
@@ -420,20 +417,11 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         return;
     }
 
-    // we will switch to the sibling if the deleted playlist is currently active
-    bool wasActive = m_pPlaylistTableModel->getPlaylist() == playlistId;
-
-    VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
-        return;
-    }
-
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     if (locked) {
         qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
         return;
     }
-
-    int siblingId = getSiblingPlaylistIdOf(m_lastRightClickedIndex);
 
     QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
             tr("Confirm Deletion"),
@@ -446,15 +434,6 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 
     m_playlistDao.deletePlaylist(playlistId);
-
-    if (siblingId == kInvalidPlaylistId) {
-        return;
-    }
-    if (wasActive) {
-        activatePlaylist(siblingId);
-    } else if (m_pSidebarWidget) {
-        m_pSidebarWidget->selectChildIndex(indexFromPlaylistId(siblingId), false);
-    }
 }
 
 void BasePlaylistFeature::slotImportPlaylist() {
@@ -770,6 +749,7 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
 
 /// Clears the child model dynamically, but the invisible root item remains
 void BasePlaylistFeature::clearChildModel() {
+    m_lastClickedIndex = QModelIndex();
     m_lastRightClickedIndex = QModelIndex();
     m_pSidebarModel->removeRows(0, m_pSidebarModel->rowCount());
 }

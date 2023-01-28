@@ -48,7 +48,6 @@ class SetlogFeature : public BasePlaylistFeature {
 
   private:
     void deleteAllUnlockedPlaylistsWithFewerTracks();
-    void reloadChildModel(int playlistId);
     void lockOrUnlockAllChildPlaylists(bool lock);
     QString getRootViewHtml() const override;
 
