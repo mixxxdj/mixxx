@@ -434,11 +434,13 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
     const QStringList versionParts = configVersion.split(".");
-    const QVersionNumber configFileVersion(versionParts[0].toInt(), versionParts[1].toInt(), versionParts[2].toInt());
+    const QVersionNumber configFileVersion(versionParts[0].toInt(),
+            versionParts[1].toInt(),
+            versionParts[2].toInt());
 #else
     const auto configFileVersion = QVersionNumber::fromString(configVersion);
 #endif
-    
+
     //This variable indicates the first known version that requires no changes.
     const QVersionNumber cleanVersion(1,12,0);
     if (configFileVersion >= cleanVersion) {
