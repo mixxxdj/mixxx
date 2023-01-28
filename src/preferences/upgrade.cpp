@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QScopedPointer>
 #include <QTranslator>
+#include <QVersionNumber>
 
 #include "config.h"
 #include "controllers/defs_controllers.h"
@@ -433,9 +434,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
     }
 
-    if (configVersion.startsWith("1.12") ||
-        configVersion.startsWith("2.0") ||
-        configVersion.startsWith("2.1.0")) {
+    QStringList versionParts = configVersion.split(".");
+    QVersionNumber configFileVersion(versionParts[0].toInt(), versionParts[1].toInt(), versionParts[2].toInt());
+    const QVersionNumber cleanVersion(1,12,0);
+    if (configFileVersion > cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
