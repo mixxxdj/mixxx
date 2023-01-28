@@ -490,13 +490,11 @@ void CoreServices::initialize(QApplication* pApp) {
         if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         } else if (isPlaylist(musicFiles.at(i))) {
-            qWarning() << "Detected Playlist file!!";
             const QString playlistFile = musicFiles.at(i);
-            qWarning() << playlistFile;
+            qDebug() << "Found playlist files in the command line arguments!!" << playlistFile;
             m_pLibrary->importPlaylistFile(playlistFile);
         }
     }
-
     m_isInitialized = true;
 }
 

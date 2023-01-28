@@ -126,8 +126,6 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
 }
 
 void PlaylistFeature::importPlaylistFile(const QString& playlistFile) {
-    qWarning() << "Reached playlistfeature";
-    qWarning() << playlistFile;
     const QFileInfo fileInfo(playlistFile);
     const QString baseName = fileInfo.baseName();
     QString name;
