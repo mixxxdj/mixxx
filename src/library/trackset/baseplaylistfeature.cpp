@@ -228,10 +228,6 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     emit enableCoverArtDisplay(true);
     // Update selection
     emit featureSelect(this, m_lastClickedIndex);
-    if (!m_pSidebarWidget) {
-        return;
-    }
-    m_pSidebarWidget->selectChildIndex(m_lastClickedIndex);
 }
 
 void BasePlaylistFeature::renameItem(const QModelIndex& index) {
