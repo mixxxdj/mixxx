@@ -245,7 +245,7 @@ if(MSVC)
   add_compile_options(/UTF8)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
-    message(STATUS "x64 Enabling SS2 CPU optimizations (>= Pentium 4)")
+    message(STATUS "x64 Enabling SSE2 CPU optimizations (>= Pentium 4)")
     # Define gcc/clang style defines for SSE and SSE2 for compatibility
     add_compile_definitions("__SSE__" "__SSE2__")
   endif()
@@ -313,7 +313,7 @@ if(MSVC)
     if(OPTIMIZE STREQUAL "portable")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
-        message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
         # Set compiler option for SSE/SSE2
@@ -323,7 +323,7 @@ if(MSVC)
       message("Enabling optimizations for native system, specified by user")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
-        message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
       endif()
@@ -385,7 +385,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
     if(OPTIMIZE STREQUAL "portable")
       # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
-        message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "Enabling SSE2 CPU optimizations (>= Pentium 4)")
         add_compile_options(-mtune=generic)
         # -mtune=generic picks the most common, but compatible options.
         # on arm platforms equivalent to -march=arch
