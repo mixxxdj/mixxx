@@ -10,8 +10,6 @@ namespace mixxx {
 class SeratoStoredColor {
   public:
     static constexpr RgbColor kNoColor = RgbColor(0xFFFFFF);
-    static constexpr RgbColor kDefaultTrackColor = RgbColor(0xFF9999);
-    static constexpr RgbColor kDefaultCueColor = RgbColor(0xCC0000);
     static constexpr RgbColor kFixedLoopColor = RgbColor(0x27AAE1);
     static constexpr RgbColor kFixedUnsetColor = RgbColor(0x000000);
 

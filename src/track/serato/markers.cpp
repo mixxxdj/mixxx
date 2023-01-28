@@ -574,9 +574,10 @@ QByteArray SeratoMarkers::dumpID3() const {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->dumpID3(), kEntrySizeID3);
     }
-    // TODO(): Why we do not use kNoColor? The Roundtrip is probably broken.
+
+    DEBUG_ASSERT(m_pTrackColor);
     SeratoStoredTrackColor trackColor = m_pTrackColor.value_or(
-            SeratoStoredTrackColor(SeratoStoredColor::kDefaultTrackColor));
+            SeratoStoredTrackColor(SeratoStoredColor::kNoColor));
     stream << serato32fromUint24(trackColor.toQRgb());
 
     return data;
@@ -602,8 +603,9 @@ QByteArray SeratoMarkers::dumpMP4() const {
         stream.writeRawData(pEntry->dumpMP4(), kEntrySizeMP4);
     }
 
+    DEBUG_ASSERT(m_pTrackColor);
     SeratoStoredTrackColor trackColor = m_pTrackColor.value_or(
-            SeratoStoredTrackColor(SeratoStoredColor::kDefaultTrackColor));
+            SeratoStoredTrackColor(SeratoStoredColor::kNoColor));
     stream << static_cast<quint8>(0x00)
            << static_cast<quint8>(qRed(trackColor.toQRgb()))
            << static_cast<quint8>(qGreen(trackColor.toQRgb()))
