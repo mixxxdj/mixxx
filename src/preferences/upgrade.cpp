@@ -436,7 +436,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
     const QStringList versionParts = configVersion.split(".");
-    const QVersionNumber configFileVersion(versionParts[0].toInt(),
+    const auto configFileVersion = QVersionNumber(versionParts[0].toInt(),
             versionParts[1].toInt(),
             versionParts[2].toInt());
 #else
