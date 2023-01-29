@@ -126,8 +126,6 @@ class BaseTrackCache : public QObject {
 
     const StringCollator m_collator;
 
-    QStringList m_searchColumns;
-
     // Temporary storage for filterAndSort()
 
     QVector<TrackId> m_trackOrder;

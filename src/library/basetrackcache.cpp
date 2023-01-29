@@ -27,8 +27,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
           m_columnCache(std::move(columns)),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection)),
-          m_searchColumns(std::move(searchColumns)),
+          m_pQueryParser(new SearchQueryParser(pTrackCollection, std::move(searchColumns))),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_database(pTrackCollection->database()) {
@@ -470,7 +469,6 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     const std::unique_ptr<QueryNode> pQuery =
             m_pQueryParser->parseQuery(
                     searchQuery,
-                    m_searchColumns,
                     queryFragments.join(" AND "));
 
     QString filter = pQuery->toSql();

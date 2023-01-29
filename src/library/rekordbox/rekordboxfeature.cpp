@@ -1459,7 +1459,8 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 
 void RekordboxFeature::onRekordboxDevicesFound() {
     std::vector<std::unique_ptr<TreeItem>> foundDevices;
-    for (const auto& pDeviceFound : m_devicesFuture.result()) {
+    const QList<TreeItem*> result = m_devicesFuture.result();
+    for (const auto& pDeviceFound : result) {
         foundDevices.emplace_back(pDeviceFound);
     }
 

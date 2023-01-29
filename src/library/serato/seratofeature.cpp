@@ -1063,7 +1063,8 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
 
 void SeratoFeature::onSeratoDatabasesFound() {
     std::vector<std::unique_ptr<TreeItem>> foundDatabases;
-    for (const auto& pDatabaseFound : m_databasesFuture.result()) {
+    const QList<TreeItem*> result = m_databasesFuture.result();
+    for (const auto& pDatabaseFound : result) {
         foundDatabases.emplace_back(pDatabaseFound);
     }
 
