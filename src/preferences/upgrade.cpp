@@ -435,7 +435,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     const auto configFileVersion = QVersionNumber::fromString(configVersion);
 
     // This variable indicates the first known version that requires no changes.
-    const QVersionNumber cleanVersion(1,12,0);
+    const QVersionNumber cleanVersion(1, 12, 0);
     if (configFileVersion >= cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
