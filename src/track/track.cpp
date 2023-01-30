@@ -1373,7 +1373,7 @@ quint16 Track::getCoverHash() const {
     return m_record.getCoverInfo().hash;
 }
 
-void Track::exportSeratoMetadata() {
+bool Track::exportSeratoMetadata() {
     const auto streamInfo = m_record.getStreamInfoFromSource();
     VERIFY_OR_DEBUG_ASSERT(streamInfo &&
             streamInfo->getSignalInfo().isValid() &&
@@ -1381,32 +1381,37 @@ void Track::exportSeratoMetadata() {
         kLogger.warning() << "Cannot write Serato metadata because signal "
                              "info and/or duration is not available:"
                           << getLocation();
-        return;
+        return false;
     }
-    const mixxx::audio::SampleRate sampleRate =
-            streamInfo->getSignalInfo().getSampleRate();
-    mixxx::SeratoTags* seratoTags =
+    mixxx::SeratoTags* pSeratoTags =
             m_record.refMetadata().refTrackInfo().ptrSeratoTags();
-    DEBUG_ASSERT(seratoTags);
-    if (seratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
+    VERIFY_OR_DEBUG_ASSERT(pSeratoTags) {
+        return false;
+    }
+    if (pSeratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
         kLogger.warning()
                 << "Refusing to overwrite Serato metadata that failed to parse:"
                 << getLocation();
-    } else {
-        seratoTags->setTrackColor(getColor());
-        seratoTags->setBpmLocked(isBpmLocked());
-        QList<mixxx::CueInfo> cueInfos;
-        for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
-            cueInfos.append(pCue->getCueInfo(sampleRate));
-        }
-        const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
-                getLocation(), streamInfo->getSignalInfo());
-        seratoTags->setCueInfos(cueInfos, timingOffset);
-        seratoTags->setBeats(m_pBeats,
-                streamInfo->getSignalInfo(),
-                streamInfo->getDuration(),
-                timingOffset);
+        return false;
     }
+    pSeratoTags->setTrackColor(getColor());
+    pSeratoTags->setBpmLocked(isBpmLocked());
+
+    const mixxx::audio::SampleRate sampleRate =
+            streamInfo->getSignalInfo().getSampleRate();
+    QList<mixxx::CueInfo> cueInfos;
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+        cueInfos.append(pCue->getCueInfo(sampleRate));
+    }
+
+    const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
+            getLocation(), streamInfo->getSignalInfo());
+    pSeratoTags->setCueInfos(cueInfos, timingOffset);
+    pSeratoTags->setBeats(m_pBeats,
+            streamInfo->getSignalInfo(),
+            streamInfo->getDuration(),
+            timingOffset);
+    return true;
 }
 
 ExportTrackMetadataResult Track::exportMetadata(

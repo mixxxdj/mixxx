@@ -450,7 +450,7 @@ class Track : public QObject {
     };
     double getDuration(DurationRounding rounding) const;
 
-    void exportSeratoMetadata();
+    bool exportSeratoMetadata();
 
     ExportTrackMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource,
