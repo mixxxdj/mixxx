@@ -103,7 +103,13 @@ TraktorS3.ChannelColors = {
 TraktorS3.LEDDimValue = 0x00;
 TraktorS3.LEDBrightValue = 0x02;
 
-// Parameters for the scratch smoothing
+// By default the jog wheel's behavior when rotating it matches 33 1/3 rpm
+// vinyl. Changing this value to 2.0 causes a single rotation of the platter to
+// result in twice as much movement, and a value of 0.5 causes the amount of
+// movement to be halved.
+TraktorS3.JogSpeedMultiplier = 1.0;
+
+// Parameters for the jog wheel smoothing while scratching
 TraktorS3.Alpha = 1.0 / 8;
 TraktorS3.Beta = TraktorS3.Alpha / 32;
 
@@ -1263,7 +1269,13 @@ TraktorS3.Deck = class {
         }
 
         if (field.value !== 0) {
-            engine.scratchEnable(this.activeChannelNumber, 768, 33.33334, TraktorS3.Alpha, TraktorS3.Beta);
+            engine.scratchEnable(
+                this.activeChannelNumber,
+                768,
+                33.33334 / TraktorS3.JogSpeedMultiplier,
+                TraktorS3.Alpha,
+                TraktorS3.Beta
+            );
         } else {
             engine.scratchDisable(this.activeChannelNumber);
 
@@ -1302,7 +1314,7 @@ TraktorS3.Deck = class {
             // get the rate ratio.
             const velocity = (tickDelta / timeDelta) / thirtyThree;
 
-            engine.setValue(this.activeChannel, "jog", velocity);
+            engine.setValue(this.activeChannel, "jog", velocity * TraktorS3.JogSpeedMultiplier);
         }
     }
 
