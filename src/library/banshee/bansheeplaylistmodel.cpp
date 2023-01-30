@@ -215,10 +215,10 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
     QStringList tableColumns = {
             kTrackId,
             kViewOrder,
-            kPreview}; // 3
+            kPreview};
 
     QStringList trackSourceColumns = {
-            kTrackId, // 0
+            kTrackId,
             KArtist,
             KTitel,
             kDuration,
