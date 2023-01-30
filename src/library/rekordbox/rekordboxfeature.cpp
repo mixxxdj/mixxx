@@ -1262,13 +1262,13 @@ RekordboxFeature::RekordboxFeature(
             TRACKLOCATIONSTABLE_LOCATION,
             LIBRARYTABLE_COMMENT};
 
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection,
-                    tableName,
-                    std::move(idColumn),
-                    std::move(columns),
-                    std::move(searchColumns),
-                    false));
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
+            m_pTrackCollection,
+            tableName,
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
     m_pRekordboxPlaylistModel = make_parented<RekordboxPlaylistModel>(
             this, pLibrary->trackCollections(), m_trackSource);
 

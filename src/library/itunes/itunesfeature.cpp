@@ -94,13 +94,13 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             "title",
             "genre"};
 
-    m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
             m_pLibrary->trackCollections()->internalCollection(),
             std::move(tableName),
             std::move(idColumn),
             std::move(columns),
             std::move(searchColumns),
-            false));
+            false);
     m_pITunesTrackModel = new BaseExternalTrackModel(
         this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes",

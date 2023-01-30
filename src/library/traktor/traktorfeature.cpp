@@ -92,13 +92,13 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
             "title",
             "genre"};
 
-    m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
             pLibrary->trackCollections()->internalCollection(),
             tableName,
             std::move(idColumn),
             std::move(columns),
             std::move(searchColumns),
-            false));
+            false);
 
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(this, pLibrary->trackCollections(), m_trackSource);

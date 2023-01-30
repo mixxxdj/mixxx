@@ -246,13 +246,13 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             KTitel,
             kGenre};
 
-    QSharedPointer<BaseTrackCache> trackSource(
-            new BaseTrackCache(m_pTrackCollectionManager->internalCollection(),
-                    m_tempTableName,
-                    idColumn,
-                    std::move(trackSourceColumns),
-                    std::move(searchColumns),
-                    false));
+    auto trackSource = QSharedPointer<BaseTrackCache>::create(
+            m_pTrackCollectionManager->internalCollection(),
+            m_tempTableName,
+            idColumn,
+            std::move(trackSourceColumns),
+            std::move(searchColumns),
+            false);
 
     setTable(m_tempTableName, idColumn, std::move(tableColumns), trackSource);
     setSearch("");

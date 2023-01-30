@@ -880,13 +880,13 @@ SeratoFeature::SeratoFeature(
             LIBRARYTABLE_COMMENT,
             LIBRARYTABLE_GROUPING};
 
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection,
-                    kSeratoLibraryTable,
-                    std::move(idColumn),
-                    std::move(columns),
-                    std::move(searchColumns),
-                    false));
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
+            m_pTrackCollection,
+            kSeratoLibraryTable,
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
     m_pSeratoPlaylistModel = new SeratoPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
 
     m_title = tr("Serato");

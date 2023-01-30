@@ -42,13 +42,13 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
             "title",
             "genre"};
 
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection,
-                    tableName,
-                    std::move(idColumn),
-                    std::move(columns),
-                    std::move(searchColumns),
-                    false));
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
+            m_pTrackCollection,
+            tableName,
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
         this, pLibrary->trackCollections(),
