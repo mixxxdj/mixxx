@@ -42,8 +42,8 @@ QAtomicInt sTableNumber;
 
 const QString kTrackId = QStringLiteral(CLM_TRACK_ID);
 const QString kViewOrder = QStringLiteral(CLM_VIEW_ORDER);
-const QString KArtist = QStringLiteral(CLM_ARTIST);
-const QString KTitel = QStringLiteral(CLM_TITLE);
+const QString kArtist = QStringLiteral(CLM_ARTIST);
+const QString kTitle = QStringLiteral(CLM_TITLE);
 const QString kDuration = QStringLiteral(CLM_DURATION);
 const QString kUri = QStringLiteral(CLM_URI);
 const QString kAlbum = QStringLiteral(CLM_ALBUM);
@@ -219,8 +219,8 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
 
     QStringList trackSourceColumns = {
             kTrackId,
-            KArtist,
-            KTitel,
+            kArtist,
+            kTitle,
             kDuration,
             kUri,
             kAlbum,
@@ -237,13 +237,13 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             kPlaycount,
             kComposer};
     QStringList searchColumns = {
-            KArtist,
+            kArtist,
             kAlbum,
             kAlbumArtist,
             kUri,
             kGrouping,
             kComment,
-            KTitel,
+            kTitle,
             kGenre};
 
     auto trackSource = QSharedPointer<BaseTrackCache>::create(
