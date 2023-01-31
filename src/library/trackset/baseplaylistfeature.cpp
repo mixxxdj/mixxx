@@ -618,7 +618,6 @@ void BasePlaylistFeature::slotExportPlaylist() {
     }
 }
 
-// MV added method
 void BasePlaylistFeature::slotExportPlaylists() {
     const PlaylistDAO::HiddenType hidden = PlaylistDAO::PLHT_NOT_HIDDEN;
     QList<QPair<int, QString>> test2 = m_playlistDao.getPlaylists(hidden);
