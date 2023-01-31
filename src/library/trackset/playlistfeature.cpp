@@ -91,6 +91,7 @@ void PlaylistFeature::onRightClickChild(
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
+    menu.addAction(m_pExportPlaylistsAction);
     menu.addAction(m_pExportTrackFilesAction);
     menu.exec(globalPos);
 }
