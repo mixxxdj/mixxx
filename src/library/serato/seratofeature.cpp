@@ -1062,7 +1062,6 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
 }
 
 void SeratoFeature::onSeratoDatabasesFound() {
-    // std::vector<std::unique_ptr<TreeItem>> foundDatabases;
     const QList<TreeItem*> result = m_databasesFuture.result();
     auto foundDatabases = std::vector<std::unique_ptr<TreeItem>>(result.cbegin(), result.cend());
 
