@@ -671,7 +671,7 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
-    m_lastRightClickedIndex = {};
+    m_lastRightClickedIndex = QModelIndex();
     m_childModel.removeRows(0, m_childModel.rowCount());
 }
 

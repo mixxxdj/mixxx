@@ -46,7 +46,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
         return m_lastRightClickedIndex;
     }
     void clearLastRightClickedIndex() {
-        m_lastRightClickedIndex = {};
+        m_lastRightClickedIndex = QModelIndex();
     };
 
     TrackCollection* const m_pTrackCollection;

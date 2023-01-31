@@ -479,7 +479,7 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
 QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     qDebug() << "CrateFeature::rebuildChildModel()" << selectedCrateId;
 
-    m_lastRightClickedIndex = {};
+    m_lastRightClickedIndex = QModelIndex();
 
     TreeItem* pRootItem = m_childModel.getRootItem();
     VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
