@@ -163,7 +163,8 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 
 // This function is executed in a separate thread other than the main thread
 // The returned list owns the pointers, but we can't use a unique_ptr because
-// the result is passed by a const reference inside QFuture.
+// the result is passed by a const reference inside QFuture and than copied
+// to the main thread requiring a copy-able object.
 QList<TreeItem*> findRekordboxDevices() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
