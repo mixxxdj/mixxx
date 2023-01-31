@@ -670,7 +670,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 
 // This function is executed in a separate thread other than the main thread
 // The returned list owns the pointers, but we can't use a unique_ptr because
-// the result is passed by a const reference
+// the result is passed by a const reference inside QFuture.
 QList<TreeItem*> findSeratoDatabases() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
