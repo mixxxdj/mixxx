@@ -85,7 +85,7 @@ void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
 TreeItem* TreeItem::appendChild(
         QString label,
         QVariant data) {
-    std::unique_ptr<TreeItem> pNewChild = std::make_unique<TreeItem>(
+    auto pNewChild = std::make_unique<TreeItem>(
             std::move(label),
             std::move(data));
     TreeItem* pRet = pNewChild.get();
