@@ -27,7 +27,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
           m_columnCache(std::move(columns)),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection, std::move(searchColumns))),
+          m_pQueryParser(std::make_unique<SearchQueryParser>(
+                  pTrackCollection, std::move(searchColumns))),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_database(pTrackCollection->database()) {
