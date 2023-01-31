@@ -341,7 +341,8 @@ std::optional<RgbColor::optional_t> SeratoTags::getTrackColor() const {
         return std::nullopt;
     }
 
-    return pStoredColor->toDisplayedColor();
+    return std::optional<RgbColor::optional_t>(
+            pStoredColor->toDisplayedColor());
 }
 
 void SeratoTags::setTrackColor(RgbColor::optional_t color) {
