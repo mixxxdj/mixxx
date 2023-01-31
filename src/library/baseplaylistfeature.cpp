@@ -633,7 +633,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        std::unique_ptr<TreeItem> pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
+        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
         pItem->setBold(m_playlistsSelectedTrackIsIn.contains(playlistId));
 
         decorateChild(pItem.get(), playlistId);

@@ -137,13 +137,12 @@ ITunesFeature::~ITunesFeature() {
 
 std::unique_ptr<BaseSqlTableModel>
 ITunesFeature::createPlaylistModelForPlaylist(const QString& playlist) {
-    std::unique_ptr<BaseExternalPlaylistModel> pModel =
-            std::make_unique<BaseExternalPlaylistModel>(this,
-                    m_pLibrary->trackCollections(),
-                    "mixxx.db.model.itunes_playlist",
-                    "itunes_playlists",
-                    "itunes_playlist_tracks",
-                    m_trackSource);
+    auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
+            m_pLibrary->trackCollections(),
+            "mixxx.db.model.itunes_playlist",
+            "itunes_playlists",
+            "itunes_playlist_tracks",
+            m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }

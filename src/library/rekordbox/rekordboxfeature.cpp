@@ -1333,9 +1333,8 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
 
 std::unique_ptr<BaseSqlTableModel>
 RekordboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
-    std::unique_ptr<RekordboxPlaylistModel> pModel =
-            std::make_unique<RekordboxPlaylistModel>(
-                    this, m_pLibrary->trackCollections(), m_trackSource);
+    auto pModel = std::make_unique<RekordboxPlaylistModel>(
+            this, m_pLibrary->trackCollections(), m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }

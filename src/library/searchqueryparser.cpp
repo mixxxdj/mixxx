@@ -227,13 +227,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 // as the crate names the track is in. This allows the user
                 // to use crates like tags
                 if (m_searchCrates) {
-                    std::unique_ptr<OrNode> gNode = std::make_unique<OrNode>();
-
+                    auto gNode = std::make_unique<OrNode>();
                     gNode->addNode(std::make_unique<CrateFilterNode>(
                                     &m_pTrackCollection->crates(), argument));
                     gNode->addNode(std::make_unique<TextFilterNode>(
                             m_pTrackCollection->database(), m_queryColumns, argument));
-
                     pNode = std::move(gNode);
                 } else {
                     pNode = std::make_unique<TextFilterNode>(
