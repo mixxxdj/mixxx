@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 //
 // Traktor Kontrol S3 HID controller script v2.00
-// Last modification: December 2022
+// Last modification: January 2023
 // Authors: Owen Williams, Robbert van der Helm
 // https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3
 //
@@ -19,44 +19,37 @@ var TraktorS3 = {};
 // ==== Friendly User Configuration ====
 // This controller script has two modes for controlling FX:
 //
-// - A mode where the Filter and FX 1-4 buttons switch between the first five
-//   quick effect chain presets found in Settings -> Effects, and the FX Enable
-//   buttons toggle the enabled/bypass status of those quick effect chains. This
-//   emulates the intended behavior of the Mixer FX section on the Traktor
-//   Kontrol S3. The Filter button is bound to the first preset in the list, and
-//   the FX 1-4 buttons are bound to presets 2-5.
-//
-//   Pressing one of the five FX/Filter buttons switches every channel's quick
-//   effect chain to the corresponding preset. Holding one of the buttons down
-//   while pressing one of the four channel's Filter Enable buttons will assign
-//   the chain to just that channel. When the Filter Enable button is not
-//   enabled then channel will behave the same as if the first Filter quick
-//   effect chain preset was used.
-//
-//   The mode works best with the following configuration:
+// - A mode focussing on quick effect chain presets, emulating the intended
+//   behavior of the Mixer FX section on the Traktor Kontrol S3. This is the
+//   default behavior. To make best use of this mode, you will need to make the
+//   following configuration changes:
 //
 //   - The 'Keep superknob position' option in the Effects preferences page
 //     should be enabled.
-//   - The very first quick effect preset in the quick effect presets list
-//     should be set to the Moog Filter preset or another filter preset.
+//   - The very first quick effect preset in the quick effect presets list on
+//     the same preferences page should be set to the Moog Filter preset or
+//     another filter preset.
 //   - The next four quick effect presets should contain that exact same filter
 //     effect, plus another effect. Delays, reverbs, flangers, trance gates, and
 //     white noise are some examples of effects that would work well here.
 //
-// - Another mode that exposes all of Mixxx's effect controls at the expense of
-//   being more complex to use. See the manual for the full key binding scheme.
+// - Another mode that gives detailed control over Mixxx's individual effect
+//   sections instead of focusing on the quick effects. This mode is more
+//   complex to use as the result of the S3's limited number of buttons and
+//   knobs dedicated to effects.
 //
-// The first mode is dubbed 'vanilla mode' as it behaves in the way the mixer FX
-// section was originally intended to be used by Native Instruments. Disable
-// this option to use the second, Mixxx-specific mode.
-TraktorS3.VanillaFxMode = true;
+// The first mode is dubbed 'quick effect mode' and it is enabled by default.
+// Disable this option to use the second, Mixxx-specific mode. See the readme at
+// https://manual.mixxx.org/latest/en/hardware/controllers/native_instruments_traktor_kontrol_s3.html
+// for more information on how to use these modes.
+TraktorS3.QuickEffectMode = true;
 // When enabled, set all channels to the first FX chain on startup. Otherwise
 // the quick FX chain assignments from the last Mixxx run are preserved.
-TraktorS3.VanillaFxModeDefaultToFilter = true;
+TraktorS3.QuickEffectModeDefaultToFilter = true;
 // When enabled, the FX Enable buttons will use the colors set in
 // `TraktorS3.ChannelColors` when the filter effect is selected. Disabling this
 // will use the Filter button's orange color instead.
-TraktorS3.VanillaFxModeChannelColors = false;
+TraktorS3.QuickEffectModeChannelColors = false;
 
 // The pitch slider can operate either in absolute or relative mode.
 // In absolute mode:
@@ -2345,9 +2338,9 @@ TraktorS3.shutdown = function() {
 /**
  * An alternative to `FXControl` that behaves more similarly to how the
  * controller works with Traktor. See the description for
- * `TraktorS3.VanillaFxMode` for more information.
+ * `TraktorS3.QuickEffectMode` for more information.
  */
-TraktorS3.VanillaFxControl = class {
+TraktorS3.QuickFxControl = class {
     constructor(controller) {
         this.controller = controller;
 
@@ -2381,7 +2374,7 @@ TraktorS3.VanillaFxControl = class {
             4: this.controller.hid.LEDColors.YELLOW,
         };
 
-        if (TraktorS3.VanillaFxModeDefaultToFilter) {
+        if (TraktorS3.QuickEffectModeDefaultToFilter) {
             for (let channel = 1; channel <= 4; channel++) {
                 this.setQuickEffectChain(channel, 0);
             }
@@ -2580,7 +2573,7 @@ TraktorS3.VanillaFxControl = class {
         // between channels. We'll also fall back to the channel colors if the
         // user manually selected an out of bounds chain
         let ledColor = fxEnabled ? TraktorS3.LEDBrightValue : TraktorS3.LEDDimValue;
-        if (!TraktorS3.VanillaFxModeChannelColors || (fxNumber >= 1 && fxNumber <= 5)) {
+        if (!TraktorS3.QuickEffectModeChannelColors || (fxNumber >= 1 && fxNumber <= 5)) {
             ledColor += this.fxColors[fxNumber];
         } else {
             ledColor += this.controller.hid.LEDColors[TraktorS3.ChannelColors[channelGroup]];
@@ -2604,8 +2597,8 @@ TraktorS3.init = function(_id) {
         "[Channel2]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks.deck2, "[Channel2]"),
     };
 
-    if (TraktorS3.VanillaFxMode) {
-        this.kontrol.fxController = new TraktorS3.VanillaFxControl(this.kontrol);
+    if (TraktorS3.QuickEffectMode) {
+        this.kontrol.fxController = new TraktorS3.QuickFxControl(this.kontrol);
     } else {
         this.kontrol.fxController = new TraktorS3.FXControl(this.kontrol);
     }
