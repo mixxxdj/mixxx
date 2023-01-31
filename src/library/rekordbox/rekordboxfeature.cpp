@@ -163,7 +163,7 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 
 // This function is executed in a separate thread other than the main thread
 // The returned list owns the pointers, but we can't use a unique_ptr because
-// the result is passed by a const reference
+// the result is passed by a const reference inside QFuture.
 QList<TreeItem*> findRekordboxDevices() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -1458,11 +1458,8 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 }
 
 void RekordboxFeature::onRekordboxDevicesFound() {
-    std::vector<std::unique_ptr<TreeItem>> foundDevices;
     const QList<TreeItem*> result = m_devicesFuture.result();
-    for (const auto& pDeviceFound : result) {
-        foundDevices.emplace_back(pDeviceFound);
-    }
+    auto foundDevices = std::vector<std::unique_ptr<TreeItem>>(result.cbegin(), result.cend());
 
     clearLastRightClickedIndex();
 
