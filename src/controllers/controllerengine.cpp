@@ -62,6 +62,9 @@ ControllerEngine::ControllerEngine(
         m_dx[i] = 0.0;
         m_scratchFilters[i] = new AlphaBetaFilter();
         m_ramp[i] = false;
+        m_brakeActive[i] = false;
+        m_spinbackActive[i] = false;
+        m_softStartActive[i] = false;
     }
 
     initializeScriptEngine();
@@ -1292,8 +1295,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
     if (m_dx[deck] != 0) {
         //qDebug() << "Already scratching deck" << deck << ". Overriding.";
         int timerId = m_scratchTimers.key(deck);
-        killTimer(timerId);
-        m_scratchTimers.remove(timerId);
+        stopScratchTimer(timerId);
     }
 
     // Controller resolution in intervals per second at normal speed.

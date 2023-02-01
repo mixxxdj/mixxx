@@ -679,7 +679,7 @@ HerculesMP3e2.wheelOnOff = function() {
 HerculesMP3e2.jogWheel = function(midino, control, value, status, group) {
     var deck = (group == "[Channel1]") ? deckA : deckB;
 
-    // This function is called everytime the jog is moved
+    // This function is called every time the jog is moved
     if (value == 0x01) {
         if (superButtonHold == 2) {
             if ((deck == 1) || (deck == 3)) {

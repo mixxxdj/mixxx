@@ -70,7 +70,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pKeyControl(nullptr),
           m_pReadAheadManager(nullptr),
           m_pReader(nullptr),
-          m_filepos_play(kInitalSamplePosition),
+          m_filepos_play(kInitialSamplePosition),
           m_speed_old(0),
           m_tempo_ratio_old(1.),
           m_scratching_old(false),
@@ -513,7 +513,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     m_pause.lock();
     m_visualPlayPos->setInvalid();
-    m_filepos_play = kInitalSamplePosition; // for execute seeks to 0.0
+    m_filepos_play = kInitialSamplePosition; // for execute seeks to 0.0
     m_pCurrentTrack = pTrack;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
@@ -581,6 +581,12 @@ void EngineBuffer::slotPassthroughChanged(double enabled) {
     if (enabled != 0) {
         // If passthrough was enabled, stop playing the current track.
         slotControlStop(1.0);
+        // Disable CUE and Play indicators
+        m_pCueControl->resetIndicators();
+    } else {
+        // Update CUE and Play indicators. Note: m_pCueControl->updateIndicators()
+        // is not sufficient.
+        updateIndicatorsAndModifyPlay(false, false);
     }
 }
 
@@ -1242,9 +1248,24 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (m_trackSampleRateOld == 0) {
-        // This happens if Deck Passthrough is active but no track is loaded.
-        // We skip indicator updates.
+    // Explicitly invalidate the visual playposition so waveformwidgetrenderer
+    // clears the visual when passthrough was activated while a track was loaded.
+    // TODO(ronso0) Check if postProcess() needs to be called at all when passthrough
+    // is active -- if no, remove this hack.
+    if (m_pPassthroughEnabled->toBool()) {
+        m_visualPlayPos->setInvalid();
+        return;
+    }
+
+    if (m_filepos_play == kInitialSamplePosition ||
+            m_trackSampleRateOld == 0 ||
+            m_tempo_ratio_old == 0) {
+        // Skip indicator updates with invalid values to prevent undefined behavior,
+        // e.g. in WaveformRenderBeat::draw().
+        //
+        // This is known to happen if Deck Passthrough is active, when either no
+        // track is loaded or a track was loaded but processSeek() has not been
+        // called yet.
         return;
     }
 
@@ -1253,9 +1274,9 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
 
-    const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame
-            / m_trackSampleRateOld / m_tempo_ratio_old;
-    if(speed > 0 && fFractionalPlaypos == 1.0) {
+    const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame /
+            m_trackSampleRateOld / getRateRatio();
+    if (speed > 0 && fFractionalPlaypos == 1.0) {
         // At Track end
         speed = 0;
     }

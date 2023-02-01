@@ -64,7 +64,8 @@ class ControlDoublePrivate : public QObject {
     static QList<QSharedPointer<ControlDoublePrivate>> takeAllInstances();
 
     static QHash<ConfigKey, ConfigKey> getControlAliases() {
-        // Implicitly shared classes can safely be copied across threads
+        MMutexLocker locker(&s_qCOHashMutex);
+        // lock thread-unsafe copy constructors of QHash
         return s_qCOAliasHash;
     }
 

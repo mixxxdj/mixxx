@@ -11942,7 +11942,7 @@ function nth(array, n) {
  * @since 4.0.0
  * @category Util
  * @param {number} [n=0] The index of the argument to return.
- * @returns {Function} Returns the new pass-thru function.
+ * @returns {Function} Returns the new passthrough function.
  * @example
  *
  * var func = _.nthArg(1);
@@ -17785,19 +17785,19 @@ function assemble() {
   var str = '';
   var first$$1 = true;
   Array.prototype.slice.call(arguments).forEach(function (arg) {
-    var appendend = void 0;
+    var append = void 0;
     if (Array.isArray(arg)) {
-      appendend = '[' + arg.toString() + ']';
+      append = '[' + arg.toString() + ']';
     } else if ((typeof arg === 'undefined' ? 'undefined' : _typeof(arg)) === 'object' && startsWith(arg.toString(), '[object')) {
-      appendend = stringify_1(arg, null, 2);
+      append = stringify_1(arg, null, 2);
     } else {
-      appendend = arg;
+      append = arg;
     }
     if (first$$1) {
-      str = appendend;
+      str = append;
       first$$1 = false;
     } else {
-      str = str + ' ' + appendend;
+      str = str + ' ' + append;
     }
   });
   return str;

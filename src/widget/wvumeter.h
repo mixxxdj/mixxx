@@ -1,20 +1,14 @@
 #pragma once
 
-#include <QPixmap>
-#include <QString>
-#include <QPaintEvent>
-#include <QWidget>
-#include <QDomNode>
-
-#include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
-class WVuMeter : public WWidget  {
-   Q_OBJECT
+class WVuMeter : public WWidget {
+    Q_OBJECT
   public:
-    explicit WVuMeter(QWidget *parent=nullptr);
+    explicit WVuMeter(QWidget* parent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
@@ -35,7 +29,7 @@ class WVuMeter : public WWidget  {
     void updateState(mixxx::Duration elapsed);
 
   private:
-    void paintEvent(QPaintEvent * /*unused*/) override;
+    void paintEvent(QPaintEvent* /*unused*/) override;
     void setPeak(double parameter);
 
     // Current parameter and peak parameter.

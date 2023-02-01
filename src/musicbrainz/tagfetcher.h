@@ -65,8 +65,7 @@ class TagFetcher : public QObject {
             const mixxx::network::WebResponseWithContent& responseWithContent);
 
   private:
-    bool onAcoustIdTaskTerminated();
-    bool onMusicBrainzTaskTerminated();
+    void terminate();
 
     QNetworkAccessManager m_network;
 

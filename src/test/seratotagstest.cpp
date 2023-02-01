@@ -217,7 +217,9 @@ TEST_F(SeratoTagsTest, MarkersParseDumpRoundtrip) {
 
         const auto trackColor = seratoTags.getTrackColor();
         const auto cueInfos = seratoTags.getCueInfos();
-        seratoTags.setTrackColor(trackColor);
+        if (trackColor) {
+            seratoTags.setTrackColor(*trackColor);
+        }
         seratoTags.setCueInfos(cueInfos);
 
         const QByteArray outputData = seratoTags.dumpMarkers(filetype);
@@ -252,7 +254,9 @@ TEST_F(SeratoTagsTest, Markers2RoundTrip) {
         const auto trackColor = seratoTags.getTrackColor();
         const auto cueInfos = seratoTags.getCueInfos();
         seratoTags.setBpmLocked(bpmLocked);
-        seratoTags.setTrackColor(trackColor);
+        if (trackColor) {
+            seratoTags.setTrackColor(*trackColor);
+        }
         seratoTags.setCueInfos(cueInfos);
 
         const QByteArray outputData = seratoTags.dumpMarkers2(filetype);

@@ -61,6 +61,9 @@ class TrackFile {
     QString baseName() const {
         return m_fileInfo.baseName();
     }
+    QString completeBaseName() const {
+        return m_fileInfo.completeBaseName();
+    }
     QString fileName() const {
         return m_fileInfo.fileName();
     }

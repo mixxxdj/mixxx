@@ -8,6 +8,7 @@
 
 #include "musicbrainz/musicbrainz.h"
 #include "network/webtask.h"
+#include "util/performancetimer.h"
 
 namespace mixxx {
 
@@ -17,7 +18,7 @@ class MusicBrainzRecordingsTask : public network::WebTask {
   public:
     MusicBrainzRecordingsTask(
             QNetworkAccessManager* networkAccessManager,
-            QList<QUuid>&& recordingIds,
+            const QList<QUuid>& recordingIds,
             QObject* parent = nullptr);
     ~MusicBrainzRecordingsTask() override = default;
 
@@ -29,12 +30,17 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             int errorCode,
             const QString& errorMessage);
 
+  protected:
+    void onNetworkError(
+            QNetworkReply* finishedNetworkReply,
+            network::HttpStatusCode statusCode) override;
+
   private:
     QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
     void doNetworkReplyFinished(
-            QNetworkReply* finishedNetworkReply,
+            QNetworkReply* pFinishedNetworkReply,
             network::HttpStatusCode statusCode) override;
 
     void emitSucceeded(
@@ -44,14 +50,14 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             int errorCode,
             const QString& errorMessage);
 
-    void continueWithNextRequest();
-
     const QUrlQuery m_urlQuery;
 
     QList<QUuid> m_queuedRecordingIds;
     QSet<QUuid> m_finishedRecordingIds;
 
     QMap<QUuid, musicbrainz::TrackRelease> m_trackReleases;
+
+    PerformanceTimer m_lastRequestSentAt;
 
     int m_parentTimeoutMillis;
 };

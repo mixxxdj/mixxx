@@ -427,7 +427,7 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
     m_seratoMarkers2.setCues(cueInfoList);
 }
 
-RgbColor::optional_t SeratoTags::getTrackColor() const {
+std::optional<RgbColor::optional_t> SeratoTags::getTrackColor() const {
     RgbColor::optional_t color = m_seratoMarkers.getTrackColor();
 
     if (!color) {
@@ -435,11 +435,11 @@ RgbColor::optional_t SeratoTags::getTrackColor() const {
         color = m_seratoMarkers2.getTrackColor();
     }
 
-    if (color) {
-        color = SeratoTags::storedToDisplayedTrackColor(*color);
+    if (!color) {
+        return std::nullopt;
     }
 
-    return color;
+    return std::optional<RgbColor::optional_t>{SeratoTags::storedToDisplayedTrackColor(*color)};
 }
 
 void SeratoTags::setTrackColor(RgbColor::optional_t color) {

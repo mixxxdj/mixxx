@@ -448,6 +448,7 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
+        softTakeover: true,
         input: function(channel, control, value, _status, _group) {
             if (this.MSB !== undefined) {
                 value = (this.MSB << 7) + value;
@@ -467,9 +468,16 @@
             // For the first messages, disregard the LSB in case
             // the first LSB is received after the first MSB.
             if (this.MSB === undefined) {
-                this.max = 127;
+                // a flaw in the Pot API does not mandate consumers
+                // to supply an accurate max value when using
+                // this with non-7-bit inputs. We cannot detect
+                // that in the constructor so set the max
+                // appropriately here
+                if (this.max === Component.prototype.max) {
+                    this.max = (1 << 14) - 1;
+                }
+                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
                 this.input(channel, control, value, status, group);
-                this.max = 16383;
             }
             this.MSB = value;
         },
@@ -477,10 +485,12 @@
             // Make sure the first MSB has been received
             if (this.MSB !== undefined) {
                 this.input(channel, control, value, status, group);
+            } else {
+                this._firstLSB = value;
             }
         },
         connect: function() {
-            if (this.firstValueReceived && !this.relative) {
+            if (this.firstValueReceived && !this.relative && this.softTakeover) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
         },
@@ -713,6 +723,67 @@
             }
             this.setCurrentDeck("[Channel" + this.deckNumbers[index] + "]");
         }
+    });
+
+    var JogWheelBasic = function(options) {
+        Component.call(this, options);
+
+        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
+
+        if (!_.isInteger(this.deck)) {
+            console.warn("missing scratch deck");
+            return;
+        }
+        if (this.deck <= 0) {
+            console.warn("invalid deck number: " + this.deck);
+            return;
+        }
+        if (!_.isInteger(this.wheelResolution)) {
+            console.warn("missing jogwheel resolution");
+            return;
+        }
+        if (!_.isFinite(this.alpha)) {
+            console.warn("missing alpha scratch parameter value");
+            return;
+        }
+        if (!_.isFinite(this.beta)) {
+            this.beta = this.alpha / 32;
+        }
+        if (!_.isFinite(this.rpm)) {
+            this.rpm = 33 + 1/3;
+        }
+        if (this.group === undefined) {
+            this.group = "[Channel" + this.deck + "]";
+        }
+        this.inKey = "jog";
+    };
+
+    JogWheelBasic.prototype = new Component({
+        vinylMode: true,
+        isPress: Button.prototype.isPress,
+        inValueScale: function(value) {
+            // default implementation for converting signed ints
+            return value < 0x40 ? value : value - (this.max + 1);
+        },
+        inputWheel: function(_channel, _control, value, _status, _group) {
+            value = this.inValueScale(value);
+            if (engine.isScratching(this.deck)) {
+                engine.scratchTick(this.deck, value);
+            } else {
+                this.inSetValue(value);
+            }
+        },
+        inputTouch: function(channel, control, value, status, _group) {
+            if (this.isPress(channel, control, value, status) && this.vinylMode) {
+                engine.scratchEnable(this.deck,
+                    this.wheelResolution,
+                    this.rpm,
+                    this.alpha,
+                    this.beta);
+            } else {
+                engine.scratchDisable(this.deck);
+            }
+        },
     });
 
     var EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
@@ -1167,6 +1238,7 @@
     exports.Encoder = Encoder;
     exports.ComponentContainer = ComponentContainer;
     exports.Deck = Deck;
+    exports.JogWheelBasic = JogWheelBasic;
     exports.EffectUnit = EffectUnit;
     global.components = exports;
 }(this));

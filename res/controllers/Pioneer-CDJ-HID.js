@@ -777,4 +777,3 @@ PioneerCDJHID.pregain = function (field) {
         script.absoluteNonLin(field.value, 0, 1, 5, 0, 65536)
     );
 }
-

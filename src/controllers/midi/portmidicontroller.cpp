@@ -198,10 +198,12 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
 
     PmError err = m_pOutputDevice->writeShort(word);
     if (err == pmNoError) {
-        controllerDebug(MidiUtils::formatMidiMessage(getName(),
-                                                     status, byte1, byte2,
-                                                     MidiUtils::channelFromStatus(status),
-                                                     MidiUtils::opCodeFromStatus(status)));
+        controllerDebug(QStringLiteral("outgoing: ") << MidiUtils::formatMidiMessage(getName(),
+                                status,
+                                byte1,
+                                byte2,
+                                MidiUtils::channelFromStatus(status),
+                                MidiUtils::opCodeFromStatus(status)));
     } else {
         // Use two qWarnings() to ensure line break works on all operating systems
         qWarning() << "Error sending short message"
@@ -229,7 +231,8 @@ void PortMidiController::send(const QByteArray& data) {
 
     PmError err = m_pOutputDevice->writeSysEx((unsigned char*)data.constData());
     if (err == pmNoError) {
-        controllerDebug(MidiUtils::formatSysexMessage(getName(), data));
+        controllerDebug(QStringLiteral("outgoing: ")
+                << MidiUtils::formatSysexMessage(getName(), data));
     } else {
         // Use two qWarnings() to ensure line break works on all operating systems
         qWarning() << "Error sending SysEx message:"

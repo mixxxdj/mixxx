@@ -381,7 +381,7 @@ class SeratoMarkers2 final {
               m_lastBase64ByteFLAC('A') {
     }
 
-    /// Parse a binary Serato repesentation of the "Markers2" data from a
+    /// Parse a binary Serato representation of the "Markers2" data from a
     /// `QByteArray` and write the results to the `SeratoMarkers2` instance.
     /// The `fileType` parameter determines the exact format of the data being
     /// used.
@@ -390,7 +390,7 @@ class SeratoMarkers2 final {
             const QByteArray& outerData,
             taglib::FileType fileType);
 
-    /// Create a binary Serato repesentation of the "Markers2" data suitable
+    /// Create a binary Serato representation of the "Markers2" data suitable
     /// for `fileType` and dump it into a `QByteArray`. The content of that
     /// byte array can be used for round-trip tests or written to the
     /// appropriate tag to make it accessible to Serato.
@@ -430,6 +430,12 @@ class SeratoMarkers2 final {
     QList<CueInfo> getCues() const;
     void setCues(const QList<CueInfo>& cueInfos);
 
+    /// Returns a color if the tag is present and contains a `COLOR` entry.
+    /// Usually, such an entry should always exist, even if the track has no
+    /// color assigned to it in Serato (in that case the color is `0xFFFFFF`).
+    ///
+    /// Note that the color returned by this function needs to be converted
+    /// into a display color using `SeratoTags::storedToDisplayedTrackColor()`.
     RgbColor::optional_t getTrackColor() const;
     void setTrackColor(RgbColor color);
 

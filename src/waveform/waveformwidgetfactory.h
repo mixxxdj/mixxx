@@ -12,6 +12,7 @@
 #include "waveform/widgets/waveformwidgettype.h"
 
 class WVuMeter;
+class WVuMeterGL;
 class WWaveformViewer;
 class WaveformWidgetAbstract;
 class VSyncThread;
@@ -122,7 +123,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void destroyWidgets();
 
-    void addTimerListener(WVuMeter* pWidget);
+    void addVuMeter(WVuMeter* pWidget);
+    void addVuMeter(WVuMeterGL* pWidget);
 
     void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);
@@ -140,6 +142,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void waveformMeasured(float frameRate, int droppedFrames);
     void renderSpinnies(VSyncThread*);
     void swapSpinnies();
+    void renderVuMeters(VSyncThread*);
+    void swapVuMeters();
 
   public slots:
     void slotSkinLoaded();

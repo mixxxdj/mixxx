@@ -275,15 +275,14 @@ WLibrary {
   }
   #SearchLineBox {
   padding-right: 2px;
-  border-right: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
   }
 
 #LibExpandBox {
-  border-width: 1px 0px 1px 0px;
-  border-radius: 0px;
-  padding: 0px 0px 2px 2px;
+  border-width: 1px 0px 1px 1px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  padding: 0px 0px 2px 0px;
+  margin-left: 4px;
 }
 
 #SidebarBox {
@@ -667,6 +666,10 @@ WLibrary {
 
 
 /************** Mixer *********************************************************/
+
+#CrossfaderContainer[highlight="1"] {
+  border:  1px solid #cf9200;
+}
 
 #MixerDecks {
   padding: 2px 6px 2px 6px;

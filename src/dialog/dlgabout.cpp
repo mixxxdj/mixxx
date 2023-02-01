@@ -111,7 +111,16 @@ DlgAbout::DlgAbout()
             << "Javier Vilarroig"
             << "Pino Toscano"
             << "Alexander Horner"
-            << "Michael Ehlen";
+            << "Michael Ehlen"
+            << "Alice Midori"
+            << "h67ma"
+            << "Fatih Emre YILDIZ"
+            << "Fredrik Wieczerkowski"
+            << "Vincent Duez-Dellac"
+            << "Somesh Metri"
+            << "Maarten de Boer"
+            << "Doteya"
+            << "olafklingt";
 
     QStringList specialThanks;
     specialThanks

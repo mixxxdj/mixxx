@@ -424,7 +424,7 @@ bool WPushButton::event(QEvent* e) {
     } else if (e->type() == QEvent::Leave) {
         if (m_bPressed) {
             // A Leave event is send instead of a mouseReleaseEvent()
-            // fake it to get not stucked in pressed state
+            // fake it to get not stuck in pressed state
             QMouseEvent mouseEvent = QMouseEvent(
                     QEvent::MouseButtonRelease,
                     QPointF(),

@@ -73,7 +73,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetPathFromIndex(int index) const;
     QString askForPresetName(const QString& prefilledName = QString()) const;
     void applyPresetChanges();
-    void savePreset();
+    bool savePreset();
     void initTableView(QTableView* pTable);
 
     /// Set dirty state (i.e. changes have been made).
@@ -110,6 +110,7 @@ class DlgPrefController : public DlgPreferencePage {
     const QString m_pUserDir;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
+    ControlPickerMenu* m_pControlPickerMenu;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
     QMap<QString, bool> m_pOverwritePresets;

@@ -21,7 +21,7 @@ def get_toplevel_path() -> str:
 
     cmd = ["git", "rev-parse", "--show-toplevel"]
     logger.debug("Executing: %r", cmd)
-    return subprocess.check_output(cmd, text=True).strip()
+    return os.path.normpath(subprocess.check_output(cmd, text=True).strip())
 
 
 def get_moved_files(
@@ -169,7 +169,7 @@ def get_changed_lines(
                 yield lineobj
 
         # If we reach this part, the line does not contain a diff filename or a
-        # hunk header and does not belog to a hunk. This means that this line
+        # hunk header and does not belong to a hunk. This means that this line
         # will be ignored implicitly.
 
     # Make sure we really parsed all lines from the last hunk

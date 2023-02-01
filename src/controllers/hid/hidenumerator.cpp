@@ -11,6 +11,10 @@ bool recognizeDevice(const hid_device_info& device_info) {
     // Skip mice and keyboards. Users can accidentally disable their mouse
     // and/or keyboard by enabling them as HID controllers in Mixxx.
     // https://bugs.launchpad.net/mixxx/+bug/1940599
+    // With HIDAPI backend libusb usage_page and usage are always 0
+    // Reading usage_page and usage is intentionally disabled in hid.c
+    // because it is very invasive as it requires the detach and re-attach
+    // of the kernel driver
     if (device_info.usage_page == kGenericDesktopUsagePage &&
             (device_info.usage == kGenericDesktopMouseUsage ||
                     device_info.usage == kGenericDesktopKeyboardUsage)) {

@@ -26,6 +26,11 @@ const QString kRequestPath = QStringLiteral("/ws/2/recording/");
 
 const QByteArray kUserAgentRawHeaderKey = "User-Agent";
 
+// MusicBrainz allows only a single request per second on average
+// to avoid rate limiting.
+// See: <https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting>
+constexpr Duration kMinDurationBetweenRequests = Duration::fromMillis(1000);
+
 QString userAgentRawHeaderValue() {
     return VersionStore::applicationName() +
             QStringLiteral("/") +
@@ -67,7 +72,7 @@ QNetworkRequest createNetworkRequest(
 
 MusicBrainzRecordingsTask::MusicBrainzRecordingsTask(
         QNetworkAccessManager* networkAccessManager,
-        QList<QUuid>&& recordingIds,
+        const QList<QUuid>& recordingIds,
         QObject* parent)
         : network::WebTask(
                   networkAccessManager,
@@ -101,15 +106,16 @@ QNetworkReply* MusicBrainzRecordingsTask::doStartNetworkRequest(
                 << "GET"
                 << networkRequest.url();
     }
+    m_lastRequestSentAt.start();
     return networkAccessManager->get(networkRequest);
 }
 
 void MusicBrainzRecordingsTask::doNetworkReplyFinished(
-        QNetworkReply* finishedNetworkReply,
+        QNetworkReply* pFinishedNetworkReply,
         network::HttpStatusCode statusCode) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    const QByteArray body = finishedNetworkReply->readAll();
+    const QByteArray body = pFinishedNetworkReply->readAll();
     QXmlStreamReader reader(body);
 
     // HTTP status of successful results:
@@ -124,18 +130,22 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
                 << "statusCode:" << statusCode
                 << "body:" << body;
         auto error = musicbrainz::Error(reader);
-        emitFailed(
-                network::WebResponse(
-                        finishedNetworkReply->url(),
-                        finishedNetworkReply->request().url(),
-                        statusCode),
-                error.code,
-                error.message);
+        if (error.code) {
+            emitFailed(
+                    network::WebResponse(
+                            pFinishedNetworkReply->url(),
+                            pFinishedNetworkReply->request().url(),
+                            statusCode),
+                    error.code,
+                    error.message);
+            return;
+        }
+        WebTask::onNetworkError(pFinishedNetworkReply, statusCode);
         return;
     }
 
-    auto recordingsResult = musicbrainz::parseRecordings(reader);
-    for (auto&& trackRelease : recordingsResult.first) {
+    const auto [trackReleases, success] = musicbrainz::parseRecordings(reader);
+    for (auto&& trackRelease : trackReleases) {
         // In case of a response with status 301 (Moved Permanently)
         // the actual recording id might differ from the requested id.
         // To avoid requesting recording ids twice we need to remember
@@ -143,20 +153,22 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
         m_finishedRecordingIds.insert(trackRelease.recordingId);
         m_trackReleases.insert(trackRelease.trackReleaseId, trackRelease);
     }
-    if (!recordingsResult.second) {
-        kLogger.warning()
-                << "Failed to parse XML response";
-        emitFailed(
-                network::WebResponse(
-                        finishedNetworkReply->url(),
-                        finishedNetworkReply->request().url(),
-                        statusCode),
-                -1,
-                QStringLiteral("Failed to parse XML response"));
-        return;
-    }
 
     if (m_queuedRecordingIds.isEmpty()) {
+        if (!success && m_trackReleases.isEmpty()) {
+            // this error is only fatal if we have no tracks at all
+            kLogger.warning()
+                    << "Failed to parse XML response";
+            emitFailed(
+                    network::WebResponse(
+                            pFinishedNetworkReply->url(),
+                            pFinishedNetworkReply->request().url(),
+                            statusCode),
+                    -1,
+                    QStringLiteral("Failed to parse XML response"));
+            return;
+        }
+
         // Finished all recording ids
         m_finishedRecordingIds.clear();
         auto trackReleases = m_trackReleases.values();
@@ -167,7 +179,21 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
 
     // Continue with next recording id
     DEBUG_ASSERT(!m_queuedRecordingIds.isEmpty());
-    slotStart(m_parentTimeoutMillis);
+
+    // Ensure that at least kMinDurationBetweenRequests has passed
+    // since the last request before starting the next request.
+    // This is achieved by adjusting the start delay adaptively.
+    const Duration elapsedSinceLastRequestSent = m_lastRequestSentAt.elapsed();
+    const Duration delayBeforeNextRequest =
+            kMinDurationBetweenRequests -
+            std::min(kMinDurationBetweenRequests, elapsedSinceLastRequestSent);
+    slotStart(m_parentTimeoutMillis, delayBeforeNextRequest.toIntegerMillis());
+}
+
+void MusicBrainzRecordingsTask::onNetworkError(
+        QNetworkReply* pFinishedNetworkReply,
+        network::HttpStatusCode statusCode) {
+    doNetworkReplyFinished(pFinishedNetworkReply, statusCode);
 }
 
 void MusicBrainzRecordingsTask::emitSucceeded(

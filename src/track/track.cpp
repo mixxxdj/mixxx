@@ -206,10 +206,14 @@ void Track::importMetadata(
         const auto newKey = m_record.getGlobalKey();
 
         // Import track color from Serato tags if available
-        const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
-        const bool colorModified = compareAndSet(m_record.ptrColor(), newColor);
+        const std::optional<mixxx::RgbColor::optional_t> newColor =
+                m_record.getMetadata()
+                        .getTrackInfo()
+                        .getSeratoTags()
+                        .getTrackColor();
+        const bool colorModified = newColor && compareAndSet(m_record.ptrColor(), *newColor);
         modified |= colorModified;
-        DEBUG_ASSERT(!colorModified || m_record.getColor() == newColor);
+        DEBUG_ASSERT(!colorModified || m_record.getColor() == *newColor);
 
         if (!modified) {
             // Unmodified, nothing todo
@@ -228,7 +232,8 @@ void Track::importMetadata(
             emit replayGainUpdated(newReplayGain);
         }
         if (colorModified) {
-            emit colorUpdated(newColor);
+            DEBUG_ASSERT(newColor);
+            emit colorUpdated(*newColor);
         }
     }
 
@@ -355,7 +360,7 @@ bool Track::trySetBeatsWhileLocked(
         mixxx::BeatsPointer pBeats,
         bool lockBpmAfterSet) {
     if (m_pBeats && m_record.getBpmLocked()) {
-        // Track has already a valid and locked beats object, abbort.
+        // Track has already a valid and locked beats object, abort.
         qDebug() << "Track beats is already set and BPM-locked. Discard the new beats";
         return false;
     }
@@ -1098,7 +1103,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
         DEBUG_ASSERT(pCue->thread() == thread());
         // Ensure that the track IDs are correct
         pCue->setTrackId(m_record.getId());
-        // Start listening to cue point updatess AFTER setting
+        // Start listening to cue point updates AFTER setting
         // the track id. Otherwise we would receive unwanted
         // signals about changed cue points that may cause all
         // sorts of issues, e.g. when adding new tracks during
@@ -1570,7 +1575,7 @@ void Track::setAudioProperties(
     QMutexLocker lock(&m_qMutex);
     // These properties are stored separately in the database
     // and are also imported from file tags. They will be
-    // overriden by the actual properties from the audio
+    // overridden by the actual properties from the audio
     // source later.
     DEBUG_ASSERT(!m_record.hasStreamInfoFromSource());
     if (compareAndSet(

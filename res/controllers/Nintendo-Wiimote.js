@@ -912,4 +912,3 @@ Wiimote.accel = function(field) {
         HIDDebug(field.name + " DELTA " + field.delta);
     }
 }
-

@@ -73,9 +73,9 @@ case "$1" in
             fi
         else
             echo "macOS 10.13 SDK not found, downloading it..."
-            curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz" -o "${SDKROOT}.tar.xz"
+            curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.13.sdk.tar.xz" -o "${SDKROOT}.tar.xz"
             OBSERVED_SHA256=$(shasum -a 256 "${SDKROOT}.tar.xz"|cut -f 1 -d' ')
-            EXPECTED_SHA256="a3a077385205039a7c6f9e2c98ecdf2a720b2a819da715e03e0630c75782c1e4"
+            EXPECTED_SHA256="1d2984acab2900c73d076fbd40750035359ee1abe1a6c61eafcd218f68923a5a"
             if [[ "$OBSERVED_SHA256" == "$EXPECTED_SHA256" ]]; then
                 echo "Download matched expected SHA256 sum $EXPECTED_SHA256"
             else
@@ -125,7 +125,7 @@ case "$1" in
         echo ""
         echo "options:"
         echo "   help       Displays this help."
-        echo "   name       Displays the name of the required build envirnment."
-        echo "   setup      Installes the build environment."
+        echo "   name       Displays the name of the required build environment."
+        echo "   setup      Installs the build environment."
         ;;
 esac

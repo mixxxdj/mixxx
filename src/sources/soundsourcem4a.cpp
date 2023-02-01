@@ -747,7 +747,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                 // Either abort or retry by exiting the inner loop
                 break;
             } else {
-                // Reset the retry flag after succesfully decoding a block
+                // Reset the retry flag after successfully decoding a block
                 retryAfterReopeningDecoder = false;
             }
             // Upon a pending retry the inner loop is exited immediately and

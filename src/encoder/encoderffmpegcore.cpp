@@ -450,11 +450,7 @@ int EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
         return -1;
     }
 
-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 89, 100)
     if (l_SCodecCtx->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) {
-#else
-    if (l_SCodecCtx->codec->capabilities & CODEC_CAP_VARIABLE_FRAME_SIZE) {
-#endif
         m_iAudioInputFrameSize = 10000;
     } else {
         m_iAudioInputFrameSize = l_SCodecCtx->frame_size;
@@ -531,11 +527,7 @@ AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx,
 
     // Some formats want stream headers to be separate.
     if (formatctx->oformat->flags & AVFMT_GLOBALHEADER) {
-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 89, 100)
         l_SCodecCtx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-#else
-        l_SCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
-#endif
     }
 
     return l_SStream;

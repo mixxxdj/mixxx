@@ -755,7 +755,7 @@
         <key>volume</key>
         <status>0xB0</status>
         <midino>0x46</midino>
-      </control>      
+      </control>
       <control>
         <group>[Flanger]</group>
         <key>lfoPeriod</key>
@@ -780,7 +780,7 @@
         <key>volume</key>
         <status>0xB0</status>
         <midino>0x54</midino>
-      </control>  
+      </control>
       <control>
         <group>[Flanger]</group>
         <key>lfoPeriod</key>
@@ -806,7 +806,7 @@
         <key>pregain</key>
         <status>0xB0</status>
         <midino>0x4A</midino>
-      </control>  
+      </control>
       <control>
         <group>[Sampler2]</group>
         <key>pregain</key>

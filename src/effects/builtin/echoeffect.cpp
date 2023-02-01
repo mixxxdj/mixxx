@@ -191,12 +191,14 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             pGroupState->prev_feedback,
             bufferParameters.framesPerBuffer());
 
+    int rampIndex = 0;
     //TODO: rewrite to remove assumption of stereo buffer
     for (SINT i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
-        CSAMPLE_GAIN send_ramped = send.getNext();
-        CSAMPLE_GAIN feedback_ramped = feedback.getNext();
+        CSAMPLE_GAIN send_ramped = send.getNth(rampIndex);
+        CSAMPLE_GAIN feedback_ramped = feedback.getNth(rampIndex);
+        ++rampIndex;
 
         CSAMPLE bufferedSampleLeft = pGroupState->delay_buf[read_position];
         CSAMPLE bufferedSampleRight = pGroupState->delay_buf[read_position + 1];

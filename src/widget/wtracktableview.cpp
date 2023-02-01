@@ -309,7 +309,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
     // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
     // the flags(...) function that we're already using in LibraryTableModel. I
     // haven't been able to get it to stop us from using a model as a drag
-    // target though, so my hax above may not be completely unjustified.
+    // target though, so my hacks above may not be completely unjustified.
 
     setVisible(true);
 
@@ -480,7 +480,7 @@ void WTrackTableView::onShow() {
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // Only use this for drag and drop if the LeftButton is pressed we need to
     // check for this because mousetracking is activated and this function is
-    // called everytime the mouse is moved -- kain88 May 2012
+    // called every time the mouse is moved -- kain88 May 2012
     if (pEvent->buttons() != Qt::LeftButton) {
         // Needed for mouse-tracking to fire entered() events. If we call this
         // outside of this if statement then we get 'ghost' drags. See Bug

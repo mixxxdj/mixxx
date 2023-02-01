@@ -258,16 +258,14 @@ WSearchLineEdit {
 
 #SearchLineBox {
   padding-right: 2px;
-  border-right: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
 }
 
 #LibExpandBox {
   border-right: 0px;
-  border-left: 0px;
-  border-radius: 0px;
-  padding: 0px 2px 2px 2px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  padding: 0px 2px 2px 0px;
+  margin-left: 4px;
 }
 
 #SidebarBox {
@@ -351,7 +349,7 @@ WSearchLineEdit {
   border-radius: 1px;
 }
 
-/* Disbled for now since the hover effect is stuck as soon as the
+/* Disabled for now since the hover effect is stuck as soon as the
   track menu is opened.
 #TitleText[highlight="1"]:hover, #TitleTextSmall[highlight="1"]:hover,
 #ArtistText[highlight="1"]:hover, #ArtistTextSmall[highlight="1"]:hover {
@@ -716,6 +714,10 @@ WBeatSpinBox::down-button,
 
 
 /************** Mixer ***************************************************/
+
+#CrossfaderContainer[highlight="1"] {
+  border:  1px solid #b2421c;
+}
 
 #MixerDecks {
   padding: 2px 5px 2px 5px;
@@ -1603,7 +1605,7 @@ WBeatSpinBox::down-button {
   WPushButton#MicAuxAdd {
     background-color: #1e1e20;
   }
-  /* brigth buttons in dimmed containers
+  /* bright buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
   #CueDeleteButton,
   #SplitCue[displayValue="0"],

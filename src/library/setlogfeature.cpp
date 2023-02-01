@@ -331,7 +331,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         if (view != nullptr) {
             // We have a active view on the history. The user may have some
             // important active selection. For example putting track into crates
-            // while the song changes trough autodj. The selection is then lost
+            // while the song changes through autodj. The selection is then lost
             // and dataloss occurs
             const QList<TrackId> trackIds = view->getSelectedTrackIds();
             m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);

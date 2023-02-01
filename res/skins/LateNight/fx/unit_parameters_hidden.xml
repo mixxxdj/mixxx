@@ -18,7 +18,7 @@
         <Layout>horizontal</Layout>
         <Children>
 
-          <!-- TODO ronso0 mkae this work without compressing fx slots -->
+          <!-- TODO ronso0 make this work without compressing fx slots -->
           <!-- Separator shown when it makes sense (gap is > 60px) -->
           <!-- <WidgetGroup>
             <Layout>horizontal</Layout>

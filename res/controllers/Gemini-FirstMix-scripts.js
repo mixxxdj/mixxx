@@ -24,7 +24,7 @@
  * Jogwheel: Normally (when the Scratch button for the deck is not lit), the jogwheels will "nudge" the playing track, speeding it up or slowing it down slightly.
  * Pressing the Scratch button will toggle the scratch mode. In scratch mode, the jogwheels will "scratch" the playing track but only while you are touching them (because the jogwheels are touch-sensitive).
  *
- * Sel(ect) buttons: I didn't know what to do with these buttons so I left them undefined.
+ * SEL buttons: I didn't know what to do with these buttons so I left them undefined.
  *
  **/
 
@@ -262,4 +262,3 @@ firstmix.playbutton2 = function (channel, control, value, status, group) {
         midi.sendShortMsg(0x90,0x4C,0x7F);    // Turn on the Play LED
     }
 }
-

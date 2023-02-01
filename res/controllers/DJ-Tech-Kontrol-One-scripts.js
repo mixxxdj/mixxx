@@ -1566,4 +1566,3 @@ for (i=1;i<12;i++){
     len=KONTROL1.beatloopLengths[i];
     KONTROL1.loopbuttonLEDs["beatloop_"+len+"_enabled"]=KONTROL1.getIt["b"+i];
 }
-

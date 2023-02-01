@@ -50,6 +50,8 @@ DlgPrefController::DlgPrefController(QWidget* parent,
     // Create text color for the file and wiki links
     createLinkColor();
 
+    m_pControlPickerMenu = new ControlPickerMenu(this);
+
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
@@ -153,7 +155,8 @@ void DlgPrefController::showLearningWizard() {
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
-    m_pDlgControllerLearning = new DlgControllerLearning(this, m_pController);
+    m_pDlgControllerLearning =
+            new DlgControllerLearning(this, m_pController, m_pControlPickerMenu);
     m_pDlgControllerLearning->show();
     ControllerLearningEventFilter* pControllerLearning =
             m_pControllerManager->getControllerLearningEventFilter();
@@ -496,7 +499,11 @@ void DlgPrefController::slotApply() {
         bEnabled = m_ui.chkEnabledDevice->isChecked();
 
         if (m_pPreset->isDirty()) {
-            savePreset();
+            if (savePreset()) {
+                // We might have saved the previous preset with a new name,
+                // so update the preset combobox.
+                enumeratePresets(m_pPreset->filePath());
+            }
         }
     }
     m_ui.chkEnabledDevice->setChecked(bEnabled);
@@ -562,12 +569,13 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
     }
 
     applyPresetChanges();
+    bool previousPresetSaved = false;
     if (m_pPreset && m_pPreset->isDirty()) {
         if (QMessageBox::question(this,
                     tr("Mapping has been edited"),
                     tr("Do you want to save the changes?")) ==
                 QMessageBox::Yes) {
-            savePreset();
+            previousPresetSaved = savePreset();
         }
     }
 
@@ -578,17 +586,23 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
         DEBUG_ASSERT(!pPreset->isDirty());
     }
 
-    slotShowPreset(pPreset);
+    if (previousPresetSaved) {
+        // We might have saved the previous preset with a new name, so update
+        // the preset combobox.
+        enumeratePresets(presetPath);
+    } else {
+        slotShowPreset(pPreset);
+    }
 }
 
-void DlgPrefController::savePreset() {
+bool DlgPrefController::savePreset() {
     VERIFY_OR_DEBUG_ASSERT(m_pPreset) {
-        return;
+        return false;
     }
 
     if (!m_pPreset->isDirty()) {
         qDebug() << "Mapping is not dirty, no need to save it.";
-        return;
+        return false;
     }
 
     QString oldFilePath = m_pPreset->filePath();
@@ -634,7 +648,7 @@ void DlgPrefController::savePreset() {
                 m_pOverwritePresets.insert(m_pPreset->filePath(), true);
             }
         } else if (overwriteMsgBox.close()) {
-            return;
+            return false;
         }
     }
 
@@ -646,6 +660,11 @@ void DlgPrefController::savePreset() {
         newFilePath = oldFilePath;
     } else {
         presetName = askForPresetName(presetName);
+        if (presetName.isEmpty()) {
+            // QInputDialog was closed
+            qDebug() << "Mapping not saved, new name is empty";
+            return false;
+        }
         newFilePath = presetNameToPath(m_pUserDir, presetName);
         m_pPreset->setName(presetName);
         qDebug() << "Mapping renamed to" << m_pPreset->name();
@@ -653,14 +672,14 @@ void DlgPrefController::savePreset() {
 
     if (!m_pPreset->savePreset(newFilePath)) {
         qDebug() << "Failed to save mapping as" << newFilePath;
-        return;
+        return false;
     }
     qDebug() << "Mapping saved as" << newFilePath;
 
     m_pPreset->setFilePath(newFilePath);
     m_pPreset->setDirty(false);
 
-    enumeratePresets(m_pPreset->filePath());
+    return true;
 }
 
 QString DlgPrefController::askForPresetName(const QString& prefilledName) const {
@@ -688,7 +707,8 @@ QString DlgPrefController::askForPresetName(const QString& prefilledName) const 
                              .remove(rxRemove)
                              .trimmed();
         if (!ok) {
-            continue;
+            // Return empty string if the dialog was canceled. Callers will deal with this.
+            return QString();
         }
         if (presetName.isEmpty()) {
             QMessageBox::warning(nullptr,
@@ -741,7 +761,7 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_pPreset = preset;
 
     ControllerInputMappingTableModel* pInputModel =
-            new ControllerInputMappingTableModel(this);
+            new ControllerInputMappingTableModel(this, m_pControlPickerMenu);
     pInputModel->setPreset(preset);
 
     QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
@@ -765,7 +785,7 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_pInputTableModel = pInputModel;
 
     ControllerOutputMappingTableModel* pOutputModel =
-            new ControllerOutputMappingTableModel(this);
+            new ControllerOutputMappingTableModel(this, m_pControlPickerMenu);
     pOutputModel->setPreset(preset);
 
     QSortFilterProxyModel* pOutputProxyModel = new QSortFilterProxyModel(this);

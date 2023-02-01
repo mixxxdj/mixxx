@@ -11,7 +11,6 @@
 
 #include "util/logger.h"
 
-
 namespace {
 
 const mixxx::Logger kLogger("CrateStorage");
@@ -56,7 +55,6 @@ const QString kCrateSummaryViewQuery = QString(
                     kLibraryTracksJoin,
                     CRATE_TABLE,
                     CRATETABLE_ID);
-
 
 class CrateQueryBinder {
   public:
@@ -104,15 +102,12 @@ QString joinSqlStringList(const QList<TrackId>& trackIds) {
 
 } // anonymous namespace
 
-
-
 CrateQueryFields::CrateQueryFields(const FwdSqlQuery& query)
     : m_iId(query.fieldIndex(CRATETABLE_ID)),
       m_iName(query.fieldIndex(CRATETABLE_NAME)),
       m_iLocked(query.fieldIndex(CRATETABLE_LOCKED)),
       m_iAutoDjSource(query.fieldIndex(CRATETABLE_AUTODJ_SOURCE)) {
 }
-
 
 void CrateQueryFields::populateFromQuery(
         const FwdSqlQuery& query,
@@ -122,7 +117,6 @@ void CrateQueryFields::populateFromQuery(
     pCrate->setLocked(isLocked(query));
     pCrate->setAutoDjSource(isAutoDjSource(query));
 }
-
 
 CrateTrackQueryFields::CrateTrackQueryFields(const FwdSqlQuery& query)
     : m_iCrateId(query.fieldIndex(CRATETRACKSTABLE_CRATEID)),
@@ -243,14 +237,12 @@ void CrateStorage::disconnectDatabase() {
     m_database = QSqlDatabase();
 }
 
-
 void CrateStorage::createViews() {
     VERIFY_OR_DEBUG_ASSERT(FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared()) {
         kLogger.critical()
                 << "Failed to create database view for crate summaries!";
     }
 }
-
 
 uint CrateStorage::countCrates() const {
     FwdSqlQuery query(m_database, QString(
@@ -264,7 +256,6 @@ uint CrateStorage::countCrates() const {
         return 0;
     }
 }
-
 
 bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
     FwdSqlQuery query(m_database, QString(
@@ -287,7 +278,6 @@ bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
     }
     return false;
 }
-
 
 bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
     FwdSqlQuery query(m_database, QString(
@@ -314,7 +304,6 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
     return false;
 }
 
-
 CrateSelectResult CrateStorage::selectCrates() const {
     FwdSqlQuery query(m_database,
             mixxx::DbConnection::collateLexicographically(QString(
@@ -328,7 +317,6 @@ CrateSelectResult CrateStorage::selectCrates() const {
         return CrateSelectResult();
     }
 }
-
 
 CrateSelectResult CrateStorage::selectCratesByIds(
         const QString& subselectForCrateIds,
@@ -369,7 +357,6 @@ CrateSelectResult CrateStorage::selectCratesByIds(
     }
 }
 
-
 CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     FwdSqlQuery query(m_database,
             mixxx::DbConnection::collateLexicographically(QString(
@@ -384,7 +371,6 @@ CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
         return CrateSelectResult();
     }
 }
-
 
 CrateSummarySelectResult CrateStorage::selectCrateSummaries() const {
     FwdSqlQuery query(m_database,
@@ -421,7 +407,6 @@ bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary)
     return false;
 }
 
-
 uint CrateStorage::countCrateTracks(CrateId crateId) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT COUNT(*) FROM %1 WHERE %2=:crateId").arg(
@@ -436,7 +421,6 @@ uint CrateStorage::countCrateTracks(CrateId crateId) const {
         return 0;
     }
 }
-
 
 //static
 QString CrateStorage::formatSubselectQueryForCrateTrackIds(
@@ -472,8 +456,6 @@ QString CrateStorage::formatQueryForTrackIdsWithCrate() {
             CRATETABLE_ID);
 }
 
-
-
 CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:crateId ORDER BY %3").arg(
@@ -487,7 +469,6 @@ CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) co
         return CrateTrackSelectResult();
     }
 }
-
 
 CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) const {
     FwdSqlQuery query(m_database, QString(
@@ -504,19 +485,21 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) co
 }
 
 CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<TrackId>& trackIds) const {
-    FwdSqlQuery query(m_database, QString(
-        "SELECT *, ("
-        "    SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and %1.%5 in (%9)"
-        " ) AS %6, 0 as %7 FROM %2 ORDER BY %8").arg(
-                CRATE_TRACKS_TABLE,
-                CRATE_TABLE,
-                CRATETABLE_ID,
-                CRATETRACKSTABLE_CRATEID,
-                CRATETRACKSTABLE_TRACKID,
-                CRATESUMMARY_TRACK_COUNT,
-                CRATESUMMARY_TRACK_DURATION,
-                CRATETABLE_NAME,
-                joinSqlStringList(trackIds)));
+    FwdSqlQuery query(m_database,
+            mixxx::DbConnection::collateLexicographically(
+                    QString("SELECT *, ("
+                            "    SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 "
+                            "and %1.%5 in (%9)"
+                            " ) AS %6, 0 as %7 FROM %2 ORDER BY %8")
+                            .arg(CRATE_TRACKS_TABLE,
+                                    CRATE_TABLE,
+                                    CRATETABLE_ID,
+                                    CRATETRACKSTABLE_CRATEID,
+                                    CRATETRACKSTABLE_TRACKID,
+                                    CRATESUMMARY_TRACK_COUNT,
+                                    CRATESUMMARY_TRACK_DURATION,
+                                    CRATETABLE_NAME,
+                                    joinSqlStringList(trackIds))));
 
     if (query.execPrepared()) {
         return CrateSummarySelectResult(std::move(query));
@@ -574,7 +557,6 @@ QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackI
     return trackCrates;
 }
 
-
 bool CrateStorage::onInsertingCrate(
         const Crate& crate,
         CrateId* pCrateId) {
@@ -610,7 +592,6 @@ bool CrateStorage::onInsertingCrate(
         return false;
     }
 }
-
 
 bool CrateStorage::onUpdatingCrate(
         const Crate& crate) {
@@ -649,7 +630,6 @@ bool CrateStorage::onUpdatingCrate(
         return false;
     }
 }
-
 
 bool CrateStorage::onDeletingCrate(
         CrateId crateId) {
@@ -704,7 +684,6 @@ bool CrateStorage::onDeletingCrate(
     }
 }
 
-
 bool CrateStorage::onAddingCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
@@ -735,7 +714,6 @@ bool CrateStorage::onAddingCrateTracks(
     }
     return true;
 }
-
 
 bool CrateStorage::onRemovingCrateTracks(
         CrateId crateId,
@@ -769,7 +747,6 @@ bool CrateStorage::onRemovingCrateTracks(
     }
     return true;
 }
-
 
 bool CrateStorage::onPurgingTracks(
         const QList<TrackId>& trackIds) {

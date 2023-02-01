@@ -92,7 +92,7 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
-        } else {
+        } else if (!m_loadedCover.isNull()) {
             m_pDlgFullSize->init(m_pLoadedTrack);
         }
     }

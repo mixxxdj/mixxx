@@ -31,16 +31,17 @@ NetworkTask::~NetworkTask() {
     s_instanceCounter.increment(-1);
 }
 
-void NetworkTask::invokeStart(int timeoutMillis) {
+void NetworkTask::invokeStart(int timeoutMillis, int delayMillis) {
     QMetaObject::invokeMethod(
             this,
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
             "slotStart",
             Qt::AutoConnection,
-            Q_ARG(int, timeoutMillis)
+            Q_ARG(int, timeoutMillis),
+            Q_ARG(int, delayMillis)
 #else
-            [this, timeoutMillis] {
-                this->slotStart(timeoutMillis);
+            [this, timeoutMillis, delayMillis] {
+                this->slotStart(timeoutMillis, delayMillis);
             }
 #endif
     );

@@ -53,6 +53,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
+          m_pPrevFailedTrackId(),
           m_replaygainPending(false),
           m_pChannelToCloneFrom(nullptr) {
     ChannelHandleAndGroup channelGroup =
@@ -415,8 +416,19 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
     m_pChannelToCloneFrom = nullptr;
+
     // Alert user.
+    // The QMessageBox blocks the event loop (and the GUI since it's modal dialog),
+    // though if a controller's Load button was pressed repeatedly we may get
+    // multiple identical messages for the same track.
+    // Avoid this and show only one message per track track at a time.
+    if (pTrack && m_pPrevFailedTrackId == pTrack->getId()) {
+        return;
+    } else if (pTrack) {
+        m_pPrevFailedTrackId = pTrack->getId();
+    }
     QMessageBox::warning(nullptr, tr("Couldn't load track."), reason);
+    m_pPrevFailedTrackId = TrackId();
 }
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,

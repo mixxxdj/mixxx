@@ -39,11 +39,13 @@ class WaveformWidgetRenderer {
     const QString& getGroup() const {
         return m_group;
     }
-    const TrackPointer getTrackInfo() const {
+    const TrackPointer& getTrackInfo() const {
         return m_pTrack;
     }
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
+
+    CuePointer getCuePointerFromIndex(int cueIndex) const;
 
     double getFirstDisplayedPosition() const {
         return m_firstDisplayedPosition;
@@ -81,9 +83,6 @@ class WaveformWidgetRenderer {
         return m_trackPixelCount * (position - m_firstDisplayedPosition);
     }
 
-    double getPlayPos() const {
-        return m_playPos;
-    }
     int getPlayPosVSample() const {
         return m_playPosVSample;
     }
@@ -178,7 +177,6 @@ class WaveformWidgetRenderer {
     //TODO: vRince create some class to manage control/value
     //ControlConnection
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
-    double m_playPos;
     int m_playPosVSample;
     int m_totalVSamples;
     ControlProxy* m_pRateRatioCO;
@@ -210,4 +208,6 @@ private:
             QPointF p1,
             QPointF p2,
             QPointF p3);
+
+    double m_playPos;
 };

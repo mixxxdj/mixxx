@@ -85,7 +85,7 @@ class EngineBuffer : public EngineObject {
     // This value is used to make sure the initial seek after loading a track is
     // not omitted. Therefore this value must be different for 0.0 or any likely
     // value for the main cue
-    static constexpr double kInitalSamplePosition = -DBL_MAX;
+    static constexpr double kInitialSamplePosition = -DBL_MAX;
 
     EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);

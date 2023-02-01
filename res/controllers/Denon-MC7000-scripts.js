@@ -26,7 +26,6 @@
  * Newer Kernels will provide native audio support for this controller.
  */
 
-
 var MC7000 = {};
 
 /*///////////////////////////////////
@@ -114,6 +113,9 @@ MC7000.factor2 = [];
 
 //Set Shift button state to false as default
 MC7000.shift = [false, false, false, false];
+
+// For each side whether the top or bottom deck is active.
+MC7000.topDeckActive = [true, true];
 
 // initialize the PAD Mode to Hot Cue and all others off when starting
 MC7000.PADModeCue = [true, true, true, true];
@@ -211,6 +213,10 @@ MC7000.init = function() {
     engine.makeConnection("[Channel2]", "VuMeter", MC7000.VuMeter);
     engine.makeConnection("[Channel3]", "VuMeter", MC7000.VuMeter);
     engine.makeConnection("[Channel4]", "VuMeter", MC7000.VuMeter);
+
+    // Switch to active decks
+    midi.sendShortMsg(MC7000.topDeckActive[0] ? 0x90 : 0x92, 0x08, 0x7F);
+    midi.sendShortMsg(MC7000.topDeckActive[1] ? 0x91 : 0x93, 0x08, 0x7F);
 
     // Platter Ring LED mode
     midi.sendShortMsg(0x90, 0x64, MC7000.modeSingleLED);
@@ -755,7 +761,7 @@ MC7000.setPadColor = function(deckOffset, colorValue) {
 // Shift Button
 MC7000.shiftButton = function(channel, control, value, status, group) {
     var deckOffset = script.deckFromGroup(group) - 1;
-    MC7000.shift[deckOffset] = ! MC7000.shift[deckOffset];
+    MC7000.shift[deckOffset] = value > 0;
     midi.sendShortMsg(0x90 + deckOffset, 0x32,
         MC7000.shift[deckOffset] ? 0x7F : 0x01);
 };
@@ -833,8 +839,8 @@ MC7000.wheelTouch = function(channel, control, value, status, group) {
 
 // The wheel that actually controls the scratching
 MC7000.wheelTurn = function(channel, control, value, status, group) {
-    // TODO(all): check for latency and use it to normalize the jog factor so jog wont be
-    // depending on audio latency anymore.
+    // TODO(all): check for latency and use it to normalize the jog factor so
+    // jog won't be depending on audio latency anymore.
 
     // A: For a control that centers on 0:
     var numTicks = (value < 0x64) ? value : (value - 128);
@@ -1108,6 +1114,26 @@ MC7000.crossFaderCurve = function(control, value) {
     script.crossfaderCurve(value);
 };
 
+// Update state on deck changes
+MC7000.switchDeck = function(channel, control, value, status) {
+    var deckOffset = status - 0x90;
+    var isTopDeck = deckOffset < 2;
+    var side = deckOffset % 2;
+    var previousDeckOffset = (deckOffset + 2) % 4;
+
+    // We need to 'transfer' the shift state when switching decks,
+    // otherwise it will get stuck and result in an 'inverted'
+    // shift after switching back to the deck.
+    // Since the controller switches immediately upon pressing down,
+    // we only do this when value is high.
+
+    if (value === 0x7F && MC7000.topDeckActive[side] !== isTopDeck) {
+        MC7000.topDeckActive[side] = isTopDeck;
+        MC7000.shift[deckOffset] = MC7000.shift[previousDeckOffset];
+        MC7000.shift[previousDeckOffset] = false;
+    }
+};
+
 // Set FX wet/dry value
 MC7000.fxWetDry = function(channel, control, value, status, group) {
     var numTicks = (value < 0x64) ? value : (value - 128);
@@ -1298,12 +1324,11 @@ MC7000.PitchLED = function(value, group) {
 
 /* CONTROLLER SHUTDOWN */
 MC7000.shutdown = function() {
-    var i;
     // Need to switch off LEDs one by one,
     // otherwise the controller cannot handle the signal traffic
 
     // Switch off Transport section LEDs
-    for (i = 0; i <= 3; i++) {
+    for (var i = 0; i <= 3; i++) {
         midi.sendShortMsg(0x90 + i, 0x00, 0x01);
         midi.sendShortMsg(0x90 + i, 0x01, 0x01);
         midi.sendShortMsg(0x90 + i, 0x02, 0x01);

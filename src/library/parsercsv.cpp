@@ -1,17 +1,3 @@
-//
-// C++ Implementation: parsercsv
-//
-// Description: module to parse Comma-Separated Values (CSV) formatted playlists (rfc4180)
-//
-//
-// Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
-// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
-// Author: Daniel Schürmann daschuer@gmx.de, (C) 2011
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
 #include "library/parsercsv.h"
 
 #include <QDir>
@@ -21,11 +7,23 @@
 
 #include "moc_parsercsv.cpp"
 
-ParserCsv::ParserCsv() : Parser() {
+namespace {
+
+bool isColumnExported(BaseSqlTableModel* pPlaylistTableModel, int column) {
+    if (pPlaylistTableModel->isColumnInternal(column)) {
+        return false;
+    }
+    if (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) == column) {
+        return false;
+    }
+    if (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+        // This is the bas64 encoded image which may hit the maximum line length of spreadsheet applications
+        return false;
+    }
+    return true;
 }
 
-ParserCsv::~ParserCsv() {
-}
+} // namespace
 
 QList<QString> ParserCsv::parse(const QString& sFilename) {
     QFile file(sFilename);
@@ -34,9 +32,9 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
     clearLocations();
     //qDebug() << "ParserCsv: Starting to parse.";
     if (file.open(QIODevice::ReadOnly)) {
-        QByteArray ba = file.readAll();
+        QByteArray byteArray = file.readAll();
 
-        QList<QList<QString> > tokens = tokenize(ba, ',');
+        QList<QList<QString> > tokens = tokenize(byteArray, ',');
 
         // detect Location column
         int loc_coll = 0x7fffffff;
@@ -148,8 +146,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     bool first = true;
     int columns = pPlaylistTableModel->columnCount();
     for (int i = 0; i < columns; ++i) {
-        if (pPlaylistTableModel->isColumnInternal(i) ||
-                (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) == i)) {
+        if (!isColumnExported(pPlaylistTableModel, i)) {
             continue;
         }
         if (!first) {
@@ -170,8 +167,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
         // writing fields section
         first = true;
         for (int i = 0; i < columns; ++i) {
-            if (pPlaylistTableModel->isColumnInternal(i) ||
-                    (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) == i)) {
+            if (!isColumnExported(pPlaylistTableModel, i)) {
                 continue;
             }
             if (!first) {

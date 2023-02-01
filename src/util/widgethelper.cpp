@@ -47,6 +47,17 @@ QWindow* getWindow(
     return nullptr;
 }
 
+// get the base color of a widget, or recursively search the parent tree for one
+QColor findBaseColor(QWidget* pWidget) {
+    while (pWidget) {
+        if (pWidget->palette().isBrushSet(QPalette::Normal, QPalette::Base)) {
+            return pWidget->palette().color(QPalette::Base);
+        }
+        pWidget = qobject_cast<QWidget*>(pWidget->parent());
+    }
+    return QColor(0, 0, 0);
+}
+
 } // namespace widgethelper
 
 } // namespace mixxx

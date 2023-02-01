@@ -780,7 +780,7 @@ void MixxxMainWindow::finalize() {
     QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
     DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
     // We need to reset the parented pointer here that it does not become a
-    // dangling pinter after the object has been deleted.
+    // dangling pointer after the object has been deleted.
     m_pMenuBar = nullptr;
     setMenuBar(nullptr);
     if (!pMenuBar.isNull()) {
@@ -1592,7 +1592,7 @@ void MixxxMainWindow::rebootMixxxView() {
     if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
-        // Programatic placement at this point is very problematic.
+        // Programmatic placement at this point is very problematic.
         // The screen() method returns stale data (primary screen)
         // until the user interacts with mixxx again. Keyboard shortcuts
         // do not count, moving window, opening menu etc does
