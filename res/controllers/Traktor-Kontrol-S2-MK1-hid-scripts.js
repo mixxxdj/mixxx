@@ -8,18 +8,6 @@
 /*      but feel free to tweak this to your heart's content!    */
 /****************************************************************/
 
-// ==== Jog Wheel Touch Calibration ====
-// Set the threshold for scratching for each jog wheel.
-// If it is always scratching increase the value
-// If it never scratches decrease the value
-// Bigger values mean more force necessary for it to scratch.
-// The unpressed value is around 3100.
-// The fully pressed value is around 3700.
-const JogWheelTouchThreshold = {
-    "[Channel1]": 3222,
-    "[Channel2]": 3444,
-};
-
 // ==== Friendly User Configuration ====
 // The Cue button, when Shift is also held, can have two possible functions:
 // 1. "REWIND": seeks to the very start of the track.
@@ -48,7 +36,7 @@ class DeckClass {
         this.previousPregain = 0;
         this.previousLeftEncoder = 0;
         this.previousRightEncoder = 0;
-        this.wheelTouchInertiaTimer = 0;
+        this.wheelPressInertiaTimer = 0;
         this.gainEncoderPressed = false;
         this.leftEncoderPressed = false;
         this.rightEncoderPressed = false;
@@ -64,6 +52,7 @@ class DeckClass {
         this.lastTickTime = 0;
         this.lastTickValue = 0;
         this.syncEnabledTime = {};
+        this.calibration = null;
     }
     registerInputs(inputReport0x01, inputReport0x02, config) {
         // InputReport 0x01
@@ -88,9 +77,10 @@ class DeckClass {
         this.registerScalar(inputReport0x02, "rate", config.rate);
         this.registerEncoder(inputReport0x02, "!left_encoder", config.leftEncoder, this.leftEncoder);
         this.registerEncoder(inputReport0x02, "!right_encoder", config.rightEncoder, this.rightEncoder);
-        this.registerScalar(inputReport0x02, "volume", config.volume);
+        // this.registerScalar(inputReport0x02, "volume", config.volume);
+        this.registerScalar(inputReport0x02, "!volume", config.volume, this.volume);
         this.registerEncoder(inputReport0x02, "!pregain", config.gain, this.gainEncoder);
-        this.registerScalar(inputReport0x02, "!jog_touch", config.jogTouch, this.jogTouch);
+        this.registerScalar(inputReport0x02, "!jog_press", config.jogPress, this.jogPress);
         this.eq.registerInputs(inputReport0x02, config.eq);
         // configure soft takeover
         engine.softTakeover(this.group, "rate", true);
@@ -127,6 +117,10 @@ class DeckClass {
         engine.makeConnection(this.channel, "VuMeter", this.onVuMeterChanged.bind(this)).trigger();
         engine.makeConnection(this.channel, "loop_enabled", this.onLoopEnabledChanged.bind(this));
     }
+    calibrate(calibration) {
+        this.calibration = calibration;
+        this.eq.calibrate(calibration.eq);
+    }
     registerButton(hidReport, name, config, callback) {
         if (callback !==undefined) {
             callback= callback.bind(this);
@@ -150,6 +144,9 @@ class DeckClass {
     }
     linkLed(name, callback) {
         this.controller.linkOutput(this.channel, name, this.channel, name, callback.bind(this));
+    }
+    volume(field) {
+        setFaderParameter(this.channel, "volume", field.value, this.calibration.volume);
     }
     gainEncoderPress(field) {
         if (field.value > 0) {
@@ -224,7 +221,7 @@ class DeckClass {
             engine.setValue(this.channel, "keylock", !locked);
         } else {
             const playing = engine.getValue(this.channel, "play");
-            // Failsafe to disable scratching in case the finishJogTouch timer has not executed yet
+            // Failsafe to disable scratching in case the finishJogPress timer has not executed yet
             // after a backspin.
             if (engine.isScratching(this.number)) {
                 engine.scratchDisable(this.number, false);
@@ -390,18 +387,18 @@ class DeckClass {
             }
         }
     }
-    jogTouch(field) {
-        if (this.wheelTouchInertiaTimer !== 0) {
+    jogPress(field) {
+        if (this.wheelPressInertiaTimer !== 0) {
             // The wheel was touched again, reset the timer.
-            engine.stopTimer(this.wheelTouchInertiaTimer);
-            this.wheelTouchInertiaTimer = 0;
+            engine.stopTimer(this.wheelPressInertiaTimer);
+            this.wheelPressInertiaTimer = 0;
         }
-        if (field.value > JogWheelTouchThreshold[this.channel]) {
+        if (field.value > this.calibration.jogPress.pressed) {
             engine.scratchEnable(this.number, 1024, 33.3333, 0.125, 0.125/8, true);
         } else {
             // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
             // Depending on how fast the platter was moving, lengthen the time we'll wait.
-            const scratchRate = Math.abs(engine.getValue(this.number, "scratch2"));
+            const scratchRate = Math.abs(engine.getValue(this.channel, "scratch2"));
             // inertiaTime was experimentally determined. It should be enough time to allow the user to
             // press play after a backspin without normal playback starting before they can press the
             // button, but not so long that there is an awkward delay before stopping scratching after
@@ -414,11 +411,11 @@ class DeckClass {
             }
             if (inertiaTime < 100) {
             // Just do it now.
-                this.finishJogTouch();
+                this.finishJogPress();
             } else {
                 this.wheelTouchInertiaTimer = engine.beginTimer(
                     inertiaTime,
-                    this.finishJogTouch.bind(this)
+                    this.finishJogPress.bind(this)
                     , true);
             }
         }
@@ -506,7 +503,6 @@ class DeckClass {
         } else {
             tickDelta = tickval - previousTick;
         }
-        //HIDDebug(group + " " + tickval + " " + previousTick + " " + tickDelta);
         return [tickDelta, timeDelta];
     }
 
@@ -518,8 +514,8 @@ class DeckClass {
         }
     }
 
-    finishJogTouch() {
-        this.wheelTouchInertiaTimer = 0;
+    finishJogPress() {
+        this.wheelPressInertiaTimer = 0;
         const play = engine.getValue(this.channel, "play");
         if (play !== 0) {
             // If we are playing, just hand off to the engine.
@@ -533,7 +529,7 @@ class DeckClass {
                 engine.scratchDisable(this.number, true);
             } else {
             // Check again soon.
-                this.wheelTouchInertiaTimer = engine.beginTimer(1, this.finishJogTouch.bind(this), true);
+                this.wheelPressInertiaTimer = engine.beginTimer(20, this.finishJogPress.bind(this), true);
             }
         }
     }
@@ -678,18 +674,42 @@ class Equalizer {
         this.deck = deck;
         this.controller = this.deck.controller;
         this.group = "[EqualizerRack1_" + this.deck.channel + "_Effect1]";
+        this.params = {
+            hi: new EqualizerParameter(this, 3),
+            mid: new EqualizerParameter(this, 2),
+            low: new EqualizerParameter(this, 1),
+        };
     }
     registerInputs(inputReport0x02, config) {
-        this.registerKnob(inputReport0x02, "parameter3", config.hi);
-        this.registerKnob(inputReport0x02, "parameter2", config.mid);
-        this.registerKnob(inputReport0x02, "parameter1", config.low);
-        // soft takeover
-        engine.softTakeover(this.group, "parameter3", true);
-        engine.softTakeover(this.group, "parameter2", true);
-        engine.softTakeover(this.group, "parameter1", true);
+        for (const param in this.params) {
+            this.params[param].registerInputs(inputReport0x02, config[param]);
+        }
     }
-    registerKnob(hidReport, name, config) {
-        hidReport.addControl(this.group, name, config, "H");
+    calibrate(calibration) {
+        for (const param in this.params) {
+            this.params[param].calibrate(calibration[param]);
+        }
+    }
+}
+class EqualizerParameter {
+    constructor(equalizer, number) {
+        this.equalizer = equalizer;
+        this.group = equalizer.group;
+        this.number = number;
+        this.calibration = null;
+    }
+    registerInputs(inputReport0x02, config) {
+        this.registerKnob(inputReport0x02, "!parameter" + this.number, config, this.knob);
+        engine.softTakeover(this.group, "parameter" + this.number, true);
+    }
+    calibrate(calibration) {
+        this.calibration = calibration;
+    }
+    registerKnob(hidReport, name, config, callback) {
+        hidReport.addControl(this.group, name, config, "H", 0xFFFF, false, callback.bind(this));
+    }
+    knob(field) {
+        setKnobParameter(this.group, "parameter" + this.number, field.value, this.calibration);
     }
 }
 
@@ -711,6 +731,7 @@ class EffectUnit {
             new EffectParameter(this, 2),
             new EffectParameter(this, 3),
         ];
+        this.calibration = null;
     }
     registerInputs(inputReport0x01, inputReport0x02, config) {
         this.registerButton(inputReport0x01, "!effect_focus_button", config.focus, this.effectFocusButton);
@@ -734,6 +755,12 @@ class EffectUnit {
         engine.makeConnection(this.group, "focused_effect", this.onFocusedEffectChange.bind(this)).trigger();
         engine.makeConnection(this.group, "group_[Channel1]_enable", this.outputCallback.bind(this)).trigger();
         engine.makeConnection(this.group, "group_[Channel2]_enable", this.outputCallback.bind(this)).trigger();
+    }
+    calibrate(calibration) {
+        this.calibration = calibration.mix;
+        for (let i = 0; i < 3; i++) {
+            this.params[i].calibrate(calibration.params[i]);
+        }
     }
     registerButton(hidReport, name, config, callback) {
         if (callback !==undefined) {
@@ -779,7 +806,7 @@ class EffectUnit {
         }
     }
     mixKnob(field) {
-        engine.setParameter(this.group, "mix", field.value/4095);
+        setKnobParameter(this.group, "mix", field.value, this.calibration);
     }
     onShowParametersChange(value, group, _control) {
         if (value === 0) {
@@ -847,6 +874,7 @@ class EffectParameter {
         this.longPressTimer = 0;
         this.isLongPressed = false;
         this.ledConnection = null;
+        this.calibration = null;
     }
     registerInputs(inputReport0x01, inputReport0x02, config) {
         this.registerButton(inputReport0x01, "!effectbutton" + this.number, config.button, this.effectButton);
@@ -860,6 +888,9 @@ class EffectParameter {
     }
     registerOutputs(outputReport0x80, config) {
         outputReport0x80.addOutput(this.group, "!effectbutton" + this.number, config, "B");
+    }
+    calibrate(calibration) {
+        this.calibration = calibration;
     }
     registerButton(hidReport, name, config, callback) {
         hidReport.addControl(this.group, name, config[0], "B", config[1], false, callback.bind(this));
@@ -906,17 +937,8 @@ class EffectParameter {
         script.toggleControl(button.group, button.key);
     }
     effectKnob(field) {
-        const focusedEffect = engine.getValue(this.group, "focused_effect");
-        const scaledValue = field.value / 4095;
-        if (focusedEffect > 0) {
-            engine.setParameter(this.groupPrefix + "_Effect" + focusedEffect + "]",
-                "parameter" + this.number,
-                scaledValue);
-        } else {
-            engine.setParameter(this.groupPrefix + "_Effect" + this.number + "]",
-                "meta",
-                scaledValue);
-        }
+        const knob = this.getKnobGroupAndKey();
+        setKnobParameter(knob.group, knob.key, field.value, this.calibration);
     }
     connectLedNormal() {
         const button = this.getButtonGroupAndKey();
@@ -943,6 +965,20 @@ class EffectParameter {
             return {
                 group: this.groupPrefix + "_Effect" + focusedEffect + "]",
                 key: "button_parameter" + this.number,
+            };
+        }
+    }
+    getKnobGroupAndKey() {
+        const focusedEffect = engine.getValue(this.group, "focused_effect");
+        if (focusedEffect === 0) {
+            return {
+                group: this.groupPrefix + "_Effect" + this.number + "]",
+                key: "meta",
+            };
+        } else {
+            return {
+                group: this.groupPrefix + "_Effect" + focusedEffect + "]",
+                key: "parameter" + this.number,
             };
         }
     }
@@ -977,6 +1013,8 @@ class TraktorS2MK1Class {
             new EffectUnit(this, 1),
             new EffectUnit(this, 2),
         ];
+        this.rawCalibration = {};
+        this.calibration = null;
     }
     registerInputPackets() {
         // Values in input report 0x01 are all buttons, except the jog wheels.
@@ -1013,7 +1051,7 @@ class TraktorS2MK1Class {
             rightEncoder: [0x02, 0x0F],
             volume: 0x2B,
             gain: [0x01, 0x0F],
-            jogTouch: 0x0D,
+            jogPress: 0x0D,
             eq: {
                 hi: 0x11,
                 mid: 0x25,
@@ -1046,7 +1084,7 @@ class TraktorS2MK1Class {
             rightEncoder: [0x04, 0x0F],
             volume: 0x2D,
             gain: [0x03, 0x0F],
-            jogTouch: 0x1D,
+            jogPress: 0x1D,
             eq: {
                 hi: 0x21,
                 mid: 0x23,
@@ -1077,10 +1115,9 @@ class TraktorS2MK1Class {
         });
         InputReport0x01.addControl("[Master]", "!browse_encoder_press", 0x0E, "B", 0x08, false, this.browseEncoderPress.bind(this));
 
-        InputReport0x02.addControl("[Master]", "crossfader", 0x2F, "H");
+        InputReport0x02.addControl("[Master]", "!crossfader", 0x2F, "H", 0xFFFF, false, this.crossfader.bind(this));
         InputReport0x02.addControl("[Master]", "headMix", 0x31, "H");
-        InputReport0x02.addControl("[Master]", "!samplerGain", 0x13, "H");
-        InputReport0x02.setCallback("[Master]", "!samplerGain", this.samplerGainKnob.bind(this));
+        InputReport0x02.addControl("[Master]", "!samplerGain", 0x13, "H", 0xFFFF, false, this.samplerGainKnob.bind(this));
         InputReport0x02.addControl("[Playlist]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoder.bind(this));
 
         // Soft takeover for knobs
@@ -1091,16 +1128,8 @@ class TraktorS2MK1Class {
         }
 
         // Set scalers
-        // this.scalerParameter.useSetParameter = true;
-        this.controller.setScaler("volume", this.scalerVolume);
         this.controller.setScaler("headMix", this.scalerSlider);
-        this.controller.setScaler("parameter1", this.scalerParameter);
-        this.controller.setScaler("parameter2", this.scalerParameter);
-        this.controller.setScaler("parameter3", this.scalerParameter);
-        this.controller.setScaler("super1", this.scalerParameter);
-        this.controller.setScaler("crossfader", this.scalerSlider);
         this.controller.setScaler("rate", this.scalerSlider);
-        this.controller.setScaler("mix", this.scalerParameter);
 
         // Register packet
         this.controller.registerInputPacket(InputReport0x01);
@@ -1185,6 +1214,21 @@ class TraktorS2MK1Class {
         });
         this.controller.setOutput("[Master]", "!warninglight", 0x00, true);
     }
+    calibrate() {
+        this.rawCalibration.faders = new Uint8Array(controller.getFeatureReport(0xD0));
+        this.rawCalibration.knobs = new Uint8Array(0x20 * 3);
+        this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD1)), 0x00);
+        this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD2)), 0x20);
+        this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD3)), 0x40);
+        this.rawCalibration.jogWheels = new Uint8Array(controller.getFeatureReport(0xD4));
+        this.calibration = this.parseRawCalibration();
+        for (let i = 0; i < 2; i++) {
+            this.decks[i].calibrate(this.calibration.decks[i]);
+        }
+        for (let i = 0; i < 2; i++) {
+            this.effectUnits[i].calibrate(this.calibration.effectUnits[i]);
+        }
+    }
     init() {
         if (!(ShiftCueButtonAction === "REWIND" || ShiftCueButtonAction === "REVERSEROLL")) {
             throw new Error("ShiftCueButtonAction must be either \"REWIND\" or \"REVERSEROLL\"\n" +
@@ -1204,6 +1248,7 @@ class TraktorS2MK1Class {
             "ButtonBrightnessOff is: " + ButtonBrightnessOff);
         }
 
+        this.calibrate();
         this.registerInputPackets();
 
         const debugLEDs = false;
@@ -1254,7 +1299,7 @@ class TraktorS2MK1Class {
     }
     samplerGainKnob(field) {
         for (let i = 1; i <= 8; i++) {
-            engine.setParameter("[Sampler" + i + "]", "pregain", field.value / 4095);
+            setKnobParameter("[Sampler" + i + "]", "pregain", field.value, this.calibration.sampler);
         }
     }
 
@@ -1280,6 +1325,9 @@ class TraktorS2MK1Class {
             }
         }
     }
+    crossfader(field) {
+        setFaderParameter("[Master]", "crossfader", field.value, this.calibration.crossfader);
+    }
 
     scalerParameter(group, name, value) {
         const scaledValue =  script.absoluteLin(value, 0, 1, 16, 4080);
@@ -1298,20 +1346,77 @@ class TraktorS2MK1Class {
         return script.absoluteLin(value, -1, 1, 16, 4080);
     }
 
-    outputChannelCallback(value, group, key) {
-        let ledValue = 0x05;
-        if (value) {
-            ledValue = 0x1F;
-        }
-        this.controller.setOutput(group, key, ledValue, !this.batchingLEDUpdate);
+    parseRawCalibration() {
+        return {
+            decks: [
+                {
+                    volume: this.parseFaderCalibration(0x0C),
+                    eq: {
+                        hi: this.parseKnobCalibration(0x18),
+                        mid: this.parseKnobCalibration(0x1E),
+                        low: this.parseKnobCalibration(0x24),
+                    },
+                    jogPress: this.parseJogPressCalibration(0x00),
+                },
+                {
+                    volume: this.parseFaderCalibration(0x10),
+                    eq: {
+                        hi: this.parseKnobCalibration(0x2A),
+                        mid: this.parseKnobCalibration(0x30),
+                        low: this.parseKnobCalibration(0x36),
+                    },
+                    jogPress: this.parseJogPressCalibration(0x04),
+                },
+            ],
+            effectUnits: [
+                {
+                    mix: this.parseKnobCalibration(0x00),
+                    params: [
+                        this.parseKnobCalibration(0x06),
+                        this.parseKnobCalibration(0x0C),
+                        this.parseKnobCalibration(0x12),
+                    ],
+                },
+                {
+                    mix: this.parseKnobCalibration(0x42),
+                    params: [
+                        this.parseKnobCalibration(0x48),
+                        this.parseKnobCalibration(0x4E),
+                        this.parseKnobCalibration(0x54),
+                    ]
+                }
+            ],
+            crossfader: this.parseFaderCalibration(0x14),
+            sampler: this.parseKnobCalibration(0x3C),
+        };
     }
-
-    outputChannelCallbackDark(value, group, key) {
-        let ledValue = 0x00;
-        if (value) {
-            ledValue = 0x1F;
-        }
-        this.controller.setOutput(group, key, ledValue, !this.batchingLEDUpdate);
+    parseKnobCalibration(index) {
+        const data = this.rawCalibration.knobs;
+        return {
+            min: this.parseUint16Le(data, index),
+            center: this.parseUint16Le(data, index+2),
+            max: this.parseUint16Le(data, index+4),
+        };
+    }
+    parseFaderCalibration(index) {
+        const data = this.rawCalibration.faders;
+        return {
+            min: this.parseUint16Le(data, index),
+            max: this.parseUint16Le(data, index+2),
+        };
+    }
+    parseJogPressCalibration(index) {
+        const data = this.rawCalibration.jogWheels;
+        return {
+            unpressed: this.parseUint16Be(data, index),
+            pressed: this.parseUint16Be(data, index+2),
+        };
+    }
+    parseUint16Le(data, index) {
+        return data[index] + (data[index+1]<<8);
+    }
+    parseUint16Be(data, index) {
+        return (data[index]<<8) + data[index+1];
     }
 
     shiftPressed() {
@@ -1357,6 +1462,20 @@ const encoderDirection = function(newValue, oldValue) {
         direction = -1;
     }
     return direction;
+};
+
+const setKnobParameter = function(group, key, value, calibration) {
+    let calibratedValue;
+    if (value <= calibration.center) {
+        calibratedValue = script.absoluteLin(value, 0, 0.5, calibration.min, calibration.center);
+    } else {
+        calibratedValue = script.absoluteLin(value, 0.5, 1, calibration.center, calibration.max);
+    }
+    engine.setValue(group, key, calibratedValue);
+};
+const setFaderParameter = function(group, key, value, calibration) {
+    const calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.max);
+    engine.setParameter(group, key, calibratedValue);
 };
 
 
