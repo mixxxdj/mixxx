@@ -22,68 +22,69 @@ bool dumpToFile(const QString& filename, const QByteArray& data) {
 class SeratoTagsTest : public testing::Test {
   protected:
     void trackColorRoundtrip(mixxx::RgbColor::optional_t displayedColor) {
-        mixxx::RgbColor storedColor =
-                mixxx::SeratoTags::displayedToStoredTrackColor(displayedColor);
-        mixxx::RgbColor::optional_t actualDisplayedColor = mixxx::SeratoTags::storedToDisplayedTrackColor(storedColor);
+        mixxx::SeratoStoredTrackColor storedColor =
+                mixxx::SeratoStoredTrackColor::fromDisplayedColor(displayedColor);
+        mixxx::RgbColor::optional_t actualDisplayedColor = storedColor.toDisplayedColor();
         EXPECT_EQ(displayedColor, actualDisplayedColor);
     }
     void trackColorRoundtripWithKnownStoredColor(
             mixxx::RgbColor::optional_t displayedColor,
-            mixxx::RgbColor storedColor) {
-        mixxx::RgbColor actualStoredColor =
-                mixxx::SeratoTags::displayedToStoredTrackColor(displayedColor);
+            mixxx::SeratoStoredTrackColor storedColor) {
+        mixxx::SeratoStoredTrackColor actualStoredColor =
+                mixxx::SeratoStoredTrackColor::fromDisplayedColor(displayedColor);
         EXPECT_EQ(actualStoredColor, storedColor);
 
         mixxx::RgbColor::optional_t actualDisplayedColor =
-                mixxx::SeratoTags::storedToDisplayedTrackColor(storedColor);
+                storedColor.toDisplayedColor();
         EXPECT_EQ(displayedColor, actualDisplayedColor);
     }
 };
 
 TEST_F(SeratoTagsTest, TrackColorConversionRoundtripWithKnownStoredColor) {
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x993399), mixxx::RgbColor(0xFF99FF));
+            mixxx::RgbColor::optional(0x993399), mixxx::SeratoStoredTrackColor(0xFF99FF));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x993377), mixxx::RgbColor(0xFF99DD));
+            mixxx::RgbColor::optional(0x993377), mixxx::SeratoStoredTrackColor(0xFF99DD));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x993355), mixxx::RgbColor(0xFF99BB));
+            mixxx::RgbColor::optional(0x993355), mixxx::SeratoStoredTrackColor(0xFF99BB));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x993333), mixxx::RgbColor(0xFF9999));
+            mixxx::RgbColor::optional(0x993333), mixxx::SeratoStoredTrackColor(0xFF9999));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x995533), mixxx::RgbColor(0xFFBB99));
+            mixxx::RgbColor::optional(0x995533), mixxx::SeratoStoredTrackColor(0xFFBB99));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x997733), mixxx::RgbColor(0xFFDD99));
+            mixxx::RgbColor::optional(0x997733), mixxx::SeratoStoredTrackColor(0xFFDD99));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x999933), mixxx::RgbColor(0xFFFF99));
+            mixxx::RgbColor::optional(0x999933), mixxx::SeratoStoredTrackColor(0xFFFF99));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x779933), mixxx::RgbColor(0xDDFF99));
+            mixxx::RgbColor::optional(0x779933), mixxx::SeratoStoredTrackColor(0xDDFF99));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x559933), mixxx::RgbColor(0xBBFF99));
+            mixxx::RgbColor::optional(0x559933), mixxx::SeratoStoredTrackColor(0xBBFF99));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x339933), mixxx::RgbColor(0x99FF99));
+            mixxx::RgbColor::optional(0x339933), mixxx::SeratoStoredTrackColor(0x99FF99));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x339955), mixxx::RgbColor(0x99FFBB));
+            mixxx::RgbColor::optional(0x339955), mixxx::SeratoStoredTrackColor(0x99FFBB));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x339977), mixxx::RgbColor(0x99FFDD));
+            mixxx::RgbColor::optional(0x339977), mixxx::SeratoStoredTrackColor(0x99FFDD));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x339999), mixxx::RgbColor(0x99FFFF));
+            mixxx::RgbColor::optional(0x339999), mixxx::SeratoStoredTrackColor(0x99FFFF));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x337799), mixxx::RgbColor(0x99DDFF));
+            mixxx::RgbColor::optional(0x337799), mixxx::SeratoStoredTrackColor(0x99DDFF));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x335599), mixxx::RgbColor(0x99BBFF));
+            mixxx::RgbColor::optional(0x335599), mixxx::SeratoStoredTrackColor(0x99BBFF));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x333399), mixxx::RgbColor(0x9999FF));
+            mixxx::RgbColor::optional(0x333399), mixxx::SeratoStoredTrackColor(0x9999FF));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x553399), mixxx::RgbColor(0xBB99FF));
+            mixxx::RgbColor::optional(0x553399), mixxx::SeratoStoredTrackColor(0xBB99FF));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x773399), mixxx::RgbColor(0xDD99FF));
+            mixxx::RgbColor::optional(0x773399), mixxx::SeratoStoredTrackColor(0xDD99FF));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x333333), mixxx::RgbColor(0x000000));
+            mixxx::RgbColor::optional(0x333333), mixxx::SeratoStoredTrackColor(0x000000));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x555555), mixxx::RgbColor(0xBBBBBB));
+            mixxx::RgbColor::optional(0x555555), mixxx::SeratoStoredTrackColor(0xBBBBBB));
     trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional(0x090909), mixxx::RgbColor(0x999999));
-    trackColorRoundtripWithKnownStoredColor(std::nullopt, mixxx::RgbColor(0xFFFFFF));
+            mixxx::RgbColor::optional(0x090909), mixxx::SeratoStoredTrackColor(0x999999));
+    trackColorRoundtripWithKnownStoredColor(
+            std::nullopt, mixxx::SeratoStoredTrackColor(0xFFFFFF));
 }
 
 TEST_F(SeratoTagsTest, TrackColorConversionRoundtrip) {
@@ -182,18 +183,14 @@ TEST_F(SeratoTagsTest, SetCueInfos) {
 TEST_F(SeratoTagsTest, CueColorConversionRoundtrip) {
     for (const auto color : mixxx::PredefinedColorPalettes::
                     kSeratoTrackMetadataHotcueColorPalette) {
-        const auto displayedColor = mixxx::SeratoTags::storedToDisplayedSeratoDJProCueColor(color);
-        const auto storedColor =
-                mixxx::SeratoTags::displayedToStoredSeratoDJProCueColor(
-                        displayedColor);
-        EXPECT_EQ(color, storedColor);
+        const auto displayedColor = mixxx::SeratoStoredHotcueColor(color).toDisplayedColor();
+        const auto storedColor = mixxx::SeratoStoredHotcueColor::fromDisplayedColor(displayedColor);
+        EXPECT_EQ(color, storedColor.toQRgb());
     }
 
     for (const auto color : mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette) {
-        const auto storedColor = mixxx::SeratoTags::displayedToStoredSeratoDJProCueColor(color);
-        const auto displayedColor =
-                mixxx::SeratoTags::storedToDisplayedSeratoDJProCueColor(
-                        storedColor);
+        const auto storedColor = mixxx::SeratoStoredHotcueColor::fromDisplayedColor(color);
+        const auto displayedColor = storedColor.toDisplayedColor();
         EXPECT_EQ(color, displayedColor);
     }
 }

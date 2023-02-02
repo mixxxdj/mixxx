@@ -21,16 +21,12 @@ class SeratoTags final {
         Failed = 2,
     };
 
-    static constexpr RgbColor kDefaultTrackColor = RgbColor(0xFF9999);
-    static constexpr RgbColor kDefaultCueColor = RgbColor(0xCC0000);
-    static constexpr RgbColor kFixedLoopColor = RgbColor(0x27AAE1);
+    SeratoTags()
+            : m_seratoBeatGridParserStatus(ParserStatus::None),
+              m_seratoMarkersParserStatus(ParserStatus::None),
+              m_seratoMarkers2ParserStatus(ParserStatus::None) {
+    }
 
-    SeratoTags() = default;
-
-    static RgbColor::optional_t storedToDisplayedTrackColor(RgbColor color);
-    static RgbColor displayedToStoredTrackColor(RgbColor::optional_t color);
-    static RgbColor storedToDisplayedSeratoDJProCueColor(RgbColor color);
-    static RgbColor displayedToStoredSeratoDJProCueColor(RgbColor color);
     static double guessTimingOffsetMillis(
             const QString& filePath, const audio::SignalInfo& signalInfo);
 
