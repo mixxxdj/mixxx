@@ -216,6 +216,8 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         }
         // No child item for crate found
         // -> Create and append a new child item for this crate
+        // TODO() Use here std::span to get around the heap alloctaion of
+        // std::vector for a single element.
         std::vector<std::unique_ptr<TreeItem>> rows;
         rows.push_back(std::make_unique<TreeItem>(crate.getName(), crate.getId().toVariant()));
         QModelIndex parentIndex = m_childModel.index(0, 0);

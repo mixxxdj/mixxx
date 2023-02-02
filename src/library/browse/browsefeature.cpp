@@ -152,6 +152,8 @@ void BrowseFeature::slotAddQuickLink() {
 
     QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
     std::vector<std::unique_ptr<TreeItem>> rows;
+    // TODO() Use here std::span to get around the heap allocation of
+    // std::vector for a single element.
     rows.push_back(std::make_unique<TreeItem>(name, vpath));
     m_childModel.insertTreeItemRows(std::move(rows), m_pQuickLinkItem->childRows(), parent);
 
