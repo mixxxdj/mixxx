@@ -63,7 +63,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void deleteItem(const QModelIndex& index) override;
 
   protected slots:
-    void slotDeletePlaylist();
+    virtual void slotDeletePlaylist();
     void slotDuplicatePlaylist();
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
