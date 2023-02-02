@@ -114,6 +114,8 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QFutureWatcher<TreeItem*>::finished,
             this,
             &TraktorFeature::onTrackCollectionLoaded);
+
+    m_pTraktorTableModel->setSearch(""); // enable search
 }
 
 TraktorFeature::~TraktorFeature() {
