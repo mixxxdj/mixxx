@@ -54,6 +54,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
+    // Caution: Make sure this is reset whenever the library tree is updated,
+    // so that the internalPointer() does not become dangling
     QModelIndex m_lastRightClickedIndex;
 
     parented_ptr<QAction> m_pAddToAutoDJAction;

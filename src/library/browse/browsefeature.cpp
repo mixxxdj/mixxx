@@ -273,6 +273,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+
+    // Make sure that this is reset when the related TreeItem is deleted.
     m_pLastRightClickedItem = item;
 
     if (!item) {

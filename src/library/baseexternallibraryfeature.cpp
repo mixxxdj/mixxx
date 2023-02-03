@@ -58,7 +58,8 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
 
 void BaseExternalLibraryFeature::onRightClickChild(
         const QPoint& globalPos, const QModelIndex& index) {
-    //Save the model index so we can get it in the action slots...
+    // Save the model index so we can get it in the action slots...
+    // Make sure that this is reset when the related TreeItem is deleted.
     m_lastRightClickedIndex = index;
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pAddToAutoDJAction);
