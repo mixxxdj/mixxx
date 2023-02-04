@@ -17,6 +17,9 @@
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
 
+constexpr double kMinBeatJumpSize = 0.03125;
+constexpr double kMaxBeatJumpSize = 512;
+
 // returns true if a is valid and is fairly close to target (within +/- 1 frame).
 bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) {
     return a.isValid() && a > target - 1 && a < target + 1;
@@ -175,6 +178,9 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotBeatJump, Qt::DirectConnection);
     m_pCOBeatJumpSize = new ControlObject(ConfigKey(group, "beatjump_size"),
                                           true, false, false, 4.0);
+    m_pCOBeatJumpSize->connectValueChangeRequest(this,
+            &LoopingControl::slotBeatJumpSizeChangeRequest,
+            Qt::DirectConnection);
 
     m_pCOBeatJumpSizeHalve = new ControlPushButton(ConfigKey(group, "beatjump_size_halve"));
     connect(m_pCOBeatJumpSizeHalve,
@@ -1429,6 +1435,14 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
     // slotBeatLoop will call m_pCOBeatLoopSize->setAndConfirm if
     // new beatloop_size is valid
+
+    double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatSize = s_dBeatSizes[0];
+    if ((beats < minBeatSize) || (beats > maxBeatSize)) {
+        // Don't clamp the value here to not fall out of a measure
+        return;
+    }
+
     slotBeatLoop(beats, true, false);
 }
 
@@ -1493,6 +1507,14 @@ void LoopingControl::slotBeatJump(double beats) {
             seekExact(seekPosition);
         }
     }
+}
+
+void LoopingControl::slotBeatJumpSizeChangeRequest(double beats) {
+    if ((beats < kMinBeatJumpSize) || (beats > kMaxBeatJumpSize)) {
+        // Don't clamp the value here to not fall out of a measure
+        return;
+    }
+    m_pCOBeatJumpSize->setAndConfirm(beats);
 }
 
 void LoopingControl::slotBeatJumpSizeHalve(double pressed) {

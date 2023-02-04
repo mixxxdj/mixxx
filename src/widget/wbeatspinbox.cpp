@@ -54,12 +54,7 @@ void WBeatSpinBox::stepBy(int steps) {
     QString temp = text();
     int cursorPos = lineEdit()->cursorPosition();
     if (validate(temp, cursorPos) == QValidator::Acceptable) {
-        double editValue = valueFromText(temp);
-        newValue = editValue * pow(2, steps);
-        if (newValue < minimum() || newValue > maximum()) {
-            // don't clamp the value here to not fall out of a measure
-            newValue = editValue;
-        }
+        newValue = valueFromText(temp) * pow(2, steps);
     } else {
         // here we have an unacceptable edit, going back to the old value first
         newValue = oldValue;
