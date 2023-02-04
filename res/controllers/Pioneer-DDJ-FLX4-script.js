@@ -646,10 +646,26 @@ PioneerDDJFLX4.samplerPlayOutputCallbackFunction = function(value, group, _contr
     }
 };
 
-PioneerDDJFLX4.padModeKeyPressed = function(_channel, _control, value, _status, group) {
-    var deck = (_status == 0x90 ? PioneerDDJFLX4.lights.deck1 : PioneerDDJFLX4.lights.deck2);
+PioneerDDJFLX4.padModeKeyPressed = function(_channel, _control, value, _status, _group) {
+    var deck = (_status === 0x90 ? PioneerDDJFLX4.lights.deck1 : PioneerDDJFLX4.lights.deck2);
 
-    if (_control == 0x1B) { PioneerDDJFLX4.toggleLight(deck.hotcueMode, true); } else if (_control == 0x69) { PioneerDDJFLX4.toggleLight(deck.keyboardMode, true); } else if (_control == 0x1E) { PioneerDDJFLX4.toggleLight(deck.padFX1Mode, true); } else if (_control == 0x6B) { PioneerDDJFLX4.toggleLight(deck.padFX2Mode, true); } else if (_control == 0x20) { PioneerDDJFLX4.toggleLight(deck.beatJumpMode, true); } else if (_control == 0x6D) { PioneerDDJFLX4.toggleLight(deck.beatLoopMode, true); } else if (_control == 0x22) { PioneerDDJFLX4.toggleLight(deck.samplerMode, true); } else if (_control == 0x6F) { PioneerDDJFLX4.toggleLight(deck.keyShiftMode, true); }
+    if (_control === 0x1B) {
+        PioneerDDJFLX4.toggleLight(deck.hotcueMode, true);
+    } else if (_control === 0x69) {
+        PioneerDDJFLX4.toggleLight(deck.keyboardMode, true);
+    } else if (_control === 0x1E) {
+        PioneerDDJFLX4.toggleLight(deck.padFX1Mode, true);
+    } else if (_control === 0x6B) {
+        PioneerDDJFLX4.toggleLight(deck.padFX2Mode, true);
+    } else if (_control === 0x20) {
+        PioneerDDJFLX4.toggleLight(deck.beatJumpMode, true);
+    } else if (_control === 0x6D) {
+        PioneerDDJFLX4.toggleLight(deck.beatLoopMode, true);
+    } else if (_control === 0x22) {
+        PioneerDDJFLX4.toggleLight(deck.samplerMode, true);
+    } else if (_control === 0x6F) {
+        PioneerDDJFLX4.toggleLight(deck.keyShiftMode, true);
+    }
 };
 
 PioneerDDJFLX4.samplerPadPressed = function(_channel, _control, value, _status, group) {
