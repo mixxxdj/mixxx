@@ -198,3 +198,41 @@ TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     deck1->slotEjectTrack(1.0);
     ASSERT_EQ(nullptr, deck1->getLoadedTrack());
 }
+
+TEST_F(PlayerManagerTest, UnReplaceTest) {
+    // Trigger eject twice within 500 ms to undo track replacement
+    auto deck1 = m_pPlayerManager->getDeck(1);
+    // Load a track
+    TrackPointer pTrack1 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest1));
+    ASSERT_NE(nullptr, pTrack1);
+    TrackId testId1 = pTrack1->getId();
+    ASSERT_TRUE(testId1.isValid());
+    deck1->slotLoadTrack(pTrack1, false);
+    m_pEngine->process(1024);
+    while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
+        QTest::qSleep(100); // millis
+    }
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+
+    // Load another track.
+    TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
+    ASSERT_NE(nullptr, pTrack2);
+    deck1->slotLoadTrack(pTrack2, false);
+    m_pEngine->process(1024);
+    while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
+        QTest::qSleep(100); // millis
+    }
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+
+    // Eject. Make sure eject does not trigger 'unreplace':
+    // sleep for longer than 500 ms 'unreplace' period so this is not registered as double-click
+    QTest::qSleep(500); // millis
+    deck1->slotEjectTrack(1.0);
+    ASSERT_EQ(nullptr, deck1->getLoadedTrack());
+
+    // Eject again, assume this is reached faster than 500 ms after first eject
+    deck1->slotEjectTrack(1.0);
+    // First track should be reloaded
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+    ASSERT_EQ(testId1, deck1->getLoadedTrack()->getId());
+}
