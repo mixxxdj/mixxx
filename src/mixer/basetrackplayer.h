@@ -123,6 +123,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;
 
+    PerformanceTimer m_ejectTimer;
+
     std::unique_ptr<ControlPushButton> m_pEject;
 
     // Deck clone control

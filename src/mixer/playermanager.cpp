@@ -608,6 +608,13 @@ TrackPointer PlayerManager::getLastEjectedTrack() const {
     return nullptr;
 }
 
+TrackPointer PlayerManager::getSecondLastEjectedTrack() const {
+    if (m_pLibrary) {
+        return m_pLibrary->trackCollectionManager()->getTrackById(m_secondLastEjectedTrackId);
+    }
+    return nullptr;
+}
+
 Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
     const auto locker = lockMutex(&m_mutex);
     if (microphone < 1 || microphone >= static_cast<unsigned int>(m_microphones.size())) {
@@ -772,7 +779,12 @@ void PlayerManager::slotSaveEjectedTrack(TrackPointer track) {
     VERIFY_OR_DEBUG_ASSERT(track) {
         return;
     }
-    m_lastEjectedTrackId = track->getId();
+    const TrackId id = track->getId();
+    if (id == m_lastEjectedTrackId) {
+        return;
+    }
+    m_secondLastEjectedTrackId = m_lastEjectedTrackId;
+    m_lastEjectedTrackId = id;
 }
 
 void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
