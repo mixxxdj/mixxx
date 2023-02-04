@@ -560,7 +560,7 @@ void EngineBuffer::ejectTrack() {
     m_pTrackLoaded->forceSet(0);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.reset();
     m_playButton->set(0.0);
@@ -1298,10 +1298,13 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update visual control object, this needs to be done more often than the
     // playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos, speed * m_baserate_old,
+    m_visualPlayPos->set(
+            fFractionalPlaypos,
+            speed * m_baserate_old,
             (double)iBufferSize / m_trackSamplesOld,
             fractionalPlayposFromAbsolute(m_dSlipPosition),
-            tempoTrackSeconds);
+            tempoTrackSeconds,
+            iBufferSize / kSamplesPerFrame / static_cast<double>(m_iSampleRate) * 1000000.0);
 }
 
 void EngineBuffer::hintReader(const double dRate) {

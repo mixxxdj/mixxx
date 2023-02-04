@@ -52,8 +52,6 @@ public:
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
-    // Returns the processing latency in milliseconds
-    double getProcessingLatency() const;
     void setAudioBufferSizeIndex(unsigned int latency);
     unsigned int getSyncBuffers() const;
     void setSyncBuffers(unsigned int sampleRate);
