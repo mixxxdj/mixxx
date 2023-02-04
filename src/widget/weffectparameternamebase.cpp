@@ -79,9 +79,12 @@ void WEffectParameterNameBase::parameterUpdated() {
         m_text = kNoEffectString;
         setBaseTooltip(tr("No effect loaded."));
     }
+    // frameWidth() is the maximum of the sum of margin, border and padding
+    // width of the left and the right side.
     m_widthHint = math_max(
-            valueWidth,
-            metrics.size(0, m_text).width());
+                          valueWidth,
+                          metrics.size(0, m_text).width()) +
+            2 * frameWidth();
     setText(m_text);
     m_parameterUpdated = true;
 }

@@ -95,7 +95,7 @@ void WLabel::setText(const QString& text) {
     m_longText = text;
     if (m_elideMode != Qt::ElideNone) {
         QFontMetrics metrics(font());
-        // Measure the text for label width
+        // Measure the text for the optimum label width
         // frameWidth() is the maximum of the sum of margin, border and padding
         // width of the left and the right side.
         m_widthHint = metrics.size(0, m_longText).width() + 2 * frameWidth();
