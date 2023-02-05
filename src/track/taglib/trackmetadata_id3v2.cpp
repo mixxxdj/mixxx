@@ -712,7 +712,7 @@ void importTrackMetadataFromTag(
                 readFirstUserTextIdentificationFrame(
                         tag,
                         QStringLiteral("COMMENT"));
-        if (!comment.isNull() || resetMissingTagMetadata) {
+        if (!comment.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setComment(comment);
         }
     }
