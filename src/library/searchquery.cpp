@@ -371,12 +371,10 @@ QString NumericFilterNode::toSql() const {
     if (m_bRangeQuery) {
         QStringList searchClauses;
         for (const auto& sqlColumn: m_sqlColumns) {
-            QStringList rangeClauses;
-            rangeClauses << QString("%1 >= %2").arg(
-                    sqlColumn, QString::number(m_dRangeLow));
-            rangeClauses << QString("%1 <= %2").arg(
-                    sqlColumn, QString::number(m_dRangeHigh));
-            searchClauses << concatSqlClauses(rangeClauses, "AND");
+            searchClauses << QString(QStringLiteral("%1 BETWEEN %2 AND %3"))
+                                     .arg(sqlColumn,
+                                             QString::number(m_dRangeLow),
+                                             QString::number(m_dRangeHigh));
         }
         return concatSqlClauses(searchClauses, "OR");
     }
@@ -486,8 +484,7 @@ QString YearFilterNode::toSql() const {
     if (m_bRangeQuery) {
         QStringList rangeClauses;
         return QString(
-                QStringLiteral("(CAST(substr(year,1,4) AS INTEGER) >= %1) AND "
-                               "(CAST(substr(year,1,4) AS INTEGER) <= %2)"))
+                QStringLiteral("CAST(substr(year,1,4) AS INTEGER) BETWEEN %1 AND %2"))
                 .arg(QString::number(m_dRangeLow),
                         QString::number(m_dRangeHigh));
     }
