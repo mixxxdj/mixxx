@@ -128,13 +128,6 @@ if(APPLE)
   endif()
 endif()
 
-if(DEFINED VCPKG_ROOT AND DEFINED VCPKG_TARGET_TRIPLET)
-  if(NOT EXISTS "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}")
-    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET} "
-        "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
-  endif()
-endif()
-
 project(mixxx VERSION 2.4.0)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha-pre") # set to "alpha-pre" "beta" or ""
@@ -153,6 +146,18 @@ include(ExternalProject)
 include(GNUInstallDirs)
 include(DefaultOption)
 include(IsStaticLibrary)
+
+# Verify VCPKG settings
+if(DEFINED _VCPKG_INSTALLED_DIR)
+  if(NOT EXISTS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+    # Fail early if this part of CMAKE_PREFIX_PATH does not exist
+    # else the library lookups below will fail with misleading error messages
+    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
+        "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
+  else()
+    message(STATUS "Using VCPKG_TARGET_TRIPLET: ${VCPKG_TARGET_TRIPLET}")
+  endif()
+endif()
 
 #######################################################################
 # Compilers and toolchains
@@ -240,7 +245,7 @@ if(MSVC)
   add_compile_options(/UTF8)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
-    message(STATUS "x64 Enabling SS2 CPU optimizations (>= Pentium 4)")
+    message(STATUS "x64 Enabling SSE2 CPU optimizations (>= Pentium 4)")
     # Define gcc/clang style defines for SSE and SSE2 for compatibility
     add_compile_definitions("__SSE__" "__SSE2__")
   endif()
@@ -308,7 +313,7 @@ if(MSVC)
     if(OPTIMIZE STREQUAL "portable")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
-        message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
         # Set compiler option for SSE/SSE2
@@ -318,7 +323,7 @@ if(MSVC)
       message("Enabling optimizations for native system, specified by user")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
-        message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
       endif()
@@ -380,7 +385,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
     if(OPTIMIZE STREQUAL "portable")
       # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
-        message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "Enabling SSE2 CPU optimizations (>= Pentium 4)")
         add_compile_options(-mtune=generic)
         # -mtune=generic picks the most common, but compatible options.
         # on arm platforms equivalent to -march=arch
@@ -914,6 +919,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/replaygain.cpp
   src/track/serato/beatgrid.cpp
   src/track/serato/beatsimporter.cpp
+  src/track/serato/color.cpp
   src/track/serato/cueinfoimporter.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
@@ -1617,19 +1623,6 @@ if(MSVC)
 endif()
 
 if(WIN32)
-  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
-  # there is no particular reason to look for this file versus any other one in the directory.
-  find_file(QT_TRANSLATION_FILE qt_de.qm PATH_SUFFIXES share/qt5/translations)
-  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
-  install(
-    DIRECTORY "${QT_TRANSLATIONS}"
-    DESTINATION "${MIXXX_INSTALL_DATADIR}"
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-    FILES_MATCHING REGEX
-      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-  )
-
   # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is blocklisted.
   # Qt does not link these and vcpkg does not build them as a dependency of Qt,
   # so copy them manually.
@@ -2430,6 +2423,21 @@ elseif(WIN32)
   endif()
 endif()
 
+if(APPLE OR WIN32)
+  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
+  # there is no particular reason to look for this file versus any other one in the directory.
+  find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
+  install(
+    DIRECTORY "${QT_TRANSLATIONS}"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
+endif()
+
 # Queen Mary DSP
 add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/base/KaiserWindow.cpp
@@ -2736,8 +2744,8 @@ endif()
 find_package(lilv)
 default_option(LILV "Lilv (LV2) support" "lilv_FOUND")
 if(LILV)
-  if(NOT TARGET lilv::lilv)
-    message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
+  if(NOT lilv_FOUND)
+    message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and LV2 libraries and development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
     src/effects/backends/lv2/lv2backend.cpp

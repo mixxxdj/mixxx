@@ -33,6 +33,8 @@ class WEffectParameterNameBase : public WLabel {
 
   private:
     const QString mimeTextIdentifier() const;
+    QString m_unitString;
     QString m_text;
     QTimer m_displayNameResetTimer;
+    bool m_parameterUpdated;
 };

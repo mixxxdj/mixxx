@@ -361,6 +361,21 @@
        </widget>
       </item>
 
+      <item row="4" column="0" colspan="3">
+       <widget class="QCheckBox" name="checkBoxEnableSearchCompletions">
+        <property name="text">
+         <string>Enable search completions</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="3">
+       <widget class="QCheckBox" name="checkBoxEnableSearchHistoryShortcuts">
+        <property name="text">
+         <string>Enable search history keyboard shortcuts</string>
+        </property>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item>
@@ -540,6 +555,8 @@
   <tabstop>libraryFont</tabstop>
   <tabstop>libraryFontButton</tabstop>
   <tabstop>searchDebouncingTimeoutSpinBox</tabstop>
+  <tabstop>checkBoxEnableSearchCompletions</tabstop>
+  <tabstop>checkBoxEnableSearchHistoryShortcuts</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
   <tabstop>checkBox_show_banshee</tabstop>
   <tabstop>checkBox_show_itunes</tabstop>

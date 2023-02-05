@@ -7,7 +7,8 @@
 EffectChainPreset::EffectChainPreset()
         : m_name(kNoEffectString),
           m_mixMode(EffectChainMixMode::DrySlashWet),
-          m_dSuper(0.0) {
+          m_dSuper(0.0),
+          m_readOnly(false) {
 }
 
 EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
@@ -27,6 +28,8 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
     m_mixMode = EffectChainMixMode::fromString(mixModeStr);
 
     m_dSuper = XmlParse::selectNodeDouble(chainElement, EffectXml::kChainSuperParameter);
+
+    m_readOnly = false;
 
     QDomElement effectsElement = XmlParse::selectElement(chainElement, EffectXml::kEffectsRoot);
     QDomNodeList effectList = effectsElement.childNodes();

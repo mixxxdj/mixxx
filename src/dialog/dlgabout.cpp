@@ -124,7 +124,6 @@ DlgAbout::DlgAbout()
             << "Stefan N&uuml;rnberger"
             << "motific"
             << "Fatih Emre YILDIZ"
-            << "Fredrik Wieczerkowski"
             << "Vincent Duez-Dellac"
             << "Javier Vilalta"
             << "David Chocholat&yacute;"

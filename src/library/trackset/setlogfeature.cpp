@@ -103,6 +103,19 @@ void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
     transaction.commit();
 }
 
+void SetlogFeature::slotDeletePlaylist() {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == m_playlistId) {
+        // the current setlog must not be deleted
+        return;
+    }
+    // regular setlog, call the base implementation
+    BasePlaylistFeature::slotDeletePlaylist();
+}
+
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
     Q_UNUSED(globalPos);
     m_lastRightClickedIndex = QModelIndex();

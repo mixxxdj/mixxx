@@ -36,7 +36,7 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
     }
 
     auto chainPresetListUpdateSignal = &EffectChainPresetManager::effectChainPresetListUpdated;
-    auto pQuickEffectChain = dynamic_cast<QuickEffectChain*>(m_pChain.data());
+    auto pQuickEffectChain = qobject_cast<QuickEffectChain*>(m_pChain.data());
     if (pQuickEffectChain) {
         chainPresetListUpdateSignal = &EffectChainPresetManager::quickEffectChainPresetListUpdated;
         m_bQuickEffectChain = true;
@@ -84,10 +84,8 @@ void WEffectChainPresetSelector::populate() {
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
-    Q_UNUSED(index);
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
-    setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
     // After selecting an effect move focus to the tracks table in order
     // to immediately allow keyboard shortcuts again.
     // TODO(ronso0) switch to previously focused (library?) widget instead
@@ -97,7 +95,7 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
     setCurrentIndex(findData(name));
-    setBaseTooltip(name);
+    setBaseTooltip(itemData(currentIndex(), Qt::ToolTipRole).toString());
 }
 
 bool WEffectChainPresetSelector::event(QEvent* pEvent) {

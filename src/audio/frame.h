@@ -44,7 +44,15 @@ class FramePos final {
     /// values), use `FramePos::toEngineSamplePosMaybeInvalid` instead.
     double toEngineSamplePos() const {
         DEBUG_ASSERT(isValid());
-        return value() * mixxx::kEngineChannelCount;
+        double engineSamplePos = value() * mixxx::kEngineChannelCount;
+        // In the rare but possible instance that the position is valid but
+        // the engine sample position is exactly -1.0, we nudge the position
+        // because otherwise fromEngineSamplePosMaybeInvalid() will think
+        // the position is invalid.
+        if (engineSamplePos == kLegacyInvalidEnginePosition) {
+            return kLegacyInvalidEnginePosition - 0.0001;
+        }
+        return engineSamplePos;
     }
 
     /// Return a `FramePos` from a given engine sample position. Sample
