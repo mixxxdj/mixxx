@@ -4,6 +4,7 @@
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "mixer/playermanager.h"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 
@@ -80,10 +81,24 @@ bool allowLoadToPlayer(
         return true;
     }
 
-    return pConfig->getValueString(
-                          ConfigKey("[Controls]",
-                                  "AllowTrackLoadToPlayingDeck"))
-            .toInt();
+    bool allowLoadTrackIntoPlayingDeck = false;
+    if (pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
+        int loadWhenDeckPlaying =
+                pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
+        switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
+        case LoadWhenDeckPlaying::Allow:
+        case LoadWhenDeckPlaying::AllowButStopDeck:
+            allowLoadTrackIntoPlayingDeck = true;
+            break;
+        case LoadWhenDeckPlaying::Reject:
+            break;
+        }
+    } else {
+        // support older version of this flag
+        allowLoadTrackIntoPlayingDeck =
+                pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
+    }
+    return allowLoadTrackIntoPlayingDeck;
 }
 
 } // anonymous namespace

@@ -61,7 +61,7 @@ class AnalyzerPlugin {
     virtual AnalyzerPluginInfo info() const = 0;
 
     virtual bool initialize(mixxx::audio::SampleRate sampleRate) = 0;
-    virtual bool processSamples(const CSAMPLE* pIn, const int iLen) = 0;
+    virtual bool processSamples(const CSAMPLE* pIn, SINT iLen) = 0;
     virtual bool finalize() = 0;
 };
 

@@ -20,6 +20,10 @@ extern const ConfigKey kTrackDoubleClickActionConfigKey;
 
 extern const ConfigKey kSearchDebouncingTimeoutMillisConfigKey;
 
+extern const ConfigKey kEnableSearchCompletionsConfigKey;
+
+extern const ConfigKey kEnableSearchHistoryShortcutsConfigKey;
+
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
 extern const ConfigKey kHistoryMinTracksToKeepConfigKey;
@@ -34,7 +38,7 @@ const bool kEditMetadataSelectedClickDefault = false;
 
 extern const ConfigKey kSyncTrackMetadataConfigKey;
 
-extern const ConfigKey kSyncSeratoMetadataConfigKey;
+extern const ConfigKey kResetMissingTagMetadataOnImportConfigKey;
 
 extern const ConfigKey kSyncSeratoMetadataConfigKey;
 

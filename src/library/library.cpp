@@ -356,6 +356,14 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::rightClicked,
             m_pSidebarModel,
             &SidebarModel::rightClicked);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::renameItem,
+            m_pSidebarModel,
+            &SidebarModel::renameItem);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::deleteItem,
+            m_pSidebarModel,
+            &SidebarModel::deleteItem);
 
     connect(pSidebarWidget,
             &WLibrarySidebar::setLibraryFocus,

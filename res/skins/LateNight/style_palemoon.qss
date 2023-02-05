@@ -229,7 +229,13 @@ WSearchLineEdit {
 #VuMeterBoxMasterSingle,
 #LatencyMeterBox {
   background-color: #040404;
-}
+  }
+  #LatencyMeterBox[highlight="0"] {
+    border: 1px solid #040404;
+  }
+  #LatencyMeterBox[highlight="1"] {
+    border: 1px solid yellow;
+  }
 
 #WaveformsContainer {
   border-bottom: 1px solid #0c0c0c;
@@ -246,16 +252,14 @@ WSearchLineEdit {
 
 #SearchLineBox {
   padding-right: 2px;
-  border-right: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
 }
 
 #LibExpandBox {
   border-right: 0px;
-  border-left: 0px;
-  border-radius: 0px;
-  padding: 0px 2px 2px 4px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  padding: 0px 2px 2px 0px;
+  margin-left: 4px;
 }
 
 #SidebarBox {
@@ -698,6 +702,10 @@ WBeatSpinBox::down-button,
 
 
 /************** Mixer ***************************************************/
+
+#CrossfaderContainer[highlight="1"] {
+  border:  1px solid #b2421c;
+}
 
 #MixerDecks {
   padding: 2px 5px 2px 5px;
@@ -1374,11 +1382,6 @@ QPushButton#pushButtonRecording:checked {
 
 #LibraryFeatureControls QPushButton:!enabled {
   color: #444443;
-}
-
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  color: #b24c12;
 }
 
 #SkinSettingsButton,

@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <memory>
 
+#include "analyzer/analyzertrack.h"
 #include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
@@ -89,6 +90,7 @@ class WTrackMenu : public QMenu {
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void trackMenuVisible(bool visible);
+    void restoreCurrentIndex();
 
   private slots:
     // File
@@ -116,6 +118,8 @@ class WTrackMenu : public QMenu {
     // Analysis
     void slotAnalyze();
     void slotReanalyze();
+    void slotReanalyzeWithFixedTempo();
+    void slotReanalyzeWithVariableTempo();
 
     // BPM
     void slotLockBpm();
@@ -188,7 +192,7 @@ class WTrackMenu : public QMenu {
     void updateSelectionCrates(QWidget* pWidget);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
-    void addToAnalysis();
+    void addToAnalysis(AnalyzerTrack::Options options = AnalyzerTrack::Options());
 
     void clearBeats();
     void lockBpm(bool lock);
@@ -287,6 +291,8 @@ class WTrackMenu : public QMenu {
     // Analysis actions
     QAction* m_pAnalyzeAction{};
     QAction* m_pReanalyzeAction{};
+    QAction* m_pReanalyzeConstBpmAction{};
+    QAction* m_pReanalyzeVarBpmAction{};
 
     // Clear track metadata actions
     QAction* m_pClearBeatsAction{};

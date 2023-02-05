@@ -615,7 +615,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         //POSITION: NO  PITCH: NO
         //if it's been a long time, we're stopped.
         //if it hasn't been long,
-        //let the track play a wee bit more before deciding we've stopped
+        //let the track play a bit more before deciding we've stopped
 
         m_pRateRatio->set(1.0);
 

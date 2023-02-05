@@ -1,5 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 
 Skin.Button {
     id: root
@@ -22,7 +22,6 @@ Skin.Button {
     onReleased: {
         if (!toggleable)
             control.value = 0;
-
     }
 
     Mixxx.ControlProxy {
@@ -31,5 +30,4 @@ Skin.Button {
         group: root.group
         key: root.key
     }
-
 }

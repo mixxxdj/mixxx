@@ -33,6 +33,8 @@ class TagFetcher : public QObject {
             const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
     void fetchProgress(
             const QString& message);
+    void numberOfRecordingsFoundFromAcoustId(int totalNumberOfRecordings);
+    void currentRecordingFetchedFromMusicBrainz();
     void networkError(
             int httpStatus,
             const QString& app,
@@ -65,8 +67,7 @@ class TagFetcher : public QObject {
             const mixxx::network::WebResponseWithContent& responseWithContent);
 
   private:
-    bool onAcoustIdTaskTerminated();
-    bool onMusicBrainzTaskTerminated();
+    void terminate();
 
     QNetworkAccessManager m_network;
 

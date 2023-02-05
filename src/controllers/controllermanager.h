@@ -47,6 +47,7 @@ class ControllerManager : public QObject {
     void requestSetUpDevices();
     void requestShutdown();
     void requestInitialize();
+    void mappingApplied(bool applied);
 
   public slots:
     void updateControllerList();

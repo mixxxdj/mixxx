@@ -42,5 +42,8 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ValueScaler type,
     } else if (type == EffectManifestParameter::ValueScaler::LogarithmicInverse) {
         m_pControl->setBehavior(
                 new ControlLogInvPotmeterBehavior(dMinValue, dMaxValue, -40));
+    } else if (type == EffectManifestParameter::ValueScaler::Integral) {
+        m_pControl->setBehavior(new ControlLinSteppedIntPotBehavior(
+                dMinValue, dMaxValue, false));
     }
 }

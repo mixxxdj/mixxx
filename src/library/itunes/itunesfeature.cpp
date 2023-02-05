@@ -118,6 +118,8 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QFutureWatcher<TreeItem*>::finished,
             this,
             &ITunesFeature::onTrackCollectionLoaded);
+
+    m_pITunesTrackModel->setSearch(""); // enable search.
 }
 
 ITunesFeature::~ITunesFeature() {

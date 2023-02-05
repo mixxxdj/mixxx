@@ -30,7 +30,6 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     bool restoreCurrentViewState() override;
 
   public slots:
-    void clicked();
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 

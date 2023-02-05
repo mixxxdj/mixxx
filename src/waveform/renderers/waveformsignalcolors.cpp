@@ -88,12 +88,18 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
         m_playedOverlayColor = Qt::transparent;
     }
 
-    // This color is used to draw an overlay over the entire overview-waveforms
-    // if vinyl passthrough is enabled
+    // This color is used to draw an overlay over the entire overview waveforms
+    // if vinyl passthrough is enabled. Default is black with 73% opacity.
     m_passthroughOverlayColor = context.selectColor(node, "PassthroughOverlayColor");
     m_passthroughOverlayColor = WSkinColor::getCorrectColor(m_passthroughOverlayColor).toRgb();
     if (!m_passthroughOverlayColor.isValid()) {
         m_passthroughOverlayColor = WSkinColor::getCorrectColor(QColor(0, 0, 0, 187)).toRgb();
+    }
+    // This color is for the "Passthrough" label on scrolling waveforms. Default is orange.
+    m_passthroughLabelColor = context.selectColor(node, "PassthroughLabelColor");
+    m_passthroughLabelColor = WSkinColor::getCorrectColor(m_passthroughLabelColor).toRgb();
+    if (!m_passthroughLabelColor.isValid()) {
+        m_passthroughLabelColor = WSkinColor::getCorrectColor(QColor(100, 53, 0, 255)).toRgb();
     }
 
     m_bgColor = context.selectColor(node, "BgColor");

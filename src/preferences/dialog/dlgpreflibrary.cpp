@@ -90,6 +90,8 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
+    updateSearchLineEditHistoryOptions();
+
     connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
     // TODO(XXX) this string should be extracted from the soundsources
@@ -210,6 +212,9 @@ void DlgPrefLibrary::slotResetToDefaults() {
     setLibraryFont(QApplication::font());
     searchDebouncingTimeoutSpinBox->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
+    checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kCompletionsEnabledDefault);
+    checkBoxEnableSearchHistoryShortcuts->setChecked(
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -266,6 +271,13 @@ void DlgPrefLibrary::slotUpdate() {
             kEditMetadataSelectedClickDefault);
     checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
     m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
+
+    checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
+            kEnableSearchCompletionsConfigKey,
+            WSearchLineEdit::kCompletionsEnabledDefault));
+    checkBoxEnableSearchHistoryShortcuts->setChecked(m_pConfig->getValue(
+            kEnableSearchHistoryShortcutsConfigKey,
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -413,6 +425,12 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(kUseRelativePathOnExportConfigKey,
             ConfigValue((int)checkBox_use_relative_path->isChecked()));
 
+    m_pConfig->set(kEnableSearchCompletionsConfigKey,
+            ConfigValue(checkBoxEnableSearchCompletions->isChecked()));
+    m_pConfig->set(kEnableSearchHistoryShortcutsConfigKey,
+            ConfigValue(checkBoxEnableSearchHistoryShortcuts->isChecked()));
+    updateSearchLineEditHistoryOptions();
+
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
@@ -493,6 +511,15 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
             kSearchDebouncingTimeoutMillisConfigKey,
             searchDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
+}
+
+void DlgPrefLibrary::updateSearchLineEditHistoryOptions() {
+    WSearchLineEdit::setSearchCompletionsEnabled(m_pConfig->getValue<bool>(
+            kEnableSearchCompletionsConfigKey,
+            WSearchLineEdit::kCompletionsEnabledDefault));
+    WSearchLineEdit::setSearchHistoryShortcutsEnabled(m_pConfig->getValue<bool>(
+            kEnableSearchHistoryShortcutsConfigKey,
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
