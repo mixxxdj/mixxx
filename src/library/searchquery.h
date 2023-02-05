@@ -17,8 +17,6 @@
 
 const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
 
-QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
-
 class QueryNode {
   public:
     QueryNode(const QueryNode&) = delete; // prevent copying

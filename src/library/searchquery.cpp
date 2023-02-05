@@ -10,6 +10,8 @@
 #include "util/db/dbconnection.h"
 #include "util/db/sqllikewildcards.h"
 
+namespace {
+
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
@@ -59,6 +61,8 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
 
     return QVariant();
 }
+
+} // namespace
 
 //static
 QString QueryNode::concatSqlClauses(
