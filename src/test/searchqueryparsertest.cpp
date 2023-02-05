@@ -382,6 +382,27 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
         qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, NumericFilterYear) {
+    QStringList searchColumns;
+    searchColumns << "year";
+
+    auto pQuery(
+            m_parser.parseQuery("year:1969", searchColumns, ""));
+
+    TrackPointer pTrack = newTestTrack(44100);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setYear(" 1969-08-15 ");
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setYear(" 19690815 ");
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setYear(" 1969-extra ");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QStringLiteral("CAST(substr(year,1,4) AS INTEGER) = 1969")),
+            qPrintable(pQuery->toSql()));
+}
+
 TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
     QStringList searchColumns;
     searchColumns << "artist"
