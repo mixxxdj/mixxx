@@ -22,7 +22,9 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     } else if (column == LIBRARYTABLE_ALBUMARTIST) {
         return pTrack->getAlbumArtist();
     } else if (column == LIBRARYTABLE_YEAR) {
-        return pTrack->getYear();
+        // We use only the year that is part of the first four digits
+        // In all possible formats.
+        return pTrack->getYear().left(4);
     } else if (column == LIBRARYTABLE_DATETIMEADDED) {
         return pTrack->getDateAdded();
     } else if (column == LIBRARYTABLE_GENRE) {
