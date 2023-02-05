@@ -27,8 +27,6 @@ class QueryNode {
 
   protected:
     QueryNode() {}
-
-    static QString concatSqlClauses(const QStringList& sqlClauses, const QString& sqlConcatOp);
 };
 
 class GroupNode : public QueryNode {

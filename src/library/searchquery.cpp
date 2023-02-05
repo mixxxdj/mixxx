@@ -62,10 +62,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     return QVariant();
 }
 
-} // namespace
-
-//static
-QString QueryNode::concatSqlClauses(
+QString concatSqlClauses(
         const QStringList& sqlClauses, const QString& sqlConcatOp) {
     switch (sqlClauses.size()) {
     case 0:
@@ -79,6 +76,8 @@ QString QueryNode::concatSqlClauses(
         return "(" % sqlClauses.join(") " % sqlConcatOp % " (") % ")";
     }
 }
+
+} // namespace
 
 bool AndNode::match(const TrackPointer& pTrack) const {
     for (const auto& pNode: m_nodes) {
