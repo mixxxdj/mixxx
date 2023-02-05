@@ -73,7 +73,10 @@ QString concatSqlClauses(
         // The component terms need to be wrapped into parentheses,
         // but the whole expression does not. The composite node is
         // always responsible for proper wrapping into parentheses!
-        return "(" % sqlClauses.join(") " % sqlConcatOp % " (") % ")";
+        return QChar('(') +
+                sqlClauses.join(
+                        QStringLiteral(") ") + sqlConcatOp + QStringLiteral(" (")) +
+                QChar(')');
     }
 }
 
