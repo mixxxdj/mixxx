@@ -147,7 +147,6 @@ class NumericFilterNode : public QueryNode {
     // derived classes.
     void init(QString argument);
 
-  private:
     virtual double parse(const QString& arg, bool *ok);
 
     QStringList m_sqlColumns;
@@ -213,5 +212,10 @@ class SqlNode : public QueryNode {
     QString m_sql;
 };
 
+class YearFilterNode : public NumericFilterNode {
+  public:
+    YearFilterNode(const QStringList& sqlColumns, const QString& argument);
+    QString toSql() const override;
+};
 
 #endif /* SEARCHQUERY_H */

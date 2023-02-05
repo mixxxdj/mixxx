@@ -466,3 +466,31 @@ QString KeyFilterNode::toSql() const {
     }
     return concatSqlClauses(searchClauses, "OR");
 }
+
+YearFilterNode::YearFilterNode(
+        const QStringList& sqlColumns, const QString& argument)
+        : NumericFilterNode(sqlColumns, argument) {
+}
+
+QString YearFilterNode::toSql() const {
+    if (m_bNullQuery) {
+        return QStringLiteral("year IS NULL");
+    }
+
+    if (m_bOperatorQuery) {
+        return QString(
+                QStringLiteral("CAST(substr(year,1,4) AS INTEGER) %1 %2"))
+                .arg(m_operator, QString::number(m_dOperatorArgument));
+    }
+
+    if (m_bRangeQuery) {
+        QStringList rangeClauses;
+        return QString(
+                QStringLiteral("(CAST(substr(year,1,4) AS INTEGER) >= %1) AND "
+                               "(CAST(substr(year,1,4) AS INTEGER) <= %2)"))
+                .arg(QString::number(m_dRangeLow),
+                        QString::number(m_dRangeHigh));
+    }
+
+    return QString();
+}
