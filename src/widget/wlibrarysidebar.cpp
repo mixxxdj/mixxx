@@ -178,9 +178,8 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
 }
 
 void WLibrarySidebar::toggleSelectedItem() {
-    QModelIndexList selectedIndices = selectionModel()->selectedRows();
-    if (selectedIndices.size() > 0) {
-        QModelIndex index = selectedIndices.at(0);
+    QModelIndex index = selectedIndex();
+    if (index.isValid()) {
         // Activate the item so its content shows in the main library.
         emit pressed(index);
         // Expand or collapse the item as necessary.
@@ -189,9 +188,8 @@ void WLibrarySidebar::toggleSelectedItem() {
 }
 
 bool WLibrarySidebar::isLeafNodeSelected() {
-    QModelIndexList selectedIndices = selectionModel()->selectedRows();
-    if (selectedIndices.size() > 0) {
-        QModelIndex index = selectedIndices.at(0);
+    QModelIndex index = selectedIndex();
+    if (index.isValid()) {
         if(!index.model()->hasChildren(index)) {
             return true;
         }
@@ -205,9 +203,8 @@ bool WLibrarySidebar::isLeafNodeSelected() {
 
 bool WLibrarySidebar::isChildIndexSelected(const QModelIndex& index) {
     // qDebug() << "WLibrarySidebar::isChildIndexSelected" << index;
-    QModelIndexList selectedIndices = selectionModel()->selectedRows();
-    if (selectedIndices.size() <= 0) {
-        // qWarning() << " >> no selection";
+    QModelIndex selIndex = selectedIndex();
+    if (!selIndex.isValid()) {
         return false;
     }
     SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
@@ -220,13 +217,13 @@ bool WLibrarySidebar::isChildIndexSelected(const QModelIndex& index) {
         // qDebug() << " >> index can't be translated";
         return false;
     }
-    return translated == selectedIndices.first();
+    return translated == selIndex;
 }
 
 bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
     // qDebug() << "WLibrarySidebar::isFeatureRootIndexSelected";
-    QModelIndexList selectedIndices = selectionModel()->selectedRows();
-    if (selectedIndices.size() <= 0) {
+    QModelIndex selIndex = selectedIndex();
+    if (!selIndex.isValid()) {
         return false;
     }
     SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
@@ -234,7 +231,7 @@ bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
         return false;
     }
     const QModelIndex rootIndex = sidebarModel->getFeatureRootIndex(pFeature);
-    return rootIndex == selectedIndices.first();
+    return rootIndex == selIndex;
 }
 
 /// Invoked by actual keypresses (requires widget focus) and emulated keypresses
@@ -260,13 +257,8 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         QTreeView::keyPressEvent(event);
         // After the selection changed force-activate (click) the newly selected
         // item to save us from having to push "Enter".
-        QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        if (selectedIndices.isEmpty()) {
-            return;
-        }
-        QModelIndex selIndex = selectedIndices.first();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
+        QModelIndex selIndex = selectedIndex();
+        if (!selIndex.isValid()) {
             return;
         }
         // Ensure the new selection is visible even if it was already selected/
@@ -282,7 +274,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             return;
         }
         // If an expanded item is selected let QTreeView collapse it
-        QModelIndex selIndex = selectedIndices.first();
+        QModelIndex selIndex = selectedIndex();
         VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
             qDebug() << "invalid sidebar index";
             return;
@@ -306,11 +298,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         return;
     case kRenameSidebarItemShortcutKey: { // F2
         // Rename crate or playlist (internal, external, history)
-        QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        if (selectedIndices.isEmpty()) {
-            return;
-        }
-        QModelIndex selIndex = selectedIndices.first();
+        QModelIndex selIndex = selectedIndex();
         VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
             qDebug() << "invalid sidebar index";
             return;
@@ -327,13 +315,8 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         if (event->modifiers() != kHideRemoveShortcutModifier) {
             return;
         }
-        QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        if (selectedIndices.isEmpty()) {
-            return;
-        }
-        QModelIndex selIndex = selectedIndices.first();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
+        QModelIndex selIndex = selectedIndex();
+        if (!selIndex.isValid()) {
             return;
         }
         emit deleteItem(selIndex);
@@ -406,21 +389,25 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem
     scrollTo(translated, EnsureVisible);
 }
 
+QModelIndex WLibrarySidebar::selectedIndex() {
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (selectedIndices.isEmpty()) {
+        return QModelIndex();
+    }
+    QModelIndex selIndex = selectedIndices.first();
+    VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
+        return QModelIndex();
+    }
+    return selIndex;
+}
+
 /// Refocus the selected item after right-click
 void WLibrarySidebar::focusSelectedIndex() {
     // After the context menu was activated (and closed, with or without clicking
     // an action), the currentIndex is the right-clicked item.
     // If if the currentIndex is not selected, make the selection the currentIndex
-    QModelIndexList selectedIndices = selectionModel()->selectedRows();
-    if (selectedIndices.isEmpty()) {
-        // QTreeView will handle this, i.e. select an index in keyPressEvent()
-        return;
-    }
-    QModelIndex selIndex = selectedIndices.first();
-    VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-        return;
-    }
-    if (selIndex != selectionModel()->currentIndex()) {
+    QModelIndex selIndex = selectedIndex();
+    if (selIndex.isValid() && selIndex != selectionModel()->currentIndex()) {
         setCurrentIndex(selIndex);
     }
 }

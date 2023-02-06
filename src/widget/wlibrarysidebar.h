@@ -50,6 +50,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   private:
     void focusSelectedIndex();
+    QModelIndex selectedIndex();
 
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
