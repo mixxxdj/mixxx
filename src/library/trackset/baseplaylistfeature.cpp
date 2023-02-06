@@ -620,14 +620,17 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
 void BasePlaylistFeature::slotExportPlaylists() {
     const PlaylistDAO::HiddenType hidden = PlaylistDAO::PLHT_NOT_HIDDEN;
-    QList<QPair<int, QString>> test2 = m_playlistDao.getPlaylists(hidden);
 
     QList<QPair<int, QString>> allPlaylists = m_playlistDao.getPlaylists(hidden);
 
+    QPair<int, QString> thePair;
+    int playlistId;
+    QString playlistName;
+
     for (int i = 0; i < allPlaylists.length(); i++) {
-        QPair thePair = allPlaylists.at(i);
-        int playlistId = thePair.first;
-        QString playlistName = m_playlistDao.getPlaylistName(playlistId);
+        thePair = allPlaylists.at(i);
+        playlistId = thePair.first;
+        playlistName = m_playlistDao.getPlaylistName(playlistId);
 
         if (playlistId == kInvalidPlaylistId) {
             return;
