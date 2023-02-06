@@ -181,7 +181,7 @@ void WLibrarySidebar::toggleSelectedItem() {
     QModelIndex index = selectedIndex();
     if (index.isValid()) {
         // Activate the item so its content shows in the main library.
-        emit pressed(index);
+        emit clicked(index);
         // Expand or collapse the item as necessary.
         setExpanded(index, !isExpanded(index));
     }
