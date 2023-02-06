@@ -1344,7 +1344,6 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
             std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonSyncEnabled2 =
             std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
-    auto pButtonEject1 = std::make_unique<ControlProxy>(m_sGroup1, "eject");
 
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(120));
@@ -1357,7 +1356,7 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     EXPECT_TRUE(isSoftLeader(m_sGroup1));
     assertSyncOff(m_sGroup2);
 
-    pButtonEject1->set(1.0);
+    m_pChannel1->getEngineBuffer()->ejectTrack();
     // When an eject happens, the bpm gets set to zero.
     ProcessBuffer();
 
@@ -1382,7 +1381,7 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     EXPECT_TRUE(isSoftLeader(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
 
-    pButtonEject1->set(1.0);
+    m_pChannel1->getEngineBuffer()->ejectTrack();
     m_pTrack1->trySetBeats(mixxx::BeatsPointer());
     ProcessBuffer();
 
