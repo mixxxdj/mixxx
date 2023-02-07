@@ -474,19 +474,12 @@ namespace {
         pTrackLibraryQuery->bindValue(":beats_sub_version", beatsSubVersion);
         pTrackLibraryQuery->bindValue(":beats", beatsBlob);
 
-        QByteArray keysBlob;
-        QString keysVersion;
-        QString keysSubVersion;
-        QString keyText;
-        mixxx::track::io::key::ChromaticKey key = mixxx::track::io::key::INVALID;
-        const Keys keys(track.getKeys());
-        if (keys.isValid()) {
-            keysBlob = keys.toByteArray();
-            keysVersion = keys.getVersion();
-            keysSubVersion = keys.getSubVersion();
-            key = keys.getGlobalKey();
-            keyText = KeyUtils::getGlobalKeyText(keys);
-        }
+        const Keys keys = track.getKeys();
+        QByteArray keysBlob = keys.toByteArray();
+        QString keysVersion = keys.getVersion();
+        QString keysSubVersion = keys.getSubVersion();
+        mixxx::track::io::key::ChromaticKey key = keys.getGlobalKey();
+        QString keyText = keys.getGlobalKeyText();
         pTrackLibraryQuery->bindValue(":keys", keysBlob);
         pTrackLibraryQuery->bindValue(":keys_version", keysVersion);
         pTrackLibraryQuery->bindValue(":keys_sub_version", keysSubVersion);
@@ -1077,7 +1070,7 @@ bool setTrackAudioProperties(
             mixxx::audio::SampleRate(samplerate),
             mixxx::audio::Bitrate(bitrate),
             mixxx::Duration::fromSeconds(duration));
-    return false;
+    return false; // shouldDirty
 }
 
 bool setTrackBeats(const QSqlRecord& record, const int column,
@@ -1100,7 +1093,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
         const auto pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0.0);
         pTrack->trySetBeats(pBeats);
     }
-    return false;
+    return false; // shouldDirty
 }
 
 bool setTrackKey(const QSqlRecord& record, const int column,
@@ -1109,21 +1102,24 @@ bool setTrackKey(const QSqlRecord& record, const int column,
     QString keysVersion = record.value(column + 1).toString();
     QString keysSubVersion = record.value(column + 2).toString();
     QByteArray keysBlob = record.value(column + 3).toByteArray();
-    Keys keys = KeyFactory::loadKeysFromByteArray(
-            keysVersion, keysSubVersion, &keysBlob);
-
-    if (keys.isValid()) {
-        pTrack->setKeys(keys);
-    } else if (keyText.size() > 0) {
+    bool shouldDirty = false;
+    if (!keysVersion.isEmpty()) {
+        pTrack->setKeys(KeyFactory::loadKeysFromByteArray(
+                keysVersion,
+                keysSubVersion,
+                &keysBlob));
+    } else if (!keyText.isEmpty()) {
         // Typically this happens if we are upgrading from an older (<1.12.0)
         // version of Mixxx that didn't support Keys. We treat all legacy data
         // as user-generated because that way it will be treated sensitively.
-        pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
+        pTrack->setKeys(KeyFactory::makeBasicKeysKeepText(
+                keyText,
+                mixxx::track::io::key::USER));
         // The in-database data would change because of this. Mark the track
         // dirty so we save it when it is deleted.
-        return true;
+        shouldDirty = true;
     }
-    return false;
+    return shouldDirty;
 }
 
 bool setTrackCoverInfo(const QSqlRecord& record, const int column,
@@ -1143,7 +1139,7 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
     coverInfo.coverLocation = record.value(column + 2).toString();
     coverInfo.hash = record.value(column + 3).toUInt();
     pTrack->setCoverInfo(coverInfo);
-    return false;
+    return false; // shouldDirty
 }
 
 struct ColumnPopulator {
@@ -1174,60 +1170,59 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     QSqlQuery query(m_database);
 
     ColumnPopulator columns[] = {
-        // Location must be first.
-        { "track_locations.location", nullptr },
-        { "artist", setTrackArtist },
-        { "title", setTrackTitle },
-        { "album", setTrackAlbum },
-        { "album_artist", setTrackAlbumArtist },
-        { "year", setTrackYear },
-        { "genre", setTrackGenre },
-        { "composer", setTrackComposer },
-        { "grouping", setTrackGrouping },
-        { "tracknumber", setTrackNumber },
-        { "tracktotal", setTrackTotal },
-        { "filetype", setTrackFiletype },
-        { "rating", setTrackRating },
-        { "color", setTrackColor },
-        { "comment", setTrackComment },
-        { "url", setTrackUrl },
-        { "cuepoint", setTrackCuePoint },
-        { "replaygain", setTrackReplayGainRatio },
-        { "replaygain_peak", setTrackReplayGainPeak },
-        { "timesplayed", setTrackTimesPlayed },
-        { "played", setTrackPlayed },
-        { "datetime_added", setTrackDateAdded },
-        { "header_parsed", setTrackMetadataSynchronized },
+            // Location must be first.
+            {"track_locations.location", nullptr},
+            {"artist", setTrackArtist},
+            {"title", setTrackTitle},
+            {"album", setTrackAlbum},
+            {"album_artist", setTrackAlbumArtist},
+            {"year", setTrackYear},
+            {"genre", setTrackGenre},
+            {"composer", setTrackComposer},
+            {"grouping", setTrackGrouping},
+            {"tracknumber", setTrackNumber},
+            {"tracktotal", setTrackTotal},
+            {"filetype", setTrackFiletype},
+            {"rating", setTrackRating},
+            {"color", setTrackColor},
+            {"comment", setTrackComment},
+            {"url", setTrackUrl},
+            {"cuepoint", setTrackCuePoint},
+            {"replaygain", setTrackReplayGainRatio},
+            {"replaygain_peak", setTrackReplayGainPeak},
+            {"timesplayed", setTrackTimesPlayed},
+            {"played", setTrackPlayed},
+            {"datetime_added", setTrackDateAdded},
+            {"header_parsed", setTrackMetadataSynchronized},
 
-        // Audio properties are set together at once. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "channels", setTrackAudioProperties },
-        { "samplerate", nullptr },
-        { "bitrate", nullptr },
-        { "duration", nullptr },
+            // Audio properties are set together at once. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"channels", setTrackAudioProperties},
+            {"samplerate", nullptr},
+            {"bitrate", nullptr},
+            {"duration", nullptr},
 
-        // Beat detection columns are handled by setTrackBeats. Do not change
-        // the ordering of these columns or put other columns in between them!
-        { "bpm", setTrackBeats },
-        { "beats_version", nullptr },
-        { "beats_sub_version", nullptr },
-        { "beats", nullptr },
-        { "bpm_lock", nullptr },
+            // Beat detection columns are handled by setTrackBeats. Do not change
+            // the ordering of these columns or put other columns in between them!
+            {"bpm", setTrackBeats},
+            {"beats_version", nullptr},
+            {"beats_sub_version", nullptr},
+            {"beats", nullptr},
+            {"bpm_lock", nullptr},
 
-        // Beat detection columns are handled by setTrackKey. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "key", setTrackKey },
-        { "keys_version", nullptr },
-        { "keys_sub_version", nullptr },
-        { "keys", nullptr },
+            // Key detection columns are handled by setTrackKey. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"key", setTrackKey},
+            {"keys_version", nullptr},
+            {"keys_sub_version", nullptr},
+            {"keys", nullptr},
 
-        // Cover art columns are handled by setTrackCoverInfo. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "coverart_source", setTrackCoverInfo },
-        { "coverart_type", nullptr },
-        { "coverart_location", nullptr },
-        { "coverart_hash", nullptr }
-    };
+            // Cover art columns are handled by setTrackCoverInfo. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"coverart_source", setTrackCoverInfo},
+            {"coverart_type", nullptr},
+            {"coverart_location", nullptr},
+            {"coverart_hash", nullptr}};
 
     QString columnsStr;
     int columnsSize = 0;

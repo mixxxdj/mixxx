@@ -7,6 +7,7 @@
 #include "moc_track.cpp"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
+#include "track/keyfactory.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
@@ -153,8 +154,9 @@ void Track::importMetadata(
         // and validated.
         const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
         importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
-        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
-        importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
+        const auto importedKeyText = importedMetadata.getTrackInfo().getKeyText();
+        importedMetadata.refTrackInfo().setKeyText(
+                m_record.getMetadata().getTrackInfo().getKeyText());
 
         bool modified = false;
         // Only set the metadata synchronized flag (column `header_parsed`
@@ -195,15 +197,19 @@ void Track::importMetadata(
         const auto newBpm = getBpmWhileLocked();
 
         auto keysModified = false;
-        if (KeyUtils::guessKeyFromText(importedKeyText) != mixxx::track::io::key::INVALID) {
-            // Only update the current key with a valid value. Otherwise preserve
-            // the existing value.
-            keysModified = m_record.updateGlobalKeyText(
-                    importedKeyText,
-                    mixxx::track::io::key::FILE_METADATA);
+        const Keys keys = KeyFactory::makeBasicKeysKeepText(
+                importedKeyText,
+                mixxx::track::io::key::FILE_METADATA);
+        // Only update the current key with a valid value. Otherwise preserve
+        // the existing value.
+        if (keys.getGlobalKey() != mixxx::track::io::key::INVALID) {
+            if (keys != m_record.getKeys()) {
+                m_record.setKeys(keys);
+                keysModified = true;
+            }
         }
         modified |= keysModified;
-        const auto newKey = m_record.getGlobalKey();
+        const auto newKey = m_record.getKeys().getGlobalKey();
 
         // Import track color from Serato tags if available
         const std::optional<mixxx::RgbColor::optional_t> newColor =
@@ -1258,7 +1264,7 @@ void Track::setRating (int rating) {
 }
 
 void Track::afterKeysUpdated(QMutexLocker* pLock) {
-    const auto newKey = m_record.getGlobalKey();
+    const auto newKey = m_record.getKeys().getGlobalKey();
     markDirtyAndUnlock(pLock);
     emitKeysUpdated(newKey);
 }
@@ -1288,28 +1294,34 @@ Keys Track::getKeys() const {
 
 void Track::setKey(mixxx::track::io::key::ChromaticKey key,
                    mixxx::track::io::key::Source keySource) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_record.updateGlobalKey(key, keySource)) {
-        afterKeysUpdated(&lock);
+    if (key == mixxx::track::io::key::INVALID) {
+        return;
     }
+    const Keys keys = KeyFactory::makeBasicKeys(key, keySource);
+    QMutexLocker lock(&m_qMutex);
+    m_record.setKeys(keys);
+    afterKeysUpdated(&lock);
 }
 
 mixxx::track::io::key::ChromaticKey Track::getKey() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getGlobalKey();
+    return m_record.getKeys().getGlobalKey();
 }
 
+// returns the formatted key for display purpose
 QString Track::getKeyText() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_record.getGlobalKeyText();
+    Keys keys;
+    { // lock scope
+        QMutexLocker lock(&m_qMutex);
+        keys = m_record.getKeys();
+    }
+    return KeyUtils::formatGlobalKey(keys);
 }
 
+// normalizes the keyText before storing
 void Track::setKeyText(const QString& keyText,
                        mixxx::track::io::key::Source keySource) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_record.updateGlobalKeyText(keyText, keySource)) {
-        afterKeysUpdated(&lock);
-    }
+    setKey(KeyUtils::guessKeyFromText(keyText), keySource);
 }
 
 void Track::setBpmLocked(bool bpmLocked) {
@@ -1403,7 +1415,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-    if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
+    if (pConfig && pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
         const auto streamInfo = m_record.getStreamInfoFromSource();
         VERIFY_OR_DEBUG_ASSERT(streamInfo &&
                 streamInfo->getSignalInfo().isValid() &&
