@@ -17,7 +17,8 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 static const QString s_openKeyPattern("^\\s*(1[0-2]|[1-9])([dm])\\s*$");
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-static const QString s_lancelotKeyPattern("^\\s*(1[0-2]|[1-9])([ab])\\s*$");
+// This is also used to detect RapidEvolution Key Code format using a padding "0"
+static const QString s_lancelotKeyPattern("^\\s*0*(1[0-2]|[1-9])([ab])\\s*$");
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale spec (m = minor, min, maj)
@@ -248,7 +249,14 @@ QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
 
 // static
 ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
-    QString trimmed = text.trimmed();
+    // Remove Shift (Tuning) Information used by Rapid Evolution like: "A#m +50";
+    int shiftStart = text.indexOf('+');
+    if (shiftStart < 0) {
+        shiftStart = text.indexOf('-');
+    }
+    const QString trimmed =
+            shiftStart >= 0 ? text.left(shiftStart).trimmed() : text.trimmed();
+
     if (trimmed.isEmpty()) {
         return mixxx::track::io::key::INVALID;
     }
