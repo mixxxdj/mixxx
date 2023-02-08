@@ -32,12 +32,12 @@ class SoundDevice {
         return m_hostAPI;
     }
     void setSampleRate(double sampleRate);
-    void setFramesPerBuffer(unsigned int framesPerBuffer);
+    void setConfigFramesPerBuffer(unsigned int framesPerBuffer);
     virtual SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) = 0;
     virtual bool isOpen() const = 0;
     virtual SoundDeviceStatus close() = 0;
-    virtual void readProcess() = 0;
-    virtual void writeProcess() = 0;
+    virtual void readProcess(SINT framesPerBuffer) = 0;
+    virtual void writeProcess(SINT framesPerBuffer) = 0;
     virtual QString getError() const = 0;
     virtual unsigned int getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;
@@ -84,7 +84,12 @@ class SoundDevice {
     double m_dSampleRate;
     // The name of the audio API used by this device.
     QString m_hostAPI;
-    SINT m_framesPerBuffer;
+    // The **configured** number of frames per buffer. We'll tell PortAudio we
+    // want this many frames in a buffer, but PortAudio may still give us have a
+    // differently sized buffers. As such this value should only be used for
+    // configuring the audio devices. The actual runtime buffer size should be
+    // used for any computations working with audio.
+    SINT m_configFramesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
 };

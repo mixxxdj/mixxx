@@ -29,9 +29,11 @@ class SoundDeviceNotFound : public SoundDevice {
     SoundDeviceStatus close() override {
         return SoundDeviceStatus::Error;
     };
-    void readProcess() override { };
-    void writeProcess() override { };
-    QString getError() const override{ return QObject::tr("Device not found"); };
+    void readProcess(SINT /*framesPerbuffer*/) override{};
+    void writeProcess(SINT /*framesPerbuffer*/) override{};
+    QString getError() const override {
+        return QObject::tr("Device not found");
+    };
 
     unsigned int getDefaultSampleRate() const override {
         return 44100;

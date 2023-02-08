@@ -707,7 +707,7 @@ void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     if (!m_pDlgTagFetcher) {
         m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
-                m_pTrackModel);
+                m_pUserSettings, m_pTrackModel);
         connect(m_pDlgTagFetcher.get(),
                 &QDialog::finished,
                 this,

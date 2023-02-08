@@ -79,3 +79,8 @@ const ConfigKey mixxx::library::prefs::kUseRelativePathOnExportConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("UseRelativePathOnExport")};
+
+const ConfigKey mixxx::library::prefs::kCoverArtFetcherQualityConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("CoverArtFetcherQuality")};

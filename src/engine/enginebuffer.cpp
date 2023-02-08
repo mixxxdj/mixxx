@@ -590,7 +590,7 @@ void EngineBuffer::ejectTrack() {
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
 
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
@@ -1399,19 +1399,20 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update visual control object, this needs to be done more often than the
     // playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos,
+    m_visualPlayPos->set(
+            fFractionalPlaypos,
             speed * m_baserate_old,
             static_cast<int>(iBufferSize) /
                     m_trackEndPositionOld.toEngineSamplePos(),
             fractionalPlayposFromAbsolute(m_slipPosition),
-            tempoTrackSeconds);
+            tempoTrackSeconds,
+            iBufferSize / kSamplesPerFrame / m_sampleRate.toDouble() * 1000000.0);
 
     // TODO: Especially with long audio buffers, jitter is visible. This can be fixed by moving the
     // ClockControl::updateIndicators into the waveform update loop which is synced with the display refresh rate.
     // Via the visual play position it's possible to access to the sample that is currently played,
     // and not the one that have been processed as in the current solution.
-    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
-    m_pClockControl->updateIndicators(speed * m_baserate_old, m_playPosition, sampleRate);
+    m_pClockControl->updateIndicators(speed * m_baserate_old, m_playPosition, m_sampleRate);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
