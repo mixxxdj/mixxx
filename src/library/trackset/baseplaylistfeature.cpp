@@ -151,7 +151,6 @@ void BasePlaylistFeature::initActions() {
             &PlaylistDAO::renamed,
             this,
             &BasePlaylistFeature::slotPlaylistTableRenamed);
-
     connect(m_pLibrary,
             &Library::trackSelected,
             this,
@@ -619,25 +618,14 @@ void BasePlaylistFeature::slotExportPlaylist() {
 }
 
 void BasePlaylistFeature::slotExportPlaylists() {
-    const PlaylistDAO::HiddenType hidden = PlaylistDAO::PLHT_NOT_HIDDEN;
+    QList<QPair<int, QString>> allPlaylists =
+            m_playlistDao.getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
 
-    QList<QPair<int, QString>> allPlaylists = m_playlistDao.getPlaylists(hidden);
-
-    QPair<int, QString> thePair;
-    int playlistId;
-    QString playlistName;
-
-    for (int i = 0; i < allPlaylists.length(); i++) {
-        thePair = allPlaylists.at(i);
-        playlistId = thePair.first;
-        playlistName = m_playlistDao.getPlaylistName(playlistId);
-
+    for (const auto& [playlistId, playlistName] : allPlaylists) {
         if (playlistId == kInvalidPlaylistId) {
             return;
         }
 
-        // replace separator character with something generic
-        playlistName = playlistName.replace(QDir::separator(), kUnsafeFilenameReplacement);
         qDebug() << "Export playlist" << playlistName;
 
         QString lastPlaylistDirectory = m_pConfig->getValue(
