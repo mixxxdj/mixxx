@@ -17,6 +17,7 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 static const QString s_openKeyPattern("^\\s*(1[0-2]|[1-9])([dm])\\s*$");
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
+// This is also used to detect RapidEvolution Key Code format using a padding "0"
 static const QString s_lancelotKeyPattern("^\\s*0*(1[0-2]|[1-9])([ab])\\s*$");
 
 // a-g followed by any number of sharps or flats, optionally followed by
