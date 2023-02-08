@@ -38,6 +38,9 @@ class VSyncThread : public QThread {
     void setupSync(QGLWidget* glw, int index);
     void waitUntilSwap(QGLWidget* glw);
     mixxx::Duration sinceLastSwap() const;
+    int getSyncIntervalTimeMicros() const {
+        return m_syncIntervalTimeMicros;
+    }
   signals:
     void vsyncRender();
     void vsyncSwap();
