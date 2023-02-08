@@ -248,16 +248,14 @@ QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
 }
 
 // static
-ChromaticKey KeyUtils::guessKeyFromText(QString text) {
+ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
     // Remove Shift (Tuning) Information used by Rapid Evolution like: "A#m +50";
     int shiftStart = text.indexOf('+');
     if (shiftStart < 0) {
         shiftStart = text.indexOf('-');
     }
-    if (shiftStart >= 0) {
-        text = text.left(shiftStart);
-    }
-    const QString trimmed = text.trimmed();
+    const QString trimmed =
+            shiftStart >= 0 ? text.left(shiftStart).trimmed() : text.trimmed();
 
     if (trimmed.isEmpty()) {
         return mixxx::track::io::key::INVALID;
