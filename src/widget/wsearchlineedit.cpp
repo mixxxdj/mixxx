@@ -2,6 +2,7 @@
 
 #include <QAbstractItemView>
 #include <QApplication>
+#include <QCompleter>
 #include <QFont>
 #include <QLineEdit>
 #include <QShortcut>
@@ -309,7 +310,18 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!currentText().isNull());
-        return currentText();
+        QString text = currentText();
+        QLineEdit* pEdit = lineEdit();
+        QCompleter* pCompleter = completer();
+        if (pCompleter && pEdit && pEdit->hasSelectedText()) {
+            if (text.startsWith(pCompleter->completionPrefix()) &&
+                    pCompleter->completionPrefix().size() == pEdit->cursorPosition()) {
+                // Search for the entered text until the user has confirmed the
+                // completion by -> or enter
+                return pCompleter->completionPrefix();
+            }
+        }
+        return text;
     } else {
         return QString();
     }
@@ -374,11 +386,23 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
             slotSaveSearch();
         }
         break;
+    case Qt::Key_Left:
+    case Qt::Key_Right:
+        QComboBox::keyPressEvent(keyEvent);
+        slotTriggerSearch();
+        return;
     case Qt::Key_Enter:
-    case Qt::Key_Return:
+    case Qt::Key_Return: {
         if (slotClearSearchIfClearButtonHasFocus()) {
             return;
         }
+        QLineEdit* pEdit = lineEdit();
+        if (pEdit && pEdit->hasSelectedText()) {
+            QComboBox::keyPressEvent(keyEvent);
+            slotTriggerSearch();
+            return;
+        }
+
         if (findCurrentTextIndex() == -1) {
             slotSaveSearch();
         }
@@ -389,6 +413,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
             emit setLibraryFocus(FocusWidget::TracksTable);
         }
         return;
+    }
     case Qt::Key_Space:
         // Open/close popup with Ctrl + space
         if (s_historyShortcutsEnabled && keyEvent->modifiers() == Qt::ControlModifier) {
