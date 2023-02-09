@@ -313,6 +313,34 @@ bool PlaylistDAO::setPlaylistLocked(const int playlistId, const bool locked) {
     return true;
 }
 
+int PlaylistDAO::setPlaylistsLocked(const QStringList& idStringList, const bool lock) {
+    if (idStringList.isEmpty()) {
+        return 0;
+    }
+    if (lock) {
+        qInfo() << "Locking" << idStringList.size() << "playlists";
+    } else {
+        qInfo() << "Unlocking" << idStringList.size() << "playlists";
+    }
+
+    QString idString = idStringList.join(",");
+
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "UPDATE Playlists SET locked = :lock WHERE id IN (%1)")
+                          .arg(idString));
+    // SQLite3 doesn't support boolean value. Using integer instead.
+    int iLock = lock ? 1 : 0;
+    query.bindValue(":lock", iLock);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return -1;
+    }
+
+    return idStringList.length();
+}
+
 bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(

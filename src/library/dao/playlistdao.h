@@ -69,6 +69,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
     bool setPlaylistLocked(const int playlistId, const bool locked);
+    int setPlaylistsLocked(const QStringList& idStringList, const bool lock);
     // Find out the state of a playlist lock
     bool isPlaylistLocked(const int playlistId) const;
     // Append a list of tracks to a playlist
