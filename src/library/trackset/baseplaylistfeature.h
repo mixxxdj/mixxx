@@ -54,9 +54,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
         slotPlaylistTableChanged(playlistId);
         selectPlaylistInSidebar(playlistId, false);
     };
-    virtual void slotPlaylistTableLockChanged(int playlistId) = 0;
+    virtual void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
-    virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
     void slotCreatePlaylist();
     void renameItem(const QModelIndex& index) override;
     void deleteItem(const QModelIndex& index) override;
@@ -83,7 +82,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
         QString label;
     };
 
-    virtual void updateChildModel(int selected_id);
+    virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
 

@@ -309,20 +309,24 @@ bool PlaylistDAO::setPlaylistLocked(const int playlistId, const bool locked) {
         LOG_FAILED_QUERY(query);
         return false;
     }
-    emit lockChanged(playlistId);
+    emit lockChanged(QSet<int>{playlistId});
     return true;
 }
 
-int PlaylistDAO::setPlaylistsLocked(const QStringList& idStringList, const bool lock) {
-    if (idStringList.isEmpty()) {
+int PlaylistDAO::setPlaylistsLocked(const QSet<int>& playlistIds, const bool lock) {
+    if (playlistIds.isEmpty()) {
         return 0;
     }
     if (lock) {
-        qInfo() << "Locking" << idStringList.size() << "playlists";
+        qInfo() << "Locking" << playlistIds.size() << "playlists";
     } else {
-        qInfo() << "Unlocking" << idStringList.size() << "playlists";
+        qInfo() << "Unlocking" << playlistIds.size() << "playlists";
     }
 
+    QStringList idStringList;
+    for (int id : qAsConst(playlistIds)) {
+        idStringList.append(QString::number(id));
+    }
     QString idString = idStringList.join(",");
 
     QSqlQuery query(m_database);
@@ -338,7 +342,8 @@ int PlaylistDAO::setPlaylistsLocked(const QStringList& idStringList, const bool 
         return -1;
     }
 
-    return idStringList.length();
+    emit lockChanged(playlistIds);
+    return playlistIds.size();
 }
 
 bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {

@@ -152,7 +152,7 @@ void BasePlaylistFeature::connectPlaylistDAO() {
     connect(&m_playlistDao,
             &PlaylistDAO::lockChanged,
             this,
-            &BasePlaylistFeature::slotPlaylistTableLockChanged);
+            &BasePlaylistFeature::slotPlaylistContentOrLockChanged);
     connect(&m_playlistDao,
             &PlaylistDAO::deleted,
             this,
@@ -160,7 +160,7 @@ void BasePlaylistFeature::connectPlaylistDAO() {
     connect(&m_playlistDao,
             &PlaylistDAO::tracksChanged,
             this,
-            &BasePlaylistFeature::slotPlaylistContentChanged);
+            &BasePlaylistFeature::slotPlaylistContentOrLockChanged);
     connect(&m_playlistDao,
             &PlaylistDAO::renamed,
             this,
@@ -715,18 +715,15 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-void BasePlaylistFeature::updateChildModel(int playlistId) {
-    // qDebug() << "BasePlaylistFeature::updateChildModel:" << playlistId;
-    // TODO(ronso0) refactor for efficiency by using a QSet<int> to avoid
-    // countless TreeItem iterations when bulk-locking
-    // See slotPlaylistContentChanged()
-    // This would also allow updating the tree on lockChanged signal, instead of
-    // rebuilding it (collapsed/expanded states are reset).
-    if (playlistId == kInvalidPlaylistId) {
+void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
+    // qDebug() << "BasePlaylistFeature::updateChildModel";
+    if (playlistIds.isEmpty()) {
         return;
     }
-    QString playlistLabel = fetchPlaylistLabel(playlistId);
-    QVariant variantId = QVariant(playlistId);
+
+    int id = kInvalidPlaylistId;
+    QString label;
+    bool ok = false;
 
     for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
         QModelIndex index = m_pSidebarModel->index(row, 0);
@@ -734,15 +731,20 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
         DEBUG_ASSERT(pTreeItem != nullptr);
         if (pTreeItem->hasChildren()) {
             for (TreeItem* pChild : qAsConst(pTreeItem->children())) {
-                if (pChild->getData() == variantId) {
-                    pTreeItem = pChild;
-                    break;
+                id = pChild->getData().toInt(&ok);
+                if (ok && id != kInvalidPlaylistId && playlistIds.contains(id)) {
+                    label = m_playlistDao.getPlaylistName(id);
+                    pChild->setLabel(label);
+                    decorateChild(pChild, id);
                 }
             }
-        }
-        if (pTreeItem->getData() == variantId) {
-            pTreeItem->setLabel(playlistLabel);
-            decorateChild(pTreeItem, playlistId);
+        } else {
+            id = pTreeItem->getData().toInt(&ok);
+            if (ok && id != kInvalidPlaylistId && playlistIds.contains(id)) {
+                label = m_playlistDao.getPlaylistName(id);
+                pTreeItem->setLabel(label);
+                decorateChild(pTreeItem, id);
+            }
         }
     }
 }

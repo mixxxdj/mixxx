@@ -297,6 +297,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
+    // TODO(ronso0) Why not m_playlistDao.getPlaylistName(id) ??
     QSqlTableModel playlistTableModel(this,
             m_pLibrary->trackCollectionManager()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
@@ -443,19 +444,15 @@ void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
         return;
     }
 
-    QStringList ids;
+    QSet<int> ids;
     for (auto* child : qAsConst(yearChildren)) {
         bool ok = false;
         int childId = child->getData().toInt(&ok);
         if (ok && childId != kInvalidPlaylistId) {
-            ids.append(child->getData().toString());
+            ids.insert(childId);
         }
     }
     m_playlistDao.setPlaylistsLocked(ids, lock);
-
-    // refresh sidebar model manually since PlaylistDAO::setPlaylistsLocked doesn't
-    // emit a signal we can connect to slotPlaylistTableLockChanged()
-    slotPlaylistTableChanged(kInvalidPlaylistId);
 }
 
 void SetlogFeature::slotDeleteAllChildPlaylists() {
@@ -644,26 +641,22 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
-void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
+void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
+    // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
+    QSet<int> idsToBeUpdated;
     for (const auto playlistId : qAsConst(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
-            updateChildModel(playlistId);
+            idsToBeUpdated.insert(playlistId);
         }
     }
-}
-
-void SetlogFeature::slotPlaylistTableLockChanged(int playlistId) {
-    // qDebug() << "slotPlaylistTableLockChanged() playlistId:" << playlistId;
-    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
-        updateChildModel(playlistId);
-    }
+    updateChildModel(idsToBeUpdated);
 }
 
 void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
-        updateChildModel(playlistId);
+        updateChildModel(QSet<int>{playlistId});
     }
 }
 

@@ -304,19 +304,15 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
-void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
+void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
+    // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
+    QSet<int> idsToBeUpdated;
     for (const auto playlistId : qAsConst(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
-            updateChildModel(playlistId);
+            idsToBeUpdated.insert(playlistId);
         }
     }
-}
-
-void PlaylistFeature::slotPlaylistTableLockChanged(int playlistId) {
-    // qDebug() << "slotPlaylistTableLockChanged() playlistId:" << playlistId;
-    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
-        updateChildModel(playlistId);
-    }
+    updateChildModel(idsToBeUpdated);
 }
 
 void PlaylistFeature::slotPlaylistTableRenamed(
@@ -324,7 +320,7 @@ void PlaylistFeature::slotPlaylistTableRenamed(
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
-        updateChildModel(playlistId);
+        updateChildModel(QSet<int>{playlistId});
     }
 }
 
