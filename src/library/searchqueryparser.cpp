@@ -19,13 +19,13 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
                   << "comment"
                   << "location"
                   << "crate";
-    m_numericFilters << "year"
-                     << "track"
+    m_numericFilters << "track"
                      << "bpm"
                      << "played"
                      << "rating"
                      << "bitrate";
-    m_specialFilters << "key"
+    m_specialFilters << "year"
+                     << "key"
                      << "duration"
                      << "added"
                      << "dateadded"
@@ -204,10 +204,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else if (field == "duration") {
                     pNode = std::make_unique<DurationFilterNode>(
                             m_fieldToSqlColumns[field], argument);
+                } else if (field == "year") {
+                    pNode = std::make_unique<YearFilterNode>(
+                            m_fieldToSqlColumns[field], argument);
                 } else if (field == "date_added" ||
-                           field == "datetime_added" ||
-                           field == "added" ||
-                           field == "dateadded") {
+                        field == "datetime_added" ||
+                        field == "added" ||
+                        field == "dateadded") {
                     field = "datetime_added";
                     pNode = std::make_unique<TextFilterNode>(
                         m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);

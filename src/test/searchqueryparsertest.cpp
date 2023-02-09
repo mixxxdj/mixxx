@@ -382,6 +382,28 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
         qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, NumericFilterYear) {
+    QStringList searchColumns;
+    searchColumns << "year";
+
+    auto pQuery(
+            m_parser.parseQuery("year:1969", searchColumns, ""));
+
+    TrackPointer pTrack = newTestTrack(44100);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    // Note: The sourounding spaces are checking that a user input is popperly trimmed.
+    pTrack->setYear(" 1969-08-15 ");
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setYear(" 19690815 ");
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setYear(" 1969-extra ");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QStringLiteral("CAST(substr(year,1,4) AS INTEGER) = 1969")),
+            qPrintable(pQuery->toSql()));
+}
+
 TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
     QStringList searchColumns;
     searchColumns << "artist"
@@ -500,8 +522,8 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(bpm >= 127.12) AND (bpm <= 129)")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("bpm BETWEEN 127.12 AND 129")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, MultipleFilters) {
@@ -521,11 +543,12 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
     pTrack->setTitle("Colorvision");
     EXPECT_TRUE(pQuery->match(pTrack));
 
-    EXPECT_STREQ(
-        qPrintable(QString("((bpm >= 127.12) AND (bpm <= 129)) AND "
-                           "((artist LIKE '%com truise%') OR (album_artist LIKE '%com truise%')) AND "
-                           "((artist LIKE '%colorvision%') OR (title LIKE '%colorvision%'))")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_STREQ(qPrintable(QString("(bpm BETWEEN 127.12 AND 129) AND "
+                                    "((artist LIKE '%com truise%') OR "
+                                    "(album_artist LIKE '%com truise%')) AND "
+                                    "((artist LIKE '%colorvision%') OR (title "
+                                    "LIKE '%colorvision%'))")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
@@ -701,8 +724,8 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("duration BETWEEN 150 AND 200")),
+            qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:2:30-200", searchColumns, "");
     pTrack->setDuration(80);
@@ -713,8 +736,8 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("duration BETWEEN 150 AND 200")),
+            qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:150-200", searchColumns, "");
     pTrack->setDuration(80);
@@ -725,8 +748,8 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("duration BETWEEN 150 AND 200")),
+            qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:2m30s-3m20s", searchColumns, "");
     pTrack->setDuration(80);
@@ -737,8 +760,8 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("duration BETWEEN 150 AND 200")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, CrateFilter) {
