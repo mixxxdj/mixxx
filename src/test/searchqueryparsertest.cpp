@@ -391,6 +391,7 @@ TEST_F(SearchQueryParserTest, NumericFilterYear) {
 
     TrackPointer pTrack = newTestTrack(44100);
     EXPECT_FALSE(pQuery->match(pTrack));
+    // Note: The sourounding spaces are checking that a user input is popperly trimmed.
     pTrack->setYear(" 1969-08-15 ");
     EXPECT_TRUE(pQuery->match(pTrack));
     pTrack->setYear(" 19690815 ");
