@@ -738,6 +738,11 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 
 void BasePlaylistFeature::updateChildModel(int playlistId) {
     // qDebug() << "BasePlaylistFeature::updateChildModel:" << playlistId;
+    // TODO(ronso0) refactor for efficiency by using a QSet<int> to avoid
+    // countless TreeItem iterations when bulk-locking
+    // See slotPlaylistContentChanged()
+    // This would also allow updating the tree on lockChanged signal, instead of
+    // rebuilding it (collapsed/expanded states are reset).
     if (playlistId == kInvalidPlaylistId) {
         return;
     }

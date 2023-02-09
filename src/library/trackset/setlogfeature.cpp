@@ -72,6 +72,18 @@ SetlogFeature::SetlogFeature(
             this,
             &SetlogFeature::slotGetNewPlaylist);
 
+    m_pLockAllChildPlaylists = new QAction(tr("Lock all child playlists"), this);
+    connect(m_pLockAllChildPlaylists,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotLockAllChildPlaylists);
+
+    m_pUnlockAllChildPlaylists = new QAction(tr("Unlock all child playlists"), this);
+    connect(m_pUnlockAllChildPlaylists,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotUnlockAllChildPlaylists);
+
     m_pDeleteAllChildPlaylists = new QAction(tr("Delete all child playlists"), this);
     connect(m_pDeleteAllChildPlaylists,
             &QAction::triggered,
@@ -162,10 +174,10 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     QMenu menu(m_pSidebarWidget);
     if (playlistId == m_placeholderId) {
         // this is a YEAR item
+        menu.addAction(m_pLockAllChildPlaylists);
+        menu.addAction(m_pUnlockAllChildPlaylists);
+        menu.addSeparator();
         menu.addAction(m_pDeleteAllChildPlaylists);
-        // TODO(ronso0) Allow un/locking all child playlists?
-        // This is handy if you want to either bulk-secure setlogs, or prepare
-        // further cleanup / rename
     } else {
         // this is a playlist
         bool locked = m_playlistDao.isPlaylistLocked(playlistId);
@@ -402,6 +414,48 @@ void SetlogFeature::slotJoinWithPrevious() {
             }
         }
     }
+}
+
+void SetlogFeature::slotLockAllChildPlaylists() {
+    lockOrUnlockAllChildPlaylists(true);
+}
+
+void SetlogFeature::slotUnlockAllChildPlaylists() {
+    lockOrUnlockAllChildPlaylists(false);
+}
+
+void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+    if (lock) {
+        qWarning() << "lock all child playlists of" << m_lastRightClickedIndex.data().toString();
+    } else {
+        qWarning() << "unlock all child playlists of" << m_lastRightClickedIndex.data().toString();
+    }
+    // Ask for confirmation: "Delete all playlists in this group, including locked?"
+    TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+    if (!item) {
+        return;
+    }
+    const QList<TreeItem*> yearChildren = item->children();
+    if (yearChildren.isEmpty()) {
+        return;
+    }
+
+    QStringList ids;
+    for (auto* child : qAsConst(yearChildren)) {
+        bool ok = false;
+        int childId = child->getData().toInt(&ok);
+        if (ok && childId != kInvalidPlaylistId) {
+            ids.append(child->getData().toString());
+        }
+    }
+    m_playlistDao.setPlaylistsLocked(ids, lock);
+
+    // refresh sidebar model manually since PlaylistDAO::setPlaylistsLocked doesn't
+    // emit a signal we can connect to slotPlaylistTableLockChanged()
+    slotPlaylistTableChanged(kInvalidPlaylistId);
 }
 
 void SetlogFeature::slotDeleteAllChildPlaylists() {
