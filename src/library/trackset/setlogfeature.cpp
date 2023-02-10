@@ -623,6 +623,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         rootWasSelected = m_pSidebarWidget &&
                 m_pSidebarWidget->isFeatureRootIndexSelected(this);
     }
+    // TODO Nice to have: if focused item != selected item, also refocus
 
     QModelIndex newIndex = constructChildModel(selectedPlaylistId);
 

@@ -19,7 +19,11 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
-    setSelectionMode(QAbstractItemView::SingleSelection);
+    // To allow moving the item focus with Ctrl+Up/Down independently from the
+    // selection we need to enable MultiSelection or ExtendedSelection.
+    // Though, since we don't want actual multi-/extended selection, we have to
+    // prevent that in keyPressEvent() and mousePressEvent().
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
     //Drag and drop setup
     setDragEnabled(false);
     setDragDropMode(QAbstractItemView::DragDrop);
@@ -242,19 +246,44 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
 
     switch (event->key()) {
     case Qt::Key_Return:
-        focusSelectedIndex();
+    case Qt::Key_Enter: {
+        // if the focused item is not selected, quit focus move mode and select it.
+        QModelIndex currIndex = currentIndex();
+        if (currIndex.isValid() && !isChildIndexSelected(currIndex)) {
+            selectIndex(currIndex);
+            emit clicked(currIndex);
+            return;
+        }
+        // else activate and toggle expand state.
+        QModelIndex selIndex = selectedIndex();
+        if (!selIndex.isValid()) {
+            return;
+        }
         toggleSelectedItem();
         return;
+    }
     case Qt::Key_Down:
     case Qt::Key_Up:
     case Qt::Key_PageDown:
     case Qt::Key_PageUp:
     case Qt::Key_End:
     case Qt::Key_Home: {
-        // make the selected item the navigation starting point
-        focusSelectedIndex();
+        if (event->modifiers().testFlag(Qt::ShiftModifier)) {
+            // Don't allow extending the selection
+            return;
+        }
+        if (!event->modifiers().testFlag(Qt::ControlModifier)) {
+            // make sure the the selected item is the navigation starting point
+            focusSelectedIndex();
+        }
         // Let the tree view move up and down for us.
+        // With Ctrl pressed this only moves the current index.
         QTreeView::keyPressEvent(event);
+        if (event->modifiers().testFlag(Qt::ControlModifier)) {
+            // Selection didn't and shouldn't change, nothing to do
+            return;
+        }
+
         // After the selection changed force-activate (click) the newly selected
         // item to save us from having to push "Enter".
         QModelIndex selIndex = selectedIndex();
@@ -269,39 +298,50 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         return;
     }
     case Qt::Key_Left: {
-        QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        if (selectedIndices.isEmpty()) {
-            return;
-        }
-        // If an expanded item is selected let QTreeView collapse it
+        bool select = false;
         QModelIndex selIndex = selectedIndex();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
+        if (!selIndex.isValid()) {
             return;
         }
-        // collapse knot
+        QModelIndex currIndex = currentIndex();
+        if (currIndex.isValid() && selIndex != currIndex) {
+            // use focused index
+            selIndex = currIndex;
+        } else {
+            // use selected index
+            select = true;
+        }
+
+        // If an expanded item is selected let QTreeView collapse it
         if (isExpanded(selIndex)) {
             QTreeView::keyPressEvent(event);
             return;
         }
-        // Else jump to its parent and activate it
+        // Else jump to its parent and activate it if requested
         QModelIndex parentIndex = selIndex.parent();
         if (parentIndex.isValid()) {
-            selectIndex(parentIndex);
-            emit pressed(parentIndex);
+            if (select) {
+                selectIndex(parentIndex);
+                emit pressed(parentIndex);
+            } else {
+                selectionModel()->setCurrentIndex(parentIndex, QItemSelectionModel::NoUpdate);
+            }
         }
         return;
     }
     case Qt::Key_Escape:
-        // Focus tracks table
+        // Reset sidebar to selection, focus tracks table
+        focusSelectedIndex();
         emit setLibraryFocus(FocusWidget::TracksTable);
         return;
     case kRenameSidebarItemShortcutKey: { // F2
-        // Rename crate or playlist (internal, external, history)
-        QModelIndex selIndex = selectedIndex();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
-            return;
+        // Rename focused crate or playlist (internal, external, history)
+        QModelIndex selIndex = currentIndex();
+        if (!selIndex.isValid()) {
+            QModelIndex selIndex = selectedIndex();
+            if (!selIndex.isValid()) {
+                return;
+            }
         }
         if (isExpanded(selIndex)) {
             // Root views / knots can not be renamed
@@ -312,6 +352,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     }
     case kHideRemoveShortcutKey: { // Del (macOS: Cmd+Backspace)
         // Delete crate or playlist (internal, external, history)
+        // TODO consider focus // restore currIndex after deletion
         if (event->modifiers() != kHideRemoveShortcutModifier) {
             return;
         }
@@ -332,13 +373,13 @@ void WLibrarySidebar::mousePressEvent(QMouseEvent* event) {
     if (event->buttons().testFlag(Qt::RightButton)) {
         return;
     }
+    if (event->buttons().testFlag(Qt::LeftButton)) {
+        // reject Shift+click and Ctrl+click to to prohibit multi-selection
+        if (event->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier)) {
+            return;
+        }
+    }
     QTreeView::mousePressEvent(event);
-}
-
-void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
-    // Clear the current index, i.e. remove the focus indicator
-    selectionModel()->clearCurrentIndex();
-    QTreeView::focusInEvent(event);
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {

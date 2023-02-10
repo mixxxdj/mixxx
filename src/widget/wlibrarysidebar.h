@@ -27,7 +27,6 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void dropEvent(QDropEvent * event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
-    void focusInEvent(QFocusEvent* event) override;
     void timerEvent(QTimerEvent* event) override;
     void toggleSelectedItem();
     bool isLeafNodeSelected();
