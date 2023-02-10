@@ -229,6 +229,14 @@ WLibrarySidebar::item:selected,
   color: #D6D6D6;
   background-color: #006596;
 }
+WLibrarySidebar::item:selected:focus {
+  outline: none;
+  border: 0px;
+}
+WLibrarySidebar::item:!selected:focus {
+  outline: none;
+  border: 1px solid white;
+}
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
 WTrackTableView,
@@ -412,8 +420,7 @@ WSearchLineEdit {
   qproperty-layoutSpacing: 0;
 }
 
-WLibrarySidebar,
-WLibrarySidebar::item:focus {
+WLibrarySidebar {
   outline: none;
 /* Spacing between treeview and preview deck/search bar */
   margin: 0px;
