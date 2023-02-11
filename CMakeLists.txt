@@ -109,11 +109,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
-if(APPLE)
-  option(QOPENGL "Use QOpenGL... classes instead of QGLWidget" ON)
-else()
-  option(QOPENGL "Use QOpenGL... classes instead of QGLWidget" OFF)
-endif()
+option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
