@@ -803,14 +803,6 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
     // This is the only thing we can do if the track has different BPM,
     // playing the next beat together.
 
-    // First calculate the position in the other track where this next beat will be.
-    // This original version has double precision issues (we kept it for documentation):
-    // const mixxx::audio::FrameDiff_t thisSecs2ToNextBeat =
-    //        (thisNextBeatPosition - thisPosition) / thisSampleRate / thisRateRatio;
-    // const mixxx::audio::FramePos otherPositionOfThisNextBeat = otherPosition +
-    //       thisSecs2ToNextBeat * otherBeats->getSampleRate() *
-    //                 pOtherEngineBuffer->getRateRatio();
-
     // calculate framesTransposeFactor first to avoid rounding issues, because it is often 1
     double framesTransposeFactor = otherBeats->getSampleRate() /
             thisSampleRate * pOtherEngineBuffer->getRateRatio() / thisRateRatio;
