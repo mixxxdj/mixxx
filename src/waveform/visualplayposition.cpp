@@ -51,17 +51,18 @@ double VisualPlayPosition::calcPosAtNextVSync(
     double playPos = data.m_enginePlayPos; // load playPos for the first sample in Buffer
     if (data.m_audioBufferMicroS != 0.0) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        Q_UNUSED(vSyncThread);
+        Q_UNUSED(pVSyncThread);
         int refToVSync = 0;
+        int syncIntervalTimeMicros = 0;
 #else
         int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+        int syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
 #endif
         int offset = refToVSync - data.m_callbackEntrytoDac;
         // The offset is limited to the audio buffer + waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
-        int maxOffset = static_cast<int>(data.m_audioBufferMicroS +
-                pVSyncThread->getSyncIntervalTimeMicros());
+        int maxOffset = static_cast<int>(data.m_audioBufferMicroS + syncIntervalTimeMicros);
         offset = math_clamp(offset, -maxOffset, maxOffset);
         // add the offset for the position of the sample that will be transferred to the DAC
         // When the next display frame is displayed
