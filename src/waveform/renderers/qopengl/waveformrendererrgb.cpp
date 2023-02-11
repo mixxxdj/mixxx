@@ -1,6 +1,5 @@
 #include "waveform/renderers/qopengl/waveformrendererrgb.h"
 
-#include "fixedpointcalc.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
@@ -10,6 +9,12 @@
 #include "widget/wwidget.h"
 
 using namespace qopengl;
+
+namespace {
+inline float math_pow2(float x) {
+    return x * x;
+}
+} // namespace
 
 WaveformRendererRGB::WaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidget)
@@ -81,21 +86,6 @@ inline void WaveformRendererRGB::addRectangle(
 }
 
 void WaveformRendererRGB::renderGL() {
-    // The source of our data are uint8_t values (waveformData.filtered.low/mid/high).
-    // We can avoid type conversion by calculating the values needed for drawing
-    // using fixed point. Since the range of the intermediate values is limited, we
-    // can take advantage of this and use a lookup table instead of sqrtf.
-
-    uint32_t rgbLowColor_r = toFrac8(m_rgbLowColor_r);
-    uint32_t rgbMidColor_r = toFrac8(m_rgbMidColor_r);
-    uint32_t rgbHighColor_r = toFrac8(m_rgbHighColor_r);
-    uint32_t rgbLowColor_g = toFrac8(m_rgbLowColor_g);
-    uint32_t rgbMidColor_g = toFrac8(m_rgbMidColor_g);
-    uint32_t rgbHighColor_g = toFrac8(m_rgbHighColor_g);
-    uint32_t rgbLowColor_b = toFrac8(m_rgbLowColor_b);
-    uint32_t rgbMidColor_b = toFrac8(m_rgbMidColor_b);
-    uint32_t rgbHighColor_b = toFrac8(m_rgbHighColor_b);
-
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
@@ -135,15 +125,10 @@ void WaveformRendererRGB::renderGL() {
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    // gains in 8 bit fractional fixed point
-    const uint32_t frac8LowGain(toFrac8(lowGain));
-    const uint32_t frac8MidGain(toFrac8(midGain));
-    const uint32_t frac8HighGain(toFrac8(highGain));
-
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
-    const float heightFactor = allGain * halfBreadth;
+    const float heightFactor = allGain * halfBreadth / std::sqrt(3.f * 256.f * 256.f);
 
     // Effective visual index of x
     double xVisualSampleIndex = firstVisualIndex;
@@ -190,75 +175,76 @@ void WaveformRendererRGB::renderGL() {
         visualIndexStart = std::max(visualIndexStart, 0);
         visualIndexStop = std::min(visualIndexStop, dataSize);
 
-        uint32_t maxLow = 0;
-        uint32_t maxMid = 0;
-        uint32_t maxHigh = 0;
+        float maxLow = 0;
+        float maxMid = 0;
+        float maxHigh = 0;
 
-        uint32_t maxAll = 0.;
-        uint32_t maxAllNext = 0.;
+        float maxAll = 0.;
+        float maxAllNext = 0.;
 
         for (int i = visualIndexStart; i < visualIndexStop; i += 2) {
             const WaveformData& waveformData = data[i];
             const WaveformData& waveformDataNext = data[i + 1];
 
-            maxLow = math_max_u32(maxLow, waveformData.filtered.low, waveformDataNext.filtered.low);
-            maxMid = math_max_u32(maxMid, waveformData.filtered.mid, waveformDataNext.filtered.mid);
-            maxHigh = math_max_u32(maxHigh,
-                    waveformData.filtered.high,
-                    waveformDataNext.filtered.high);
+            const float filteredLow = static_cast<const float>(waveformData.filtered.low);
+            const float filteredMid = static_cast<const float>(waveformData.filtered.mid);
+            const float filteredHigh = static_cast<const float>(waveformData.filtered.high);
 
-            uint32_t all = frac8Pow2ToFrac16(waveformData.filtered.low * frac8LowGain) +
-                    frac8Pow2ToFrac16(waveformData.filtered.mid * frac8MidGain) +
-                    frac8Pow2ToFrac16(waveformData.filtered.high * frac8HighGain);
+            const float nextFilteredLow = static_cast<const float>(waveformDataNext.filtered.low);
+            const float nextFilteredMid = static_cast<const float>(waveformDataNext.filtered.mid);
+            const float nextFilteredHigh = static_cast<const float>(waveformDataNext.filtered.high);
+
+            maxLow = math_max3(maxLow, filteredLow, nextFilteredLow);
+            maxMid = math_max3(maxMid, filteredMid, nextFilteredMid);
+            maxHigh = math_max3(maxHigh, filteredHigh, nextFilteredHigh);
+
+            const float all = math_pow2(filteredLow) * lowGain +
+                    math_pow2(filteredMid) * midGain +
+                    math_pow2(filteredHigh) * highGain;
             maxAll = math_max(maxAll, all);
 
-            uint32_t allNext = frac8Pow2ToFrac16(waveformDataNext.filtered.low * frac8LowGain) +
-                    frac8Pow2ToFrac16(waveformDataNext.filtered.mid * frac8MidGain) +
-                    frac8Pow2ToFrac16(waveformDataNext.filtered.high * frac8HighGain);
+            const float allNext = math_pow2(nextFilteredLow) * lowGain +
+                    math_pow2(nextFilteredMid) * midGain +
+                    math_pow2(nextFilteredHigh) * highGain;
             maxAllNext = math_max(maxAllNext, allNext);
         }
 
-        // We can do these integer calculation safely, staying well within the
-        // 32 bit range, and we will normalize below.
-        maxLow *= frac8LowGain;
-        maxMid *= frac8MidGain;
-        maxHigh *= frac8HighGain;
-        uint32_t red = maxLow * rgbLowColor_r + maxMid * rgbMidColor_r +
-                maxHigh * rgbHighColor_r;
-        uint32_t green = maxLow * rgbLowColor_g + maxMid * rgbMidColor_g +
-                maxHigh * rgbHighColor_g;
-        uint32_t blue = maxLow * rgbLowColor_b + maxMid * rgbMidColor_b +
-                maxHigh * rgbHighColor_b;
+        maxLow *= lowGain;
+        maxMid *= midGain;
+        maxHigh *= highGain;
+        float red = maxLow * m_rgbLowColor_r + maxMid * m_rgbMidColor_r +
+                maxHigh * m_rgbHighColor_r;
+        float green = maxLow * m_rgbLowColor_g + maxMid * m_rgbMidColor_g +
+                maxHigh * m_rgbHighColor_g;
+        float blue = maxLow * m_rgbLowColor_b + maxMid * m_rgbMidColor_b +
+                maxHigh * m_rgbHighColor_b;
 
-        // Normalize red, green, blue to 0..255, using the maximum of the three and
-        // this fixed point arithmetic trick:
-        // max / ((max>>8)+1) = 0..255
-        uint32_t max = math_max_u32(red, green, blue);
-        max >>= 8;
+        // Normalize red, green, blue, using the maximum of the three
 
-        if (max == 0) {
+        const float max = math_max3(red, green, blue);
+
+        if (max == 0.f) {
             // avoid division by 0
-            red = 0;
-            green = 0;
-            blue = 0;
+            red = 0.f;
+            green = 0.f;
+            blue = 0.f;
         } else {
-            max++; // important, otherwise we normalize to 256
-
-            red /= max;
-            green /= max;
-            blue /= max;
+            const float normFactor = 1.f / max;
+            red *= normFactor;
+            green *= normFactor;
+            blue *= normFactor;
         }
 
         const float fx = static_cast<float>(x);
 
         // lines are thin rectangles
         addRectangle(fx,
-                halfBreadth - heightFactor * frac16_sqrt(maxAll),
+                halfBreadth - heightFactor * std::sqrt(maxAll),
                 fx + 1.f,
-                halfBreadth + heightFactor * frac16_sqrt(maxAllNext),
-                float(red) / 255.f,
-                float(green) / 255.f,
-                float(blue) / 255.f);
+                halfBreadth + heightFactor * std::sqrt(maxAllNext),
+                red,
+                green,
+                blue);
 
         xVisualSampleIndex += gain;
     }
