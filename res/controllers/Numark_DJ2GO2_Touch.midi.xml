@@ -223,98 +223,8 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.leftDeck.hotcueButtons[1].input</key>
         <status>0x84</status>
-        <midino>0x21</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
-        <status>0x94</status>
-        <midino>0x21</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
-        <status>0x84</status>
-        <midino>0x22</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
-        <status>0x94</status>
-        <midino>0x22</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.reLoopStop.input</key>
-        <status>0x84</status>
-        <midino>0x24</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.reLoopStop.input</key>
-        <status>0x94</status>
-        <midino>0x24</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.pflButton.input</key>
-        <status>0x80</status>
-        <midino>0x1B</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.pflButton.input</key>
-        <status>0x90</status>
-        <midino>0x1B</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.playButton.input</key>
-        <status>0x80</status>
-        <midino>0x00</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.playButton.input</key>
-        <status>0x90</status>
-        <midino>0x00</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.tempoFader.inputMSB</key>
-        <status>0xB0</status>
         <midino>0x09</midino>
         <options>
           <script-binding/>
@@ -322,7 +232,160 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.tempoFader.inputLSB</key>
+        <key>DJ2GO2Touch.leftDeck.hotcueButtons[1].input</key>
+        <status>0x94</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.hotcueButtons[2].input</key>
+        <status>0x84</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.hotcueButtons[2].input</key>
+        <status>0x94</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.hotcueButtons[3].input</key>
+        <status>0x84</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.hotcueButtons[3].input</key>
+        <status>0x94</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.hotcueButtons[4].input</key>
+        <status>0x84</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.hotcueButtons[4].input</key>
+        <status>0x94</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
+        <status>0x84</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
+        <status>0x94</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
+        <status>0x84</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
+        <status>0x94</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.reLoopStop.input</key>
+        <status>0x84</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.reLoopStop.input</key>
+        <status>0x94</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.pflButton.input</key>
+        <status>0x80</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.pflButton.input</key>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.playButton.input</key>
+        <status>0x80</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.playButton.input</key>
+        <status>0x90</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.tempoFader.input</key>
         <status>0xB0</status>
         <midino>0x09</midino>
         <options>
@@ -583,6 +646,78 @@
       </control>
       <control>
         <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.hotcueButtons[1].input</key>
+        <status>0x85</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.hotcueButtons[1].input</key>
+        <status>0x95</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.hotcueButtons[2].input</key>
+        <status>0x85</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.hotcueButtons[2].input</key>
+        <status>0x95</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.hotcueButtons[3].input</key>
+        <status>0x85</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.hotcueButtons[3].input</key>
+        <status>0x95</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.hotcueButtons[4].input</key>
+        <status>0x85</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.hotcueButtons[4].input</key>
+        <status>0x95</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.loopIn.input</key>
         <status>0x85</status>
         <midino>0x21</midino>
@@ -664,16 +799,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.tempoFader.inputMSB</key>
-        <status>0xB1</status>
-        <midino>0x09</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.tempoFader.inputLSB</key>
+        <key>DJ2GO2Touch.rightDeck.tempoFader.input</key>
         <status>0xB1</status>
         <midino>0x09</midino>
         <options>
@@ -757,7 +883,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.crossfader.inputMSB</key>
+        <key>DJ2GO2Touch.crossfader.input</key>
         <status>0xBF</status>
         <midino>0x08</midino>
         <options>
@@ -766,16 +892,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.crossfader.inputLSB</key>
-        <status>0xBF</status>
-        <midino>0x08</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>DJ2GO2Touch.masterGain.inputMSB</key>
+        <key>DJ2GO2Touch.masterGain.input</key>
         <status>0xBF</status>
         <midino>0x0A</midino>
         <options>
@@ -784,25 +901,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.masterGain.inputLSB</key>
-        <status>0xBF</status>
-        <midino>0x0A</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>DJ2GO2Touch.cueGain.inputMSB</key>
-        <status>0xBF</status>
-        <midino>0x0C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>DJ2GO2Touch.cueGain.inputLSB</key>
+        <key>DJ2GO2Touch.cueGain.input</key>
         <status>0xBF</status>
         <midino>0x0C</midino>
         <options>

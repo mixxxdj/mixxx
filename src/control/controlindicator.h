@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "util/parented_ptr.h"
 
 /// This type of control is used for blinking buttons such as the "play" or

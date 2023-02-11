@@ -756,10 +756,10 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
                                     QStringList(), ""));
 
     // locations for test tracks
-    const QString kTrackALocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-jpg.mp3");
-    const QString kTrackBLocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-png.mp3");
+    const QString kTrackALocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-png.mp3")));
 
     // Create new crate and add it to the collection
     Crate testCrate;
@@ -800,12 +800,12 @@ TEST_F(SearchQueryParserTest, ShortCrateFilter) {
                                     searchColumns, ""));
 
     // locations for test tracks
-    const QString kTrackALocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-jpg.mp3");
-    const QString kTrackBLocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-png.mp3");
-    const QString kTrackCLocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/artist.mp3");
+    const QString kTrackALocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-png.mp3")));
+    const QString kTrackCLocationTest(
+            getTestDir().filePath(QStringLiteral("id3-test-data/artist.mp3")));
 
     // Create new crate and add it to the collection
     Crate testCrate;
@@ -832,7 +832,6 @@ TEST_F(SearchQueryParserTest, ShortCrateFilter) {
     EXPECT_TRUE(pQuery->match(pTrackC));
 }
 
-
 TEST_F(SearchQueryParserTest, CrateFilterEmpty) {
     // Empty should match everything
     auto pQuery(m_parser.parseQuery(QString("crate: "), QStringList(), ""));
@@ -856,10 +855,10 @@ TEST_F(SearchQueryParserTest, CrateFilterQuote){
                                     QStringList(), ""));
 
     // locations for test tracks
-    const QString kTrackALocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-jpg.mp3");
-    const QString kTrackBLocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-png.mp3");
+    const QString kTrackALocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-png.mp3")));
 
     // Create new crate and add it to the collection
     Crate testCrate;
@@ -900,10 +899,10 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
                                     QStringList(), ""));
 
     // locations for test tracks
-    const QString kTrackALocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-jpg.mp3");
-    const QString kTrackBLocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-png.mp3");
+    const QString kTrackALocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-png.mp3")));
 
     // Create new crate and add it to the collection
     Crate testCrate;
@@ -945,10 +944,10 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
                                     QStringList(), ""));
 
     // locations for test tracks
-    const QString kTrackALocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-jpg.mp3");
-    const QString kTrackBLocationTest(QDir::currentPath() %
-                  "/src/test/id3-test-data/cover-test-png.mp3");
+    const QString kTrackALocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-png.mp3")));
 
     // Create new crates and add them to the collection
     Crate testCrateA;
@@ -995,4 +994,106 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
                  qPrintable("(" + m_crateFilterQuery.arg(searchTermAEsc) +
                             ") AND (NOT (" + m_crateFilterQuery.arg(searchTermB) + "))"),
                  qPrintable(pQueryB->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, SplitQueryIntoWords) {
+    QStringList rv = SearchQueryParser::splitQueryIntoWords(QString("a test b"));
+    QStringList ex = QStringList() << "a"
+                                   << "test"
+                                   << "b";
+    qDebug() << rv << ex;
+    EXPECT_EQ(rv, ex);
+
+    QStringList rv2 = SearchQueryParser::splitQueryIntoWords(QString("a \"test ' b\" x"));
+    QStringList ex2 = QStringList() << "a"
+                                    << "\"test ' b\""
+                                    << "x";
+    qDebug() << rv2 << ex2;
+    EXPECT_EQ(rv2, ex2);
+
+    QStringList rv3 = SearchQueryParser::splitQueryIntoWords(QString("a x"));
+    QStringList ex3 = QStringList() << "a"
+                                    << "x";
+    qDebug() << rv3 << ex3;
+    EXPECT_EQ(rv3, ex3);
+
+    QStringList rv4 = SearchQueryParser::splitQueryIntoWords(
+            QString("a crate:x title:\"S p A C e\" ~key:2m"));
+    QStringList ex4 = QStringList() << "a"
+                                    << "crate:x"
+                                    << "title:\"S p A C e\""
+                                    << "~key:2m";
+    qDebug() << rv4 << ex4;
+    EXPECT_EQ(rv4, ex4);
+}
+
+TEST_F(SearchQueryParserTest, QueryIsLessSpecific) {
+    // Generate a file name for the temporary file
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("searchme"),
+            QStringLiteral("searchm")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A B C"),
+            QStringLiteral("A C")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A B C"),
+            QStringLiteral("A D C")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A D C"),
+            QStringLiteral("A D C ")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A D  C "),
+            QStringLiteral("A D C")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A B  C"),
+            QStringLiteral("A D C")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A D C"),
+            QStringLiteral("A D C ")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A D  C "),
+            QStringLiteral("A D C")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("A B  C"),
+            QStringLiteral("A D C")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("Abba1 Abba2 Abb"),
+            QStringLiteral("Abba1 Abba Abb")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("Abba1 Abba2 Abb"),
+            QStringLiteral("Abba1 Aba Abb")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("Abba1"),
+            QLatin1String("")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("Abba1"),
+            QStringLiteral("bba")));
+
+    EXPECT_TRUE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("crate:abc"),
+            QStringLiteral("crate:ab")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("crate:\"a b c\""),
+            QStringLiteral("crate:\"a c\"")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("-crate:\"a b c\""),
+            QStringLiteral("crate:\"a b c\"")));
+
+    EXPECT_FALSE(SearchQueryParser::queryIsLessSpecific(
+            QStringLiteral("-crate:\"a b c\""),
+            QStringLiteral("crate:\"a b c\"")));
 }

@@ -21,8 +21,8 @@ KaiserWindow::parametersForTransitionWidth(double attenuation,
 {
     Parameters p;
     p.length = 1 + (attenuation > 21.0 ?
-                    ceil((attenuation - 7.95) / (2.285 * transition)) :
-                    ceil(5.79 / transition));
+                    std::ceil((attenuation - 7.95) / (2.285 * transition)) :
+                    std::ceil(5.79 / transition));
     p.beta = (attenuation > 50.0 ? 
               0.1102 * (attenuation - 8.7) :
               attenuation > 21.0 ? 

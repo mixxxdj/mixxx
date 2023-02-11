@@ -112,7 +112,28 @@ DlgAbout::DlgAbout()
             << "Ball&oacute; Gy&ouml;rgy"
             << "Pino Toscano"
             << "Alexander Horner"
-            << "Michael Ehlen";
+            << "Michael Ehlen"
+            << "Alice Midori"
+            << "h67ma"
+            << "tcoyvwac"
+            << "Tobias Oszlanyi (OsZ)"
+            << "Fredrik Wieczerkowski"
+            << "Viktor Gal"
+            << "Maty&aacute;&scaron; Bobek"
+            << "Mr. Rincewind"
+            << "Stefan N&uuml;rnberger"
+            << "motific"
+            << "Fatih Emre YILDIZ"
+            << "Vincent Duez-Dellac"
+            << "Javier Vilalta"
+            << "David Chocholat&yacute;"
+            << "Fabian Wolter"
+            << "Matteo Gheza"
+            << "Michael Bacarella"
+            << "Somesh Metri"
+            << "Maarten de Boer"
+            << "Doteya"
+            << "olafklingt";
 
     QStringList specialThanks;
     specialThanks
@@ -307,7 +328,6 @@ DlgAbout::DlgAbout()
             << "Andreas M&uuml;ller"
             << "Sam Cross"
             << "Joey Pabalinas"
-            << "Stefan N&uuml;rnberger"
             << "Markus Kl&ouml;sges"
             << "Pavel Potocek"
             << "Timothy Rae"

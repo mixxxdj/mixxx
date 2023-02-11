@@ -8,6 +8,7 @@
       <Template src="skin:vumeter_master.xml"/>
     </Children>
   </SingletonDefinition>
+
   <WidgetGroup>
     <ObjectName>MixerStrip_4Decks</ObjectName>
     <Layout>vertical</Layout>
@@ -35,6 +36,7 @@
           <WidgetGroup><Size>0me,25f</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
+
       <!-- Same size as deck VU meters -->
       <WidgetGroup>
         <ObjectName>MixerStrip_4Decks_small</ObjectName>
@@ -52,21 +54,12 @@
           <WidgetGroup><Size>0me,34f</Size></WidgetGroup>
 
           <!-- EQ knobs spacer -->
+          <!-- 3 EQ knobs + QuickEffect knob, 34px each
+               QuickEffect selector 22px -->
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <SizePolicy>me,max</SizePolicy>
-            <Children>
-              <!-- 3 EQ knobs, 34px each -->
-              <WidgetGroup><Size>0min,102f</Size></WidgetGroup>
-              <!-- QuickEffect knob, 34px optional -->
-              <WidgetGroup>
-                <Size>0min,34f</Size>
-                <Connection>
-                  <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
+            <Size>0min,158f</Size>
+            <Children/>
             <Connection>
               <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -138,7 +131,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                     <SizePolicy>min,me</SizePolicy>
-                    <MaximumSize>60,180</MaximumSize>
+                    <MaximumSize>60,193</MaximumSize>
                     <Children>
                       <SingletonContainer>
                         <ObjectName>StereoVUMeterMaster</ObjectName>

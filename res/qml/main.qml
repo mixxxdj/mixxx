@@ -1,8 +1,7 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.11
 import "Theme"
 
 ApplicationWindow {
@@ -75,8 +74,28 @@ ApplicationWindow {
                     }
                 }
 
-            }
+                Skin.Button {
+                    id: showDevToolsButton
 
+                    text: "Develop"
+                    activeColor: Theme.white
+                    checkable: true
+                    checked: devToolsWindow.visible
+                    onClicked: {
+                        if (devToolsWindow.visible)
+                            devToolsWindow.close();
+                        else
+                            devToolsWindow.show();
+                    }
+
+                    DeveloperToolsWindow {
+                        id: devToolsWindow
+
+                        width: 640
+                        height: 480
+                    }
+                }
+            }
         }
 
         Skin.DeckRow {
@@ -95,10 +114,9 @@ ApplicationWindow {
             width: parent.width
             visible: !root.maximizeLibrary
 
-            FadeBehavior on visible {
+            Skin.FadeBehavior on visible {
                 fadeTarget: crossfader
             }
-
         }
 
         Skin.DeckRow {
@@ -110,37 +128,34 @@ ApplicationWindow {
             minimized: root.maximizeLibrary
             visible: root.show4decks
 
-            FadeBehavior on visible {
+            Skin.FadeBehavior on visible {
                 fadeTarget: decks34
             }
-
         }
 
-        SamplerRow {
+        Skin.SamplerRow {
             id: samplers
 
             width: parent.width
             visible: root.showSamplers
 
-            FadeBehavior on visible {
+            Skin.FadeBehavior on visible {
                 fadeTarget: samplers
             }
-
         }
 
-        EffectRow {
+        Skin.EffectRow {
             id: effects
 
             width: parent.width
             visible: root.showEffects
 
-            FadeBehavior on visible {
+            Skin.FadeBehavior on visible {
                 fadeTarget: effects
             }
-
         }
 
-        Library {
+        Skin.Library {
             width: parent.width
             height: parent.height - y
         }
@@ -150,9 +165,6 @@ ApplicationWindow {
                 properties: "x,y"
                 duration: 150
             }
-
         }
-
     }
-
 }

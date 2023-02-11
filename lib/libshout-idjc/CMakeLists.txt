@@ -37,7 +37,20 @@ target_compile_definitions(${PROJECT_NAME}
         LIBSHOUT_MICRO=${PROJECT_VERSION_PATCH}
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
+option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
+if(MSVC)
+  if(WARNINGS_PEDANTIC)
+    target_compile_options(${PROJECT_NAME} PUBLIC /W4)
+  else()
+    target_compile_options(${PROJECT_NAME} PUBLIC /W3)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS)
+  endif()
+else()
+  target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra $<$<COMPILE_LANGUAGE:CXX>:-Woverloaded-virtual> -Wfloat-conversion -Werror=return-type -Wno-unused-parameter)
+  if(WARNINGS_PEDANTIC)
+    target_compile_options(${PROJECT_NAME} PUBLIC -pedantic)
+  endif()
+endif()
 
 cmake_push_check_state()
 
@@ -175,11 +188,6 @@ endif()
 check_include_file(time.h HAVE_TIME_H)
 if(HAVE_TIME_H)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_TIME_H)
-    check_struct_has_member( "struct timespec" "tv_sec" "time.h" HAVE_STRUCT_TIMESPEC )
-    # HAVE_STRUCT_TIMESPEC must be defined for windows pthreads on newer MSVC
-    if(HAVE_STRUCT_TIMESPEC)
-        target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STRUCT_TIMESPEC)
-    endif(HAVE_STRUCT_TIMESPEC)
 endif()
 
 if(HAVE_SYS_TIME_H AND HAVE_TIME_H)

@@ -50,7 +50,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     width->setDescription(QObject::tr(
             "Delay amplitude of the LFO (low frequency oscillator)"));
     width->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    width->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    width->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     width->setRange(0.0, kMaxLfoWidthMs / 2, kMaxLfoWidthMs);
 
     EffectManifestParameterPointer manual = pManifest->addParameter();
@@ -61,7 +61,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
             "Delay offset of the LFO (low frequency oscillator).\n"
             "With width at zero, this allows for manually sweeping over the entire delay range."));
     manual->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    manual->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    manual->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     manual->setRange(kMinDelayMs, kCenterDelayMs, kMaxDelayMs);
 
     EffectManifestParameterPointer regen = pManifest->addParameter();
@@ -176,13 +176,15 @@ void FlangerEffect::processChannel(
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
+    int rampIndex = 0;
     for (SINT i = 0;
             i < engineParameters.samplesPerBuffer();
             i += engineParameters.channelCount()) {
-        CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
-        CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
-        double width_ramped = widthRamped.getNext();
-        double manual_ramped = manualRamped.getNext();
+        CSAMPLE_GAIN mix_ramped = mixRamped.getNth(rampIndex);
+        CSAMPLE_GAIN regen_ramped = regenRamped.getNth(rampIndex);
+        double width_ramped = widthRamped.getNth(rampIndex);
+        double manual_ramped = manualRamped.getNth(rampIndex);
+        ++rampIndex;
 
         pState->lfoFrames++;
         if (pState->lfoFrames >= lfoPeriodFrames) {

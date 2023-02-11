@@ -6,11 +6,21 @@
 #include <QMetaType>
 #include <memory>
 
+#include "preferences/usersettings.h"
+
 class Track;
 
 typedef std::shared_ptr<Track> TrackPointer;
 typedef std::weak_ptr<Track> TrackWeakPointer;
 typedef QList<TrackPointer> TrackPointerList;
+
+struct SyncTrackMetadataParams {
+    bool resetMissingTagMetadataOnImport = false;
+    bool syncSeratoMetadata = false;
+
+    static SyncTrackMetadataParams readFromUserSettings(
+            const UserSettings& userSettings);
+};
 
 enum class ExportTrackMetadataResult {
     Succeeded,

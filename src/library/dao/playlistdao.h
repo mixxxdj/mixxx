@@ -58,7 +58,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     /// Delete Playlists with fewer entries then "length"
     /// Needs to be called inside a transaction.
     /// @return number of deleted playlists, -1 on error
-    int deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType type, int minNumberOfTracks);
+    int deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::HiddenType type,
+            int minNumberOfTracks);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
@@ -71,6 +72,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool appendTrackToPlaylist(TrackId trackId, const int playlistId);
     // Find out how many playlists exist.
     unsigned int playlistCount() const;
+    // Get all playlist ids and names of a specific type
+    QList<QPair<int, QString>> getPlaylists(const HiddenType hidden) const;
     // Find out the name of the playlist at the given Id
     QString getPlaylistName(const int playlistId) const;
     // Get the playlist id by its name

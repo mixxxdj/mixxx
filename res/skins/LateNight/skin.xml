@@ -48,9 +48,11 @@
       <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
+      <attribute persist="true" config_key="[Skin],select_big_spinny_or_cover">0</attribute>
       <!-- ToDo: deck-independent vinyl controls? -->
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <!-- Deck variant that is shown as soon as the mixer is hidden.
@@ -63,7 +65,8 @@
       <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
       <!-- Compact deck -->
       <attribute persist="true" config_key="[Skin],show_rate_controls_compact">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_loopjump_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_beatjump_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_sync_button_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_key_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_key_controls_compact">1</attribute>
@@ -169,6 +172,7 @@
       <SetVariable name="IntroOutroColor">#2c5c9a</SetVariable>
       <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
       <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="PassthroughLabelColor">#b24c12</SetVariable>
       <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
       <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
       <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
@@ -273,6 +277,7 @@
       <SetVariable name="IntroOutroColor">#0000ff</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="PassthroughLabelColor">#d09300</SetVariable>
       <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
       <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
       <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
@@ -389,13 +394,6 @@
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
-
-    <!-- Some helpers to show widgets and switch layouts
-        depending on the skin configuration.
-        Apparently putting those here keeps i.e. the spinny
-        config when [Master],maximize_library is toggled. -->
-        <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
-        <Template src="skin:/helpers/skin_helper_spinny-cover.xml"/>
 
         <Template src="skin:toolbar.xml"/>
 

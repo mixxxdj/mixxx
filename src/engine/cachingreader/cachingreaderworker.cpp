@@ -1,8 +1,10 @@
 #include "engine/cachingreader/cachingreaderworker.h"
 
+#include <QAtomicInt>
 #include <QFileInfo>
 #include <QtDebug>
 
+#include "analyzer/analyzersilence.h"
 #include "control/controlobject.h"
 #include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
@@ -10,10 +12,14 @@
 #include "util/compatibility/qmutex.h"
 #include "util/event.h"
 #include "util/logger.h"
+#include "util/span.h"
 
 namespace {
 
 mixxx::Logger kLogger("CachingReaderWorker");
+
+// we need the last silence frame and the first sound frame
+constexpr SINT kNumSoundFrameToVerify = 2;
 
 } // anonymous namespace
 
@@ -67,6 +73,18 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         }
     }
 
+    // This call here assumes that the caching reader will read the first sound cue at
+    // one of the first chunks. The check serves as a sanity check to ensure that the
+    // sample data has not changed since it has ben analyzed. This could happen because
+    // of a change in actual audio data or because the file was decoded using a different
+    // decoder
+    // This is part of a first prove of concept and needs to be replaces with a different
+    // solution which is still under discussion. This might be also extended
+    // to further checks whether a automatic offset adjustment is possible or a the
+    // sample position metadata shall be treated as outdated.
+    // Failures of the sanity check only result in an entry into the log at the moment.
+    verifyFirstSound(pChunk);
+
     ReaderStatusUpdate result;
     result.init(status, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
     return result;
@@ -83,8 +101,11 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 }
 
 void CachingReaderWorker::run() {
-    unsigned static id = 0; //the id of this thread, for debugging purposes
-    QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
+    // the id of this thread, for debugging purposes
+    static auto lastId = QAtomicInt(0);
+    const auto id = lastId.fetchAndAddRelaxed(1) + 1;
+    QThread::currentThread()->setObjectName(
+            QStringLiteral("CachingReaderWorker ") + QString::number(id));
 
     Event::start(m_tag);
     while (!m_stop.loadAcquire()) {
@@ -107,7 +128,7 @@ void CachingReaderWorker::run() {
             }
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
             // Read the requested chunk and send the result
-            const ReaderStatusUpdate update(processReadRequest(request));
+            const ReaderStatusUpdate update = processReadRequest(request);
             m_pReaderStatusFIFO->writeBlocking(&update, 1);
         } else {
             Event::end(m_tag);
@@ -127,8 +148,12 @@ void CachingReaderWorker::discardAllPendingRequests() {
 
 void CachingReaderWorker::closeAudioSource() {
     discardAllPendingRequests();
-    // Closes open file handles of the old track.
-    m_pAudioSource.reset();
+
+    if (m_pAudioSource) {
+        // Closes open file handles of the old track.
+        m_pAudioSource->close();
+        m_pAudioSource.reset();
+    }
 
     // This function has to be called with the engine stopped only
     // to avoid collecting new requests for the old track
@@ -213,6 +238,14 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
             CachingReaderChunk::frames2samples(
                     m_pAudioSource->frameLength());
 
+    // This code is a workaround until we have found a better solution to
+    // verify and correct offsets.
+    CuePointer pN60dBSound =
+            pTrack->findCueByType(mixxx::CueType::N60dBSound);
+    if (pN60dBSound) {
+        m_firstSoundFrameToVerify = pN60dBSound->getPosition();
+    }
+
     // The engine must not request any chunks before receiving the
     // trackLoaded() signal
     DEBUG_ASSERT(!m_pChunkReadRequestFIFO->readAvailable());
@@ -227,4 +260,31 @@ void CachingReaderWorker::quitWait() {
     m_stop = 1;
     m_semaRun.release();
     wait();
+}
+
+void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
+    if (!m_firstSoundFrameToVerify.isValid()) {
+        return;
+    }
+
+    const int firstSoundIndex =
+            CachingReaderChunk::indexForFrame(static_cast<SINT>(
+                    m_firstSoundFrameToVerify.toLowerFrameBoundary()
+                            .value()));
+    if (pChunk->getIndex() == firstSoundIndex) {
+        CSAMPLE sampleBuffer[kNumSoundFrameToVerify * mixxx::kEngineChannelCount];
+        SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
+        pChunk->readBufferedSampleFrames(sampleBuffer,
+                mixxx::IndexRange::forward(end - 1, kNumSoundFrameToVerify));
+        if (AnalyzerSilence::verifyFirstSound(std::span<const CSAMPLE>(sampleBuffer),
+                    mixxx::audio::FramePos(1))) {
+            qDebug() << "First sound found at the previously stored position";
+        } else {
+            // This can happen in case of track edits or replacements, changed
+            // encoders or encoding issues.
+            qWarning() << "First sound has been moved! The beatgrid and "
+                          "other annotations are no longer valid";
+        }
+        m_firstSoundFrameToVerify = mixxx::audio::FramePos();
+    }
 }

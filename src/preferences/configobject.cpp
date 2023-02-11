@@ -17,7 +17,7 @@ const QString kTempFilenameExtension = QStringLiteral(".tmp");
 const QString kCMakeCacheFile = QStringLiteral("CMakeCache.txt");
 const QLatin1String kSourceDirLine = QLatin1String("mixxx_SOURCE_DIR:STATIC=");
 
-QString computeResourcePath() {
+QString computeResourcePathImpl() {
     // Try to read in the resource directory from the command line
     QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
@@ -107,7 +107,7 @@ ConfigValueKbd::ConfigValueKbd(const QKeySequence& keys)
 
 template<class ValueType>
 ConfigObject<ValueType>::ConfigObject(const QString& file)
-        : ConfigObject(file, computeResourcePath(), computeSettingsPath(file)) {
+        : ConfigObject(file, computeResourcePathImpl(), computeSettingsPath(file)) {
     reopen(file);
 }
 
@@ -479,4 +479,14 @@ QString ConfigObject<ConfigValueKbd>::getValue(
         return default_value;
     }
     return value.value;
+}
+
+template<>
+QString ConfigObject<ConfigValue>::computeResourcePath() {
+    return computeResourcePathImpl();
+}
+
+template<>
+QString ConfigObject<ConfigValueKbd>::computeResourcePath() {
+    return computeResourcePathImpl();
 }

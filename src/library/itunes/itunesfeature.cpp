@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QMessageBox>
-#include <QStandardPaths>
 #include <QUrl>
 #include <QXmlStreamReader>
 #include <QtDebug>
@@ -119,6 +118,8 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QFutureWatcher<TreeItem*>::finished,
             this,
             &ITunesFeature::onTrackCollectionLoaded);
+
+    m_pITunesTrackModel->setSearch(""); // enable search.
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -213,7 +214,11 @@ void ITunesFeature::activate(bool forceReload) {
         }
         m_isActivated =  true;
         // Let a worker thread do the XML parsing
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_future = QtConcurrent::run(&ITunesFeature::importLibrary, this);
+#else
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
+#endif
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iTunes");
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
@@ -401,7 +406,7 @@ TreeItem* ITunesFeature::importLibrary() {
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
         if (xml.isStartElement()) {
-            if (xml.name() == "key") {
+            if (xml.name() == QLatin1String("key")) {
                 QString key = xml.readElementText();
                 if (key == "Music Folder") {
                     if (isTracksParsed) {
@@ -670,7 +675,7 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
             continue;
         }
         if (xml.isEndElement()) {
-            if (xml.name() == "array") {
+            if (xml.name() == QLatin1String("array")) {
                 break;
             }
         }
@@ -787,7 +792,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
             }
         }
         if (xml.isEndElement()) {
-            if (xml.name() == "array") {
+            if (xml.name() == QLatin1String("array")) {
                 //qDebug() << "exit playlist";
                 break;
             }

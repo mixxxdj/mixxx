@@ -1,8 +1,10 @@
+#pragma once
 #include <QColor>
 #include <QObject>
 #include <QPointer>
 #include <QString>
 #include <QUrl>
+#include <QtQml>
 
 #include "mixer/basetrackplayer.h"
 #include "track/track.h"
@@ -29,6 +31,8 @@ class QmlPlayerProxy : public QObject {
     Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
     Q_PROPERTY(QUrl trackLocationUrl READ getTrackLocationUrl NOTIFY trackLocationUrlChanged)
+    QML_NAMED_ELEMENT(Player)
+    QML_UNCREATABLE("Only accessible via Mixxx.PlayerManager.getPlayer(group)")
 
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
@@ -55,8 +59,8 @@ class QmlPlayerProxy : public QObject {
         return m_pTrackPlayer;
     }
 
-    Q_INVOKABLE void loadTrackFromLocation(const QString& trackLocation);
-    Q_INVOKABLE void loadTrackFromLocationUrl(const QUrl& trackLocationUrl);
+    Q_INVOKABLE void loadTrackFromLocation(const QString& trackLocation, bool play = false);
+    Q_INVOKABLE void loadTrackFromLocationUrl(const QUrl& trackLocationUrl, bool play = false);
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
@@ -99,7 +103,7 @@ class QmlPlayerProxy : public QObject {
     void coverArtUrlChanged();
     void trackLocationUrlChanged();
 
-    void loadTrackFromLocationRequested(const QString& trackLocation);
+    void loadTrackFromLocationRequested(const QString& trackLocation, bool play);
 
   private:
     QPointer<BaseTrackPlayer> m_pTrackPlayer;

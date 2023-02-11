@@ -8,6 +8,7 @@
 namespace {
 
 const QString kMissingFilter = "mixxx_deleted=0 AND fs_deleted=1";
+const QString kModelName = "missing:";
 
 } // anonymous namespace
 
@@ -56,7 +57,6 @@ void MissingTableModel::setTableModel(int id) {
 MissingTableModel::~MissingTableModel() {
 }
 
-
 void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
     m_pTrackCollectionManager->purgeTracks(getTrackRefs(indices));
 
@@ -64,7 +64,6 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
     // there.
     select(); //Repopulate the data model.
 }
-
 
 bool MissingTableModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
@@ -88,4 +87,13 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
 
 TrackModel::Capabilities MissingTableModel::getCapabilities() const {
     return Capability::Purge;
+}
+
+QString MissingTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName + m_tableName;
+    }
+    return kModelName + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
 }

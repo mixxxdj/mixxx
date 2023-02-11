@@ -11,12 +11,12 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "mixxxmainwindow.h"
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "skin/skin.h"
 #include "skin/skinloader.h"
+#include "util/cmdlineargs.h"
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/widgethelper.h"
@@ -73,7 +73,9 @@ DlgPrefInterface::DlgPrefInterface(
     const auto translationsDir = QDir(
             m_pConfig->getResourcePath() +
             QStringLiteral("translations/"));
-    DEBUG_ASSERT(translationsDir.exists());
+    if (!translationsDir.exists()) {
+        qWarning() << "Translations directory does not exist" << translationsDir.absolutePath();
+    }
 
     QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
     // Add source language as a fake value

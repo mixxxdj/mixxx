@@ -1,6 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import "Theme"
 
@@ -8,8 +7,8 @@ Rectangle {
     id: root
 
     property alias knob: knob
-    property string statusGroup: root.knob.group // required
-    property string statusKey // required
+    property string statusGroup: root.knob.group
+    required property string statusKey
 
     color: Theme.knobBackgroundColor
     width: 56
@@ -48,7 +47,5 @@ Rectangle {
         TapHandler {
             onTapped: statusControl.value = !statusControl.value
         }
-
     }
-
 }

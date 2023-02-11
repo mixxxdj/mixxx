@@ -82,7 +82,7 @@ EffectChain::EffectChain(const QString& group,
     connect(m_pControlChainSuperParameter.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotControlChainSuperParameter(value, false); });
+            [=, this](double value) { slotControlChainSuperParameter(value, false); });
     m_pControlChainSuperParameter->set(0.0);
     m_pControlChainSuperParameter->setDefaultValue(0.0);
 
@@ -356,13 +356,13 @@ void EffectChain::setControlLoadedPresetIndex(uint index) {
 
 void EffectChain::slotControlNextChainPreset(double value) {
     if (value > 0) {
-        loadChainPreset(presetAtIndex(presetIndex() + 1));
+        slotControlChainPresetSelector(1);
     }
 }
 
 void EffectChain::slotControlPrevChainPreset(double value) {
     if (value > 0) {
-        loadChainPreset(presetAtIndex(presetIndex() - 1));
+        slotControlChainPresetSelector(-1);
     }
 }
 
@@ -394,26 +394,14 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
-    request->EnableInputChannelForChain.pChannelHandle = &handleGroup.handle();
+    request->EnableInputChannelForChain.channelHandle = handleGroup.handle();
 
-    // Allocate EffectStates here in the main thread to avoid allocating
-    // memory in the realtime audio callback thread. Pointers to the
-    // EffectStates are passed to the EffectRequest and the EffectProcessorImpls
-    // store the pointers. The containers of EffectState* pointers get deleted
-    // by ~EffectsRequest, but the EffectStates are managed by EffectProcessorImpl.
+    // Initialize EffectStates for the input channel here in the main thread to
+    // avoid allocating memory in the realtime audio callback thread.
 
-    // The EffectStates for one EngineEffectChain must be sent all together in
-    // the same message using an EffectStatesMapArray. If they were separated
-    // into a message for each effect, there would be a chance that the
-    // EngineEffectChain could get activated in one cycle of the audio callback
-    // thread but the EffectStates for an EngineEffect would not be received by
-    // EngineEffectsManager until the next audio callback cycle.
-
-    auto* pEffectStatesMapArray = new EffectStatesMapArray;
     for (int i = 0; i < m_effectSlots.size(); ++i) {
-        m_effectSlots[i]->fillEffectStatesMap(&(*pEffectStatesMapArray)[i]);
+        m_effectSlots[i]->initalizeInputChannel(handleGroup.handle());
     }
-    request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 
     m_pMessenger->writeRequest(request);
 
@@ -428,7 +416,7 @@ void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handleGrou
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
-    request->DisableInputChannelForChain.pChannelHandle = &handleGroup.handle();
+    request->DisableInputChannelForChain.channelHandle = handleGroup.handle();
     m_pMessenger->writeRequest(request);
 }
 

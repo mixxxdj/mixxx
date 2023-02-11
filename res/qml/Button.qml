@@ -1,6 +1,4 @@
-import "." as Skin
-import QtGraphicalEffects 1.12
-import QtQml 2.12
+import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "Theme"
@@ -9,7 +7,7 @@ AbstractButton {
     id: root
 
     property color normalColor: Theme.buttonNormalColor
-    property color activeColor // required
+    required property color activeColor
     property color pressedColor: activeColor
     property bool highlight: false
 
@@ -74,7 +72,6 @@ AbstractButton {
                 target: labelGlow
                 visible: false
             }
-
         }
     ]
 
@@ -92,7 +89,6 @@ AbstractButton {
             right: 10
             bottom: 10
         }
-
     }
 
     contentItem: Item {
@@ -104,7 +100,6 @@ AbstractButton {
             anchors.fill: parent
             radius: 5
             spread: 0.1
-            samples: 1 + radius * 2
             color: label.color
             source: label
         }
@@ -122,7 +117,5 @@ AbstractButton {
             font.pixelSize: Theme.buttonFontPixelSize
             color: root.normalColor
         }
-
     }
-
 }

@@ -66,17 +66,27 @@ EffectManifestPointer EffectsBackendManager::getManifestFromUniqueId(
     // Do not manipulate the string passed to this function, just pass
     // it directly to BuiltInBackend.
     if (delimiterIndex == -1) {
-        return m_effectsBackends.value(EffectBackendType::BuiltIn)
-                ->getManifest(uid);
+        auto pEffectsBackend = m_effectsBackends.value(EffectBackendType::BuiltIn);
+        VERIFY_OR_DEBUG_ASSERT(pEffectsBackend) {
+            return {};
+        }
+        return pEffectsBackend->getManifest(uid);
     }
     backendType = EffectsBackend::backendTypeFromString(uid.mid(delimiterIndex + 1));
-    return m_effectsBackends.value(backendType)
-            ->getManifest(uid.mid(-1, delimiterIndex + 1));
+    auto pEffectsBackend = m_effectsBackends.value(backendType);
+    VERIFY_OR_DEBUG_ASSERT(pEffectsBackend) {
+        return {};
+    }
+    return pEffectsBackend->getManifest(uid.mid(-1, delimiterIndex + 1));
 }
 
 EffectManifestPointer EffectsBackendManager::getManifest(
         const QString& id, EffectBackendType backendType) const {
-    return m_effectsBackends.value(backendType)->getManifest(id);
+    auto pEffectsBackend = m_effectsBackends.value(backendType);
+    VERIFY_OR_DEBUG_ASSERT(pEffectsBackend) {
+        return {};
+    }
+    return pEffectsBackend->getManifest(id);
 }
 
 const QString EffectsBackendManager::getDisplayNameForEffectPreset(
@@ -96,8 +106,9 @@ const QString EffectsBackendManager::getDisplayNameForEffectPreset(
             break;
         }
     }
-    VERIFY_OR_DEBUG_ASSERT(manifestFound) {
+    if (!manifestFound) {
         qWarning() << "Failed to find manifest for effect preset " << pPreset->id();
+        DEBUG_ASSERT(false);
     }
     return displayName;
 }

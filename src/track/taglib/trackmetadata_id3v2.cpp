@@ -66,10 +66,7 @@ const QString kFormatTYER = QStringLiteral("yyyy");
 const QString kFormatTDAT = QStringLiteral("ddMM");
 
 // Owners of ID3v2 UFID frames.
-// NOTE(uklotzde, 2019-09-28): This is the owner string for MusicBrainz
-// as written by MusicBrainz Picard 2.1.3 although the mapping table
-// doesn't mention any "http://" prefix.
-// See also: https://picard.musicbrainz.org/docs/mappings
+// https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html#id21
 const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 // Serato frames
@@ -83,24 +80,72 @@ inline QString frameToQString(
     return toQString(frame.toString());
 }
 
+bool isUnsupportedID3v2FrameThenLogWarning(const TagLib::ID3v2::Frame* pFrame) {
+    if (dynamic_cast<const TagLib::ID3v2::UnknownFrame*>(pFrame)) {
+        kLogger.warning()
+                << "ID3v2 frame"
+                << pFrame->frameID().data()
+                << "is not yet supported by TagLib";
+        return true;
+    }
+    // Not an of UnknownFrame, i.e. maybe some other kind of ID3v2 frame
+    return false;
+}
+
+void logWarningAboutUnsupportedOrUnexpectedID3v2Frame(const TagLib::ID3v2::Frame* pFrame) {
+    if (!isUnsupportedID3v2FrameThenLogWarning(pFrame)) {
+        // Do not crash if the caller unexpectedly passed a nullptr
+        VERIFY_OR_DEBUG_ASSERT(pFrame) {
+            return;
+        }
+        kLogger.warning()
+                << "Unexpected ID3v2 frame"
+                << pFrame->frameID().data();
+    }
+}
+
+template<typename T>
+T* downcastFrame(TagLib::ID3v2::Frame* pFrame) {
+    DEBUG_ASSERT(pFrame);
+    // We need to use a safe dynamic_cast at runtime instead of an unsafe
+    // static_cast at compile time to detect unexpected frame subtypes!
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    auto* pDowncastFrame = dynamic_cast<T*>(pFrame);
+    VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
+        // This should only happen when reading corrupt or malformed files
+        logWarningAboutUnsupportedOrUnexpectedID3v2Frame(pFrame);
+    }
+    return pDowncastFrame;
+}
+
+template<typename T>
+const T* downcastFrame(const TagLib::ID3v2::Frame* pFrame) {
+    // We need to use a safe dynamic_cast at runtime instead of an unsafe
+    // static_cast at compile time to detect unexpected frame subtypes!
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    const auto* pDowncastFrame = dynamic_cast<const T*>(pFrame);
+    VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
+        // This should only happen when reading corrupt or malformed files
+        logWarningAboutUnsupportedOrUnexpectedID3v2Frame(pFrame);
+    }
+    return pDowncastFrame;
+}
+
 // Returns the first frame of an ID3v2 tag as a string.
 QString firstNonEmptyFrameToQString(
         const TagLib::ID3v2::FrameList& frameList) {
-    for (const TagLib::ID3v2::Frame* pFrame : frameList) {
-        if (pFrame) {
-            TagLib::String str = pFrame->toString();
-            if (!str.isEmpty()) {
-                return toQString(str);
-            }
-            const auto* pUnknownFrame = dynamic_cast<const TagLib::ID3v2::UnknownFrame*>(pFrame);
-            if (pUnknownFrame) {
-                kLogger.warning()
-                        << "Unsupported ID3v2 frame"
-                        << pUnknownFrame->frameID().data();
-            }
+    for (const TagLib::ID3v2::Frame* const pFrame : frameList) {
+        VERIFY_OR_DEBUG_ASSERT(pFrame) {
+            continue;
         }
+        TagLib::String str = pFrame->toString();
+        if (!str.isEmpty()) {
+            return toQString(str);
+        }
+        isUnsupportedID3v2FrameThenLogWarning(pFrame);
+        // Otherwise silently ignore this empty, generic frame and continue
     }
-    return QString();
+    return {};
 }
 
 TagLib::String::Type getStringType(
@@ -142,29 +187,26 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
         const QString& description,
         bool preferNotEmpty = true) {
     TagLib::ID3v2::CommentsFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& commentsFrames =
-            tag.frameListMap()["COMM"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it(commentsFrames.begin());
-            it != commentsFrames.end();
-            ++it) {
-        auto* pFrame =
-                dynamic_cast<TagLib::ID3v2::CommentsFrame*>(*it);
-        if (pFrame) {
-            const QString frameDescription(
-                    toQString(pFrame->description()));
-            if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
+    for (TagLib::ID3v2::Frame* const pFrame : tag.frameListMap()["COMM"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* const pNextFrame = downcastFrame<TagLib::ID3v2::CommentsFrame>(pFrame);
+        if (!pNextFrame) {
+            continue;
+        }
+        const auto frameDescription = toQString(pNextFrame->description());
+        if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
+            // Description mismatch
+            continue;
+        }
+        if (preferNotEmpty && pNextFrame->toString().isEmpty()) {
+            // we might need the first matching frame later
+            // even if it is empty
+            if (!pFirstFrame) {
+                pFirstFrame = pNextFrame;
             }
+        } else {
+            // found what we are looking for
+            return pNextFrame;
         }
     }
     // simply return the first matching frame
@@ -185,28 +227,26 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::UserTextIdentificationFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& textFrames =
-            tag.frameListMap()["TXXX"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it = textFrames.begin();
-            it != textFrames.end();
-            ++it) {
-        auto* pFrame =
-                dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-        if (pFrame) {
-            const QString frameDescription = toQString(pFrame->description());
-            if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
+    for (TagLib::ID3v2::Frame* const pFrame : tag.frameListMap()["TXXX"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* const pNextFrame = downcastFrame<TagLib::ID3v2::UserTextIdentificationFrame>(pFrame);
+        if (!pNextFrame) {
+            continue;
+        }
+        const auto frameDescription = toQString(pNextFrame->description());
+        if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
+            // Description mismatch
+            continue;
+        }
+        if (preferNotEmpty && pNextFrame->toString().isEmpty()) {
+            // we might need the first matching frame later
+            // even if it is empty
+            if (!pFirstFrame) {
+                pFirstFrame = pNextFrame;
             }
+        } else {
+            // found what we are looking for
+            return pNextFrame;
         }
     }
     // simply return the first matching frame
@@ -218,12 +258,11 @@ QString readFirstUserTextIdentificationFrame(
         const QString& description) {
     const TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
             findFirstUserTextIdentificationFrame(tag, description);
-    if (pTextFrame && (pTextFrame->fieldList().size() > 1)) {
+    if (pTextFrame && pTextFrame->fieldList().size() > 1) {
         // The actual value is stored in the 2nd field
         return toQString(pTextFrame->fieldList()[1]);
-    } else {
-        return QString();
     }
+    return {};
 }
 
 #if defined(__EXTRA_METADATA__)
@@ -236,28 +275,26 @@ TagLib::ID3v2::UniqueFileIdentifierFrame* findFirstUniqueFileIdentifierFrame(
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!owner.isEmpty());
     TagLib::ID3v2::UniqueFileIdentifierFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& ufidFrames =
-            tag.frameListMap()["UFID"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it = ufidFrames.begin();
-            it != ufidFrames.end();
-            ++it) {
-        auto pFrame =
-                dynamic_cast<TagLib::ID3v2::UniqueFileIdentifierFrame*>(*it);
-        if (pFrame) {
-            const QString frameOwner = toQString(pFrame->owner());
-            if (0 == frameOwner.compare(owner, Qt::CaseInsensitive)) {
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
+    for (TagLib::ID3v2::Frame* const pFrame : tag.frameListMap()["UFID"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* const pNextFrame = downcastFrame<TagLib::ID3v2::UniqueFileIdentifierFrame>(pFrame);
+        if (!pNextFrame) {
+            continue;
+        }
+        const auto frameOwner = toQString(pNextFrame->owner());
+        if (frameOwner.compare(owner, Qt::CaseInsensitive) != 0) {
+            // Owner mismatch
+            continue;
+        }
+        if (preferNotEmpty && pNextFrame->toString().isEmpty()) {
+            // we might need the first matching frame later
+            // even if it is empty
+            if (!pFirstFrame) {
+                pFirstFrame = pNextFrame;
             }
+        } else {
+            // found what we are looking for
+            return pNextFrame;
         }
     }
     // simply return the first matching frame
@@ -269,11 +306,10 @@ QByteArray readFirstUniqueFileIdentifierFrame(
         const QString& owner) {
     const TagLib::ID3v2::UniqueFileIdentifierFrame* pFrame =
             findFirstUniqueFileIdentifierFrame(tag, owner);
-    if (pFrame) {
-        return QByteArray(pFrame->identifier().data(), pFrame->identifier().size());
-    } else {
-        return QByteArray();
+    if (!pFrame) {
+        return {};
     }
+    return QByteArray(pFrame->identifier().data(), pFrame->identifier().size());
 }
 #endif // __EXTRA_METADATA__
 
@@ -287,33 +323,31 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& geobFrames =
-            tag.frameListMap()["GEOB"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it(geobFrames.begin());
-            it != geobFrames.end();
-            ++it) {
-        auto* pFrame =
-                dynamic_cast<TagLib::ID3v2::GeneralEncapsulatedObjectFrame*>(*it);
-        if (pFrame) {
-            const QString frameDescription(
-                    toQString(pFrame->description()));
-            if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
-                if (!mimeType.isEmpty() && mimeType != pFrame->mimeType()) {
-                    // MIME type mismatch
-                    continue;
-                }
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
+    for (auto* const pFrame : tag.frameListMap()["GEOB"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* const pNextFrame =
+                downcastFrame<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>(pFrame);
+        if (!pNextFrame) {
+            continue;
+        }
+        const auto frameDescription = toQString(pNextFrame->description());
+        if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
+            // Description mismatch
+            continue;
+        }
+        if (!mimeType.isEmpty() && mimeType != pNextFrame->mimeType()) {
+            // MIME type mismatch
+            continue;
+        }
+        if (preferNotEmpty && pNextFrame->toString().isEmpty()) {
+            // we might need the first matching frame later
+            // even if it is empty
+            if (!pFirstFrame) {
+                pFirstFrame = pNextFrame;
             }
+        } else {
+            // found what we are looking for
+            return pNextFrame;
         }
     }
     // simply return the first matching frame
@@ -326,11 +360,10 @@ inline QByteArray readFirstGeneralEncapsulatedObjectFrame(
         const QString& mimeType = QString()) {
     const TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pGeobFrame =
             findFirstGeneralEncapsulatedObjectFrame(tag, description, toTString(mimeType));
-    if (pGeobFrame) {
-        return toQByteArrayRaw(pGeobFrame->object());
-    } else {
-        return QByteArray();
+    if (!pGeobFrame) {
+        return {};
     }
+    return toQByteArrayRaw(pGeobFrame->object());
 }
 
 void writeTextIdentificationFrame(
@@ -399,32 +432,32 @@ int removeUserTextIdentificationFrames(
     bool repeat;
     do {
         repeat = false;
-        // Bind the const-ref result to avoid a local copy
-        const TagLib::ID3v2::FrameList& textFrames =
-                pTag->frameListMap()["TXXX"];
-        for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
-                it != textFrames.end();
-                ++it) {
-            auto* pFrame =
-                    dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-            if (pFrame) {
-                const QString frameDescription(
-                        toQString(pFrame->description()));
-                if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
-                    if (kLogger.debugEnabled()) {
-                        kLogger.debug()
-                                << "Removing ID3v2 TXXX frame:"
-                                << toQString(pFrame->description());
-                    }
-                    // After removing a frame the result of frameListMap()
-                    // is no longer valid!!
-                    pTag->removeFrame(pFrame, false); // remove an unowned frame
-                    ++count;
-                    // Exit and restart loop
-                    repeat = true;
-                    break;
-                }
+        for (TagLib::ID3v2::Frame* const pFrame :
+                std::as_const(pTag->frameListMap())["TXXX"]) {
+            DEBUG_ASSERT(pFrame);
+            const auto* const pNextFrame =
+                    downcastFrame<TagLib::ID3v2::UserTextIdentificationFrame>(pFrame);
+            if (!pNextFrame) {
+                continue;
             }
+            const auto frameDescription =
+                    toQString(pNextFrame->description());
+            if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
+                // Description mismatch
+                continue;
+            }
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Removing ID3v2 TXXX frame:"
+                        << toQString(pNextFrame->description());
+            }
+            // After removing a frame the result of frameListMap()
+            // is no longer valid!!
+            pTag->removeFrame(pFrame, false); // remove an unowned frame
+            ++count;
+            // Abort inner loop and restart outer loop
+            repeat = true;
+            break;
         }
     } while (repeat);
     return count;
@@ -550,23 +583,6 @@ void writeGeneralEncapsulatedObjectFrame(
     }
 }
 
-template<typename T>
-const T* downcastFrame(TagLib::ID3v2::Frame* frame) {
-    DEBUG_ASSERT(frame);
-    // We need to use a safe dynamic_cast at runtime instead of an unsafe
-    // static_cast at compile time to detect unexpected frame subtypes!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
-    const T* downcastFrame = dynamic_cast<T*>(frame);
-    VERIFY_OR_DEBUG_ASSERT(downcastFrame) {
-        // This should only happen when reading corrupt or malformed files
-        kLogger.warning()
-                << "Unexpected ID3v2"
-                << frame->frameID().data()
-                << "frame type";
-    }
-    return downcastFrame;
-}
-
 inline QImage loadImageFromPictureFrame(
         const TagLib::ID3v2::AttachedPictureFrame& apicFrame) {
     return loadImageFromByteVector(apicFrame.picture());
@@ -594,7 +610,7 @@ bool importCoverImageFromTag(
     }
 
     const auto iterAPIC = tag.frameListMap().find("APIC");
-    if ((iterAPIC == tag.frameListMap().end()) || iterAPIC->second.isEmpty()) {
+    if (iterAPIC == tag.frameListMap().end() || iterAPIC->second.isEmpty()) {
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "No cover art: None or empty list of ID3v2 APIC frames";
@@ -602,41 +618,46 @@ bool importCoverImageFromTag(
         return false; // abort
     }
 
-    const TagLib::ID3v2::FrameList pFrames = iterAPIC->second;
     for (const auto coverArtType : kPreferredPictureTypes) {
-        for (auto* const pFrame : pFrames) {
-            const auto* pApicFrame =
+        for (const TagLib::ID3v2::Frame* const pFrame : iterAPIC->second) {
+            DEBUG_ASSERT(pFrame);
+            const auto* const pNextFrame =
                     downcastFrame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
-            if (pApicFrame && (pApicFrame->type() == coverArtType)) {
-                QImage image(loadImageFromPictureFrame(*pApicFrame));
-                if (image.isNull()) {
-                    kLogger.warning()
-                            << "Failed to load image from ID3v2 APIC frame of type"
-                            << pApicFrame->type();
-                    continue;
-                } else {
-                    *pCoverArt = image;
-                    return true; // success
-                }
+            if (!pNextFrame) {
+                continue;
+            }
+            if (pNextFrame->type() != coverArtType) {
+                continue;
+            }
+            QImage image = loadImageFromPictureFrame(*pNextFrame);
+            if (image.isNull()) {
+                kLogger.warning()
+                        << "Failed to load image from ID3v2 APIC frame of type"
+                        << pNextFrame->type();
+                continue;
+            } else {
+                *pCoverArt = std::move(image);
+                return true; // success
             }
         }
     }
 
     // Fallback: No best match -> Simply select the 1st loadable image
-    for (auto* const pFrame : pFrames) {
-        const auto* pApicFrame =
+    for (const auto* const pFrame : iterAPIC->second) {
+        const auto* const pNextFrame =
                 downcastFrame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
-        if (pApicFrame) {
-            const QImage image(loadImageFromPictureFrame(*pApicFrame));
-            if (image.isNull()) {
-                kLogger.warning()
-                        << "Failed to load image from ID3v2 APIC frame of type"
-                        << pApicFrame->type();
-                continue;
-            } else {
-                *pCoverArt = image;
-                return true; // success
-            }
+        if (!pNextFrame) {
+            continue;
+        }
+        QImage image = loadImageFromPictureFrame(*pNextFrame);
+        if (image.isNull()) {
+            kLogger.warning()
+                    << "Failed to load image from ID3v2 APIC frame of type"
+                    << pNextFrame->type();
+            continue;
+        } else {
+            *pCoverArt = std::move(image);
+            return true; // success
         }
     }
 
@@ -648,7 +669,8 @@ bool importCoverImageFromTag(
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::ID3v2::Tag& tag) {
+        const TagLib::ID3v2::Tag& tag,
+        bool resetMissingTagMetadata) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
@@ -690,13 +712,13 @@ void importTrackMetadataFromTag(
                 readFirstUserTextIdentificationFrame(
                         tag,
                         QStringLiteral("COMMENT"));
-        if (!comment.isNull()) {
+        if (!comment.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setComment(comment);
         }
     }
 
     const TagLib::ID3v2::FrameList albumArtistFrames(tag.frameListMap()["TPE2"]);
-    if (!albumArtistFrames.isEmpty()) {
+    if (!albumArtistFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setArtist(
                 firstNonEmptyFrameToQString(albumArtistFrames));
     }
@@ -712,7 +734,7 @@ void importTrackMetadataFromTag(
     }
 
     const TagLib::ID3v2::FrameList composerFrames(tag.frameListMap()["TCOM"]);
-    if (!composerFrames.isEmpty()) {
+    if (!composerFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setComposer(
                 firstNonEmptyFrameToQString(composerFrames));
     }
@@ -722,33 +744,56 @@ void importTrackMetadataFromTag(
     // frames.
     // https://discussions.apple.com/thread/7900430
     // http://blog.jthink.net/2016/11/the-reason-why-is-grouping-field-no.html
-    if (tag.frameListMap().contains("GRP1")) {
-        // New grouping/work mapping
-        const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
-        if (!appleGroupingFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setGrouping(
-                    firstNonEmptyFrameToQString(appleGroupingFrames));
-        }
+    const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
+    const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
 #if defined(__EXTRA_METADATA__)
-        const TagLib::ID3v2::FrameList workFrames = tag.frameListMap()["TIT1"];
-        if (!workFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setWork(
-                    firstNonEmptyFrameToQString(workFrames));
-        }
-        const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
-        if (!movementFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setMovement(
-                    firstNonEmptyFrameToQString(movementFrames));
-        }
-#endif // __EXTRA_METADATA__
-    } else {
-        // No Apple grouping frame found -> Use the traditional mapping
-        const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
-        if (!traditionalGroupingFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setGrouping(
-                    firstNonEmptyFrameToQString(traditionalGroupingFrames));
-        }
+    // Unconditionally adopt the the new grouping/work/movement mapping
+    // from Apple iTunes. This ensures that now information is lost, even
+    // if it ends up in the wrong track properties.
+    // The code must be consistent with the corresponding write function!
+    // FIXME: Revisit this decision before enabling the code.
+    if (!appleGroupingFrames.isEmpty() || resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setGrouping(
+                firstNonEmptyFrameToQString(appleGroupingFrames));
     }
+    if (!traditionalGroupingFrames.isEmpty() || resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setWork(
+                firstNonEmptyFrameToQString(traditionalGroupingFrames));
+    }
+    const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
+    if (!movementFrames.isEmpty() || resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setMovement(
+                firstNonEmptyFrameToQString(movementFrames));
+    }
+#else  // __EXTRA_METADATA__
+    // Read the grouping from the new GRP1 frame if these frames are
+    // present in the file. Do so even if it all are empty! If no GRP1
+    // frames are present then read it from the traditional TIT1 frames.
+    // This content-sensitive, conditional behavior must match the
+    // corresponding implementation of the write function for consistent
+    // results!
+    const QString traditionalGrouping = firstNonEmptyFrameToQString(traditionalGroupingFrames);
+    if (appleGroupingFrames.isEmpty()) {
+        // Fallback
+        if (!traditionalGroupingFrames.isEmpty() || resetMissingTagMetadata) {
+            pTrackMetadata->refTrackInfo().setGrouping(traditionalGrouping);
+        }
+    } else {
+        const QString appleGrouping =
+                firstNonEmptyFrameToQString(appleGroupingFrames);
+        if (!traditionalGrouping.trimmed().isEmpty() &&
+                traditionalGrouping != appleGrouping) {
+            // Only log an informational message if the TIT1 frames carry
+            // meaningful data that differs from the GRP1 data. This might
+            // be fine if the TIT1 frames stores the "work" field that is not
+            // yet supported by Mixxx (see __EXTRA_METADATA__).
+            qInfo() << "ID3v2: Discarding content of TIT1" << traditionalGrouping
+                    << "in favor of GRP1" << appleGrouping
+                    << "for grouping (content group) field";
+        }
+        pTrackMetadata->refTrackInfo().setGrouping(appleGrouping);
+    }
+#endif // __EXTRA_METADATA__
 
     // ID3v2.4.0: TDRC replaces TYER + TDAT
     const QString recordingTime(
@@ -773,7 +818,7 @@ void importTrackMetadataFromTag(
                 }
             }
         }
-        if (!year.isEmpty()) {
+        if (!year.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setYear(year);
         }
     }
@@ -788,6 +833,9 @@ void importTrackMetadataFromTag(
                 &trackTotal);
         pTrackMetadata->refTrackInfo().setTrackNumber(trackNumber);
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setTrackNumber(QString{});
+        pTrackMetadata->refTrackInfo().setTrackTotal(QString{});
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -801,13 +849,17 @@ void importTrackMetadataFromTag(
                 &discTotal);
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setDiscNumber(QString{});
+        pTrackMetadata->refTrackInfo().setDiscTotal(QString{});
     }
 #endif // __EXTRA_METADATA__
 
     const TagLib::ID3v2::FrameList bpmFrames(tag.frameListMap()["TBPM"]);
-    if (!bpmFrames.isEmpty()) {
+    if (!bpmFrames.isEmpty() || resetMissingTagMetadata) {
         parseBpm(pTrackMetadata,
-                firstNonEmptyFrameToQString(bpmFrames));
+                firstNonEmptyFrameToQString(bpmFrames),
+                resetMissingTagMetadata);
         if (pTrackMetadata->getTrackInfo().getBpm().isValid()) {
             double bpmValue = pTrackMetadata->getTrackInfo().getBpm().value();
             // Some software use (or used) to write decimated values without comma,
@@ -852,7 +904,7 @@ void importTrackMetadataFromTag(
     }
 
     const TagLib::ID3v2::FrameList keyFrames(tag.frameListMap()["TKEY"]);
-    if (!keyFrames.isEmpty()) {
+    if (!keyFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setKey(
                 firstNonEmptyFrameToQString(keyFrames));
     }
@@ -861,15 +913,15 @@ void importTrackMetadataFromTag(
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_TRACK_GAIN"));
-    if (!trackGain.isEmpty()) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (!trackGain.isEmpty() || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_TRACK_PEAK"));
-    if (!trackPeak.isEmpty()) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (!trackPeak.isEmpty() || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -877,126 +929,126 @@ void importTrackMetadataFromTag(
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_ALBUM_GAIN"));
-    if (!albumGain.isEmpty()) {
-        parseAlbumGain(pTrackMetadata, albumGain);
+    if (!albumGain.isEmpty() || resetMissingTagMetadata) {
+        parseAlbumGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_ALBUM_PEAK"));
-    if (!albumPeak.isEmpty()) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (!albumPeak.isEmpty() || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Artist Id"));
-    if (!trackArtistId.isNull()) {
+    if (!trackArtistId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QByteArray trackRecordingId =
             readFirstUniqueFileIdentifierFrame(
                     tag,
                     kMusicBrainzOwner);
-    if (!trackRecordingId.isEmpty()) {
+    if (!trackRecordingId.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
     QString trackReleaseId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Release Track Id"));
-    if (!trackReleaseId.isNull()) {
+    if (!trackReleaseId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
     QString trackWorkId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Work Id"));
-    if (!trackWorkId.isNull()) {
+    if (!trackWorkId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(QUuid(trackWorkId));
     }
     QString albumArtistId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Album Artist Id"));
-    if (!albumArtistId.isNull()) {
+    if (!albumArtistId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
     }
     QString albumReleaseId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Album Id"));
-    if (!albumReleaseId.isNull()) {
+    if (!albumReleaseId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
     QString albumReleaseGroupId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Release Group Id"));
-    if (!albumReleaseGroupId.isNull()) {
+    if (!albumReleaseGroupId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 
     const TagLib::ID3v2::FrameList conductorFrames(tag.frameListMap()["TPE3"]);
-    if (!conductorFrames.isEmpty()) {
+    if (!conductorFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setConductor(
                 firstNonEmptyFrameToQString(conductorFrames));
     }
     const TagLib::ID3v2::FrameList isrcFrames(tag.frameListMap()["TSRC"]);
-    if (!isrcFrames.isEmpty()) {
+    if (!isrcFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setISRC(
                 firstNonEmptyFrameToQString(isrcFrames));
     }
     const TagLib::ID3v2::FrameList languageFrames(tag.frameListMap()["TLAN"]);
-    if (!languageFrames.isEmpty()) {
+    if (!languageFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLanguage(
                 firstNonEmptyFrameToQString(languageFrames));
     }
     const TagLib::ID3v2::FrameList lyricistFrames(tag.frameListMap()["TEXT"]);
-    if (!lyricistFrames.isEmpty()) {
+    if (!lyricistFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLyricist(
                 firstNonEmptyFrameToQString(lyricistFrames));
     }
     if (tag.header()->majorVersion() >= 4) {
         const TagLib::ID3v2::FrameList moodFrames(tag.frameListMap()["TMOO"]);
-        if (!moodFrames.isEmpty()) {
+        if (!moodFrames.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setMood(
                     firstNonEmptyFrameToQString(moodFrames));
         }
     }
     const TagLib::ID3v2::FrameList copyrightFrames(tag.frameListMap()["TCOP"]);
-    if (!copyrightFrames.isEmpty()) {
+    if (!copyrightFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setCopyright(
                 firstNonEmptyFrameToQString(copyrightFrames));
     }
     const TagLib::ID3v2::FrameList licenseFrames(tag.frameListMap()["WCOP"]);
-    if (!licenseFrames.isEmpty()) {
+    if (!licenseFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setLicense(
                 firstNonEmptyFrameToQString(licenseFrames));
     }
     const TagLib::ID3v2::FrameList recordLabelFrames(tag.frameListMap()["TPUB"]);
-    if (!recordLabelFrames.isEmpty()) {
+    if (!recordLabelFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setRecordLabel(
                 firstNonEmptyFrameToQString(recordLabelFrames));
     }
     const TagLib::ID3v2::FrameList remixerFrames(tag.frameListMap()["TPE4"]);
-    if (!remixerFrames.isEmpty()) {
+    if (!remixerFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setRemixer(
                 firstNonEmptyFrameToQString(remixerFrames));
     }
     const TagLib::ID3v2::FrameList subtitleFrames(tag.frameListMap()["TIT3"]);
-    if (!subtitleFrames.isEmpty()) {
+    if (!subtitleFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setSubtitle(
                 firstNonEmptyFrameToQString(subtitleFrames));
     }
     const TagLib::ID3v2::FrameList encoderFrames(tag.frameListMap()["TENC"]);
-    if (!encoderFrames.isEmpty()) {
+    if (!encoderFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoder(
                 firstNonEmptyFrameToQString(encoderFrames));
     }
     const TagLib::ID3v2::FrameList encoderSettingsFrames(tag.frameListMap()["TSSE"]);
-    if (!encoderSettingsFrames.isEmpty()) {
+    if (!encoderSettingsFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(
                 firstNonEmptyFrameToQString(encoderSettingsFrames));
     }
@@ -1113,35 +1165,36 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             "TCOM",
             trackMetadata.getTrackInfo().getComposer());
 
-    // We can use the TIT1 frame only once, either for storing the Work
-    // like Apple decided to do or traditionally for the Content Group.
-    // Rationale: If the the file already has one or more GRP1 frames
-    // or if the track has a Work field then store the Grouping in a
-    // GRP1 frame instead of using TIT1.
-    // See also: importTrackMetadataFromTag()
-    if (
 #if defined(__EXTRA_METADATA__)
-            !trackMetadata.getTrackInfo().getWork().isNull() ||
-            !trackMetadata.getTrackInfo().getMovement().isNull() ||
-#endif // __EXTRA_METADATA__
-            pTag->frameListMap().contains("GRP1")) {
-        // New grouping/work/movement mapping if properties for classical
-        // music are available or if the GRP1 frame is already present in
-        // the file.
+    // Unconditionally adopt the the new grouping/work/movement mapping
+    // from Apple iTunes. This ensures that now information is lost, even
+    // if it ends up in the wrong ID3v2 tags.
+    // The code must be consistent with the corresponding write function!
+    // FIXME: Revisit this decision before enabling the code.
+    writeTextIdentificationFrame(
+            pTag,
+            "GRP1",
+            trackMetadata.getTrackInfo().getGrouping());
+    writeTextIdentificationFrame(
+            pTag,
+            "TIT1",
+            trackMetadata.getTrackInfo().getWork());
+    writeTextIdentificationFrame(
+            pTag,
+            "MVNM",
+            trackMetadata.getTrackInfo().getMovement());
+#else  // __EXTRA_METADATA__
+    // Write the grouping back into the new GRP1 frame if any GRP1
+    // frames are already present in the file. Otherwise write it
+    // into the traditional TIT1 frame.
+    // This content-sensitive, conditional behavior must match the
+    // corresponding implementation of the read function for consistent
+    // results!
+    if (pTag->frameListMap().contains("GRP1")) {
         writeTextIdentificationFrame(
                 pTag,
                 "GRP1",
                 trackMetadata.getTrackInfo().getGrouping());
-#if defined(__EXTRA_METADATA__)
-        writeTextIdentificationFrame(
-                pTag,
-                "TIT1",
-                trackMetadata.getTrackInfo().getWork());
-        writeTextIdentificationFrame(
-                pTag,
-                "MVNM",
-                trackMetadata.getTrackInfo().getMovement());
-#endif // __EXTRA_METADATA__
     } else {
         // Stick to the traditional CONTENTGROUP mapping.
         writeTextIdentificationFrame(
@@ -1149,6 +1202,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getGrouping());
     }
+#endif // __EXTRA_METADATA__
 
     // According to the specification "The 'TBPM' frame contains the number
     // of beats per minute in the mainpart of the audio. The BPM is an
@@ -1201,20 +1255,11 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             uuidToNullableStringWithoutBraces(
                     trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
             false);
-    {
-        QByteArray identifier = trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toByteArray();
-        if (identifier.size() == 38) {
-            // Strip leading/trailing curly braces
-            DEBUG_ASSERT(identifier.startsWith('{'));
-            DEBUG_ASSERT(identifier.endsWith('}'));
-            identifier = identifier.mid(1, 36);
-        }
-        DEBUG_ASSERT(identifier.size() == 36);
-        writeUniqueFileIdentifierFrame(
-                pTag,
-                kMusicBrainzOwner,
-                identifier);
-    }
+    writeUniqueFileIdentifierFrame(
+            pTag,
+            kMusicBrainzOwner,
+            uuidToCompactAsciiHexDigits(
+                    trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
     writeUserTextIdentificationFrame(
             pTag,
             "MusicBrainz Release Track Id",

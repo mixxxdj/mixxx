@@ -80,6 +80,6 @@ class VisualsManager {
         }
     }
   private:
-    std::vector<std::unique_ptr<DeckVisuals> > m_deckVisuals;
+    std::vector<std::unique_ptr<DeckVisuals>> m_deckVisuals;
     PerformanceTimer m_cpuTimer;
 };

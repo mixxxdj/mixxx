@@ -77,6 +77,8 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
             this,
             &RhythmboxFeature::onTrackCollectionLoaded,
             Qt::QueuedConnection);
+
+    m_pRhythmboxTrackModel->setSearch(""); // enable search.
 }
 
 RhythmboxFeature::~RhythmboxFeature() {
@@ -117,13 +119,17 @@ void RhythmboxFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_track_future = QtConcurrent::run(&RhythmboxFeature::importMusicCollection, this);
+#else
         m_track_future = QtConcurrent::run(this, &RhythmboxFeature::importMusicCollection);
+#endif
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit featureIsLoading(this, true);
     }
-
+    emit saveModelState();
     emit showTrackModel(m_pRhythmboxTrackModel);
     emit enableCoverArtDisplay(false);
 }
@@ -132,6 +138,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "RhythmboxFeature::activateChild()" << index;
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
+    emit saveModelState();
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     emit showTrackModel(m_pRhythmboxPlaylistModel);
     emit enableCoverArtDisplay(false);
@@ -174,7 +181,7 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
-        if (xml.isStartElement() && xml.name() == "entry") {
+        if (xml.isStartElement() && xml.name() == QLatin1String("entry")) {
             QXmlStreamAttributes attr = xml.attributes();
             //Check if we really parse a track and not album art information
             if (attr.value("type").toString() == "song") {
@@ -225,7 +232,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
-        if (xml.isStartElement() && xml.name() == "playlist") {
+        if (xml.isStartElement() && xml.name() == QLatin1String("playlist")) {
             QXmlStreamAttributes attr = xml.attributes();
 
             //Only parse non built-in playlists
@@ -284,49 +291,49 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isStartElement()) {
-            if (xml.name() == "title") {
+            if (xml.name() == QLatin1String("title")) {
                 title = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "artist") {
+            if (xml.name() == QLatin1String("artist")) {
                 artist = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "genre") {
+            if (xml.name() == QLatin1String("genre")) {
                 genre = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "album") {
+            if (xml.name() == QLatin1String("album")) {
                 album = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "track-number") {
+            if (xml.name() == QLatin1String("track-number")) {
                 tracknumber = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "duration") {
+            if (xml.name() == QLatin1String("duration")) {
                 playtime = xml.readElementText().toInt();;
                 continue;
             }
-            if (xml.name() == "bitrate") {
+            if (xml.name() == QLatin1String("bitrate")) {
                 bitrate = xml.readElementText().toInt();
                 continue;
             }
-            if (xml.name() == "beats-per-minute") {
+            if (xml.name() == QLatin1String("beats-per-minute")) {
                 bpm = xml.readElementText().toInt();
                 continue;
             }
-            if (xml.name() == "comment") {
+            if (xml.name() == QLatin1String("comment")) {
                 comment = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "location") {
+            if (xml.name() == QLatin1String("location")) {
                 locationUrl = QUrl(xml.readElementText());
                 continue;
             }
         }
         //exit the loop if we reach the closing <entry> tag
-        if (xml.isEndElement() && xml.name() == "entry") {
+        if (xml.isEndElement() && xml.name() == QLatin1String("entry")) {
             break;
         }
     }
@@ -370,7 +377,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
     while (!xml.atEnd()) {
         //read next XML element
         xml.readNext();
-        if (xml.isStartElement() && xml.name() == "location") {
+        if (xml.isStartElement() && xml.name() == QLatin1String("location")) {
             const auto fileInfo = mixxx::FileInfo::fromQUrl(xml.readElementText());
 
             //get the ID of the file in the rhythmbox_library table
@@ -404,7 +411,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
             }
         }
         // Exit the the loop if we reach the closing <playlist> tag
-        if (xml.isEndElement() && xml.name() == "playlist") {
+        if (xml.isEndElement() && xml.name() == QLatin1String("playlist")) {
             break;
         }
     }

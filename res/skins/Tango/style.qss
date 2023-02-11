@@ -15,7 +15,7 @@
   background-color: #1e1e1e;
 }
 
-WLabel, QLabel,
+WLabel,
 WNumber, WNumberPos,
 WPushButton,
 WKey,
@@ -26,18 +26,11 @@ WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
 WOverview #PassthroughLabel,
-WCueMenuPopup,
 WEffectName,
-WEffectSelector,
-WEffectSelector QAbstractScrollArea,
-WEffectChainPresetSelector,
-WEffectChainPresetSelector QAbstractScrollArea,
-#fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea,
 WLibraryTextBrowser,
-WLibrary QPushButton,
-WLibrary QLabel,
-WLibrary QRadioButton {
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   font-family: Ubuntu;
   font-weight: normal;
   font-style: normal;
@@ -49,7 +42,9 @@ WLibrary QRadioButton {
 #MainMenu,
 #MainMenu QMenu,
 QToolTip,
+WCueMenuPopup,
 WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
@@ -60,6 +55,11 @@ WLibraryTextBrowser QMenu,
 WOverview, /* Hotcue labels in the overview */
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
+WEffectChainPresetButton QMenu,
+WEffectChainPresetButton QMenu QCheckBox,
+WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 /* With 'Ubuntu' font the header section titles would always be top-aligned... */
@@ -75,9 +75,9 @@ WPushButton {
 }
 
 WPushButton,
-WLibrary QPushButton,
-WLibrary QLabel,
-WLibrary QRadioButton {
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   font-size: 12px/12px;
 }
 
@@ -1342,7 +1342,7 @@ WLabel#TrackComment {
 }
 
 #GainKnob {
-  margin: 0px 2px 4px 2px;
+  margin: 2px;
 }
 #SuperWetDryKnob {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
@@ -1370,7 +1370,7 @@ WLabel#TrackComment {
 }
 
 #EQKillButton {
-  margin: 1px 0px 3px 0px;
+  margin: 1px 0px 2px 0px;
   }
   #EQKillButton[displayValue="0"] {
     background-color: #585858;
@@ -1719,14 +1719,17 @@ decks, samplers, mic, aux, fx */
     WEffectChainPresetSelector {
       /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
       margin: 0px;
-      /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-          names start getting cut off. Adding explicit padding improves this. */
-      padding: 0px 28px 0px 0px;
       /* The 3D frame on the combo box becomes flat when you give it a border */
       border: 0px solid transparent;
       border-radius: 3px;
     }
-    WEffectChainPresetSelector,
+    WEffectSelector {
+      /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+          names start getting cut off. Adding explicit padding improves this. */
+      padding: 0px 28px 0px 0px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
     #fadeModeCombobox {
       border: 1px solid #666;
       margin: 0px 0px 2px 1px;
@@ -1734,124 +1737,155 @@ decks, samplers, mic, aux, fx */
       border-radius: 2px;
       height: 20px;
     }
-  WEffectChainPresetSelector {
-    background-color: #252525;
-    color: #888;
-  }
-  WEffectSelector:hover,
-  WEffectChainPresetSelector:hover {
-    background-color: #0f0f0f;
-    }
-    WEffectSelector::drop-down,
-    WEffectChainPresetSelector::drop-down,
-    #fadeModeCombobox::drop-down {
-      border: 0px;
+    WEffectChainPresetSelector {
+      /* blend with the mixer backgrpund */
+      background-color: #333;
+      color: #aaa;
       margin: 0px;
       padding: 0px;
+    }
+
+  WEffectSelector:hover {
+    background-color: #0f0f0f;
+  }
+  WEffectChainPresetSelector:hover {
+    background-color: #262626;
+  }
+
+  WEffectSelector::drop-down,
+  WEffectChainPresetSelector::drop-down,
+  #fadeModeCombobox::drop-down {
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    }
+    WEffectSelector::drop-down {
+      margin-right: -2px;
+    }
+    /* QuickEffect selector in left-hand decks has it's down arrow
+      on the left side, below the QuickEffect toggle */
+    #QuickEffectSelectorLeft {
+      text-align: left;
       }
-      WEffectSelector::drop-down {
-        margin-right: -2px;
-      }
-      /* QuickEffect selector in left-hand decks has it's down arrow
-        on the left side, below the QuickEffect toggle */
-      #EffectChainselectorLeft::drop-down {
+      #QuickEffectSelectorLeft::drop-down {
         subcontrol-origin: margin;
         subcontrol-position: left center;
       }
-    WEffectChainPresetButton {
-      padding: 0px;
-      margin: 0px;
-      border-color: #0f0f0f;
-      border-style: solid;
-      border-width: 0px 1px 1px 1px;
-      border-radius: 2px;
-      background-color: #333;
+    #QuickEffectSelectorRight {
+      text-align: right;
       }
-      WEffectChainPresetButton#EffectChainPresetButtonLeft {
-        border-width: 1px 0px 1px 1px;
-      }
-      WEffectChainPresetButton#EffectChainPresetButtonRight {
-        border-width: 1px 1px 1px 0px;
-      }
-      WEffectChainPresetButton:hover {
-        background-color: #151515;
-      }
-      WEffectChainPresetButton::menu-indicator {
-        subcontrol-position: center center;
+      #QuickEffectSelectorRight::drop-down {
         subcontrol-origin: margin;
-        margin: 0px 2px 0px 0px;
-        padding: 0px;
-        border: 0px;
-        outline: none;
+        subcontrol-position: right center;
       }
 
-    WEffectChainPresetButton::menu-indicator,
-    WEffectSelector::down-arrow,
-    WEffectChainPresetSelector::down-arrow,
-    #fadeModeCombobox::down-arrow {
-      /* When the skin is scaled, bg-color would be applied
-      to the (not scaled) button image only:
-      background-color: #101010;
-      width: 11px;
-      height: 20px; */
-      image: url(skin:/../Tango/buttons/btn_arrow_down.svg) no-repeat center center;
-      }
-      WEffectChainPresetButton::menu-indicator:hover,
-      WEffectSelector::down-arrow:hover,
-      WEffectChainPresetSelector::down-arrow:hover,
-      #fadeModeCombobox::down-arrow:hover {
-        image: url(skin:/../Tango/buttons/btn_arrow_down_hover.svg) no-repeat center center;
-      }
+  WEffectChainPresetButton {
+    padding: 0px;
+    margin: 1px;
+    border:  none;
+    /*border-color: #0f0f0f;
+    border-style: solid;
+    border-width: 0px 1px 1px 1px;
+    border-radius: 2px;*/
+    background-color: #333;
+    }
+    /*WEffectChainPresetButton#EffectChainPresetButtonLeft {
+      border-width: 1px 0px 1px 1px;
+    }
+    WEffectChainPresetButton#EffectChainPresetButtonRight {
+      border-width: 1px 1px 1px 0px;
+    }*/
+    WEffectChainPresetButton:hover {
+      background-color: #151515;
+    }
+    WEffectChainPresetButton::menu-indicator {
+      subcontrol-position: center center;
+      subcontrol-origin: margin;
+      margin: 0px 2px 0px 0px;
+      padding: 0px;
+      border: 0px;
+      outline: none;
+    }
 
-    WEffectSelector QAbstractScrollArea,
-    WEffectChainPresetSelector QAbstractScrollArea,
-    #fadeModeCombobox QAbstractScrollArea {
-      border-radius: 2px;
-      margin: 0px;
+  WEffectSelector::down-arrow,
+  WEffectChainPresetButton::menu-indicator,
+  WSearchLineEdit::down-arrow,
+  #fadeModeCombobox::down-arrow {
+    /* With a fixed size and the skin being scaled
+    * button icon is not scaled
+    * bg-color is applied only to the icon rectangle
+    background-color: #101010;
+    width: 11px;
+    height: 20px; */
+    image: url(skin:/../Tango/buttons/btn_arrow_down_fx.svg) no-repeat center center;
     }
-    WEffectSelector QAbstractScrollArea,
-    WEffectChainPresetSelector QAbstractScrollArea {
-      min-width: 140px;
+    WEffectSelector::down-arrow:hover,
+    WEffectChainPresetButton::menu-indicator:hover,
+    WSearchLineEdit::down-arrow:hover,
+    #fadeModeCombobox::down-arrow:hover {
+      image: url(skin:/../Tango/buttons/btn_arrow_down_fx_hover.svg) no-repeat center center;
     }
-    #fadeModeCombobox QAbstractScrollArea {
-      min-width: 165px;
+  WEffectChainPresetSelector::down-arrow {
+    image: url(skin:/../Tango/buttons/btn_arrow_down_fxquick.svg) no-repeat center center;
     }
-    /* selected item */
-    WEffectSelector::checked,
-    WEffectChainPresetSelector::checked,
-    #fadeModeCombobox::checked {
-      /* not applied
-      padding-left: 5px;
-      font-weight: bold;
-      background-color: #000; */
-      color: #fff;
-      background-color: #555;
+    WEffectChainPresetSelector::down-arrow:hover {
+      image: url(skin:/../Tango/buttons/btn_arrow_down_fxquick_hover.svg) no-repeat center center;
     }
-    /* tick mark frame */
-    WEffectSelector::indicator:checked,
-    WEffectChainPresetSelector::indicator:checked,
-    #fadeModeCombobox::indicator:checked {
-    /* This is sufficient to completely hide the tick mark,
-      but this alone would show an empty, shadowed box instead of tick mark:  */
-      /* This should decrease the tick mark's left & right margin but is not respected
-      margin: 0px -4px 0px -4px; */
-      /* This draws a border. And eliminates the tick mark...
-      border: 1px solid #999; */
-      /* This has no effect:
-      height: 10px;
-      width: 10px; */
-      /* Image is rendered correctly but size of the tick mark containers
-      won't change. Also, only with this option the hover bg color defined
-      above will be applied... it's qt magic
-      background: #0081B7; */
-      margin: 3px;
-      image: url(skin:/../Tango/buttons/btn_lib_checkmark_white.svg) no-repeat center center;
-    }
-    WEffectSelector::indicator:!checked,
-    WEffectChainPresetSelector::indicator:!checked,
-    #fadeModeCombobox::indicator:!checked {
-      image: url(skin:/../Tango/buttons/btn_.svg) no-repeat center center;
-    }
+
+  WEffectSelector QAbstractScrollArea,
+  WEffectChainPresetSelector QAbstractScrollArea,
+  WSearchLineEdit QAbstractScrollArea,
+  #fadeModeCombobox QAbstractScrollArea {
+    border-radius: 2px;
+    margin: 0px;
+  }
+  WEffectSelector QAbstractScrollArea,
+  WEffectChainPresetSelector QAbstractScrollArea {
+    min-width: 140px;
+  }
+  #fadeModeCombobox QAbstractScrollArea {
+    min-width: 165px;
+  }
+  /* selected item */
+  WEffectSelector::checked,
+  WEffectChainPresetSelector::checked,
+  #fadeModeCombobox::checked {
+    /* not applied
+    padding-left: 5px;
+    font-weight: bold;
+    background-color: #000; */
+    color: #fff;
+    background-color: #555;
+  }
+  /* tick mark frame */
+  WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+  /* This is sufficient to completely hide the tick mark,
+    but this alone would show an empty, shadowed box instead of tick mark:  */
+    /* This should decrease the tick mark's left & right margin but is not respected
+    margin: 0px -4px 0px -4px; */
+    /* This draws a border. And eliminates the tick mark...
+    border: 1px solid #999; */
+    /* This has no effect:
+    height: 10px;
+    width: 10px; */
+    /* Image is rendered correctly but size of the tick mark containers
+    won't change. Also, only with this option the hover bg color defined
+    above will be applied... it's qt magic
+    background: #0081B7; */
+    margin: 3px 3px 3px 6px;
+    image: url(skin:/../Tango/buttons/btn_lib_checkmark_white.svg) no-repeat center center;
+  }
+  /* Wtf?
+  This removes 3D border from unchecked effects checkmark space.
+  But: his will also prevent the icons from being scaled up,
+  so set desired size in the svg itself. */
+  WEffectSelector::item:selected,
+  WEffectChainPresetSelector::item:selected,
+  #fadeModeCombobox::item:selected {
+    border: 0px;
+  }
 
 #FxParametersLeft {
   qproperty-layoutAlignment: 'AlignRight';
@@ -2172,12 +2206,21 @@ WTrackProperty#SamplerTitle_mini {
 
 WEffectSelector::checked, /* selected item */
 WEffectSelector::indicator, /* checkbox, tick mark */
-WEffectSelector::drop-down,
 WEffectSelector::indicator:unchecked,
-#fadeModeCombobox::checked, /* selected mode */
-#fadeModeCombobox::indicator, /* checkbox, tick mark */
-#fadeModeCombobox::drop-down,
-#fadeModeCombobox::indicator:unchecked {
+
+WEffectSelector::drop-down,
+WEffectChainPresetSelector::checked,
+WEffectChainPresetSelector::indicator,
+WEffectChainPresetSelector::indicator:unchecked,
+WEffectChainPresetSelector::drop-down,
+WSearchLineEdit::checked,
+WSearchLineEdit::indicator,
+WSearchLineEdit::indicator:unchecked,
+WSearchLineEdit::drop-down,
+#fadeModeCombobox::checked,
+#fadeModeCombobox::indicator,
+#fadeModeCombobox::indicator:unchecked,
+#fadeModeCombobox::drop-down {
   padding: 0px;
   margin: 0px;
   image: none;
@@ -2261,12 +2304,16 @@ WCueMenuPopup QLabel,
 #SkinSettingsLabel,
 #SkinSettingsButton,
 #SkinSettingsButtonMulti,
-WEffectSelector, WEffectSelector QAbstractScrollArea,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea,
+WEffectChainPresetSelector::item,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu::item,
 WEffectChainPresetButton QMenu QCheckBox,
-WEffectChainPresetSelector QAbstractScrollArea,
-#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
+WSearchLineEdit QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea::item {
   background-color: #1a1a1a;
   color: #ccc;
@@ -2284,6 +2331,7 @@ WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   border: 1px solid #888;
   border-radius: 2px;
@@ -2312,8 +2360,14 @@ WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
-#fadeModeCombobox::item:selected,
-WEffectSelector::item:selected {
+WEffectSelector::item:selected,
+WEffectChainPresetSelector::item:selected,
+WEffectChainPresetButton QMenu::item:selected,
+WEffectChainPresetButton QMenu QCheckBox:selected,
+WEffectChainPresetButton QMenu QCheckBox:focus,
+WEffectChainPresetButton QMenu QCheckBox:hover,
+WSearchLineEdit::item:selected,
+#fadeModeCombobox::item:selected {
   background-color: #555;
   color: #fff;
   /* remove OS focus indicator */
@@ -2334,6 +2388,7 @@ QLineEdit QMenu::item:disabled {
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
   WTrackTableViewHeader QMenu::separator,
+  WEffectChainPresetButton QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
@@ -2343,6 +2398,7 @@ QLineEdit QMenu::item:disabled {
 
 WLibrarySidebar QMenu::indicator,
 WTrackTableViewHeader QMenu::indicator,
+WEffectChainPresetButton QMenu QCheckBox::indicator,
 WTrackMenu QMenu QCheckBox::indicator {
   background-color: #0f0f0f;
   border: 1px solid #333;
@@ -2350,6 +2406,7 @@ WTrackMenu QMenu QCheckBox::indicator {
   }
   WLibrarySidebar QMenu::indicator:checked,
   WTrackTableViewHeader QMenu::indicator:checked,
+  WEffectChainPresetButton QMenu QCheckBox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked {
     image: url(skin:/../Tango/buttons/btn_lib_checkmark.svg);
     border: 1px solid #111;
@@ -2647,12 +2704,14 @@ WLibraryTextBrowser {
 #LibraryContainer QScrollBar,
 WEffectSelector QAbstractScrollArea QScrollBar,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar,
+WSearchLineEdit QAbstractScrollArea QScrollBar,
 #fadeModeCombobox QAbstractScrollArea QScrollBar {
   padding: 1px;
 }
 #LibraryContainer QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   min-width: 12px;
   height: 10px;
@@ -2662,6 +2721,7 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
   #LibraryContainer QScrollBar:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:vertical,
+  WSearchLineEdit QAbstractScrollArea QScrollBar:vertical,
   #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
     min-height: 12px;
     width: 10px;
@@ -2675,6 +2735,8 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-page,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-page,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::add-page,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
     min-width: 15px;
@@ -2684,6 +2746,7 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
   #LibraryContainer QScrollBar::handle:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
     min-width: 25px;
     background: #595959;
@@ -2692,12 +2755,14 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
     #LibraryContainer QScrollBar::handle:horizontal:hover,
     WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
     WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
+    WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal:hover,
     #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover {
       background: #888;
     }
   #LibraryContainer QScrollBar::handle:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
     min-height: 25px;
     background: #595959;
@@ -2706,6 +2771,7 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
     #LibraryContainer QScrollBar::handle:vertical:hover,
     WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
     WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
+    WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical:hover,
     #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
       background: #888;
     }
@@ -2716,6 +2782,8 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line:vertical,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::add-line:horizontal,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::add-line:vertical,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical {
     width: 0px;
@@ -2727,6 +2795,8 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line:horizontal,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line:vertical,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
     width: 0px;
@@ -2736,6 +2806,7 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
   #LibraryContainer QAbstractScrollArea::corner,
   WEffectSelector QAbstractScrollArea::corner,
   WEffectChainPresetSelector QAbstractScrollArea::corner,
+  WSearchLineEdit QAbstractScrollArea::corner,
   #fadeModeCombobox QAbstractScrollArea::corner {
     background-color: #0f0f0f;
     border: 0px;
@@ -2801,7 +2872,6 @@ Library features and their buttons:
   #LibraryFeatureControls QPushButton:!enabled {
     color: #888;
     }
-  WEffectChainPresetSelector:hover,
   #LibraryFeatureControls QPushButton:hover,
   #fadeModeCombobox:hover {
     border: 1px solid #888;
@@ -2985,7 +3055,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     image: url(skin:/../Tango/buttons/btn_lib_checkbox.svg);
     }
 
-WLibrary QSpinBox {
+#LibraryFeatureControls QSpinBox {
   min-height: 22px;
   max-height: 22px;
   min-width: 40px;
@@ -3006,13 +3076,12 @@ WSearchLineEdit {
   margin-bottom: 5px; */
   }
   WSearchLineEdit:focus {
-    padding: 1px;
     color: #eeeeee;
   }
   /* Clear button: see /skins/default.qss */
 
-WLibrary QLabel,
-WLibrary QRadioButton { /*
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton { /*
   background: none;
   Extra declaration for QRadioButton otherwise it shows up with
   wrong colors in Linux with Gnome  */
@@ -3029,11 +3098,11 @@ QRadioButton#radioButtonRecentlyAdded {
   margin: 0px 3px 0px 5px;
 }
 
-WLibrary QRadioButton::indicator:checked {
+#LibraryFeatureControls QRadioButton::indicator:checked {
   image: url(skin:/../Tango/buttons/btn_lib_radio_button_on.svg) center center;
 }
 
-WLibrary QRadioButton::indicator:unchecked {
+#LibraryFeatureControls QRadioButton::indicator:unchecked {
   image: url(skin:/../Tango/buttons/btn_lib_radio_button_off.svg) center center;
 }
 
@@ -3045,6 +3114,8 @@ WTrackTableViewHeader QMenu::indicator:unchecked,
 WTrackTableViewHeader QMenu::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
+WEffectChainPresetSelector::indicator::unchecked,
+WEffectChainPresetSelector::indicator::unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,
 #fadeModeCombobox::indicator:unchecked:selected {
   image: none;

@@ -13,8 +13,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent)
-        : QWidget(parent),
-          WaveformWidgetAbstract(group) {
+        : NonGLWaveformWidgetAbstract(group, parent) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

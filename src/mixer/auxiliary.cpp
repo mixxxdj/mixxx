@@ -7,9 +7,12 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 
-Auxiliary::Auxiliary(QObject* pParent, const QString& group, int index,
-                     SoundManager* pSoundManager, EngineMaster* pEngine,
-                     EffectsManager* pEffectsManager)
+Auxiliary::Auxiliary(PlayerManager* pParent,
+        const QString& group,
+        int index,
+        SoundManager* pSoundManager,
+        EngineMaster* pEngine,
+        EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
     EngineAux* pAuxiliary = new EngineAux(channelGroup, pEffectsManager);

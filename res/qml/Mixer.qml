@@ -1,12 +1,11 @@
 import "." as Skin
 import QtQuick 2.12
-import QtQuick.Controls 2.12
 
 Item {
-    id: mixer
+    id: root
 
-    property string leftDeckGroup // required
-    property string rightDeckGroup // required
+    required property string leftDeckGroup
+    required property string rightDeckGroup
     property bool show4decks: false
 
     implicitWidth: content.width + 10
@@ -23,28 +22,26 @@ Item {
         anchors.centerIn: parent
         anchors.margins: 5
 
-        EqColumn {
+        Skin.EqColumn {
             group: root.leftDeckGroup
         }
 
-        MixerColumn {
+        Skin.MixerColumn {
             width: 56
             height: parent.height
             group: root.leftDeckGroup
         }
 
-        MixerColumn {
+        Skin.MixerColumn {
             width: 56
             height: parent.height
             group: root.rightDeckGroup
         }
 
-        EqColumn {
+        Skin.EqColumn {
             width: 56
             height: parent.height
             group: root.rightDeckGroup
         }
-
     }
-
 }

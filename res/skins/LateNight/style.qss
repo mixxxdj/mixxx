@@ -4,7 +4,7 @@
 
 #Mixxx,
 WWidget,
-WLabel, QLabel,
+WLabel,
 WNumber, WNumberPos,
 WPushButton,
 WKey,
@@ -14,7 +14,6 @@ WTrackProperty,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
-WOverview #PassthroughLabel,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -26,9 +25,9 @@ WEffectChainPresetSelector,
 WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-WLibrary QPushButton,
-WLibrary QLabel,
-WLibrary QRadioButton,
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton,
 WTrackTableViewHeader,
 WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
@@ -54,14 +53,12 @@ WPushButton#BroadcastButton,
 WPushButton#SkinSettingsToggle,
 #LibraryFeatureControls QPushButton,
 /* Passthrough label on overview waveform */
-WOverview #PassthroughLabel,
 WPushButton#EQKillButton,
 WLabel#LatencyLabel,
 WLabel#SamplerTitleMini,
 /* SKin settings & Library */
 WPushButton#SkinSettingsNumToggle[value="1"],
-QLabel#labelRecFilename,
-WOverview #PassthroughLabel {
+QLabel#labelRecFilename {
   font-family: "Open Sans";
   font-weight: bold;
 }
@@ -136,6 +133,7 @@ WEffectChainPresetSelector QAbstractScrollArea {
   }
   WEffectSelector::down-arrow,
   WEffectChainPresetSelector::down-arrow,
+  WSearchLineEdit::down-arrow,
   #fadeModeCombobox::down-arrow,
   WTrackTableView::indicator {
     border: 0;
@@ -151,6 +149,10 @@ WEffectChainPresetSelector::checked,
 WEffectChainPresetSelector::indicator,
 WEffectChainPresetSelector::indicator:unchecked,
 WEffectChainPresetSelector::drop-down,
+WSearchLineEdit::checked,
+WSearchLineEdit::indicator,
+WSearchLineEdit::indicator:unchecked,
+WSearchLineEdit::drop-down,
 #fadeModeCombobox::checked,
 #fadeModeCombobox::indicator,
 #fadeModeCombobox::indicator:unchecked,
@@ -164,13 +166,15 @@ WEffectChainPresetSelector::drop-down,
 /* Remove 3D border from unchecked effects checkmark space */
 WEffectSelector::item:selected,
 WEffectChainPresetSelector:item:selected,
+WSearchLineEdit::item:selected,
 #fadeModeCombobox::item:selected {
   border: 0px;
 }
 
   WLibrarySidebar QMenu::indicator,
   WTrackTableViewHeader QMenu::indicator,
-  WTrackMenu QMenu QCheckBox::indicator {
+  WTrackMenu QMenu QCheckBox::indicator,
+  WEffectChainPresetButton QMenu QCheckBox::indicator {
     border: 1px solid #333;
     border-radius: 1px;
     background-color: #000;
@@ -301,7 +305,7 @@ WTrackTableViewHeader::item {
   WTrackTableViewHeader::down-arrow {
     width: 0.8em;
     padding: 0 0.15em;
-    }
+  }
 
 
 #HotcueButton {
@@ -455,7 +459,7 @@ WSpinny { /*
 
 /************** Mixer  ********************************************************/
 #MixerContainer {
-  qproperty-layoutAlignment: 'AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #MixerDecks {
@@ -494,8 +498,7 @@ WSpinny { /*
   qproperty-layoutSpacing: 2;
 }
 #VuMeterBox,
-#VuMeterBoxMaster,
-#LatencyMeterBox {
+#VuMeterBoxMaster {
   /* (black) groove around Vu widgets */
   padding: 1px;
 }
@@ -629,13 +632,14 @@ WEffectChainPresetSelector {
 
   WEffectSelector QAbstractScrollArea,
   WEffectChainPresetSelector QAbstractScrollArea,
+  WSearchLineEdit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
     margin: 0px;
   }
-  /* selected item */
+  /* checked item */
   WEffectSelector:checked,
   WEffectChainPresetSelector:checked,
   #fadeModeCombobox:checked {
@@ -648,15 +652,12 @@ WEffectChainPresetSelector {
   /* hovered items */
   WEffectSelector::item:selected,
   WEffectChainPresetSelector::item:selected,
+  WSearchLineEdit::item:selected,
   #fadeModeCombobox::item:selected {
-    background-color: #333;
   /* Already one of those properties destroys font config and
      puts tick mark behind text:
     margin: 0px;
     padding: 0px; */
-  /* This moves the tick mark behind item text,
-    text sits at left border now
-    border: 0; */
   }
   WEffectSelector::indicator,
   #fadeModeCombobox::indicator {
@@ -667,6 +668,18 @@ WEffectChainPresetSelector {
     margin: 0px;
     padding: 0px;*/
   }
+
+WEffectChainPresetButton,
+WEffectChainPresetButton::menu-indicator {
+  background-color: transparent;
+  border:  0px;
+  margin:  0px;
+  padding: 0px;
+}
+WEffectChainPresetButton::menu-indicator {
+  subcontrol-origin: margin;
+  subcontrol-position:  center center;
+}
 /************** Effects *******************************************************/
 
 

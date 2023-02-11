@@ -10,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/replaygain.h"
 #include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/color/rgbcolor.h"
 #include "util/memory.h"
 #include "util/parented_ptr.h"
@@ -32,18 +33,21 @@ class BaseTrackPlayer : public BasePlayer {
         RESET_SPEED
     };
 
-    BaseTrackPlayer(QObject* pParent, const QString& group);
+    BaseTrackPlayer(PlayerManager* pParent, const QString& group);
     ~BaseTrackPlayer() override = default;
 
     virtual TrackPointer getLoadedTrack() const = 0;
+    virtual void setupEqControls() = 0;
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
+    virtual void slotEjectTrack(double) = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
+    void trackUnloaded(TrackPointer pUnloadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
     void noVinylControlInputConfigured();
@@ -52,7 +56,7 @@ class BaseTrackPlayer : public BasePlayer {
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
     Q_OBJECT
   public:
-    BaseTrackPlayerImpl(QObject* pParent,
+    BaseTrackPlayerImpl(PlayerManager* pParent,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
@@ -69,13 +73,14 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // connected. Delete me when EngineMaster supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
-    void setupEqControls();
+    void setupEqControls() final;
 
     // For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;
+    void slotEjectTrack(double) final;
     void slotCloneFromGroup(const QString& group) final;
     void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -91,6 +96,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotCloneChannel(EngineChannel* pChannel);
     void slotCloneFromDeck(double deck);
     void slotCloneFromSampler(double sampler);
+    void loadTrackFromGroup(const QString& group);
+    void slotLoadTrackFromDeck(double deck);
+    void slotLoadTrackFromSampler(double sampler);
     void slotTrackColorChangeRequest(double value);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
@@ -113,13 +121,20 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     UserSettingsPointer m_pConfig;
     EngineMaster* m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
+    TrackId m_pPrevFailedTrackId;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;
 
+    std::unique_ptr<ControlPushButton> m_pEject;
+
     // Deck clone control
     std::unique_ptr<ControlObject> m_pCloneFromDeck;
     std::unique_ptr<ControlObject> m_pCloneFromSampler;
+
+    // Load track from other deck/sampler
+    std::unique_ptr<ControlObject> m_pLoadTrackFromDeck;
+    std::unique_ptr<ControlObject> m_pLoadTrackFromSampler;
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;

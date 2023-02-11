@@ -5,9 +5,11 @@
 #include <QAtomicInt>
 #include <QMutex>
 #include <cfloat>
+#include <initializer_list>
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/controls/macrocontrol.h"
 #include "engine/engineobject.h"
@@ -75,11 +77,19 @@ class EngineBuffer : public EngineObject {
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
-    enum KeylockEngine {
-        SOUNDTOUCH,
-        RUBBERBAND,
-        KEYLOCK_ENGINE_COUNT,
+    // This enum is also used in mixxx.cfg
+    // Don't remove or swap values to keep backward compatibility
+    enum class KeylockEngine {
+        SoundTouch = 0,
+        RubberBandFaster = 1,
+        RubberBandFiner = 2,
     };
+
+    // intended for iteration over the KeylockEngine enum
+    constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
+            KeylockEngine::SoundTouch,
+            KeylockEngine::RubberBandFaster,
+            KeylockEngine::RubberBandFiner};
 
     EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
@@ -113,7 +123,7 @@ class EngineBuffer : public EngineObject {
     void requestClonePosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
-    void process(CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pOut, const int iBufferSize) override;
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
@@ -123,6 +133,7 @@ class EngineBuffer : public EngineObject {
 
     bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
+    void ejectTrack();
 
     mixxx::audio::FramePos getExactPlayPos() const;
     double getVisualPlayPos() const;
@@ -132,7 +143,7 @@ class EngineBuffer : public EngineObject {
 
     double getRateRatio() const;
 
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
 
     // For dependency injection of scalers.
     void setScalerForTest(
@@ -144,13 +155,35 @@ class EngineBuffer : public EngineObject {
 
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
-        case SOUNDTOUCH:
+        case KeylockEngine::SoundTouch:
             return tr("Soundtouch (faster)");
-        case RUBBERBAND:
+        case KeylockEngine::RubberBandFaster:
             return tr("Rubberband (better)");
+        case KeylockEngine::RubberBandFiner:
+            if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
+                return tr("Rubberband R3 (near-hi-fi quality)");
+            }
+            [[fallthrough]];
         default:
-            return tr("Unknown (bad value)");
+            return tr("Unknown, using Rubberband (better)");
         }
+    }
+
+    static bool isKeylockEngineAvailable(KeylockEngine engine) {
+        switch (engine) {
+        case KeylockEngine::SoundTouch:
+            return true;
+        case KeylockEngine::RubberBandFaster:
+            return true;
+        case KeylockEngine::RubberBandFiner:
+            return EngineBufferScaleRubberBand::isEngineFinerAvailable();
+        default:
+            return false;
+        }
+    }
+
+    constexpr static KeylockEngine defaultKeylockEngine() {
+        return KeylockEngine::RubberBandFaster;
     }
 
     // Request that the EngineBuffer load a track. Since the process is
@@ -174,8 +207,6 @@ class EngineBuffer : public EngineObject {
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotKeylockEngineChanged(double);
-
-    void slotEjectTrack(double);
 
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -208,8 +239,6 @@ class EngineBuffer : public EngineObject {
     void updateIndicators(double rate, int iBufferSize);
 
     void hintReader(const double rate);
-
-    void ejectTrack();
 
     double fractionalPlayposFromAbsolute(mixxx::audio::FramePos position);
 
@@ -251,7 +280,7 @@ class EngineBuffer : public EngineObject {
     friend class HotcueControlTest;
     friend class LoopingControlTest;
 
-    LoopingControl* m_pLoopingControl; // used for testes
+    LoopingControl* m_pLoopingControl; // used for tests
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
@@ -354,7 +383,6 @@ class EngineBuffer : public EngineObject {
     // thread, which is required to avoid segfaults.
     ControlProxy* m_pPassthroughEnabled;
 
-    ControlPushButton* m_pEject;
     ControlObject* m_pTrackLoaded;
 
     // Whether or not to repeat the track when at the end
@@ -421,4 +449,5 @@ class EngineBuffer : public EngineObject {
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };
 
+Q_DECLARE_METATYPE(EngineBuffer::KeylockEngine)
 Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)

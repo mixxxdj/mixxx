@@ -9,6 +9,7 @@
 class ControlProxy;
 
 class VinylControl : public QObject {
+    Q_OBJECT
   public:
     VinylControl(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControl();

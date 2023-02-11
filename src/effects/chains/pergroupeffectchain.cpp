@@ -2,7 +2,8 @@
 
 #include "effects/effectsmanager.h"
 
-PerGroupEffectChain::PerGroupEffectChain(const QString& group,
+PerGroupEffectChain::PerGroupEffectChain(
+        const ChannelHandleAndGroup& handleAndGroup,
         const QString& chainSlotGroup,
         SignalProcessingStage stage,
         EffectsManager* pEffectsManager,
@@ -15,18 +16,6 @@ PerGroupEffectChain::PerGroupEffectChain(const QString& group,
     m_pControlChainMix->set(1.0);
     sendParameterUpdate();
 
-    // TODO(rryan): remove.
-    const ChannelHandleAndGroup* handleAndGroup = nullptr;
-    for (const ChannelHandleAndGroup& handle_group :
-            m_pEffectsManager->registeredInputChannels()) {
-        if (handle_group.name() == group) {
-            handleAndGroup = &handle_group;
-            break;
-        }
-    }
-    DEBUG_ASSERT(handleAndGroup != nullptr);
-
     // Register this channel alone with the chain slot.
-    registerInputChannel(*handleAndGroup);
-    enableForInputChannel(*handleAndGroup);
+    registerInputChannel(handleAndGroup);
 }

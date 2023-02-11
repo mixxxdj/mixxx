@@ -8,6 +8,12 @@
 #include "moc_baseexternalplaylistmodel.cpp"
 #include "track/track.h"
 
+namespace {
+
+const QString kModelName = "external:";
+
+} // anonymous namespace
+
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
@@ -17,7 +23,8 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
-          m_trackSource(trackSource) {
+          m_trackSource(trackSource),
+          m_currentPlaylistId(-1) {
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
@@ -104,6 +111,12 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
         return;
     }
 
+    // Store search text
+    QString currSearch = currentSearch();
+    if (m_currentPlaylistId != -1 && !currSearch.trimmed().isEmpty()) {
+        m_searchTexts.insert(m_currentPlaylistId, currSearch);
+    }
+
     const auto playlistIdNumber =
             QString::number(playlistId);
     const auto playlistViewTable =
@@ -134,11 +147,13 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
         return;
     }
 
+    m_currentPlaylistId = playlistId;
     playlistViewColumns.last() = LIBRARYTABLE_PREVIEW;
     setTable(playlistViewTable, playlistViewColumns.first(), playlistViewColumns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
-    setSearch("");
+    // Restore search text
+    setSearch(m_searchTexts.value(m_currentPlaylistId));
 }
 
 TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
@@ -162,4 +177,15 @@ TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
             Capability::LoadToSampler;
+}
+
+QString BaseExternalPlaylistModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName +
+                QString::number(m_currentPlaylistId);
+    }
+    return kModelName +
+            QString::number(m_currentPlaylistId) +
+            QStringLiteral("#") +
+            currentSearch();
 }

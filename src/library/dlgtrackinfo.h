@@ -6,6 +6,7 @@
 
 #include "library/coverart.h"
 #include "library/ui_dlgtrackinfo.h"
+#include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/track_decl.h"
@@ -16,6 +17,7 @@
 class TrackModel;
 class DlgTagFetcher;
 class WCoverArtLabel;
+class WCoverArtMenu;
 class WStarRating;
 
 /// A dialog box to display and edit track properties.
@@ -27,6 +29,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public:
     // TODO: Remove dependency on TrackModel
     explicit DlgTrackInfo(
+            UserSettingsPointer pUserSettings,
             const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override = default;
 
@@ -51,12 +54,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void trackUpdated();
 
-    void slotBpmDouble();
-    void slotBpmHalve();
-    void slotBpmTwoThirds();
-    void slotBpmThreeFourth();
-    void slotBpmFourThirds();
-    void slotBpmThreeHalves();
     void slotBpmScale(mixxx::Beats::BpmScale bpmScale);
     void slotBpmClear();
     void slotBpmConstChanged(int state);
@@ -106,6 +103,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateTrackMetadataFields();
     void updateSpinBpmFromBeats();
 
+    const UserSettingsPointer m_pUserSettings;
+
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
@@ -120,6 +119,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
 
+    parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;
 

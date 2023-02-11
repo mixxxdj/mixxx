@@ -35,12 +35,12 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
-    FocusWidget sidebarFocusChange(FocusWidget newFocus);
+    void renameItem(const QModelIndex&);
+    void deleteItem(const QModelIndex&);
+    FocusWidget setLibraryFocus(FocusWidget newFocus);
 
   protected:
     bool event(QEvent* pEvent) override;
-    void focusInEvent(QFocusEvent*) override;
-    void focusOutEvent(QFocusEvent*) override;
 
   private:
     QBasicTimer m_expandTimer;

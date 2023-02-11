@@ -1,5 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import "Theme"
 
 Skin.Button {
@@ -12,7 +12,7 @@ Skin.Button {
         ExplicitLeader
     }
 
-    property string group // required
+    required property string group
     property alias mode: modeControl.value
 
     function toggleSync() {
@@ -25,21 +25,21 @@ Skin.Button {
 
     activeColor: {
         switch (mode) {
-        case SyncButton.SyncMode.ImplicitLeader:
-            return Theme.yellow;
-        case SyncButton.SyncMode.ExplicitLeader:
-            return Theme.red;
-        default:
-            return Theme.deckActiveColor;
+            case SyncButton.SyncMode.ImplicitLeader:
+                return Theme.yellow;
+            case SyncButton.SyncMode.ExplicitLeader:
+                return Theme.red;
+            default:
+                return Theme.deckActiveColor;
         }
     }
     text: {
         switch (mode) {
-        case SyncButton.SyncMode.ImplicitLeader:
-        case SyncButton.SyncMode.ExplicitLeader:
-            return "Leader";
-        default:
-            return "Sync";
+            case SyncButton.SyncMode.ImplicitLeader:
+                case SyncButton.SyncMode.ExplicitLeader:
+                    return "Leader";
+            default:
+                return "Sync";
         }
     }
     highlight: enabledControl.value
@@ -66,5 +66,4 @@ Skin.Button {
         group: root.group
         key: "sync_master"
     }
-
 }

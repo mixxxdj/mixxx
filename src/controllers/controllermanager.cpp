@@ -294,10 +294,10 @@ void ControllerManager::slotSetUpDevices() {
         pController->applyMapping();
     }
 
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
 }
 
-void ControllerManager::maybeStartOrStopPolling() {
+void ControllerManager::pollIfAnyControllersOpen() {
     auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
@@ -378,7 +378,7 @@ void ControllerManager::openController(Controller* pController) {
         pController->close();
     }
     int result = pController->open();
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
 
     // If successfully opened the device, apply the mapping and save the
     // preference setting.
@@ -396,7 +396,7 @@ void ControllerManager::closeController(Controller* pController) {
         return;
     }
     pController->close();
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
     // Update configuration to reflect controller is disabled.
     m_pConfig->setValue(
             ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 0);
@@ -415,6 +415,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         closeController(pController);
         // Unset the controller mapping for this controller
         m_pConfig->remove(key);
+        emit mappingApplied(false);
         return;
     }
 
@@ -432,8 +433,10 @@ void ControllerManager::slotApplyMapping(Controller* pController,
 
     if (bEnabled) {
         openController(pController);
+        emit mappingApplied(pController->isMappable());
     } else {
         closeController(pController);
+        emit mappingApplied(false);
     }
 }
 

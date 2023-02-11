@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QScopedPointer>
 #include <QTranslator>
+#include <QVersionNumber>
 
 #include "config.h"
 #include "controllers/defs_controllers.h"
@@ -286,12 +287,12 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         QDir newOSXDir(OSXLocation190);
         newOSXDir.mkpath(OSXLocation190);
 
-        QList<QPair<QString, QString> > dirsToMove;
+        QList<QPair<QString, QString>> dirsToMove;
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180, OSXLocation190));
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/midi", OSXLocation190 + "midi"));
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/presets", OSXLocation190 + "presets"));
 
-        QListIterator<QPair<QString, QString> > dirIt(dirsToMove);
+        QListIterator<QPair<QString, QString>> dirIt(dirsToMove);
         QPair<QString, QString> curPair;
         while (dirIt.hasNext())
         {
@@ -433,9 +434,11 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
     }
 
-    if (configVersion.startsWith("1.12") ||
-        configVersion.startsWith("2.0") ||
-        configVersion.startsWith("2.1.0")) {
+    const auto configFileVersion = QVersionNumber::fromString(configVersion);
+
+    // This variable indicates the first known version that requires no changes.
+    const QVersionNumber cleanVersion(1, 12, 0);
+    if (configFileVersion >= cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));

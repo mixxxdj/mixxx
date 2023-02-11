@@ -17,8 +17,10 @@
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/visualsmanager.h"
+#endif
 
 namespace {
 
@@ -31,12 +33,12 @@ inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
 }
 } // namespace
 
-BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
+BaseTrackPlayer::BaseTrackPlayer(PlayerManager* pParent, const QString& group)
         : BasePlayer(pParent, group) {
 }
 
 BaseTrackPlayerImpl::BaseTrackPlayerImpl(
-        QObject* pParent,
+        PlayerManager* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
@@ -49,6 +51,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
+          m_pPrevFailedTrackId(),
           m_replaygainPending(false),
           m_pChannelToCloneFrom(nullptr) {
     m_pChannel = new EngineDeck(handleGroup,
@@ -80,6 +83,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &EngineBuffer::trackLoadFailed,
             this,
             &BaseTrackPlayerImpl::slotLoadFailed);
+
+    m_pEject = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "eject"));
+    connect(m_pEject.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotEjectTrack,
+            Qt::DirectConnection);
 
     // Get loop point control objects
     m_pLoopInPoint = make_parented<ControlProxy>(
@@ -116,6 +126,22 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlObject::valueChanged,
             this,
             &BaseTrackPlayerImpl::slotCloneFromSampler);
+
+    // Load track from other deck/sampler
+    m_pLoadTrackFromDeck = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromDeck"),
+            false);
+    connect(m_pLoadTrackFromDeck.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromDeck);
+    m_pLoadTrackFromSampler = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromSampler"),
+            false);
+    connect(m_pLoadTrackFromSampler.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromSampler);
 
     // Waveform controls
     // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
@@ -295,6 +321,26 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     connectLoadedTrack();
 }
 
+void BaseTrackPlayerImpl::slotEjectTrack(double v) {
+    if (v <= 0) {
+        return;
+    }
+    if (!m_pLoadedTrack) {
+        TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
+        if (lastEjected) {
+            slotLoadTrack(lastEjected, false);
+        }
+        return;
+    }
+
+    // Don't allow rejections while playing a track. We don't need to lock to
+    // call ControlObject::get() so this is fine.
+    if (m_pPlay->toBool()) {
+        return;
+    }
+    m_pChannel->getEngineBuffer()->ejectTrack();
+}
+
 TrackPointer BaseTrackPlayerImpl::unloadTrack() {
     if (!m_pLoadedTrack) {
         // nothing to do
@@ -342,6 +388,7 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
 
     TrackPointer pUnloadedTrack(std::move(m_pLoadedTrack));
     DEBUG_ASSERT(!m_pLoadedTrack);
+    emit trackUnloaded(pUnloadedTrack);
     return pUnloadedTrack;
 }
 
@@ -433,8 +480,19 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
     m_pChannelToCloneFrom = nullptr;
+
     // Alert user.
+    // The QMessageBox blocks the event loop (and the GUI since it's modal dialog),
+    // though if a controller's Load button was pressed repeatedly we may get
+    // multiple identical messages for the same track.
+    // Avoid this and show only one message per track track at a time.
+    if (pTrack && m_pPrevFailedTrackId == pTrack->getId()) {
+        return;
+    } else if (pTrack) {
+        m_pPrevFailedTrackId = pTrack->getId();
+    }
     QMessageBox::warning(nullptr, tr("Couldn't load track."), reason);
+    m_pPrevFailedTrackId = TrackId();
 }
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
@@ -608,6 +666,30 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     slotLoadTrack(pTrack, false);
 }
 
+void BaseTrackPlayerImpl::slotLoadTrackFromDeck(double d) {
+    int deck = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForDeck(deck - 1));
+}
+
+void BaseTrackPlayerImpl::slotLoadTrackFromSampler(double d) {
+    int sampler = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForSampler(sampler - 1));
+}
+
+void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
+    EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
+    if (!pChannel) {
+        return;
+    }
+
+    TrackPointer pTrack = pChannel->getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+
+    slotLoadTrack(pTrack, false);
+}
+
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change.
@@ -693,8 +775,13 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
 }
 
 void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
             && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
+#else
+    // TODO: Re-enable zoom range check or decouple zoom from engine code
+    {
+#endif
         m_pWaveformZoom->setAndConfirm(v);
     }
 }
@@ -720,8 +807,13 @@ void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
         return;
     }
 
-    double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]","DefaultZoom"),
-        WaveformWidgetRenderer::s_waveformDefaultZoom);
+    double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]", "DefaultZoom"),
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            WaveformWidgetRenderer::s_waveformDefaultZoom);
+#else
+            // TODO: This should not be hardcoded.
+            3.0);
+#endif
     m_pWaveformZoom->set(defaultZoom);
 }
 

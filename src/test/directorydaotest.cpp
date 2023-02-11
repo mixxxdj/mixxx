@@ -33,13 +33,13 @@ class DirectoryDAOTest : public LibraryTest {
         ASSERT_TRUE(query.exec());
     }
 
-    static QString getSupportedFileExt() {
-        const auto defaultFileExt = QStringLiteral("mp3");
-        if (SoundSourceProxy::isFileExtensionSupported(defaultFileExt)) {
-            return defaultFileExt;
-        } else {
-            return SoundSourceProxy::getSupportedFileExtensions().constFirst();
+    static QString getSupportedFileSuffix() {
+        // Return any supported suffix, it doesn't matter which
+        const auto supportedFileSuffixes = SoundSourceProxy::getSupportedFileSuffixes();
+        VERIFY_OR_DEBUG_ASSERT(!supportedFileSuffixes.isEmpty()) {
+            return {};
         }
+        return supportedFileSuffixes.constFirst();
     }
 };
 
@@ -215,13 +215,13 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        oldDirPath, "a." + getSupportedFileExt()),
+                                        oldDirPath, "a." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        oldDirPath, "b." + getSupportedFileExt()),
+                                        oldDirPath, "b." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
 
@@ -229,56 +229,56 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        newDirPath, "c." + getSupportedFileExt()),
+                                        newDirPath, "c." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        otherDirPath, "d." + getSupportedFileExt()),
+                                        otherDirPath, "d." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        oldDirPath + "." + getSupportedFileExt()),
+                                        oldDirPath + "." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        newDirPath + "." + getSupportedFileExt()),
+                                        newDirPath + "." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        otherDirPath + "." + getSupportedFileExt()),
+                                        otherDirPath + "." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        oldDirPath.toLower(), "a." + getSupportedFileExt()),
+                                        oldDirPath.toLower(), "a." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        oldDirPath.toUpper(), "b." + getSupportedFileExt()),
+                                        oldDirPath.toUpper(), "b." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        newDirPath.toLower(), "c." + getSupportedFileExt()),
+                                        newDirPath.toLower(), "c." + getSupportedFileSuffix()),
                                 false)
                         .isValid());
     ASSERT_TRUE(
             internalCollection()
                     ->addTrack(
                             Track::newTemporary(
-                                    otherDirPath.toUpper(), "d." + getSupportedFileExt()),
+                                    otherDirPath.toUpper(), "d." + getSupportedFileSuffix()),
                             false)
                     .isValid());
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>844</width>
+    <width>1434</width>
     <height>823</height>
    </rect>
   </property>
@@ -42,7 +42,72 @@
        <string>Effect Chain Presets</string>
       </attribute>
       <layout class="QGridLayout" name="chainPresetGridLayout">
-       <item row="5" column="0" colspan="2">
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="chainPresetsTabHeader">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Drag and drop to rearrange lists and copy chains between lists. Create and edit chain presets in the effect units in the main window. Please refer the manual for further details.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="presetListControllerLabel">
+         <property name="text">
+          <string>Chain presets from these lists will be selectable in the given order in the main window and from controllers (depending on the controller mapping).</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="chainPresetsLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Effect Chain Presets</string>
+         </property>
+         <property name="topMargin" stdset="0">
+          <number>6</number>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QListView" name="quickEffectListView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0" colspan="2">
         <layout class="QVBoxLayout" name="chainDetailsVBoxLayout">
          <item>
           <widget class="QLabel" name="effectsInChainHeader">
@@ -79,6 +144,9 @@
              <property name="text">
               <string>Import</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroupPresetActions</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -89,6 +157,9 @@
              <property name="text">
               <string>Rename</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroupPresetActions</string>
+             </attribute>
             </widget>
            </item>
           </layout>
@@ -103,6 +174,9 @@
              <property name="text">
               <string>Export</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroupPresetActions</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -113,36 +187,16 @@
              <property name="text">
               <string>Delete</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroupPresetActions</string>
+             </attribute>
             </widget>
            </item>
           </layout>
          </item>
         </layout>
        </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QLabel" name="chainPresetsTabHeader">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Drag and drop to rearrange lists and move chains between lists.</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QListView" name="quickEffectListView">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
+       <item row="8" column="1">
         <widget class="QLabel" name="quickEffectChainPresetsLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -157,62 +211,20 @@
           </font>
          </property>
          <property name="text">
-          <string>QuickEffect Chain Presets</string>
+          <string>Quick Effect Chain Presets</string>
          </property>
          <property name="topMargin" stdset="0">
           <number>6</number>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="9" column="0">
         <widget class="QListView" name="chainListView">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QLabel" name="chainCreationHintLabel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Create and edit chain presets in the effect units in the main window.</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="chainPresetsLabel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Effect Chain Presets</string>
-         </property>
-         <property name="topMargin" stdset="0">
-          <number>6</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="presetListControllerLabel">
-         <property name="text">
-          <string>Presets from these lists may be loaded from controllers.</string>
          </property>
         </widget>
        </item>
@@ -468,6 +480,9 @@
         <property name="text">
          <string>Keep metaknob position</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupMetaKnob</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -475,6 +490,9 @@
         <property name="text">
          <string>Reset metaknob to effect default</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupMetaKnob</string>
+        </attribute>
        </widget>
       </item>
      </layout>
@@ -482,6 +500,22 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>chainListView</tabstop>
+  <tabstop>quickEffectListView</tabstop>
+  <tabstop>visibleEffectsTableView</tabstop>
+  <tabstop>hiddenEffectsTableView</tabstop>
+  <tabstop>chainPresetImportButton</tabstop>
+  <tabstop>chainPresetExportButton</tabstop>
+  <tabstop>chainPresetRenameButton</tabstop>
+  <tabstop>chainPresetDeleteButton</tabstop>
+  <tabstop>radioButtonKeepMetaknobPosition</tabstop>
+  <tabstop>radioButtonMetaknobLoadDefault</tabstop>
+ </tabstops>
  <resources/>
+ <buttongroups>
+  <buttongroup name="buttonGroupMetaKnob"/>
+  <buttongroup name="buttonGroupPresetActions"/>
+ </buttongroups>
  <connections/>
 </ui>

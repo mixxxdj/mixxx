@@ -41,6 +41,10 @@ class ChannelHandle {
         return m_iHandle;
     }
 
+    operator int() const {
+        return m_iHandle;
+    }
+
   private:
     ChannelHandle(int iHandle)
             : m_iHandle(iHandle) {
@@ -65,6 +69,10 @@ inline bool operator<(const ChannelHandle& h1, const ChannelHandle& h2) {
 
 inline bool operator==(const ChannelHandle& h1, const ChannelHandle& h2) {
     return h1.handle() == h2.handle();
+}
+
+inline bool operator==(const int& i, const ChannelHandle& h2) {
+    return i == h2.handle();
 }
 
 inline bool operator!=(const ChannelHandle& h1, const ChannelHandle& h2) {
@@ -95,7 +103,7 @@ class ChannelHandleAndGroup {
         return m_name;
     }
 
-    inline const ChannelHandle& handle() const {
+    inline ChannelHandle handle() const {
         return m_handle;
     }
 
@@ -181,7 +189,7 @@ class ChannelHandleMap {
         if (!handle.valid()) {
             return m_dummy;
         }
-        return m_data.at(handle.handle());
+        return m_data.at(handle);
     }
 
     void insert(const ChannelHandle& handle, const T& value) {
@@ -189,22 +197,28 @@ class ChannelHandleMap {
             return;
         }
 
-        int iHandle = handle.handle();
-        maybeExpand(iHandle + 1);
-        m_data[iHandle] = value;
+        maybeExpand(static_cast<int>(handle) + 1);
+        m_data[handle] = value;
     }
 
     T& operator[](const ChannelHandle& handle) {
         if (!handle.valid()) {
             return m_dummy;
         }
-        int iHandle = handle.handle();
-        maybeExpand(iHandle + 1);
-        return m_data[iHandle];
+        maybeExpand(static_cast<int>(handle) + 1);
+        return m_data[handle];
     }
 
     void clear() {
         m_data.clear();
+    }
+
+    int size() const {
+        return m_data.size();
+    }
+
+    bool isEmpty() {
+        return m_data.isEmpty();
     }
 
     typename container_type::iterator begin() {

@@ -1,0 +1,59 @@
+From e10d46e190b62dda04cf6377293dc42b69508657 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Daniel=20Sch=C3=BCrmann?= <daschuer@mixxx.org>
+Date: Sun, 2 Jan 2022 02:04:20 +0100
+Subject: [PATCH 2/5] Fix xwax build on windows
+
+---
+ lut.c       | 4 ++--
+ timecoder.c | 4 +++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+ mode change 100644 => 100755 timecoder.c
+
+diff --git a/lut.c b/lut.c
+index 55918aa..d9d1658 100644
+--- a/lut.c
++++ b/lut.c
+@@ -46,13 +46,13 @@ int lut_init(struct lut *lut, int nslots)
+             " (%d slots per hash, %zuKb)\n",
+             hashes, nslots, nslots / hashes, bytes / 1024);
+ 
+-    lut->slot = malloc(sizeof(struct slot) * nslots);
++    lut->slot = (struct slot*)(malloc(sizeof(struct slot) * nslots));
+     if (lut->slot == NULL) {
+         perror("malloc");
+         return -1;
+     }
+ 
+-    lut->table = malloc(sizeof(slot_no_t) * hashes);
++    lut->table = (slot_no_t*)(malloc(sizeof(slot_no_t) * hashes));
+     if (lut->table == NULL) {
+         perror("malloc");
+         return -1;
+diff --git a/timecoder.c b/timecoder.c
+old mode 100644
+new mode 100755
+index 31daa48..f41e378
+--- a/timecoder.c
++++ b/timecoder.c
+@@ -22,7 +22,9 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#ifndef _MSC_VER
+ #include <unistd.h>
++#endif
+ 
+ #include "debug.h"
+ #include "timecoder.h"
+@@ -349,7 +351,7 @@ int timecoder_monitor_init(struct timecoder *tc, int size)
+ {
+     assert(tc->mon == NULL);
+     tc->mon_size = size;
+-    tc->mon = malloc(SQ(tc->mon_size));
++    tc->mon = (unsigned char*)(malloc(SQ(tc->mon_size)));
+     if (tc->mon == NULL) {
+         perror("malloc");
+         return -1;
+-- 
+2.25.1
+

@@ -166,7 +166,7 @@ bool decodeFrameHeader(
 const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
 
 //static
-const QStringList SoundSourceProviderMp3::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderMp3::kSupportedFileTypes = {
         QStringLiteral("mp3"),
 };
 
@@ -392,7 +392,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     // Calculate average bitrate values
     DEBUG_ASSERT(m_seekFrameList.size() > 0); // see above
-    m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
+    m_avgSeekFrameCount = frameLength() / static_cast<SINT>(m_seekFrameList.size());
     if (cntBitrateFrames > 0) {
         const unsigned long avgBitrate = sumBitrateFrames / cntBitrateFrames;
         initBitrateOnce(avgBitrate / 1000); // bps -> kbps

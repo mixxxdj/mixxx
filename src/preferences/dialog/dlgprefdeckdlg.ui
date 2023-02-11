@@ -24,12 +24,12 @@
        <number>10</number>
       </property>
       <item row="5" column="0">
-       <widget class="QLabel" name="labelPlayingTrackProtection">
+       <widget class="QLabel" name="labelLoadWhenDeckPlaying">
         <property name="text">
-         <string>Playing track protection</string>
+         <string>Loading a track, when deck is playing</string>
         </property>
         <property name="buddy">
-         <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>
+         <cstring>comboBoxLoadWhenDeckPlaying</cstring>
         </property>
        </widget>
       </item>
@@ -145,11 +145,7 @@ CUP mode:
        </widget>
       </item>
       <item row="5" column="1" colspan="2">
-       <widget class="QCheckBox" name="checkBoxDisallowLoadToPlayingDeck">
-        <property name="text">
-         <string>Do not load tracks into playing decks</string>
-        </property>
-       </widget>
+       <widget class="QComboBox" name="comboBoxLoadWhenDeckPlaying"/>
       </item>
       <item row="2" column="1" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -661,7 +657,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>radioButtonElapsedAndRemaining</tabstop>
   <tabstop>comboBoxTimeFormat</tabstop>
   <tabstop>comboBoxLoadPoint</tabstop>
-  <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
+  <tabstop>comboBoxLoadWhenDeckPlaying</tabstop>
   <tabstop>checkBoxCloneDeckOnLoadDoubleTap</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>checkBoxInvertSpeedSlider</tabstop>

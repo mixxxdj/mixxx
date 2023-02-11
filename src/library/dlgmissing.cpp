@@ -37,7 +37,6 @@ DlgMissing::DlgMissing(
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);
-    connect(btnPurge, &QPushButton::clicked, this, &DlgMissing::clicked);
     connect(btnSelect, &QPushButton::clicked, this, &DlgMissing::selectAll);
     connect(m_pTrackTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
@@ -60,11 +59,6 @@ DlgMissing::~DlgMissing() {
 void DlgMissing::onShow() {
     m_pMissingTableModel->select();
     activateButtons(false);
-}
-
-void DlgMissing::clicked() {
-    // all marked tracks are gone now anyway
-    onShow();
 }
 
 void DlgMissing::onSearch(const QString& text) {
@@ -92,6 +86,14 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
 bool DlgMissing::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
+
+void DlgMissing::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+};
+
+bool DlgMissing::restoreCurrentViewState() {
+    return m_pTrackTableView->restoreCurrentViewState();
+};
 
 void DlgMissing::setFocus() {
     m_pTrackTableView->setFocus();

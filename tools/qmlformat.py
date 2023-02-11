@@ -14,21 +14,36 @@ qmlformat is not installed or not in your $PATH, please install.
 """
 
 
+def find_qt_version():
+    moc_executable = shutil.which("moc")
+    if not moc_executable:
+        return None
+
+    moc_version = subprocess.check_output((moc_executable, "-v")).strip()
+    matchobj = re.search("moc ([0-9]*)\\.([0-9]*)\\.[0-9]*", str(moc_version))
+    if not matchobj:
+        return None
+
+    return (int(matchobj.group(1)), int(matchobj.group(2)))
+
+
 def main(argv=None):
-    qmlformat_executable = shutil.which("qmlformat")
+    qmlformat_executable = None
+    # First look up at the most common location for QT6 which is
+    # usually not in PATH
+    if sys.platform != "win32":
+        qmlformat_executable = shutil.which(
+            "qmlformat", path="/usr/lib/qt6/bin:/usr/lib64/qt6/bin"
+        )
+    # Then look in PATH
     if not qmlformat_executable:
-        # verify if qmlformat is available on this machine
-        moc_executable = shutil.which("moc")
-        if moc_executable:
-            moc_version = subprocess.check_output(
-                (moc_executable, "-v")
-            ).strip()
-            v = re.search("moc ([0-9]*)\\.([0-9]*)\\.[0-9]*", str(moc_version))
-            if v:
-                version = (int(v.group(1)), int(v.group(2)))
-                if version < (5, 15):
-                    # Succeed if a Qt Version < 5.15 is used without qmlformat
-                    return 0
+        qmlformat_executable = shutil.which("qmlformat")
+    if not qmlformat_executable:
+        qt_version = find_qt_version()
+        if qt_version is None or qt_version < (5, 15):
+            # Succeed if a Qt Version < 5.15 is used without qmlformat
+            return 0
+
         print(QMLFORMAT_MISSING_MESSAGE.strip(), file=sys.stderr)
         return 1
 
@@ -38,21 +53,6 @@ def main(argv=None):
 
     for filename in args.file:
         subprocess.call((qmlformat_executable, "-i", filename))
-
-        # Replace required properties
-        # (incompatible with Qt 5.12)
-        with open(filename, mode="r") as fp:
-            text = fp.read()
-
-        text = re.sub(
-            r"^(\s*)required property (.*)$",
-            r"\g<1>property \g<2> // required",
-            text,
-            flags=re.MULTILINE,
-        )
-
-        with open(filename, mode="w") as fp:
-            fp.write(text)
 
     return 0
 

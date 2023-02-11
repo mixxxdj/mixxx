@@ -11,7 +11,6 @@
 #include "recording/recordingmanager.h"
 #include "track/track_decl.h"
 
-class PlaylistTableModel;
 class WLibrary;
 class WTrackTableView;
 
@@ -24,16 +23,18 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ~DlgRecording() override;
 
     void onSearch(const QString& text) override;
-    void onShow() override;
+    void onShow() override{};
     bool hasFocus() const override;
     void setFocus() override;
-    void loadSelectedTrack() override;
+    void activateSelectedTrack() override;
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
+    void saveCurrentViewState() override;
+    bool restoreCurrentViewState() override;
 
   public slots:
     void slotRecordingStateChanged(bool);
@@ -46,13 +47,13 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, const QString& group, bool play);
     void restoreSearch(const QString& search);
+    void restoreModelState();
 
   private:
     UserSettingsPointer m_pConfig;
     WTrackTableView* m_pTrackTableView;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    QString m_recordingDir;
 
     void refreshLabels();
     void slotRecButtonClicked(bool checked);

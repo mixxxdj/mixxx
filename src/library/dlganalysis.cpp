@@ -3,6 +3,7 @@
 #include <QSqlTableModel>
 
 #include "analyzer/analyzerprogress.h"
+#include "analyzer/analyzerscheduledtrack.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
@@ -119,8 +120,8 @@ void DlgAnalysis::onSearch(const QString& text) {
     m_pAnalysisLibraryTableModel->search(text);
 }
 
-void DlgAnalysis::loadSelectedTrack() {
-    m_pAnalysisLibraryTableView->loadSelectedTrack();
+void DlgAnalysis::activateSelectedTrack() {
+    m_pAnalysisLibraryTableView->activateSelectedTrack();
 }
 
 void DlgAnalysis::loadSelectedTrackToGroup(const QString& group, bool play) {
@@ -161,7 +162,7 @@ void DlgAnalysis::analyze() {
     if (m_bAnalysisActive) {
         emit stopAnalysis();
     } else {
-        QList<TrackId> trackIds;
+        QList<AnalyzerScheduledTrack> tracks;
 
         QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
         foreach(QModelIndex selectedIndex, selectedIndexes) {
@@ -169,10 +170,10 @@ void DlgAnalysis::analyze() {
                 selectedIndex.row(),
                 m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data());
             if (trackId.isValid()) {
-                trackIds.append(trackId);
+                tracks.append(trackId);
             }
         }
-        emit analyzeTracks(trackIds);
+        emit analyzeTracks(tracks);
     }
 }
 
@@ -228,4 +229,12 @@ void DlgAnalysis::showAllSongs() {
 void DlgAnalysis::installEventFilter(QObject* pFilter) {
     QWidget::installEventFilter(pFilter);
     m_pAnalysisLibraryTableView->installEventFilter(pFilter);
+}
+
+void DlgAnalysis::saveCurrentViewState() {
+    m_pAnalysisLibraryTableView->saveCurrentViewState();
+}
+
+bool DlgAnalysis::restoreCurrentViewState() {
+    return m_pAnalysisLibraryTableView->restoreCurrentViewState();
 }

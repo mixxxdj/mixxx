@@ -248,6 +248,9 @@ mixxx::BeatsPointer Beats::fromByteArray(
         const QString& beatsVersion,
         const QString& beatsSubVersion,
         const QByteArray& byteArray) {
+    VERIFY_OR_DEBUG_ASSERT(!beatsVersion.isEmpty()) {
+        return nullptr;
+    }
     mixxx::BeatsPointer pBeats = nullptr;
     if (beatsVersion == BEAT_GRID_1_VERSION || beatsVersion == BEAT_GRID_2_VERSION) {
         pBeats = fromBeatGridByteArray(sampleRate, beatsSubVersion, byteArray);

@@ -1,12 +1,11 @@
 import "." as Skin
 import QtQuick 2.12
-import QtQuick.Layouts 1.11
 import "Theme"
 
 Item {
     id: root
 
-    property string group // required
+    required property string group
 
     Rectangle {
         id: gainKnobFrame
@@ -28,7 +27,6 @@ Item {
             key: "pregain"
             color: Theme.gainKnobColor
         }
-
     }
 
     Item {
@@ -66,7 +64,6 @@ Item {
             barColor: Theme.volumeSliderBarColor
             bg: Theme.imgVolumeSliderBackground
         }
-
     }
 
     Skin.ControlButton {
@@ -81,5 +78,4 @@ Item {
         activeColor: Theme.pflActiveButtonColor
         toggleable: true
     }
-
 }

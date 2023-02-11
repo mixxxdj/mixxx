@@ -36,26 +36,24 @@ DlgHidden::DlgHidden(
     m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollectionManager());
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
+    // set up button connections
     connect(btnUnhide,
             &QPushButton::clicked,
             m_pTrackTableView,
             &WTrackTableView::slotUnhide);
-    connect(btnUnhide,
-            &QPushButton::clicked,
-            this,
-            &DlgHidden::clicked);
     connect(btnPurge,
             &QPushButton::clicked,
             m_pTrackTableView,
             &WTrackTableView::slotPurge);
-    connect(btnPurge,
+    connect(btnDelete,
             &QPushButton::clicked,
-            this,
-            &DlgHidden::clicked);
+            m_pTrackTableView,
+            &WTrackTableView::slotDeleteTracksFromDisk);
     connect(btnSelect,
             &QPushButton::clicked,
             this,
             &DlgHidden::selectAll);
+    // set up common track table view connections
     connect(m_pTrackTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -100,18 +98,14 @@ QString DlgHidden::currentSearch() {
     return m_pHiddenTableModel->currentSearch();
 }
 
-void DlgHidden::clicked() {
-    // all marked tracks are gone now anyway
-    onShow();
-}
-
 void DlgHidden::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
 void DlgHidden::activateButtons(bool enable) {
-    btnPurge->setEnabled(enable);
     btnUnhide->setEnabled(enable);
+    btnPurge->setEnabled(enable);
+    btnDelete->setEnabled(enable);
 }
 
 void DlgHidden::selectionChanged(const QItemSelection &selected,
@@ -122,6 +116,14 @@ void DlgHidden::selectionChanged(const QItemSelection &selected,
 
 bool DlgHidden::hasFocus() const {
     return m_pTrackTableView->hasFocus();
+}
+
+void DlgHidden::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+bool DlgHidden::restoreCurrentViewState() {
+    return m_pTrackTableView->restoreCurrentViewState();
 }
 
 void DlgHidden::setFocus() {

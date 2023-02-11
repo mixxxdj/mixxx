@@ -10,10 +10,19 @@
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 
+namespace {
+
+const QString kModelName = "crate";
+
+} // anonymous namespace
+
 CrateTableModel::CrateTableModel(
         QObject* pParent,
         TrackCollectionManager* pTrackCollectionManager)
-        : TrackSetTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.crate") {
+        : TrackSetTableModel(
+                  pParent,
+                  pTrackCollectionManager,
+                  "mixxx.db.model.crate") {
 }
 
 void CrateTableModel::selectCrate(CrateId crateId) {
@@ -22,6 +31,12 @@ void CrateTableModel::selectCrate(CrateId crateId) {
         qDebug() << "Already focused on crate " << crateId;
         return;
     }
+    // Store search text
+    QString currSearch = currentSearch();
+    if (m_selectedCrate.isValid() && !currSearch.trimmed().isEmpty()) {
+        m_searchTexts.insert(m_selectedCrate.value(), currSearch);
+    }
+
     m_selectedCrate = crateId;
 
     QString tableName = QStringLiteral("crate_%1").arg(m_selectedCrate.toString());
@@ -56,7 +71,9 @@ void CrateTableModel::selectCrate(CrateId crateId) {
             LIBRARYTABLE_ID,
             columns,
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setSearch("");
+
+    // Restore search text
+    setSearch(m_searchTexts.value(m_selectedCrate.value()));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
@@ -109,7 +126,9 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
             Capability::RemoveCrate |
-            Capability::ResetPlayed;
+            Capability::ResetPlayed |
+            Capability::RemoveFromDisk |
+            Capability::Analyze;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;
@@ -177,4 +196,23 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     select();
+}
+
+QString CrateTableModel::modelKey(bool noSearch) const {
+    if (m_selectedCrate.isValid()) {
+        if (noSearch) {
+            return kModelName + QStringLiteral(":") +
+                    QString::number(m_selectedCrate.value());
+        }
+        return kModelName + QStringLiteral(":") +
+                QString::number(m_selectedCrate.value()) +
+                QStringLiteral("#") +
+                currentSearch();
+    } else {
+        if (noSearch) {
+            return kModelName;
+        }
+        return kModelName + QStringLiteral("#") +
+                currentSearch();
+    }
 }

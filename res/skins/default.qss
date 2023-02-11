@@ -60,15 +60,6 @@ WColorPicker QPushButton[checked="true"] {
   qproperty-icon: url(:/images/ic_checkmark.svg);
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  margin-left: 4px;
-  font-family: "Open Sans";
-  font-weight: bold;
-  font-size: 18px;
-  color: #ff8800;
-}
-
 /* Clear button */
 #SearchClearButton {
   background: none;
@@ -104,6 +95,7 @@ WCoverArtMenu,
 WEffectChainPresetButton QMenu,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 0.15em;
 }

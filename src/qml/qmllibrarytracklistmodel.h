@@ -1,5 +1,6 @@
 #pragma once
 #include <QIdentityProxyModel>
+#include <QtQml>
 
 class LibraryTableModel;
 
@@ -7,6 +8,10 @@ namespace mixxx {
 namespace qml {
 
 class QmlLibraryTrackListModel : public QIdentityProxyModel {
+    Q_OBJECT
+    QML_NAMED_ELEMENT(LibraryTrackListModel)
+    QML_UNCREATABLE("Only accessible via Mixxx.Library.model")
+
   public:
     enum Roles {
         TitleRole = Qt::UserRole,
@@ -23,6 +28,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
     QVariant data(const QModelIndex& index, int role) const override;
     int columnCount(const QModelIndex& index = QModelIndex()) const override;
     QHash<int, QByteArray> roleNames() const override;
+    Q_INVOKABLE QVariant get(int row) const;
 };
 
 } // namespace qml

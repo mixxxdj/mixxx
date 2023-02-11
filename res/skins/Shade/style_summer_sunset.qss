@@ -136,11 +136,6 @@ WEffectSelector::indicator:unchecked:selected,
   background-color: #706633;
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  color: #FF9900;
-}
-
 WTrackTableView:focus,
 WLibrarySidebar:focus,
 WLibraryTextBrowser:focus,
@@ -166,7 +161,7 @@ WSearchLineEdit:focus {
     border: 1px solid #52F904;
     }
 
-WLibrary QRadioButton::indicator:checked {
+#LibraryFeatureControls QRadioButton::indicator:checked {
   image: url(skin:/btn/btn_lib_radio_button_on_neongreen.svg) center center;
 }
 

@@ -5,7 +5,6 @@
 #include <QWidget>
 #include <memory>
 
-#include "defs_urls.h"
 #include "library/library_decl.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
@@ -19,6 +18,13 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
         AddToAutoDJBottom = 1,
         AddToAutoDJTop = 2,
         Ignore = 3,
+    };
+
+    enum class CoverArtFetcherQuality {
+        Low = 0,
+        Medium = 1,
+        High = 2,
+        Highest = 3,
     };
 
     DlgPrefLibrary(
@@ -60,6 +66,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   private:
     void initializeDirList();
     void setLibraryFont(const QFont& font);
+    void updateSearchLineEditHistoryOptions();
 
     QStandardItemModel m_dirListModel;
     UserSettingsPointer m_pConfig;

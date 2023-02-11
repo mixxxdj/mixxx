@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+#include <QtQml>
 
 #include "effects/effectsmanager.h"
 
@@ -17,6 +18,11 @@ class QmlEffectSlotProxy : public QObject {
     Q_PROPERTY(QString effectId READ getEffectId WRITE setEffectId NOTIFY effectIdChanged)
     Q_PROPERTY(mixxx::qml::QmlEffectManifestParametersModel* parametersModel
                     READ getParametersModel NOTIFY parametersModelChanged)
+    QML_NAMED_ELEMENT(EffectSlotProxy)
+    QML_UNCREATABLE(
+            "Only accessible via "
+            "Mixxx.EffectsManager.getEffectSlot(rackNumber, unitNumber, "
+            "effectNumber)");
 
   public:
     explicit QmlEffectSlotProxy(

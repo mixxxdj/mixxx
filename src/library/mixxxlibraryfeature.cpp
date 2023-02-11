@@ -176,12 +176,15 @@ void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 #endif
 
 void MixxxLibraryFeature::activate() {
+    //qDebug() << "MixxxLibraryFeature::activate()";
+    emit saveModelState();
     emit showTrackModel(m_pLibraryTableModel);
     emit enableCoverArtDisplay(true);
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
+    emit saveModelState();
     emit switchToView(itemName);
     if (m_pMissingView && itemName == kMissingTitle) {
         emit restoreSearch(m_pMissingView->currentSearch());

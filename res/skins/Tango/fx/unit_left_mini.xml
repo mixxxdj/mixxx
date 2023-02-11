@@ -237,7 +237,7 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml">
+          <Template src="skin:../Tango/controls/button_2state_persist.xml">
             <SetVariable name="ObjectName">MixModeButton</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
             <SetVariable name="Size">30f,18f</SetVariable>

@@ -1,12 +1,11 @@
-import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
+import Mixxx 1.0 as Mixxx
+import Mixxx.Controls 1.0 as MixxxControls
 import QtQuick 2.12
-import QtQuick.Shapes 1.12
 
 Mixxx.WaveformOverview {
     id: root
 
-    property string group // required
+    required property string group
 
     player: Mixxx.PlayerManager.getPlayer(root.group)
 
@@ -15,7 +14,9 @@ Mixxx.WaveformOverview {
 
         group: root.group
         key: "track_loaded"
-        onValueChanged: markers.visible = value
+        onValueChanged: (value) => {
+            markers.visible = value;
+        }
     }
 
     Mixxx.ControlProxy {
@@ -35,11 +36,12 @@ Mixxx.WaveformOverview {
             model: 8
 
             MixxxControls.WaveformOverviewHotcueMarker {
-                anchors.fill: parent
-                group: root.group
-                hotcueNumber: index + 1
-            }
+                required property int index
 
+                anchors.fill: parent
+                group: root.group // qmllint disable unqualified
+                hotcueNumber: this.index + 1
+            }
         }
 
         MixxxControls.WaveformOverviewMarker {
@@ -49,23 +51,18 @@ Mixxx.WaveformOverview {
             group: root.group
             key: "playposition"
         }
-
     }
 
     MouseArea {
-        id: mousearea
-
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
-        onPressed: {
-            playPositionControl.value = mouse.x / mousearea.width;
+        onPressed: (mouse) => {
+            playPositionControl.value = mouse.x / this.width;
         }
-        onPositionChanged: {
-            if (containsPress)
-                playPositionControl.value = mouse.x / width;
-
+        onPositionChanged: (mouse) => {
+            if (this.containsPress)
+                playPositionControl.value = mouse.x / this.width;
         }
     }
-
 }

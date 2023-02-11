@@ -8,7 +8,7 @@ namespace {
 const QString kArtistTitleSeparatorWithSpaces = QStringLiteral(" - ");
 const QString kArtistTitleSeparator = QStringLiteral("_-_");
 
-const QChar kFileExtensionSeparator = '.';
+const QChar kFileSuffixSeparator = '.';
 
 } // anonymous namespace
 
@@ -30,9 +30,9 @@ bool TrackInfo::parseArtistTitleFromFileName(
         }
     }
     auto title = titleWithFileType;
-    if (titleWithFileType.contains(kFileExtensionSeparator)) {
+    if (titleWithFileType.contains(kFileSuffixSeparator)) {
         // Strip file extension starting at the right-most '.'
-        title = titleWithFileType.section(kFileExtensionSeparator, 0, -2);
+        title = titleWithFileType.section(kFileSuffixSeparator, 0, -2);
     }
     title = title.trimmed();
     if (!title.isEmpty()) {

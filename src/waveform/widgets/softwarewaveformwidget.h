@@ -2,9 +2,9 @@
 
 #include <QWidget>
 
-#include "waveformwidgetabstract.h"
+#include "nonglwaveformwidgetabstract.h"
 
-class SoftwareWaveformWidget : public QWidget, public WaveformWidgetAbstract {
+class SoftwareWaveformWidget : public NonGLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     virtual ~SoftwareWaveformWidget();

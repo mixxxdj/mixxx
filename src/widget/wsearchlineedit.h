@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QComboBox>
+#include <QCompleter>
 #include <QDomNode>
 #include <QEvent>
 #include <QTimer>
@@ -22,9 +23,13 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     static constexpr int kMaxDebouncingTimeoutMillis = 9999;
     static constexpr int kSaveTimeoutMillis = 5000;
     static constexpr int kMaxSearchEntries = 50;
+    static constexpr bool kCompletionsEnabledDefault = true;
+    static constexpr bool kHistoryShortcutsEnabledDefault = true;
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
+    static void setSearchCompletionsEnabled(bool searchCompletionsEnabled);
+    static void setSearchHistoryShortcutsEnabled(bool searchHistoryShortcutsEnabled);
     virtual void showPopup() override;
 
     explicit WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig = nullptr);
@@ -38,10 +43,11 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void focusOutEvent(QFocusEvent*) override;
     bool event(QEvent*) override;
     bool eventFilter(QObject* obj, QEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
   signals:
     void search(const QString& text);
-    FocusWidget searchbarFocusChange(FocusWidget newFocusWidget);
+    FocusWidget setLibraryFocus(FocusWidget newFocusWidget);
 
   public slots:
     void slotSetFont(const QFont& font);
@@ -73,13 +79,15 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     // value provider that sends signals whenever the corresponding
     // configuration value changes.
     static int s_debouncingTimeoutMillis;
+    static bool s_completionsEnabled;
+    static bool s_historyShortcutsEnabled;
 
     void refreshState();
 
     void enableSearch(const QString& text);
     void updateEditBox(const QString& text);
-    void updateClearButton(const QString& text);
-    void updateStyleMetrics();
+    void updateClearAndDropdownButton(const QString& text);
+    void updateCompleter();
     void deleteSelectedComboboxItem();
     void deleteSelectedListItem();
 
@@ -96,12 +104,12 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void loadQueriesFromConfig();
     void saveQueriesInConfig();
 
+    parented_ptr<QCompleter> m_completer;
     parented_ptr<QToolButton> const m_clearButton;
 
-    int m_frameWidth;
     int m_innerHeight;
-    int m_dropButtonWidth;
 
     QTimer m_debouncingTimer;
     QTimer m_saveTimer;
+    bool m_queryEmitted;
 };

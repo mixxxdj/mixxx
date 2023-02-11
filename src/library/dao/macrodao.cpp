@@ -35,7 +35,7 @@ bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
         if (!macro->getId().isValid()) {
             macro->setId(DbId(query.lastInsertId()));
         } else {
-            DEBUG_ASSERT(query.lastInsertId() == macro->getId().value())
+            DEBUG_ASSERT(query.lastInsertId() == macro->getId().value());
         }
         macro->setDirty(false);
         return true;

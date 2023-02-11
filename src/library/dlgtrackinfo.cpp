@@ -1,6 +1,5 @@
 #include "library/dlgtrackinfo.h"
 
-#include <QDesktopServices>
 #include <QSignalBlocker>
 #include <QStringBuilder>
 #include <QTreeWidget>
@@ -10,6 +9,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
+#include "library/library_prefs.h"
 #include "library/trackmodel.h"
 #include "moc_dlgtrackinfo.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -23,6 +23,7 @@
 #include "util/desktophelper.h"
 #include "util/duration.h"
 #include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
 
 namespace {
@@ -37,13 +38,16 @@ const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
 } // namespace
 
 DlgTrackInfo::DlgTrackInfo(
+        UserSettingsPointer pUserSettings,
         const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
+          m_pUserSettings(std::move(pUserSettings)),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
-          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
+          m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
+          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
           m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
     init();
 }
@@ -78,6 +82,7 @@ void DlgTrackInfo::init() {
         btnPrev->hide();
     }
 
+    // QDialog buttons
     connect(btnApply,
             &QPushButton::clicked,
             this,
@@ -93,30 +98,25 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotCancel);
 
-    connect(bpmDouble,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmDouble);
-    connect(bpmHalve,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmHalve);
-    connect(bpmTwoThirds,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmTwoThirds);
-    connect(bpmThreeFourth,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmThreeFourth);
-    connect(bpmFourThirds,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmFourThirds);
-    connect(bpmThreeHalves,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmThreeHalves);
+    // BPM edit buttons
+    connect(bpmDouble, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Double);
+    });
+    connect(bpmHalve, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Halve);
+    });
+    connect(bpmTwoThirds, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
+    });
+    connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
+    });
+    connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
+    });
+    connect(bpmThreeHalves, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
+    });
     connect(bpmClear,
             &QPushButton::clicked,
             this,
@@ -151,19 +151,22 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setTitle(txtTrackName->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setTitle(
+                        txtTrackName->text().trimmed());
             });
     connect(txtArtist,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setArtist(txtArtist->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setArtist(
+                        txtArtist->text().trimmed());
             });
     connect(txtAlbum,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refAlbumInfo().setTitle(txtAlbum->text().trimmed());
+                m_trackRecord.refMetadata().refAlbumInfo().setTitle(
+                        txtAlbum->text().trimmed());
             });
     connect(txtAlbumArtist,
             &QLineEdit::editingFinished,
@@ -197,13 +200,18 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setYear(txtYear->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setYear(
+                        txtYear->text().trimmed());
             });
-    connect(txtTrackNumber, &QLineEdit::editingFinished, [this]() {
-        m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
-                txtTrackNumber->text().trimmed());
-    });
+    connect(txtTrackNumber,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
+                        txtTrackNumber->text().trimmed());
+            });
 
+    // Import and file browser buttons
     connect(btnImportMetadataFromFile,
             &QPushButton::clicked,
             this,
@@ -219,6 +227,7 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotOpenInFileBrowser);
 
+    // Cover art
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -226,12 +235,14 @@ void DlgTrackInfo::init() {
                 this,
                 &DlgTrackInfo::slotCoverFound);
     }
-    connect(m_pWCoverArtLabel.get(),
-            &WCoverArtLabel::coverInfoSelected,
+
+    connect(m_pWCoverArtMenu,
+            &WCoverArtMenu::coverInfoSelected,
             this,
             &DlgTrackInfo::slotCoverInfoSelected);
-    connect(m_pWCoverArtLabel.get(),
-            &WCoverArtLabel::reloadCoverArt,
+
+    connect(m_pWCoverArtMenu,
+            &WCoverArtMenu::reloadCoverArt,
             this,
             &DlgTrackInfo::slotReloadCoverArt);
 }
@@ -295,11 +306,11 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 
     setWindowTitle(track.getInfo());
 
+    // Cover art, file type and 'date added'
     replaceTrackRecord(
             track.getRecord(),
             track.getLocation());
 
-    // Non-editable track fields
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
 
     reloadTrackBeats(track);
@@ -325,7 +336,8 @@ void DlgTrackInfo::replaceTrackRecord(
             m_trackRecord.getFileType());
     txtDateAdded->setText(
             mixxx::displayLocalDateTime(
-                    m_trackRecord.getDateAdded()));
+                    mixxx::localDateTimeFromUtc(
+                            m_trackRecord.getDateAdded())));
 
     updateTrackMetadataFields();
 }
@@ -359,8 +371,12 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     // Non-editable fields
     txtDuration->setText(
             m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
-    txtBitrate->setText(
-            m_trackRecord.getMetadata().getBitrateText());
+    QString bitrate = m_trackRecord.getMetadata().getBitrateText();
+    if (bitrate.isEmpty()) {
+        txtBitrate->clear();
+    } else {
+        txtBitrate->setText(bitrate + QChar(' ') + mixxx::audio::Bitrate::unit());
+    }
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
                     m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
@@ -420,7 +436,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
         return;
     }
     loadTrackInternal(pTrack);
-    if (m_pDlgTagFetcher && m_pLoadedTrack) {
+    if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
     }
 }
@@ -432,7 +448,7 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_currentTrackIndex = index;
     loadTrackInternal(pTrack);
-    if (m_pDlgTagFetcher && m_currentTrackIndex.isValid()) {
+    if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_currentTrackIndex);
     }
 }
@@ -484,6 +500,19 @@ void DlgTrackInfo::saveTrack() {
         return;
     }
 
+    // In case Apply is triggered by hotkey AND a QLineEdit with pending changes
+    // is focused AND the user did not hit Enter to finish editing,
+    // the content of that focused line edit would be reset to the last confirmed state.
+    // This hack makes a focused QLineEdit emit editingFinished() (clearFocus()
+    // implicitly emits a focusOutEvent()
+    if (this == QApplication::activeWindow()) {
+        auto focusWidget = QApplication::focusWidget();
+        if (focusWidget) {
+            focusWidget->clearFocus();
+            focusWidget->setFocus();
+        }
+    }
+
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
     const QSignalBlocker signalBlocker(this);
@@ -525,31 +554,10 @@ void DlgTrackInfo::clear() {
     txtLocation->setText("");
 }
 
-void DlgTrackInfo::slotBpmDouble() {
-    slotBpmScale(mixxx::Beats::BpmScale::Double);
-}
-
-void DlgTrackInfo::slotBpmHalve() {
-    slotBpmScale(mixxx::Beats::BpmScale::Halve);
-}
-
-void DlgTrackInfo::slotBpmTwoThirds() {
-    slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
-}
-
-void DlgTrackInfo::slotBpmThreeFourth() {
-    slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
-}
-
-void DlgTrackInfo::slotBpmFourThirds() {
-    slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
-}
-
-void DlgTrackInfo::slotBpmThreeHalves() {
-    slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
-}
-
 void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
+    if (!m_pBeatsClone) {
+        return;
+    }
     const auto scaledBeats = m_pBeatsClone->tryScale(bpmScale);
     if (scaledBeats) {
         m_pBeatsClone = *scaledBeats;
@@ -666,10 +674,12 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
     QImage coverImage;
+    const auto resetMissingTagMetadata = m_pUserSettings->getValue<bool>(
+            mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
     const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
-                            &trackMetadata, &coverImage);
+                            &trackMetadata, &coverImage, resetMissingTagMetadata);
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
@@ -697,7 +707,7 @@ void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     if (!m_pDlgTagFetcher) {
         m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
-                m_pTrackModel);
+                m_pUserSettings, m_pTrackModel);
         connect(m_pDlgTagFetcher.get(),
                 &QDialog::finished,
                 this,

@@ -9,8 +9,10 @@
 /// EqualizerEffectChain is hardwired to one input channel, always
 /// enabled, and has the mix knob fully enabled.
 class EqualizerEffectChain : public PerGroupEffectChain {
+    Q_OBJECT
   public:
-    EqualizerEffectChain(const QString& group,
+    EqualizerEffectChain(
+            const ChannelHandleAndGroup& handleAndGroup,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 

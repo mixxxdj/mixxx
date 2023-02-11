@@ -77,7 +77,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             volatile const bool* pCancel) const;
 
     // Only used by friend class TrackCollection, but public for testing!
-    void saveTrack(Track* pTrack) const;
+    bool saveTrack(Track* pTrack) const;
 
     /// Update the play counter properties according to the corresponding
     /// aggregated properties obtained from the played history.
@@ -166,7 +166,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     }
     void addTracksFinish(bool rollback = false);
 
-    bool updateTrack(Track* pTrack) const;
+    bool updateTrack(const Track& track) const;
 
     void hideAllTracks(const QDir& rootDir) const;
 

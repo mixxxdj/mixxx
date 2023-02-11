@@ -1,6 +1,7 @@
 #pragma once
 
-#include "preferences/usersettings.h"
+#include <QMimeType>
+
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
 #include "util/sandbox.h"
@@ -23,8 +24,8 @@ class SoundSourceProxy {
     /// registered.
     static bool registerProviders();
 
-    static QStringList getSupportedFileExtensions() {
-        return s_soundSourceProviders.getRegisteredFileExtensions();
+    static QStringList getSupportedFileTypes() {
+        return s_soundSourceProviders.getRegisteredFileTypes();
     }
     static const QStringList& getSupportedFileNamePatterns() {
         return s_supportedFileNamePatterns;
@@ -32,24 +33,39 @@ class SoundSourceProxy {
     static const QRegularExpression& getSupportedFileNamesRegex() {
         return s_supportedFileNamesRegex;
     }
+    static QString getFileTypeByMimeType(const QMimeType& mimeType) {
+        return s_fileTypeByMimeType.value(mimeType);
+    }
+
+    /// Get the list of supported file extensions
+    ///
+    /// A single file type may map to multiple file suffixes, e.g.
+    /// "aiff" to "aif" or "aiff".
+    static QStringList getSupportedFileSuffixes();
+
+    static QStringList getFileSuffixesForFileType(const QString& fileType);
 
     static bool isUrlSupported(const QUrl& url);
     static bool isFileSupported(const mixxx::FileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
-    static bool isFileExtensionSupported(const QString& fileExtension);
+    static bool isFileTypeSupported(const QString& fileType);
+    static bool isFileSuffixSupported(const QString& fileSuffix);
 
     static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForUrl(
             const QUrl& url);
-    static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForFileExtension(
-            const QString& fileExtension) {
-        return s_soundSourceProviders.getRegistrationsForFileExtension(fileExtension);
+    static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForFileType(
+            const QString& fileType) {
+        return s_soundSourceProviders.getRegistrationsForFileType(fileType);
     }
-    static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileExtension(
-            const QString& fileExtension);
+    static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileType(
+            const QString& fileType);
 
-    explicit SoundSourceProxy(
+    explicit SoundSourceProxy(TrackPointer pTrack);
+
+    // Only needed for testing all available providers explicitly
+    SoundSourceProxy(
             TrackPointer pTrack,
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+            mixxx::SoundSourceProviderPointer pProvider);
 
     /// The track object that has been passed at construction.
     ///
@@ -86,7 +102,8 @@ class SoundSourceProxy {
     importTrackMetadataAndCoverImageFromFile(
             mixxx::FileAccess trackFileAccess,
             mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverImage);
+            QImage* pCoverImage,
+            bool resetMissingTagMetadata);
 
     /// Import both track metadata and/or the cover image of the
     /// captured track object from the corresponding file.
@@ -101,7 +118,8 @@ class SoundSourceProxy {
     std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
     importTrackMetadataAndCoverImage(
             mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverImage) const;
+            QImage* pCoverImage,
+            bool resetMissingTagMetadata) const;
 
     /// Controls which (metadata/coverart) and how tags are (re-)imported from
     /// audio files when creating a SoundSourceProxy.
@@ -126,6 +144,13 @@ class SoundSourceProxy {
         Always,
     };
 
+    enum class UpdateTrackFromSourceResult {
+        NotUpdated,
+        MetadataImportFailed,
+        MetadataImportedAndUpdated,
+        ExtraMetadataImportedAndMerged,
+    };
+
     /// Updates file type, metadata, and cover image of the track object
     /// from the source file according to the given mode.
     ///
@@ -148,13 +173,18 @@ class SoundSourceProxy {
     /// analysis in case unexpected behavior has been reported.
     ///
     /// Returns true if the track has been modified and false otherwise.
-    bool updateTrackFromSource(
-            const UserSettingsPointer& pConfig,
-            UpdateTrackFromSourceMode mode);
+    UpdateTrackFromSourceResult updateTrackFromSource(
+            UpdateTrackFromSourceMode mode,
+            const SyncTrackMetadataParams& syncParams);
 
     /// Opening the audio source through the proxy will update the
     /// audio properties of the corresponding track object. Returns
     /// a null pointer on failure.
+    ///
+    /// The caller is responsible for invoking AudioSource::close().
+    /// Otherwise the underlying files will remain open until the
+    /// last reference is dropped. One of these references is hold
+    /// by SoundSourceProxy as a member.
     ///
     /// Note: If opening the audio stream fails the selection
     /// process may continue among the available providers and
@@ -164,27 +194,23 @@ class SoundSourceProxy {
     mixxx::AudioSourcePointer openAudioSource(
             const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
 
-    /// Explicitly close the AudioSource.
-    ///
-    /// This will happen implicitly when the instance goes out
-    /// of scope, i.e. upon destruction.
-    void closeAudioSource();
-
   private:
     static mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
     static QRegularExpression s_supportedFileNamesRegex;
+    static QHash<QMimeType, QString> s_fileTypeByMimeType;
 
     friend class TrackCollectionManager;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
-            const UserSettingsPointer& pConfig);
+            const SyncTrackMetadataParams& syncParams);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
-    explicit SoundSourceProxy(
-            const QUrl& url,
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+    explicit SoundSourceProxy(const QUrl& url);
+
+    bool openSoundSource(
+            const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
 
     const TrackPointer m_pTrack;
 
@@ -197,11 +223,12 @@ class SoundSourceProxy {
     // provider and is initialized with -1 if no
     int m_providerRegistrationIndex;
 
-    void initSoundSource(
-            const mixxx::SoundSourceProviderPointer& pProvider);
+    void findProviderAndInitSoundSource();
 
-    mixxx::SoundSourceProviderPointer primaryProvider(
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+    bool initSoundSourceWithProvider(
+            mixxx::SoundSourceProviderPointer&& pProvider);
+
+    mixxx::SoundSourceProviderPointer primaryProvider();
     mixxx::SoundSourceProviderPointer nextProvider();
     std::pair<mixxx::SoundSourceProviderPointer, mixxx::SoundSource::OpenMode>
             nextProviderWithOpenMode(mixxx::SoundSource::OpenMode);
@@ -214,10 +241,4 @@ class SoundSourceProxy {
     // This pointer must stay in this class together with
     // the corresponding track pointer. Don't pass it around!!
     mixxx::SoundSourcePointer m_pSoundSource;
-
-    // Keeps track of opening and closing the corresponding
-    // SoundSource. This pointer can safely be passed around,
-    // because internally it contains a reference to the TIO
-    // that keeps it alive.
-    mixxx::AudioSourcePointer m_pAudioSource;
 };

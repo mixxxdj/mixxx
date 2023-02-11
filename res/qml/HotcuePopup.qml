@@ -1,5 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "Theme"
@@ -7,7 +7,7 @@ import "Theme"
 Popup {
     id: root
 
-    property Hotcue hotcue // required
+    required property Hotcue hotcue
 
     dim: false
     modal: true
@@ -26,6 +26,8 @@ Popup {
             model: Mixxx.Config.getHotcueColorPalette()
 
             Rectangle {
+                required property color modelData
+
                 height: 24
                 width: 24
                 color: modelData
@@ -33,15 +35,12 @@ Popup {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        hotcue.setColor(parent.color);
+                        root.hotcue.setColor(parent.color);
                         root.close();
                     }
                 }
-
             }
-
         }
-
     }
 
     Skin.Button {
@@ -52,7 +51,8 @@ Popup {
         anchors.topMargin: 5
         text: "Clear"
         activeColor: Theme.deckActiveColor
-        onDownChanged: hotcue.clear = down
+        onPressed: root.hotcue.clear = 1
+        onReleased: root.hotcue.clear = 0
     }
 
     enter: Transition {
@@ -62,7 +62,6 @@ Popup {
             to: 1
             duration: 100
         }
-
     }
 
     exit: Transition {
@@ -72,7 +71,6 @@ Popup {
             to: 0
             duration: 100
         }
-
     }
 
     background: BorderImage {
@@ -89,7 +87,5 @@ Popup {
             right: 20
             bottom: 10
         }
-
     }
-
 }

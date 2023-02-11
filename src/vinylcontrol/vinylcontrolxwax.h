@@ -18,9 +18,10 @@ extern "C" {
 
 #define XWAX_DEVICE_FRAME 32
 #define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
-#define QUALITY_RING_SIZE 100
+#define QUALITY_RING_SIZE 32
 
 class VinylControlXwax : public VinylControl {
+    Q_OBJECT
   public:
     VinylControlXwax(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControlXwax();
@@ -45,7 +46,9 @@ class VinylControlXwax : public VinylControl {
     void enableConstantMode();
     void enableConstantMode(double rate);
     bool uiUpdateTime(double time);
-    void establishQuality(bool quality_sample);
+    void establishQuality(double& pitch);
+    int getPositionQuality();
+    int getPitchQuality(double& pitch);
 
     // Cache the position of the end of record
     unsigned int m_uiSafeZone;
@@ -60,9 +63,12 @@ class VinylControlXwax : public VinylControl {
     // Signal quality ring buffer.
     // TODO(XXX): Replace with CircularBuffer instead of handling the ring logic
     // in VinylControlXwax.
-    bool m_bQualityRing[QUALITY_RING_SIZE];
-    int m_iQualPos;
-    int m_iQualFilled;
+    int m_iQualityRing[QUALITY_RING_SIZE];
+    int m_iQualityRingIndex;
+    int m_iQualityRingFilled;
+
+    int m_iQualityLastPosition;
+    double m_dQualityLastPitch;
 
     // Keeps track of the most recent position as reported by xwax.
     int m_iPosition;

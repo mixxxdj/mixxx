@@ -20,9 +20,9 @@ To get started with Mixxx:
 
 ## Bug tracker
 
-The Mixxx team uses [Launchpad] to manage Mixxx development.
+The Mixxx team uses [Github Issues][issues] to manage Mixxx development.
 
-Have a bug or feature request? [File a bug on Launchpad][fileabug].
+Have a bug or feature request? [File a bug on Github][fileabug].
 
 Want to get involved in Mixxx development? Assign yourself a bug from the [easy
 bug list][easybugs] and get started!
@@ -30,7 +30,8 @@ bug list][easybugs] and get started!
 ## Building Mixxx
 
 First, open a terminal (on Windows, use "x64 Native Tools Command Prompt for
-VS 2019"), download the mixxx source code and navigate to it:
+[VS 2019][visualstudio2019]"), download the mixxx
+source code and navigate to it:
 
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
@@ -47,12 +48,6 @@ tools/debian_buildenv.sh setup` respectively), then run:
 
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
-
-More Information can be found on the [wiki]:
-
-- [Compiling on Linux]
-- [Compiling on macOS]
-- [Compiling on Windows]
 
 ## Documentation
 
@@ -91,23 +86,21 @@ license.
 [mixxx]: https://mixxx.org
 [download-stable]: https://mixxx.org/download/#stable
 [download-testing]: https://mixxx.org/download/#testing
-[fileabug]: https://bugs.launchpad.net/mixxx/+filebug
+[issues]: https://github.com/mixxxdj/mixxx/issues
+[fileabug]: https://github.com/mixxxdj/mixxx/issues/new/choose
 [twitter]: https://twitter.com/mixxxdj
 [facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
 [blog]: https://mixxx.org/news/
 [manual]: https://manual.mixxx.org/
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
 [faq]: https://github.com/mixxxdj/mixxx/wiki/Faq
-[Compiling on Linux]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux
-[Compiling on MacOS]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20macOS
-[Compiling on Windows]: https://github.com/mixxxdj/mixxx/wiki/compiling-on-windows
-[CMake]: https://cmake.org/
-[easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
+[visualstudio2019]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2019
+[easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj
 [Mixxx i18n wiki]: https://github.com/mixxxdj/mixxx/wiki/Internationalization
 [Mixxx localization forum]: https://mixxx.discourse.group/c/translation/13
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
-[hardware compatibility]: https://github.com/mixxxdj/mixxx/wiki/Hardware-Compatibility
+[hardware compatibility]: https://manual.mixxx.org/2.3/en/hardware/manuals.html
 [zulip]: https://mixxx.zulipchat.com/
 [discourse]: https://mixxx.discourse.group/

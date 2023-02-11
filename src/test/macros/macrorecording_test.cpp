@@ -106,7 +106,7 @@ TEST_F(MacroRecordingTest, RecordHotcueAndPlay) {
     MacroPointer pMacro = getMacro();
 
     // Check that recording stops gracefully when ejecting
-    m_pEngineBuffer1->slotEjectTrack(1);
+    m_pEngineBuffer1->ejectTrack();
     EXPECT_EQ(getStatus(), MacroControl::Status::NoTrack);
     testMacro.checkMacroAction(pMacro);
 }

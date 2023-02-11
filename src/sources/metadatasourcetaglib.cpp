@@ -5,27 +5,18 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QThread>
 #include <memory>
 
 #include "track/taglib/trackmetadata.h"
 #include "util/logger.h"
+#include "util/safelywritablefile.h"
 
 namespace mixxx {
 
 namespace {
 
 Logger kLogger("MetadataSourceTagLib");
-
-// TODO(uklotzde): Add a configurable option in the user settings
-const bool kExportTrackMetadataIntoTemporaryFile = true;
-
-// Appended to the original file name of the temporary file used for writing
-const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
-
-// Appended to the original file name for renaming and before deleting this
-// file. Should not be longer than kSafelyWritableTempFileSuffix to avoid
-// potential failures caused by exceeded path length.
-const QString kSafelyWritableOrigFileSuffix = QStringLiteral("_orig");
 
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
@@ -76,20 +67,27 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
 
 std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
 MetadataSourceTagLib::afterImport(ImportResult importResult) const {
-    return std::make_pair(importResult,
-            MetadataSource::getFileSynchronizedAt(QFileInfo(m_fileName)));
+    const auto sourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(QFile(m_fileName));
+    DEBUG_ASSERT(sourceSynchronizedAt.isValid() ||
+            importResult != ImportResult::Succeeded);
+    return std::make_pair(importResult, sourceSynchronizedAt);
 }
 
 std::pair<MetadataSourceTagLib::ExportResult, QDateTime>
 MetadataSourceTagLib::afterExport(ExportResult exportResult) const {
-    return std::make_pair(exportResult,
-            MetadataSource::getFileSynchronizedAt(QFileInfo(m_fileName)));
+    const auto sourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(QFile(m_fileName));
+    DEBUG_ASSERT(sourceSynchronizedAt.isValid() ||
+            exportResult != ExportResult::Succeeded);
+    return std::make_pair(exportResult, sourceSynchronizedAt);
 }
 
 std::pair<MetadataSource::ImportResult, QDateTime>
 MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
-        QImage* pCoverImage) const {
+        QImage* pCoverImage,
+        bool resetMissingTagMetadata) const {
     VERIFY_OR_DEBUG_ASSERT(pTrackMetadata || pCoverImage) {
         kLogger.warning()
                 << "Nothing to import"
@@ -120,13 +118,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
             DEBUG_ASSERT(pTag);
-            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importTrackMetadataFromTag(
+                    pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         } else if (taglib::hasAPETag(file)) {
             const TagLib::APE::Tag* pTag = file.APETag();
             DEBUG_ASSERT(pTag);
-            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::ape::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         } else if (taglib::hasID3v1Tag(file)) {
@@ -150,7 +149,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasMP4Tag(file)) {
             const TagLib::MP4::Tag* pTag = file.tag();
             DEBUG_ASSERT(pTag);
-            taglib::mp4::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::mp4::importTrackMetadataFromTag(pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::mp4::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -167,13 +166,17 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasXiphComment(file)) {
             TagLib::Ogg::XiphComment* pTag = file.xiphComment();
             DEBUG_ASSERT(pTag);
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::FLAC);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
+                    *pTag,
+                    taglib::FileType::FLAC,
+                    resetMissingTagMetadata);
             coverImageImported = taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             importSucceeded = true;
         } else if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
             DEBUG_ASSERT(pTag);
-            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importTrackMetadataFromTag(
+                    pTrackMetadata, *pTag, resetMissingTagMetadata);
             coverImageImported = taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
             importSucceeded = true;
         }
@@ -200,7 +203,10 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         TagLib::Ogg::XiphComment* pTag = file.tag();
         if (pTag) {
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::OGG);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
+                    *pTag,
+                    taglib::FileType::OGG,
+                    resetMissingTagMetadata);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -213,7 +219,10 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         TagLib::Ogg::XiphComment* pTag = file.tag();
         if (pTag) {
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::OPUS);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
+                    *pTag,
+                    taglib::FileType::OPUS,
+                    resetMissingTagMetadata);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -227,7 +236,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasAPETag(file)) {
             const TagLib::APE::Tag* pTag = file.APETag();
             DEBUG_ASSERT(pTag);
-            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::ape::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -241,7 +250,8 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
             DEBUG_ASSERT(pTag);
-            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importTrackMetadataFromTag(
+                    pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         } else if (file.hasInfoTag()) {
@@ -260,7 +270,8 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.tag();
             DEBUG_ASSERT(pTag);
-            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importTrackMetadataFromTag(
+                    pTrackMetadata, *pTag, resetMissingTagMetadata);
             taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         } else if (file.importTrackMetadataFromTextChunks(pTrackMetadata)) {
@@ -309,11 +320,25 @@ class MpegTagSaver : public TagSaver {
     }
 
     bool saveModifiedTags() override {
+        DEBUG_ASSERT(hasModifiedTags());
+#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION < 12)
         // NOTE(uklotzde, 2016-08-28): Only save the tags that have
         // actually been modified! Otherwise TagLib 1.11 adds unwanted
         // ID3v1 tags, even if the file does not already contain those
         // legacy tags.
         return m_file.save(m_modifiedTagsBitmask);
+#else
+        // Keep ID3v1 tag synchronized if it already exists in the file
+        const auto duplicateTags =
+                m_file.hasID3v1Tag()
+                ? TagLib::File::DuplicateTags::Duplicate
+                : TagLib::File::DuplicateTags::DoNotDuplicate;
+        return m_file.save(
+                m_modifiedTagsBitmask,
+                TagLib::File::StripTags::StripNone,
+                TagLib::ID3v2::Version::v4,
+                duplicateTags);
+#endif
     }
 
   private:
@@ -587,180 +612,6 @@ class AiffTagSaver : public TagSaver {
     bool m_modifiedTags;
 };
 
-/**
- * When writing the tags in-place directly into the original file
- * an intermediate failure might corrupt this precious file. For
- * example this might occur if the application crashes or is quit
- * unexpectedly, if the original file becomes unavailable while
- * writing by disconnecting a drive, if the file system is running
- * out of free space, or if an unexpected driver or hardware failure
- * occurs.
- *
- * To reduce the risk of corrupting the original file all write
- * operations are performed on a temporary file that is created
- * as an exact copy of the original file. Only after all write
- * operations have finished successfully the original file is
- * replaced with the temporary file.
- */
-class SafelyWritableFile final {
-  public:
-    SafelyWritableFile(QString origFileName, bool useTemporaryFile) {
-        // Both file names remain uninitialized until all prerequisite operations
-        // in the constructor have been completed successfully. Otherwise failure
-        // to create the temporary file will not be handled correctly!
-        // See also: https://bugs.launchpad.net/mixxx/+bug/1815305
-        DEBUG_ASSERT(m_origFileName.isNull());
-        DEBUG_ASSERT(m_tempFileName.isNull());
-        if (!QFileInfo(origFileName).isWritable()) {
-            kLogger.warning()
-                    << "Failed to prepare file for writing:"
-                    << origFileName
-                    << "is not writable.";
-            // Abort constructor
-            return;
-        }
-        if (useTemporaryFile) {
-            QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
-            QFile origFile(origFileName);
-            if (!origFile.copy(tempFileName)) {
-                kLogger.warning()
-                        << origFile.errorString()
-                        << "- Failed to clone original into temporary file before writing:"
-                        << origFileName
-                        << "->"
-                        << tempFileName;
-                // Abort constructor
-                return;
-            }
-            QFile tempFile(tempFileName);
-            DEBUG_ASSERT(tempFile.exists());
-            // Both file sizes are expected to be equal after successfully
-            // copying the file contents.
-            VERIFY_OR_DEBUG_ASSERT(origFile.size() == tempFile.size()) {
-                kLogger.warning()
-                        << "Failed to verify size after cloning original into temporary file before writing:"
-                        << origFile.size()
-                        << "<>"
-                        << tempFile.size();
-                // Cleanup
-                if (tempFile.exists() && !tempFile.remove()) {
-                    kLogger.warning()
-                            << tempFile.errorString()
-                            << "- Failed to remove temporary file:"
-                            << tempFileName;
-                }
-                // Abort constructor
-                return;
-            }
-            // Successfully cloned original into temporary file for writing - finish initialization
-            m_origFileName = std::move(origFileName);
-            m_tempFileName = std::move(tempFileName);
-        } else {
-            // Directly write into original file - finish initialization
-            m_origFileName = std::move(origFileName);
-            DEBUG_ASSERT(m_tempFileName.isNull());
-        }
-    }
-    ~SafelyWritableFile() {
-        cancel();
-    }
-
-    const QString& fileName() const {
-        if (m_tempFileName.isNull()) {
-            // If m_tempFileName has not been initialized then no temporary
-            // copy was requested in the constructor.
-            return m_origFileName;
-        } else {
-            return m_tempFileName;
-        }
-    }
-
-    bool isReady() const {
-        return !fileName().isEmpty();
-    }
-
-    bool commit() {
-        if (m_tempFileName.isNull()) {
-            return true; // nothing to do
-        }
-        QFile newFile(m_tempFileName);
-        if (!newFile.exists()) {
-            kLogger.warning()
-                    << "Temporary file not found:"
-                    << newFile.fileName();
-            return false;
-        }
-        QFile oldFile(m_origFileName);
-        if (oldFile.exists()) {
-            QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
-            DEBUG_ASSERT(!QFile::exists(backupFileName)); // very unlikely, otherwise renaming fails
-            if (!oldFile.rename(backupFileName)) {
-                kLogger.critical()
-                        << oldFile.errorString()
-                        << "- Failed to rename the original file for backup before writing:"
-                        << oldFile.fileName()
-                        << "->"
-                        << backupFileName;
-                return false;
-            }
-        }
-        DEBUG_ASSERT(!QFile::exists(m_origFileName));
-        if (!newFile.rename(m_origFileName)) {
-            kLogger.critical()
-                    << newFile.errorString()
-                    << "- Failed to rename temporary file after writing:"
-                    << newFile.fileName()
-                    << "->"
-                    << m_origFileName;
-            if (oldFile.exists()) {
-                // Try to restore the original file
-                if (!oldFile.rename(m_origFileName)) {
-                    // Undo operation failed
-                    kLogger.warning()
-                            << oldFile.errorString()
-                            << "- Both the original and the temporary file are still available:"
-                            << oldFile.fileName()
-                            << newFile.fileName();
-                }
-                return false;
-            }
-        }
-        if (oldFile.exists()) {
-            if (!oldFile.remove()) {
-                kLogger.warning()
-                        << oldFile.errorString()
-                        << "- Failed to remove backup file after writing:"
-                        << oldFile.fileName();
-                return false;
-            }
-        }
-        // Prevent any further interaction and file access
-        m_origFileName = QString();
-        m_tempFileName = QString();
-        return true;
-    }
-
-    void cancel() {
-        if (m_tempFileName.isNull()) {
-            return; // nothing to do
-        }
-        QFile tempFile(m_tempFileName);
-        if (tempFile.exists() && !tempFile.remove()) {
-            kLogger.warning()
-                    << tempFile.errorString()
-                    << "- Failed to remove temporary file:"
-                    << m_tempFileName;
-        }
-        // Prevent any further interaction and file access
-        m_origFileName = QString();
-        m_tempFileName = QString();
-    }
-
-  private:
-    QString m_origFileName;
-    QString m_tempFileName;
-};
-
 } // anonymous namespace
 
 std::pair<MetadataSource::ExportResult, QDateTime>
@@ -773,7 +624,8 @@ MetadataSourceTagLib::exportTrackMetadata(
                     << "into file" << m_fileName
                     << "with type" << m_fileType;
 
-    SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
+    SafelyWritableFile safelyWritableFile(m_fileName,
+            SafelyWritableFile::SafetyMode::Edit);
     if (!safelyWritableFile.isReady()) {
         kLogger.warning()
                 << "Unable to export track metadata into file"

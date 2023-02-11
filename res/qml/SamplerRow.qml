@@ -9,10 +9,10 @@ RowLayout {
         model: 8
 
         Skin.Sampler {
+            required property int index
+
             Layout.fillWidth: true
             group: "[Sampler" + (index + 1) + "]"
         }
-
     }
-
 }

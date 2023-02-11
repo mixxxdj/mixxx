@@ -77,13 +77,12 @@ bool mergeReplayGainMetadataProperty(
     }
     return modified;
 }
-#endif // __EXTRA_METADATA__
 
 // This conditional copy operation only works for nullable properties
 // like QString or QUuid.
 template<typename T>
 bool copyIfNotNull(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isNull() &&
             *pMergedProperty != importedProperty) {
@@ -97,7 +96,7 @@ bool copyIfNotNull(
 // empty = missing.
 template<typename T>
 bool copyIfNotEmpty(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isEmpty() &&
             *pMergedProperty != importedProperty) {
@@ -106,6 +105,7 @@ bool copyIfNotEmpty(
     }
     return false;
 }
+#endif // __EXTRA_METADATA__
 
 } // anonymous namespace
 
@@ -149,33 +149,37 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
         // at least once yet.
         return SourceSyncStatus::Void;
     }
-    if (getSourceSynchronizedAt().isValid()) {
-        const QDateTime fileSourceSynchronizedAt =
-                MetadataSource::getFileSynchronizedAt(fileInfo.asQFileInfo());
-        if (fileSourceSynchronizedAt.isValid()) {
-            if (getSourceSynchronizedAt() < fileSourceSynchronizedAt) {
-                return SourceSyncStatus::Outdated;
-            } else {
-                if (getSourceSynchronizedAt() > fileSourceSynchronizedAt) {
-                    kLogger.warning()
-                            << "Internal source synchronization time stamp"
-                            << getSourceSynchronizedAt()
-                            << "is ahead of"
-                            << fileSourceSynchronizedAt
-                            << "for file"
-                            << mixxx::FileInfo(fileInfo)
-                            << ": Has this file been replaced with an older version?";
-                }
-                return SourceSyncStatus::Synchronized;
-            }
-        } else {
-            kLogger.warning()
-                    << "Failed to obtain synchronization time stamp for file"
-                    << mixxx::FileInfo(fileInfo)
-                    << ": Is this file missing or inaccessible?";
-        }
+    if (!getSourceSynchronizedAt().isValid()) {
+        // Existing tracks that have been imported before database version
+        // 37 don't have a synchronization time stamp.
+        return SourceSyncStatus::Unknown;
     }
-    return SourceSyncStatus::Unknown;
+    const QDateTime fileSourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(fileInfo.toQFile());
+    if (!fileSourceSynchronizedAt.isValid()) {
+        kLogger.warning()
+                << "Failed to obtain synchronization time stamp for file"
+                << mixxx::FileInfo(fileInfo)
+                << ": Is this file missing or inaccessible?";
+        return SourceSyncStatus::Undefined;
+    }
+    if (getSourceSynchronizedAt() < fileSourceSynchronizedAt) {
+        return SourceSyncStatus::Outdated;
+    }
+    if (getSourceSynchronizedAt() > fileSourceSynchronizedAt) {
+        // The internal metadata has either been updated and not re-exported (yet)
+        // or the file has been replaced with an older version. In both cases the
+        // file metadata should not be re-imported implicitly and is considered
+        // as synchronized.
+        kLogger.debug()
+                << "Internal source synchronization time stamp"
+                << getSourceSynchronizedAt()
+                << "is ahead of"
+                << fileSourceSynchronizedAt
+                << "for file"
+                << mixxx::FileInfo(fileInfo);
+    }
+    return SourceSyncStatus::Synchronized;
 }
 
 bool TrackRecord::replaceMetadataFromSource(

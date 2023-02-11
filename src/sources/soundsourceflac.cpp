@@ -75,13 +75,13 @@ constexpr SINT kBitsPerSampleDefault = 0;
 const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
 
 //static
-const QStringList SoundSourceProviderFLAC::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderFLAC::kSupportedFileTypes = {
         QStringLiteral("flac"),
 };
 
 SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;
@@ -566,7 +566,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
 
 void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     QString error;
-    // not much can be done at this point -- luckly the decoder seems to be
+    // not much can be done at this point -- luckily the decoder seems to be
     // pretty forgiving -- bkgood
     switch (status) {
     case FLAC__STREAM_DECODER_ERROR_STATUS_LOST_SYNC:
@@ -581,6 +581,11 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     case FLAC__STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM:
         error = "STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM";
         break;
+#if FLAC_API_VERSION_CURRENT >= 12
+    case FLAC__STREAM_DECODER_ERROR_STATUS_BAD_METADATA:
+        error = "STREAM_DECODER_ERROR_STATUS_BAD_METADATA";
+        break;
+#endif
     }
     kLogger.warning()
             << "FLAC decoding error" << error

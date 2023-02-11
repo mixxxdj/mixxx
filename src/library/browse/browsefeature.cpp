@@ -4,7 +4,6 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
-#include <QStandardPaths>
 #include <QStringList>
 #include <QTreeView>
 
@@ -33,13 +32,17 @@ BrowseFeature::BrowseFeature(
         : LibraryFeature(pLibrary, pConfig, QString("computer")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
-          m_proxyModel(&m_browseModel),
+          m_proxyModel(&m_browseModel, true),
           m_pSidebarModel(new FolderTreeModel(this)),
           m_pLastRightClickedItem(nullptr) {
     connect(this,
             &BrowseFeature::requestAddDir,
             pLibrary,
             &Library::slotRequestAddDir);
+    connect(&m_browseModel,
+            &BrowseTableModel::restoreModelState,
+            this,
+            &LibraryFeature::restoreModelState);
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
     connect(m_pAddQuickLinkAction,
@@ -222,7 +225,6 @@ void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     libraryWidget->registerView("BROWSEHOME", edit);
-    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -241,10 +243,11 @@ void BrowseFeature::activate() {
 void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->getLabel() << " "
-             << item->getData();
+             << item->getData().toString();
 
     QString path = item->getData().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        emit saveModelState();
         m_browseModel.setPath({});
     } else {
         // Open a security token for this path and if we do not have access, ask
@@ -260,10 +263,14 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
                 return;
             }
         }
+        emit saveModelState();
         m_browseModel.setPath(std::move(dirAccess));
     }
     emit showTrackModel(&m_proxyModel);
-    emit disableSearch();
+    // Search is restored in Library::slotShowTrackModel, disable it where it's useless
+    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        emit disableSearch();
+    }
     emit enableCoverArtDisplay(false);
 }
 
@@ -399,13 +406,13 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         folders += getRemovableDevices();
     } else {
         // we assume that the path refers to a folder in the file system
-        // populate childs
+        // populate children
         const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
         QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
                 QDir::Dirs | QDir::NoDotAndDotDot);
 
-        // loop through all the item and construct the childs
+        // loop through all the item and construct the children
         foreach (QFileInfo one, all) {
             // Skip folders that end with .app on OS X
 #if defined(__APPLE__)
@@ -455,10 +462,7 @@ void BrowseFeature::loadQuickLinks() {
 }
 
 QString BrowseFeature::extractNameFromPath(const QString& spath) {
-    QString path = spath.left(spath.count()-1);
-    int index = path.lastIndexOf("/");
-    QString name = (spath.count() > 1) ? path.mid(index+1) : spath;
-    return name;
+    return QFileInfo(spath).fileName();
 }
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {

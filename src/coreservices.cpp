@@ -16,12 +16,16 @@
 #include "engine/enginemaster.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
 #include "preferences/settingsmanager.h"
+#ifdef __MODPLUG__
+#include "preferences/dialog/dlgprefmodplug.h"
+#endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
@@ -312,6 +316,13 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pVCManager->init();
 #endif
 
+#ifdef __MODPLUG__
+    // Restore the configuration for the modplug library before trying to load a module.
+    DlgPrefModplug modplugPrefs{nullptr, pConfig};
+    modplugPrefs.loadSettings();
+    modplugPrefs.applySettings();
+#endif
+
     // Inhibit Screensaver
     m_pScreensaverManager = std::make_shared<ScreensaverManager>(pConfig);
     connect(&PlayerInfo::instance(),
@@ -375,7 +386,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // Scan the library for new files and directories
     bool rescan = pConfig->getValue<bool>(
-            ConfigKey("[Library]", "RescanOnStartup"));
+            library::prefs::kRescanOnStartupConfigKey);
     // rescan the library if we get a new plugin
     QList<QString> prev_plugins_list =
             pConfig->getValueString(
@@ -399,16 +410,17 @@ void CoreServices::initialize(QApplication* pApp) {
             QSet<QString>::fromList(prev_plugins_list);
 #endif
 
-    const QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
-    QSet<QString> curr_plugins =
+    const QList<QString> supportedFileSuffixes = SoundSourceProxy::getSupportedFileSuffixes();
+    auto curr_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-            QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
+            QSet<QString>(supportedFileSuffixes.begin(), supportedFileSuffixes.end());
 #else
-            QSet<QString>::fromList(curr_plugins_list);
+            QSet<QString>::fromList(supportedFileSuffixes);
 #endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
-    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"), curr_plugins_list.join(","));
+    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
+            supportedFileSuffixes.join(","));
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
@@ -421,6 +433,36 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager->loadSamplers();
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
+
+    // The following UI controls must be created here so that controllers can bind to them
+    // on startup.
+    m_uiControls.clear();
+
+    struct UIControlConfig {
+        ConfigKey key;
+        bool persist;
+        bool defaultValue;
+    };
+    const std::vector<UIControlConfig> uiControls = {
+            {ConfigKey("[Master]", "skin_settings"), false, false},
+            {ConfigKey("[Microphone]", "show_microphone"), true, true},
+            {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
+            {ConfigKey("[PreviewDeck]", "show_previewdeck"), true, true},
+            {ConfigKey("[Library]", "show_coverart"), true, true},
+            {ConfigKey("[Master]", "maximize_library"), true, false},
+            {ConfigKey("[Samplers]", "show_samplers"), true, true},
+            {ConfigKey("[EffectRack1]", "show"), true, true},
+            {ConfigKey("[Skin]", "show_4effectunits"), true, false},
+            {ConfigKey("[Master]", "show_mixer"), true, true},
+            {ConfigKey("[Skin]", "show_spinnies"), true, true},
+            {ConfigKey("[Skin]", "show_coverart"), true, true},
+    };
+    m_uiControls.reserve(uiControls.size());
+    for (const auto& row : uiControls) {
+        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
+                row.key, row.persist, row.defaultValue));
+        m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
+    }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -595,6 +637,8 @@ void CoreServices::finalize() {
     m_pDbConnectionPool.reset(); // should drop the last reference
 
     m_pTouchShift.reset();
+
+    m_uiControls.clear();
 
     m_pControlIndicatorTimer.reset();
 

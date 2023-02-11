@@ -28,7 +28,9 @@
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/vsyncthread.h"
+#endif
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -71,7 +73,9 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wskincolor.h"
 #include "widget/wslidercomposed.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
+#endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
@@ -80,6 +84,9 @@
 #include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
 #include "widget/wvumeter.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include "widget/wvumetergl.h"
+#endif
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wwidgetgroup.h"
@@ -527,9 +534,7 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "StarRating") {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
-        WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
-        WaveformWidgetFactory::instance()->addTimerListener(pVuMeterWidget);
-        result = wrapWidget(pVuMeterWidget);
+        result = wrapWidget(parseVuMeter(node));
     } else if (nodeName == "StatusLight") {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
@@ -940,6 +945,11 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
 }
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -962,7 +972,7 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     connect(overviewWidget,
             &WOverview::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -981,9 +991,15 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     overviewWidget->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return overviewWidget;
+#endif
 }
 
 QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -1017,7 +1033,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     connect(viewer,
             &WWaveformViewer::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(viewer, &WWaveformViewer::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1025,6 +1041,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
+#endif
 }
 
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
@@ -1046,7 +1063,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     connect(pTrackText,
             &WTrackText::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(pTrackText, &WTrackText::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
@@ -1083,7 +1100,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     connect(pTrackProperty,
             &WTrackProperty::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(pTrackProperty,
             &WTrackProperty::cloneDeck,
             m_pPlayerManager,
@@ -1126,7 +1143,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     connect(pGroup,
             &WTrackWidgetGroup::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(pGroup,
             &WTrackWidgetGroup::cloneDeck,
             m_pPlayerManager,
@@ -1251,6 +1268,11 @@ QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
@@ -1274,22 +1296,100 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
         return nullptr;
     }
-    WSpinny* spinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-    commonWidgetSetup(node, spinny);
+    // Note: For some reasons on X11 we need to create the widget without a parent to avoid to
+    // create two platform windows (QXcbWindow) in QWidget::create() for this widget.
+    // This happens, because the QWidget::create() of a parent() will populate all children
+    // with platform windows q_createNativeChildrenAndSetParent() while another window is already
+    // under construction. The ID for the first window is not cleared and leads to a segfault
+    // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    WSpinny* pSpinny;
+    if (qApp->platformName() == QLatin1String("xcb")) {
+        pSpinny = new WSpinny(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
+        pSpinny->setParent(m_pParent);
+    } else {
+        pSpinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    }
+    commonWidgetSetup(node, pSpinny);
 
     connect(waveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
-            spinny,
+            pSpinny,
             &WSpinny::render);
-    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
-    connect(spinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
-    connect(spinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, pSpinny, &WSpinny::swap);
+    connect(pSpinny,
+            &WSpinny::trackDropped,
+            m_pPlayerManager,
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+    connect(pSpinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
-    spinny->setup(node, *m_pContext);
-    spinny->installEventFilter(m_pKeyboard);
-    spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    spinny->Init();
-    return spinny;
+    ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
+    ConfigKey configKey;
+    if (showCoverControl) {
+        configKey = showCoverControl->getKey();
+    }
+    pSpinny->setup(node, *m_pContext, configKey);
+    pSpinny->installEventFilter(m_pKeyboard);
+    pSpinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    pSpinny->Init();
+    return pSpinny;
+#endif
+}
+
+QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
+    if (!CmdlineArgs::Instance().getUseVuMeterGL()) {
+        // Standard WVuMeter
+        WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
+        WaveformWidgetFactory::instance()->addVuMeter(pVuMeterWidget);
+        return pVuMeterWidget;
+    }
+
+    // QGLWidget derived WVuMeterGL
+
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Mixxx is running in safe mode.
+        dummy->setText(tr("Safe Mode Enabled"));
+        return dummy;
+    }
+
+    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
+    if (!waveformWidgetFactory->isOpenGlAvailable() &&
+            !waveformWidgetFactory->isOpenGlesAvailable()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when VuMeter can not be displayed. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
+    // Note: For some reasons on X11 we need to create the widget without a parent to avoid to
+    // create two platform windows (QXcbWindow) in QWidget::create() for this widget.
+    // This happens, because the QWidget::create() of a parent() will populate all children
+    // with platform windows q_createNativeChildrenAndSetParent() while another window is already
+    // under construction. The ID for the first window is not cleared and leads to a segfault
+    // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    WVuMeterGL* pVuMeterWidget;
+    if (qApp->platformName() == QLatin1String("xcb")) {
+        pVuMeterWidget = new WVuMeterGL();
+        pVuMeterWidget->setParent(m_pParent);
+    } else {
+        pVuMeterWidget = new WVuMeterGL(m_pParent);
+    }
+    commonWidgetSetup(node, pVuMeterWidget);
+
+    waveformWidgetFactory->addVuMeter(pVuMeterWidget);
+
+    pVuMeterWidget->setup(node, *m_pContext);
+    pVuMeterWidget->installEventFilter(m_pKeyboard);
+    pVuMeterWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pVuMeterWidget->Init();
+
+    return pVuMeterWidget;
+#endif
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
@@ -1336,7 +1436,7 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
         connect(pCoverArt,
                 &WCoverArt::trackDropped,
                 m_pPlayerManager,
-                &PlayerManager::slotLoadToPlayer);
+                &PlayerManager::slotLoadLocationToPlayerMaybePlay);
         connect(pCoverArt, &WCoverArt::cloneDeck,
                 m_pPlayerManager, &PlayerManager::slotCloneDeck);
     }
@@ -1672,6 +1772,10 @@ QWidget* LegacySkinParser::parseEffectChainName(const QDomElement& node) {
 QWidget* LegacySkinParser::parseEffectChainPresetButton(const QDomElement& node) {
     WEffectChainPresetButton* pButton = new WEffectChainPresetButton(m_pParent, m_pEffectsManager);
     commonWidgetSetup(node, pButton);
+    QString toolTip = m_tooltips.tooltipForId("EffectUnit_chain_preset_menu");
+    if (!toolTip.isEmpty()) {
+        pButton->prependBaseTooltip(toolTip);
+    }
     pButton->setup(node, *m_pContext);
     return pButton;
 }
@@ -1930,8 +2034,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
         if (file.open(QIODevice::ReadOnly)) {
             QByteArray fileBytes = file.readAll();
 
-            style = QString::fromLocal8Bit(fileBytes.constData(),
-                                           fileBytes.length());
+            style = QString::fromLocal8Bit(fileBytes);
         }
 
         QString platformSpecificAttribute;
@@ -1949,8 +2052,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
             if (platformSpecificFile.open(QIODevice::ReadOnly)) {
                 QByteArray fileBytes = platformSpecificFile.readAll();
 
-                style += QString::fromLocal8Bit(fileBytes.constData(),
-                                                fileBytes.length());
+                style += QString::fromLocal8Bit(fileBytes);
             }
         }
 
@@ -1973,8 +2075,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
             QFile file(strNewName);
             if (file.open(QIODevice::ReadOnly)) {
                 QByteArray fileBytes = file.readAll();
-                style.prepend(QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length()));
+                style.prepend(QString::fromLocal8Bit(fileBytes));
             }
         } else if (scaleFactor >= 2) {
             // Try to load with @2x suffix
@@ -1984,8 +2085,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
             QFile file(strNewName);
             if (file.open(QIODevice::ReadOnly)) {
                 QByteArray fileBytes = file.readAll();
-                style.prepend(QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length()));
+                style.prepend(QString::fromLocal8Bit(fileBytes));
             }
         }
 #endif

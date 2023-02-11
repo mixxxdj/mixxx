@@ -15,7 +15,7 @@
 #include "util/dnd.h"
 #include "util/math.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/waveformwidgetabstract.h"
+#include "waveform/widgets/nonglwaveformwidgetabstract.h"
 
 WWaveformViewer::WWaveformViewer(
         const QString& group,
@@ -41,6 +41,10 @@ WWaveformViewer::WWaveformViewer(
     m_pWheel = new ControlProxy(
             group, "wheel", this, ControlFlag::NoAssertIfMissing);
     m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
+    m_pPassthroughEnabled = make_parented<ControlProxy>(group, "passthrough", this);
+    m_pPassthroughEnabled->connectValueChanged(this,
+            &WWaveformViewer::passthroughChanged,
+            Qt::DirectConnection);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::NoFocus);
@@ -90,7 +94,11 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                m_pCueMenuPopup->popup(event->globalPosition().toPoint());
+#else
                 m_pCueMenuPopup->popup(event->globalPos());
+#endif
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't
@@ -259,19 +267,27 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
         QWidget* pWidget = m_waveformWidget->getWidget();
         connect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
         m_waveformWidget->getWidget()->setMouseTracking(true);
+        // Make connection to show "Passthrough" label on the waveform, except for
+        // "Empty" waveform type
+        if (m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {
+            return;
+        }
+        connect(this,
+                &WWaveformViewer::passthroughChanged,
+                this,
+                [this](double value) {
+                    m_waveformWidget->setPassThroughEnabled(value > 0);
+                });
+        // Make sure the label is shown after the waveform type was changed
+        emit passthroughChanged(m_pPassthroughEnabled->toBool());
     }
 }
 
 CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) const {
-    if (pMark && pMark->getHotCue() != Cue::kNoHotCue) {
-        const QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
-        for (const auto& pCue : cueList) {
-            if (pCue->getHotCue() == pMark->getHotCue()) {
-                return pCue;
-            }
-        }
+    if (m_waveformWidget && pMark) {
+        return m_waveformWidget->getCuePointerFromIndex(pMark->getHotCue());
     }
-    return CuePointer();
+    return {};
 }
 
 void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
@@ -281,8 +297,11 @@ void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
 }
 
 void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
-    QColor originalColor = mixxx::RgbColor::toQColor(getCuePointerFromCueMark(pMark)->getColor());
-    pMark->setBaseColor(originalColor, m_dimBrightThreshold);
+    auto pCue = getCuePointerFromCueMark(pMark);
+    if (pCue) {
+        QColor originalColor = mixxx::RgbColor::toQColor(pCue->getColor());
+        pMark->setBaseColor(originalColor, m_dimBrightThreshold);
+    }
 }
 
 bool WWaveformViewer::isPlaying() const {

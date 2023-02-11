@@ -209,6 +209,7 @@ class ControlDoublePrivate : public QObject {
 /// The constant ControlDoublePrivate version is used as dummy for default
 /// constructed control objects
 class ControlDoublePrivateConst : public ControlDoublePrivate {
+    Q_OBJECT
   public:
     ~ControlDoublePrivateConst() override = default;
 

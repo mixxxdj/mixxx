@@ -1,7 +1,5 @@
 #include "library/dao/playlistdao.h"
 
-#include "moc_playlistdao.cpp"
-
 #include <QRandomGenerator>
 #include <QtDebug>
 #include <QtSql>
@@ -9,7 +7,9 @@
 #include "library/autodj/autodjprocessor.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "moc_playlistdao.cpp"
 #include "track/track.h"
+#include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/math.h"
 
@@ -227,7 +227,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
-int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
+int PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
         PlaylistDAO::HiddenType type, int minNumberOfTracks) {
     VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
         return 0; // nothing to do, probably unintended invocation
@@ -238,7 +238,7 @@ int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
             "SELECT id FROM Playlists  "
             "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
             "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
-            "Playlists.hidden = :hidden"));
+            "Playlists.hidden = :hidden AND Playlists.locked = 0"));
     query.bindValue(":hidden", static_cast<int>(type));
     query.bindValue(":length", minNumberOfTracks);
     if (!query.exec()) {
@@ -402,6 +402,33 @@ unsigned int PlaylistDAO::playlistCount() const {
         numRecords = query.value(query.record().indexOf("count")).toInt();
     }
     return numRecords;
+}
+
+QList<QPair<int, QString>> PlaylistDAO::getPlaylists(const HiddenType hidden) const {
+    //qDebug() << "PlaylistDAO::getPlaylists(hidden =" << hidden
+    //         << QThread::currentThread() << m_database.connectionName();
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            mixxx::DbConnection::collateLexicographically(
+                    QString("SELECT id, name FROM Playlists "
+                            "WHERE hidden = %1 "
+                            "ORDER BY name")
+                            .arg(hidden)));
+
+    QList<QPair<int, QString>> playlists;
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return playlists;
+    }
+
+    while (query.next()) {
+        const int id = query.value(0).toInt();
+        const QString name = query.value(1).toString();
+        playlists.append(qMakePair(id, name));
+    }
+    return playlists;
 }
 
 int PlaylistDAO::getPlaylistId(const int index) const {
@@ -843,6 +870,10 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
                 ++it) {
             if (it.key() == trackId) {
                 const auto playlistId = it.value();
+                // keep tracks in history playlists
+                if (getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+                    continue;
+                }
                 removeTracksFromPlaylistByIdInner(playlistId, trackId);
                 playlistIds.insert(playlistId);
             }

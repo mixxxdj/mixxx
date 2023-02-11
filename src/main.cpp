@@ -5,15 +5,18 @@
 #include <QTextCodec>
 #include <QThread>
 #include <QtDebug>
+#include <cstdio>
+#include <stdexcept>
 
 #include "config.h"
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include "qml/qmlapplication.h"
+#else
 #include "mixxxmainwindow.h"
 #endif
-#include "qml/qmlapplication.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -23,7 +26,9 @@
 namespace {
 
 // Exit codes
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 constexpr int kFatalErrorOnStartupExitCode = 1;
+#endif
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
@@ -36,15 +41,11 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
     int exitCode;
-    // TODO: remove --qml command line option and make QML only available
-    // with Qt6 when Mixxx can build with Qt6.
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    if (args.getQml()) {
-#endif
-        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
-        exitCode = pApp->exec();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+    exitCode = pApp->exec();
+#else
+    {
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
         // leaked COs may be triggered.

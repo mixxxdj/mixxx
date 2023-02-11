@@ -25,7 +25,8 @@ class TrackModel {
             : m_db(db),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
-              m_eDefaultSortOrder(Qt::AscendingOrder) {
+              m_eDefaultSortOrder(Qt::AscendingOrder),
+              m_confirmHideRemoveTracks(true) {
     }
     virtual ~TrackModel() {}
 
@@ -49,6 +50,8 @@ class TrackModel {
         Purge = 1u << 13u,
         RemovePlaylist = 1u << 14u,
         RemoveCrate = 1u << 15u,
+        RemoveFromDisk = 1u << 16u,
+        Analyze = 1u << 17u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
@@ -89,6 +92,7 @@ class TrackModel {
         SampleRate = 29,
         Color = 30,
         LastPlayedAt = 31,
+        PlaylistDateTimeAdded = 32,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
@@ -211,6 +215,18 @@ class TrackModel {
     virtual void select() {
     }
 
+    /// @brief modelKey returns a unique identifier for the model
+    /// @param noSearch don't include the current search in the key
+    /// @param baseOnly return only a identifier for the whole subsystem
+    virtual QString modelKey(bool noSearch) const = 0;
+
+    virtual bool getRequireConfirmationToHideRemoveTracks() {
+        return m_confirmHideRemoveTracks;
+    }
+    virtual void setRequireConfirmationToHideRemoveTracks(bool require) {
+        m_confirmHideRemoveTracks = require;
+    }
+
     virtual bool updateTrackGenre(
             Track* pTrack,
             const QString& genre) const = 0;
@@ -226,5 +242,6 @@ class TrackModel {
     QList<int> m_emptyColumns;
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
+    bool m_confirmHideRemoveTracks;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackModel::Capabilities)

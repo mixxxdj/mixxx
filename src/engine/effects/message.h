@@ -34,37 +34,14 @@ struct EffectsRequest {
         NUM_REQUEST_TYPES
     };
 
+    // Creates a new uninitialized EffectsRequest.  Callers are responsible for making sure that
+    // they initialize all the values of the struct corresponding to the type they select.
     EffectsRequest()
             : type(NUM_REQUEST_TYPES),
               request_id(-1),
               value(0.0) {
         pTargetChain = nullptr;
         pTargetEffect = nullptr;
-#define CLEAR_STRUCT(x) memset(&x, 0, sizeof(x));
-        CLEAR_STRUCT(AddEffectChain);
-        CLEAR_STRUCT(RemoveEffectChain);
-        CLEAR_STRUCT(EnableInputChannelForChain);
-        CLEAR_STRUCT(DisableInputChannelForChain);
-        CLEAR_STRUCT(AddEffectToChain);
-        CLEAR_STRUCT(RemoveEffectFromChain);
-        CLEAR_STRUCT(SetEffectChainParameters);
-        CLEAR_STRUCT(SetEffectParameters);
-        CLEAR_STRUCT(SetParameterParameters);
-#undef CLEAR_STRUCT
-    }
-
-    // This is called from the main thread by EffectsManager after receiving a
-    // response from EngineEffectsManager in the audio engine thread.
-    ~EffectsRequest() {
-        if (type == ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
-            VERIFY_OR_DEBUG_ASSERT(EnableInputChannelForChain.pEffectStatesMapArray != nullptr) {
-                return;
-            }
-            // This only deletes the container used to passed the EffectStates
-            // to EffectProcessorImpl. The EffectStates are managed by
-            // EffectProcessorImpl.
-            delete EnableInputChannelForChain.pEffectStatesMapArray;
-        }
     }
 
     MessageType type;
@@ -92,15 +69,13 @@ struct EffectsRequest {
         } AddEffectChain;
         struct {
             EngineEffectChain* pChain;
-            int iIndex;
             SignalProcessingStage signalProcessingStage;
         } RemoveEffectChain;
         struct {
-            EffectStatesMapArray* pEffectStatesMapArray;
-            const ChannelHandle* pChannelHandle;
+            ChannelHandle channelHandle;
         } EnableInputChannelForChain;
         struct {
-            const ChannelHandle* pChannelHandle;
+            ChannelHandle channelHandle;
         } DisableInputChannelForChain;
         struct {
             EngineEffect* pEffect;

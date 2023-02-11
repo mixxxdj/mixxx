@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QPointer>
 
+#include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/trackanalysisscheduler.h"
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
@@ -36,7 +37,6 @@ class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
-class WLibraryTextBrowser;
 
 #ifdef __ENGINEPRIME__
 namespace mixxx {
@@ -74,12 +74,13 @@ class Library: public QObject {
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
-    void bindFeatureRootView(WLibraryTextBrowser* pTextBrowser);
 
     void addFeature(LibraryFeature* feature);
 
     /// Needed for exposing models to QML
     LibraryTableModel* trackTableModel() const;
+
+    bool isTrackIdInCurrentLibraryView(const TrackId& trackId);
 
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -110,7 +111,7 @@ class Library: public QObject {
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
-    void slotLoadLocationToPlayer(const QString& location, const QString& group);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
@@ -120,7 +121,7 @@ class Library: public QObject {
     void onSkinLoadFinished();
 
   signals:
-    void showTrackModel(QAbstractItemModel* model);
+    void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
@@ -129,11 +130,15 @@ class Library: public QObject {
     void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
+    void selectTrack(const TrackId&);
     void trackSelected(TrackPointer pTrack);
+    void analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks);
 #ifdef __ENGINEPRIME__
     void exportLibrary();
     void exportCrate(CrateId crateId);
 #endif
+    void saveModelState();
+    void restoreModelState();
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
@@ -157,6 +162,7 @@ class Library: public QObject {
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
+    WLibrary* m_pLibraryWidget;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;

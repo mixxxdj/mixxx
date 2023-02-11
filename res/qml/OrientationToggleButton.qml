@@ -1,20 +1,19 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
-import QtQuick.Controls 2.12
 
 Item {
     id: root
 
-    property string group // required
-    property string key // required
+    required property string group
+    required property string key
     property alias orientation: orientationSlider.value
     property color color: "white"
 
     implicitWidth: 56
     implicitHeight: 26
 
-    Slider {
+    Skin.Slider {
         id: orientationSlider
 
         anchors.fill: parent
@@ -35,7 +34,6 @@ Item {
             const val = valueAt(visualPosition);
             if (val != control.value)
                 control.value = val;
-
         }
 
         background: Rectangle {
@@ -62,11 +60,8 @@ Item {
                 NumberAnimation {
                     duration: 150
                 }
-
             }
-
         }
-
     }
 
     Mixxx.ControlProxy {
@@ -75,5 +70,4 @@ Item {
         group: root.group
         key: root.key
     }
-
 }

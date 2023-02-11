@@ -16,9 +16,12 @@
 #Mixxx, WWidget,
 WEffectName,
 WKey,
-WLabel, QLabel,
+WLabel,
 WNumber, WNumberPos,
-WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
+WPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QRadioButton,
 WRecordingDuration,
 WTime,
 WTrackText,
@@ -26,7 +29,6 @@ WTrackProperty,
 QSpinBox,
 WBeatSpinBox,
 QToolTip,
-WOverview #PassthroughLabel,
 WTrackTableViewHeader,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader::section,
@@ -36,6 +38,8 @@ WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
+WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
@@ -44,6 +48,8 @@ WOverview /* Hotcue labels in the overview */,
 QComboBox,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WSearchLineEdit,
+WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea {
   font-family: "Open Sans";
@@ -51,34 +57,16 @@ WEffectSelector QAbstractScrollArea,
   font-style: normal;
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  font-size: 12px;
-  font-weight: bold;
-  color: #55F764;
-}
-
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
 wouldn't style the respective spinbox in Shade (anymore),
 that's why we do it in another way here */
 #spinBoxTransition {
-  font-size: 13px;
-  padding: 0px;
   selection-color: #eee;
   selection-background-color: #060613;
   }
   WBeatSpinBox {
     border: 1px solid #060613;
-  }
-  #spinBoxTransition {
-  /* omitting the border definition miraculously makes the spinbox grow */
-  /* 0px border OTOH makes the spinbox shrink disproportionately
-    border: 0px; */
-    margin: 0px 0px 2px 1px;
-  }
-WLibrary QPushButton {
-  border: 1px solid #99A0A4;
   }
 
 WBeatSpinBox::up-button,
@@ -140,17 +128,18 @@ WEffectSelector::indicator:unchecked,
 #MainMenu::item,
 WBeatSpinBox,
 #spinBoxTransition:up-button,
-#spinBoxTransition:down-button,
-#fadeModeCombobox,
-#fadeModeCombobox::down-arrow {
+#spinBoxTransition:down-button {
   color: #000;
   background-color: #8D98A3;
+  }
+  #fadeModeCombobox,
+  #fadeModeCombobox::down-arrow {
+    color: #000;
+    background-color: #99a0a4;
   }
   #spinBoxTransition {
     color: #000;
     background-color: #72777a;
-    height: 20px;
-    margin-left: 3px;
   }
 /* hovered items */
 #MainMenu::item:selected,
@@ -182,6 +171,7 @@ WEffectSelector::indicator:unchecked:selected,
   }
   /* Remove 3D border from unchecked effects checkmark space */
   WEffectSelector::item:selected,
+  WSearchLineEdit::item:selected,
   #fadeModeCombobox::item:selected {
     border: 0px;
   }
@@ -230,7 +220,7 @@ WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-WLibrary QPushButton:enabled,
+#LibraryFeatureControls QPushButton:enabled,
 WBeatSpinBox,
 #spinBoxTransition {
   font-size: 13px;
@@ -289,6 +279,9 @@ WEffectSelector QAbstractScrollArea,
       margin: 0px;
       image: url(skin:/btn/btn_spin_down.png) no-repeat;
     }
+    WSearchLineEdit::down-arrow {
+      image: url(skin:/btn/btn_search_down_grey.svg) no-repeat;
+    }
 
 
 /******** TODO properties identical in all skin, move to common file *************/
@@ -297,8 +290,12 @@ WEffectSelector QAbstractScrollArea,
   WEffectSelector::indicator, /* checkbox, tick mark */
   WEffectSelector::drop-down,
   WEffectSelector::indicator:unchecked,
-  #fadeModeCombobox::checked, /* selected item */
-  #fadeModeCombobox::indicator, /* checkbox, tick mark */
+  WSearchLineEdit::checked,
+  WSearchLineEdit::indicator,
+  WSearchLineEdit::drop-down,
+  WSearchLineEdit::indicator:unchecked,
+  #fadeModeCombobox::checked,
+  #fadeModeCombobox::indicator,
   #fadeModeCombobox::drop-down,
   #fadeModeCombobox::indicator:unchecked,
   WTrackMenu QMenu QCheckBox {
@@ -444,7 +441,7 @@ WLibrarySidebar {
   alternate-background-color: #1a1a1a;
 /* In selected library rows this sets the color of
   * shapes in star rating delegate  */
-  selection-color: #000;
+  selection-color: #fff;
   /* background of Color delegate in selected row */
   selection-background-color: #656d75;
 }
@@ -454,12 +451,25 @@ WLibraryTextBrowser {
 }
 
 WTrackTableView::item:selected,
+WSearchLineEdit::item:selected,
+WSearchLineEdit::item:checked,
 WLibrarySidebar::item:selected,
 WLibrarySidebar::branch:selected,
 #LibraryBPMButton::item:selected {
-  color: #000;
+  color: #fff;
   background-color: #656d75;
-}
+  }
+  WSearchLineEdit::item:checked:!selected {
+    color: #fff;
+    background-color: #32363a;
+  }
+  WSearchLineEdit::item:checked:selected {
+    color: #fff;
+    background-color: #7f8891;
+  }
+  WSearchLineEdit::indicator {
+    width:  0;
+  }
 WLibrarySidebar,
 WLibrarySidebar::item:focus {
   outline: none;
@@ -499,7 +509,7 @@ WTrackTableView {
   #LibraryBPMButton::item {
     color: #cfcfcf;
     }
-    WLibrary QCheckBox {
+    WLibrary > QCheckBox {
       text-align: right;
       alignment: right;
     }
@@ -579,18 +589,25 @@ WEffectSelector::indicator:unchecked:selected,
 WSearchLineEdit {
   margin-top: 2px;
   padding: 2px;
-  border: 1px solid #656565;
-  background: #0f0f0f;
-  color: #cfcfcf;
   }
   WSearchLineEdit:focus {
     padding: 1px;
     border: 2px solid #ff6600;
-    color: #eeeeee;
     selection-color: #0f0f0f;
     selection-background-color: #d2d2d2;
   }
   /* Clear button: see /skins/default.qss */
+
+WSearchLineEdit,
+WSearchLineEdit QAbstractScrollArea,
+WSearchLineEdit::item {
+  background: #0f0f0f;
+  color: #eeeeee;
+  }
+WSearchLineEdit,
+WSearchLineEdit QAbstractScrollArea {
+  border: 1px solid #656565;
+  }
 
 
 WLibrarySidebar {
@@ -643,6 +660,8 @@ WTrackTableViewHeader::section,
 #LibraryContainer QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   background-color: #626f87;
@@ -682,6 +701,7 @@ WTrackTableViewHeader::down-arrow {
 /* Scroll bars */
 #LibraryContainer QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   min-width: 40px;
   height: 18px;
@@ -689,6 +709,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
 }
 #LibraryContainer QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   min-height: 40px;
   width: 18px;
@@ -699,6 +720,8 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
 #LibraryContainer QScrollBar::sub-page,
 WEffectSelector QAbstractScrollArea QScrollBar::add-page,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+WSearchLineEdit QAbstractScrollArea QScrollBar::add-page,
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   min-width: 14px;
@@ -709,6 +732,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   background: #626f87;
@@ -717,11 +742,13 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 }
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 40px;
 }
 #LibraryContainer QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 40px;
 }
@@ -730,6 +757,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 #LibraryContainer QScrollBar::add-line:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar::add-line:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar::add-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical {
   width: 0px;
@@ -739,6 +768,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
 #LibraryContainer QScrollBar::sub-line:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
   width: 0px;
@@ -748,6 +779,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
 WEffectSelector QAbstractScrollArea::corner,
+WSearchLineEdit QAbstractScrollArea::corner,
 #fadeModeCombobox QAbstractScrollArea::corner {
   background-color: #0f0f0f;
   border-top: 1px solid #585858;
@@ -784,12 +816,9 @@ QSplitter::handle:vertical {
   height: 6px;
 }
 
-WLibrary QPushButton {
-  font-size: 10px;
-  font-family: "Open Sans";
-}
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
-WLibrary QLabel, WLibrary QRadioButton {
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   font-size: 13px;
   background: transparent;
   color: #C1C1C1;
@@ -798,23 +827,24 @@ WLibrary QLabel, WLibrary QRadioButton {
 
 WLibrary { margin: 2px 3px 0px 0px; }
 
-WLibrary QRadioButton {
+#LibraryFeatureControls QRadioButton {
   margin: 0px 3px 3px 3px;
 }
 /* Center QLabels */
-WLibrary QLabel { margin: 0px 3px 3px 0px; }
+#LibraryFeatureControls QLabel {
+  margin: 0px 3px 3px 0px;
+}
 
-WLibrary QRadioButton::indicator:checked {
+#LibraryFeatureControls QRadioButton::indicator:checked {
   image: url(skin:/btn/btn_lib_radio_button_on_pink.svg) center center;
 }
 
-WLibrary QRadioButton::indicator:unchecked {
+#LibraryFeatureControls QRadioButton::indicator:unchecked {
   image: url(skin:/btn/btn_lib_radio_button_off.svg) center center;
 }
 
 #LibraryFeatureControls QPushButton {
   text-align: center;
-  font-size: 9pt;
   font-weight: normal;
   /* Note(ronso0)
   Interferes with skin scaling, system font size respectively
@@ -829,6 +859,12 @@ WLibrary QRadioButton::indicator:unchecked {
   color: #060613;
   background-color: #99a0a4;
   border: 1px solid #99a0a4;
+  font-size: 10px;
+  }
+  #fadeModeCombobox {
+    margin: 1px 2px 3px 1px;
+    /* this is required to apply the custom styles */
+    border: 0px solid #99a0a4;
   }
   #DlgAutoDJ > #LibraryFeatureControls QPushButton {
     padding: 0px;
@@ -836,8 +872,21 @@ WLibrary QRadioButton::indicator:unchecked {
     height: 18px;
     }
     QPushButton#pushButtonAutoDJ {
-      width: 40px;
+      /* icon is 40x18, final size is 42x20 */
+      min-width: 40px;
+      max-width: 40px;
     }
+  #spinBoxTransition {
+    width: 32px;
+    height: 20px;
+    padding: 0px;
+    margin-left: 3px;
+    margin: 0px 0px 2px 1px;
+  /* omitting the border definition miraculously makes the spinbox grow */
+  /* 0px border OTOH makes the spinbox shrink disproportionately
+    border: 0px; */
+    border: 0px;
+  }
 
   #LibraryFeatureControls QPushButton:!enabled {
     background-color: #72777A;

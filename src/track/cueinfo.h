@@ -17,8 +17,8 @@ enum class CueType {
     Jump = 5,
     Intro = 6,
     Outro = 7,
-    AudibleSound = 8, // range that covers beginning and end of audible
-                      // sound; not shown to user
+    N60dBSound = 8, // range that covers beginning and end of audible
+                    // sound; not shown to user
 };
 
 enum class CueFlag {

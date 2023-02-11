@@ -1,15 +1,12 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.11
 import "Theme"
 
 Rectangle {
     id: root
 
-    property string group // required
+    required property string group
     property bool minimized: false
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
@@ -123,23 +120,20 @@ Rectangle {
                 group: root.group
                 key: "playposition"
             }
-
         }
 
         MouseArea {
             anchors.fill: progressContainer
             cursorShape: Qt.PointingHandCursor
             hoverEnabled: true
-            onPressed: {
+            onPressed: (mouse) => {
                 playPositionControl.value = mouse.x / width;
             }
-            onPositionChanged: {
+            onPositionChanged: (mouse) => {
                 if (containsPress)
                     playPositionControl.value = mouse.x / width;
-
             }
         }
-
     }
 
     Skin.VuMeter {
@@ -157,10 +151,10 @@ Rectangle {
     Mixxx.ControlProxy {
         id: playControl
 
-        readonly property bool playing: value != 0
+        readonly property bool playing: this.value !== 0
 
         function stop() {
-            value = 0;
+            this.value = 0;
         }
 
         group: root.group
@@ -171,8 +165,8 @@ Rectangle {
         id: ejectControl
 
         function trigger() {
-            value = 1;
-            value = 0;
+            this.value = 1;
+            this.value = 0;
         }
 
         group: root.group
@@ -192,5 +186,4 @@ Rectangle {
         anchors.fill: parent
         group: root.group
     }
-
 }

@@ -578,6 +578,12 @@
             </item>
             <item row="2" column="3">
              <widget class="QLabel" name="txtDateAdded">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string/>
               </property>
@@ -1000,11 +1006,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>bpmTap</tabstop>
   <tabstop>bpmDouble</tabstop>
   <tabstop>bpmHalve</tabstop>
-  <tabstop>bpmClear</tabstop>
   <tabstop>bpmTwoThirds</tabstop>
   <tabstop>bpmThreeFourth</tabstop>
   <tabstop>bpmThreeHalves</tabstop>
   <tabstop>bpmFourThirds</tabstop>
+  <tabstop>bpmClear</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
   <tabstop>btnCancel</tabstop>

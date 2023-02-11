@@ -49,7 +49,7 @@ struct MessageStats {
 // static
 MidiInputMappings LearningUtils::guessMidiInputMappings(
         const ConfigKey& control,
-        const QList<QPair<MidiKey, unsigned char> >& messages) {
+        const QList<QPair<MidiKey, unsigned char>>& messages) {
     QMap<unsigned char, MessageStats> stats_by_control;
     MessageStats stats;
 

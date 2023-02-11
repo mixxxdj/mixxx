@@ -1,13 +1,11 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
-import QtQuick.Controls 2.12
 import "Theme"
 
 Item {
     id: root
 
-    property real crossfaderWidth // required
+    required property real crossfaderWidth
 
     implicitHeight: crossfader.height
 
@@ -44,7 +42,6 @@ Item {
 
         Skin.MicrophoneDuckingPanel {
         }
-
     }
 
     Skin.SectionBackground {
@@ -70,7 +67,6 @@ Item {
             fg: Theme.imgCrossfaderHandle
             bg: Theme.imgCrossfaderBackground
         }
-
     }
 
     Row {
@@ -102,7 +98,5 @@ Item {
             layoutDirection: Qt.RightToLeft
             unitNumber: 4
         }
-
     }
-
 }

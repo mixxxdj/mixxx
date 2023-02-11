@@ -6,7 +6,9 @@
 #include "util/math.h"
 
 WRateRange::WRateRange(const QString& group, QWidget* parent)
-        : WNumber(parent) {
+        : WNumber(parent),
+          m_nodePosition(VerticalPosition::Top),
+          m_nodeDisplay(DisplayType::Default) {
     m_pRateRangeControl = new ControlProxy(
             group, "rateRange", this, ControlFlag::NoAssertIfMissing);
     m_pRateRangeControl->connectValueChanged(this, &WRateRange::setValue);

@@ -1,11 +1,11 @@
-import Mixxx.Controls 0.1 as MixxxControls
+import Mixxx.Controls 1.0 as MixxxControls
 import QtQuick 2.12
 import "Theme"
 
 MixxxControls.Knob {
     id: root
 
-    property color color // required
+    required property color color
     property url shadowSource: Theme.imgKnobShadow
     property url backgroundSource: Theme.imgKnob
 
@@ -52,7 +52,5 @@ MixxxControls.Knob {
             y: height
             color: root.color
         }
-
     }
-
 }

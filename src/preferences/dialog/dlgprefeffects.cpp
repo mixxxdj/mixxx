@@ -15,6 +15,7 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pFocusedChainList(nullptr),
+          m_pFocusedEffectList(nullptr),
           m_pConfig(pConfig),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
@@ -30,19 +31,6 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
             hiddenEffectsTableView, m_pBackendManager);
     hiddenEffectsTableView->setModel(m_pHiddenEffectsModel);
     setupManifestTableView(hiddenEffectsTableView);
-
-    // Allow selection only in either of the effects lists at a time to clarify
-    // which effect/chain the info below refers to.
-    // Upon selection change, deselect items in the adjacent list (reset doesn't
-    // emit dataChanged() signal.
-    connect(visibleEffectsTableView->selectionModel(),
-            &QItemSelectionModel::currentRowChanged,
-            hiddenEffectsTableView->selectionModel(),
-            &QItemSelectionModel::reset);
-    connect(hiddenEffectsTableView->selectionModel(),
-            &QItemSelectionModel::currentRowChanged,
-            visibleEffectsTableView->selectionModel(),
-            &QItemSelectionModel::reset);
 
     setupChainListView(chainListView);
     setupChainListView(quickEffectListView);
@@ -73,17 +61,20 @@ DlgPrefEffects::~DlgPrefEffects() {
 }
 
 void DlgPrefEffects::setupManifestTableView(QTableView* pTableView) {
+    pTableView->verticalHeader()->hide();
     pTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     pTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     pTableView->setDragDropMode(QAbstractItemView::DragDrop);
     // QTableView won't remove dragged items without this??
     pTableView->setDragDropOverwriteMode(false);
+    pTableView->setTabKeyNavigation(false);
     pTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     pTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     connect(pTableView->selectionModel(),
             &QItemSelectionModel::currentRowChanged,
             this,
             &DlgPrefEffects::effectsTableItemSelected);
+    pTableView->installEventFilter(this);
 }
 
 void DlgPrefEffects::setupChainListView(QListView* pListView) {
@@ -91,7 +82,7 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
     pListView->setModel(pModel);
     pListView->setDropIndicatorShown(true);
     pListView->setDragDropMode(QAbstractItemView::DragDrop);
-    pListView->setSelectionMode(QAbstractItemView::SingleSelection);
+    pListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     //TODO: prevent drops of duplicate items
     pListView->setDefaultDropAction(Qt::CopyAction);
     connect(pListView->selectionModel(),
@@ -102,7 +93,7 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
 }
 
 void DlgPrefEffects::slotUpdate() {
-    clear();
+    clearEffectInfo();
 
     // Prevent emission of dataChanged() when clearing the effects lists to not
     // call effectsTableItemSelected() with a selection that has no model.
@@ -119,13 +110,7 @@ void DlgPrefEffects::slotUpdate() {
     m_pHiddenEffectsModel->setList(hiddenEffects);
 
     // No chain preset is selected when the preferences are opened
-    for (int i = 0; i < m_effectsLabels.size(); ++i) {
-        m_effectsLabels[i]->setText(QString::number(i + 1) + ": ");
-    }
-
-    chainPresetExportButton->setEnabled(false);
-    chainPresetRenameButton->setEnabled(false);
-    chainPresetDeleteButton->setEnabled(false);
+    clearChainInfoDisableButtons();
 
     loadChainPresetLists();
 
@@ -158,12 +143,21 @@ void DlgPrefEffects::slotResetToDefaults() {
     slotUpdate();
 }
 
-void DlgPrefEffects::clear() {
+void DlgPrefEffects::clearEffectInfo() {
     effectName->clear();
     effectAuthor->clear();
     effectDescription->clear();
     effectVersion->clear();
     effectType->clear();
+}
+
+void DlgPrefEffects::clearChainInfoDisableButtons() {
+    for (int i = 0; i < m_effectsLabels.size(); ++i) {
+        m_effectsLabels[i]->setText(QString::number(i + 1) + ": ");
+    }
+    chainPresetExportButton->setEnabled(false);
+    chainPresetRenameButton->setEnabled(false);
+    chainPresetDeleteButton->setEnabled(false);
 }
 
 void DlgPrefEffects::loadChainPresetLists() {
@@ -176,6 +170,12 @@ void DlgPrefEffects::loadChainPresetLists() {
 
     QStringList quickEffectChainPresetNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getQuickEffectPresetsSorted()) {
+        // Don't show the empty '---' preset.
+        // After pushing the changed preferences list back to the preset manager
+        // it is re-added to the root list.
+        if (pChainPreset->name() == kNoEffectString) {
+            continue;
+        }
         quickEffectChainPresetNames << pChainPreset->name();
     }
     pModel = dynamic_cast<EffectChainPresetListModel*>(quickEffectListView->model());
@@ -183,6 +183,12 @@ void DlgPrefEffects::loadChainPresetLists() {
 }
 
 void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
+    // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
+    // in eventFilter()
+    if (!selected.isValid()) {
+        clearEffectInfo();
+        return;
+    }
     auto pModel = static_cast<const EffectManifestTableModel*>(selected.model());
     VERIFY_OR_DEBUG_ASSERT(pModel) {
         return;
@@ -203,6 +209,14 @@ void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
+    // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
+    // in eventFilter()
+    if (!selected.isValid() ||
+            m_pFocusedChainList->selectionModel()->selectedRows(0).count() > 1) {
+        clearChainInfoDisableButtons();
+        return;
+    }
+
     QString chainPresetName = selected.model()->data(selected).toString();
     EffectChainPresetPointer pChainPreset = m_pChainPresetManager->getPreset(chainPresetName);
     if (pChainPreset == nullptr || pChainPreset->isEmpty()) {
@@ -219,10 +233,10 @@ void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
                 // Code uses 0-indexed numbers; users see 1 indexed numbers
                 m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
             } else {
-                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + "---");
+                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
             }
         } else {
-            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + "---");
+            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
         }
     }
 
@@ -296,14 +310,55 @@ void DlgPrefEffects::slotDeletePreset() {
     saveChainPresetLists();
 }
 
-bool DlgPrefEffects::eventFilter(QObject* pChainList, QEvent* event) {
+bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
     if (event->type() == QEvent::FocusIn) {
-        auto pListView = dynamic_cast<QListView*>(pChainList);
-        if (!pListView) {
+        // Allow selection only in either of the effects/chains lists at a time
+        // to clarify which effect/chain the info below refers to.
+        // The method to update the info box for the new selection is the same
+        // for both the Chains and Effects tab:
+        // * clear selection in adjacent view
+        // * restore previous selection (select first item if none was selected)
+        //   which updates the info box via 'currentRowChanged' signals
+        auto pChainList = qobject_cast<QListView*>(object);
+        auto pEffectList = qobject_cast<QTableView*>(object);
+        // Restore previous selection only if focus was changed with keyboard.
+        // For mouse clicks, that procedure would select the wrong index.
+        QFocusEvent* focEv = static_cast<QFocusEvent*>(event);
+        bool keyboardFocusIn = false;
+        if (focEv->reason() == Qt::TabFocusReason ||
+                focEv->reason() == Qt::BacktabFocusReason) {
+            keyboardFocusIn = true;
+        }
+
+        if (pChainList) {
+            m_pFocusedChainList = pChainList;
+            unfocusedChainList()->selectionModel()->clearSelection();
+            if (keyboardFocusIn) {
+                QModelIndex currIndex = m_pFocusedChainList->selectionModel()->currentIndex();
+                if (!currIndex.isValid()) {
+                    currIndex = m_pFocusedChainList->model()->index(0, 0);
+                }
+                m_pFocusedChainList->selectionModel()->clearCurrentIndex();
+                m_pFocusedChainList->selectionModel()->setCurrentIndex(
+                        currIndex,
+                        QItemSelectionModel::ClearAndSelect);
+            }
+            return true;
+        } else if (pEffectList) {
+            m_pFocusedEffectList = pEffectList;
+            unfocusedEffectList()->selectionModel()->clearSelection();
+            if (keyboardFocusIn) {
+                QModelIndex currIndex = m_pFocusedEffectList->currentIndex();
+                if (!currIndex.isValid()) {
+                    currIndex = pEffectList->model()->index(0, 0);
+                }
+                pEffectList->selectionModel()->clearCurrentIndex();
+                pEffectList->selectRow(currIndex.row());
+            }
+            return true;
+        } else {
             return false;
         }
-        m_pFocusedChainList = pListView;
-        unfocusedChainList()->selectionModel()->reset();
     }
     return false;
 }
@@ -313,5 +368,13 @@ QListView* DlgPrefEffects::unfocusedChainList() {
         return quickEffectListView;
     } else {
         return chainListView;
+    }
+}
+
+QTableView* DlgPrefEffects::unfocusedEffectList() {
+    if (m_pFocusedEffectList == visibleEffectsTableView) {
+        return hiddenEffectsTableView;
+    } else {
+        return visibleEffectsTableView;
     }
 }

@@ -80,6 +80,8 @@ reapplying those migrations.
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         track_id INTEGER NOT NULL REFERENCES library(id),
         type INTEGER DEFAULT 0 NOT NULL,
+        <!-- Positions and lengths are actually stored as SQLite REAL (double) frame values.
+        This allows for bpm-accurate sub-sample accuracy positions and lengths. -->
         position INTEGER DEFAULT -1 NOT NULL,
         length INTEGER DEFAULT 0 NOT NULL,
         hotcue INTEGER DEFAULT -1 NOT NULL,

@@ -6,7 +6,6 @@
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
-#include "library/library.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -21,7 +20,6 @@
 #include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/logger.h"
-#include "util/sleepableqthread.h"
 
 namespace {
 
@@ -58,6 +56,30 @@ bool extractIntFromRegex(const QRegularExpression& regex, const QString& group, 
         *number = numberFromMatch;
     }
     return true;
+}
+
+/// Returns the first object from a list of `BaseTrackPlayer` instances where
+/// the corresponding `play` CO is set to 0.
+template<class T>
+T* findFirstStoppedPlayerInList(const QList<T*>& players) {
+    for (T* pPlayer : players) {
+        VERIFY_OR_DEBUG_ASSERT(pPlayer != nullptr) {
+            continue;
+        }
+
+        ControlObject* pPlayControl = ControlObject::getControl(
+                ConfigKey(pPlayer->getGroup(), "play"));
+        VERIFY_OR_DEBUG_ASSERT(pPlayControl != nullptr) {
+            continue;
+        }
+
+        if (!pPlayControl->toBool()) {
+            return pPlayer;
+        }
+    }
+
+    // There is no stopped player in the list.
+    return nullptr;
 }
 
 } // anonymous namespace
@@ -103,7 +125,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
             &PlayerManager::slotChangeNumAuxiliaries, Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
-    m_pSamplerBank = new SamplerBank(this);
+    m_pSamplerBank = new SamplerBank(m_pConfig, this);
 
     m_cloneTimer.start();
 }
@@ -140,6 +162,7 @@ PlayerManager::~PlayerManager() {
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
+    m_pLibrary = pLibrary;
     const auto locker = lockMutex(&m_mutex);
     connect(pLibrary, &Library::loadTrackToPlayer, this, &PlayerManager::slotLoadTrackToPlayer);
     connect(pLibrary,
@@ -388,6 +411,10 @@ void PlayerManager::addDeckInner() {
             &BaseTrackPlayer::noVinylControlInputConfigured,
             this,
             &PlayerManager::noVinylControlInputConfigured);
+    connect(pDeck,
+            &BaseTrackPlayer::trackUnloaded,
+            this,
+            &PlayerManager::slotSaveEjectedTrack);
 
     if (m_pTrackAnalysisScheduler) {
         connect(pDeck,
@@ -409,7 +436,10 @@ void PlayerManager::addDeckInner() {
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, deckIndex), pEngineDeck);
 
     // Setup equalizer and QuickEffect chain for this deck.
-    m_pEffectsManager->addDeck(handleGroup.m_name);
+    m_pEffectsManager->addDeck(handleGroup);
+
+    // Setup EQ ControlProxies used for resetting EQs on track load
+    pDeck->setupEqControls();
 }
 
 void PlayerManager::loadSamplers() {
@@ -446,6 +476,10 @@ void PlayerManager::addSamplerInner() {
                 this,
                 &PlayerManager::slotAnalyzeTrack);
     }
+    connect(pSampler,
+            &BaseTrackPlayer::trackUnloaded,
+            this,
+            &PlayerManager::slotSaveEjectedTrack);
 
     m_players[handleGroup.handle()] = pSampler;
     m_samplers.append(pSampler);
@@ -567,6 +601,13 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     return m_samplers[sampler - 1];
 }
 
+TrackPointer PlayerManager::getLastEjectedTrack() const {
+    if (m_pLibrary) {
+        return m_pLibrary->trackCollectionManager()->getTrackById(m_lastEjectedTrackId);
+    }
+    return nullptr;
+}
+
 Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
     const auto locker = lockMutex(&m_mutex);
     if (microphone < 1 || microphone >= static_cast<unsigned int>(m_microphones.size())) {
@@ -638,57 +679,78 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
     m_lastLoadedPlayer = group;
 }
 
-void PlayerManager::slotLoadToPlayer(const QString& location, const QString& group) {
+void PlayerManager::slotLoadLocationToPlayer(
+        const QString& location, const QString& group, bool play) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
-    emit loadLocationToPlayer(location, group);
+    emit loadLocationToPlayer(location, group, play);
+}
+
+void PlayerManager::slotLoadLocationToPlayerMaybePlay(
+        const QString& location, const QString& group) {
+    bool play = false;
+    LoadWhenDeckPlaying loadWhenDeckPlaying =
+            static_cast<LoadWhenDeckPlaying>(
+                    m_pConfig->getValue(kConfigKeyLoadWhenDeckPlaying,
+                            static_cast<int>(kDefaultLoadWhenDeckPlaying)));
+    switch (loadWhenDeckPlaying) {
+    case LoadWhenDeckPlaying::AllowButStopDeck:
+    case LoadWhenDeckPlaying::Reject:
+        break;
+    case LoadWhenDeckPlaying::Allow:
+        if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+            // deck is currently playing, so immediately play new track
+            play = true;
+        }
+        break;
+    }
+    slotLoadLocationToPlayer(location, group, play);
 }
 
 void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
-    slotLoadToPlayer(location, groupForDeck(deck-1));
+    slotLoadLocationToPlayer(location, groupForDeck(deck - 1), false);
 }
 
 void PlayerManager::slotLoadToPreviewDeck(const QString& location, int previewDeck) {
-    slotLoadToPlayer(location, groupForPreviewDeck(previewDeck-1));
+    slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1), false);
 }
 
 void PlayerManager::slotLoadToSampler(const QString& location, int sampler) {
-    slotLoadToPlayer(location, groupForSampler(sampler-1));
+    slotLoadLocationToPlayer(location, groupForSampler(sampler - 1), false);
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     auto locker = lockMutex(&m_mutex);
-    QList<Deck*>::iterator it = m_decks.begin();
-    while (it != m_decks.end()) {
-        Deck* pDeck = *it;
-        ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
-        if (playControl && playControl->get() != 1.) {
-            locker.unlock();
-            pDeck->slotLoadTrack(pTrack, false);
-            // Test for a fixed race condition with fast loads
-            //SleepableQThread::sleep(1);
-            //pDeck->slotLoadTrack(TrackPointer(), false);
-            return;
-        }
-        ++it;
+    BaseTrackPlayer* pDeck = findFirstStoppedPlayerInList(m_decks);
+    if (pDeck == nullptr) {
+        qDebug() << "PlayerManager: No stopped deck found, not loading track!";
+        return;
     }
+
+    pDeck->slotLoadTrack(pTrack, false);
+}
+
+void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play) {
+    auto locker = lockMutex(&m_mutex);
+    BaseTrackPlayer* pDeck = findFirstStoppedPlayerInList(m_decks);
+    if (pDeck == nullptr) {
+        qDebug() << "PlayerManager: No stopped deck found, not loading track!";
+        return;
+    }
+
+    slotLoadLocationToPlayer(location, pDeck->getGroup(), play);
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     auto locker = lockMutex(&m_mutex);
-    QList<Sampler*>::iterator it = m_samplers.begin();
-    while (it != m_samplers.end()) {
-        Sampler* pSampler = *it;
-        ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pSampler->getGroup(), "play"));
-        if (playControl && playControl->get() != 1.) {
-            locker.unlock();
-            pSampler->slotLoadTrack(pTrack, false);
-            return;
-        }
-        ++it;
+    BaseTrackPlayer* pSampler = findFirstStoppedPlayerInList(m_samplers);
+    if (pSampler == nullptr) {
+        qDebug() << "PlayerManager: No stopped sampler found, not loading track!";
+        return;
     }
+    locker.unlock();
+
+    pSampler->slotLoadTrack(pTrack, false);
 }
 
 void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
@@ -696,7 +758,7 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         return;
     }
     if (m_pTrackAnalysisScheduler) {
-        if (m_pTrackAnalysisScheduler->scheduleTrackById(track->getId())) {
+        if (m_pTrackAnalysisScheduler->scheduleTrack(track->getId())) {
             m_pTrackAnalysisScheduler->resume();
         }
         // The first progress signal will suspend a running batch analysis
@@ -704,6 +766,13 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         // before any signals from the analyzer queue arrive.
         emit trackAnalyzerProgress(track->getId(), kAnalyzerProgressUnknown);
     }
+}
+
+void PlayerManager::slotSaveEjectedTrack(TrackPointer track) {
+    VERIFY_OR_DEBUG_ASSERT(track) {
+        return;
+    }
+    m_lastEjectedTrackId = track->getId();
 }
 
 void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {

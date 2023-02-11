@@ -151,7 +151,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                 query.bindValue(":" CLM_GROUPING, entry.pTrack->grouping);
                 query.bindValue(":" CLM_TRACKNUMBER, entry.pTrack->tracknumber);
                 QDateTime timeAdded;
-                timeAdded.setTime_t(entry.pTrack->dateadded);
+                timeAdded.setSecsSinceEpoch(entry.pTrack->dateadded);
                 query.bindValue(":" CLM_DATEADDED, timeAdded.toString(Qt::ISODate));
                 query.bindValue(":" CLM_BPM, entry.pTrack->bpm);
                 query.bindValue(":" CLM_BITRATE, entry.pTrack->bitrate);

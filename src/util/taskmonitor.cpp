@@ -28,6 +28,7 @@ TaskMonitor::~TaskMonitor() {
                 << "pending tasks";
         abortAllTasks();
     }
+    closeProgressDialog();
 }
 
 Task* TaskMonitor::senderTask() const {
@@ -137,11 +138,27 @@ void TaskMonitor::abortAllTasks() {
     updateProgress();
 }
 
+void TaskMonitor::closeProgressDialog() {
+    DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    DEBUG_ASSERT(m_taskInfos.isEmpty());
+    // Deleting the progress dialog immediately might cause
+    // segmentation faults due to pending signals! The deletion
+    // has to be deferred until re-entering the event loop.
+    auto* const pProgressDlg = m_pProgressDlg.release();
+    DEBUG_ASSERT(!m_pProgressDlg);
+    if (pProgressDlg) {
+        DEBUG_ASSERT(pProgressDlg->autoClose());
+        pProgressDlg->reset();
+        pProgressDlg->deleteLater();
+    }
+}
+
 void TaskMonitor::updateProgress() {
     DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_taskInfos.isEmpty()) {
-        m_pProgressDlg.reset();
+        closeProgressDialog();
         return;
     }
     const int currentProgress = static_cast<int>(std::round(sumEstimatedPercentageOfCompletion()));

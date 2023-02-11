@@ -19,9 +19,10 @@
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
-          m_midiDebug(false),
+          m_controllerDebug(false),
           m_developer(false),
           m_safeMode(false),
+          m_useVuMeterGL(true),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
           m_scaleFactor(1.0),
@@ -40,7 +41,7 @@ CmdlineArgs::CmdlineArgs()
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
           m_settingsPath(
-                  QStandardPaths::writableLocation(QStandardPaths::DataLocation)
+                  QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)
                           .append("/")) {
 #endif
 }
@@ -133,8 +134,8 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Top-level directory where Mixxx should look for settings. "
-                                      "Default is:") +
-                            getSettingsPath()
+                                      "Default is: ") +
+                            QDir::toNativeSeparators(getSettingsPath())
                             : QString(),
             QStringLiteral("path"));
     QCommandLineOption settingsPathDeprecated(
@@ -170,6 +171,16 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(timelinePath);
     parser.addOption(timelinePathDeprecated);
 
+    const QCommandLineOption disableVuMeterGL(QStringLiteral("disable-vumetergl"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Do not use OpenGL vu meter")
+                            : QString());
+    QCommandLineOption disableVuMeterGLDeprecated(
+            QStringLiteral("disableVuMeterGL"), disableVuMeterGL.description());
+    disableVuMeterGLDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(disableVuMeterGL);
+    parser.addOption(disableVuMeterGLDeprecated);
+
     const QCommandLineOption controllerDebug(QStringLiteral("controller-debug"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Causes Mixxx to display/log all of the controller data it "
@@ -188,12 +199,6 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "performance, and a Developer tools menu.")
                             : QString());
     parser.addOption(developer);
-
-    const QCommandLineOption qml(QStringLiteral("qml"),
-            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
-                                      "Loads experimental QML GUI instead of legacy QWidget skin")
-                            : QString());
-    parser.addOption(qml);
 
     const QCommandLineOption safeMode(QStringLiteral("safe-mode"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -325,9 +330,9 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_timelinePath = parser.value(timelinePathDeprecated);
     }
 
-    m_midiDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_useVuMeterGL = !(parser.isSet(disableVuMeterGL) || parser.isSet(disableVuMeterGLDeprecated));
+    m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
     m_developer = parser.isSet(developer);
-    m_qml = parser.isSet(qml);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);
 

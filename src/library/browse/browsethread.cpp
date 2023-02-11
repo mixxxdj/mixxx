@@ -134,7 +134,7 @@ void BrowseThread::populateModel() {
     // see signal/slot connection in BrowseTableModel
     emit clearModel(thisModelObserver);
 
-    QList< QList<QStandardItem*> > rows;
+    QList<QList<QStandardItem*>> rows;
 
     int row = 0;
     // Iterate over the files
@@ -162,10 +162,13 @@ void BrowseThread::populateModel() {
                 thisPath.token());
         {
             mixxx::TrackMetadata trackMetadata;
+            // Both resetMissingTagMetadata = false/true have the same effect
+            constexpr auto resetMissingTagMetadata = false;
             SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
                     fileAccess,
                     &trackMetadata,
-                    nullptr);
+                    nullptr,
+                    resetMissingTagMetadata);
 
             item = new QStandardItem(fileAccess.info().fileName());
             item->setToolTip(item->text());
@@ -296,12 +299,13 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit rowsAppended(rows, thisModelObserver);
-            qDebug() << "Append " << rows.count() << " from " << fileAccess.info();
+            qDebug() << "Append" << rows.count() << "tracks from "
+                     << thisPath.info().locationPath();
             rows.clear();
         }
-        // Sleep additionally for 10ms which prevents us from GUI freezes
+        // Sleep additionally for 20ms which prevents us from GUI freezes
         msleep(20);
     }
     emit rowsAppended(rows, thisModelObserver);
-    qDebug() << "Append last " << rows.count();
+    qDebug() << "Append last" << rows.count() << "tracks from" << thisPath.info().locationPath();
 }

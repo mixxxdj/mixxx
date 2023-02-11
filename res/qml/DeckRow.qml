@@ -1,11 +1,10 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
 
 Item {
     id: root
 
-    property string leftDeckGroup // required
-    property string rightDeckGroup // required
+    required property string leftDeckGroup
+    required property string rightDeckGroup
     property alias mixer: mixer
     property bool minimized: false
 
@@ -64,7 +63,6 @@ Item {
                 target: rightDeck
                 anchors.left: mixer.right
             }
-
         }
     ]
 
@@ -89,7 +87,6 @@ Item {
         FadeBehavior on visible {
             fadeTarget: mixer
         }
-
     }
 
     Deck {
@@ -117,9 +114,6 @@ Item {
                 property: "implicitHeight"
                 duration: 150
             }
-
         }
-
     }
-
 }

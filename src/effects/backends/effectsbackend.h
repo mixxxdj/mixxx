@@ -27,6 +27,8 @@ class EffectsBackend {
 
     /// returns a list sorted like it should be displayed in the GUI
     virtual const QList<QString> getEffectIds() const = 0;
+    /// returns a pointer to the manifest or a null pointer in case a
+    /// previously stored effect is no longer available
     virtual EffectManifestPointer getManifest(const QString& effectId) const = 0;
     virtual const QList<EffectManifestPointer> getManifests() const = 0;
     virtual bool canInstantiateEffect(const QString& effectId) const = 0;

@@ -9,7 +9,7 @@
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        : GLWaveformRenderer(waveformWidgetRenderer) {
 }
 
 GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal() {

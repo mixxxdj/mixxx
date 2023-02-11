@@ -31,13 +31,13 @@ ov_callbacks SoundSourceOggVorbis::s_callbacks = {
 const QString SoundSourceProviderOggVorbis::kDisplayName = QStringLiteral("Xiph.org OggVorbis");
 
 //static
-const QStringList SoundSourceProviderOggVorbis::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderOggVorbis::kSupportedFileTypes = {
         QStringLiteral("ogg"),
 };
 
 SoundSourceProviderPriority SoundSourceProviderOggVorbis::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;

@@ -3,6 +3,7 @@
 #include <QStyledItemDelegate>
 
 class MidiOpCodeDelegate : public QStyledItemDelegate {
+    Q_OBJECT
   public:
     MidiOpCodeDelegate(QObject* pParent);
     virtual ~MidiOpCodeDelegate();

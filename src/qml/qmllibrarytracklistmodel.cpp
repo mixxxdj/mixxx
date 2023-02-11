@@ -87,5 +87,14 @@ QHash<int, QByteArray> QmlLibraryTrackListModel::roleNames() const {
     return kRoleNames;
 }
 
+QVariant QmlLibraryTrackListModel::get(int row) const {
+    QModelIndex idx = index(row, 0);
+    QVariantMap dataMap;
+    for (auto it = kRoleNames.constBegin(); it != kRoleNames.constEnd(); it++) {
+        dataMap.insert(it.value(), data(idx, it.key()));
+    }
+    return dataMap;
+}
+
 } // namespace qml
 } // namespace mixxx

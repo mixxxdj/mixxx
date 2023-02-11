@@ -7,8 +7,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 EmptyWaveformWidget::EmptyWaveformWidget(const QString& group, QWidget* parent)
-        : QWidget(parent),
-          WaveformWidgetAbstract(group) {
+        : NonGLWaveformWidgetAbstract(group, parent) {
     //Empty means just a background ;)
     addRenderer<WaveformRenderBackground>();
 

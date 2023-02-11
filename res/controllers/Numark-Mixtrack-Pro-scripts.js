@@ -34,7 +34,7 @@
 // 	Stutter: Adjust BeatGrid in the correct place (useful to sync well).
 //		 LED Blink at each Beat of the grid.
 //
-//	Sync:	If the other deck is stopped, only sync tempo (not fase).
+//	Sync:	If the other deck is stopped, only sync tempo (not phase).
 //		LED Blink at Clip Gain (Peak indicator).
 //
 // 	Pitch: 	Up, Up; Down, Down. Pitch slide are inverted, to match with the screen (otherwise is very confusing).
@@ -592,7 +592,7 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
 		}
 
-	} else { // en stop hace scratch siempre
+    } else { // stop scratching
 
 		if (!NumarkMixTrackPro.touch[deck-1]){
 
@@ -639,7 +639,7 @@ NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
 
 	} else {
 
-		// si esta en play y el modo scratch desactivado, al presionar el touch no hace nada
+		// if playing and scratch mode is disabled, do nothing on press
 		if (!NumarkMixTrackPro.scratchMode[deck-1] && engine.getValue(group, "play")) return;
 
 		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);

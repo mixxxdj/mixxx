@@ -60,6 +60,7 @@ case "$1" in
             libmad0-dev \
             libmodplug-dev \
             libmp3lame-dev \
+            libmsgsl-dev \
             libopus-dev \
             libopusfile-dev \
             libportmidi-dev \
@@ -79,6 +80,7 @@ case "$1" in
             libupower-glib-dev \
             libusb-1.0-0-dev \
             libwavpack-dev \
+            lv2-dev \
             markdown \
             portaudio19-dev \
             protobuf-compiler \

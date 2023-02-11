@@ -20,6 +20,7 @@ const QString kEffectForGroupPrefix = QStringLiteral("EffectForGroup_");
 const QString kEnableEqs = QStringLiteral("EnableEQs");
 const QString kEqsOnly = QStringLiteral("EQsOnly");
 const QString kSingleEq = QStringLiteral("SingleEQEffect");
+const QString kMainEQParameterKey = QStringLiteral("EffectForGroup_[Master]_parameter");
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
 const QString kDefaultQuickEffectChainName = QStringLiteral("Filter");
@@ -56,6 +57,16 @@ DlgPrefEQ::DlgPrefEQ(
           m_bEqAutoReset(false),
           m_bGainAutoReset(false) {
     setupUi(this);
+    // Set the focus policy for comboboxes and sliders and connect them to the
+    // custom event filter. See eventFilter() for details.
+    // Deck EQ & QuickEffect comboxboxes are set up accordingly in slotNumDecksChanged(),
+    // main EQ sliders in slotMainEqEffectChanged()
+    SliderHiEQ->setFocusPolicy(Qt::StrongFocus);
+    SliderHiEQ->installEventFilter(this);
+    SliderLoEQ->setFocusPolicy(Qt::StrongFocus);
+    SliderLoEQ->installEventFilter(this);
+    comboBoxMainEq->setFocusPolicy(Qt::StrongFocus);
+    comboBoxMainEq->installEventFilter(this);
 
     loadSettings();
 
@@ -84,6 +95,15 @@ DlgPrefEQ::DlgPrefEQ(
             &QCheckBox::stateChanged,
             this,
             &DlgPrefEQ::slotSingleEqChecked);
+    // Quick hack to update the checkbox "Use the same EQ filter for all decks"
+    // to not use the default state (checked) when slotNumDecksChanged() calls
+    // slotSingleEqChecked(state) here in constructor, because that would be written
+    // to config immediateley and thus reset the previous unchecked state.
+    // TODO(ronso0) Write only in slotApply(), read from config only in slotUpdate().
+    // Currently config is read in both slotUpdate() and loadSettings().
+    CheckBoxSingleEqEffect->setChecked(m_pConfig->getValue(
+                                               ConfigKey(kConfigGroup, kSingleEq), "yes") == "yes");
+    slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
@@ -110,6 +130,25 @@ DlgPrefEQ::~DlgPrefEQ() {
     m_deckQuickEffectSelectors.clear();
 }
 
+// Catch scroll events and filter them if they addressed an unfocused combobox or
+// silder and send them to the scroll area instead.
+// This avoids undesired value changes of unfocused widget when scrolling the page.
+// Values can be changed only by explicit selection, dragging sliders and with
+// Up/Down (Left/Right respectively), PageUp/PageDown as well as Home/End keys.
+bool DlgPrefEQ::eventFilter(QObject* obj, QEvent* e) {
+    if (e->type() == QEvent::Wheel) {
+        // Reject scrolling only if widget is unfocused.
+        // Object to widget cast is needed to check the focus state.
+        QComboBox* combo = qobject_cast<QComboBox*>(obj);
+        QSlider* slider = qobject_cast<QSlider*>(obj);
+        if ((combo && !combo->hasFocus()) || (slider && !slider->hasFocus())) {
+            QApplication::sendEvent(verticalLayout, e);
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, e);
+}
+
 void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     int oldDecks = m_deckEqEffectSelectors.size();
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
@@ -119,6 +158,10 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
 
         // Create the drop down list for deck EQs
         QComboBox* pEqComboBox = new QComboBox(this);
+        // Ignore scroll events if combobox is not focused.
+        // See eventFilter() for details.
+        pEqComboBox->setFocusPolicy(Qt::StrongFocus);
+        pEqComboBox->installEventFilter(this);
         m_deckEqEffectSelectors.append(pEqComboBox);
         connect(pEqComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -127,6 +170,8 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
 
         // Create the drop down list for Quick Effects
         QComboBox* pQuickEffectComboBox = new QComboBox(this);
+        pQuickEffectComboBox->setFocusPolicy(Qt::StrongFocus);
+        pQuickEffectComboBox->installEventFilter(this);
         m_deckQuickEffectSelectors.append(pQuickEffectComboBox);
         connect(pQuickEffectComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -257,10 +302,7 @@ void DlgPrefEQ::populateDeckQuickEffectBoxList(
         QString deckGroupName = PlayerManager::groupForDeck(deck);
         QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
         EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
-
-        // Add empty item at the top: no effect
-        box->addItem(kNoEffectString);
-        int i = 1;
+        int i = 0;
         for (const auto& pChainPreset : presetList) {
             box->addItem(pChainPreset->name());
             if (pChain->presetName() == pChainPreset->name()) {
@@ -277,17 +319,19 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
     bool do_hide = static_cast<bool>(checked);
     m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
             do_hide ? QString("yes") : QString("no"));
-    int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
-    for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
-        if (do_hide) {
-            m_deckEqEffectSelectors.at(i - 1)->setCurrentIndex(deck1EQIndex);
-            gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
-            gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
-            gridLayout_3->itemAtPosition(i, 2)->widget()->hide();
-        } else {
-            gridLayout_3->itemAtPosition(i, 0)->widget()->show();
-            gridLayout_3->itemAtPosition(i, 1)->widget()->show();
-            gridLayout_3->itemAtPosition(i, 2)->widget()->show();
+    if (m_deckEqEffectSelectors.size()) {
+        int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
+        for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
+            if (do_hide) {
+                m_deckEqEffectSelectors.at(i - 1)->setCurrentIndex(deck1EQIndex);
+                gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
+                gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
+                gridLayout_3->itemAtPosition(i, 2)->widget()->hide();
+            } else {
+                gridLayout_3->itemAtPosition(i, 0)->widget()->show();
+                gridLayout_3->itemAtPosition(i, 1)->widget()->show();
+                gridLayout_3->itemAtPosition(i, 2)->widget()->show();
+            }
         }
     }
 
@@ -445,8 +489,8 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
     EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
     QList<EffectChainPresetPointer> presetList =
             m_pChainPresetManager->getQuickEffectPresetsSorted();
-    if (pChain && effectIndex > 0 && effectIndex <= presetList.size()) {
-        pChain->loadChainPreset(presetList[effectIndex - 1]);
+    if (pChain && effectIndex >= 0 && effectIndex < presetList.size()) {
+        pChain->loadChainPreset(presetList[effectIndex]);
     }
 }
 
@@ -543,7 +587,7 @@ void DlgPrefEQ::slotUpdateLoEQ() {
     slotApply();
 }
 
-void DlgPrefEQ::slotUpdateMainEQParameter(int value) {
+void DlgPrefEQ::slotApplyMainEQParameter(int value) {
     EffectSlotPointer pEffectSlot(m_pEffectMainEQ);
     if (!pEffectSlot.isNull()) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
@@ -552,14 +596,17 @@ void DlgPrefEQ::slotUpdateMainEQParameter(int value) {
                 EffectManifestParameter::ParameterType::Knob, index);
 
         if (pParameterSlot->isLoaded()) {
-            double dValue = value / 100.0;
-            pParameterSlot->setParameter(dValue);
+            // Calculate parameter value from relative slider position
+            double paramValue = static_cast<double>(value - slider->minimum()) /
+                    static_cast<double>(slider->maximum() - slider->minimum());
+            pParameterSlot->setParameter(paramValue);
             QLabel* valueLabel = m_mainEQValues[index];
+            double dValue = value / 100.0;
             QString valueText = QString::number(dValue);
             valueLabel->setText(valueText);
 
             m_pConfig->set(ConfigKey(kConfigGroup,
-                                   QString("EffectForGroup_[Master]_parameter%1").arg(index + 1)),
+                                   kMainEQParameterKey + QString::number(index + 1)),
                     ConfigValue(valueText));
         }
     }
@@ -675,7 +722,7 @@ void DlgPrefEQ::setUpMainEQ() {
 
             if (pParameterSlot->isLoaded()) {
                 QString strValue = m_pConfig->getValueString(ConfigKey(kConfigGroup,
-                        QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)));
+                        kMainEQParameterKey + QString::number(i + 1)));
                 bool ok;
                 double value = strValue.toDouble(&ok);
                 if (ok) {
@@ -740,18 +787,36 @@ void DlgPrefEQ::slotMainEqEffectChanged(int effectIndex) {
                     slider->setMinimumHeight(90);
                     // Set the index as a property because we need it inside slotUpdateFilter()
                     slider->setProperty("index", QVariant(i));
+                    // Ignore scroll events if slider is not focused.
+                    // See eventFilter() for details.
+                    slider->setFocusPolicy(Qt::StrongFocus);
+                    slider->installEventFilter(this);
                     slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
                     m_mainEQSliders.append(slider);
+                    // catch drag event
                     connect(slider,
                             &QSlider::sliderMoved,
                             this,
-                            &DlgPrefEQ::slotUpdateMainEQParameter);
+                            &DlgPrefEQ::slotApplyMainEQParameter);
+                    // catch scroll event
+                    connect(slider,
+                            &QSlider::valueChanged,
+                            this,
+                            &DlgPrefEQ::slotApplyMainEQParameter);
 
                     QLabel* valueLabel = new QLabel(this);
                     m_mainEQValues.append(valueLabel);
                     QString valueText = QString::number((double)slider->value() / 100);
                     valueLabel->setText(valueText);
                     slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
+
+                    // Immediately save the new (default) parameter values in preferences.
+                    // Otherwise, without pressing 'Reset parameter', the previously saved
+                    // parameter values (of another EQ effect) would be loaded on next start
+                    // which (unnoticed) messes up the parameters displayed now.
+                    m_pConfig->set(ConfigKey(kConfigGroup,
+                                           kMainEQParameterKey + QString::number(i + 1)),
+                            ConfigValue(valueText));
                 }
             }
         }
@@ -819,15 +884,19 @@ void DlgPrefEQ::setMainEQParameter(int i, double value) {
                 EffectManifestParameter::ParameterType::Knob, i);
 
         if (pParameterSlot->isLoaded()) {
-            pParameterSlot->setParameter(value);
-            m_mainEQSliders[i]->setValue(static_cast<int>(value * 100));
+            QSlider* slider = m_mainEQSliders[i];
+            // Calculate parameter value from relative slider position
+            double paramValue = static_cast<double>(value - slider->minimum()) /
+                    static_cast<double>(slider->maximum() - slider->minimum());
+            pParameterSlot->setParameter(paramValue);
+            slider->setValue(static_cast<int>(value * 100));
 
             QLabel* valueLabel = m_mainEQValues[i];
             QString valueText = QString::number(value);
             valueLabel->setText(valueText);
 
             m_pConfig->set(ConfigKey(kConfigGroup,
-                                   QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)),
+                                   kMainEQParameterKey + QString::number(i + 1)),
                     ConfigValue(valueText));
         }
     }

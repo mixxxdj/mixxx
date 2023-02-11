@@ -48,7 +48,7 @@ BehringerCMDStudio4a.vuMeterUpdate = function (value, group, control){
 }
 
 BehringerCMDStudio4a.initLEDs = function () {
-    // (re)Initialise any LEDs that are direcctly controlled by this script.
+    // (Re-)Initialize any LEDs that are directly controlled by this script.
     // DEL buttons (one for each virtual deck).
     midi.sendShortMsg(0x90, 0x2A, 0x00);
     midi.sendShortMsg(0x91, 0x4A, 0x00);
@@ -210,7 +210,7 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
                     // Raised bug about this:
                     // https://bugs.launchpad.net/mixxx/+bug/1538200
                     // Changed timer from 50 to 100 after the pathology of this
-                    // bug was explined in the bug report.
+                    // bug was explained in the bug report.
                     engine.beginTimer(100, function() { engine.setValue(group, "slip_enabled", 1); }, 1);
                 }
             }

@@ -47,6 +47,7 @@ class ControllerManager : public QObject {
     void requestSetUpDevices();
     void requestShutdown();
     void requestInitialize();
+    void mappingApplied(bool applied);
 
   public slots:
     void updateControllerList();
@@ -70,7 +71,7 @@ class ControllerManager : public QObject {
     void pollDevices();
     void startPolling();
     void stopPolling();
-    void maybeStartOrStopPolling();
+    void pollIfAnyControllersOpen();
 
   private:
     UserSettingsPointer m_pConfig;

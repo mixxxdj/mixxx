@@ -2,6 +2,7 @@
 
 #include <QVariant>
 
+#include "library/searchqueryparser.h"
 #include "util/assert.h"
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
@@ -76,6 +77,17 @@ void ProxyTrackModel::search(const QString& searchText, const QString& extraFilt
     }
 }
 
+QString ProxyTrackModel::modelKey(bool noSearch) const {
+    if (m_pTrackModel) {
+        if (m_bHandleSearches) {
+            return m_pTrackModel->modelKey(true) + QStringLiteral("#") + currentSearch();
+        } else {
+            return m_pTrackModel->modelKey(noSearch);
+        }
+    }
+    return QString();
+}
+
 const QString ProxyTrackModel::currentSearch() const {
     if (m_bHandleSearches) {
         return m_currentSearch;
@@ -143,26 +155,41 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         return false;
     }
 
+    const QString currSearch = m_currentSearch.trimmed();
+    if (currSearch.isEmpty()) {
+        return true;
+    }
+
+    QStringList tokens = SearchQueryParser::splitQueryIntoWords(currSearch);
+    tokens.removeDuplicates();
+
     const QList<int>& filterColumns = m_pTrackModel->searchColumns();
     QAbstractItemModel* itemModel =
             dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
-    bool rowMatches = false;
 
-    QRegularExpression filter = filterRegularExpression();
-    QListIterator<int> iter(filterColumns);
-
-    while (!rowMatches && iter.hasNext()) {
-        int i = iter.next();
-        QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
-        QVariant data = itemModel->data(index);
-        if (data.canConvert<QString>()) {
-            QString strData = data.toString();
-            if (strData.contains(filter)) {
-                rowMatches = true;
+    for (const auto& token : std::as_const(tokens)) {
+        bool tokenMatch = false;
+        for (const auto column : std::as_const(filterColumns)) {
+            QModelIndex index = itemModel->index(sourceRow, column, sourceParent);
+            QString strData = itemModel->data(index).toString();
+            if (!strData.isEmpty()) {
+                QString tokNoQuotes = token;
+                tokNoQuotes.remove('\"');
+                if (strData.contains(tokNoQuotes, Qt::CaseInsensitive)) {
+                    tokenMatch = true;
+                    tokens.removeOne(token);
+                }
+            }
+            if (tokenMatch) {
+                break;
             }
         }
     }
-    return rowMatches;
+
+    if (tokens.length() > 0) {
+        return false;
+    }
+    return true;
 }
 
 QString ProxyTrackModel::getModelSetting(const QString& name) {

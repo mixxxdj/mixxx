@@ -1,10 +1,7 @@
 #include "library/basetracktablemodel.h"
 
-#include <QScreen>
-// for hack to get primary screen instead of view widget's screen
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QGuiApplication>
-#endif
+#include <QScreen>
 
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
@@ -515,14 +512,7 @@ bool BaseTrackTableModel::setData(
 QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         const QModelIndex& index) const {
     // Determine height of the cover art image depending on the screen size
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    auto* pTableView = qobject_cast<WTrackTableView*>(parent());
-    VERIFY_OR_DEBUG_ASSERT(pTableView) {
-        return QVariant();
-    }
-    QScreen* pViewScreen = pTableView->screen();
-#else
-    // Ugly hack assuming that the view is on whatever Qt considers the primary screen.
+    // Assuming that the view is on whatever Qt considers the primary screen.
     QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
     VERIFY_OR_DEBUG_ASSERT(app) {
         qWarning() << "Unable to get application's QGuiApplication instance, "
@@ -530,7 +520,7 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         return QVariant();
     }
     QScreen* pViewScreen = app->primaryScreen();
-#endif
+
     unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
             pViewScreen->availableGeometry().height() *
             kRelativeHeightOfCoverartToolTip);
@@ -573,6 +563,9 @@ QVariant BaseTrackTableModel::roleValue(
             return composeCoverArtToolTipHtml(index);
         case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
             return QVariant();
+        case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
+            return std::move(rawValue);
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -640,8 +633,15 @@ QVariant BaseTrackTableModel::roleValue(
             }
             QDateTime dt = mixxx::localDateTimeFromUtc(rawValue.toDateTime());
             if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                // localized text date: "Wednesday, May 20, 1998 03:40:13 AM CEST"
                 return dt;
             }
+            if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
+                // Timstamp column in history feature:
+                // Use localized date/time format without text: "5/20/98 03:40 AM"
+                return mixxx::displayLocalDateTime(dt);
+            }
+            // For Date Added, use just the date: "5/20/98"
             return dt.date();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
@@ -693,20 +693,6 @@ QVariant BaseTrackTableModel::roleValue(
             } else {
                 return QChar('-');
             }
-        }
-        case ColumnCache::COLUMN_LIBRARYTABLE_YEAR: {
-            if (rawValue.isNull()) {
-                return QVariant();
-            }
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QString>()) {
-                return QVariant();
-            }
-            bool ok;
-            const auto year = mixxx::TrackMetadata::formatCalendarYear(rawValue.toString(), &ok);
-            if (!ok) {
-                return QVariant();
-            }
-            return year;
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
             if (rawValue.isNull()) {

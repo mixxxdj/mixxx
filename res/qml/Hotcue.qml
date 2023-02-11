@@ -1,12 +1,12 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import "Theme"
 
 Item {
     id: root
 
-    property int hotcueNumber // required
-    property string group // required
+    required property int hotcueNumber
+    required property string group
     property alias activate: hotcueActivateControl.value
     property alias clear: hotcueClearControl.value
     readonly property bool isSet: hotcueStatusControl.value != 0
@@ -25,28 +25,27 @@ Item {
         id: hotcueColorControl
 
         group: root.group
-        key: "hotcue_" + hotcueNumber + "_color"
+        key: "hotcue_" + root.hotcueNumber + "_color"
     }
 
     Mixxx.ControlProxy {
         id: hotcueActivateControl
 
         group: root.group
-        key: "hotcue_" + hotcueNumber + "_activate"
+        key: "hotcue_" + root.hotcueNumber + "_activate"
     }
 
     Mixxx.ControlProxy {
         id: hotcueStatusControl
 
         group: root.group
-        key: "hotcue_" + hotcueNumber + "_status"
+        key: "hotcue_" + root.hotcueNumber + "_status"
     }
 
     Mixxx.ControlProxy {
         id: hotcueClearControl
 
         group: root.group
-        key: "hotcue_" + hotcueNumber + "_clear"
+        key: "hotcue_" + root.hotcueNumber + "_clear"
     }
-
 }

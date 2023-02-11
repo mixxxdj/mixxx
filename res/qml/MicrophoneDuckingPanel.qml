@@ -1,5 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import "Theme"
 
@@ -36,27 +36,25 @@ Column {
             id: duckingControl
 
             property string duckingModeName: {
-                switch (value) {
-                case MicrophoneDuckingPanel.DuckingMode.Auto:
-                    return "Auto";
-                case MicrophoneDuckingPanel.DuckingMode.Manual:
-                    return "Manual";
-                default:
-                    return "Off";
+                switch (this.value) {
+                    case MicrophoneDuckingPanel.DuckingMode.Auto:
+                        return "Auto";
+                    case MicrophoneDuckingPanel.DuckingMode.Manual:
+                        return "Manual";
+                    default:
+                        return "Off";
                 }
             }
             property bool duckingEnabled: {
-                return (value == MicrophoneDuckingPanel.DuckingMode.Auto || value == MicrophoneDuckingPanel.DuckingMode.Manual);
+                return (this.value == MicrophoneDuckingPanel.DuckingMode.Auto || this.value == MicrophoneDuckingPanel.DuckingMode.Manual);
             }
 
             function nextMode() {
-                value = (value + 1) % MicrophoneDuckingPanel.DuckingMode.NumModes;
+                this.value = (this.value + 1) % MicrophoneDuckingPanel.DuckingMode.NumModes;
             }
 
             group: "[Master]"
             key: "talkoverDucking"
         }
-
     }
-
 }

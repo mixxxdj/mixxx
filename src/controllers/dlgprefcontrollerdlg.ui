@@ -436,6 +436,20 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
+        <layout class="QHBoxLayout" name="layout_inputSearch">
+         <item>
+          <widget class="QLineEdit" name="inputControlSearch"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="inputControlSearchBtn">
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QTableView" name="m_pInputMappingTableView">
          <property name="editTriggers">
           <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
@@ -505,11 +519,26 @@
        </item>
       </layout>
      </widget>
+
      <widget class="QWidget" name="outputMappingsTab">
       <attribute name="title">
        <string>Output Mappings</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QHBoxLayout" name="layout_outputSearch">
+         <item>
+          <widget class="QLineEdit" name="outputControlSearch"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="outputControlSearchBtn">
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QTableView" name="m_pOutputMappingTableView">
          <property name="enabled">

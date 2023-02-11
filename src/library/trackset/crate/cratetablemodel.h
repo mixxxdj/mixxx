@@ -23,7 +23,9 @@ class CrateTableModel final : public TrackSetTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
 
     Capabilities getCapabilities() const final;
+    QString modelKey(bool noSearch) const override;
 
   private:
     CrateId m_selectedCrate;
+    QHash<int, QString> m_searchTexts;
 };

@@ -68,7 +68,6 @@ void ReadAheadFrameBuffer::adjustCapacityBeforeBuffering(
 
 bool ReadAheadFrameBuffer::tryContinueReadingFrom(
         FrameIndex readIndex) {
-    DEBUG_ASSERT(isValid());
     if (!isReady()) {
         return false;
     }

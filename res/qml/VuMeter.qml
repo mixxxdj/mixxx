@@ -1,14 +1,13 @@
-import Mixxx 0.1 as Mixxx
-import QtGraphicalEffects 1.12
+import Mixxx 1.0 as Mixxx
+import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import "Theme"
 
 Rectangle {
     id: root
 
-    property string group // required
-    property string key // required
-    property color barColor // required
+    required property string group
+    required property string key
 
     radius: width / 2
     color: "black"
@@ -35,7 +34,6 @@ Rectangle {
             height: control.parameter * (parent.height - 2 * anchors.margins)
             radius: width / 2
         }
-
     }
 
     Rectangle {
@@ -70,9 +68,7 @@ Rectangle {
                 position: 1
                 color: Theme.green
             }
-
         }
-
     }
 
     OpacityMask {
@@ -80,5 +76,4 @@ Rectangle {
         source: meterGradient
         maskSource: meterMask
     }
-
 }

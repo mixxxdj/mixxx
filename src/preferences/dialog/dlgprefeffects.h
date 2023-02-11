@@ -34,13 +34,16 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void setupManifestTableView(QTableView* pTableView);
     void setupChainListView(QListView* pListView);
 
-    void clear();
+    void clearEffectInfo();
+    void clearChainInfoDisableButtons();
     void loadChainPresetLists();
     void saveChainPresetLists();
 
     bool eventFilter(QObject* pChainList, QEvent* event) override;
     QListView* m_pFocusedChainList;
     QListView* unfocusedChainList();
+    QTableView* m_pFocusedEffectList;
+    QTableView* unfocusedEffectList();
 
     QList<QLabel*> m_effectsLabels;
 

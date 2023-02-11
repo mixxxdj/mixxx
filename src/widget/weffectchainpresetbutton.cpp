@@ -9,7 +9,6 @@
 WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManager* pEffectsManager)
         : QPushButton(parent),
           WBaseWidget(this),
-          m_iChainNumber(0),
           m_pEffectsManager(pEffectsManager),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pMenu(make_parented<QMenu>(new QMenu(this))) {
@@ -22,9 +21,17 @@ WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManag
 }
 
 void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& context) {
-    m_iChainNumber = EffectWidgetUtils::getEffectUnitNumberFromNode(node, context);
     m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
+    VERIFY_OR_DEBUG_ASSERT(m_pChain) {
+        SKIN_WARNING(node, context)
+                << "EffectChainPresetButton node could not attach to effect chain";
+        return;
+    }
+    connect(m_pChain.get(),
+            &EffectChain::chainPresetChanged,
+            this,
+            &WEffectChainPresetButton::populateMenu);
     for (const auto& pEffectSlot : m_pChain->getEffectSlots()) {
         connect(pEffectSlot.data(),
                 &EffectSlot::effectChanged,
@@ -42,14 +49,29 @@ void WEffectChainPresetButton::populateMenu() {
     m_pMenu->clear();
 
     // Chain preset items
+    bool presetIsReadOnly = true;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
-        m_pMenu->addAction(pChainPreset->name(), this, [this, pChainPreset]() {
+        QString title = pChainPreset->name();
+        if (title == m_pChain->presetName()) {
+            title = QChar(0x2713) + // CHECK MARK
+                    QChar(' ') + title;
+            presetIsReadOnly = pChainPreset->isReadOnly();
+        }
+        m_pMenu->addAction(title, this, [this, pChainPreset]() {
             m_pChain->loadChainPreset(pChainPreset);
         });
     }
     m_pMenu->addSeparator();
-    m_pMenu->addAction(tr("Save as new preset"), this, [this]() {
-        m_pChainPresetManager->savePreset(m_pChain);
+    // This prevents showing the Update button for the empty '---' preset, in case
+    // WEffectChainPresetButton and effect slot controls of a QuickEffect chain are
+    // exposed in a custom skin.
+    if (!presetIsReadOnly) {
+        m_pMenu->addAction(tr("Update Preset"), this, [this]() {
+            m_pChainPresetManager->updatePreset(m_pChain);
+        });
+    }
+    m_pMenu->addAction(tr("Save As New Preset..."), this, [this]() {
+        m_pChainPresetManager->savePresetAndReload(m_pChain);
     });
 
     m_pMenu->addSeparator();
@@ -58,18 +80,20 @@ void WEffectChainPresetButton::populateMenu() {
     // TODO: get number of currently visible effect slots from skin
     for (int effectSlotIndex = 0; effectSlotIndex < 3; effectSlotIndex++) {
         auto pEffectSlot = m_pChain->getEffectSlots().at(effectSlotIndex);
-        const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
-        const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
 
+        const QString effectSlotNumPrefix(QString::number(effectSlotIndex + 1) + ": ");
         auto pManifest = pEffectSlot->getManifest();
         if (pManifest == nullptr) {
-            m_pMenu->addAction(tr("Empty Effect Slot %1").arg(effectSlotIndex + 1));
+            m_pMenu->addAction(effectSlotNumPrefix + kNoEffectString);
             continue;
         }
 
-        auto pEffectMenu = make_parented<QMenu>(m_pMenu);
-        pEffectMenu->setTitle(pEffectSlot->getManifest()->displayName());
+        auto pEffectMenu = make_parented<QMenu>(
+                effectSlotNumPrefix + pEffectSlot->getManifest()->displayName(),
+                m_pMenu);
 
+        const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
+        const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
         int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NumTypes);
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
             const EffectManifestParameter::ParameterType parameterType =
@@ -111,11 +135,20 @@ void WEffectChainPresetButton::populateMenu() {
 
                 pEffectMenu->addAction(pAction.get());
             }
-            pEffectMenu->addSeparator();
         }
+        pEffectMenu->addSeparator();
+
         pEffectMenu->addAction(tr("Save snapshot"), this, [this, pEffectSlot] {
             m_pEffectsManager->getEffectPresetManager()->saveDefaultForEffect(pEffectSlot);
         });
         m_pMenu->addMenu(pEffectMenu);
     }
+}
+
+bool WEffectChainPresetButton::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+
+    return QPushButton::event(pEvent);
 }

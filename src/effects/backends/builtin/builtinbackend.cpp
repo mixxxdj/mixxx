@@ -19,10 +19,12 @@
 #include "effects/backends/builtin/reverbeffect.h"
 #endif
 #include "effects/backends/builtin/autopaneffect.h"
+#include "effects/backends/builtin/distortioneffect.h"
 #include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 #include "effects/backends/builtin/metronomeeffect.h"
 #include "effects/backends/builtin/phasereffect.h"
+#include "effects/backends/builtin/pitchshifteffect.h"
 #include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
 
@@ -54,6 +56,8 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
     registerEffect<TremoloEffect>();
+    registerEffect<PitchShiftEffect>();
+    registerEffect<DistortionEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(
@@ -88,9 +92,6 @@ const QList<QString> BuiltInBackend::getEffectIds() const {
 }
 
 EffectManifestPointer BuiltInBackend::getManifest(const QString& effectId) const {
-    VERIFY_OR_DEBUG_ASSERT(m_registeredEffects.contains(effectId)) {
-        return EffectManifestPointer();
-    }
     return m_registeredEffects.value(effectId).pManifest;
 }
 

@@ -1,6 +1,5 @@
 #include "widget/wmainmenubar.h"
 
-#include <QDesktopServices>
 #include <QUrl>
 
 #include "config.h"
@@ -134,6 +133,9 @@ void WMainMenuBar::initialize() {
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
     auto* pLibraryRescan = new QAction(rescanTitle, this);
+    pLibraryRescan->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_Rescan"),
+            tr("Ctrl+Shift+L"))));
     pLibraryRescan->setStatusTip(rescanText);
     pLibraryRescan->setWhatsThis(buildWhatsThis(rescanTitle, rescanText));
     pLibraryRescan->setCheckable(false);
@@ -517,7 +519,7 @@ void WMainMenuBar::initialize() {
                 &WMainMenuBar::slotDeveloperStatsBase);
         pDeveloperMenu->addAction(pDeveloperStatsBase);
 
-        // "D" cannont be used with Alt here as it is already by the Developer menu
+        // "D" cannot be used with Alt here as it is already by the Developer menu
         QString scriptDebuggerTitle = tr("Deb&ugger Enabled");
         QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
         bool scriptDebuggerEnabled = m_pConfig->getValueString(
@@ -682,8 +684,7 @@ void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
 }
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
-    if (deck < 0 || deck >= m_vinylControlEnabledActions.size()) {
-        DEBUG_ASSERT(false);
+    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_vinylControlEnabledActions.size()) {
         return;
     }
     m_vinylControlEnabledActions.at(deck)->setChecked(enabled);

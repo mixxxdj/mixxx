@@ -1,21 +1,17 @@
 import "." as Skin
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import "Theme"
 
 Skin.Button {
     id: root
 
-    property int hotcueNumber // required
-    property string group // required
+    required property int hotcueNumber
+    required property string group
 
     text: hotcueNumber
-    width: playButton.height
-    height: playButton.height
     activeColor: hotcue.color
     highlight: hotcue.isSet
 
-    Hotcue {
+    Skin.Hotcue {
         id: hotcue
 
         group: root.group
@@ -24,11 +20,10 @@ Skin.Button {
         onIsSetChanged: {
             if (!isSet)
                 popup.close();
-
         }
     }
 
-    HotcuePopup {
+    Skin.HotcuePopup {
         id: popup
 
         hotcue: hotcue
@@ -39,7 +34,7 @@ Skin.Button {
 
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: {
+        onClicked: (mouse) => {
             if (hotcue.isSet) {
                 popup.x = mouse.x;
                 popup.y = mouse.y;
@@ -47,5 +42,4 @@ Skin.Button {
             }
         }
     }
-
 }
