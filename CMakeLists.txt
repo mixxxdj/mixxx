@@ -1639,7 +1639,7 @@ add_subdirectory(
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark"
   "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark"
 )
-target_link_libraries(mixxx-test PRIVATE benchmark)
+target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
 
 # Test Suite
 include(CTest)
