@@ -1,5 +1,7 @@
 #include "macrocontrol.h"
 
+#include <QRegExp>
+
 #include "track/track.h"
 
 namespace {
@@ -147,9 +149,9 @@ void MacroControl::notifySeek(mixxx::audio::FramePos position) {
         return;
     }
     // Account for quantization so the jump stays in-phase but snaps exactly to the original target
-    m_recordedActions.try_emplace(
+    VERIFY_OR_DEBUG_ASSERT(m_recordedActions.try_emplace(
             frameInfo().currentPosition + (queuedTarget - position),
-            queuedTarget);
+            queuedTarget)){};
 }
 
 void MacroControl::slotJumpQueued(mixxx::audio::FramePos samplePos) {
