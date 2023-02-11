@@ -1,170 +1,6 @@
-#include "widget/qopengl/wvumetergl.h"
+#include "widget/wvumetergl.h"
 
 #include "util/math.h"
-#include "util/timer.h"
-#include "util/widgethelper.h"
-#include "waveform/vsyncthread.h"
-#include "widget/qopengl/moc_wvumetergl.cpp"
-#include "widget/wpixmapstore.h"
-
-#define DEFAULT_FALLTIME 20
-#define DEFAULT_FALLSTEP 1
-#define DEFAULT_HOLDTIME 400
-#define DEFAULT_HOLDSIZE 5
-
-WVuMeterGL::WVuMeterGL(QWidget* parent)
-        : WGLWidget(parent),
-          WBaseWidget(this),
-          m_iRendersPending(0),
-          m_bSwapNeeded(false),
-          m_dParameter(0),
-          m_dPeakParameter(0),
-          m_dLastParameter(0),
-          m_dLastPeakParameter(0),
-          m_iPixmapLength(0),
-          m_bHorizontal(false),
-          m_iPeakHoldSize(0),
-          m_iPeakFallStep(0),
-          m_iPeakHoldTime(0),
-          m_iPeakFallTime(0),
-          m_dPeakHoldCountdownMs(0) {
-}
-
-WVuMeterGL::~WVuMeterGL() {
-    makeCurrentIfNeeded();
-    m_pTextureBack.reset();
-    m_pTextureVu.reset();
-    doneCurrent();
-}
-
-void WVuMeterGL::setup(const QDomNode& node, const SkinContext& context) {
-    // Set pixmaps
-    bool bHorizontal = false;
-    (void)context.hasNodeSelectBool(node, "Horizontal", &bHorizontal);
-
-    // Set background pixmap if available
-    QDomElement backPathNode = context.selectElement(node, "PathBack");
-    if (!backPathNode.isNull()) {
-        // The implicit default in <1.12.0 was FIXED so we keep it for backwards
-        // compatibility.
-        setPixmapBackground(
-                context.getPixmapSource(backPathNode),
-                context.selectScaleMode(backPathNode, Paintable::FIXED),
-                context.getScaleFactor());
-    }
-
-    QDomElement vuNode = context.selectElement(node, "PathVu");
-    // The implicit default in <1.12.0 was FIXED so we keep it for backwards
-    // compatibility.
-    setPixmaps(context.getPixmapSource(vuNode),
-            bHorizontal,
-            context.selectScaleMode(vuNode, Paintable::FIXED),
-            context.getScaleFactor());
-
-    m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
-    if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100) {
-        m_iPeakHoldSize = DEFAULT_HOLDSIZE;
-    }
-
-    m_iPeakFallStep = context.selectInt(node, "PeakFallStep");
-    if (m_iPeakFallStep < 1 || m_iPeakFallStep > 1000) {
-        m_iPeakFallStep = DEFAULT_FALLSTEP;
-    }
-
-    m_iPeakHoldTime = context.selectInt(node, "PeakHoldTime");
-    if (m_iPeakHoldTime < 1 || m_iPeakHoldTime > 3000) {
-        m_iPeakHoldTime = DEFAULT_HOLDTIME;
-    }
-
-    m_iPeakFallTime = context.selectInt(node, "PeakFallTime");
-    if (m_iPeakFallTime < 1 || m_iPeakFallTime > 1000) {
-        m_iPeakFallTime = DEFAULT_FALLTIME;
-    }
-
-    setFocusPolicy(Qt::NoFocus);
-}
-
-void WVuMeterGL::setPixmapBackground(
-        const PixmapSource& source,
-        Paintable::DrawMode mode,
-        double scaleFactor) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapBack.isNull()) {
-        qDebug() << metaObject()->className()
-                 << "Error loading background pixmap:" << source.getPath();
-    } else if (mode == Paintable::FIXED) {
-        setFixedSize(m_pPixmapBack->size());
-    }
-}
-
-void WVuMeterGL::setPixmaps(const PixmapSource& source,
-        bool bHorizontal,
-        Paintable::DrawMode mode,
-        double scaleFactor) {
-    m_pPixmapVu = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapVu.isNull()) {
-        qDebug() << "WVuMeterGL: Error loading vu pixmap" << source.getPath();
-    } else {
-        m_bHorizontal = bHorizontal;
-        if (m_bHorizontal) {
-            m_iPixmapLength = m_pPixmapVu->width();
-        } else {
-            m_iPixmapLength = m_pPixmapVu->height();
-        }
-    }
-}
-
-void WVuMeterGL::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dValue);
-    m_dParameter = math_clamp(dParameter, 0.0, 1.0);
-
-    if (dParameter > 0.0) {
-        setPeak(dParameter);
-    } else {
-        // A 0.0 value is very unlikely except when the VU Meter is disabled
-        m_dPeakParameter = 0;
-    }
-}
-
-void WVuMeterGL::setPeak(double parameter) {
-    if (parameter > m_dPeakParameter) {
-        m_dPeakParameter = parameter;
-        m_dPeakHoldCountdownMs = m_iPeakHoldTime;
-    }
-}
-
-void WVuMeterGL::updateState(mixxx::Duration elapsed) {
-    double msecsElapsed = elapsed.toDoubleMillis();
-    // If we're holding at a peak then don't update anything
-    m_dPeakHoldCountdownMs -= msecsElapsed;
-    if (m_dPeakHoldCountdownMs > 0) {
-        return;
-    } else {
-        m_dPeakHoldCountdownMs = 0;
-    }
-
-    // Otherwise, decrement the peak position by the fall step size times the
-    // milliseconds elapsed over the fall time multiplier. The peak will fall
-    // FallStep times (out of 128 steps) every FallTime milliseconds.
-    m_dPeakParameter -= static_cast<double>(m_iPeakFallStep) *
-            msecsElapsed /
-            static_cast<double>(m_iPeakFallTime * m_iPixmapLength);
-    m_dPeakParameter = math_clamp(m_dPeakParameter, 0.0, 1.0);
-}
-
-void WVuMeterGL::paintEvent(QPaintEvent* e) {
-    Q_UNUSED(e);
-}
-
-void WVuMeterGL::showEvent(QShowEvent* e) {
-    Q_UNUSED(e);
-    WGLWidget::showEvent(e);
-    // Find the base color recursively in parent widget.
-    m_qBgColor = mixxx::widgethelper::findBaseColor(this);
-    // Force a rerender when the openglwindow is exposed.
-    // 2 pendings renders, in case we have triple buffering
-    m_iRendersPending = 2;
-}
 
 void WVuMeterGL::initializeGL() {
     if (m_pPixmapBack.isNull()) {
@@ -185,26 +21,26 @@ void WVuMeterGL::initializeGL() {
         m_pTextureVu->setWrapMode(QOpenGLTexture::ClampToBorder);
     }
 
-    QString vertexShaderCode =
-            "\
-uniform mat4 matrix;\n\
-attribute vec4 position;\n\
-attribute vec3 texcoor;\n\
-varying vec3 vTexcoor;\n\
-void main()\n\
-{\n\
-    vTexcoor = texcoor;\n\
-    gl_Position = matrix * position;\n\
-}\n";
+    QString vertexShaderCode = QStringLiteral(R"--(
+uniform mat4 matrix;
+attribute vec4 position;
+attribute vec3 texcoor;
+varying vec3 vTexcoor;
+void main()
+{
+    vTexcoor = texcoor;
+    gl_Position = matrix * position;
+}
+)--");
 
-    QString fragmentShaderCode =
-            "\
-uniform sampler2D sampler;\n\
-varying vec3 vTexcoor;\n\
-void main()\n\
-{\n\
-    gl_FragColor = texture2D(sampler, vec2(vTexcoor.x, vTexcoor.y));\n\
-}\n";
+    QString fragmentShaderCode = QStringLiteral(R"--(
+uniform sampler2D sampler;
+varying vec3 vTexcoor;
+void main()
+{
+    gl_FragColor = texture2D(sampler, vec2(vTexcoor.x, vTexcoor.y));
+}
+)--");
 
     if (!m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderCode)) {
         return;
@@ -223,25 +59,12 @@ void main()\n\
     }
 }
 
-void WVuMeterGL::render(VSyncThread* vSyncThread) {
-    ScopedTimer t("WVuMeterGL::render");
-
-    updateState(vSyncThread->sinceLastSwap());
-
-    if (m_dParameter != m_dLastParameter || m_dPeakParameter != m_dLastPeakParameter) {
-        m_iRendersPending = 2;
-    }
-
-    if (m_iRendersPending == 0 || !shouldRender()) {
+void WVuMeterGL::renderGL() {
+    if (!shouldRender()) {
         return;
     }
 
     makeCurrentIfNeeded();
-    drawNativeGL();
-    doneCurrent();
-}
-
-void WVuMeterGL::drawNativeGL() {
     glClearColor(m_qBgColor.redF(), m_qBgColor.greenF(), m_qBgColor.blueF(), 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -336,21 +159,14 @@ void WVuMeterGL::drawNativeGL() {
         }
     }
 
-    m_dLastParameter = m_dParameter;
-    m_dLastPeakParameter = m_dPeakParameter;
-    m_iRendersPending--;
-    m_bSwapNeeded = true;
+    doneCurrent();
 }
 
-void WVuMeterGL::swap() {
-    // TODO @m0dB move shouldRender outside?
-    if (!m_bSwapNeeded || !shouldRender()) {
-        return;
-    }
+void WVuMeterGL::cleanupGL() {
     makeCurrentIfNeeded();
-    swapBuffers();
+    m_pTextureBack.reset();
+    m_pTextureVu.reset();
     doneCurrent();
-    m_bSwapNeeded = false;
 }
 
 void WVuMeterGL::drawTexture(QOpenGLTexture* texture,

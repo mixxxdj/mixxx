@@ -30,6 +30,12 @@ WVuMeterGL::WVuMeterGL(QWidget* parent)
           m_dPeakHoldCountdownMs(0) {
 }
 
+WVuMeterGL::~WVuMeterGL() {
+#ifdef MIXXX_USE_QOPENGL
+    cleanupGL();
+#endif
+}
+
 void WVuMeterGL::setup(const QDomNode& node, const SkinContext& context) {
     // Set pixmaps
     bool bHorizontal = false;
@@ -158,6 +164,9 @@ void WVuMeterGL::showEvent(QShowEvent* e) {
     WGLWidget::showEvent(e);
     // Find the base color recursively in parent widget.
     m_qBgColor = mixxx::widgethelper::findBaseColor(this);
+    // Force a rerender when exposed (needed when using QOpenGL)
+    // 2 pendings renders, in case we have triple buffering
+    m_iPendingRenders = 2;
 }
 
 void WVuMeterGL::render(VSyncThread* vSyncThread) {
@@ -173,6 +182,19 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
         return;
     }
 
+#ifdef MIXXX_USE_QOPENGL
+    renderGL();
+#else
+    renderQPainter();
+#endif
+
+    m_dLastParameter = m_dParameter;
+    m_dLastPeakParameter = m_dPeakParameter;
+    m_iPendingRenders--;
+    m_bSwapNeeded = true;
+}
+
+void WVuMeterGL::renderQPainter() {
     QPainter p(paintDevice());
     // fill the background, in case the image contains transparency
     p.fillRect(rect(), m_qBgColor);
@@ -277,11 +299,6 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
             }
         }
     }
-
-    m_dLastParameter = m_dParameter;
-    m_dLastPeakParameter = m_dPeakParameter;
-    m_iPendingRenders--;
-    m_bSwapNeeded = true;
 }
 
 void WVuMeterGL::swap() {
@@ -290,5 +307,6 @@ void WVuMeterGL::swap() {
     }
     makeCurrentIfNeeded();
     swapBuffers();
+    doneCurrent();
     m_bSwapNeeded = false;
 }
