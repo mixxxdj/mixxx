@@ -181,6 +181,10 @@ class MixxxMainWindow : public QMainWindow {
 
     const CmdlineArgs& m_cmdLineArgs;
 
+#ifdef __LINUX__
+    bool m_recreateMenubarOnFullscreenToggle;
+#endif
+
     ControlPushButton* m_pTouchShift;
     mixxx::ScreenSaverPreference m_inhibitScreensaver;
 

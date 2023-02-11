@@ -168,6 +168,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
+#ifdef __LINUX__
+          m_recreateMenubarOnFullscreenToggle(false),
+#endif
           m_pTouchShift(nullptr) {
     m_runtime_timer.start();
     mixxx::Time::start();
@@ -212,6 +215,19 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     initializeKeyboard();
     installEventFilter(m_pKeyboard);
+
+#ifdef __LINUX__
+    // If true this will recreate and reconnect the mainmenu bar when toggling
+    // fullscreen in order to fix
+    // "No menu bar with ubuntu unity in full screen mode"
+    // https://github.com/mixxxdj/mixxx/issues/6072 (bugs #885890 and #1076789).
+    // Before touching anything here, please read those bugs.
+    // 'unity' seems to be the only affectde desktop environment. Test for other DEs
+    // if required.
+    // Alternative global menus work without this currently, e.g. vala-panel-appmenu
+    m_recreateMenubarOnFullscreenToggle =
+            QString::fromLocal8Bit(qgetenv("XDG_SESSION_DESKTOP")) == "unity";
+#endif
 
     // Menubar depends on translations.
     mixxx::Translations::initializeTranslations(
@@ -1430,19 +1446,20 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
     if (toggle) {
         showFullScreen();
 #ifdef __LINUX__
-        // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
-        // #885890 and Bug #1076789. Before touching anything here, please read
-        // those bugs.
-        createMenuBar();
-        connectMenuBar();
-        if (m_pMenuBar->isNativeMenuBar()) {
-            m_pMenuBar->setNativeMenuBar(false);
+        if (m_recreateMenubarOnFullscreenToggle) {
+            createMenuBar();
+            connectMenuBar();
+            if (m_pMenuBar->isNativeMenuBar()) {
+                m_pMenuBar->setNativeMenuBar(false);
+            }
         }
 #endif
     } else {
 #ifdef __LINUX__
-        createMenuBar();
-        connectMenuBar();
+        if (m_recreateMenubarOnFullscreenToggle) {
+            createMenuBar();
+            connectMenuBar();
+        }
 #endif
         showNormal();
     }
