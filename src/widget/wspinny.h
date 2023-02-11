@@ -1,8 +1,9 @@
 #pragma once
 
 #ifdef MIXXX_USE_QOPENGL
-#include "widget/qopengl/wspinny.h"
-#else
+#include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
+#endif
 
 #include <QEvent>
 #include <QHideEvent>
@@ -32,7 +33,8 @@ class WSpinny : public WGLWidget,
                 public TrackDropTarget {
     Q_OBJECT
   public:
-    WSpinny(QWidget* parent, const QString& group,
+    WSpinny(QWidget* parent,
+            const QString& group,
             UserSettingsPointer pConfig,
             VinylControlManager* pVCMan,
             BaseTrackPlayer* pPlayer);
@@ -43,8 +45,8 @@ class WSpinny : public WGLWidget,
     void setup(const QDomNode& node,
             const SkinContext& context,
             const ConfigKey& showCoverConfigKey);
-    void dragEnterEvent(QDragEnterEvent *event) override;
-    void dropEvent(QDropEvent *event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
 
   public slots:
     void slotLoadTrack(TrackPointer);
@@ -67,17 +69,16 @@ class WSpinny : public WGLWidget,
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
 
-
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:
-    //QWidget:
+    // QWidget:
     void paintEvent(QPaintEvent* /*unused*/) override;
-    void mouseMoveEvent(QMouseEvent * e) override;
-    void mousePressEvent(QMouseEvent * e) override;
-    void mouseReleaseEvent(QMouseEvent * e) override;
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
     void resizeEvent(QResizeEvent* /*unused*/) override;
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent* event) override;
@@ -89,6 +90,8 @@ class WSpinny : public WGLWidget,
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
+    void renderQPainter();
+
     const QString m_group;
     UserSettingsPointer m_pConfig;
     std::shared_ptr<QImage> m_pBgImage;
@@ -115,7 +118,6 @@ class WSpinny : public WGLWidget,
     CoverInfo m_lastRequestedCover;
     bool m_bShowCover;
 
-
     VinylControlManager* m_pVCManager;
     double m_dInitialPos;
 
@@ -125,7 +127,7 @@ class WSpinny : public WGLWidget,
     QImage m_qImage;
     int m_iVinylScopeSize;
 
-    float m_fAngle; //Degrees
+    float m_fAngle; // Degrees
     double m_dAngleCurrentPlaypos;
     double m_dAngleLastPlaypos;
     float m_fGhostAngle;
@@ -143,6 +145,21 @@ class WSpinny : public WGLWidget,
     BaseTrackPlayer* m_pPlayer;
     WCoverArtMenu* m_pCoverMenu;
     DlgCoverArtFullSize* m_pDlgCoverArt;
-};
 
-#endif // not defined MIXXX_USE_QOPENGL
+#ifdef MIXXX_USE_QOPENGL
+    // defined in qopengl/wspinny.cpp
+    void initializeGL() override;
+    void drawTexture(QOpenGLTexture* texture);
+    void cleanupGL();
+    void updateLoaderCoverGL();
+    void renderGL();
+
+    QOpenGLShaderProgram m_shaderProgram;
+    std::unique_ptr<QOpenGLTexture> m_pBgTexture;
+    std::unique_ptr<QOpenGLTexture> m_pMaskTexture;
+    std::unique_ptr<QOpenGLTexture> m_pFgTextureScaled;
+    std::unique_ptr<QOpenGLTexture> m_pGhostTextureScaled;
+    std::unique_ptr<QOpenGLTexture> m_pLoadedCoverTextureScaled;
+    std::unique_ptr<QOpenGLTexture> m_pQTexture;
+#endif
+};

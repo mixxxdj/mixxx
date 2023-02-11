@@ -99,6 +99,9 @@ WSpinny::~WSpinny() {
 #ifdef __VINYLCONTROL__
     m_pVCManager->removeSignalQualityListener(this);
 #endif
+#ifdef MIXXX_USE_QOPENGL
+    cleanupGL();
+#endif
 }
 
 void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
@@ -249,6 +252,9 @@ void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
+#ifdef MIXXX_USE_QOPENGL
+    updateLoaderCoverGL();
+#endif
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
         connect(m_loadedTrack.get(),
@@ -272,6 +278,9 @@ void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
+#ifdef MIXXX_USE_QOPENGL
+    updateLoaderCoverGL();
+#endif
     update();
 }
 
@@ -294,6 +303,9 @@ void WSpinny::slotCoverFound(
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
+#ifdef MIXXX_USE_QOPENGL
+        updateLoaderCoverGL();
+#endif
         update();
     }
 }
@@ -331,6 +343,24 @@ void WSpinny::render(VSyncThread* vSyncThread) {
                 &m_dGhostAngleCurrentPlaypos);
     }
 
+    if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos) {
+        m_fAngle = static_cast<float>(calculateAngle(m_dAngleCurrentPlaypos));
+        m_dAngleLastPlaypos = m_dAngleCurrentPlaypos;
+    }
+
+    if (m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos) {
+        m_fGhostAngle = static_cast<float>(calculateAngle(m_dGhostAngleCurrentPlaypos));
+        m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
+    }
+
+#ifdef MIXXX_USE_QOPENGL
+    renderGL();
+#else
+    renderQPainter();
+#endif
+}
+
+void WSpinny::renderQPainter() {
     double scaleFactor = devicePixelRatioF();
 
     QPainter p(paintDevice());
@@ -371,16 +401,6 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         p.save();
     }
 
-    if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos) {
-        m_fAngle = static_cast<float>(calculateAngle(m_dAngleCurrentPlaypos));
-        m_dAngleLastPlaypos = m_dAngleCurrentPlaypos;
-    }
-
-    if (m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos) {
-        m_fGhostAngle = static_cast<float>(calculateAngle(m_dGhostAngleCurrentPlaypos));
-        m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
-    }
-
     if (paintGhost) {
         p.restore();
         p.save();
@@ -408,6 +428,7 @@ void WSpinny::swap() {
     }
     makeCurrentIfNeeded();
     swapBuffers();
+    doneCurrent();
 }
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
