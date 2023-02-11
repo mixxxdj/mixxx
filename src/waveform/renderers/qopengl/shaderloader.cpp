@@ -1,5 +1,7 @@
 #include "waveform/renderers/qopengl/shaderloader.h"
 
+#include "util/assert.h"
+
 using namespace qopengl;
 
 ShaderLoader::ShaderLoader() = default;
@@ -7,19 +9,21 @@ ShaderLoader::ShaderLoader() = default;
 ShaderLoader::~ShaderLoader() = default;
 
 void ShaderLoader::initShaders(const QString& vertexShaderCode, const QString& fragmentShaderCode) {
-    if (!m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderCode)) {
+    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.addShaderFromSourceCode(
+            QOpenGLShader::Vertex, vertexShaderCode)) {
         return;
     }
 
-    if (!m_shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode)) {
+    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.addShaderFromSourceCode(
+            QOpenGLShader::Fragment, fragmentShaderCode)) {
         return;
     }
 
-    if (!m_shaderProgram.link()) {
+    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.link()) {
         return;
     }
 
-    if (!m_shaderProgram.bind()) {
+    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.bind()) {
         return;
     }
 }
