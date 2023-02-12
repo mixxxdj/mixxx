@@ -121,17 +121,8 @@ MC7000.shift = [false, false, false, false];
 // For each side whether the top or bottom deck is active.
 MC7000.topDeckActive = [true, true];
 
-// initialize the PAD Mode to Hot Cue and all others off when starting
-MC7000.PADModeCue = [true, true, true, true];
-MC7000.PADModeCueLoop = [false, false, false, false];
-MC7000.PADModeFlip = [false, false, false, false];
-MC7000.PADModeRoll = [false, false, false, false];
-MC7000.PADModeSavedLoop = [false, false, false, false];
-MC7000.PADModeSlicer = [false, false, false, false];
-MC7000.PADModeSlicerLoop = [false, false, false, false];
-MC7000.PADModeSampler = [false, false, false, false];
-MC7000.PADModeVelSamp = [false, false, false, false];
-MC7000.PADModePitch = [false, false, false, false];
+// initialize the PAD Mode to Hot Cue when starting
+MC7000.PADMode = ["Cue", "Cue", "Cue", "Cue"];
 
 // PAD Mode 'Beatloop Roll' sizes
 MC7000.beatLoopRoll = [1 / 16, 1 / 8, 1 / 4, 1 / 2, 1, 2, 4, 8];
@@ -235,29 +226,22 @@ MC7000.init = function() {
     midi.sendShortMsg(0x92, 0x07, MC7000.isVinylMode ? 0x7F: 0x01);
     midi.sendShortMsg(0x93, 0x07, MC7000.isVinylMode ? 0x7F: 0x01);
 
-    // HotCue Mode LEDs
-    for (var cueIdx = 1; cueIdx <= 8; cueIdx++) {
-        engine.makeConnection("[Channel1]", "hotcue_"+cueIdx+"_enabled", MC7000.HotCueLED);
-        engine.makeConnection("[Channel2]", "hotcue_"+cueIdx+"_enabled", MC7000.HotCueLED);
-        engine.makeConnection("[Channel3]", "hotcue_"+cueIdx+"_enabled", MC7000.HotCueLED);
-        engine.makeConnection("[Channel4]", "hotcue_"+cueIdx+"_enabled", MC7000.HotCueLED);
+    for (var chanIdx = 1; chanIdx <= 4; chanIdx++) {
+        // HotCue Mode LEDs
+        for (var cueIdx = 1; cueIdx <= 8; cueIdx++) {
+            engine.makeConnection("[Channel"+chanIdx+"]", "hotcue_"+cueIdx+"_enabled", MC7000.HotCueLED);
+        }
+        // Pitch LEDs
+        for (var pitchIdx = 1; pitchIdx <= 8; pitchIdx++) {
+            engine.makeConnection("[Channel"+chanIdx+"]", "hotcue_"+pitchIdx+"_enabled", MC7000.PitchLED);
+        }
     }
-    // Sampler Mode LEDs
+    // Sampler Mode LEDs and Velocity Sampler Mode LEDs
     for (var samplerIdx = 1; samplerIdx <= MC7000.SamplerQty; samplerIdx++) {
         engine.makeConnection("[Sampler"+samplerIdx+"]", "track_loaded", MC7000.SamplerLED);
         engine.makeConnection("[Sampler"+samplerIdx+"]", "play", MC7000.SamplerLED);
-    }
-    // Velocity Sampler Mode LEDs
-    for (var velSampIdx = 1; velSampIdx <= MC7000.SamplerQty; velSampIdx++) {
-        engine.makeConnection("[Sampler"+velSampIdx+"]", "track_loaded", MC7000.VelSampLED);
-        engine.makeConnection("[Sampler"+velSampIdx+"]", "play", MC7000.VelSampLED);
-    }
-    //Pitch LEDs
-    for (var pitchIdx = 1; pitchIdx <= 8; pitchIdx++) {
-        engine.makeConnection("[Channel1]", "hotcue_"+pitchIdx+"_enabled", MC7000.PitchLED);
-        engine.makeConnection("[Channel2]", "hotcue_"+pitchIdx+"_enabled", MC7000.PitchLED);
-        engine.makeConnection("[Channel3]", "hotcue_"+pitchIdx+"_enabled", MC7000.PitchLED);
-        engine.makeConnection("[Channel4]", "hotcue_"+pitchIdx+"_enabled", MC7000.PitchLED);
+        engine.makeConnection("[Sampler"+samplerIdx+"]", "track_loaded", MC7000.VelSampLED);
+        engine.makeConnection("[Sampler"+samplerIdx+"]", "play", MC7000.VelSampLED);
     }
     // send Softtakeover delayed to avoid conflicts with ControllerStatusSysex
     engine.beginTimer(2000, function() {
@@ -289,20 +273,11 @@ MC7000.padModeCue = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = true;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "Cue";
     // change PAD color when switching to Hot Cue Mode
-    for (var i = 1; i <= 8; i++) {
-        var hotcueEnabled = engine.getValue(group, "hotcue_" + i + "_enabled", true);
-        midi.sendShortMsg(0x94 + deckIndex, 0x14 + i - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
+    for (var cueIdx = 1; cueIdx <= 8; cueIdx++) {
+        var hotcueEnabled = engine.getValue(group, "hotcue_" + cueIdx + "_enabled", true);
+        midi.sendShortMsg(0x94 + deckIndex, 0x14 + cueIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
     }
 };
 
@@ -313,16 +288,7 @@ MC7000.padModeCueLoop = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = true;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "CueLoop";
     // switch off PAD illumination
     MC7000.setAllPadColor(deckIndex, MC7000.padColor.alloff);
 };
@@ -334,16 +300,7 @@ MC7000.padModeFlip = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = true;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "Flip";
     // switch off PAD illumination
     MC7000.setAllPadColor(deckIndex, MC7000.padColor.alloff);
 };
@@ -355,16 +312,7 @@ MC7000.padModeRoll = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = true;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "Roll";
     // change PAD color when switching to Roll Mode
     MC7000.setAllPadColor(deckIndex, MC7000.padColor.rolloff);
 };
@@ -376,20 +324,11 @@ MC7000.padModeSavedLoop = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = true;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "SavedLoop";
     // change PAD color when switching to Saved Loop Mode
-    for (var i = 0; i < 8; i++) {
-        var activeLED = engine.getValue(group, "beatloop_" + MC7000.fixedLoop[i] + "_enabled") ? MC7000.padColor.fixedloopon : MC7000.padColor.fixedloopoff;
-        midi.sendShortMsg(0x94 + deckIndex, 0x14 + i, activeLED);
+    for (var savedLoopIdx = 0; savedLoopIdx < 8; savedLoopIdx++) {
+        var activeLED = engine.getValue(group, "beatloop_" + MC7000.fixedLoop[savedLoopIdx] + "_enabled") ? MC7000.padColor.fixedloopon : MC7000.padColor.fixedloopoff;
+        midi.sendShortMsg(0x94 + deckIndex, 0x14 + savedLoopIdx, activeLED);
     }
 };
 
@@ -400,16 +339,7 @@ MC7000.padModeSlicer = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = true;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "Slicer";
     // change PAD color when switching to Slicer Mode
     MC7000.setAllPadColor(deckIndex, MC7000.padColor.sliceron);
 };
@@ -421,16 +351,7 @@ MC7000.padModeSlicerLoop = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = true;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "SlicerLoop";
     // switch off PAD illumination
     MC7000.setAllPadColor(deckIndex, MC7000.padColor.alloff);
 };
@@ -442,16 +363,7 @@ MC7000.padModeSampler = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = true;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "Sampler";
     // change PAD color when switching to Sampler Mode
     MC7000.SamplerLED();
 };
@@ -463,16 +375,7 @@ MC7000.padModeVelSamp = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = true;
-    MC7000.PADModePitch[deckIndex] = false;
+    MC7000.PADMode[deckIndex] = "VelSamp";
     // change PAD color when switching to Velocity Sampler Mode
     MC7000.VelSampLED();
 };
@@ -485,27 +388,16 @@ MC7000.padModePitch = function(channel, control, value, status, group) {
     if (value === 0x00) {
         return; // don't respond to note off messages
     }
+    MC7000.PADMode[deckIndex] = "Pitch";
     MC7000.halftoneToPadMap[deckIndex] = [4, 5, 6, 7, 0, 1, 2, 3];
-
-    MC7000.PADModeCue[deckIndex] = false;
-    MC7000.PADModeCueLoop[deckIndex] = false;
-    MC7000.PADModeFlip[deckIndex] = false;
-    MC7000.PADModeRoll[deckIndex] = false;
-    MC7000.PADModeSavedLoop[deckIndex] = false;
-    MC7000.PADModeSlicer[deckIndex] = false;
-    MC7000.PADModeSlicerLoop[deckIndex] = false;
-    MC7000.PADModeSampler[deckIndex] = false;
-    MC7000.PADModeVelSamp[deckIndex] = false;
-    MC7000.PADModePitch[deckIndex] = true;
-
     // switch on initial PAD illumination = hotcue for pitch or if
     // MC7000.HotcueSelectedGroup selected = pad mode pitchoff color
-    for (var i = 1; i <= 8; i++) {
+    for (var pitchIdx = 1; pitchIdx <= 8; pitchIdx++) {
         if (MC7000.HotcueSelectedGroup[deckIndex] !== 0) {
-            midi.sendShortMsg(0x94 + deckIndex, 0x14 + i - 1, MC7000.padColor.pitchoff);
+            midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, MC7000.padColor.pitchoff);
         } else {
-            var hotcueEnabled = engine.getValue(group, "hotcue_" + i + "_enabled", true);
-            midi.sendShortMsg(0x94 + deckIndex, 0x14 + i - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
+            var hotcueEnabled = engine.getValue(group, "hotcue_" + pitchIdx + "_enabled", true);
+            midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
         }
     }
 };
@@ -515,7 +407,7 @@ MC7000.padModePitch = function(channel, control, value, status, group) {
 MC7000.PadButtons = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckIndex = deckNumber - 1;
-    var i, j, z;
+    var i, j;
 
     // The following modes are currently unhandled and could be
     // added as if-branches in the future:
@@ -525,24 +417,24 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
     // - MC7000.PADModeSlicerLoop
 
     // activate and clear Hot Cues
-    if (MC7000.PADModeCue[deckIndex] && engine.getValue(group, "track_loaded") === 1) {
-        for (i = 1; i <= 8; i++) {
-            if (control === 0x14 + i - 1 && value === 0x7F) {
-                engine.setValue(group, "hotcue_" + i + "_activate", true);
-            } else if (control === 0x14 + i - 1 && value === 0x00) {
-                engine.setValue(group, "hotcue_" + i + "_activate", false);
+    if (MC7000.PADMode[deckIndex] === "Cue" && engine.getValue(group, "track_loaded") === 1) {
+        for (var cueIdx = 1; cueIdx <= 8; cueIdx++) {
+            if (control === 0x14 + cueIdx - 1 && value === 0x7F) {
+                engine.setValue(group, "hotcue_" + cueIdx + "_activate", true);
+            } else if (control === 0x14 + cueIdx - 1 && value === 0x00) {
+                engine.setValue(group, "hotcue_" + cueIdx + "_activate", false);
                 if (engine.getValue(group, "slip_enabled")) {
                     engine.setValue(group, "slip_enabled", false);
                     engine.beginTimer(50, function() {
                         engine.setValue(group, "slip_enabled", true);
                     }, true);
                 }
-            } else if (control === 0x1C + i - 1 && value === 0x7F) {
-                engine.setValue(group, "hotcue_" + i + "_clear", true);
-                midi.sendShortMsg(0x94 + deckIndex, 0x1C + i - 1, MC7000.padColor.hotcueoff);
+            } else if (control === 0x1C + cueIdx - 1 && value === 0x7F) {
+                engine.setValue(group, "hotcue_" + cueIdx + "_clear", true);
+                midi.sendShortMsg(0x94 + deckIndex, 0x1C + cueIdx - 1, MC7000.padColor.hotcueoff);
             }
         }
-    } else if (MC7000.PADModeRoll[deckIndex]) {
+    } else if (MC7000.PADMode[deckIndex] === "Roll") {
         // TODO(all): check for actual beatloop_size and apply back after a PAD Roll
         i = control - 0x14;
         if (control === 0x14 + i && value > 0x00) {
@@ -552,17 +444,17 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             engine.setValue(group, "beatlooproll_activate", false);
             midi.sendShortMsg(0x94 + deckIndex, 0x14 + i, MC7000.padColor.rolloff);
         }
-    } else if (MC7000.PADModeSavedLoop[deckIndex]) {
+    } else if (MC7000.PADMode[deckIndex] === "SavedLoop") {
         if (value === 0x00) {
             return; // don't respond to note off messages
         }
         i = control - 0x14;
         engine.setValue(group, "beatloop_" + MC7000.fixedLoop[i] + "_toggle", true);
-        for (j = 0; j < 8; j++) {
-            var activeLED = engine.getValue(group, "beatloop_" + MC7000.fixedLoop[j] + "_enabled") ? MC7000.padColor.fixedloopon : MC7000.padColor.fixedloopoff;
-            midi.sendShortMsg(0x94 + deckIndex, 0x14 + j, activeLED);
+        for (var loopIdx = 0; loopIdx < 8; loopIdx++) {
+            var activeLED = engine.getValue(group, "beatloop_" + MC7000.fixedLoop[loopIdx] + "_enabled") ? MC7000.padColor.fixedloopon : MC7000.padColor.fixedloopoff;
+            midi.sendShortMsg(0x94 + deckIndex, 0x14 + loopIdx, activeLED);
         }
-    } else if (MC7000.PADModeSlicer[deckIndex]) {
+    } else if (MC7000.PADMode[deckIndex] === "Slicer") {
         if (value > 0) {
             i = control - 0x14; // unshifted button
             j = control - 0x1C; // shifted button
@@ -586,9 +478,9 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
         } else {
             midi.sendShortMsg(0x94 + deckIndex, control, MC7000.padColor.sliceron);
         }
-    } else if (MC7000.PADModeSampler[deckIndex]) {
+    } else if (MC7000.PADMode[deckIndex] === "Sampler") {
         var samplerOffset = 0;
-        var samplerOffsetJ = 0;
+        var samplerOffsetStop = 0;
         var deckOffset = 0;
         for (var samplerIdx = 1; samplerIdx <= 8; samplerIdx++) {
             if (MC7000.SamplerQty === 16) {
@@ -603,10 +495,10 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 } else if (engine.getValue("[Sampler" + samplerOffset + "]", "track_loaded") === 1) {
                     if (MC7000.prevSamplerStop) {
                         // stop playing all other samplers on this deck
-                        for (j = 1; j <= 8; j++) {
-                            samplerOffsetJ = deckOffset + j;
-                            if (engine.getValue("[Sampler" + samplerOffsetJ + "]", "play") === 1) {  // if sampler is playing then stop it
-                                engine.setValue("[Sampler" + samplerOffsetJ + "]", "cue_gotoandstop", 1);
+                        for (var samplerStopIdx = 1; samplerStopIdx <= 8; samplerStopIdx++) {
+                            samplerOffsetStop = deckOffset + samplerStopIdx;
+                            if (engine.getValue("[Sampler" + samplerOffsetStop + "]", "play") === 1) {  // if sampler is playing then stop it
+                                engine.setValue("[Sampler" + samplerOffsetStop + "]", "cue_gotoandstop", 1);
                             }
                         }
                     }
@@ -624,9 +516,9 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             }
             MC7000.SamplerLED();
         }
-    } else if (MC7000.PADModeVelSamp[deckIndex]) {
+    } else if (MC7000.PADMode[deckIndex] === "VelSamp") {
         samplerOffset = 0;
-        samplerOffsetJ = 0;
+        samplerOffsetStop = 0;
         deckOffset = 0;
         for (var velSampIdx = 1; velSampIdx <= 8; velSampIdx++) {
             if (MC7000.SamplerQty === 16) {
@@ -641,10 +533,10 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 } else if (engine.getValue("[Sampler" + samplerOffset + "]", "track_loaded") === 1) {
                     if (MC7000.prevSamplerStop) {
                         // stop playing all other samplers on this deck
-                        for (j = 1; j <= 8; j++) {
-                            samplerOffsetJ = deckOffset + j;
-                            if (engine.getValue("[Sampler" + samplerOffsetJ + "]", "play") === 1) {  // if sampler is playing then stop it
-                                engine.setValue("[Sampler" + samplerOffsetJ + "]", "cue_gotoandstop", 1);
+                        for (samplerStopIdx = 1; samplerStopIdx <= 8; samplerStopIdx++) {
+                            samplerOffsetStop = deckOffset + samplerStopIdx;
+                            if (engine.getValue("[Sampler" + samplerOffsetStop + "]", "play") === 1) {  // if sampler is playing then stop it
+                                engine.setValue("[Sampler" + samplerOffsetStop + "]", "cue_gotoandstop", 1);
                             }
                         }
                     }
@@ -663,7 +555,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             }
             MC7000.VelSampLED();
         }
-    } else if (MC7000.PADModePitch[deckIndex]) {  // TODO play and cue dependency to play and cue button
+    } else if (MC7000.PADMode[deckIndex] === "Pitch") {  // TODO play and cue dependency to play and cue button
         if (engine.getValue(group, "track_loaded") === 1) {
             for (var pitchIdx = 1; pitchIdx <= 8; pitchIdx++) {
                 // intermediate variables
@@ -699,10 +591,10 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 } else if (isButtonPressed && isControlAddressShift) { //shifted buttons deselect hotcue for pitch
                     engine.setValue(group, "pitch", 0);
                     MC7000.HotcueSelectedGroup[deckIndex] = 0;
-                    for (z = 1; z <= 8; z++) {
-                        hotcueEnabled = engine.getValue(group, "hotcue_" + z + "_enabled", true);
-                        midi.sendShortMsg(0x94 + deckIndex, 0x14 + z - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
-                        midi.sendShortMsg(0x94 + deckIndex, 0x1C + z - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff); // keep color when shift is pressed
+                    for (var padIdx = 1; padIdx <= 8; padIdx++) {
+                        hotcueEnabled = engine.getValue(group, "hotcue_" + padIdx + "_enabled", true);
+                        midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
+                        midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff); // keep color when shift is pressed
                     }
                 }
             }
@@ -710,13 +602,18 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
     }
 };
 
-
+// Set single LED color for future implementation
+//MC7000.setSinglePadColor = function(deckIdx, padIdx, colorValue) {
+//    switch 1 buttons to selected color, also when shift is pressed
+//    midi.sendShortMsg(0x94 + deckIdx, 0x14 + padIdx, colorValue);
+//    midi.sendShortMsg(0x94 + deckIdx, 0x1C + padIdx, colorValue); // keep color when shift is pressed
+//};
 
 MC7000.setAllPadColor = function(deckIndex, colorValue) {
-    for (var z = 0; z < 8; z++) {
+    for (var padIdx = 0; padIdx < 8; padIdx++) {
         // switch 8 buttons to selected color
-        midi.sendShortMsg(0x94 + deckIndex, 0x14 + z, colorValue);
-        midi.sendShortMsg(0x94 + deckIndex, 0x1C + z, colorValue); // keep color when shift is pressed
+        midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx, colorValue);
+        midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx, colorValue); // keep color when shift is pressed
     }
 };
 
@@ -1170,8 +1067,8 @@ MC7000.TrackPositionLEDs = function(value, group) {
         // only send new LED status when beatCountLED really changes
         if (MC7000.prevPadLED[deckIndex] !== beatCountLED) {
             // first set all LEDs to default color incl shifted
-            for (var i = 0; i < 16; i++) {
-                midi.sendShortMsg(0x94 + deckIndex, 0x14 + i, MC7000.padColor.sliceron);
+            for (var slicerIdx = 0; slicerIdx < 16; slicerIdx++) {
+                midi.sendShortMsg(0x94 + deckIndex, 0x14 + slicerIdx, MC7000.padColor.sliceron);
             }
             // now chose which PAD LED to turn on (+8 means shifted PAD LEDs)
             if (beatCountLED === 0) {
@@ -1193,7 +1090,7 @@ MC7000.TrackPositionLEDs = function(value, group) {
 MC7000.HotCueLED = function(value, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckIndex = deckNumber - 1;
-    if (MC7000.PADModeCue[deckIndex]) {
+    if (MC7000.PADMode[deckIndex] === "Cue") {
         for (var padIdx = 1; padIdx <= 8; padIdx++) {
             if (value === 1) {
                 if (engine.getValue(group, "hotcue_"+padIdx+"_enabled") === 1) {
@@ -1215,7 +1112,7 @@ MC7000.SamplerLED = function() {
     for (var deckIdx = 0; deckIdx < 4; deckIdx++) {
         for (var samplerIdx = 1; samplerIdx <= 8; samplerIdx++) {
             var sampNo = 0;
-            if (MC7000.PADModeSampler[deckIdx]) {
+            if (MC7000.PADMode[deckIdx] === "Sampler") {
                 if (MC7000.SamplerQty === 16) {
                     // use sampler 1-16 for deck 1 and deck 2 and sampler 1-16 for deck 3 and 4
                     sampNo = (deckIdx % 2) * 8 + samplerIdx;
@@ -1245,7 +1142,7 @@ MC7000.VelSampLED = function() {
     for (var deckIdx = 0; deckIdx < 4; deckIdx++) {
         for (var velSampIdx = 1; velSampIdx <= 8; velSampIdx++) {
             var sampNo = 0;
-            if (MC7000.PADModeVelSamp[deckIdx]) {
+            if (MC7000.PADMode[deckIdx] === "VelSamp") {
                 if (MC7000.SamplerQty === 16) {
                     // use sampler 1-16 for deck 1 and deck 2 and sampler 1-16 for deck 3 and 4
                     sampNo = (deckIdx % 2) * 8 + velSampIdx;
@@ -1275,7 +1172,7 @@ MC7000.VelSampLED = function() {
 MC7000.PitchLED = function(value, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckIndex = deckNumber - 1;
-    if (MC7000.PADModePitch[deckIndex]) {
+    if (MC7000.PADMode[deckIndex] === "Pitch") {
         for (var pitchIdx = 0; pitchIdx < 8; pitchIdx++) {
             if (engine.getValue("[Channel"+deckNumber+"]", "play") === 0) { // stopped
                 if (MC7000.HotcueSelectedGroup[deckIndex] !== 0) { // hotcue selected
