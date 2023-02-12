@@ -894,8 +894,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 }
 
 EngineChannel* EngineMaster::getChannel(const QString& group) {
-    for (int i = 0; i < m_channels.size(); ++i) {
-        ChannelInfo* pChannelInfo = m_channels[i];
+    for (const ChannelInfo* pChannelInfo : m_channels) {
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
         }
@@ -922,8 +921,7 @@ const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(const QString& group) const {
-    for (int i = 0; i < m_channels.size(); ++i) {
-        const ChannelInfo* pChannelInfo = m_channels[i];
+    for (const ChannelInfo* pChannelInfo : m_channels) {
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pBuffer;
         }
