@@ -58,7 +58,8 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
 
 void BaseExternalLibraryFeature::onRightClickChild(
         const QPoint& globalPos, const QModelIndex& index) {
-    //Save the model index so we can get it in the action slots...
+    // Save the model index so we can get it in the action slots...
+    // Make sure that this is reset when the related TreeItem is deleted.
     m_lastRightClickedIndex = index;
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pAddToAutoDJAction);
@@ -132,8 +133,8 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
 
     DEBUG_ASSERT(pPlaylist);
     *pPlaylist = m_lastRightClickedIndex.data().toString();
-    QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-            getPlaylistModelForPlaylist(*pPlaylist));
+    std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
+            createPlaylistModelForPlaylist(*pPlaylist));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
         qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "

@@ -618,7 +618,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
   * This method queries the database and does dynamic insertion
 */
 QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
-    QList<TreeItem*> data_list;
+    std::vector<std::unique_ptr<TreeItem>> data_list;
     int selected_row = -1;
 
     int row = 0;
@@ -633,17 +633,17 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlistLabel, playlistId);
-        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlistId));
+        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
+        pItem->setBold(m_playlistsSelectedTrackIsIn.contains(playlistId));
 
-        decorateChild(item, playlistId);
-        data_list.append(item);
+        decorateChild(pItem.get(), playlistId);
+        data_list.push_back(std::move(pItem));
 
         ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertTreeItemRows(data_list, 0);
+    m_childModel.insertTreeItemRows(std::move(data_list), 0);
     if (selected_row == -1) {
         return QModelIndex();
     }
@@ -671,6 +671,7 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
+    m_lastRightClickedIndex = QModelIndex();
     m_childModel.removeRows(0, m_childModel.rowCount());
 }
 

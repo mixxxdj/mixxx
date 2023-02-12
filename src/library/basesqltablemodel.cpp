@@ -334,16 +334,16 @@ void BaseSqlTableModel::select() {
              << m_rowInfo.size();
 }
 
-void BaseSqlTableModel::setTable(const QString& tableName,
-        const QString& idColumn,
-        const QStringList& tableColumns,
+void BaseSqlTableModel::setTable(QString tableName,
+        QString idColumn,
+        QStringList tableColumns,
         QSharedPointer<BaseTrackCache> trackSource) {
     if (sDebug) {
         qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
     }
-    m_tableName = tableName;
-    m_idColumn = idColumn;
-    m_tableColumns = tableColumns;
+    m_tableName = std::move(tableName);
+    m_idColumn = std::move(idColumn);
+    m_tableColumns = std::move(tableColumns);
 
     if (m_trackSource) {
         disconnect(m_trackSource.data(),

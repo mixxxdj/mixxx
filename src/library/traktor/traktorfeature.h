@@ -47,7 +47,8 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
+    std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
+            const QString& playlist) override;
     TreeItem* importLibrary(const QString& file);
     // parses a track in the music collection
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
