@@ -157,8 +157,8 @@ MC7000.prevPadLED = [0, 0, 0, 0];
 MC7000.paramButton = [0, 0, 0, 0];
 
 /*
-color codes:
-colors are encoded using the following schema: Take the individual components of the color (R, G, B). Then use
+Color Codes:
+Colors are encoded using the following schema: Take the individual components of the color (R, G, B). Then use
 the two most significant bits of that color (rr, gg, bb) and pack that into a 7-byte integer using the following schema `0b0rrggbb`. Then add 1 before sending to the controller.
 */
 
@@ -1036,14 +1036,11 @@ MC7000.censor = function(channel, control, value, status, group) {
         }
     }
 };
-
-// Param Button for Pitch Play to increase or decrease pitch, Star rating otherwise
+// Param Button for Pitch Play to decrease pitch, or decrease star rating otherwise
 MC7000.StarsDown = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckIndex = deckNumber - 1;
-    if (value === 0x00) {
-        //return; // don't respond to note off messages
-    } else {
+    if (value >= 0x00) {
         if (MC7000.PADModePitch[deckIndex]) {
             for (var i = 0; i < 8; i++) {
                 MC7000.halftoneToPadMap[deckIndex][i] = MC7000.halftoneToPadMap[deckIndex][i] - 8; // pitch down
@@ -1053,13 +1050,11 @@ MC7000.StarsDown = function(channel, control, value, status, group) {
         }
     }
 };
-
+// Param Button for Pitch Play to increase pitch, or increase star rating otherwise
 MC7000.StarsUp = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckIndex = deckNumber - 1;
-    if (value === 0x00) {
-        //return; // don't respond to note off messages
-    } else {
+    if (value >= 0x00) {
         if (MC7000.PADModePitch[deckIndex]) {
             for (var i = 0; i < 8; i++) {
                 MC7000.halftoneToPadMap[deckIndex][i] = MC7000.halftoneToPadMap[deckIndex][i] + 8; // pitch up
@@ -1221,20 +1216,22 @@ MC7000.SamplerLED = function() {
             var sampNo = 0;
             if (MC7000.PADModeSampler[deckIdx]) {
                 if (MC7000.SamplerQty === 16) {
+                    // use sampler 1-16 for deck 1 and deck 2 and sampler 1-16 for deck 3 and 4
                     sampNo = (deckIdx % 2) * 8 + samplerIdx;
                 } else if (MC7000.SamplerQty === 32) {
+                    // use sampler 1 - sampler 32 for deck 1 - 4
                     sampNo = deckIdx * 8 + samplerIdx;
                 }
                 if (engine.getValue("[Sampler"+sampNo+"]", "track_loaded") === 1) {
                     var samplerIsNotPlaying = engine.getValue("[Sampler"+sampNo+"]", "play") === 0;
                     if (samplerIsNotPlaying) {
-                        midi.sendShortMsg(0x94 + deckIdx, 0x14 + samplerIdx - 1, MC7000.padColor.samplerloaded);
+                        midi.sendShortMsg(0x94 + deckIdx, 0x14 + samplerIdx - 1, MC7000.padColor.samplerloaded); // set pad color without shift pressed
                         midi.sendShortMsg(0x94 + deckIdx, 0x1C + samplerIdx - 1, MC7000.padColor.samplerloaded); // shift pressed sets the same color
                     } else {
                         midi.sendShortMsg(0x94 + deckIdx, 0x14 + samplerIdx - 1, MC7000.padColor.samplerplay);
                     }
                 } else if (engine.getValue("[Sampler"+sampNo+"]", "track_loaded") === 0) {
-                    midi.sendShortMsg(0x94 + deckIdx, 0x14 + samplerIdx - 1, MC7000.padColor.sampleroff);
+                    midi.sendShortMsg(0x94 + deckIdx, 0x14 + samplerIdx - 1, MC7000.padColor.sampleroff); // set pad color without shift pressed
                     midi.sendShortMsg(0x94 + deckIdx, 0x1C + samplerIdx - 1, MC7000.padColor.sampleroff); // shift pressed sets the same color
                 }
             }
@@ -1249,21 +1246,23 @@ MC7000.VelSampLED = function() {
             var sampNo = 0;
             if (MC7000.PADModeVelSamp[deckIdx]) {
                 if (MC7000.SamplerQty === 16) {
-                    sampNo = (deckIdx % 2) * 8 + velSampIdx; // use sampler 1-16 for deck 1 and deck 2 and sampler 1-16 for deck 3 and 4
+                    // use sampler 1-16 for deck 1 and deck 2 and sampler 1-16 for deck 3 and 4
+                    sampNo = (deckIdx % 2) * 8 + velSampIdx;
                 } else if (MC7000.SamplerQty === 32) {
-                    sampNo = deckIdx * 8 + velSampIdx; // use sampler 1 - sampler 32 for deck 1 - 4
+                    // use sampler 1 - sampler 32 for deck 1 - 4
+                    sampNo = deckIdx * 8 + velSampIdx;
                 }
                 if (engine.getValue("[Sampler"+sampNo+"]", "track_loaded") === 1) {
                     var samplerIsNotPlaying = engine.getValue("[Sampler"+sampNo+"]", "play") === 0;
                     if (samplerIsNotPlaying) {
-                        midi.sendShortMsg(0x94 + deckIdx, 0x14 + velSampIdx - 1, MC7000.padColor.velsamploaded);
+                        midi.sendShortMsg(0x94 + deckIdx, 0x14 + velSampIdx - 1, MC7000.padColor.velsamploaded); // set pad color without shift pressed
                         midi.sendShortMsg(0x94 + deckIdx, 0x1C + velSampIdx - 1, MC7000.padColor.velsamploaded); // shift pressed sets the same color
                         engine.setValue("[Sampler"+sampNo+"]", "pregain", 1);
                     } else {
                         midi.sendShortMsg(0x94 + deckIdx, 0x14 + velSampIdx - 1, MC7000.padColor.velsampplay);
                     }
                 } else if (engine.getValue("[Sampler"+sampNo+"]", "track_loaded") === 0) {
-                    midi.sendShortMsg(0x94 + deckIdx, 0x14 + velSampIdx - 1, MC7000.padColor.velsampoff);
+                    midi.sendShortMsg(0x94 + deckIdx, 0x14 + velSampIdx - 1, MC7000.padColor.velsampoff); // set pad color without shift pressed
                     midi.sendShortMsg(0x94 + deckIdx, 0x1C + velSampIdx - 1, MC7000.padColor.velsampoff); // shift pressed sets the same color
                 }
             }
