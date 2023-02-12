@@ -98,47 +98,9 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2022-11-23" timestamp="1669217482">
+    <release version="2.3.4" type="development" date="2023-02-12" timestamp="1676237034">
       <description>
  <ul>
-  <li>
-   Numark DJ2GO2: Fix sliders and knobs
-   #4835
-   lp:1948596
-  </li>
-  <li>
-   Numark DJ2Go2: Support HotCue clear with pad
-   #10841
-  </li>
-  <li>
-   Numark DJ2Go2: Fix inverted tempo fader
-   #10852
-   #10586
-  </li>
-  <li>
-   Numark Party Mix: Mapping added
-   #4720
-  </li>
-  <li>
-   Numark N4: Inverted pitch slider, to match the GUI orientation
-   #11057
-  </li>
-  <li>
-   Ableton Push: Show as one device
-   #10905
-  </li>
-  <li>
-   Traktor S3: Fix issues with sampler and hotcue buttons
-   #4676
-  </li>
-  <li>
-   Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
-   #4495
-  </li>
-  <li>
-   Controller Preferences: Fix some usability issues
-   #10821
-  </li>
   <li>
    Track Properties: Show 'date added' as local time
    #4838
@@ -172,10 +134,6 @@
   <li>
    EQ preferences: Properly restore 'One EQ for all decks' setting
    #4886
-  </li>
-  <li>
-   MC7000: Fix off-by-one indexing in the controller script
-   #4902
   </li>
   <li>
    Cover Art: Fix picking wrong cover file, when track file name contains extra dots
@@ -260,6 +218,53 @@
   <li>
    Fixed issue with finding moved library tracks.
    #11051
+  </li>
+ </ul>
+ <p>
+  Controllers
+ </p>
+ <ul>
+  <li>
+   Numark DJ2GO2: Fix sliders and knobs
+   #4835
+   lp:1948596
+  </li>
+  <li>
+   Numark DJ2Go2: Support HotCue clear with pad
+   #10841
+  </li>
+  <li>
+   Numark DJ2Go2: Fix inverted tempo fader
+   #10852
+   #10586
+  </li>
+  <li>
+   Numark Party Mix: Mapping added
+   #4720
+  </li>
+  <li>
+   Numark N4: Inverted pitch slider, to match the GUI orientation
+   #11057
+  </li>
+  <li>
+   Ableton Push: Show as one device
+   #10905
+  </li>
+  <li>
+   Traktor S3: Fix issues with sampler and hotcue buttons
+   #4676
+  </li>
+  <li>
+   Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
+   #4495
+  </li>
+  <li>
+   Controller Preferences: Fix some usability issues
+   #10821
+  </li>
+  <li>
+   MC7000: Fix off-by-one indexing in the controller script
+   #4902
   </li>
  </ul>
  <p>

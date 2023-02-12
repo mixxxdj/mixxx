@@ -2,15 +2,6 @@
 
 ## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (unreleased)
 
-* Numark DJ2GO2: Fix sliders and knobs [#4835](https://github.com/mixxxdj/mixxx/pull/4835) [lp:1948596](https://bugs.launchpad.net/mixxx/+bug/1948596)
-* Numark DJ2Go2: Support HotCue clear with pad [#10841](https://github.com/mixxxdj/mixxx/pull/10841)
-* Numark DJ2Go2: Fix inverted tempo fader [#10852](https://github.com/mixxxdj/mixxx/pull/10852) [#10586](https://github.com/mixxxdj/mixxx/issues/10586)
-* Numark Party Mix: Mapping added [#4720](https://github.com/mixxxdj/mixxx/pull/4720)
-* Numark N4: Inverted pitch slider, to match the GUI orientation [#11057](https://github.com/mixxxdj/mixxx/pull/11046)
-* Ableton Push: Show as one device [#10905](https://github.com/mixxxdj/mixxx/pull/10905)
-* Traktor S3: Fix issues with sampler and hotcue buttons [#4676](https://github.com/mixxxdj/mixxx/pull/4676)
-* Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts [#4495](https://github.com/mixxxdj/mixxx/pull/4495)
-* Controller Preferences: Fix some usability issues [#10821](https://github.com/mixxxdj/mixxx/pull/10821)
 * Track Properties: Show 'date added' as local time [#4838](https://github.com/mixxxdj/mixxx/pull/4838) [lp:1980658](https://bugs.launchpad.net/mixxx/+bug/1980658)
 * Shade: Fix library sidebar splitter glitch [#4828](https://github.com/mixxxdj/mixxx/pull/4828) [lp:1979823](https://bugs.launchpad.net/mixxx/+bug/1979823)
 * LateNight: Add a border to the crossfader when Auto DJ is active. [#10913](https://github.com/mixxxdj/mixxx/pull/10913)
@@ -19,7 +10,6 @@
 * Build Mixxx on macOS 11, replacing deprecated macOS 10.15 [#4863](https://github.com/mixxxdj/mixxx/pull/4863)
 * Add macOS 13.0 (Ventura) support, by using portaudio 19.7.0  [#11046](https://github.com/mixxxdj/mixxx/pull/11046)
 * EQ preferences: Properly restore 'One EQ for all decks' setting [#4886](https://github.com/mixxxdj/mixxx/pull/4886)
-* MC7000: Fix off-by-one indexing in the controller script [#4902](https://github.com/mixxxdj/mixxx/pull/4902)
 * Cover Art: Fix picking wrong cover file, when track file name contains extra dots [#4909](https://github.com/mixxxdj/mixxx/pull/4909)
 * MusicBrainz: Respect rate limits [#10874](https://github.com/mixxxdj/mixxx/pull/10874) [#10795](https://github.com/mixxxdj/mixxx/issues/10795)
 * MusicBrainz: Stop fetching after closing the dialog [#10878](https://github.com/mixxxdj/mixxx/pull/10878) [#10877](https://github.com/mixxxdj/mixxx/issues/10877)
@@ -43,6 +33,19 @@
 * Auto DJ: Added a warning ina message box when it is started without decks with left and a right crossfader orientation [#11018](https://github.com/mixxxdj/mixxx/pull/11018)
 * Fixed crash with FFmpeg decoder [#11044](https://github.com/mixxxdj/mixxx/pull/11044)
 * Fixed issue with finding moved library tracks. [#11051](https://github.com/mixxxdj/mixxx/pull/11051)
+
+### Controllers
+
+* Numark DJ2GO2: Fix sliders and knobs [#4835](https://github.com/mixxxdj/mixxx/pull/4835) [lp:1948596](https://bugs.launchpad.net/mixxx/+bug/1948596)
+* Numark DJ2Go2: Support HotCue clear with pad [#10841](https://github.com/mixxxdj/mixxx/pull/10841)
+* Numark DJ2Go2: Fix inverted tempo fader [#10852](https://github.com/mixxxdj/mixxx/pull/10852) [#10586](https://github.com/mixxxdj/mixxx/issues/10586)
+* Numark Party Mix: Mapping added [#4720](https://github.com/mixxxdj/mixxx/pull/4720)
+* Numark N4: Inverted pitch slider, to match the GUI orientation [#11057](https://github.com/mixxxdj/mixxx/pull/11046)
+* Ableton Push: Show as one device [#10905](https://github.com/mixxxdj/mixxx/pull/10905)
+* Traktor S3: Fix issues with sampler and hotcue buttons [#4676](https://github.com/mixxxdj/mixxx/pull/4676)
+* Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts [#4495](https://github.com/mixxxdj/mixxx/pull/4495)
+* Controller Preferences: Fix some usability issues [#10821](https://github.com/mixxxdj/mixxx/pull/10821)
+* MC7000: Fix off-by-one indexing in the controller script [#4902](https://github.com/mixxxdj/mixxx/pull/4902)
 
 ### Packaging
 
