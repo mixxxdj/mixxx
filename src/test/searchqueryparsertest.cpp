@@ -338,11 +338,10 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
 }
 
 TEST_F(SearchQueryParserTest, NumericFilterYear) {
-    QStringList searchColumns;
-    searchColumns << "year";
+    m_parser.setSearchColumns({"year"});
 
     auto pQuery(
-            m_parser.parseQuery("year:1969", searchColumns, ""));
+            m_parser.parseQuery("year:1969", QString()));
 
     TrackPointer pTrack = newTestTrack(44100);
     EXPECT_FALSE(pQuery->match(pTrack));
