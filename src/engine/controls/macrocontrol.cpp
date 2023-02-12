@@ -285,6 +285,7 @@ void MacroControl::slotClear(double value) {
     if (getStatus() == Status::Recorded) {
         qCDebug(kMacroLoggingCategory) << "Clearing macro" << m_slot;
         m_pMacro->clear();
+        // macro_X_clear keeps the label, unless it was auto-generated.
         if (QRegExp("[0-9. ]+(\\[\\w*\\])?").exactMatch(m_pMacro->getLabel())) {
             m_pMacro->setLabel("");
         }
