@@ -5,19 +5,20 @@
 #include <functional>
 
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "effects/effectsmanager.h"
 #include "preferences/dialog/dlgpreferencepage.h"
-#include "preferences/dialog/ui_dlgprefeqdlg.h"
+#include "preferences/dialog/ui_dlgprefmixerdlg.h"
 #include "preferences/usersettings.h"
 
-class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
+class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     Q_OBJECT
   public:
-    DlgPrefEQ(
+    DlgPrefMixer(
             QWidget* parent,
             std::shared_ptr<EffectsManager> pEffectsManager,
             UserSettingsPointer _config);
-    virtual ~DlgPrefEQ();
+    virtual ~DlgPrefMixer();
 
     QUrl helpUrl() const override;
 
@@ -28,12 +29,13 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotApply() override;
     void slotUpdate() override;
     void slotResetToDefaults() override;
+    void slotUpdateXFader();
 
   private slots:
     void slotEffectChangedOnDeck(int effectIndex);
     void slotQuickEffectChangedOnDeck(int effectIndex);
     void slotNumDecksChanged(double numDecks);
-    void slotSingleEqChecked(int checked);
+    void slotSingleEqCheckboxChanged(int checked);
     // Slot for toggling between advanced and basic views
     void slotPopulateDeckEffectSelectors();
     // Update Hi EQ
@@ -43,7 +45,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
-    void slotBypass(int state);
+    void slotBypassEqChanged(int state);
     // Update the Main EQ
     void slotApplyMainEQParameter(int value);
     void slotMainEQToDefault();
@@ -52,6 +54,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   private:
     void loadSettings();
+    void drawXfaderDisplay();
     void setDefaultShelves();
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
@@ -73,9 +76,23 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     bool eventFilter(QObject* obj, QEvent* e) override;
 
+    UserSettingsPointer m_pConfig;
+
+    QGraphicsScene* m_pxfScene;
+
+    // X-fader values
+    double m_xFaderMode, m_transform, m_cal;
+
+    PollingControlProxy m_mode;
+    PollingControlProxy m_curve;
+    PollingControlProxy m_calibration;
+    PollingControlProxy m_reverse;
+    PollingControlProxy m_crossfader;
+
+    bool m_xFaderReverse;
+
     ControlProxy m_COLoFreq;
     ControlProxy m_COHiFreq;
-    UserSettingsPointer m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
     EffectChainPresetManagerPointer m_pChainPresetManager;
