@@ -110,7 +110,7 @@ MC7000.needleSearchTouched = [true, true, true, true];
 // initial value for VINYL mode per Deck (see above for user input)
 MC7000.isVinylMode = [MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn];
 
-// initialize the "factor" function for Spinback
+// initialize the "spinnbackFactor" function for Spinback
 MC7000.spinbackFactor = [];
 // initialize the "brakeSoftstartFactor" function for Brake and Softstart
 MC7000.brakeSoftstartFactor = [];
