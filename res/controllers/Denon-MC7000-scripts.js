@@ -600,7 +600,6 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             if (control === 0x14 + samplerIdx - 1 && value >= 0x01) {
                 if (engine.getValue("[Sampler" + samplerOffset + "]", "track_loaded") === 0) {
                     engine.setValue("[Sampler" + samplerOffset + "]", "LoadSelectedTrack", 1);
-                    // midi.sendShortMsg(0x94 + deckIndex, 0x14 + samplerIdx - 1, MC7000.padColor.samplerloaded);
                 } else if (engine.getValue("[Sampler" + samplerOffset + "]", "track_loaded") === 1) {
                     if (MC7000.prevSamplerStop) {
                         // stop playing all other samplers on this deck
@@ -608,14 +607,12 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                             samplerOffsetJ = deckOffset + j;
                             if (engine.getValue("[Sampler" + samplerOffsetJ + "]", "play") === 1) {  // if sampler is playing then stop it
                                 engine.setValue("[Sampler" + samplerOffsetJ + "]", "cue_gotoandstop", 1);
-                                // midi.sendShortMsg(0x94 + deckIndex, 0x14 + j - 1, MC7000.padColor.samplerloaded);
                             }
                         }
                     }
                     // ... before the actual sampler to play gets started
                     engine.setValue("[Sampler" + samplerOffset + "]", "pregain", 1);
                     engine.setValue("[Sampler" + samplerOffset + "]", "cue_gotoandplay", 1);
-                    // midi.sendShortMsg(0x94 + deckIndex, 0x14 + samplerIdx - 1, MC7000.padColor.samplerplay);
                 }
             } else if (control === 0x1C + samplerIdx - 1 && value >= 0x01) { //shifted button deactivates playing sampler or ejects sampler
                 if (engine.getValue("[Sampler" + samplerOffset + "]", "play") === 1) {
@@ -641,7 +638,6 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             if (control === 0x14 + velSampIdx - 1 && value >= 0x01) { // if padbutton for sampler VelSampIdx pressed
                 if (engine.getValue("[Sampler" + samplerOffset + "]", "track_loaded") === 0) {  // if sampler is not loaded, load sampler and set color to loaded
                     engine.setValue("[Sampler" + samplerOffset + "]", "LoadSelectedTrack", 1);
-                    // midi.sendShortMsg(0x94 + deckIndex, 0x14 + velSampIdx - 1, MC7000.padColor.velsamploaded);
                 } else if (engine.getValue("[Sampler" + samplerOffset + "]", "track_loaded") === 1) {
                     if (MC7000.prevSamplerStop) {
                         // stop playing all other samplers on this deck
@@ -649,23 +645,19 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                             samplerOffsetJ = deckOffset + j;
                             if (engine.getValue("[Sampler" + samplerOffsetJ + "]", "play") === 1) {  // if sampler is playing then stop it
                                 engine.setValue("[Sampler" + samplerOffsetJ + "]", "cue_gotoandstop", 1);
-                                // midi.sendShortMsg(0x94 + deckIndex, 0x14 + j - 1, MC7000.padColor.velsamploaded);
                             }
                         }
                     }
                     // ... before the actual sampler to play gets started
                     engine.setValue("[Sampler" + samplerOffset + "]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));
                     engine.setValue("[Sampler" + samplerOffset + "]", "cue_gotoandplay", 1);
-                    // midi.sendShortMsg(0x94 + deckIndex, 0x14 + velSampIdx - 1, MC7000.padColor.velsampplay);
                 }
             } else if (control === 0x1C + velSampIdx - 1 && value >= 0x01) { //shifted button deactivates playing sampler or ejects sampler
                 engine.setValue("[Sampler" + samplerOffset + "]", "pregain", 1);
                 if (engine.getValue("[Sampler" + samplerOffset + "]", "play") === 1) {
                     engine.setValue("[Sampler" + samplerOffset + "]", "cue_gotoandstop", 1);
-                    // midi.sendShortMsg(0x94 + deckIndex, 0x1C + velSampIdx - 1, MC7000.padColor.velsamploaded);
                 } else {
                     engine.setValue("[Sampler" + samplerOffset + "]", "eject", 1);
-                    // midi.sendShortMsg(0x94 + deckIndex, 0x1C + velSampIdx - 1, MC7000.padColor.velsampoff);
                     engine.setValue("[Sampler" + samplerOffset + "]", "eject", 0);
                 }
             }
@@ -1230,30 +1222,20 @@ MC7000.SamplerLED = function() {
             if (MC7000.PADModeSampler[deckIdx]) {
                 if (MC7000.SamplerQty === 16) {
                     sampNo = (deckIdx % 2) * 8 + samplerIdx;
-                    var inactiveSamplerDeck = (deckIdx >= 2) ? deckIdx - 2 : deckIdx + 2;
                 } else if (MC7000.SamplerQty === 32) {
                     sampNo = deckIdx * 8 + samplerIdx;
                 }
                 if (engine.getValue("[Sampler"+sampNo+"]", "track_loaded") === 1) {
-                    if (engine.getValue("[Sampler"+sampNo+"]", "play") === 0) {
+                    var samplerIsNotPlaying = engine.getValue("[Sampler"+sampNo+"]", "play") === 0;
+                    if (samplerIsNotPlaying) {
                         midi.sendShortMsg(0x94 + deckIdx, 0x14 + samplerIdx - 1, MC7000.padColor.samplerloaded);
-                        // midi.sendShortMsg(0x94 + deckIdx, 0x1F + samplerIdx - 1, MC7000.padColor.samplerloaded); //same color when shift is pressed
-                        if (MC7000.SamplerQty === 16) {
-                            midi.sendShortMsg(0x94 + inactiveSamplerDeck, 0x14 + samplerIdx - 1, MC7000.padColor.samplerloaded);
-                        }
+                        midi.sendShortMsg(0x94 + deckIdx, 0x1C + samplerIdx - 1, MC7000.padColor.samplerloaded); // shift pressed sets the same color
                     } else {
                         midi.sendShortMsg(0x94 + deckIdx, 0x14 + samplerIdx - 1, MC7000.padColor.samplerplay);
-                        // midi.sendShortMsg(0x94 + deckIdx, 0x1F + samplerIdx - 1, MC7000.padColor.samplerplay); //same color when shift is pressed
-                        if (MC7000.SamplerQty === 16) {
-                            midi.sendShortMsg(0x94 + inactiveSamplerDeck, 0x14 + samplerIdx - 1, MC7000.padColor.samplerplay);
-                        }
                     }
                 } else if (engine.getValue("[Sampler"+sampNo+"]", "track_loaded") === 0) {
                     midi.sendShortMsg(0x94 + deckIdx, 0x14 + samplerIdx - 1, MC7000.padColor.sampleroff);
-                    // midi.sendShortMsg(0x94 + deckIdx, 0x1F + samplerIdx - 1, MC7000.padColor.sampleroff); //same color when shift is pressed
-                    if (MC7000.SamplerQty === 16) {
-                        midi.sendShortMsg(0x94 + inactiveSamplerDeck, 0x14 + samplerIdx - 1, MC7000.padColor.sampleroff);
-                    }
+                    midi.sendShortMsg(0x94 + deckIdx, 0x1C + samplerIdx - 1, MC7000.padColor.sampleroff); // shift pressed sets the same color
                 }
             }
         }
@@ -1267,8 +1249,7 @@ MC7000.VelSampLED = function() {
             var sampNo = 0;
             if (MC7000.PADModeVelSamp[deckIdx]) {
                 if (MC7000.SamplerQty === 16) {
-                    sampNo = (deckIdx % 2) * 8 + velSampIdx;
-                    var inactiveVelSampDeck = (deckIdx >= 2) ? deckIdx - 2 : deckIdx + 2;
+                    sampNo = (deckIdx % 2) * 8 + velSampIdx; // use sampler 1-16 for deck 1 and deck 2 and sampler 1-16 for deck 3 and 4
                 } else if (MC7000.SamplerQty === 32) {
                     sampNo = deckIdx * 8 + velSampIdx; // use sampler 1 - sampler 32 for deck 1 - 4
                 }
@@ -1276,21 +1257,14 @@ MC7000.VelSampLED = function() {
                     var samplerIsNotPlaying = engine.getValue("[Sampler"+sampNo+"]", "play") === 0;
                     if (samplerIsNotPlaying) {
                         midi.sendShortMsg(0x94 + deckIdx, 0x14 + velSampIdx - 1, MC7000.padColor.velsamploaded);
+                        midi.sendShortMsg(0x94 + deckIdx, 0x1C + velSampIdx - 1, MC7000.padColor.velsamploaded); // shift pressed sets the same color
                         engine.setValue("[Sampler"+sampNo+"]", "pregain", 1);
-                        if (MC7000.SamplerQty === 16) {
-                            midi.sendShortMsg(0x94 + inactiveVelSampDeck, 0x14 + velSampIdx - 1, MC7000.padColor.velsamploaded);
-                        }
                     } else {
                         midi.sendShortMsg(0x94 + deckIdx, 0x14 + velSampIdx - 1, MC7000.padColor.velsampplay);
-                        if (MC7000.SamplerQty === 16) {
-                            midi.sendShortMsg(0x94 + inactiveVelSampDeck, 0x14 + velSampIdx - 1, MC7000.padColor.velsampplay);
-                        }
                     }
                 } else if (engine.getValue("[Sampler"+sampNo+"]", "track_loaded") === 0) {
                     midi.sendShortMsg(0x94 + deckIdx, 0x14 + velSampIdx - 1, MC7000.padColor.velsampoff);
-                    if (MC7000.SamplerQty === 16) {
-                        midi.sendShortMsg(0x94 + inactiveVelSampDeck, 0x14 + velSampIdx - 1, MC7000.padColor.velsampoff);
-                    }
+                    midi.sendShortMsg(0x94 + deckIdx, 0x1C + velSampIdx - 1, MC7000.padColor.velsampoff); // shift pressed sets the same color
                 }
             }
         }
