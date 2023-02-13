@@ -759,8 +759,9 @@ void DlgPrefMixer::drawXfaderDisplay() {
     constexpr int kGrindXLines = 4;
     constexpr int kGrindYLines = 6;
 
-    int sizeX = graphicsViewXfader->width();
-    int sizeY = graphicsViewXfader->height();
+    int frameWidth = graphicsViewXfader->frameWidth();
+    int sizeX = graphicsViewXfader->width() - 2 * frameWidth;
+    int sizeY = graphicsViewXfader->height() - 2 * frameWidth;
 
     // Initialize Scene
     if (m_pxfScene) {
