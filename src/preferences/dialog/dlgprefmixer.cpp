@@ -101,6 +101,8 @@ DlgPrefMixer::DlgPrefMixer(
     SliderLoEQ->installEventFilter(this);
     comboBoxMainEq->setFocusPolicy(Qt::StrongFocus);
     comboBoxMainEq->installEventFilter(this);
+    // Don't allow the xfader graph getting keyboard focus
+    graphicsViewXfader->setFocusPolicy(Qt::NoFocus);
 
     // Connection
     connect(SliderHiEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotUpdateHiEQ);
