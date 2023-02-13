@@ -862,31 +862,19 @@ void DlgPrefMixer::slotUpdateGainAutoReset(int i) {
 }
 
 void DlgPrefMixer::slotBypassEqChanged(int state) {
-    if (state) {
-        m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), QString("no"));
-        // Disable effect processing for all decks by setting the appropriate
-        // controls to 0 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
-        int deck = 0;
-        for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
-            QString group = getEQEffectGroupForDeck(deck);
-            ControlObject::set(ConfigKey(group, "enabled"), 0);
-            deck++;
-            box->setEnabled(false);
-        }
-    } else {
-        m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), QString("yes"));
-        // Enable effect processing for all decks by setting the appropriate
-        // controls to 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
-        int deck = 0;
-        for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
-            QString group = getEQEffectGroupForDeck(deck);
-            ControlObject::set(ConfigKey(group, "enabled"), 1);
-            deck++;
-            box->setEnabled(true);
-        }
-    }
+    bool bypass = static_cast<bool>(state);
 
-    slotApply();
+    m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), ConfigValue(bypass ? "no" : "yes"));
+    // Disable/enable EQ effect processing for all decks by setting the appropriate
+    // controls to 0 or 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
+    int deck = 0;
+    for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
+        QString group = EqualizerEffectChain::formatEffectSlotGroup(
+                PlayerManager::groupForDeck(deck));
+        ControlObject::set(ConfigKey(group, "enabled"), bypass ? 0 : 1);
+        deck++;
+        box->setEnabled(!bypass);
+    }
 }
 
 void DlgPrefMixer::setUpMainEQ() {
@@ -1060,11 +1048,6 @@ void DlgPrefMixer::validate_levels() {
             ++m_highEqFreq;
         }
     }
-}
-
-QString DlgPrefMixer::getEQEffectGroupForDeck(int deck) const {
-    return EqualizerEffectChain::formatEffectSlotGroup(
-            PlayerManager::groupForDeck(deck));
 }
 
 void DlgPrefMixer::slotMainEQToDefault() {

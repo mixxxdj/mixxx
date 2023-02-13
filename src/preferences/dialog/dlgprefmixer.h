@@ -22,8 +22,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     QUrl helpUrl() const override;
 
-    QString getEQEffectGroupForDeck(int deck) const;
-
   public slots:
     // Apply changes to widget
     void slotApply() override;
