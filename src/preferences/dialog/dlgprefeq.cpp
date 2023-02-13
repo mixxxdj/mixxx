@@ -822,10 +822,13 @@ void DlgPrefEQ::slotMainEqEffectChanged(int effectIndex) {
         }
     }
 
-    // Update the configured effect for the current QComboBox
     if (pManifest) {
         m_pConfig->set(ConfigKey(kConfigGroup, "EffectForGroup_[Master]"),
                 ConfigValue(pManifest->uniqueId()));
+    } else {
+        // no manifest, no id, '---' was selected.
+        m_pConfig->set(ConfigKey(kConfigGroup, "EffectForGroup_[Master]"),
+                ConfigValue());
     }
 }
 
