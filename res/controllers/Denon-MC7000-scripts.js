@@ -939,7 +939,7 @@ MC7000.StarsDown = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckIndex = deckNumber - 1;
     if (value >= 0x00) {
-        if (MC7000.PADModePitch[deckIndex]) {
+        if (MC7000.PADMode[deckIndex] === "Pitch") {
             for (var padIdx = 0; padIdx < 8; padIdx++) {
                 MC7000.halftoneToPadMap[deckIndex][padIdx] = MC7000.halftoneToPadMap[deckIndex][padIdx] - 8; // pitch down
             }
@@ -953,7 +953,7 @@ MC7000.StarsUp = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckIndex = deckNumber - 1;
     if (value >= 0x00) {
-        if (MC7000.PADModePitch[deckIndex]) {
+        if (MC7000.PADMode[deckIndex] === "Pitch") {
             for (var padIdx = 0; padIdx < 8; padIdx++) {
                 MC7000.halftoneToPadMap[deckIndex][padIdx] = MC7000.halftoneToPadMap[deckIndex][padIdx] + 8; // pitch up
             }
