@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2023-02-12" timestamp="1676240879">
+    <release version="2.3.4" type="development" date="2023-02-13" timestamp="1676326516">
       <description>
  <ul>
   <li>
@@ -272,9 +272,26 @@
   </li>
  </ul>
  <p>
-  Controllers
+  New Controller Mappings
  </p>
  <ul>
+  <li>
+   Traktor Kontrol S2 Mk1: Add controller mapping
+   #3905
+  </li>
+  <li>
+   Numark Party Mix: Mapping added
+   #4720
+  </li>
+ </ul>
+ <p>
+  Controller Fixes
+ </p>
+ <ul>
+  <li>
+   Traktor S3: Fix issues with sampler and hotcue buttons
+   #4676
+  </li>
   <li>
    Numark DJ2GO2: Fix sliders and knobs
    #4835
@@ -290,24 +307,12 @@
    #10586
   </li>
   <li>
-   Numark Party Mix: Mapping added
-   #4720
-  </li>
-  <li>
    Numark N4: Inverted pitch slider, to match the GUI orientation
    #11057
   </li>
   <li>
    Ableton Push: Show as one device
    #10905
-  </li>
-  <li>
-   Traktor S3: Fix issues with sampler and hotcue buttons
-   #4676
-  </li>
-  <li>
-   Traktor Kontrol S2 Mk1: Add controller mapping
-   #3905
   </li>
   <li>
    MC7000: Fix off-by-one indexing in the controller script
