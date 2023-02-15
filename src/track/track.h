@@ -423,6 +423,8 @@ class Track : public QObject {
     };
     double getDuration(DurationRounding rounding) const;
 
+    bool exportSeratoMetadata();
+
     ExportTrackMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource,
             UserSettingsPointer pConfig);
