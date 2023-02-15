@@ -50,6 +50,11 @@ MC7000.needleSearchPlay = false;
 MC7000.prevSamplerStop = true;
 
 // Quantity of Samplers used in mixxx possible values 16 and 32
+// To use 32 samplers instead of 16 you can set the user variable
+// MC7000.SamplerQty to 32. Deck 1 will trigger sampler 1 to 8,
+// Deck 2 will trigger sampler 9 to 16, Deck 3 will trigger
+// sampler 17 to 24 and Deck 4 will trigger sampler 25 to 32.
+// Please note that your Mixxx skin needs to support more than 16 samplers.
 MC7000.SamplerQty = 16;
 
 // Set Vinyl Mode on ("true") or off ("false") when MIXXX starts.
