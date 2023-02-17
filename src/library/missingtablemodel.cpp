@@ -47,8 +47,10 @@ void MissingTableModel::setTableModel(int id) {
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
-    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setTable(tableName,
+            LIBRARYTABLE_ID,
+            std::move(tableColumns),
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 

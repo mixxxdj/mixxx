@@ -161,6 +161,9 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 }
 
 // This function is executed in a separate thread other than the main thread
+// The returned list owns the pointers, but we can't use a unique_ptr because
+// the result is passed by a const reference inside QFuture and than copied
+// to the main thread requiring a copy-able object.
 QList<TreeItem*> findRekordboxDevices() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -191,10 +194,10 @@ QList<TreeItem*> findRekordboxDevices() {
             QList<QString> data;
             data << drive.filePath();
             data << IS_RECORDBOX_DEVICE;
-            TreeItem* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     std::move(displayPath),
                     QVariant(data));
-            foundDevices << foundDevice;
+            foundDevices << pFoundDevice;
         }
     }
 #elif defined(__LINUX__)
@@ -222,10 +225,10 @@ QList<TreeItem*> findRekordboxDevices() {
             QList<QString> data;
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-            TreeItem* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     device.fileName(),
                     QVariant(data));
-            foundDevices << foundDevice;
+            foundDevices << pFoundDevice;
         }
     }
 #else // __APPLE__
@@ -238,10 +241,10 @@ QList<TreeItem*> findRekordboxDevices() {
             QList<QString> data;
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-            auto* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     device.fileName(),
                     QVariant(data));
-            foundDevices << foundDevice;
+            foundDevices << pFoundDevice;
         }
     }
 #endif
@@ -1338,42 +1341,41 @@ RekordboxFeature::RekordboxFeature(
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
     QString tableName = kRekordboxLibraryTable;
     QString idColumn = LIBRARYTABLE_ID;
-    QStringList columns;
-    columns << LIBRARYTABLE_ID
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_TRACKNUMBER
-            << TRACKLOCATIONSTABLE_LOCATION
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_RATING
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_KEY
-            << LIBRARYTABLE_COLOR
-            << REKORDBOX_ANALYZE_PATH;
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns, false));
-    QStringList searchColumns;
-    searchColumns
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_TRACKNUMBER
-            << TRACKLOCATIONSTABLE_LOCATION
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_KEY;
-    m_trackSource->setSearchColumns(searchColumns);
+    QStringList columns = {
+            LIBRARYTABLE_ID,
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_TRACKNUMBER,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_RATING,
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BITRATE,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_KEY,
+            LIBRARYTABLE_COLOR,
+            REKORDBOX_ANALYZE_PATH};
 
-    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(
+    const QStringList searchColumns = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_TRACKNUMBER,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_COMMENT};
+
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
+            m_pTrackCollection,
+            tableName,
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
+    m_pRekordboxPlaylistModel = make_parented<RekordboxPlaylistModel>(
             this, pLibrary->trackCollectionManager(), m_trackSource);
 
     m_title = tr("Rekordbox");
@@ -1414,18 +1416,16 @@ RekordboxFeature::~RekordboxFeature() {
     dropTable(database, kRekordboxPlaylistsTable);
     dropTable(database, kRekordboxLibraryTable);
     transaction.commit();
-
-    delete m_pRekordboxPlaylistModel;
 }
 
-void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
+void RekordboxFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
         KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(formatRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
-    libraryWidget->registerView("REKORDBOXHOME", edit);
+    parented_ptr<WLibraryTextBrowser> pEdit = make_parented<WLibraryTextBrowser>(pLibraryWidget);
+    pEdit->setHtml(formatRootViewHtml());
+    pEdit->setOpenLinks(false);
+    connect(pEdit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
+    pLibraryWidget->registerView("REKORDBOXHOME", pEdit);
 }
 
 void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
@@ -1436,11 +1436,12 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(
+std::unique_ptr<BaseSqlTableModel>
+RekordboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    auto pModel = std::make_unique<RekordboxPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    model->setPlaylist(playlist);
-    return model;
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 QVariant RekordboxFeature::title() {
@@ -1559,9 +1560,12 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 }
 
 void RekordboxFeature::onRekordboxDevicesFound() {
-    QList<TreeItem*> foundDevices = m_devicesFuture.result();
-    TreeItem* root = m_pSidebarModel->getRootItem();
+    const QList<TreeItem*> result = m_devicesFuture.result();
+    auto foundDevices = std::vector<std::unique_ptr<TreeItem>>(result.cbegin(), result.cend());
 
+    clearLastRightClickedIndex();
+
+    TreeItem* root = m_pSidebarModel->getRootItem();
     QSqlDatabase database = m_pTrackCollection->database();
 
     if (foundDevices.size() == 0) {
@@ -1588,10 +1592,8 @@ void RekordboxFeature::onRekordboxDevicesFound() {
             TreeItem* child = root->child(deviceIndex);
             bool removeChild = true;
 
-            for (int foundDeviceIndex = 0; foundDeviceIndex < foundDevices.size(); foundDeviceIndex++) {
-                TreeItem* deviceFound = foundDevices[foundDeviceIndex];
-
-                if (deviceFound->getLabel() == child->getLabel()) {
+            for (const auto& pDeviceFound : foundDevices) {
+                if (pDeviceFound->getLabel() == child->getLabel()) {
                     removeChild = false;
                     break;
                 }
@@ -1605,28 +1607,26 @@ void RekordboxFeature::onRekordboxDevicesFound() {
             }
         }
 
-        QList<TreeItem*> childrenToAdd;
+        std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
 
-        for (int foundDeviceIndex = 0; foundDeviceIndex < foundDevices.size(); foundDeviceIndex++) {
-            TreeItem* deviceFound = foundDevices[foundDeviceIndex];
+        for (auto&& pDeviceFound : foundDevices) {
             bool addNewChild = true;
-
             for (int deviceIndex = 0; deviceIndex < root->childRows(); deviceIndex++) {
                 TreeItem* child = root->child(deviceIndex);
 
-                if (deviceFound->getLabel() == child->getLabel()) {
+                if (pDeviceFound->getLabel() == child->getLabel()) {
                     // This device already exists in the TreeModel, don't add or parse is again
                     addNewChild = false;
                 }
             }
 
             if (addNewChild) {
-                childrenToAdd << deviceFound;
+                childrenToAdd.push_back(std::move(pDeviceFound));
             }
         }
 
         if (!childrenToAdd.empty()) {
-            m_pSidebarModel->insertTreeItemRows(childrenToAdd, 0);
+            m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
         }
     }
 

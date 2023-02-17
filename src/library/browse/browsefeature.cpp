@@ -153,11 +153,11 @@ void BrowseFeature::slotAddQuickLink() {
     QString name = extractNameFromPath(spath);
 
     QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
-    auto pNewChild = std::make_unique<TreeItem>(name, vpath);
-    QList<TreeItem*> rows;
-    rows.append(pNewChild.get());
-    pNewChild.release();
-    m_pSidebarModel->insertTreeItemRows(rows, m_pQuickLinkItem->childRows(), parent);
+    std::vector<std::unique_ptr<TreeItem>> rows;
+    // TODO() Use here std::span to get around the heap allocation of
+    // std::vector for a single element.
+    rows.push_back(std::make_unique<TreeItem>(name, vpath));
+    m_pSidebarModel->insertTreeItemRows(std::move(rows), m_pQuickLinkItem->childRows(), parent);
 
     m_quickLinkList.append(spath);
     saveQuickLinks();
@@ -208,6 +208,7 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
+    m_pLastRightClickedItem = nullptr;
     QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     m_pSidebarModel->removeRow(index, parent);
 
@@ -276,6 +277,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+
+    // Make sure that this is reset when the related TreeItem is deleted.
     m_pLastRightClickedItem = item;
 
     if (!item) {
@@ -315,8 +318,8 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
 namespace {
 // Get the list of devices (under "Removable Devices" section).
-QList<TreeItem*> getRemovableDevices() {
-    QList<TreeItem*> ret;
+std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
+    std::vector<std::unique_ptr<TreeItem>> ret;
 #if defined(__WINDOWS__)
     // Repopulate drive list
     QFileInfoList drives = QDir::drives();
@@ -334,10 +337,9 @@ QList<TreeItem*> getRemovableDevices() {
         if (display_path.endsWith("/")) {
             display_path.chop(1);
         }
-        TreeItem* driveLetter = new TreeItem(
-            display_path, // Displays C:
-            drive.filePath()); // Displays C:/
-        ret << driveLetter;
+        ret.push_back(std::make_unique<TreeItem>(
+                display_path,       // Displays C:
+                drive.filePath())); // Displays C:/
     }
 #elif defined(__LINUX__)
     // To get devices on Linux, we look for directories under /media and
@@ -355,10 +357,9 @@ QList<TreeItem*> getRemovableDevices() {
 
     // Convert devices into a QList<TreeItem*> for display.
     foreach(QFileInfo device, devices) {
-        TreeItem* folder = new TreeItem(
-            device.fileName(),
-            QVariant(device.filePath() + QStringLiteral("/")));
-        ret << folder;
+        ret.push_back(std::make_unique<TreeItem>(
+                device.fileName(),
+                QVariant(device.filePath() + QStringLiteral("/"))));
     }
 #endif
     return ret;
@@ -395,15 +396,16 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         return;
     }
 
+    m_pLastRightClickedItem = nullptr;
     // Before we populate the subtree, we need to delete old subtrees
     m_pSidebarModel->removeRows(0, item->childRows(), index);
 
     // List of subfolders or drive letters
-    QList<TreeItem*> folders;
+    std::vector<std::unique_ptr<TreeItem>> folders;
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-        folders += getRemovableDevices();
+        folders = createRemovableDevices();
     } else {
         // we assume that the path refers to a folder in the file system
         // populate children
@@ -422,17 +424,16 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             // We here create new items for the sidebar models
             // Once the items are added to the TreeItemModel,
             // the models takes ownership of them and ensures their deletion
-            TreeItem* folder = new TreeItem(
-                one.fileName(),
-                QVariant(one.absoluteFilePath() + QStringLiteral("/")));
-            folders << folder;
+            folders.push_back(std::make_unique<TreeItem>(
+                    one.fileName(),
+                    QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
         }
     }
     // we need to check here if subfolders are found
     // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
     // has no subfolders
-    if (!folders.isEmpty()) {
-        m_pSidebarModel->insertTreeItemRows(folders, 0, index);
+    if (!folders.empty()) {
+        m_pSidebarModel->insertTreeItemRows(std::move(folders), 0, index);
     }
 }
 
