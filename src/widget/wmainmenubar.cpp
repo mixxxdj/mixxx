@@ -691,6 +691,11 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             &WMainMenuBar::internalOnNewSkinLoaded,
             pConnection,
             &VisibilityControlConnection::slotReconnectControl);
+    // reconnect when menu bar was recreated after toggling fullscreen
+    connect(this,
+            &WMainMenuBar::internalFullScreenStateChange,
+            pConnection,
+            &VisibilityControlConnection::slotReconnectControl);
     connect(this,
             &WMainMenuBar::internalOnNewSkinAboutToLoad,
             pConnection,
