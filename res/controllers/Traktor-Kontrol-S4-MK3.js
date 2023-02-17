@@ -1,4 +1,4 @@
-/// Copyright (C) 2022 Be <be@mixxx.org>
+/// Copyright (C) 2023 Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
 ///
 /// This mapping is free software; you can redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
@@ -37,6 +37,23 @@ const LEDColors = {
     white: 68,
 };
 
+const KeyboardColors = [
+    LEDColors.red,
+    LEDColors.orange,
+    LEDColors.yellow,
+    LEDColors.lime,
+    LEDColors.green,
+    LEDColors.aqua,
+    LEDColors.celeste,
+    LEDColors.sky,
+    LEDColors.blue,
+    LEDColors.purple,
+    LEDColors.fuscia,
+    LEDColors.azalea,
+    LEDColors.salmon,
+    LEDColors.white,
+];
+
 /*
  * USER CONFIGURABLE SETTINGS
  * Adjust these to your liking
@@ -48,6 +65,19 @@ const deckColors = [
     LEDColors.yellow,
     LEDColors.purple,
 ];
+
+// A full list can be found here: https://manual.mixxx.org/2.4/en/chapters/appendix/mixxx_controls.html#control-[Library]-sort_column
+const librarySortableColumns = [
+    1,  // Artist
+    2,  // Title
+    15, // BPM
+    20, // Key
+    17, // Date added
+];
+
+const loopWheelMoveFactor = 50;
+const loopEncoderMoveFactor = 500;
+const loopEncoderShiftMoveFactor = 2500;
 
 const tempoFaderSoftTakeoverColorLow = LEDColors.white;
 const tempoFaderSoftTakeoverColorHigh = LEDColors.green;
@@ -95,7 +125,6 @@ const samplerCrossfaderAssign = true;
 /*
  * HID packet parsing library
  */
-
 class HIDInputPacket {
     constructor(reportId) {
         this.reportId = reportId;
@@ -201,6 +230,7 @@ class HIDOutputPacket {
 class Component {
     constructor(options) {
         Object.assign(this, options);
+        this.outConnections = [];
         if (options !== undefined && typeof options.key === "string") {
             this.inKey = options.key;
             this.outKey = options.key;
@@ -213,14 +243,13 @@ class Component {
             && this.inPacket !== undefined && this.inPacket instanceof HIDInputPacket) {
             this.inConnect();
         }
-        this.outConnections = [];
         this.outConnect();
     }
     inConnect(callback) {
         if (this.inByte === undefined
-          || this.inBit === undefined
-          || this.inBitLength === undefined
-          || this.inPacket === undefined) {
+            || this.inBit === undefined
+            || this.inBitLength === undefined
+            || this.inPacket === undefined) {
             return;
         }
         if (typeof callback === "function") {
@@ -251,6 +280,7 @@ class Component {
         for (const connection of this.outConnections) {
             connection.disconnect();
         }
+        this.outConnections = [];
     }
     outTrigger() {
         for (const connection of this.outConnections) {
@@ -258,28 +288,21 @@ class Component {
         }
     }
 }
-
-class ComponentContainer {
-    constructor() {}
+class ComponentContainer extends Component {
+    constructor() {
+        super();
+    }
     *[Symbol.iterator]() {
-    // can't use for...of here because it would create an infinite loop
+        // can't use for...of here because it would create an infinite loop
         for (const property in this) {
             if (Object.prototype.hasOwnProperty.call(this, property)) {
                 const obj = this[property];
                 if (obj instanceof Component) {
                     yield obj;
-                } else if (obj instanceof ComponentContainer) {
-                    for (const nestedComponent of obj) {
-                        yield nestedComponent;
-                    }
                 } else if (Array.isArray(obj)) {
                     for (const objectInArray of obj) {
                         if (objectInArray instanceof Component) {
                             yield objectInArray;
-                        } else if (objectInArray instanceof ComponentContainer) {
-                            for (const doublyNestedComponent of objectInArray) {
-                                yield doublyNestedComponent;
-                            }
                         }
                     }
                 }
@@ -357,7 +380,7 @@ class Deck extends ComponentContainer {
         this.color = this.groupsToColors[newGroup];
         this.reconnectComponents(function(component) {
             if (component.group === undefined
-                  || component.group.search(script.channelRegEx) !== -1) {
+                || component.group.search(script.channelRegEx) !== -1) {
                 component.group = newGroup;
             } else if (component.group.search(script.eqRegEx) !== -1) {
                 component.group = "[EqualizerRack1_" + newGroup + "_Effect1]";
@@ -376,17 +399,73 @@ class Deck extends ComponentContainer {
 class Button extends Component {
     constructor(options) {
         super(options);
-        this.off = 0;
+
+        if (this.input === undefined) {
+            this.input = this.defaultInput;
+            if (typeof this.input === "function"
+                && this.inPacket !== undefined && this.inPacket instanceof HIDInputPacket) {
+                this.inConnect();
+            }
+        }
+
         if (this.longPressTimeOut === undefined) {
             this.longPressTimeOut = 225; // milliseconds
         }
+        if (this.indicatorInterval === undefined) {
+            this.indicatorInterval = 350; // milliseconds
+        }
+        this.longPressTimer = 0;
+        this.indicatorTimer = 0;
+        this.indicatorState = false;
+        this.isLongPress = false;
         if (this.inBitLength === undefined) {
             this.inBitLength = 1;
         }
     }
     output(value) {
+        if (this.indicatorTimer !== 0) {
+            return;
+        }
         const brightness = (value > 0) ? this.brightnessOn : this.brightnessOff;
-        this.send(this.color + brightness);
+        this.send((this.color || LEDColors.white) + brightness);
+    }
+    indicatorCallback() {
+        this.indicatorState = !this.indicatorState;
+        this.send((this.indicatorColor || this.color || LEDColors.white) + (this.indicatorState ? this.brightnessOn : this.brightnessOff));
+    }
+    indicator(on) {
+        if (on && this.indicatorTimer === 0) {
+            this.outDisconnect();
+            this.indicatorTimer = engine.beginTimer(this.indicatorInterval, this.indicatorCallback.bind(this));
+        } else if (!on && this.indicatorTimer !== 0) {
+            engine.stopTimer(this.indicatorTimer);
+            this.indicatorTimer = 0;
+            this.indicatorState = false;
+            this.outConnect();
+            this.outTrigger();
+        }
+    }
+    defaultInput(pressed) {
+        if (pressed) {
+            this.isLongPress = false;
+            if (typeof this.onShortPress === "function") { this.onShortPress(); }
+            if (typeof this.onLongPress === "function" || typeof this.onLongRelease === "function") {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeOut, () => {
+                    this.isLongPress = true;
+                    this.longPressTimer = 0;
+                    if (typeof this.onLongPress !== "function") { return; }
+                    this.onLongPress(this);
+                }, true);
+            }
+        } else if (this.isLongPress) {
+            if (typeof this.onLongRelease === "function") { this.onLongRelease(); }
+        } else {
+            if (this.longPressTimer !== 0) {
+                engine.stopTimer(this.longPressTimer);
+                this.longPressTimer = 0;
+            }
+            if (typeof this.onShortRelease === "function") { this.onShortRelease(); }
+        }
     }
 }
 
@@ -403,10 +482,17 @@ class ToggleButton extends Button {
     constructor(options) {
         super(options);
     }
-    input(pressed) {
-        if (pressed) {
-            script.toggleControl(this.group, this.inKey);
-        }
+    onShortPress() {
+        script.toggleControl(this.group, this.inKey, true);
+    }
+}
+
+class TriggerButton extends Button {
+    constructor(options) {
+        super(options);
+    }
+    onShortPress() {
+        script.triggerControl(this.group, this.inKey, true);
     }
 }
 
@@ -416,32 +502,33 @@ class PowerWindowButton extends Button {
         this.isLongPressed = false;
         this.longPressTimer = 0;
     }
-    input(pressed) {
-        if (pressed) {
-            script.toggleControl(this.group, this.inKey);
-            this.longPressTimer = engine.beginTimer(this.longPressTimeOut, () => {
-                this.isLongPressed = true;
-                this.longPressTimer = 0;
-            }, true);
-        } else {
-            if (this.isLongPressed) {
-                script.toggleControl(this.group, this.inKey);
-            }
-            if (this.longPressTimer !== 0) {
-                engine.stopTimer(this.longPressTimer);
-            }
-            this.longPressTimer = 0;
-            this.isLongPressed = false;
-        }
+    onShortPress() {
+        script.toggleControl(this.group, this.inKey);
+    }
+    onLongRelease() {
+        script.toggleControl(this.group, this.inKey);
     }
 }
 
-class PlayButton extends ToggleButton {
+class PlayButton extends Button {
     constructor(options) {
+        // Prevent accidental ejection/duplication accident
+        options.longPressTimeOut = 800;
         super(options);
         this.inKey = "play";
         this.outKey = "play_indicator";
         this.outConnect();
+    }
+    onShortPress() {
+        script.toggleControl(this.group, this.inKey, true);
+    }
+    onLongPress() {
+        if (this.shifted) {
+            engine.setValue(this.group, this.inKey, false);
+            script.triggerControl(this.group, "eject");
+        } else if (!engine.getValue(this.group, this.inKey)) {
+            script.triggerControl(this.group, "CloneFromDeck");
+        }
     }
 }
 
@@ -457,6 +544,13 @@ class CueButton extends PushButton {
     shift() {
         this.inKey = "start_stop";
     }
+    input(pressed) {
+        if (this.deck.moveMode === moveModes.keyboard) {
+            this.deck.assignKeyboardPlayMode(this.group, this.inKey);
+        } else {
+            engine.setValue(this.group, this.inKey, pressed);
+        }
+    }
 }
 
 class Encoder extends Component {
@@ -464,17 +558,26 @@ class Encoder extends Component {
         super(options);
         this.lastValue = null;
     }
-    isRightTurn(value) {
-        // detect wrap around
+    input(value) {
         const oldValue = this.lastValue;
         this.lastValue = value;
+
+        if (oldValue === null || typeof this.onChange !== "function") {
+            // This scenario happens at the controller initialisation. No real input to proceed
+            return;
+        }
+        let isRight;
         if (oldValue === this.max && value === 0) {
-            return true;
+            isRight = true;
+        } else if (oldValue === 0 && value === this.max) {
+            isRight = false;
+        } else {
+            isRight = value > oldValue;
         }
-        if (oldValue === 0 && value === this.max) {
-            return false;
-        }
-        return value > oldValue;
+        this.onChange(isRight);
+    }
+    isRightTurn(value) {
+        // detect wrap around
     }
 }
 
@@ -494,6 +597,10 @@ class HotcueButton extends PushButton {
     shift() {
         this.inKey = "hotcue_" + this.number + "_clear";
     }
+    input(pressed) {
+        engine.setValue(this.group, "scratch2_enable", false);
+        engine.setValue(this.group, this.inKey, pressed);
+    }
     output(value) {
         if (value) {
             this.send(this.color + this.brightnessOn);
@@ -512,6 +619,55 @@ class HotcueButton extends PushButton {
     }
 }
 
+class KeyboardButton extends PushButton {
+    constructor(options) {
+        super(options);
+        if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1 || this.number > 8) {
+            throw Error("KeyboardButton must have a number property of an integer between 1 and 8");
+        }
+        if (this.deck === undefined) {
+            throw Error("KeyboardButton must have a deck attached to it");
+        }
+        this.outConnect();
+    }
+    unshift() {
+        this.outTrigger();
+    }
+    shift() {
+        this.outTrigger();
+    }
+    input(pressed) {
+        const offset = this.deck.keyboardOffset - (this.shifted ? 8 : 0);
+        if (this.number + offset < 1 || this.number + offset > 24) {
+            return;
+        }
+        if (pressed) {
+            engine.setValue(this.group, "key", this.number + offset);
+        }
+        if (this.deck.keyboardPlayMode !== null) {
+            script.toggleControl(this.deck.keyboardPlayMode.group, this.deck.keyboardPlayMode.action, true);
+        }
+    }
+    output(value) {
+        const offset = this.deck.keyboardOffset - (this.shifted ? 8 : 0);
+        const colorIdx = (this.number + offset) % KeyboardColors.length;
+        const color = KeyboardColors[colorIdx];
+        if (this.number + offset < 1 || this.number + offset > 24) {
+            this.send(0);
+        } else {
+            this.send(color + (value ? this.brightnessOn : this.brightnessOff));
+        }
+    }
+    outConnect() {
+        if (undefined !== this.group) {
+            this.outConnections[0] = engine.makeConnection(this.group, "key", (key) => {
+                const offset = this.deck.keyboardOffset - (this.shifted ? 8 : 0);
+                this.output(key === this.number + offset);
+            });
+        }
+    }
+}
+
 class SamplerButton extends Button {
     constructor(options) {
         super(options);
@@ -521,26 +677,27 @@ class SamplerButton extends Button {
         this.group = "[Sampler" + this.number + "]";
         this.outConnect();
     }
-    input(pressed) {
+    unshift() { }
+    shift() { }
+    onShortPress() {
         if (!this.shifted) {
-            if (pressed) {
-                if (engine.getValue(this.group, "track_loaded") === 0) {
-                    engine.setValue(this.group, "LoadSelectedTrack", 1);
-                } else {
-                    engine.setValue(this.group, "cue_gotoandplay", 1);
-                }
+            if (engine.getValue(this.group, "track_loaded") === 0) {
+                engine.setValue(this.group, "LoadSelectedTrack", 1);
+            } else {
+                engine.setValue(this.group, "cue_gotoandplay", 1);
             }
         } else {
-            if (pressed) {
-                if (engine.getValue(this.group, "play") === 1) {
-                    engine.setValue(this.group, "play", 0);
-                } else {
-                    engine.setValue(this.group, "eject", 1);
-                }
+            if (engine.getValue(this.group, "play") === 1) {
+                engine.setValue(this.group, "play", 0);
             } else {
-                if (engine.getValue(this.group, "play") === 0) {
-                    engine.setValue(this.group, "eject", 0);
-                }
+                engine.setValue(this.group, "eject", 1);
+            }
+        }
+    }
+    onShortRelease() {
+        if (this.shifted) {
+            if (engine.getValue(this.group, "play") === 0) {
+                engine.setValue(this.group, "eject", 0);
             }
         }
     }
@@ -609,11 +766,312 @@ class Pot extends Component {
     }
 }
 
+class Mixer extends ComponentContainer {
+    constructor(inPackets, outPackets) {
+        super();
+
+        this.outPacket = outPackets[128];
+
+        this.mixerColumnDeck1 = new S4Mk3MixerColumn("[Channel1]", inPackets, outPackets[128],
+            {
+                saveGain: {inByte: 12, inBit: 0, outByte: 80},
+                effectUnit1Assign: {inByte: 3, inBit: 3, outByte: 78},
+                effectUnit2Assign: {inByte: 3, inBit: 4, outByte: 79},
+                gain: {inByte: 17},
+                eqHigh: {inByte: 45},
+                eqMid: {inByte: 47},
+                eqLow: {inByte: 49},
+                quickEffectKnob: {inByte: 65},
+                quickEffectButton: {},
+                volume: {inByte: 3},
+                pfl: {inByte: 8, inBit: 3, outByte: 77},
+                crossfaderSwitch: {inByte: 18, inBit: 4},
+            }
+        );
+        this.mixerColumnDeck2 = new S4Mk3MixerColumn("[Channel2]", inPackets, outPackets[128],
+            {
+                saveGain: {inByte: 12, inBit: 1, outByte: 84},
+                effectUnit1Assign: {inByte: 3, inBit: 5, outByte: 82},
+                effectUnit2Assign: {inByte: 3, inBit: 6, outByte: 83},
+                gain: {inByte: 19},
+                eqHigh: {inByte: 51},
+                eqMid: {inByte: 53},
+                eqLow: {inByte: 55},
+                quickEffectKnob: {inByte: 67},
+                volume: {inByte: 5},
+                pfl: {inByte: 8, inBit: 6, outByte: 81},
+                crossfaderSwitch: {inByte: 18, inBit: 2},
+            }
+        );
+        this.mixerColumnDeck3 = new S4Mk3MixerColumn("[Channel3]", inPackets, outPackets[128],
+            {
+                saveGain: {inByte: 3, inBit: 1, outByte: 88},
+                effectUnit1Assign: {inByte: 3, inBit: 0, outByte: 86},
+                effectUnit2Assign: {inByte: 3, inBit: 2, outByte: 87},
+                gain: {inByte: 15},
+                eqHigh: {inByte: 39},
+                eqMid: {inByte: 41},
+                eqLow: {inByte: 43},
+                quickEffectKnob: {inByte: 63},
+                volume: {inByte: 7},
+                pfl: {inByte: 8, inBit: 2, outByte: 85},
+                crossfaderSwitch: {inByte: 18, inBit: 6},
+            }
+        );
+        this.mixerColumnDeck4 = new S4Mk3MixerColumn("[Channel4]", inPackets, outPackets[128],
+            {
+                saveGain: {inByte: 12, inBit: 2, outByte: 92},
+                effectUnit1Assign: {inByte: 3, inBit: 7, outByte: 90},
+                effectUnit2Assign: {inByte: 12, inBit: 7, outByte: 91},
+                gain: {inByte: 21},
+                eqHigh: {inByte: 57},
+                eqMid: {inByte: 59},
+                eqLow: {inByte: 61},
+                quickEffectKnob: {inByte: 69},
+                volume: {inByte: 9},
+                pfl: {inByte: 8, inBit: 7, outByte: 89},
+                crossfaderSwitch: {inByte: 18, inBit: 0},
+            }
+        );
+
+        this.firstPressedFxSelector = null;
+        this.secondPressedFxSelector = null;
+        this.comboSelected = false;
+
+        const fxSelectsInputs = [
+            {inByte: 9, inBit: 5},
+            {inByte: 9, inBit: 1},
+            {inByte: 9, inBit: 6},
+            {inByte: 9, inBit: 0},
+            {inByte: 9, inBit: 7},
+        ];
+        this.fxSelects = [];
+        for (const i of [0, 1, 2, 3, 4]) {
+            this.fxSelects[i] = new FXSelect(
+                Object.assign(fxSelectsInputs[i], {
+                    number: i + 1,
+                    mixer: this,
+                })
+            );
+        }
+
+        const quickEffectInputs = [
+            {inByte: 8, inBit: 0, outByte: 46},
+            {inByte: 8, inBit: 5, outByte: 47},
+            {inByte: 8, inBit: 1, outByte: 48},
+            {inByte: 8, inBit: 4, outByte: 49},
+        ];
+        this.quickEffectButtons = [];
+        for (const i of [0, 1, 2, 3]) {
+            this.quickEffectButtons[i] = new QuickEffectButton(
+                Object.assign(quickEffectInputs[i], {
+                    number: i + 1,
+                    mixer: this,
+                })
+            );
+        }
+        this.resetFxSelectorColors();
+
+        this.quantizeButton = new Button({
+            input: function(pressed) {
+                if (pressed) {
+                    this.globalQuantizeOn = !this.globalQuantizeOn;
+                    for (let i = 1; i <= 4; i++) {
+                        engine.setValue("[Channel" + i + "]", "quantize", this.globalQuantizeOn);
+                    }
+                    this.send(this.globalQuantizeOn ? 127 : 0);
+                }
+            },
+            globalQuantizeOn: false,
+            inByte: 12,
+            inBit: 6,
+            outByte: 93,
+        });
+
+        this.crossfader = new Pot({
+            group: "[Master]",
+            inKey: "crossfader",
+            inByte: 1,
+            inPacket: inPackets[2],
+        });
+        this.crossfaderCurveSwitch = new Component({
+            inByte: 19,
+            inBit: 0,
+            inBitLength: 2,
+            input: function(value) {
+                switch (value) {
+                case 0x00:  // Picnic Bench / Fast Cut
+                    engine.setValue("[Mixer Profile]", "xFaderMode", 0);
+                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
+                    engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
+                    break;
+                case 0x01:  // Constant Power
+                    engine.setValue("[Mixer Profile]", "xFaderMode", 1);
+                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.3);
+                    engine.setValue("[Mixer Profile]", "xFaderCurve", 0.6);
+                    break;
+                case 0x02: // Additive
+                    engine.setValue("[Mixer Profile]", "xFaderMode", 0);
+                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
+                    engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
+                }
+            },
+        });
+
+        for (const component of this) {
+            if (component.inPacket === undefined) {
+                component.inPacket = inPackets[1];
+            }
+            component.outPacket = this.outPacket;
+            component.inConnect();
+            component.outConnect();
+            component.outTrigger();
+        }
+
+        let lightQuantizeButton = true;
+        for (let i = 1; i <= 4; i++) {
+            if (!engine.getValue("[Channel" + i + "]", "quantize")) {
+                lightQuantizeButton = false;
+            }
+        }
+        this.quantizeButton.send(lightQuantizeButton ? 127 : 0);
+        this.quantizeButton.globalQuantizeOn = lightQuantizeButton;
+    }
+
+    calculatePresetNumber() {
+        if (this.firstPressedFxSelector === this.secondPressedFxSelector || this.secondPressedFxSelector === null) {
+            return this.firstPressedFxSelector;
+        }
+        let presetNumber = 5 + (4 * (this.firstPressedFxSelector - 1)) + this.secondPressedFxSelector;
+        if (this.secondPressedFxSelector > this.firstPressedFxSelector) {
+            presetNumber--;
+        }
+        return presetNumber;
+    }
+
+    resetFxSelectorColors() {
+        for (const selector of [1, 2, 3, 4, 5]) {
+            this.outPacket.data[49 + selector] = quickEffectPresetColors[selector - 1] + Button.prototype.brightnessOn;
+        }
+        console.log("Reset color");
+        this.outPacket.send();
+    }
+}
+
+class FXSelect extends Button {
+    constructor(options) {
+        super(options);
+
+        if (this.mixer === undefined) {
+            throw Error("The mixer must be specified");
+        }
+    }
+
+    onShortPress() {
+        if (this.mixer.firstPressedFxSelector === null) {
+            this.mixer.firstPressedFxSelector = this.number;
+            for (const selector of [1, 2, 3, 4, 5]) {
+                if (selector !== this.number) {
+                    let presetNumber = 5 + (4 * (this.mixer.firstPressedFxSelector - 1)) + selector;
+                    if (selector > this.number) {
+                        presetNumber--;
+                    }
+                    this.outPacket.data[49 + selector] = quickEffectPresetColors[presetNumber - 1] + this.brightnessOn;
+                }
+            }
+            this.outPacket.send();
+        } else {
+            this.mixer.secondPressedFxSelector = this.number;
+        }
+
+    }
+
+    onShortRelease() {
+        // After a second selector was released, avoid loading a different preset when
+        // releasing the first pressed selector.
+        if (this.mixer.comboSelected && this.number === this.mixer.firstPressedFxSelector) {
+            this.mixer.comboSelected = false;
+            this.mixer.firstPressedFxSelector = null;
+            this.mixer.secondPressedFxSelector = null;
+            this.mixer.resetFxSelectorColors();
+            return;
+        }
+        // If mixer.firstPressedFxSelector === null, it was reset by the input handler for
+        // a QuickEffect enable button to load the preset for only one deck.
+        if (this.mixer.firstPressedFxSelector !== null) {
+            for (const deck of [1, 2, 3, 4]) {
+                const presetNumber = this.mixer.calculatePresetNumber();
+                engine.setValue("[QuickEffectRack1_[Channel" + deck + "]]", "loaded_chain_preset", presetNumber + 1);
+            }
+        }
+        if (this.mixer.firstPressedFxSelector === this.number) {
+            this.mixer.firstPressedFxSelector = null;
+            this.mixer.resetFxSelectorColors();
+        }
+        if (this.mixer.secondPressedFxSelector !== null) {
+            this.mixer.comboSelected = true;
+        }
+        this.mixer.secondPressedFxSelector = null;
+    }
+
+}
+
+
+class QuickEffectButton extends Button {
+    constructor(options) {
+        super(options);
+        if (this.mixer === undefined) {
+            throw Error("The mixer must be specified");
+        }
+        if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1) {
+            throw Error("number attribute must be an integer >= 1");
+        }
+        this.group = "[QuickEffectRack1_[Channel" + this.number + "]]";
+        this.outConnect();
+    }
+    onShortPress() {
+        if (this.mixer.firstPressedFxSelector === null) {
+            script.toggleControl(this.group, "enabled");
+        } else {
+            const presetNumber = this.mixer.calculatePresetNumber();
+            this.color = quickEffectPresetColors[presetNumber - 1];
+            engine.setValue(this.group, "loaded_chain_preset", presetNumber + 1);
+            this.mixer.firstPressedFxSelector = null;
+            this.mixer.secondPressedFxSelector = null;
+            this.mixer.resetFxSelectorColors();
+        }
+    }
+    onLongRelease() {
+        if (this.mixer.firstPressedFxSelector === null) {
+            script.toggleControl(this.group, "enabled");
+        }
+    }
+    output(enabled) {
+        if (enabled) {
+            this.send(this.color + this.brightnessOn);
+        } else {
+            // It is easy to mistake the dim state for the bright state, so turn
+            // the LED fully off.
+            this.send(this.color + this.brightnessOff);
+        }
+    }
+    presetLoaded(presetNumber) {
+        this.color = quickEffectPresetColors[presetNumber - 2];
+        this.outConnections[1].trigger();
+    }
+    outConnect() {
+        if (this.group !== undefined) {
+            this.outConnections[0] = engine.makeConnection(this.group, "loaded_chain_preset", this.presetLoaded.bind(this));
+            this.outConnections[1] = engine.makeConnection(this.group, "enabled", this.output.bind(this));
+        }
+    }
+}
+
 /*
  * Kontrol S4 Mk3 hardware-specific constants
  */
 
-Pot.prototype.max = 2**12 - 1;
+Pot.prototype.max = 2 ** 12 - 1;
 Pot.prototype.inBit = 0;
 Pot.prototype.inBitLength = 16;
 
@@ -646,13 +1104,13 @@ Button.prototype.colorMap = new ColorMapper({
     0xCCCCCC: LEDColors.white,
 });
 
-const wheelRelativeMax = 2**16 - 1;
+const wheelRelativeMax = 2 ** 16 - 1;
 const wheelAbsoluteMax = 2879;
 
-const wheelTimerMax = 2**32 - 1;
+const wheelTimerMax = 2 ** 32 - 1;
 const wheelTimerTicksPerSecond = 100000000;
 
-const baseRevolutionsPerMinute = 33 + 1/3;
+const baseRevolutionsPerMinute = 33 + 1 / 3;
 const baseRevolutionsPerSecond = baseRevolutionsPerMinute / 60;
 const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
 
@@ -665,10 +1123,20 @@ const wheelLEDmodes = {
     individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
 };
 
+// The mode available, which the wheel can be used for.
 const wheelModes = {
     jog: 0,
     vinyl: 1,
     motor: 2,
+    loopIn: 3,
+    loopOut: 4,
+};
+
+const moveModes = {
+    beat: 0,
+    bpm: 1,
+    grid: 2,
+    keyboard: 3,
 };
 
 // tracks state across input packets
@@ -687,9 +1155,9 @@ let wheelTimerDelta = 0;
 // from bright colors.
 const uncoloredButtonOutput = function(value) {
     if (value) {
-        this.send(127);
+        this.send((this.color || LEDColors.white) + this.brightnessOn);
     } else {
-        this.send(0);
+        this.send((this.color || LEDColors.white) + this.brightnessOff);
     }
 };
 
@@ -697,12 +1165,52 @@ class S4Mk3EffectUnit extends ComponentContainer {
     constructor(unitNumber, inPackets, outPacket, io) {
         super();
         this.group = "[EffectRack1_EffectUnit" + unitNumber + "]";
+        this.unitNumber = unitNumber;
+        this.focusedEffect = null;
 
         this.mixKnob = new Pot({
             inKey: "mix",
             group: this.group,
             inPacket: inPackets[2],
             inByte: io.mixKnob.inByte,
+        });
+
+        this.mainButton = new PowerWindowButton({
+            unit: this,
+            output: uncoloredButtonOutput,
+            inPacket: inPackets[1],
+            inByte: io.mainButton.inByte,
+            inBit: io.mainButton.inBit,
+            outByte: io.mainButton.outByte,
+            outPacket: outPacket,
+            shift: function() {
+                this.group = this.unit.group;
+                this.outKey = "group_[Master]_enable";
+                this.outConnect();
+                this.outTrigger();
+            },
+            unshift: function() {
+                this.outDisconnect();
+                this.outKey = undefined;
+                this.group = undefined;
+                uncoloredButtonOutput.call(this, false);
+            },
+            input: function(pressed) {
+                if (!this.shifted) {
+                    for (const index of [0, 1, 2]) {
+                        const effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + (index + 1) + "]";
+                        engine.setValue(effectGroup, "enabled", pressed);
+                    }
+                    this.output(pressed);
+                } else if (pressed) {
+                    if (this.unit.focusedEffect !== null) {
+                        this.unit.setFocusedEffect(null);
+                    } else {
+                        script.toggleControl(this.unit.group, "group_[Master]_enable");
+                        this.shift();
+                    }
+                }
+            }
         });
 
         this.knobs = [];
@@ -715,7 +1223,8 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 inPacket: inPackets[2],
                 inByte: io.knobs[index].inByte,
             });
-            this.buttons[index] = new PowerWindowButton({
+            this.buttons[index] = new Button({
+                unit: this,
                 key: "enabled",
                 group: effectGroup,
                 output: uncoloredButtonOutput,
@@ -724,6 +1233,26 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 inBit: io.buttons[index].inBit,
                 outByte: io.buttons[index].outByte,
                 outPacket: outPacket,
+                onShortPress: function() {
+                    if (!this.shifted) {
+                        script.toggleControl(this.group, this.inKey);
+                    }
+                },
+                onLongPress: function() {
+                    if (this.shifted) {
+                        this.unit.setFocusedEffect(index);
+                    }
+                },
+                onShortRelease: function() {
+                    if (this.shifted) {
+                        script.triggerControl(this.group, "next_effect");
+                    }
+                },
+                onLongRelease: function() {
+                    if (!this.shifted) {
+                        script.toggleControl(this.group, this.inKey);
+                    }
+                }
             });
         }
 
@@ -733,68 +1262,90 @@ class S4Mk3EffectUnit extends ComponentContainer {
             component.outTrigger();
         }
     }
+    indicatorLoop() {
+        this.focusedEffectIndicator = !this.focusedEffectIndicator;
+        this.mainButton.output(true);
+    }
+    setFocusedEffect(effectIdx) {
+        this.mainButton.indicator(effectIdx !== null);
+        this.focusedEffect = effectIdx;
+        engine.setValue(this.group, "show_parameters", this.focusedEffect !== null);
+
+
+        const effectGroup = "[EffectRack1_EffectUnit" + this.unitNumber + "_Effect" + (this.focusedEffect + 1) + "]";
+        for (const index of [0, 1, 2]) {
+            this.buttons[index].outDisconnect();
+            this.buttons[index].group = this.focusedEffect === null ? "[EffectRack1_EffectUnit" + this.unitNumber + "_Effect" + (index + 1) + "]" : effectGroup;
+            this.buttons[index].inKey = this.focusedEffect === null ? "enabled" : "button_parameter" + (index + 1);
+            this.buttons[index].outKey = this.buttons[index].inKey;
+            this.knobs[index].group = this.buttons[index].group;
+            this.knobs[index].inKey = this.focusedEffect === null ? "meta" : "parameter" + (index + 1);
+            this.buttons[index].outConnect();
+        }
+    }
 }
 
 class S4Mk3Deck extends Deck {
-    constructor(decks, colors, inPackets, outPacket, io) {
+    constructor(decks, colors, effectUnit, inPackets, outPacket, io) {
         super(decks, colors);
 
         this.playButton = new PlayButton({
             output: uncoloredButtonOutput
         });
 
-        this.cueButton = new CueButton();
+        this.cueButton = new CueButton({
+            deck: this
+        });
+        this.effectUnit = effectUnit;
 
-        const rateRanges = [0.04, 0.06, 0.08, 0.10, 0.16, 0.24, 0.5, 0.9];
-        this.syncMasterButton = new ToggleButton({
+        this.syncMasterButton = new Button({
             key: "sync_leader",
-            input: function(pressed) {
-                if (pressed) {
-                    if (!this.shifted) {
-                        script.toggleControl(this.group, this.inKey);
-                    } else {
-                        // It is possible for the rateRange to be set to a value
-                        // that is not in the rateRanges Array, so find the nearest
-                        // value in rateRanges.
-                        const currentRateRange = engine.getValue(this.group, "rateRange");
-                        let previousDiff = null;
-                        let newRateRange = rateRanges[0];
-                        for (let i = 0; i < rateRanges.length - 1; i++) {
-                            const currentDiff = Math.abs(rateRanges[i] - currentRateRange);
-                            if (currentDiff < previousDiff || previousDiff === null) {
-                                newRateRange = rateRanges[i + 1];
-                            }
-                            previousDiff = currentDiff;
-                        }
-                        engine.setValue(this.group, "rateRange", newRateRange);
-                    }
+            defaultRange: 0.08,
+            output: uncoloredButtonOutput,
+            onShortRelease: function() {
+                script.toggleControl(this.group, this.inKey);
+            },
+            onLongPress: function() {
+                const currentRange = engine.getValue(this.group, "rateRange");
+                if (currentRange < 1.0) {
+                    engine.setValue(this.group, "rateRange", 1.0);
+                    this.indicator(true);
+                } else {
+                    engine.setValue(this.group, "rateRange", this.defaultRange);
+                    this.indicator(false);
                 }
             },
         });
-        this.syncButton = new ToggleButton({
+        this.syncButton = new Button({
             key: "sync_enabled",
-            input: function(pressed) {
-                if (pressed) {
-                    if (!this.shifted) {
-                        script.toggleControl(this.group, this.inKey);
-                        engine.softTakeover(this.group, "rate", true);
-                    } else {
-                        // It is possible for the rateRange to be set to a value
-                        // that is not in the rateRanges Array, so find the nearest
-                        // value in rateRanges.
-                        const currentRateRange = engine.getValue(this.group, "rateRange");
-                        let previousDiff = null;
-                        let newRateRange = rateRanges[0];
-                        for (let i = rateRanges.length - 1; i > 0; i--) {
-                            const currentDiff = Math.abs(rateRanges[i] - currentRateRange);
-                            if (currentDiff < previousDiff || previousDiff === null) {
-                                newRateRange = rateRanges[i - 1];
-                            }
-                            previousDiff = currentDiff;
-                        }
-                        engine.setValue(this.group, "rateRange", newRateRange);
-                    }
+            output: uncoloredButtonOutput,
+            onLongPress: function() {
+                if (this.shifted) {
+                    engine.setValue(this.group, "sync_key", true);
+                    engine.setValue(this.group, "sync_key", false);
+                } else {
+                    script.triggerControl(this.group, "beatsync_tempo");
                 }
+            },
+            onShortRelease: function() {
+                script.toggleControl(this.group, this.inKey);
+                if (!this.shifted) {
+                    engine.softTakeover(this.group, "rate", true);
+                }
+            },
+            shift: function() {
+                this.outDisconnect();
+                this.inKey = "keylock";
+                this.outKey = "keylock";
+                this.outConnect();
+                this.outTrigger();
+            },
+            unshift: function() {
+                this.outDisconnect();
+                this.inKey = "sync_enabled";
+                this.outKey = "sync_enabled";
+                this.outConnect();
+                this.outTrigger();
             },
         });
         this.tempoFader = new Pot({
@@ -831,16 +1382,213 @@ class S4Mk3Deck extends Deck {
             }
         });
 
-        this.reverseButton = new PushButton({
+        this.reverseButton = new Button({
             key: "reverseroll",
+            deck: this,
+            previousWheelMode: null,
+            loopModeConnection: null,
+            unshift: function() {
+                this.outDisconnect();
+                this.outKey = "reverseroll";
+                this.outConnect();
+                this.outTrigger();
+
+            },
+            shift: function() {
+                this.outDisconnect();
+                this.outKey = "loop_enabled";
+                this.outConnect();
+                this.outTrigger();
+            },
             output: uncoloredButtonOutput,
+            onShortRelease: function() {
+                if (!this.shifted) {
+                    engine.setValue(this.group, this.key, false);
+                }
+            },
+            onShortPress: function() {
+                this.indicator(false);
+                if (this.shifted) {
+                    const loopEnabled = engine.getValue(this.group, "loop_enabled");
+                    // If there is currently no loop, we set the loop in of a new loop
+                    if (!loopEnabled) {
+                        engine.setValue(this.group, "loop_end_position", -1);
+                        engine.setValue(this.group, "loop_in", true);
+                        this.indicator(true);
+                    // Else, we enter/exit the loop in wheel mode
+                    } else if (this.previousWheelMode === null) {
+                        this.previousWheelMode = this.deck.wheelMode;
+                        this.deck.wheelMode = wheelModes.loopIn;
+
+                        if (this.loopModeConnection === null) {
+                            this.loopModeConnection = engine.makeConnection(this.group, this.outKey, (loopEnabled) => {
+                                if (loopEnabled) { return; }
+
+                                this.indicator(false);
+                                const wheelOutput = Array(40).fill(0);
+                                wheelOutput[0] = decks[0] - 1;
+                                engine.beginTimer(decks[0] * 35, () => {
+                                    controller.send(wheelOutput, null, 50, true);
+                                    this.deck.wheelMode = this.previousWheelMode;
+                                    this.previousWheelMode = null;
+                                }, true);
+                                this.loopModeConnection.disconnect();
+                                this.loopModeConnection = null;
+                            });
+                        }
+
+                        const wheelOutput = Array(40).fill(0);
+                        wheelOutput[0] = decks[0] - 1;
+                        wheelOutput[1] = wheelLEDmodes.ringFlash;
+                        wheelOutput[4] = this.color + Button.prototype.brightnessOn;
+
+                        // hack around https://github.com/mixxxdj/mixxx/issues/10828
+                        // This isn't directly needed, but because we used this hack for
+                        // the track progression, we must make sure we are in sync with it's
+                        // delayed updated
+                        engine.beginTimer(decks[0] * 35, () => { controller.send(wheelOutput, null, 50, true); }, true);
+
+                        this.indicator(true);
+                    } else if (this.previousWheelMode !== null) {
+                        if (this.loopModeConnection !== null) {
+                            this.loopModeConnection.disconnect();
+                            this.loopModeConnection = null;
+                        }
+                        const wheelOutput = Array(40).fill(0);
+                        wheelOutput[0] = decks[0] - 1;
+                        engine.beginTimer(decks[0] * 35, () => {
+                            controller.send(wheelOutput, null, 50, true);
+                            this.deck.wheelMode = this.previousWheelMode;
+                            this.previousWheelMode = null;
+                        }, true);
+                    }
+                } else {
+                    engine.setValue(this.group, this.key, true);
+                }
+            }
         });
-        this.fluxButton = new PushButton({
+        this.fluxButton = new Button({
             key: "slip_enabled",
+            deck: this,
+            previousWheelMode: null,
+            loopModeConnection: null,
+            unshift: function() {
+                this.outDisconnect();
+                this.outKey = "slip_enabled";
+                this.outConnect();
+                this.outTrigger();
+
+            },
+            shift: function() {
+                this.outDisconnect();
+                this.outKey = "loop_enabled";
+                this.outConnect();
+                this.outTrigger();
+            },
+            outConnect: function() {
+                if (this.outKey !== undefined && this.group !== undefined) {
+                    this.outConnections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+                }
+            },
             output: uncoloredButtonOutput,
+            onShortRelease: function() {
+                if (!this.shifted) {
+                    engine.setValue(this.group, this.key, false);
+                    engine.setValue(this.group, "scratch2_enable", false);
+                }
+            },
+            onShortPress: function() {
+                this.indicator(false);
+                if (this.shifted) {
+                    const loopEnabled = engine.getValue(this.group, "loop_enabled");
+                    // If there is currently no loop, we set the loop in of a new loop
+                    if (!loopEnabled) {
+                        engine.setValue(this.group, "loop_out", true);
+                        this.deck.reverseButton.indicator(false);
+                    // Else, we enter/exit the loop in wheel mode
+                    } else if (this.previousWheelMode === null) {
+                        this.previousWheelMode = this.deck.wheelMode;
+                        this.deck.wheelMode = wheelModes.loopOut;
+                        if (this.loopModeConnection === null) {
+                            this.loopModeConnection = engine.makeConnection(this.group, this.outKey, (loopEnabled) => {
+                                if (loopEnabled) { return; }
+
+                                this.indicator(false);
+                                const wheelOutput = Array(40).fill(0);
+                                wheelOutput[0] = decks[0] - 1;
+                                engine.beginTimer(decks[0] * 35, () => {
+                                    controller.send(wheelOutput, null, 50, true);
+                                    this.deck.wheelMode = this.previousWheelMode;
+                                    this.previousWheelMode = null;
+                                }, true);
+                                this.loopModeConnection.disconnect();
+                                this.loopModeConnection = null;
+                            });
+                        }
+
+                        const wheelOutput = Array(40).fill(0);
+                        wheelOutput[0] = decks[0] - 1;
+                        wheelOutput[1] = wheelLEDmodes.ringFlash;
+                        wheelOutput[4] = this.color + Button.prototype.brightnessOn;
+
+                        // hack around https://github.com/mixxxdj/mixxx/issues/10828
+                        // This isn't directly needed, but because we used this hack for
+                        // the track progression, we must make sure we are in sync with it's
+                        // delayed updated
+                        engine.beginTimer(decks[0] * 35, () => {
+                            controller.send(wheelOutput, null, 50, true);
+                        }, true);
+
+                        this.indicator(true);
+                    } else if (this.previousWheelMode !== null) {
+                        if (this.loopModeConnection !== null) {
+                            this.loopModeConnection.disconnect();
+                            this.loopModeConnection = null;
+                        }
+                        const wheelOutput = Array(40).fill(0);
+                        wheelOutput[0] = decks[0] - 1;
+                        engine.beginTimer(decks[0] * 35, () => {
+                            controller.send(wheelOutput, null, 50, true);
+                            this.deck.wheelMode = this.previousWheelMode;
+                            this.previousWheelMode = null;
+                        }, true);
+                    }
+                } else {
+                    engine.setValue(this.group, this.key, true);
+                }
+            }
         });
-        this.gridButton = new PushButton({
-            key: "beats_translate_curpos",
+        this.gridButton = new Button({
+            key: "beat_active",
+            deck: this,
+            previousMoveMode: null,
+            onShortPress: function() {
+                this.deck.libraryEncoder.gridButtonPressed = true;
+            },
+            onLongPress: function() {
+                this.deck.libraryEncoder.gridButtonPressed = true;
+                this.previousMoveMode = this.deck.moveMode;
+
+                if (this.shifted) {
+                    this.deck.moveMode = moveModes.grid;
+                } else {
+                    this.deck.moveMode = moveModes.bpm;
+                }
+
+                this.indicator(true);
+            },
+            onLongRelease: function() {
+                this.deck.libraryEncoder.gridButtonPressed = false;
+                if (this.previousMoveMode !== null) {
+                    this.deck.moveMode = this.previousMoveMode;
+                    this.previousMoveMode = null;
+                }
+                this.indicator(false);
+            },
+            onShortRelease: function() {
+                this.deck.libraryEncoder.gridButtonPressed = false;
+                script.triggerControl(this.group, "beats_translate_curpos");
+            },
         });
 
         this.deckButtonLeft = new Button({
@@ -850,7 +1598,7 @@ class S4Mk3Deck extends Deck {
                     this.deck.switchDeck(Deck.groupForNumber(decks[0]));
                     this.outPacket.data[io.deckButtonOutputByteOffset] = colors[0] + this.brightnessOn;
                     // turn off the other deck selection button's LED
-                    this.outPacket.data[io.deckButtonOutputByteOffset+1] = 0;
+                    this.outPacket.data[io.deckButtonOutputByteOffset + 1] = 0;
                     this.outPacket.send();
                 }
             },
@@ -862,7 +1610,7 @@ class S4Mk3Deck extends Deck {
                     this.deck.switchDeck(Deck.groupForNumber(decks[1]));
                     // turn off the other deck selection button's LED
                     this.outPacket.data[io.deckButtonOutputByteOffset] = 0;
-                    this.outPacket.data[io.deckButtonOutputByteOffset+1] = colors[1] + this.brightnessOn;
+                    this.outPacket.data[io.deckButtonOutputByteOffset + 1] = colors[1] + this.brightnessOn;
                     this.outPacket.send();
                 }
             },
@@ -870,7 +1618,7 @@ class S4Mk3Deck extends Deck {
 
         // set deck selection button LEDs
         outPacket.data[io.deckButtonOutputByteOffset] = colors[0] + Button.prototype.brightnessOn;
-        outPacket.data[io.deckButtonOutputByteOffset+1] = 0;
+        outPacket.data[io.deckButtonOutputByteOffset + 1] = 0;
         outPacket.send();
 
         this.shiftButton = new PushButton({
@@ -889,33 +1637,51 @@ class S4Mk3Deck extends Deck {
 
         this.leftEncoder = new Encoder({
             deck: this,
-            input: function(value) {
-                const right = this.isRightTurn(value);
-                if (!this.shifted) {
-                    if (!this.deck.leftEncoderPress.pressed) {
-                        if (right) {
-                            script.triggerControl(this.group, "beatjump_forward");
+            onChange: function(right) {
+
+                switch (this.deck.moveMode) {
+                case moveModes.grid:
+                    script.triggerControl(this.group, right ? "beats_adjust_faster" : "beats_adjust_slower");
+                    break;
+                case moveModes.keyboard:
+                    if (
+                        this.deck.keyboard[0].offset === (right ? 16 : 0)
+                    ) {
+                        return;
+                    }
+                    this.deck.keyboardOffset += (right ? 1 : -1);
+                    this.deck.keyboard.forEach(function(pad) {
+                        pad.outTrigger();
+                    });
+                    break;
+                case moveModes.bpm:
+                    script.triggerControl(this.group, right ? "beats_translate_later" : "beats_translate_earlier");
+                    break;
+                default:
+                    if (!this.shifted) {
+                        if (!this.deck.leftEncoderPress.pressed) {
+                            if (right) {
+                                script.triggerControl(this.group, "beatjump_forward");
+                            } else {
+                                script.triggerControl(this.group, "beatjump_backward");
+                            }
                         } else {
-                            script.triggerControl(this.group, "beatjump_backward");
+                            let beatjumpSize = engine.getValue(this.group, "beatjump_size");
+                            if (right) {
+                                beatjumpSize *= 2;
+                            } else {
+                                beatjumpSize /= 2;
+                            }
+                            engine.setValue(this.group, "beatjump_size", beatjumpSize);
                         }
                     } else {
-                        let beatjumpSize = engine.getValue(this.group, "beatjump_size");
                         if (right) {
-                            beatjumpSize *= 2;
+                            script.triggerControl(this.group, "pitch_up_small");
                         } else {
-                            beatjumpSize /= 2;
+                            script.triggerControl(this.group, "pitch_down_small");
                         }
-                        engine.setValue(this.group, "beatjump_size", beatjumpSize);
                     }
-                } else {
-                    // FIXME: temporary hack until jog wheels are working
-                    if (right) {
-                        engine.setValue(this.group, "jog", 3);
-                        // script.triggerControl(this.group, "pitch_up_small");
-                    } else {
-                        engine.setValue(this.group, "jog", -3);
-                        // script.triggerControl(this.group, "pitch_down_small");
-                    }
+                    break;
                 }
             }
         });
@@ -929,20 +1695,18 @@ class S4Mk3Deck extends Deck {
         });
 
         this.rightEncoder = new Encoder({
-            input: function(value) {
-                const right = this.isRightTurn(value);
-                if (!this.shifted) {
-                    if (right) {
-                        script.triggerControl(this.group, "loop_double");
-                    } else {
-                        script.triggerControl(this.group, "loop_halve");
-                    }
+            deck: this,
+            onChange: function(right) {
+                if (this.deck.wheelMode === wheelModes.loopIn || this.deck.wheelMode === wheelModes.loopOut) {
+                    const moveFactor = this.shifted ? loopEncoderShiftMoveFactor : loopEncoderMoveFactor;
+                    const valueIn = engine.getValue(this.group, "loop_start_position") + (right ? moveFactor : -moveFactor);
+                    const valueOut = engine.getValue(this.group, "loop_end_position") + (right ? moveFactor : -moveFactor);
+                    engine.setValue(this.group, "loop_start_position", valueIn);
+                    engine.setValue(this.group, "loop_end_position", valueOut);
+                } else if (this.shifted) {
+                    script.triggerControl(this.group, right ? "loop_move_1_forward" : "loop_move_1_backward");
                 } else {
-                    if (right) {
-                        script.triggerControl(this.group, "beatjump_1_forward");
-                    } else {
-                        script.triggerControl(this.group, "beatjump_1_backward");
-                    }
+                    script.triggerControl(this.group, right ? "loop_double" : "loop_halve");
                 }
             }
         });
@@ -955,58 +1719,113 @@ class S4Mk3Deck extends Deck {
                 if (!this.shifted) {
                     script.triggerControl(this.group, "beatloop_activate");
                 } else {
-                    if (loopEnabled) {
-                        script.triggerControl(this.group, "reloop_andstop");
-                    } else {
-                        script.triggerControl(this.group, "reloop_toggle");
-                    }
+                    script.triggerControl(this.group, "reloop_toggle");
                 }
             },
         });
 
         this.libraryEncoder = new Encoder({
-            input: function(value) {
-                const right = this.isRightTurn(value);
-                const previewPlaying = engine.getValue("[PreviewDeck1]", "play");
-                if (previewPlaying) {
-                    if (right) {
-                        script.triggerControl("[PreviewDeck1]", "beatjump_16_forward");
+            libraryPlayButtonPressed: false,
+            gridButtonPressed: false,
+            starButtonPressed: false,
+            libraryViewButtonPressed: false,
+            currentSortedColumnIdx: -1,
+            onChange: function(right) {
+                if (this.libraryViewButtonPressed) {
+                    this.currentSortedColumnIdx = (this.currentSortedColumnIdx + (right ? 1 : -1)) % librarySortableColumns.length;
+                    engine.setValue("[Library]", "sort_column", librarySortableColumns[this.currentSortedColumnIdx]);
+                } else if (this.starButtonPressed) {
+                    if (this.shifted) {
+                        // FIXME doesn't exist, feature request needed
+                        script.triggerControl(this.group, right ? "track_color_prev" : "track_color_next");
                     } else {
-                        script.triggerControl("[PreviewDeck1]", "beatjump_16_backward");
+                        script.triggerControl(this.group, right ? "stars_up" : "stars_down");
                     }
+                } else if (this.gridButtonPressed) {
+                    script.triggerControl(this.group, right ? "waveform_zoom_up" : "waveform_zoom_down");
+                } else if (this.libraryPlayButtonPressed) {
+                    script.triggerControl("[PreviewDeck1]", right ? "beatjump_16_forward" : "beatjump_16_backward");
                 } else {
+                    // FIXME there is a bug where this action has no effect when the Mixxx window has no focused. Bug to be reported
+                    engine.setValue("[Library]", "focused_widget", this.shifted ? 2 : 3);
                     engine.setValue("[Library]", "MoveVertical", right ? 1 : -1);
                 }
             }
         });
-        this.libraryEncoderPress = new ToggleButton({
-            inKey: "LoadSelectedTrack"
+        this.libraryEncoderPress = new Button({
+            libraryViewButtonPressed: false,
+            onShortPress: function(pressed) {
+                if (this.libraryViewButtonPressed) {
+                    script.toggleControl("[Library]", "sort_order");
+                } else if (this.shifted) {
+                    script.triggerControl("[Library]", "GoToItem");
+                } else {
+                    script.triggerControl(this.group, "LoadSelectedTrack");
+                }
+            },
+            // FIXME not supported, feature request
+            // onLongPress: function(){
+            //     script.triggerControl("[Library]", "search_related_track", engine.getValue("[Library]", "sort_column"));
+            // }
         });
         this.libraryPlayButton = new PushButton({
             group: "[PreviewDeck1]",
+            libraryEncoder: this.libraryEncoder,
             input: function(pressed) {
                 if (pressed) {
-                    if (engine.getValue(this.group, "play")) {
-                        engine.setValue(this.group, "play", 0);
-                    } else {
-                        script.triggerControl(this.group, "LoadSelectedTrackAndPlay");
-                    }
+                    script.triggerControl(this.group, "LoadSelectedTrackAndPlay");
+                } else {
+                    engine.setValue(this.group, "play", 0);
+                    script.triggerControl(this.group, "eject");
                 }
+                this.libraryEncoder.libraryPlayButtonPressed = pressed;
             },
             outKey: "play",
         });
-        this.libraryStarButton = new PushButton({
+        this.libraryStarButton = new Button({
             group: "[Library]",
             key: "MoveFocusForward",
+            libraryEncoder: this.libraryEncoder,
+            onShortRelease: function() {
+                script.triggerControl(this.group, this.shifted ? "track_color_prev" : "track_color_next");
+            },
+            onLongPress: function() {
+                this.libraryEncoder.starButtonPressed = true;
+            },
+            onLongRelease: function() {
+                this.libraryEncoder.starButtonPressed = false;
+            },
         });
-        this.libraryPlaylistButton = new PushButton({
-            group: "[Library]",
-            key: "MoveFocusBackward",
-        });
-        this.libraryViewButton = new ToggleButton({
+        // FIXME there isn not feature about playlist at the moment, feature request
+        // this.libraryPlaylistButton = new Button({
+        //     onShortRelease: function(){
+        //         const current_selected_playlist = engine.getValue("[Library]", "playlist_selected");
+        //         engine.setValue("[Library]", this.shifted ? "remove_selected_track_to_playlist" : "add_selected_track_to_playlist", current_selected_playlist);
+        //     },
+        //     onLongPress: function(){
+
+        //     }
+        // });
+        this.libraryViewButton = new Button({
             group: "[Master]",
-            inKey: "maximize_library",
+            key: "maximize_library",
+            libraryEncoder: this.libraryEncoder,
+            libraryEncoderPress: this.libraryEncoderPress,
+            onShortRelease: function() {
+                script.toggleControl(this.group, this.inKey, true);
+            },
+            onLongPress: function() {
+                this.libraryEncoder.libraryViewButtonPressed = true;
+                this.libraryEncoderPress.libraryViewButtonPressed = true;
+            },
+            onLongRelease: function() {
+                this.libraryEncoder.libraryViewButtonPressed = false;
+                this.libraryEncoderPress.libraryViewButtonPressed = false;
+            }
         });
+
+        this.keyboardPlayMode = null;
+        this.keyboardOffset = 9;
 
         this.pads = Array(8).fill(new Component());
         const defaultPadLayer = [
@@ -1037,8 +1856,8 @@ class S4Mk3Deck extends Deck {
         ];
         const hotcuePage2 = Array(8).fill({});
         const hotcuePage3 = Array(8).fill({});
-        const samplerPage1 = Array(8).fill({});
-        const samplerPage2 = Array(8).fill({});
+        const samplerPage = Array(8).fill({});
+        this.keyboard = Array(8).fill({});
         let i = 0;
         /* eslint no-unused-vars: "off" */
         for (const pad of hotcuePage2) {
@@ -1052,8 +1871,7 @@ class S4Mk3Deck extends Deck {
             if (decks[0] > 1) {
                 samplerNumber += 4;
             }
-            samplerPage1[i] = new SamplerButton({number: samplerNumber});
-            samplerPage2[i] = new SamplerButton({number: samplerNumber + 16});
+            samplerPage[i] = new SamplerButton({number: samplerNumber});
             if (samplerCrossfaderAssign) {
                 engine.setValue(
                     "[Sampler" + samplerNumber + "]",
@@ -1061,6 +1879,10 @@ class S4Mk3Deck extends Deck {
                     (decks[0] === 1) ? 0 : 2
                 );
             }
+            this.keyboard[i] = new KeyboardButton({
+                number: i + 1,
+                deck: this,
+            });
             i++;
         }
 
@@ -1074,6 +1896,7 @@ class S4Mk3Deck extends Deck {
                 Object.assign(pad, io.pads[index]);
                 if (!(pad instanceof HotcueButton)) {
                     pad.color = deck.color;
+                    pad.unshift();
                 }
                 // don't change the group of SamplerButtons
                 if (!(pad instanceof SamplerButton)) {
@@ -1095,115 +1918,128 @@ class S4Mk3Deck extends Deck {
             defaultLayer: 0,
             hotcuePage2: 1,
             hotcuePage3: 2,
-            samplerPage1: 3,
-            samplerPage2: 4,
+            samplerPage: 3,
+            keyboard: 5,
         };
         switchPadLayer(this, defaultPadLayer);
         this.currentPadLayer = this.padLayers.defaultLayer;
 
         this.hotcuePadModeButton = new Button({
             deck: this,
-            input: function(pressed) {
+            onShortPress: function() {
                 if (!this.shifted) {
-                    if (pressed) {
-                        if (this.deck.currentPadLayer !== this.deck.padLayers.hotcuePage2) {
-                            switchPadLayer(this.deck, hotcuePage2);
-                            this.deck.currentPadLayer = this.deck.padLayers.hotcuePage2;
-                        } else {
-                            switchPadLayer(this.deck, defaultPadLayer);
-                            this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
-                        }
-                        this.deck.lightPadMode();
+                    if (this.deck.currentPadLayer !== this.deck.padLayers.hotcuePage2) {
+                        switchPadLayer(this.deck, hotcuePage2);
+                        this.deck.currentPadLayer = this.deck.padLayers.hotcuePage2;
+                    } else {
+                        switchPadLayer(this.deck, defaultPadLayer);
+                        this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
                     }
+                    this.deck.lightPadMode();
                 } else {
-                    engine.setValue(this.deck.group, "loop_in", pressed);
+                    switchPadLayer(this.deck, hotcuePage3);
+                    this.deck.currentPadLayer = this.deck.padLayers.hotcuePage3;
+                    this.deck.lightPadMode();
                 }
-            },
-            // make sure loop_in gets reset to 0 if shift is released before this button
-            unshift: function() {
-                if (engine.getValue(this.deck.group, "loop_in") === 1) {
-                    engine.setValue(this.deck.group, "loop_in", 0);
-                }
+
             },
             // hack to switch the LED color when changing decks
             outTrigger: function() {
                 this.deck.lightPadMode();
             }
         });
-        this.recordPadModeButton = new Button({
-            deck: this,
-            input: function(pressed) {
-                if (!this.shifted) {
-                    if (pressed) {
-                        if (this.deck.currentPadLayer !== this.deck.padLayers.hotcuePage3) {
-                            switchPadLayer(this.deck, hotcuePage3);
-                            this.deck.currentPadLayer = this.deck.padLayers.hotcuePage3;
-                        } else {
-                            switchPadLayer(this.deck, defaultPadLayer);
-                            this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
-                        }
-                        this.deck.lightPadMode();
-                    }
-                } else {
-                    engine.setValue(this.deck.group, "loop_out", pressed);
-                }
-            },
-            // make sure loop_out gets reset to 0 if shift is released before this button
-            unshift: function() {
-                if (engine.getValue(this.deck.group, "loop_out") === 1) {
-                    engine.setValue(this.deck.group, "loop_out", 0);
-                }
-            }
-        });
+        // this.recordPadModeButton = new Button({
+        //     deck: this,
+        //     input: function(pressed) {
+        //         if (!this.shifted) {
+        //             if (pressed) {
+        //                 if (this.deck.currentPadLayer !== this.deck.padLayers.hotcuePage3) {
+        //                     switchPadLayer(this.deck, hotcuePage3);
+        //                     this.deck.currentPadLayer = this.deck.padLayers.hotcuePage3;
+        //                 } else {
+        //                     switchPadLayer(this.deck, defaultPadLayer);
+        //                     this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
+        //                 }
+        //                 this.deck.lightPadMode();
+        //             }
+        //         } else {
+        //             engine.setValue(this.deck.group, "loop_out", pressed);
+        //         }
+        //     },
+        //     // make sure loop_out gets reset to 0 if shift is released before this button
+        //     unshift: function() {
+        //         if (engine.getValue(this.deck.group, "loop_out") === 1) {
+        //             engine.setValue(this.deck.group, "loop_out", 0);
+        //         }
+        //     }
+        // });
         this.samplesPadModeButton = new Button({
             deck: this,
-            input: function(pressed) {
-                if (pressed) {
-                    if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage1) {
-                        switchPadLayer(this.deck, samplerPage1);
-                        this.deck.currentPadLayer = this.deck.padLayers.samplerPage1;
-                    } else {
-                        switchPadLayer(this.deck, defaultPadLayer);
-                        this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
-                    }
-                    this.deck.lightPadMode();
+            onShortPress: function() {
+                if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage) {
+                    switchPadLayer(this.deck, samplerPage);
+                    engine.setValue("[Samplers]", "show_samplers", true);
+                    this.deck.currentPadLayer = this.deck.padLayers.samplerPage;
+                } else {
+                    switchPadLayer(this.deck, defaultPadLayer);
+                    engine.setValue("[Samplers]", "show_samplers", false);
+                    this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
                 }
+                this.deck.lightPadMode();
             },
         });
-        this.mutePadModeButton = new Button({
+        // this.mutePadModeButton = new Button({
+        //     deck: this,
+        //     input: function(pressed) {
+        //         if (pressed) {
+        //             if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage2) {
+        //                 switchPadLayer(this.deck, samplerPage2);
+        //                 this.deck.currentPadLayer = this.deck.padLayers.samplerPage2;
+        //             } else {
+        //                 switchPadLayer(this.deck, defaultPadLayer);
+        //                 this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
+        //             }
+        //             this.deck.lightPadMode();
+        //         }
+        //     },
+        // });
+
+        this.stemsPadModeButton = new Button({
             deck: this,
-            input: function(pressed) {
-                if (pressed) {
-                    if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage2) {
-                        switchPadLayer(this.deck, samplerPage2);
-                        this.deck.currentPadLayer = this.deck.padLayers.samplerPage2;
-                    } else {
-                        switchPadLayer(this.deck, defaultPadLayer);
-                        this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
-                    }
+            previousMoveMode: null,
+            onLongPress: function() {
+                if (this.deck.keyboardPlayMode !== null) {
+                    this.deck.keyboardPlayMode = null;
                     this.deck.lightPadMode();
                 }
             },
+            onShortPress: function() {
+                if (this.previousMoveMode === null) {
+                    this.previousMoveMode = this.deck.moveMode;
+                    this.deck.moveMode = moveModes.keyboard;
+                }
+            },
+            onShortRelease: function() {
+                if (this.previousMoveMode !== null) {
+                    this.deck.moveMode = this.previousMoveMode;
+                    this.previousMoveMode = null;
+                }
+                if (this.deck.currentPadLayer === this.deck.padLayers.keyboard) {
+                    switchPadLayer(this.deck, defaultPadLayer);
+                    this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
+                } else if (this.deck.currentPadLayer !== this.deck.padLayers.keyboard) {
+                    switchPadLayer(this.deck, this.deck.keyboard);
+                    this.deck.currentPadLayer = this.deck.padLayers.keyboard;
+                }
+                this.deck.lightPadMode();
+            },
+            onLongRelease: function() {
+                if (this.previousMoveMode !== null) {
+                    this.deck.moveMode = this.previousMoveMode;
+                    this.previousMoveMode = null;
+                }
+            },
         });
-
-        this.stemsPadModeButton = new ToggleButton({
-            key: "keylock",
-        });
-
-        this.lightPadMode = function() {
-            const hotcuePadModeLEDOn = this.currentPadLayer === this.padLayers.hotcuePage2;
-            this.hotcuePadModeButton.send(this.color + (hotcuePadModeLEDOn ? this.brightnessOn : this.brightnessOff));
-
-            // unfortunately the other pad mode buttons only have one LED color
-            const recordPadModeLEDOn = this.currentPadLayer === this.padLayers.hotcuePage3;
-            this.recordPadModeButton.send(recordPadModeLEDOn ? 127 : 0);
-
-            const samplesPadModeLEDOn = this.currentPadLayer === this.padLayers.samplerPage1;
-            this.samplesPadModeButton.send(samplesPadModeLEDOn ? 127 : 0);
-
-            const mutePadModeButtonLEDOn = this.currentPadLayer === this.padLayers.samplerPage2;
-            this.mutePadModeButton.send(mutePadModeButtonLEDOn ? 127 : 0);
-        };
 
         this.wheelMode = wheelModes.vinyl;
         let motorWindDownTimer = 0;
@@ -1211,6 +2047,7 @@ class S4Mk3Deck extends Deck {
             engine.stopTimer(motorWindDownTimer);
             motorWindDownTimer = 0;
         };
+        const motorWindUpMilliseconds = 1200;
         const motorWindDownMilliseconds = 900;
         this.turntableButton = new Button({
             deck: this,
@@ -1219,10 +2056,14 @@ class S4Mk3Deck extends Deck {
                     if (this.deck.wheelMode === wheelModes.motor) {
                         this.deck.wheelMode = wheelModes.vinyl;
                         motorWindDownTimer = engine.beginTimer(motorWindDownMilliseconds, motorWindDownTimerCallback, true);
-                        //                         engine.setValue(this.group, "scratch2_enable", false);
+                        engine.setValue(this.group, "scratch2_enable", false);
                     } else {
                         this.deck.wheelMode = wheelModes.motor;
-                        //                         engine.setValue(this.group, "scratch2_enable", true);
+                        const group = this.group;
+                        engine.beginTimer(motorWindUpMilliseconds, function() {
+                            // console.log("JOG tt on for "+group);
+                            engine.setValue(group, "scratch2_enable", true);
+                        }, true);
                     }
                     this.outTrigger();
                 }
@@ -1263,17 +2104,29 @@ class S4Mk3Deck extends Deck {
             deck: this,
             input: function(touched) {
                 this.touched = touched;
-                if (this.deck.wheelMode !== wheelModes.jog) {
+                if (this.deck.wheelMode === wheelModes.vinyl || this.deck.wheelMode === wheelModes.motor) {
                     if (touched) {
                         engine.setValue(this.group, "scratch2_enable", true);
                     } else {
-                        // The wheel keeps spinning
-                        engine.beginTimer(600, () => {
-                            engine.setValue(this.group, "scratch2_enable", false);
-                        }, true);
+                        this.stopScratchWhenOver();
                     }
                 }
             },
+            stopScratchWhenOver: function() {
+                if (this.touched && (this.deck.wheelMode === wheelModes.motor || this.deck.wheelMode === wheelModes.vinyl)) {
+                    return;
+                }
+
+                if (engine.getValue(this.group, "play") &&
+                    engine.getValue(this.group, "scratch2") < 1.5 * baseRevolutionsPerSecond &&
+                    engine.getValue(this.group, "scratch2") > 0) {
+                    engine.setValue(this.group, "scratch2_enable", false);
+                } else if (engine.getValue(this.group, "scratch2") === 0) {
+                    engine.setValue(this.group, "scratch2_enable", false);
+                } else {
+                    engine.beginTimer(100, this.stopScratchWhenOver.bind(this), true);
+                }
+            }
         });
 
         // The relative and absolute position inputs have the same resolution but direction
@@ -1284,13 +2137,24 @@ class S4Mk3Deck extends Deck {
         this.wheelRelative = new Component({
             oldValue: null,
             deck: this,
+            // We use a rolling average on a sample of speed received. An alternative could
+            // be to compute precise speed as soon as two points have been received. While the
+            // alternative is likely going to reduce the delay. it may introduce imprefection due
+            // to delays that could occurred at various level, so we stick with the naive average for now
+            stack: [],
+            stackIdx: 0,
+            // There is a second sampling group, larger, that improve precision but increase delay, which
+            // is used in TT mode
+            stackAvg: [],
+            stackAvgIdx: 0,
             input: function(value) {
                 const oldValue = this.oldValue;
                 this.oldValue = value;
-                let diff = value - oldValue;
-                if (diff === 0 || oldValue === null || motorWindDownTimer !== 0) {
+                if (oldValue === null) {
+                    // This is to avoid the issue where the first time, we diff with 0, leading to the absolute value
                     return;
                 }
+                let diff = value - oldValue;
 
                 if (diff > wheelRelativeMax / 2) {
                     diff = (wheelRelativeMax - value + oldValue) * -1;
@@ -1298,26 +2162,74 @@ class S4Mk3Deck extends Deck {
                     diff = wheelRelativeMax - oldValue + value;
                 }
 
-                const wheelVelocity = diff / wheelTimerDelta * wheelTicksPerTimerTicksToRevolutionsPerSecond;
-                //                 if (this.group === "[Channel1]") {
-                //                     console.log(value + "\t" + diff + "\t" + wheelTimerDelta + "\t" + wheelVelocity + "\t" + wheelVelocity / baseRevolutionsPerSecond);
-                //                 }
-                if (engine.getValue(this.group, "scratch2_enable")) {
-                    engine.setValue(this.group, "scratch2", wheelVelocity / baseRevolutionsPerSecond);
-                } else {
-                    if (this.deck.wheelMode === wheelModes.motor
-                        || (this.deck.wheelMode === wheelModes.jog && this.deck.wheelTouch.touched)
-                    ) {
-                        return;
+                this.stack[this.stackIdx] = diff / wheelTimerDelta;
+                this.stackIdx = (this.stackIdx + 1) % 5;
+
+                const avgSpeed = (this.stack.reduce((ps, v) => ps + v, 0) / this.stack.length) * wheelTicksPerTimerTicksToRevolutionsPerSecond;
+
+                this.stackAvg[this.stackAvgIdx] = avgSpeed;
+                this.stackAvgIdx = (this.stackAvgIdx + 1) % 40;
+
+                const ttAvgSpeed = this.stackAvg.reduce((ps, v) => ps + v, 0) / this.stackAvg.length;
+
+                if (avgSpeed === 0 &&
+                    engine.getValue(this.group, "scratch2") === 0 &&
+                    engine.getValue(this.group, "jog") === 0 &&
+                    this.deck.wheelMode !== wheelModes.motor) {
+                    return;
+                }
+
+                switch (this.deck.wheelMode) {
+                case wheelModes.motor:
+                    // console.log(this.group+"\t"+ttAvgSpeed / baseRevolutionsPerSecond);
+                    engine.setValue(this.group, "scratch2", ttAvgSpeed / baseRevolutionsPerSecond);
+                    break;
+                case wheelModes.loopIn:
+                    engine.setValue(
+                        this.group,
+                        "loop_start_position",
+                        Math.min(
+                            engine.getValue(
+                                this.group,
+                                "loop_start_position"
+                            ) + (avgSpeed * loopWheelMoveFactor),
+                            engine.getValue(
+                                this.group,
+                                "loop_end_position"
+                            ) - loopWheelMoveFactor
+                        )
+                    );
+                    break;
+                case wheelModes.loopOut:
+                    engine.setValue(
+                        this.group,
+                        "loop_end_position",
+                        engine.getValue(
+                            this.group,
+                            "loop_end_position"
+                        ) + (avgSpeed * loopWheelMoveFactor)
+                    );
+                    break;
+                case wheelModes.vinyl:
+                    if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
+                        engine.setValue(this.group, "scratch2", avgSpeed);
+                    } else {
+                        engine.setValue(this.group, "jog", avgSpeed);
                     }
-                    engine.setValue(this.group, "jog", wheelVelocity * 4);
+                    break;
+                default:
+                    engine.setValue(this.group, "jog", avgSpeed);
                 }
             },
         });
 
         this.wheelLED = new Component({
+            deck: this,
             outKey: "playposition",
             output: function(fractionOfTrack) {
+                if (this.deck.wheelMode > wheelModes.motor) {
+                    return;
+                }
                 const durationSeconds = engine.getValue(this.group, "duration");
                 const positionSeconds = fractionOfTrack * durationSeconds;
                 const revolutions = positionSeconds * baseRevolutionsPerSecond;
@@ -1327,10 +2239,13 @@ class S4Mk3Deck extends Deck {
                 const wheelOutput = Array(40).fill(0);
                 wheelOutput[0] = decks[0] - 1;
                 wheelOutput[1] = wheelLEDmodes.spot;
-                wheelOutput[2] = LEDposition & (2**8 - 1);
+                wheelOutput[2] = LEDposition & (2 ** 8 - 1);
                 wheelOutput[3] = LEDposition >> 8;
                 wheelOutput[4] = this.color + Button.prototype.brightnessOn;
-                controller.send(wheelOutput, null, 50, true);
+
+                // FIXME glitch, likely related to https://github.com/mixxxdj/mixxx/issues/10828
+                engine.beginTimer(decks[0] * 35, () => { controller.send(wheelOutput, null, 50, true); }, true);
+
             }
         });
 
@@ -1350,7 +2265,7 @@ class S4Mk3Deck extends Deck {
                         component.color = this.color;
                     }
                     if (component instanceof Encoder) {
-                        component.max = 2**component.inBitLength - 1;
+                        component.max = 2 ** component.inBitLength - 1;
                     }
                     component.inConnect();
                     component.outConnect();
@@ -1359,6 +2274,40 @@ class S4Mk3Deck extends Deck {
             }
         }
         this.shiftButton.send(LEDColors.white + this.brightnessOff);
+    }
+
+    assignKeyboardPlayMode(group, action) {
+        this.keyboardPlayMode = {
+            group: group,
+            action: action,
+        };
+        this.lightPadMode();
+    }
+
+    lightPadMode() {
+        if (this.currentPadLayer === this.padLayers.hotcuePage2) {
+            this.hotcuePadModeButton.send(this.hotcuePadModeButton.color + this.hotcuePadModeButton.brightnessOn);
+        } else if (this.currentPadLayer === this.padLayers.hotcuePage3) {
+            this.hotcuePadModeButton.send(LEDColors.white + this.hotcuePadModeButton.brightnessOn);
+        } else {
+            this.hotcuePadModeButton.send(this.hotcuePadModeButton.color + this.hotcuePadModeButton.brightnessOff);
+        }
+
+        // unfortunately the other pad mode buttons only have one LED color
+        // const recordPadModeLEDOn = this.currentPadLayer === this.padLayers.hotcuePage3;
+        // this.recordPadModeButton.send(recordPadModeLEDOn ? 127 : 0);
+
+        const samplesPadModeLEDOn = this.currentPadLayer === this.padLayers.samplerPage;
+        this.samplesPadModeButton.send(samplesPadModeLEDOn ? 127 : 0);
+
+        // this.mutePadModeButtonLEDOn = this.currentPadLayer === this.padLayers.samplerPage2;
+        // const mutedModeButton.send(mutePadModeButtonLEDOn ? 127 : 0);
+        if (this.keyboardPlayMode !== null) {
+            this.stemsPadModeButton.send(LEDColors.green + this.stemsPadModeButton.brightnessOn);
+        } else {
+            const keyboardPadModeLEDOn = this.currentPadLayer === this.padLayers.keyboard;
+            this.stemsPadModeButton.send(this.stemsPadModeButton.color + (keyboardPadModeLEDOn ? this.stemsPadModeButton.brightnessOn : this.stemsPadModeButton.brightnessOff));
+        }
     }
 }
 
@@ -1412,6 +2361,7 @@ class S4Mk3MixerColumn extends ComponentContainer {
         // FIXME: Why is output not working for these?
         this.saveGain = new PushButton({
             key: "update_replaygain_from_pregain",
+            group: group,
             output: uncoloredButtonOutput,
         });
 
@@ -1470,8 +2420,8 @@ const packetToBinaryString = (data) => {
 
 class S4MK3 {
     constructor() {
-        if (engine.getValue("[Master]", "num_samplers") < 32) {
-            engine.setValue("[Master]", "num_samplers", 32);
+        if (engine.getValue("[Master]", "num_samplers") < 16) {
+            engine.setValue("[Master]", "num_samplers", 16);
         }
 
         this.inPackets = [];
@@ -1479,12 +2429,17 @@ class S4MK3 {
         this.inPackets[2] = new HIDInputPacket(2);
         this.inPackets[3] = new HIDInputPacket(3);
 
+        // There are various of other HID report which doesn't seem to have any
+        // immediate use but it is likely that some useful settings may be found
+        // in them such as the wheel tension.
+
         this.outPackets = [];
         this.outPackets[128] = new HIDOutputPacket(128, 94);
 
         this.effectUnit1 = new S4Mk3EffectUnit(1, this.inPackets, this.outPackets[128],
             {
                 mixKnob: {inByte: 31},
+                mainButton: {inByte: 2, inBit: 6, outByte: 62},
                 knobs: [
                     {inByte: 33},
                     {inByte: 35},
@@ -1500,6 +2455,7 @@ class S4MK3 {
         this.effectUnit2 = new S4Mk3EffectUnit(2, this.inPackets, this.outPackets[128],
             {
                 mixKnob: {inByte: 71},
+                mainButton: {inByte: 10, inBit: 4, outByte: 73},
                 knobs: [
                     {inByte: 73},
                     {inByte: 75},
@@ -1517,7 +2473,7 @@ class S4MK3 {
         // so every single components' IO needs to be specified individually
         // for both decks.
         this.leftDeck = new S4Mk3Deck(
-            [1, 3], [deckColors[0], deckColors[2]],
+            [1, 3], [deckColors[0], deckColors[2]], this.effectUnit1,
             this.inPackets, this.outPackets[128],
             {
                 playButton: {inByte: 5, inBit: 0, outByte: 55},
@@ -1568,7 +2524,7 @@ class S4MK3 {
         );
 
         this.rightDeck = new S4Mk3Deck(
-            [2, 4], [deckColors[1], deckColors[3]],
+            [2, 4], [deckColors[1], deckColors[3]], this.effectUnit2,
             this.inPackets, this.outPackets[128],
             {
                 playButton: {inByte: 13, inBit: 0, outByte: 66},
@@ -1618,317 +2574,10 @@ class S4MK3 {
             }
         );
 
-        this.mixerColumnDeck1 = new S4Mk3MixerColumn("[Channel1]", this.inPackets, this.outPackets[128],
-            {
-                saveGain: {inByte: 12, inBit: 0, outByte: 80},
-                effectUnit1Assign: {inByte: 3, inBit: 3, outByte: 78},
-                effectUnit2Assign: {inByte: 3, inBit: 4, outByte: 79},
-                gain: {inByte: 17},
-                eqHigh: {inByte: 45},
-                eqMid: {inByte: 47},
-                eqLow: {inByte: 49},
-                quickEffectKnob: {inByte: 65},
-                quickEffectButton: {},
-                volume: {inByte: 3},
-                pfl: {inByte: 8, inBit: 3, outByte: 77},
-                crossfaderSwitch: {inByte: 18, inBit: 4},
-            }
-        );
-        this.mixerColumnDeck2 = new S4Mk3MixerColumn("[Channel2]", this.inPackets, this.outPackets[128],
-            {
-                saveGain: {inByte: 12, inBit: 1, outByte: 84},
-                effectUnit1Assign: {inByte: 3, inBit: 5, outByte: 82},
-                effectUnit2Assign: {inByte: 3, inBit: 6, outByte: 83},
-                gain: {inByte: 19},
-                eqHigh: {inByte: 51},
-                eqMid: {inByte: 53},
-                eqLow: {inByte: 55},
-                quickEffectKnob: {inByte: 67},
-                volume: {inByte: 5},
-                pfl: {inByte: 8, inBit: 6, outByte: 81},
-                crossfaderSwitch: {inByte: 18, inBit: 2},
-            }
-        );
-        this.mixerColumnDeck3 = new S4Mk3MixerColumn("[Channel3]", this.inPackets, this.outPackets[128],
-            {
-                saveGain: {inByte: 3, inBit: 1, outByte: 88},
-                effectUnit1Assign: {inByte: 3, inBit: 0, outByte: 86},
-                effectUnit2Assign: {inByte: 3, inBit: 2, outByte: 87},
-                gain: {inByte: 15},
-                eqHigh: {inByte: 39},
-                eqMid: {inByte: 41},
-                eqLow: {inByte: 43},
-                quickEffectKnob: {inByte: 63},
-                volume: {inByte: 7},
-                pfl: {inByte: 8, inBit: 2, outByte: 85},
-                crossfaderSwitch: {inByte: 18, inBit: 6},
-            }
-        );
-        this.mixerColumnDeck4 = new S4Mk3MixerColumn("[Channel4]", this.inPackets, this.outPackets[128],
-            {
-                saveGain: {inByte: 12, inBit: 2, outByte: 92},
-                effectUnit1Assign: {inByte: 3, inBit: 7, outByte: 90},
-                effectUnit2Assign: {inByte: 12, inBit: 7, outByte: 91},
-                gain: {inByte: 21},
-                eqHigh: {inByte: 57},
-                eqMid: {inByte: 59},
-                eqLow: {inByte: 61},
-                quickEffectKnob: {inByte: 69},
-                volume: {inByte: 9},
-                pfl: {inByte: 8, inBit: 7, outByte: 89},
-                crossfaderSwitch: {inByte: 18, inBit: 0},
-            }
-        );
-
         // The interaction between the FX SELECT buttons and the QuickEffect enable buttons is rather complex.
         // It is easier to have this separate from the S4Mk3MixerColumn class and the FX SELECT buttons are not
         // really in the mixer columns.
-        const mixer = new ComponentContainer();
-        mixer.firstPressedFxSelector = null;
-        mixer.secondPressedFxSelector = null;
-        const calculatePresetNumber = function() {
-            if (mixer.firstPressedFxSelector === mixer.secondPressedFxSelector || mixer.secondPressedFxSelector === null) {
-                return mixer.firstPressedFxSelector;
-            }
-            let presetNumber = 5 + (4 * (mixer.firstPressedFxSelector - 1)) + mixer.secondPressedFxSelector;
-            if (mixer.secondPressedFxSelector > mixer.firstPressedFxSelector) {
-                presetNumber--;
-            }
-            return presetNumber;
-        };
-        mixer.comboSelected = false;
-        const resetFxSelectorColors = () => {
-            const packet = this.outPackets[128];
-            for (const selector of [1, 2, 3, 4, 5]) {
-                packet.data[49 + selector] = quickEffectPresetColors[selector - 1] + Button.prototype.brightnessOn;
-            }
-            packet.send();
-        };
-        const fxSelectInput = function(pressed) {
-            if (pressed) {
-                if (mixer.firstPressedFxSelector === null) {
-                    mixer.firstPressedFxSelector = this.number;
-                    for (const selector of [1, 2, 3, 4, 5]) {
-                        if (selector !== this.number) {
-                            let presetNumber = 5 + (4 * (mixer.firstPressedFxSelector - 1)) + selector;
-                            if (selector > this.number) {
-                                presetNumber--;
-                            }
-                            this.outPacket.data[49 + selector] = quickEffectPresetColors[presetNumber - 1] + this.brightnessOn;
-                        }
-                    }
-                    this.outPacket.send();
-                } else {
-                    mixer.secondPressedFxSelector = this.number;
-                }
-            } else {
-            // After a second selector was released, avoid loading a different preset when
-            // releasing the first pressed selector.
-                if (mixer.comboSelected && this.number === mixer.firstPressedFxSelector) {
-                    mixer.comboSelected = false;
-                    mixer.firstPressedFxSelector = null;
-                    mixer.secondPressedFxSelector = null;
-                    resetFxSelectorColors();
-                    return;
-                }
-                // If mixer.firstPressedFxSelector === null, it was reset by the input handler for
-                // a QuickEffect enable button to load the preset for only one deck.
-                if (mixer.firstPressedFxSelector !== null) {
-                    for (const deck of [1, 2, 3, 4]) {
-                        engine.setValue("[QuickEffectRack1_[Channel" + deck + "]]", "loaded_chain_preset", calculatePresetNumber());
-                    }
-                }
-                if (mixer.firstPressedFxSelector === this.number) {
-                    mixer.firstPressedFxSelector = null;
-                    resetFxSelectorColors();
-                }
-                if (mixer.secondPressedFxSelector !== null) {
-                    mixer.comboSelected = true;
-                }
-                mixer.secondPressedFxSelector = null;
-            }
-        };
-        mixer.fxSelect1 = new Button({
-            inByte: 9,
-            inBit: 5,
-            number: 1,
-            input: fxSelectInput,
-        });
-        mixer.fxSelect2 = new Button({
-            inByte: 9,
-            inBit: 1,
-            number: 2,
-            input: fxSelectInput,
-        });
-        mixer.fxSelect3 = new Button({
-            inByte: 9,
-            inBit: 6,
-            number: 3,
-            input: fxSelectInput,
-        });
-        mixer.fxSelect4 = new Button({
-            inByte: 9,
-            inBit: 0,
-            number: 4,
-            input: fxSelectInput,
-        });
-        mixer.fxSelectFilter = new Button({
-            inByte: 9,
-            inBit: 7,
-            number: 5,
-            input: fxSelectInput,
-        });
-
-        const quickEffectButton = class extends Button {
-            constructor(options) {
-                super(options);
-                if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1) {
-                    throw Error("number attribute must be an integer >= 1");
-                }
-                this.group = "[QuickEffectRack1_[Channel" + this.number + "]]";
-                this.outConnect();
-                this.isLongPressed = false;
-                this.longPressTimer = 0;
-            }
-            input(pressed) {
-                if (mixer.firstPressedFxSelector === null) {
-                    if (pressed) {
-                        script.toggleControl(this.group, "enabled");
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeOut, () => {
-                            this.isLongPressed = true;
-                            this.longPressTimer = 0;
-                        }, true);
-                    } else {
-                        if (this.isLongPressed) {
-                            script.toggleControl(this.group, "enabled");
-                        }
-                        if (this.longPressTimer !== 0) {
-                            engine.stopTimer(this.longPressTimer);
-                        }
-                        this.longPressTimer = 0;
-                        this.isLongPressed = false;
-                    }
-                } else {
-                    if (pressed) {
-                        const presetNumber = calculatePresetNumber();
-                        this.color = quickEffectPresetColors[presetNumber - 1];
-                        engine.setValue(this.group, "loaded_chain_preset", presetNumber);
-                        mixer.firstPressedFxSelector = null;
-                        mixer.secondPressedFxSelector = null;
-                        resetFxSelectorColors();
-                    }
-                }
-            }
-            output(enabled) {
-                if (enabled) {
-                    this.send(this.color + this.brightnessOn);
-                } else {
-                    // It is easy to mistake the dim state for the bright state, so turn
-                    // the LED fully off.
-                    this.send(0);
-                }
-            }
-            presetLoaded(presetNumber) {
-                this.color = quickEffectPresetColors[presetNumber - 1];
-                this.outConnections[1].trigger();
-            }
-            outConnect() {
-                if (this.group !== undefined) {
-                    this.outConnections[0] = engine.makeConnection(this.group, "loaded_chain_preset", this.presetLoaded.bind(this));
-                    this.outConnections[1] = engine.makeConnection(this.group, "enabled", this.output.bind(this));
-                }
-            }
-        };
-        mixer.quickEffectButton1 = new quickEffectButton({
-            number: 1,
-            inByte: 8,
-            inBit: 0,
-            outByte: 46
-        });
-        mixer.quickEffectButton2 = new quickEffectButton({
-            number: 2,
-            inByte: 8,
-            inBit: 5,
-            outByte: 47
-        });
-        mixer.quickEffectButton3 = new quickEffectButton({
-            number: 3,
-            inByte: 8,
-            inBit: 1,
-            outByte: 48
-        });
-        mixer.quickEffectButton4 = new quickEffectButton({
-            number: 4,
-            inByte: 8,
-            inBit: 4,
-            outByte: 49
-        });
-        resetFxSelectorColors();
-
-        mixer.quantizeButton = new Button({
-            input: function(pressed) {
-                if (pressed) {
-                    this.globalQuantizeOn = !this.globalQuantizeOn;
-                    for (let i = 1; i <= 4; i++) {
-                        engine.setValue("[Channel" + i + "]", "quantize", this.globalQuantizeOn);
-                    }
-                    this.send(this.globalQuantizeOn ? 127 : 0);
-                }
-            },
-            globalQuantizeOn: false,
-            inByte: 12,
-            inBit: 6,
-            outByte: 93,
-        });
-
-        mixer.crossfader = new Pot({
-            group: "[Master]",
-            inKey: "crossfader",
-            inByte: 1,
-            inPacket: this.inPackets[2],
-        });
-        mixer.crossfaderCurveSwitch = new Component({
-            inByte: 19,
-            inBit: 0,
-            inBitLength: 2,
-            input: function(value) {
-                switch (value) {
-                case 0x00:  // Picnic Bench / Fast Cut
-                    engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
-                    engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
-                    break;
-                case 0x01:  // Constant Power
-                    engine.setValue("[Mixer Profile]", "xFaderMode", 1);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.3);
-                    engine.setValue("[Mixer Profile]", "xFaderCurve", 0.6);
-                    break;
-                case 0x02: // Additive
-                    engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
-                    engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
-                }
-            },
-        });
-
-        for (const component of mixer) {
-            if (component.inPacket === undefined) {
-                component.inPacket = this.inPackets[1];
-            }
-            component.outPacket = this.outPackets[128];
-            component.inConnect();
-            component.outConnect();
-            component.outTrigger();
-        }
-
-        let lightQuantizeButton = true;
-        for (let i = 1; i <= 4; i++) {
-            if (!engine.getValue("[Channel" + i + "]", "quantize")) {
-                lightQuantizeButton = false;
-            }
-        }
-        mixer.quantizeButton.send(lightQuantizeButton ? 127 : 0);
-        mixer.quantizeButton.globalQuantizeOn = lightQuantizeButton;
+        this.mixer = new Mixer(this.inPackets, this.outPackets);
 
         /* eslint no-unused-vars: "off" */
         const meterConnection = engine.makeConnection("[Master]", "guiTick50ms", function(_value) {
@@ -1943,7 +2592,7 @@ class S4MK3 {
                 const segmentsToLightFully = Math.floor(scaledLevel);
                 const partialSegmentValue = scaledLevel - segmentsToLightFully;
                 if (segmentsToLightFully > 0) {
-                // There are 3 brightness levels per segment: off, dim, and full.
+                    // There are 3 brightness levels per segment: off, dim, and full.
                     for (let i = 0; i <= segmentsToLightFully; i++) {
                         deckMeters[columnBaseIndex + i] = 127;
                     }
@@ -1960,23 +2609,24 @@ class S4MK3 {
             // the clip lights on the main mix meters.
             controller.send(deckMeters, null, 129);
         });
-
         const motorTimer = engine.beginTimer(20, () => {
-            const baseRate = 6068;
+            const leftMinRate = 1560;
+            const rightMinRate = 1420;
             let velocityLeft = 0;
             let velocityRight = 0;
             const S4Mk3 = this;
             if (this.leftDeck.wheelMode === wheelModes.motor
-                  && engine.getValue(this.leftDeck.group, "play")) {
-                velocityLeft = baseRate * engine.getValue(S4Mk3.leftDeck.group, "rate_ratio");
+                && engine.getValue(S4Mk3.leftDeck.group, "play")) {
+                velocityLeft = wheelAbsoluteMax * engine.getValue(S4Mk3.leftDeck.group, "rate_ratio") + leftMinRate;
             }
             if (this.rightDeck.wheelMode === wheelModes.motor
-                  && engine.getValue(this.rightDeck.group, "play")) {
-                velocityRight = baseRate * engine.getValue(S4Mk3.rightDeck.group, "rate_ratio");
+                && engine.getValue(S4Mk3.rightDeck.group, "play")) {
+                velocityRight = wheelAbsoluteMax * engine.getValue(S4Mk3.rightDeck.group, "rate_ratio") + rightMinRate;
             }
+
             // byte 2 > 127 rotates backward
-            const motor = [1, 32, 1, velocityLeft & (2**8 - 1), velocityLeft >> 8,
-                1, 32, 1, velocityRight & (2**8 - 1), velocityRight >> 8];
+            const motor = [1, 32, 1, velocityLeft & (2 ** 8 - 1), velocityLeft >> 8,
+                1, 32, 1, velocityRight & (2 ** 8 - 1), velocityRight >> 8];
             controller.send(motor, null, 49, true);
         });
     }
@@ -2017,6 +2667,10 @@ class S4MK3 {
         // hack around https://github.com/mixxxdj/mixxx/issues/10828
         engine.beginTimer(35, () => { controller.send(wheelLEDinitPacket, null, 48); }, true);
 
+        // Init wheel timer data
+        wheelTimer = null;
+        wheelTimerDelta = 0;
+
         // get state of knobs and faders
         this.incomingData(new Uint8Array(controller.getInputReport(2)));
     }
@@ -2029,6 +2683,8 @@ class S4MK3 {
 
         const wheelOutput = Array(40).fill(0);
         // left wheel LEDs
+        // FIXME this data gets ignored due to https://github.com/mixxxdj/mixxx/issues/10828
+        // Unfortunately, because this is the teardown function, we cannot use a timer to delay the send
         controller.send(wheelOutput, null, 50);
         // right wheel LEDs
         wheelOutput[0] = 1;
