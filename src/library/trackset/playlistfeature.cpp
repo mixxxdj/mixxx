@@ -232,7 +232,7 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
 /// This method queries the database and does dynamic insertion
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
-    QList<TreeItem*> data_list;
+    std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
     int row = 0;
@@ -247,17 +247,17 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlistLabel, playlistId);
-        item->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
+        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
+        pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
 
-        decorateChild(item, playlistId);
-        data_list.append(item);
+        decorateChild(pItem.get(), playlistId);
+        childrenToAdd.push_back(std::move(pItem));
 
         ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_pSidebarModel->insertTreeItemRows(data_list, 0);
+    m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
     if (selectedRow == -1) {
         return QModelIndex();
     }

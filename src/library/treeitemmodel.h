@@ -30,7 +30,10 @@ class TreeItemModel : public QAbstractItemModel {
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-    void insertTreeItemRows(QList<TreeItem*> &rows, int position, const QModelIndex& parent = QModelIndex());
+    void insertTreeItemRows(
+            std::vector<std::unique_ptr<TreeItem>>&&,
+            int position,
+            const QModelIndex& parent = QModelIndex());
 
     TreeItem* setRootItem(std::unique_ptr<TreeItem> pRootItem);
     TreeItem* getRootItem() const {

@@ -734,6 +734,7 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
+    m_lastRightClickedIndex = QModelIndex();
     m_pSidebarModel->removeRows(0, m_pSidebarModel->rowCount());
 }
 
