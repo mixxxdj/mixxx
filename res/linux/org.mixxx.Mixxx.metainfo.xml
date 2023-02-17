@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2023-02-13" timestamp="1676326516">
+    <release version="2.3.4" type="development" date="2023-02-14" timestamp="1676360233">
       <description>
  <ul>
   <li>
@@ -315,8 +315,9 @@
    #10905
   </li>
   <li>
-   MC7000: Fix off-by-one indexing in the controller script
+   Denon DJ MC7000: off-by-one fix, soft-start/break effect, pitch play, 32 velocity samplers
    #4902
+   #4729
   </li>
   <li>
    Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts

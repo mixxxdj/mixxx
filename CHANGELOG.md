@@ -58,7 +58,9 @@
 * Numark DJ2Go2: Fix inverted tempo fader [#10852](https://github.com/mixxxdj/mixxx/pull/10852) [#10586](https://github.com/mixxxdj/mixxx/issues/10586)
 * Numark N4: Inverted pitch slider, to match the GUI orientation [#11057](https://github.com/mixxxdj/mixxx/pull/11046)
 * Ableton Push: Show as one device [#10905](https://github.com/mixxxdj/mixxx/pull/10905)
-* MC7000: Fix off-by-one indexing in the controller script [#4902](https://github.com/mixxxdj/mixxx/pull/4902)
+* Denon DJ MC7000: off-by-one fix, soft-start/break effect, pitch play, 32 velocity samplers
+  [#4902](https://github.com/mixxxdj/mixxx/pull/4902)
+  [#4729](https://github.com/mixxxdj/mixxx/pull/4729)
 * Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts [#4495](https://github.com/mixxxdj/mixxx/pull/4495)
 * Controller Preferences: Fix some usability issues [#10821](https://github.com/mixxxdj/mixxx/pull/10821)
 * Controller mapping table: show readable/translated strings for script bindings [#11139](https://github.com/mixxxdj/mixxx/pull/11139)
