@@ -375,7 +375,7 @@ void DlgAutoDJ::updateSelectionInfo() {
         labelSelectionInfo->setText(
                 QStringLiteral("%1 (%2) / ")
                         .arg(mixxx::DurationBase::formatTime(duration),
-                                indices.size()));
+                                QString::number(indices.size())));
         labelSelectionInfo->setEnabled(true);
     } else {
         labelSelectionInfo->setText("");
@@ -389,8 +389,9 @@ void DlgAutoDJ::updateTotalInfo() {
         return;
     }
 
-    labelTotalInfo->setText(QStringLiteral("%1 (%2)").arg(
-            summary.getTrackDurationText(), summary.getTrackCount()));
+    labelTotalInfo->setText(QStringLiteral("%1 (%2)")
+                                    .arg(summary.getTrackDurationText(),
+                                            QString::number(summary.getTrackCount())));
 }
 
 bool DlgAutoDJ::hasFocus() const {
