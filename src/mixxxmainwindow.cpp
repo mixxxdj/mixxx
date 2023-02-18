@@ -3,6 +3,8 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 
+#include "widget/wglwidget.h"
+
 #ifndef MIXXX_USE_QOPENGL
 #include <QGLFormat>
 #endif
@@ -198,7 +200,19 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
-#ifndef MIXXX_USE_QOPENGL
+#ifdef MIXXX_USE_QOPENGL
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+        // This widget and its QOpenGLWindow will be used to query QOpenGL
+        // information (version, driver, etc) in WaveformWidgetFactory.
+        // The widget is temporary and will be deleted there after use.
+        // The "SharedGLContext" terminology here doesn't really apply,
+        // but allows us to take advantage of the existing classes.
+        WGLWidget* widget = new WGLWidget(this);
+        widget->setGeometry(QRect(0, 0, 3, 3));
+        SharedGLContext::setWidget(widget);
+        // note: the format is set in the WGLWidget's OpenGLWindow constructor
+    }
+#else
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
@@ -223,7 +237,7 @@ void MixxxMainWindow::initialize() {
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        QGLWidget* pContextWidget = new QGLWidget(this);
+        WGLWidget* pContextWidget = new WGLWidget(this);
         pContextWidget->setGeometry(QRect(0, 0, 3, 3));
         pContextWidget->hide();
         SharedGLContext::setWidget(pContextWidget);

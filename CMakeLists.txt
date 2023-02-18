@@ -1151,6 +1151,7 @@ else()
     src/waveform/renderers/waveformrendermarkrange.cpp
     src/waveform/renderers/waveformsignalcolors.cpp
     src/waveform/renderers/waveformwidgetrenderer.cpp
+    src/waveform/sharedglcontext.cpp
     src/waveform/visualsmanager.cpp
     src/waveform/vsyncthread.cpp
     src/waveform/waveformmarklabel.cpp
@@ -1203,7 +1204,6 @@ else()
     )
   else()
     target_sources(mixxx-lib PRIVATE
-      src/waveform/sharedglcontext.cpp
       src/widget/wglwidgetqglwidget.cpp
     )
   endif()

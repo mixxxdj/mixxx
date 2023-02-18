@@ -1,6 +1,8 @@
 #include "waveform/waveformwidgetfactory.h"
 
-#ifndef MIXXX_USE_QOPENGL
+#ifdef MIXXX_USE_QOPENGL
+#include <QOpenGLWindow>
+#else
 #include <QGLFormat>
 #include <QGLShaderProgram>
 #endif
@@ -122,10 +124,49 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_visualGain[High] = 1.0;
 
 #ifdef MIXXX_USE_QOPENGL
-    // TODO @m0dB We might want to check, but as this is intended for macOS
-    // we can be sure the OpenGL is available
-    m_openGlAvailable = true;
-    m_openGLShaderAvailable = true;
+    WGLWidget* widget = SharedGLContext::getWidget();
+    if (widget) {
+        // we need to show the widget so it's QOpenGLWindow is created
+        widget->show();
+        widget->makeCurrentIfNeeded();
+        auto context = QOpenGLContext::currentContext();
+        if (context) {
+            auto glFunctions = context->functions();
+            glFunctions->initializeOpenGLFunctions();
+            QString versionString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions->glGetString(GL_VERSION))));
+            QString vendorString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions->glGetString(GL_VENDOR))));
+            QString rendererString = QString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions->glGetString(GL_RENDERER))));
+            qDebug() << versionString << vendorString << rendererString;
+
+            // note: the requested version has been set in WGLWidget's OpenGLWindow constructor
+            const int majorVersion = context->surface()->format().majorVersion();
+            const int minorVersion = context->surface()->format().minorVersion();
+
+            qDebug() << "QOpenGLContext surface format version:" << majorVersion << minorVersion;
+
+            m_openGLShaderAvailable = QOpenGLShaderProgram::hasOpenGLShaderPrograms(context);
+
+            m_openGLVersion = context->isOpenGLES() ? "ES " : "";
+            m_openGLVersion += majorVersion == 0 ? QString("None") : versionString;
+
+            if (majorVersion * 100 + minorVersion >= 201) {
+                m_openGlAvailable = true;
+                if (context->isOpenGLES()) {
+                    m_openGlesAvailable = true;
+                } else {
+                    m_openGlAvailable = true;
+                }
+            }
+
+            if (!rendererString.isEmpty()) {
+                m_openGLVersion += " (" + rendererString + ")";
+            }
+        }
+        widget->hide();
+    }
 #else
     QGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {

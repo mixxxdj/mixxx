@@ -6,6 +6,10 @@
 
 OpenGLWindow::OpenGLWindow(WGLWidget* widget)
         : m_pWidget(widget) {
+    QSurfaceFormat format;
+    format.setVersion(2, 1);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    setFormat(format);
 }
 
 OpenGLWindow::~OpenGLWindow() {
