@@ -32,7 +32,9 @@ WVuMeterGL::WVuMeterGL(QWidget* parent)
 
 WVuMeterGL::~WVuMeterGL() {
 #ifdef MIXXX_USE_QOPENGL
-    cleanupGL();
+    if (m_hasOpenGLShaderPrograms) {
+        cleanupGL();
+    }
 #endif
 }
 
@@ -183,7 +185,13 @@ void WVuMeterGL::render(VSyncThread* vSyncThread) {
     }
 
 #ifdef MIXXX_USE_QOPENGL
-    renderGL();
+    if (shouldRender()) {
+        if (m_hasOpenGLShaderPrograms) {
+            renderGL();
+        } else {
+            renderQPainter();
+        }
+    }
 #else
     renderQPainter();
 #endif

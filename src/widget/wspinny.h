@@ -154,6 +154,7 @@ class WSpinny : public WGLWidget,
     void updateLoaderCoverGL();
     void renderGL();
 
+    bool m_hasOpenGLShaderPrograms{};
     QOpenGLShaderProgram m_shaderProgram;
     std::unique_ptr<QOpenGLTexture> m_pBgTexture;
     std::unique_ptr<QOpenGLTexture> m_pMaskTexture;

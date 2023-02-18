@@ -100,7 +100,9 @@ WSpinny::~WSpinny() {
     m_pVCManager->removeSignalQualityListener(this);
 #endif
 #ifdef MIXXX_USE_QOPENGL
-    cleanupGL();
+    if (m_hasOpenGLShaderPrograms) {
+        cleanupGL();
+    }
 #endif
 }
 
@@ -253,7 +255,9 @@ void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
 #ifdef MIXXX_USE_QOPENGL
-    updateLoaderCoverGL();
+    if (m_hasOpenGLShaderPrograms) {
+        updateLoaderCoverGL();
+    }
 #endif
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
@@ -279,7 +283,9 @@ void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
 #ifdef MIXXX_USE_QOPENGL
-    updateLoaderCoverGL();
+    if (m_hasOpenGLShaderPrograms) {
+        updateLoaderCoverGL();
+    }
 #endif
     update();
 }
@@ -304,7 +310,9 @@ void WSpinny::slotCoverFound(
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
 #ifdef MIXXX_USE_QOPENGL
-        updateLoaderCoverGL();
+        if (m_hasOpenGLShaderPrograms) {
+            updateLoaderCoverGL();
+        }
 #endif
         update();
     }
@@ -354,7 +362,13 @@ void WSpinny::render(VSyncThread* vSyncThread) {
     }
 
 #ifdef MIXXX_USE_QOPENGL
-    renderGL();
+    if (shouldRender()) {
+        if (m_hasOpenGLShaderPrograms) {
+            renderGL();
+        } else {
+            renderQPainter();
+        }
+    }
 #else
     renderQPainter();
 #endif

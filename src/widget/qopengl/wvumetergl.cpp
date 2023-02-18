@@ -4,6 +4,13 @@
 #include "util/math.h"
 
 void WVuMeterGL::initializeGL() {
+    m_hasOpenGLShaderPrograms = QOpenGLShaderProgram::hasOpenGLShaderPrograms(
+            QOpenGLContext::currentContext());
+
+    if (!m_hasOpenGLShaderPrograms) {
+        return;
+    }
+
     if (m_pPixmapBack.isNull()) {
         m_pTextureBack.reset();
     } else {
@@ -63,10 +70,6 @@ void main()
 }
 
 void WVuMeterGL::renderGL() {
-    if (!shouldRender()) {
-        return;
-    }
-
     makeCurrentIfNeeded();
     glClearColor(m_qBgColor.redF(), m_qBgColor.greenF(), m_qBgColor.blueF(), 1.f);
     glClear(GL_COLOR_BUFFER_BIT);

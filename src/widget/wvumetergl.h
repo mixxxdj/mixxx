@@ -81,6 +81,7 @@ class WVuMeterGL : public WGLWidget, public WBaseWidget {
 
     QColor m_qBgColor;
 #ifdef MIXXX_USE_QOPENGL
+    bool m_hasOpenGLShaderPrograms{};
     std::unique_ptr<QOpenGLTexture> m_pTextureBack;
     std::unique_ptr<QOpenGLTexture> m_pTextureVu;
     QOpenGLShaderProgram m_shaderProgram;

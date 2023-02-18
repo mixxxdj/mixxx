@@ -1,5 +1,7 @@
 #include "widget/wspinny.h"
 
+#include <QOpenGLContext>
+
 #include "util/assert.h"
 
 void WSpinny::cleanupGL() {
@@ -86,6 +88,13 @@ void WSpinny::renderGL() {
 }
 
 void WSpinny::initializeGL() {
+    m_hasOpenGLShaderPrograms = QOpenGLShaderProgram::hasOpenGLShaderPrograms(
+            QOpenGLContext::currentContext());
+
+    if (!m_hasOpenGLShaderPrograms) {
+        return;
+    }
+
     if (m_pBgImage && !m_pBgImage->isNull())
         m_pBgTexture.reset(new QOpenGLTexture(*m_pBgImage));
     if (m_pMaskImage && !m_pMaskImage->isNull())
