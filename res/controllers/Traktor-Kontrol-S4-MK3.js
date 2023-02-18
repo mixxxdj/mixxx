@@ -82,6 +82,18 @@ const loopEncoderShiftMoveFactor = 2500;
 const tempoFaderSoftTakeoverColorLow = LEDColors.white;
 const tempoFaderSoftTakeoverColorHigh = LEDColors.green;
 
+// Define whether or not to keep LED that have only one color (reverse, flux, play) dimmed if they are inactive.
+// 'true' will keep them dimmed, 'false' will turn them off. Default: true
+const keepLEDWithOneColorDimedWhenInactive = true;
+
+// Define whether the keylock is mapped when doing "shift+master" (on press) or "shift+sync" (on release since long push copies the key)".
+// 'true' will use "sync+master", 'false' will use "shift+sync". Default: false
+const useKeylockOnMaster = false;
+
+// Define whether the grid button would blink when the playback is going over a detcted beat. Can help to adjust beat grid.
+// Default: true
+const gridButtonBlinkOverBeat = true;
+
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
 // slightly, so use that get 25 different colors to include the Filter
@@ -229,11 +241,16 @@ class HIDOutputPacket {
 
 class Component {
     constructor(options) {
-        Object.assign(this, options);
+        if (options) {
+            Object.keys(options).forEach(function(key) {
+                if (options[key] === undefined) { delete options[key]; }
+            });
+            Object.assign(this, options);
+        }
         this.outConnections = [];
-        if (options !== undefined && typeof options.key === "string") {
-            this.inKey = options.key;
-            this.outKey = options.key;
+        if (typeof this.key === "string") {
+            this.inKey = this.key;
+            this.outKey = this.key;
         }
         if (this.unshift !== undefined && typeof this.unshift === "function") {
             this.unshift();
@@ -273,7 +290,13 @@ class Component {
     }
     outConnect() {
         if (this.outKey !== undefined && this.group !== undefined) {
-            this.outConnections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+            const connection = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+            // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+            if (connection) {
+                this.outConnections[0] = connection;
+            } else {
+                console.warn("Unable to connect '"+this.group+"."+this.outKey+"' to the controller output. The control appears to be unaivailable.");
+            }
         }
     }
     outDisconnect() {
@@ -421,6 +444,16 @@ class Button extends Component {
         if (this.inBitLength === undefined) {
             this.inBitLength = 1;
         }
+    }
+    setKey(key) {
+        this.inKey = key;
+        if (key === this.outKey) {
+            return;
+        }
+        this.outDisconnect();
+        this.outKey = key;
+        this.outConnect();
+        this.outTrigger();
     }
     output(value) {
         if (this.indicatorTimer !== 0) {
@@ -610,11 +643,21 @@ class HotcueButton extends PushButton {
     }
     outConnect() {
         if (undefined !== this.group) {
-            this.outConnections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
-            this.outConnections[1] = engine.makeConnection(this.group, this.colorKey, (colorCode) => {
+            const connection0 = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+            if (connection0) {
+                this.outConnections[0] = connection0;
+            } else {
+                console.warn("Unable to connect '"+this.group+"."+this.outKey+"' to the controller output. The control appears to be unaivailable.");
+            }
+            const connection1 = engine.makeConnection(this.group, this.colorKey, (colorCode) => {
                 this.color = this.colorMap.getValueForNearestColor(colorCode);
                 this.output(engine.getValue(this.group, this.outKey));
             });
+            if (connection1) {
+                this.outConnections[1] = connection1;
+            } else {
+                console.warn("Unable to connect '"+this.group+"."+this.colorKey+"' to the controller output. The control appears to be unaivailable.");
+            }
         }
     }
 }
@@ -660,10 +703,15 @@ class KeyboardButton extends PushButton {
     }
     outConnect() {
         if (undefined !== this.group) {
-            this.outConnections[0] = engine.makeConnection(this.group, "key", (key) => {
+            const connection = engine.makeConnection(this.group, "key", (key) => {
                 const offset = this.deck.keyboardOffset - (this.shifted ? 8 : 0);
                 this.output(key === this.number + offset);
             });
+            if (connection) {
+                this.outConnections[0] = connection;
+            } else {
+                console.warn("Unable to connect '"+this.group+".key' to the controller output. The control appears to be unaivailable.");
+            }
         }
     }
 }
@@ -715,8 +763,18 @@ class SamplerButton extends Button {
     }
     outConnect() {
         if (undefined !== this.group) {
-            this.outConnections[0] = engine.makeConnection(this.group, "play", this.output.bind(this));
-            this.outConnections[1] = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
+            const connection0 = engine.makeConnection(this.group, "play", this.output.bind(this));
+            if (connection0) {
+                this.outConnections[0] = connection0;
+            } else {
+                console.warn("Unable to connect '"+this.group+".play' to the controller output. The control appears to be unaivailable.");
+            }
+            const connection1 = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
+            if (connection1) {
+                this.outConnections[1] = connection1;
+            } else {
+                console.warn("Unable to connect '"+this.group+".track_loaded' to the controller output. The control appears to be unaivailable.");
+            }
         }
     }
 }
@@ -1061,8 +1119,18 @@ class QuickEffectButton extends Button {
     }
     outConnect() {
         if (this.group !== undefined) {
-            this.outConnections[0] = engine.makeConnection(this.group, "loaded_chain_preset", this.presetLoaded.bind(this));
-            this.outConnections[1] = engine.makeConnection(this.group, "enabled", this.output.bind(this));
+            const connection0 = engine.makeConnection(this.group, "loaded_chain_preset", this.presetLoaded.bind(this));
+            if (connection0) {
+                this.outConnections[0] = connection0;
+            } else {
+                console.warn("Unable to connect '"+this.group+".loaded_chain_preset' to the controller output. The control appears to be unaivailable.");
+            }
+            const connection1 = engine.makeConnection(this.group, "enabled", this.output.bind(this));
+            if (connection1) {
+                this.outConnections[1] = connection1;
+            } else {
+                console.warn("Unable to connect '"+this.group+".enabled' to the controller output. The control appears to be unaivailable.");
+            }
         }
     }
 }
@@ -1080,6 +1148,13 @@ Encoder.prototype.inBitLength = 4;
 // valid range 0 - 3, but 3 makes some colors appear whitish
 Button.prototype.brightnessOff = 0;
 Button.prototype.brightnessOn = 2;
+Button.prototype.uncoloredOutput = function(value) {
+    if (this.indicatorTimer !== 0) {
+        return;
+    }
+    const color = (value > 0) ? (this.color || LEDColors.white) + this.brightnessOn : LEDColors.off;
+    this.send(color);
+};
 Button.prototype.colorMap = new ColorMapper({
     0xCC0000: LEDColors.red,
     0xCC5E00: LEDColors.carrot,
@@ -1150,17 +1225,6 @@ let wheelTimerDelta = 0;
  * Kontrol S4 Mk3 hardware specific mapping logic
  */
 
-// used for buttons whose LEDs only support a single color
-// Don't use dim colors for these because they are hard to tell apart
-// from bright colors.
-const uncoloredButtonOutput = function(value) {
-    if (value) {
-        this.send((this.color || LEDColors.white) + this.brightnessOn);
-    } else {
-        this.send((this.color || LEDColors.white) + this.brightnessOff);
-    }
-};
-
 class S4Mk3EffectUnit extends ComponentContainer {
     constructor(unitNumber, inPackets, outPacket, io) {
         super();
@@ -1177,7 +1241,6 @@ class S4Mk3EffectUnit extends ComponentContainer {
 
         this.mainButton = new PowerWindowButton({
             unit: this,
-            output: uncoloredButtonOutput,
             inPacket: inPackets[1],
             inByte: io.mainButton.inByte,
             inBit: io.mainButton.inBit,
@@ -1193,7 +1256,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 this.outDisconnect();
                 this.outKey = undefined;
                 this.group = undefined;
-                uncoloredButtonOutput.call(this, false);
+                this.output(false);
             },
             input: function(pressed) {
                 if (!this.shifted) {
@@ -1227,7 +1290,6 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 unit: this,
                 key: "enabled",
                 group: effectGroup,
-                output: uncoloredButtonOutput,
                 inPacket: inPackets[1],
                 inByte: io.buttons[index].inByte,
                 inBit: io.buttons[index].inBit,
@@ -1290,7 +1352,7 @@ class S4Mk3Deck extends Deck {
         super(decks, colors);
 
         this.playButton = new PlayButton({
-            output: uncoloredButtonOutput
+            output: keepLEDWithOneColorDimedWhenInactive ? undefined : Button.prototype.uncoloredOutput
         });
 
         this.cueButton = new CueButton({
@@ -1301,7 +1363,12 @@ class S4Mk3Deck extends Deck {
         this.syncMasterButton = new Button({
             key: "sync_leader",
             defaultRange: 0.08,
-            output: uncoloredButtonOutput,
+            shift: useKeylockOnMaster ? function() {
+                this.setKey("keylock");
+            } : undefined,
+            unshift: useKeylockOnMaster ? function() {
+                this.setKey("sync_leader");
+            } : undefined,
             onShortRelease: function() {
                 script.toggleControl(this.group, this.inKey);
             },
@@ -1318,7 +1385,6 @@ class S4Mk3Deck extends Deck {
         });
         this.syncButton = new Button({
             key: "sync_enabled",
-            output: uncoloredButtonOutput,
             onLongPress: function() {
                 if (this.shifted) {
                     engine.setValue(this.group, "sync_key", true);
@@ -1333,20 +1399,12 @@ class S4Mk3Deck extends Deck {
                     engine.softTakeover(this.group, "rate", true);
                 }
             },
-            shift: function() {
-                this.outDisconnect();
-                this.inKey = "keylock";
-                this.outKey = "keylock";
-                this.outConnect();
-                this.outTrigger();
-            },
-            unshift: function() {
-                this.outDisconnect();
-                this.inKey = "sync_enabled";
-                this.outKey = "sync_enabled";
-                this.outConnect();
-                this.outTrigger();
-            },
+            shift: !useKeylockOnMaster ? function() {
+                this.setKey("keylock");
+            } : undefined,
+            unshift: !useKeylockOnMaster ? function() {
+                this.setKey("sync_enabled");
+            } : undefined,
         });
         this.tempoFader = new Pot({
             inKey: "rate",
@@ -1388,19 +1446,13 @@ class S4Mk3Deck extends Deck {
             previousWheelMode: null,
             loopModeConnection: null,
             unshift: function() {
-                this.outDisconnect();
-                this.outKey = "reverseroll";
-                this.outConnect();
-                this.outTrigger();
+                this.setKey("reverseroll");
 
             },
             shift: function() {
-                this.outDisconnect();
-                this.outKey = "loop_enabled";
-                this.outConnect();
-                this.outTrigger();
+                this.setKey("loop_enabled");
             },
-            output: uncoloredButtonOutput,
+            output: keepLEDWithOneColorDimedWhenInactive ? undefined : Button.prototype.uncoloredOutput,
             onShortRelease: function() {
                 if (!this.shifted) {
                     engine.setValue(this.group, this.key, false);
@@ -1473,24 +1525,23 @@ class S4Mk3Deck extends Deck {
             previousWheelMode: null,
             loopModeConnection: null,
             unshift: function() {
-                this.outDisconnect();
-                this.outKey = "slip_enabled";
-                this.outConnect();
-                this.outTrigger();
+                this.setKey("slip_enabled");
 
             },
             shift: function() {
-                this.outDisconnect();
-                this.outKey = "loop_enabled";
-                this.outConnect();
-                this.outTrigger();
+                this.setKey("loop_enabled");
             },
             outConnect: function() {
                 if (this.outKey !== undefined && this.group !== undefined) {
-                    this.outConnections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+                    const connection = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+                    if (connection) {
+                        this.outConnections[0] = connection;
+                    } else {
+                        console.warn("Unable to connect '"+this.group+"."+this.outKey+"' to the controller output. The control appears to be unaivailable.");
+                    }
                 }
             },
-            output: uncoloredButtonOutput,
+            output: keepLEDWithOneColorDimedWhenInactive ? undefined : Button.prototype.uncoloredOutput,
             onShortRelease: function() {
                 if (!this.shifted) {
                     engine.setValue(this.group, this.key, false);
@@ -1559,7 +1610,7 @@ class S4Mk3Deck extends Deck {
             }
         });
         this.gridButton = new Button({
-            key: "beat_active",
+            key: gridButtonBlinkOverBeat ? "beat_active" : undefined,
             deck: this,
             previousMoveMode: null,
             onShortPress: function() {
@@ -2185,30 +2236,27 @@ class S4Mk3Deck extends Deck {
                     engine.setValue(this.group, "scratch2", ttAvgSpeed / baseRevolutionsPerSecond);
                     break;
                 case wheelModes.loopIn:
-                    engine.setValue(
-                        this.group,
-                        "loop_start_position",
-                        Math.min(
-                            engine.getValue(
-                                this.group,
-                                "loop_start_position"
-                            ) + (avgSpeed * loopWheelMoveFactor),
-                            engine.getValue(
-                                this.group,
-                                "loop_end_position"
-                            ) - loopWheelMoveFactor
-                        )
-                    );
+                    {
+                        const loopStartPosition = engine.getValue(this.group, "loop_start_position");
+                        const loopEndPosition = engine.getValue(this.group, "loop_end_position");
+                        const value = Math.min(loopStartPosition + (avgSpeed * loopWheelMoveFactor), loopEndPosition - loopWheelMoveFactor);
+                        engine.setValue(
+                            this.group,
+                            "loop_start_position",
+                            value
+                        );
+                    }
                     break;
                 case wheelModes.loopOut:
-                    engine.setValue(
-                        this.group,
-                        "loop_end_position",
-                        engine.getValue(
+                    {
+                        const loopEndPosition = engine.getValue(this.group, "loop_end_position");
+                        const value = loopEndPosition + (avgSpeed * loopWheelMoveFactor);
+                        engine.setValue(
                             this.group,
-                            "loop_end_position"
-                        ) + (avgSpeed * loopWheelMoveFactor)
-                    );
+                            "loop_end_position",
+                            value
+                        );
+                    }
                     break;
                 case wheelModes.vinyl:
                     if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
@@ -2343,26 +2391,22 @@ class S4Mk3MixerColumn extends ComponentContainer {
         this.pfl = new ToggleButton({
             inKey: "pfl",
             outKey: "pfl",
-            output: uncoloredButtonOutput,
         });
 
         this.effectUnit1Assign = new PowerWindowButton({
             group: "[EffectRack1_EffectUnit1]",
             key: "group_" + this.group + "_enable",
-            output: uncoloredButtonOutput,
         });
 
         this.effectUnit2Assign = new PowerWindowButton({
             group: "[EffectRack1_EffectUnit2]",
             key: "group_" + this.group + "_enable",
-            output: uncoloredButtonOutput,
         });
 
         // FIXME: Why is output not working for these?
         this.saveGain = new PushButton({
             key: "update_replaygain_from_pregain",
             group: group,
-            output: uncoloredButtonOutput,
         });
 
         this.crossfaderSwitch = new Component({
