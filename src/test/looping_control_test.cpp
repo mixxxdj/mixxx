@@ -719,39 +719,49 @@ TEST_F(LoopingControlTest, BeatLoopSize_IsSetByNumberedControl) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetRangeCheck) {
+    // Set BeatLoopSize to the maximum allowed value of 512
     m_pBeatLoopSize->set(512.0);
     EXPECT_EQ(512, m_pBeatLoopSize->get());
 
     m_pBeatLoopSize->set(150.0);
     EXPECT_EQ(150, m_pBeatLoopSize->get());
 
+    // Set BeatLoopSize to a value above the allowed maximum of 512 -> This must be ignored
     m_pBeatLoopSize->set(513.0);
     EXPECT_EQ(150, m_pBeatLoopSize->get());
 
+    // Double BeatLoopSize (the result is 300 which is in the allowed range)
     m_pButtonLoopDouble->set(1.0);
     m_pButtonLoopDouble->set(0.0);
     EXPECT_EQ(300.0, m_pBeatLoopSize->get());
 
+    // Double BeatLoopSize (the result would be 600 which is above the allowed
+    // maximum of 512 -> This must be ignored)
     m_pButtonLoopDouble->set(1.0);
     m_pButtonLoopDouble->set(0.0);
     EXPECT_EQ(300.0, m_pBeatLoopSize->get());
 
+    // Set BeatLoopSize to the minimum allowed value
     m_pBeatLoopSize->set(1 / 32.0);
     EXPECT_EQ(1 / 32.0, m_pBeatLoopSize->get());
 
     m_pBeatLoopSize->set(1 / 10.0);
     EXPECT_EQ(1 / 10.0, m_pBeatLoopSize->get());
 
+    // Set BeatLoopSize to a value below the allowed minimum of 1/32 -> This must be ignored
     m_pBeatLoopSize->set(1 / 33.0);
     EXPECT_EQ(1 / 10.0, m_pBeatLoopSize->get());
 
     m_pBeatLoopSize->set(0);
     EXPECT_EQ(1 / 10.0, m_pBeatLoopSize->get());
 
+    // Halve BeatLoopSize (the result is 1/20 which is in the allowed range)
     m_pButtonLoopHalve->set(1.0);
     m_pButtonLoopHalve->set(0.0);
     EXPECT_EQ(1 / 20.0, m_pBeatLoopSize->get());
 
+    // Halve BeatLoopSize (the result would be 1/40 which is below the allowed
+    // minimum of 1/32 -> This must be ignored)
     m_pButtonLoopHalve->set(1.0);
     m_pButtonLoopHalve->set(0.0);
     EXPECT_EQ(1 / 20.0, m_pBeatLoopSize->get());
@@ -860,39 +870,49 @@ TEST_F(LoopingControlTest, LegacyBeatLoopControl) {
 }
 
 TEST_F(LoopingControlTest, BeatjumpSize_SetRangeCheck) {
+    // Set BeatJumpSize to the maximum allowed value
     m_pBeatJumpSize->set(512.0);
     EXPECT_EQ(512, m_pBeatJumpSize->get());
 
     m_pBeatJumpSize->set(150.0);
     EXPECT_EQ(150, m_pBeatJumpSize->get());
 
+    // Set BeatJumpSize to a value above the allowed maximum of 512 -> This must be ignored
     m_pBeatJumpSize->set(513.0);
     EXPECT_EQ(150, m_pBeatJumpSize->get());
 
+    // Double BeatJumpSize (the result is 300 which is in the allowed range)
     m_pButtonBeatJumpSizeDouble->set(1.0);
     m_pButtonBeatJumpSizeDouble->set(0.0);
     EXPECT_EQ(300.0, m_pBeatJumpSize->get());
 
+    // Double BeatJumpSize (the result would be 600 which is above the allowed
+    // maximum of 512-> This must be ignored)
     m_pButtonBeatJumpSizeDouble->set(1.0);
     m_pButtonBeatJumpSizeDouble->set(0.0);
     EXPECT_EQ(300.0, m_pBeatJumpSize->get());
 
+    // Set BeatJumpSize to the minimum allowed value
     m_pBeatJumpSize->set(1 / 32.0);
     EXPECT_EQ(1 / 32.0, m_pBeatJumpSize->get());
 
     m_pBeatJumpSize->set(1 / 10.0);
     EXPECT_EQ(1 / 10.0, m_pBeatJumpSize->get());
 
+    // Set BeatJumpSize to a value below the allowed minimum of 1/32 -> This must be ignored
     m_pBeatJumpSize->set(1 / 33.0);
     EXPECT_EQ(1 / 10.0, m_pBeatJumpSize->get());
 
     m_pBeatJumpSize->set(0);
     EXPECT_EQ(1 / 10.0, m_pBeatJumpSize->get());
 
+    // Halve BeatJumpSize (the result is 1/20 which is in the allowed range)
     m_pButtonBeatJumpSizeHalve->set(1.0);
     m_pButtonBeatJumpSizeHalve->set(0.0);
     EXPECT_EQ(1 / 20.0, m_pBeatJumpSize->get());
 
+    // Halve BeatJumpSize (the result would be 1/40 which is below the allowed
+    // minimum of 1/32 -> This must be ignored)
     m_pButtonBeatJumpSizeHalve->set(1.0);
     m_pButtonBeatJumpSizeHalve->set(0.0);
     EXPECT_EQ(1 / 20.0, m_pBeatJumpSize->get());
