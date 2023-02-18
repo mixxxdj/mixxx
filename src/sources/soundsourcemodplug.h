@@ -28,7 +28,8 @@ class SoundSourceModPlug final : public SoundSource {
 
     std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+            QImage* pCoverArt,
+            bool resetMissingTagMetadata) const override;
 
     void close() override;
 

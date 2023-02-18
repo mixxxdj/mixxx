@@ -12,7 +12,8 @@ namespace mp4 {
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::MP4::Tag& tag);
+        const TagLib::MP4::Tag& tag,
+        bool resetMissingTagMetadata);
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,

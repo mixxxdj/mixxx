@@ -10,8 +10,7 @@ Variables:
 -->
 <Template>
   <SetVariable name="FxUnit">[EqualizerRack1_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="FxNum">1</SetVariable>
-  <SetVariable name="FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+  <SetVariable name="FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
 
   <WidgetGroup>
     <ObjectName>EQKnobContainerLeft</ObjectName>
@@ -62,7 +61,7 @@ Variables:
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>2.000</KnobCenterYOffset>
                 <EffectUnitGroup><Variable name="FxUnit"/></EffectUnitGroup>
-                <Effect><Variable name="FxNum"/></Effect>
+                <Effect>1</Effect>
                 <EffectParameter><Variable name="FxParameter"/></EffectParameter>
                 <Connection>
                   <ConfigKey><Variable name="FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>

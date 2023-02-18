@@ -1,6 +1,6 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
+import Mixxx 1.0 as Mixxx
+import Mixxx.Controls 1.0 as MixxxControls
 import QtQuick 2.12
 import "Theme"
 
@@ -40,7 +40,6 @@ Item {
                 opacity: 1
                 visible: true
             }
-
         }
     ]
     transitions: [
@@ -65,14 +64,12 @@ Item {
                         property: "opacity"
                         duration: 150
                     }
-
                 }
 
                 PropertyAction {
                     target: passthroughContainer
                     property: "visible"
                 }
-
             }
 
         },
@@ -97,16 +94,13 @@ Item {
                         property: "opacity"
                         duration: 150
                     }
-
                 }
 
                 PropertyAction {
                     target: waveformContainer
                     property: "visible"
                 }
-
             }
-
         }
     ]
 
@@ -132,7 +126,6 @@ Item {
             colorLow: Theme.green
             group: root.group
         }
-
     }
 
     Rectangle {
@@ -145,7 +138,5 @@ Item {
             anchors.centerIn: parent
             text: "Passthrough Enabled"
         }
-
     }
-
 }

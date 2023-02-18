@@ -29,6 +29,7 @@
             <BeatHighlightColor></BeatHighlightColor>
             <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
             <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+            <PassthroughLabelColor><Variable name="PassthroughLabelColor"/></PassthroughLabelColor>
             <DimBrightThreshold><Variable name="DimBrightThresholdWaveform"/></DimBrightThreshold>
             <!--
             The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:

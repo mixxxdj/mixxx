@@ -37,7 +37,10 @@ class VSyncThread : public QThread {
     void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void setupSync(QGLWidget* glw, int index);
     void waitUntilSwap(QGLWidget* glw);
-
+    mixxx::Duration sinceLastSwap() const;
+    int getSyncIntervalTimeMicros() const {
+        return m_syncIntervalTimeMicros;
+    }
   signals:
     void vsyncRender();
     void vsyncSwap();
@@ -55,4 +58,5 @@ class VSyncThread : public QThread {
     QSemaphore m_semaVsyncSlot;
     double m_displayFrameRate;
     int m_vSyncPerRendering;
+    mixxx::Duration m_sinceLastSwap;
 };

@@ -1,5 +1,7 @@
 #include "library/trackset/baseplaylistfeature.h"
 
+#include <qlist.h>
+
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
@@ -19,7 +21,9 @@
 #include "library/treeitemmodel.h"
 #include "moc_baseplaylistfeature.cpp"
 #include "track/track.h"
+#include "track/trackid.h"
 #include "util/assert.h"
+#include "util/defs.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -58,6 +62,7 @@ void BasePlaylistFeature::initActions() {
             &BasePlaylistFeature::slotCreatePlaylist);
 
     m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
+    m_pRenamePlaylistAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
@@ -68,6 +73,11 @@ void BasePlaylistFeature::initActions() {
             this,
             &BasePlaylistFeature::slotDuplicatePlaylist);
     m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
+    const auto removeKeySequence =
+            // TODO(XXX): Qt6 replace enum | with QKeyCombination
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
+    m_pDeletePlaylistAction->setShortcut(removeKeySequence);
     connect(m_pDeletePlaylistAction,
             &QAction::triggered,
             this,
@@ -217,6 +227,11 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
         return;
     }
     m_pSidebarWidget->selectChildIndex(m_lastRightClickedIndex);
+}
+
+void BasePlaylistFeature::renameItem(const QModelIndex& index) {
+    m_lastRightClickedIndex = index;
+    slotRenamePlaylist();
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {
@@ -387,6 +402,11 @@ int BasePlaylistFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
     return kInvalidPlaylistId;
 }
 
+void BasePlaylistFeature::deleteItem(const QModelIndex& index) {
+    m_lastRightClickedIndex = index;
+    slotDeletePlaylist();
+}
+
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     if (!m_lastRightClickedIndex.isValid()) {
@@ -415,7 +435,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
     QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
             tr("Confirm Deletion"),
-            tr("Do you really want to delete this playlist?"),
+            tr("Do you really want to delete playlist <b>%1</b>?")
+                    .arg(m_playlistDao.getPlaylistName(playlistId)),
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
     if (btn == QMessageBox::No) {
@@ -652,7 +673,11 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
-            emit analyzeTracks(ids);
+            QList<AnalyzerScheduledTrack> tracks;
+            for (auto id : ids) {
+                tracks.append(id);
+            }
+            emit analyzeTracks(tracks);
         }
     }
 }

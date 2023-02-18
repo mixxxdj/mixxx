@@ -87,10 +87,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::engineClockChanged);
 
     keylockComboBox->clear();
-    for (int i = 0; i < EngineBuffer::KEYLOCK_ENGINE_COUNT; ++i) {
-        keylockComboBox->addItem(
-                EngineBuffer::getKeylockEngineName(
-                        static_cast<EngineBuffer::KeylockEngine>(i)));
+    for (const auto engine : EngineBuffer::kKeylockEngines) {
+        if (EngineBuffer::isKeylockEngineAvailable(engine)) {
+            keylockComboBox->addItem(
+                    EngineBuffer::getKeylockEngineName(engine), QVariant::fromValue(engine));
+        }
     }
 
     m_pLatencyCompensation = new ControlProxy("[Master]", "microphoneLatencyCompensation", this);
@@ -238,7 +239,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
     // connect them to the custom event filter below so they don't accept focus
-    // when we scroll the preferences page.
+    // when we scroll the preferences page to avoid undesired value changes.
     QObjectList objList = children();
     for (int i = 0; i < objList.length(); ++i) {
         QComboBox* combo = qobject_cast<QComboBox*>(objList[i]);
@@ -308,17 +309,19 @@ void DlgPrefSound::slotApply() {
     m_config.clearOutputs();
     emit writePaths(&m_config);
 
-    SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
+    SoundDeviceStatus status = SoundDeviceStatus::Ok;
     {
         ScopedWaitCursor cursor;
-        m_pKeylockEngine->set(keylockComboBox->currentIndex());
+        const auto keylockEngine =
+                keylockComboBox->currentData().value<EngineBuffer::KeylockEngine>();
+        m_pKeylockEngine->set(static_cast<double>(keylockEngine));
         m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
-                       ConfigValue(keylockComboBox->currentIndex()));
+                ConfigValue(static_cast<int>(keylockEngine)));
 
-        err = m_pSoundManager->setConfig(m_config);
+        status = m_pSoundManager->setConfig(m_config);
     }
-    if (err != SOUNDDEVICE_ERROR_OK) {
-        QString error = m_pSoundManager->getLastErrorMessage(err);
+    if (status != SoundDeviceStatus::Ok) {
+        QString error = m_pSoundManager->getLastErrorMessage(status);
         QMessageBox::warning(nullptr, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
@@ -496,10 +499,19 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         engineClockComboBox->setCurrentIndex(0);
     }
 
-    // Default keylock is Rubberband.
-    int keylock_engine = m_pSettings->getValue(
-            ConfigKey("[Master]", "keylock_engine"), 1);
-    keylockComboBox->setCurrentIndex(keylock_engine);
+    // Default keylock engine is Rubberband Faster (v2)
+    const auto keylockEngine = static_cast<EngineBuffer::KeylockEngine>(
+            m_pSettings->getValue(ConfigKey("[Master]", "keylock_engine"),
+                    static_cast<int>(EngineBuffer::defaultKeylockEngine())));
+    const auto keylockEngineVariant = QVariant::fromValue(keylockEngine);
+    const int index = keylockComboBox->findData(keylockEngineVariant);
+    if (index >= 0) {
+        keylockComboBox->setCurrentIndex(index);
+    } else {
+        keylockComboBox->addItem(
+                EngineBuffer::getKeylockEngineName(keylockEngine), keylockEngineVariant);
+        keylockComboBox->setCurrentIndex(keylockComboBox->count() - 1);
+    }
 
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
@@ -522,10 +534,15 @@ void DlgPrefSound::apiChanged(int index) {
         sampleRateComboBox->setEnabled(false);
         latencyLabel->setEnabled(false);
         audioBufferComboBox->setEnabled(false);
+        deviceSyncComboBox->setEnabled(false);
+        engineClockComboBox->setEnabled(false);
+
     } else {
         sampleRateComboBox->setEnabled(true);
         latencyLabel->setEnabled(true);
         audioBufferComboBox->setEnabled(true);
+        deviceSyncComboBox->setEnabled(true);
+        engineClockComboBox->setEnabled(true);
     }
 }
 
@@ -681,8 +698,14 @@ void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig(m_pSoundManager.get());
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
-    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
-    m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);
+
+    const auto keylockEngine = EngineBuffer::defaultKeylockEngine();
+    const int index = keylockComboBox->findData(QVariant::fromValue(keylockEngine));
+    DEBUG_ASSERT(index >= 0);
+    if (index >= 0) {
+        keylockComboBox->setCurrentIndex(index);
+    }
+    m_pKeylockEngine->set(static_cast<double>(keylockEngine));
 
     masterMixComboBox->setCurrentIndex(1);
     m_pMasterEnabled->set(1.0);

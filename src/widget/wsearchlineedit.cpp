@@ -2,16 +2,20 @@
 
 #include <QAbstractItemView>
 #include <QApplication>
+#include <QCompleter>
 #include <QFont>
 #include <QLineEdit>
 #include <QShortcut>
 #include <QSizePolicy>
+#include <QStringLiteral>
 #include <QStyle>
 
 #include "moc_wsearchlineedit.cpp"
+#include "preferences/configobject.h"
 #include "skin/legacy/skincontext.h"
 #include "util/assert.h"
 #include "util/logger.h"
+#include "util/parented_ptr.h"
 #include "wskincolor.h"
 #include "wwidget.h"
 
@@ -25,6 +29,7 @@ const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
 const QString kDisabledText = QStringLiteral("- - -");
 
+const QString kLibraryConfigGroup = QStringLiteral("[Library]");
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
 // Border width, max. 2 px when focused (in official skins)
@@ -59,17 +64,31 @@ constexpr int WSearchLineEdit::kMaxSearchEntries;
 
 //static
 int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
+bool WSearchLineEdit::s_completionsEnabled = kCompletionsEnabledDefault;
+bool WSearchLineEdit::s_historyShortcutsEnabled = kHistoryShortcutsEnabledDefault;
 
 //static
 void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     s_debouncingTimeoutMillis = verifyDebouncingTimeoutMillis(debouncingTimeoutMillis);
 }
 
+// static
+void WSearchLineEdit::setSearchCompletionsEnabled(bool searchCompletionsEnabled) {
+    s_completionsEnabled = searchCompletionsEnabled;
+}
+
+// static
+void WSearchLineEdit::setSearchHistoryShortcutsEnabled(bool searchHistoryShortcutsEnabled) {
+    s_historyShortcutsEnabled = searchHistoryShortcutsEnabled;
+}
+
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig),
-          m_clearButton(make_parented<QToolButton>(this)) {
+          m_completer(make_parented<QCompleter>(this)),
+          m_clearButton(make_parented<QToolButton>(this)),
+          m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
     setEditable(true);
@@ -81,6 +100,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
 
     //: Shown in the library search bar when it is empty.
     lineEdit()->setPlaceholderText(tr("Search..."));
+
+    m_completer->setModel(model());
+    m_completer->setCompletionMode(QCompleter::CompletionMode::InlineCompletion);
+    updateCompleter();
 
     // The goal is to make Esc natively close the popup, while in the line edit it
     // should move the keyboard focus to the tracks table. Unfortunately, eventFilter()
@@ -207,6 +230,10 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Shortcuts") + ": \n" +
             tr("Ctrl+F") + "  " +
             tr("Focus", "Give search bar input focus") + "\n" +
+            tr("Return") + " " +
+            tr("Trigger search before search-as-you-type timeout or"
+               "jump to tracks view afterwards") +
+            "\n" +
             tr("Ctrl+Backspace") + "  " +
             tr("Clear input", "Clear the search bar input field") + "\n" +
             tr("Ctrl+Space") + "  " +
@@ -283,7 +310,18 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!currentText().isNull());
-        return currentText();
+        QString text = currentText();
+        QLineEdit* pEdit = lineEdit();
+        QCompleter* pCompleter = completer();
+        if (pCompleter && pEdit && pEdit->hasSelectedText()) {
+            if (text.startsWith(pCompleter->completionPrefix()) &&
+                    pCompleter->completionPrefix().size() == pEdit->cursorPosition()) {
+                // Search for the entered text until the user has confirmed the
+                // completion by -> or enter
+                return pCompleter->completionPrefix();
+            }
+        }
+        return text;
     } else {
         return QString();
     }
@@ -322,6 +360,9 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         // If we're at the top of the list the Up key clears the search bar,
         // no matter if it's a saved or unsaved query.
         // Otherwise Up is handled by the combobox itself.
+        if (!s_historyShortcutsEnabled) {
+            return;
+        }
         currentTextIndex = findCurrentTextIndex();
         if (currentTextIndex == 0 ||
                 (currentTextIndex == -1 && !currentText().isEmpty())) {
@@ -332,6 +373,9 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     case Qt::Key_Down:
         // After clearing the text field the Down key
         // is expected to show the latest query
+        if (!s_historyShortcutsEnabled) {
+            return;
+        }
         if (currentText().isEmpty()) {
             setCurrentIndex(0);
             return;
@@ -342,19 +386,37 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
             slotSaveSearch();
         }
         break;
+    case Qt::Key_Left:
+    case Qt::Key_Right:
+        QComboBox::keyPressEvent(keyEvent);
+        slotTriggerSearch();
+        return;
     case Qt::Key_Enter:
-    case Qt::Key_Return:
+    case Qt::Key_Return: {
         if (slotClearSearchIfClearButtonHasFocus()) {
             return;
         }
+        QLineEdit* pEdit = lineEdit();
+        if (pEdit && pEdit->hasSelectedText()) {
+            QComboBox::keyPressEvent(keyEvent);
+            slotTriggerSearch();
+            return;
+        }
+
         if (findCurrentTextIndex() == -1) {
             slotSaveSearch();
         }
-        slotTriggerSearch();
+        // Jump to tracks if search signal was already emitted
+        if (!m_queryEmitted) {
+            slotTriggerSearch();
+        } else {
+            emit setLibraryFocus(FocusWidget::TracksTable);
+        }
         return;
+    }
     case Qt::Key_Space:
         // Open/close popup with Ctrl + space
-        if (keyEvent->modifiers() == Qt::ControlModifier) {
+        if (s_historyShortcutsEnabled && keyEvent->modifiers() == Qt::ControlModifier) {
             if (view()->isVisible()) {
                 hidePopup();
             } else {
@@ -390,6 +452,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
     QComboBox::focusInEvent(event);
+    updateCompleter();
     updateClearAndDropdownButton(currentText());
 }
 
@@ -449,13 +512,9 @@ void WSearchLineEdit::slotRestoreSearch(const QString& text) {
             << "slotRestoreSearch"
             << text;
 #endif // ENABLE_TRACE_LOG
-    if (text.isNull()) {
-        slotDisableSearch();
-    } else {
-        // we save the current search before we switch to a new text
-        slotSaveSearch();
-        enableSearch(text);
-    }
+    // we save the current search before we switch to a new text
+    slotSaveSearch();
+    enableSearch(text);
 }
 
 void WSearchLineEdit::slotTriggerSearch() {
@@ -467,6 +526,7 @@ void WSearchLineEdit::slotTriggerSearch() {
     DEBUG_ASSERT(isEnabled());
     m_debouncingTimer.stop();
     emit search(getSearchText());
+    m_queryEmitted = true;
 }
 
 /// saves the current query as selection
@@ -484,27 +544,19 @@ void WSearchLineEdit::slotSaveSearch() {
     if (cText.isEmpty() || !isEnabled()) {
         return;
     }
-    if (cIndex == -1) {
-        removeItem(-1);
-    }
 
-    // Check if the text is already listed
-    QSet<QString> querySet;
-    for (int index = 0; index < count(); index++) {
-        querySet.insert(itemText(index));
+    if (cIndex > 0) {
+        // If query exists and is not at the top, remove the original index
+        removeItem(cIndex);
     }
-    if (querySet.contains(cText)) {
-        // If query exists clear the box and use its index to set the currentIndex
-        int cIndex = findData(cText, Qt::DisplayRole);
-        setCurrentIndex(cIndex);
-        return;
-    } else {
-        // Else add it at the top
+    if (cIndex > 0 || cIndex == -1) {
+        // If the query doesn't exist yet or was not at top, insert it at the top
         insertItem(0, cText);
-        setCurrentIndex(0);
-        while (count() > kMaxSearchEntries) {
-            removeItem(kMaxSearchEntries);
-        }
+    }
+    setCurrentIndex(0);
+
+    while (count() > kMaxSearchEntries) {
+        removeItem(kMaxSearchEntries);
     }
 }
 
@@ -655,6 +707,15 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
     setStyleSheet(styleSheet);
 }
 
+void WSearchLineEdit::updateCompleter() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "updateCompleter";
+#endif // ENABLE_TRACE_LOG
+
+    lineEdit()->setCompleter(s_completionsEnabled ? m_completer.toWeakRef() : nullptr);
+}
+
 bool WSearchLineEdit::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
@@ -705,6 +766,7 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
             << "slotTextChanged"
             << text;
 #endif // ENABLE_TRACE_LOG
+    m_queryEmitted = false;
     m_debouncingTimer.stop();
     if (!isEnabled()) {
         setTextBlockSignals(kDisabledText);

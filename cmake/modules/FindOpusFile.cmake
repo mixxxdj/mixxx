@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 

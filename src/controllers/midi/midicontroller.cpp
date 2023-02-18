@@ -227,10 +227,16 @@ void MidiController::receivedShortMessage(unsigned char status,
         return;
     }
 
-    qCDebug(m_logInput) << MidiUtils::formatMidiOpCode(
-            getName(), status, control, value, channel, opCode, timestamp);
-    MidiKey mappingKey(status, control);
+    qCDebug(m_logInput) << QStringLiteral("incoming: ")
+                        << MidiUtils::formatMidiOpCode(getName(),
+                                   status,
+                                   control,
+                                   value,
+                                   channel,
+                                   opCode,
+                                   timestamp);
 
+    MidiKey mappingKey(status, control);
     triggerActivity();
     if (isLearning()) {
         emit messageReceived(status, control, value);
@@ -486,8 +492,9 @@ double MidiController::computeValue(
 }
 
 void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) {
-    qCDebug(m_logInput) << MidiUtils::formatSysexMessage(getName(), data, timestamp);
-
+    qCDebug(m_logInput) << QStringLiteral("incoming: ")
+                        << MidiUtils::formatSysexMessage(
+                                   getName(), data, timestamp);
     MidiKey mappingKey(data.at(0), 0xFF);
 
     triggerActivity();

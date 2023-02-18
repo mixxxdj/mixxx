@@ -54,7 +54,7 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
-                  <Splitter><!-- Splitter to make CoverArt resizeable -->
+                  <Splitter><!-- Splitter to make CoverArt resizable -->
                     <ObjectName>LibrarySplitter</ObjectName>
                     <SizePolicy>me,me</SizePolicy>
                     <SplitSizes>1,3</SplitSizes>
@@ -106,7 +106,7 @@ Description:
                       </CoverArt>
 
                     </Children>
-                  </Splitter><!-- /Splitter to make CoverArt resizeable -->
+                  </Splitter><!-- /Splitter to make CoverArt resizable -->
                 </Children>
               </WidgetGroup><!-- /Preview Search Cover Tree -->
 

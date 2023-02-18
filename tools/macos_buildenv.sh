@@ -64,11 +64,11 @@ case "$1" in
             echo "Build environment found: ${BUILDENV_PATH}"
         fi
 
-        export VCPKG_ROOT="${BUILDENV_PATH}"
+        export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
         export CMAKE_GENERATOR=Ninja
 
         echo_exported_variables() {
-            echo "VCPKG_ROOT=${VCPKG_ROOT}"
+            echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "CMAKE_GENERATOR=${CMAKE_GENERATOR}"
         }
 

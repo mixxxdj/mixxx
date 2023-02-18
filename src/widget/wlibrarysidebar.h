@@ -35,6 +35,8 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
+    void renameItem(const QModelIndex&);
+    void deleteItem(const QModelIndex&);
     FocusWidget setLibraryFocus(FocusWidget newFocus);
 
   protected:

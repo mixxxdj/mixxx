@@ -192,26 +192,11 @@ void EffectSlot::updateEngineState() {
     }
 }
 
-void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
-    //TODO: get actual configuration of engine
-    const mixxx::EngineParameters engineParameters(
-            mixxx::audio::SampleRate(96000),
-            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
-
-    if (isLoaded()) {
-        for (const auto& outputChannel :
-                m_pEffectsManager->registeredOutputChannels()) {
-            pStatesMap->insert(outputChannel.handle(),
-                    m_pEngineEffect->createState(engineParameters));
-        }
-    } else {
-        for (EffectState* pState : *pStatesMap) {
-            if (pState) {
-                delete pState;
-            }
-        }
-        pStatesMap->clear();
+void EffectSlot::initalizeInputChannel(ChannelHandle inputChannel) {
+    if (!m_pEngineEffect) {
+        return;
     }
+    m_pEngineEffect->initalizeInputChannel(inputChannel);
 };
 
 EffectManifestPointer EffectSlot::getManifest() const {
@@ -478,6 +463,9 @@ void EffectSlot::showParameter(EffectParameterPointer pParameter) {
 }
 
 void EffectSlot::swapParameters(EffectParameterType type, int index1, int index2) {
+    if (index1 == index2) {
+        return;
+    }
     VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index1) {
         return;
     }

@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQml 2.12
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
@@ -24,12 +24,12 @@ Item {
     property real arcRadius: width / 2
     readonly property real arcStartValue: {
         switch (arcStart) {
-        case Knob.ArcStart.Minimum:
-            return min;
-        case Knob.ArcStart.Maximum:
-            return max;
-        default:
-            return valueCenter;
+            case Knob.ArcStart.Minimum:
+                return min;
+            case Knob.ArcStart.Maximum:
+                return max;
+            default:
+                return valueCenter;
         }
     }
     property real arcOffsetX: 0
@@ -79,9 +79,7 @@ Item {
                 centerX: root.width / 2 + root.arcOffsetX
                 centerY: root.width / 2 + root.arcOffsetY
             }
-
         }
-
     }
 
     DragHandler {
@@ -144,5 +142,4 @@ Item {
         property: "value"
         value: wheelHandler.value
     }
-
 }

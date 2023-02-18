@@ -1,18 +1,17 @@
 #include "widget/weffectselector.h"
 
 #include <QAbstractItemView>
-#include <QApplication>
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
 #include "effects/visibleeffectslist.h"
+#include "library/library_decl.h"
 #include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(this),
-          m_iEffectSlotIndex(-1),
           m_pEffectsManager(pEffectsManager),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()) {
     // Prevent this widget from getting focused by Tab/Shift+Tab
@@ -28,8 +27,6 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, pChainSlot);
-    m_iEffectSlotIndex = EffectWidgetUtils::getEffectSlotIndexFromNode(
-            node, context);
 
     if (m_pEffectSlot != nullptr) {
         connect(m_pVisibleEffectsList.data(),
@@ -92,12 +89,11 @@ void WEffectSelector::slotEffectSelected(int newIndex) {
     m_pEffectSlot->loadEffectWithDefaults(pManifest);
 
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
-    // After selecting an effect send Shift+Tab to move focus to the next
-    // keyboard-focusable widget (tracks table in official skins) in order
-    // to immediately allow keyboard shortcuts again.
-    QKeyEvent backwardFocusKeyEvent =
-            QKeyEvent{QEvent::KeyPress, Qt::Key_Backtab, Qt::NoModifier};
-    QApplication::sendEvent(this, &backwardFocusKeyEvent);
+    // After selecting an effect send Shift+Tab to move focus to tracks table
+    // in order to immediately allow keyboard shortcuts again.
+    // TODO(ronso0) switch to previously focused (library?) widget instead
+    ControlObject::set(ConfigKey("[Library]", "focused_widget"),
+            static_cast<double>(FocusWidget::TracksTable));
 }
 
 void WEffectSelector::slotEffectUpdated() {

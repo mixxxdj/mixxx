@@ -3021,3 +3021,24 @@ TEST_F(EngineSyncTest, ImplicitLeaderToInternalClock) {
     ASSERT_FALSE(isSoftLeader(m_sGroup2));
     ASSERT_FALSE(isSoftLeader(m_sInternalClockGroup));
 }
+
+TEST_F(EngineSyncTest, BeatContextRounding) {
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
+            m_pTrack1->getSampleRate(), mixxx::audio::FramePos(11166), mixxx::Bpm(162));
+    m_pTrack1->trySetBeats(pBeats1);
+
+    // This playposition is was able to fail a DEBUG_ASSERT before
+    // https://github.com/mixxxdj/mixxx/pull/11263 It was not possible to pass
+    // it as one double literal
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"),
+            (-5167.0 - 0.33333333333393966313) / 220500);
+    ProcessBuffer();
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    // this must not abort due to the assertion in Beats::iteratorFrom()
+    ProcessBuffer();
+
+    EXPECT_NEAR(-0.021112622826908536,
+            ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
+            kMaxFloatingPointErrorHighPrecision);
+}

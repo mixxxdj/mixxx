@@ -51,6 +51,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
+          m_pPrevFailedTrackId(),
           m_replaygainPending(false),
           m_pChannelToCloneFrom(nullptr) {
     m_pChannel = new EngineDeck(handleGroup,
@@ -125,6 +126,22 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlObject::valueChanged,
             this,
             &BaseTrackPlayerImpl::slotCloneFromSampler);
+
+    // Load track from other deck/sampler
+    m_pLoadTrackFromDeck = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromDeck"),
+            false);
+    connect(m_pLoadTrackFromDeck.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromDeck);
+    m_pLoadTrackFromSampler = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromSampler"),
+            false);
+    connect(m_pLoadTrackFromSampler.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromSampler);
 
     // Waveform controls
     // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
@@ -463,8 +480,19 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
     m_pChannelToCloneFrom = nullptr;
+
     // Alert user.
+    // The QMessageBox blocks the event loop (and the GUI since it's modal dialog),
+    // though if a controller's Load button was pressed repeatedly we may get
+    // multiple identical messages for the same track.
+    // Avoid this and show only one message per track track at a time.
+    if (pTrack && m_pPrevFailedTrackId == pTrack->getId()) {
+        return;
+    } else if (pTrack) {
+        m_pPrevFailedTrackId = pTrack->getId();
+    }
     QMessageBox::warning(nullptr, tr("Couldn't load track."), reason);
+    m_pPrevFailedTrackId = TrackId();
 }
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
@@ -632,6 +660,30 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     TrackPointer pTrack = m_pChannelToCloneFrom->getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         m_pChannelToCloneFrom = nullptr;
+        return;
+    }
+
+    slotLoadTrack(pTrack, false);
+}
+
+void BaseTrackPlayerImpl::slotLoadTrackFromDeck(double d) {
+    int deck = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForDeck(deck - 1));
+}
+
+void BaseTrackPlayerImpl::slotLoadTrackFromSampler(double d) {
+    int sampler = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForSampler(sampler - 1));
+}
+
+void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
+    EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
+    if (!pChannel) {
+        return;
+    }
+
+    TrackPointer pTrack = pChannel->getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
         return;
     }
 

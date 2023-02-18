@@ -1,5 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import "Theme"
 
@@ -120,7 +120,6 @@ Rectangle {
                 group: root.group
                 key: "playposition"
             }
-
         }
 
         MouseArea {
@@ -133,10 +132,8 @@ Rectangle {
             onPositionChanged: (mouse) => {
                 if (containsPress)
                     playPositionControl.value = mouse.x / width;
-
             }
         }
-
     }
 
     Skin.VuMeter {
@@ -189,5 +186,4 @@ Rectangle {
         anchors.fill: parent
         group: root.group
     }
-
 }

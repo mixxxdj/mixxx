@@ -57,7 +57,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     midLowPass->setDescription(QObject::tr(
             "Frequencies below this cutoff are not adjusted in the stereo field"));
     midLowPass->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
     midLowPass->setDefaultLinkType(EffectManifestParameter::LinkType::None);
     midLowPass->setNeutralPointOnScale(1);
     midLowPass->setRange(kMinCornerHz, kMinCornerHz, kMaxCornerHz);

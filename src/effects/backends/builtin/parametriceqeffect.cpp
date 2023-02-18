@@ -34,7 +34,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain1->setDescription(QObject::tr(
             "Gain for Filter 1"));
     gain1->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    gain1->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    gain1->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain1->setNeutralPointOnScale(0.5);
     gain1->setRange(-18, 0, 18); // dB
 
@@ -69,7 +69,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain2->setDescription(QObject::tr(
             "Gain for Filter 2"));
     gain2->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    gain2->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    gain2->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain2->setNeutralPointOnScale(0.5);
     gain2->setRange(-18, 0, 18); // dB
 
