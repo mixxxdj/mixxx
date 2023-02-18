@@ -17,9 +17,6 @@
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
 
-constexpr double kMinBeatJumpSize = 0.03125;
-constexpr double kMaxBeatJumpSize = 512;
-
 // returns true if a is valid and is fairly close to target (within +/- 1 frame).
 bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) {
     return a.isValid() && a > target - 1 && a < target + 1;
@@ -1436,9 +1433,9 @@ void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
     // slotBeatLoop will call m_pCOBeatLoopSize->setAndConfirm if
     // new beatloop_size is valid
 
-    double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
-    double minBeatSize = s_dBeatSizes[0];
-    if ((beats < minBeatSize) || (beats > maxBeatSize)) {
+    double maxBeatLoopSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatLoopSize = s_dBeatSizes[0];
+    if ((beats < minBeatLoopSize) || (beats > maxBeatLoopSize)) {
         // Don't clamp the value here to not fall out of a measure
         return;
     }
@@ -1510,10 +1507,15 @@ void LoopingControl::slotBeatJump(double beats) {
 }
 
 void LoopingControl::slotBeatJumpSizeChangeRequest(double beats) {
-    if ((beats < kMinBeatJumpSize) || (beats > kMaxBeatJumpSize)) {
+    // Use same limits as for beat loop size
+    double maxBeatJumpSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatJumpSize = s_dBeatSizes[0];
+
+    if ((beats < minBeatJumpSize) || (beats > maxBeatJumpSize)) {
         // Don't clamp the value here to not fall out of a measure
         return;
     }
+
     m_pCOBeatJumpSize->setAndConfirm(beats);
 }
 
