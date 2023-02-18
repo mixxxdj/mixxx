@@ -16,7 +16,7 @@ class qopengl::IWaveformRenderer : public QOpenGLFunctions {
     /// markers, the actual waveform, etc). In other word, this interface
     /// mimics the WGLWidget virtuals, but to be called as layers of an
     /// actual WGLWidget.
-    virtual ~IWaveformRenderer() = default;  
+    virtual ~IWaveformRenderer() = default;
     virtual void initializeGL() {
     }
     virtual void resizeGL(int w, int h) {

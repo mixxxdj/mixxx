@@ -6,10 +6,6 @@
 
 #include <QGLWidget>
 
-///////////////////////////////////////
-// WGLWidget as a subclass of QGLWidget
-///////////////////////////////////////
-
 class WGLWidget : public QGLWidget {
   public:
     WGLWidget(QWidget* parent);

@@ -14,6 +14,9 @@ WGLWidget::WGLWidget(QWidget* parent)
 }
 
 bool WGLWidget::isContextValid() const {
+    // A QGLWidget should always have a context, but it is possible that
+    // the context is not valid. for example, if the underlying hardware
+    // does not support the format attributes that were requested.
     return context()->isValid();
 }
 
@@ -22,13 +25,11 @@ bool WGLWidget::isContextSharing() const {
 }
 
 bool WGLWidget::shouldRender() const {
-    return true;
     return isValid() && isVisible() && windowHandle() && windowHandle()->isExposed();
 }
 
 void WGLWidget::makeCurrentIfNeeded() {
-    // TODO m0dB is this really needed? is calling makeCurrent without this 'if' really a problem?
-    // if (context() != QGLContext::currentContext()) {
-    makeCurrent();
-    //}
+    if (context() != QGLContext::currentContext()) {
+        makeCurrent();
+    }
 }

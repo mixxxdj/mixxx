@@ -81,7 +81,6 @@ void WaveformRenderBeat::renderGL() {
             firstDisplayedPosition * trackSamples);
     const auto endPosition = mixxx::audio::FramePos::fromEngineSamplePos(
             lastDisplayedPosition * trackSamples);
-    auto it = trackBeats->iteratorFrom(startPosition);
 
     // TODO @m0dB use rendererWidth for vertical orientation
     // and apply a 90 degrees rotation to the matrix
@@ -90,7 +89,9 @@ void WaveformRenderBeat::renderGL() {
 
     int vertexCount = 0;
 
-    for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
+    for (auto it = trackBeats->iteratorFrom(startPosition);
+            it != trackBeats->cend() && *it <= endPosition;
+            ++it) {
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);

@@ -1,10 +1,9 @@
 #include "waveform/renderers/qopengl/waveformrendererendoftrack.h"
 
-#include <memory>
-
 #include <QDomNode>
 #include <QPaintEvent>
 #include <QPainter>
+#include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
