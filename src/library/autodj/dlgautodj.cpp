@@ -380,7 +380,7 @@ void DlgAutoDJ::updateSelectionInfo() {
     if (!indices.isEmpty()) {
         labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
         labelSelectionInfo->setText(
-                QStringLiteral("%1 (%2) / ")
+                QStringLiteral("<%1 (%2) / ")
                         .arg(mixxx::DurationBase::formatTime(duration),
                                 QString::number(indices.size())));
         labelSelectionInfo->setEnabled(true);
@@ -396,7 +396,7 @@ void DlgAutoDJ::updateTotalInfo() {
         return;
     }
 
-    labelTotalInfo->setText(QStringLiteral("%1 (%2)")
+    labelTotalInfo->setText(QStringLiteral("<%1 (%2)")
                                     .arg(summary.getTrackDurationText(),
                                             QString::number(summary.getTrackCount())));
 }
