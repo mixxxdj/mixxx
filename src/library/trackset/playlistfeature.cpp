@@ -135,9 +135,9 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
 /// This method queries the database and does dynamic insertion
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
-    QList<TreeItem*> data_list;
-    data_list.reserve(m_pTrackCollection->playlists()
-                              .countPlaylists(PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN));
+    std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
+    childrenToAdd.reserve(m_pTrackCollection->playlists().countPlaylists(
+            PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN));
 
     int selectedRow = -1;
     PlaylistSummarySelectResult playlistSummaries(
@@ -149,19 +149,19 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
 
         if (selectedId == playlistId) {
             // save index for selection
-            selectedRow = data_list.size() - 1;
+            selectedRow = childrenToAdd.size() - 1;
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(formatLabel(playlistSummary), playlistId);
-        item->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
+        auto pItem = std::make_unique<TreeItem>(formatLabel(playlistSummary), playlistId);
+        pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
 
-        decorateChild(item, playlistId);
-        data_list.append(item);
+        decorateChild(pItem.get(), playlistId);
+        childrenToAdd.push_back(std::move(pItem));
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_pSidebarModel->insertTreeItemRows(data_list, 0);
+    m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
     if (selectedRow == -1) {
         return QModelIndex();
     }
