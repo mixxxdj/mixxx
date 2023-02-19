@@ -1011,7 +1011,6 @@ class Mixer extends ComponentContainer {
         for (const selector of [1, 2, 3, 4, 5]) {
             this.outPacket.data[49 + selector] = quickEffectPresetColors[selector - 1] + Button.prototype.brightnessOn;
         }
-        console.log("Reset color");
         this.outPacket.send();
     }
 }
@@ -1780,6 +1779,7 @@ class S4Mk3Deck extends Deck {
             gridButtonPressed: false,
             starButtonPressed: false,
             libraryViewButtonPressed: false,
+            libraryPlaylistButtonPressed: false,
             currentSortedColumnIdx: -1,
             onChange: function(right) {
                 if (this.libraryViewButtonPressed) {
@@ -1797,7 +1797,7 @@ class S4Mk3Deck extends Deck {
                 } else if (this.libraryPlayButtonPressed) {
                     script.triggerControl("[PreviewDeck1]", right ? "beatjump_16_forward" : "beatjump_16_backward");
                 } else {
-                    // FIXME there is a bug where this action has no effect when the Mixxx window has no focused. Bug to be reported
+                    // FIXME there is a bug where this action has no effect when the Mixxx window has no focused. https://github.com/mixxxdj/mixxx/issues/11285
                     engine.setValue("[Library]", "focused_widget", this.shifted ? 2 : 3);
                     engine.setValue("[Library]", "MoveVertical", right ? 1 : -1);
                 }
@@ -1808,10 +1808,14 @@ class S4Mk3Deck extends Deck {
             onShortPress: function(pressed) {
                 if (this.libraryViewButtonPressed) {
                     script.toggleControl("[Library]", "sort_order");
-                } else if (this.shifted) {
-                    script.triggerControl("[Library]", "GoToItem");
                 } else {
-                    script.triggerControl(this.group, "LoadSelectedTrack");
+                    const currentlyFocusWidget = engine.getValue("[Library]", "focused_widget");
+                    // 3 == Tracks table or root views of library features
+                    if (this.shifted || currentlyFocusWidget !== 3) {
+                        script.triggerControl("[Library]", "GoToItem");
+                    } else {
+                        script.triggerControl(this.group, "LoadSelectedTrack");
+                    }
                 }
             },
             // FIXME not supported, feature request
@@ -1835,7 +1839,6 @@ class S4Mk3Deck extends Deck {
         });
         this.libraryStarButton = new Button({
             group: "[Library]",
-            key: "MoveFocusForward",
             libraryEncoder: this.libraryEncoder,
             onShortRelease: function() {
                 script.triggerControl(this.group, this.shifted ? "track_color_prev" : "track_color_next");
@@ -1847,16 +1850,46 @@ class S4Mk3Deck extends Deck {
                 this.libraryEncoder.starButtonPressed = false;
             },
         });
-        // FIXME there isn not feature about playlist at the moment, feature request
-        // this.libraryPlaylistButton = new Button({
-        //     onShortRelease: function(){
-        //         const current_selected_playlist = engine.getValue("[Library]", "playlist_selected");
-        //         engine.setValue("[Library]", this.shifted ? "remove_selected_track_to_playlist" : "add_selected_track_to_playlist", current_selected_playlist);
-        //     },
-        //     onLongPress: function(){
+        // FIXME there is no feature about playlist at the moment, so we use this button to control the context menu, which has playlist control
+        this.libraryPlaylistButton = new Button({
+            group: "[Library]",
+            libraryEncoder: this.libraryEncoder,
+            outConnect: function() {
+                const connection = engine.makeConnection(this.group, "focused_widget", (widget) => {
+                    // 4 == Context menu
+                    this.output(widget === 4);
+                });
+                // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                if (connection) {
+                    this.outConnections[0] = connection;
+                } else {
+                    console.warn("Unable to connect '"+this.group+".focused_widget' to the controller output. The control appears to be unaivailable.");
+                }
+            },
+            onShortRelease: function() {
+                const currentlyFocusWidget = engine.getValue("[Library]", "focused_widget");
+                // 3 == Tracks table or root views of library features
+                // 4 == Context menu
+                if (currentlyFocusWidget !== 3 && currentlyFocusWidget !== 4) {
+                    return;
+                }
+                script.toggleControl("[Library]", "show_track_menu");
+                this.libraryEncoder.libraryPlayButtonPressed = false;
 
-        //     }
-        // });
+                if (currentlyFocusWidget === 4) {
+                    engine.setValue("[Library]", "focused_widget", 3);
+                }
+            },
+            onShortPress: function() {
+                this.libraryEncoder.libraryPlayButtonPressed = true;
+            },
+            onLongRelease: function() {
+                this.libraryEncoder.libraryPlayButtonPressed = false;
+            },
+            onLongPress: function() {
+                engine.setValue("[Library]", "clear_search", 1);
+            }
+        });
         this.libraryViewButton = new Button({
             group: "[Master]",
             key: "maximize_library",
@@ -2112,7 +2145,6 @@ class S4Mk3Deck extends Deck {
                         this.deck.wheelMode = wheelModes.motor;
                         const group = this.group;
                         engine.beginTimer(motorWindUpMilliseconds, function() {
-                            // console.log("JOG tt on for "+group);
                             engine.setValue(group, "scratch2_enable", true);
                         }, true);
                     }
@@ -2232,7 +2264,6 @@ class S4Mk3Deck extends Deck {
 
                 switch (this.deck.wheelMode) {
                 case wheelModes.motor:
-                    // console.log(this.group+"\t"+ttAvgSpeed / baseRevolutionsPerSecond);
                     engine.setValue(this.group, "scratch2", ttAvgSpeed / baseRevolutionsPerSecond);
                     break;
                 case wheelModes.loopIn:
