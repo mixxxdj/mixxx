@@ -45,6 +45,14 @@ void WaveformWidget::initializeGL() {
     }
 }
 
+void WaveformWidget::resizeGL(int w, int h) {
+    makeCurrentIfNeeded();
+    for (int i = 0; i < m_rendererStack.size(); ++i) {
+        m_rendererStack[i]->qopenglWaveformRenderer()->resizeGL(w, h);
+    }
+    doneCurrent();
+}
+
 void WaveformWidget::handleEventFromWindow(QEvent* ev) {
     auto viewer = dynamic_cast<WWaveformViewer*>(parent());
     if (viewer) {

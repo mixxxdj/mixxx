@@ -30,6 +30,9 @@ void OpenGLWindow::paintGL() {
 }
 
 void OpenGLWindow::resizeGL(int w, int h) {
+    if (m_pWidget) {
+        m_pWidget->resizeGL(w, h);
+    }
 }
 
 void OpenGLWindow::widgetDestroyed() {

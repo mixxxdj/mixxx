@@ -37,7 +37,9 @@ void qopengl::WaveformRenderMark::setup(const QDomNode& node, const SkinContext&
 void qopengl::WaveformRenderMark::initializeGL() {
     initGradientShader();
     initTextureShader();
-
+    for (const auto& pMark : m_marks) {
+        generateMarkImage(pMark);
+    }
     generatePlayPosMarkTexture();
 }
 
@@ -213,14 +215,8 @@ void qopengl::WaveformRenderMark::renderGL() {
             continue;
         }
 
-        if (pMark->hasVisible() && !pMark->isVisible()) {
+        if ((pMark->hasVisible() && !pMark->isVisible()) || pMark->m_image.isNull()) {
             continue;
-        }
-
-        // Generate image on first paint can't be done in setup since we need to
-        // wait for the render widget to be resized yet.
-        if (pMark->m_image.isNull()) {
-            generateMarkImage(pMark);
         }
 
         const double samplePosition = pMark->getSamplePosition();
@@ -433,10 +429,10 @@ void qopengl::WaveformRenderMark::drawTriangle(QPainter* painter,
 }
 
 void qopengl::WaveformRenderMark::resizeGL(int, int) {
-    // Delete all marks' images. New images will be created on next paint.
     for (const auto& pMark : m_marks) {
-        pMark->m_image = QImage();
+        generateMarkImage(pMark);
     }
+    generatePlayPosMarkTexture();
 }
 
 void qopengl::WaveformRenderMark::onSetTrack() {

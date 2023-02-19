@@ -38,6 +38,7 @@ class WGLWidget : public QWidget {
     // called (indirectly) by WaveformWidgetFactory
     virtual void renderGL();
     // called by OpenGLWindow
+    virtual void resizeGL(int w, int h);
     virtual void handleEventFromWindow(QEvent* ev);
     virtual void initializeGL();
 

@@ -19,11 +19,10 @@ class qopengl::WaveformWidget : public ::WGLWidget,
     // override for WaveformWidgetAbstract
     mixxx::Duration render() override;
 
-    // override for WGLWidget
-    void renderGL() override;
-
     // overrides for WGLWidget
     void initializeGL() override;
+    void renderGL() override;
+    void resizeGL(int w, int h) override;
 
     virtual WGLWidget* getGLWidget() override {
         return this;
