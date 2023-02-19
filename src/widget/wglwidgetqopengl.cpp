@@ -68,9 +68,7 @@ void WGLWidget::initializeGL() {
 
 void WGLWidget::swapBuffers() {
     if (shouldRender()) {
-        makeCurrentIfNeeded();
         m_pOpenGLWindow->context()->swapBuffers(m_pOpenGLWindow->context()->surface());
-        doneCurrent();
     }
 }
 

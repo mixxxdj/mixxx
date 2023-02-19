@@ -39,12 +39,10 @@ void WaveformWidget::renderGL() {
 }
 
 void WaveformWidget::initializeGL() {
-    makeCurrentIfNeeded();
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->qopenglWaveformRenderer()->initializeOpenGLFunctions();
         m_rendererStack[i]->qopenglWaveformRenderer()->initializeGL();
     }
-    doneCurrent();
 }
 
 void WaveformWidget::handleEventFromWindow(QEvent* ev) {

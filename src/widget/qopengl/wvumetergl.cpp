@@ -70,7 +70,6 @@ void main()
 }
 
 void WVuMeterGL::renderGL() {
-    makeCurrentIfNeeded();
     glClearColor(m_qBgColor.redF(), m_qBgColor.greenF(), m_qBgColor.blueF(), 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -164,8 +163,6 @@ void WVuMeterGL::renderGL() {
             }
         }
     }
-
-    doneCurrent();
 }
 
 void WVuMeterGL::cleanupGL() {
