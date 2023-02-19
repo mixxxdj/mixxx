@@ -88,7 +88,7 @@ class WVuMeterGL : public WGLWidget, public WBaseWidget {
 
     void initializeGL() override;
     void cleanupGL();
-    void renderGL();
+    void renderGL() override;
     void drawTexture(QOpenGLTexture* texture, const QRectF& sourceRect, const QRectF& targetRect);
 #endif
 };

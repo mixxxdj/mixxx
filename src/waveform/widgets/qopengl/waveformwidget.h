@@ -1,6 +1,5 @@
 #pragma once
 
-#include "waveform/widgets/qopengl/iwaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wglwidget.h"
 
@@ -11,18 +10,16 @@ class WaveformWidget;
 }
 
 class qopengl::WaveformWidget : public ::WGLWidget,
-                                public ::WaveformWidgetAbstract,
-                                public qopengl::IWaveformWidget {
+                                public ::WaveformWidgetAbstract {
     Q_OBJECT
   public:
     explicit WaveformWidget(const QString& group, QWidget* parent);
     ~WaveformWidget() override;
 
-    qopengl::IWaveformWidget* qopenglWaveformWidget() override {
-        return this;
-    }
+    // override for WaveformWidgetAbstract
+    mixxx::Duration render() override;
 
-    // override for IWaveformWidget
+    // override for WGLWidget
     void renderGL() override;
 
     // overrides for WGLWidget

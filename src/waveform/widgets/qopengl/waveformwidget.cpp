@@ -18,9 +18,15 @@ WaveformWidget::~WaveformWidget() {
     doneCurrent();
 }
 
-void WaveformWidget::renderGL() {
+mixxx::Duration WaveformWidget::render() {
     makeCurrentIfNeeded();
+    renderGL();
+    doneCurrent();
+    // not used, here for API compatibility
+    return mixxx::Duration();
+}
 
+void WaveformWidget::renderGL() {
     if (shouldOnlyDrawBackground()) {
         if (!m_rendererStack.empty()) {
             m_rendererStack[0]->qopenglWaveformRenderer()->renderGL();
@@ -30,7 +36,6 @@ void WaveformWidget::renderGL() {
             m_rendererStack[i]->qopenglWaveformRenderer()->renderGL();
         }
     }
-    doneCurrent();
 }
 
 void WaveformWidget::initializeGL() {

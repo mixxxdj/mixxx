@@ -152,7 +152,7 @@ class WSpinny : public WGLWidget,
     void drawTexture(QOpenGLTexture* texture);
     void cleanupGL();
     void updateLoaderCoverGL();
-    void renderGL();
+    void renderGL() override;
 
     bool m_hasOpenGLShaderPrograms{};
     QOpenGLShaderProgram m_shaderProgram;

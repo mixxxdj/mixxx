@@ -364,7 +364,9 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 #ifdef MIXXX_USE_QOPENGL
     if (shouldRender()) {
         if (m_hasOpenGLShaderPrograms) {
+            makeCurrentIfNeeded();
             renderGL();
+            doneCurrent();
         } else {
             renderQPainter();
         }

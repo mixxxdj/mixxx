@@ -58,6 +58,10 @@ void WGLWidget::doneCurrent() {
     }
 }
 
+void WGLWidget::renderGL() {
+    // to be implemented in derived widgets if needed
+}
+
 void WGLWidget::initializeGL() {
     // to be implemented in derived widgets if needed
 }
