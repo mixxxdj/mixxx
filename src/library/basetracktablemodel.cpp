@@ -624,7 +624,7 @@ QVariant BaseTrackTableModel::roleValue(
             VERIFY_OR_DEBUG_ASSERT(ok && timesPlayed >= 0) {
                 return QVariant();
             }
-            return QString("(%1)").arg(timesPlayed);
+            return QString::number(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
