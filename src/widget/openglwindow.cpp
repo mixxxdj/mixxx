@@ -22,6 +22,11 @@ void OpenGLWindow::initializeGL() {
 }
 
 void OpenGLWindow::paintGL() {
+    if (m_pWidget && isExposed()) {
+        m_pWidget->renderGL();
+        m_pWidget->swapBuffers();
+        m_pWidget->renderGL();
+    }
 }
 
 void OpenGLWindow::resizeGL(int w, int h) {
