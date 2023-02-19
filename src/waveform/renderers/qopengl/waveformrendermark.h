@@ -60,7 +60,7 @@ class qopengl::WaveformRenderMark : public QObject, public qopengl::WaveformRend
     bool m_bCuesUpdates{};
 
     void fillRectWithGradient(const QRectF& rect, QColor color, Qt::Orientation orientation);
-    void drawTexture(int x, int y, QOpenGLTexture* texture);
+    void drawTexture(float x, float y, QOpenGLTexture* texture);
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

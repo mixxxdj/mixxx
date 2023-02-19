@@ -123,7 +123,7 @@ void main()
     }
 }
 
-void qopengl::WaveformRenderMark::drawTexture(int x, int y, QOpenGLTexture* texture) {
+void qopengl::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* texture) {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const float texx1 = 0.f;
     const float texy1 = 0.f;
@@ -215,8 +215,12 @@ void qopengl::WaveformRenderMark::renderGL() {
             continue;
         }
 
-        if ((pMark->hasVisible() && !pMark->isVisible()) || pMark->m_image.isNull()) {
+        if (pMark->hasVisible() && !pMark->isVisible()) {
             continue;
+        }
+
+        if (pMark->m_image.isNull()) {
+            generateMarkImage(pMark);
         }
 
         const double samplePosition = pMark->getSamplePosition();
@@ -225,15 +229,14 @@ void qopengl::WaveformRenderMark::renderGL() {
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
             const double sampleEndPosition = pMark->getSampleEndPosition();
 
-            currentMarkPoint = qRound(currentMarkPoint);
+            currentMarkPoint = std::floor(currentMarkPoint);
 
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // Pixmaps are expected to have the mark stroke at the center,
                 // and preferably have an odd width in order to have the stroke
                 // exactly at the sample position.
-                const int markHalfWidth = static_cast<int>(
-                        pMark->m_image.width() / 2.0 / devicePixelRatio);
-                const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfWidth;
+                const float markHalfWidth = pMark->m_pTexture->width() / devicePixelRatio / 2.f;
+                const float drawOffset = currentMarkPoint - markHalfWidth;
 
                 bool visible = false;
                 // Check if the current point needs to be displayed.
@@ -251,7 +254,7 @@ void qopengl::WaveformRenderMark::renderGL() {
                             m_waveformRenderer->transformSamplePositionInRendererWorld(
                                     sampleEndPosition);
 
-                    currentMarkEndPoint = qRound(currentMarkEndPoint);
+                    currentMarkEndPoint = std::floor(currentMarkEndPoint);
 
                     if (visible || currentMarkEndPoint > 0) {
                         QColor color = pMark->fillColor();
@@ -269,18 +272,18 @@ void qopengl::WaveformRenderMark::renderGL() {
                 }
 
                 if (visible) {
-                    marksOnScreen[pMark] = drawOffset;
+                    marksOnScreen[pMark] = static_cast<int>(drawOffset);
                 }
             } else {
-                const int markHalfHeight = static_cast<int>(pMark->m_image.height() / 2.0);
-                const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfHeight;
+                const float markHalfHeight = pMark->m_pTexture->height() / devicePixelRatio / 2.f;
+                const float drawOffset = currentMarkPoint - markHalfHeight;
 
                 bool visible = false;
                 // Check if the current point needs to be displayed.
                 if (currentMarkPoint > -markHalfHeight &&
                         currentMarkPoint < m_waveformRenderer->getHeight() +
                                         markHalfHeight) {
-                    drawTexture(drawOffset, 0, pMark->m_pTexture.get());
+                    drawTexture(drawOffset, 0.f, pMark->m_pTexture.get());
                     visible = true;
                 }
 
@@ -305,21 +308,21 @@ void qopengl::WaveformRenderMark::renderGL() {
                 }
 
                 if (visible) {
-                    marksOnScreen[pMark] = drawOffset;
+                    marksOnScreen[pMark] = static_cast<int>(drawOffset);
                 }
             }
         }
     }
     m_waveformRenderer->setMarkPositions(marksOnScreen);
 
-    double currentMarkPoint =
-            qRound(m_waveformRenderer->getPlayMarkerPosition() *
-                    m_waveformRenderer->getWidth());
-    const int markHalfWidth = static_cast<int>(
-            m_pPlayPosMarkTexture->width() / 2.0 / devicePixelRatio);
-    const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfWidth;
+    double currentMarkPoint = m_waveformRenderer->getPlayMarkerPosition() *
+            m_waveformRenderer->getWidth();
+    currentMarkPoint = std::floor(currentMarkPoint);
 
-    drawTexture(drawOffset, 0, m_pPlayPosMarkTexture.get());
+    const float markHalfWidth = m_pPlayPosMarkTexture->width() / devicePixelRatio / 2.f;
+    const float drawOffset = static_cast<float>(currentMarkPoint) - markHalfWidth;
+
+    drawTexture(drawOffset, 0.f, m_pPlayPosMarkTexture.get());
 }
 
 void qopengl::WaveformRenderMark::generatePlayPosMarkTexture() {
@@ -333,14 +336,14 @@ void qopengl::WaveformRenderMark::generatePlayPosMarkTexture() {
     //    const auto playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
     const auto orientation = m_waveformRenderer->getOrientation();
 
-    const int lineX = 5;
-    const int lineY = 5;
+    const float lineX = 5.5;
+    const float lineY = 5.5;
 
     if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
         imgwidth = 11;
-        imgheight = m_waveformRenderer->getHeight();
+        imgheight = height;
     } else {
-        imgwidth = m_waveformRenderer->getWidth();
+        imgwidth = width;
         imgheight = 11;
     }
 
@@ -364,24 +367,24 @@ void qopengl::WaveformRenderMark::generatePlayPosMarkTexture() {
         // lines next to playpos
         // Note: don't draw lines where they would overlap the triangles,
         // otherwise both translucent strokes add up to a darker tone.
-        painter.drawLine(lineX + 1, 4, lineX + 1, height);
-        painter.drawLine(lineX - 1, 4, lineX - 1, height);
+        painter.drawLine(QLineF(lineX + 1.f, 4.f, lineX + 1.f, height));
+        painter.drawLine(QLineF(lineX - 1.f, 4.f, lineX - 1.f, height));
 
         // triangle at top edge
         // Increase line/waveform contrast
         painter.setOpacity(0.8);
-        QPointF t0 = QPointF(lineX - 5, 0);
-        QPointF t1 = QPointF(lineX + 5, 0);
-        QPointF t2 = QPointF(lineX, 6);
+        QPointF t0 = QPointF(lineX - 5.f, 0.f);
+        QPointF t1 = QPointF(lineX + 5.f, 0.f);
+        QPointF t2 = QPointF(lineX, 6.f);
         drawTriangle(&painter, bgFill, t0, t1, t2);
     } else { // vertical waveforms
-        painter.drawLine(4, lineY + 1, width, lineY + 1);
-        painter.drawLine(4, lineY - 1, width, lineY - 1);
+        painter.drawLine(QLineF(4.f, lineY + 1.f, width, lineY + 1.f));
+        painter.drawLine(QLineF(4.f, lineY - 1.f, width, lineY - 1.f));
         // triangle at left edge
         painter.setOpacity(0.8);
-        QPointF l0 = QPointF(0, lineY - 5.01);
-        QPointF l1 = QPointF(0, lineY + 4.99);
-        QPointF l2 = QPointF(6, lineY);
+        QPointF l0 = QPointF(0.f, lineY - 5.f);
+        QPointF l1 = QPointF(0.f, lineY + 5.f);
+        QPointF l2 = QPointF(6.f, lineY);
         drawTriangle(&painter, bgFill, l0, l1, l2);
     }
 
@@ -391,15 +394,15 @@ void qopengl::WaveformRenderMark::generatePlayPosMarkTexture() {
     QBrush fgFill = m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor();
     if (orientation == Qt::Horizontal) {
         // play position line
-        painter.drawLine(lineX, 0, lineX, height);
+        painter.drawLine(QLineF(lineX, 0.f, lineX, height));
         // triangle at top edge
-        QPointF t0 = QPointF(lineX - 4, 0);
-        QPointF t1 = QPointF(lineX + 4, 0);
-        QPointF t2 = QPointF(lineX, 5);
+        QPointF t0 = QPointF(lineX - 4.f, 0.f);
+        QPointF t1 = QPointF(lineX + 4.f, 0.f);
+        QPointF t2 = QPointF(lineX, 5.f);
         drawTriangle(&painter, fgFill, t0, t1, t2);
     } else {
         // vertical waveforms
-        painter.drawLine(0, lineY, width, lineY);
+        painter.drawLine(QLineF(0.f, lineY, width, lineY));
         // triangle at left edge
         QPointF l0 = QPointF(0, lineY - 4.01);
         QPointF l1 = QPointF(0, lineY + 4);
@@ -556,28 +559,30 @@ void qopengl::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
 
         // fixed margin ...
         QRect wordRect = metrics.tightBoundingRect(label);
-        constexpr int marginX = 1;
-        constexpr int marginY = 1;
-        wordRect.moveTop(marginX + 1);
-        wordRect.moveLeft(marginY + 1);
         wordRect.setHeight(wordRect.height() + (wordRect.height() % 2));
         wordRect.setWidth(wordRect.width() + (wordRect.width()) % 2);
+        constexpr float marginX = 1.f;
+        constexpr float marginY = 1.f;
+        QRectF wordRectF(marginX + 1.f,
+                marginY + 1.f,
+                static_cast<float>(wordRect.width()),
+                static_cast<float>(wordRect.height()));
         // even wordrect to have an even Image >> draw the line in the middle !
 
-        int labelRectWidth = wordRect.width() + 2 * marginX + 4;
-        int labelRectHeight = wordRect.height() + 2 * marginY + 4;
+        float labelRectWidth = wordRectF.width() + 2 * marginX + 4;
+        float labelRectHeight = wordRectF.height() + 2 * marginY + 4;
 
-        QRectF labelRect(0, 0, (float)labelRectWidth, (float)labelRectHeight);
+        QRectF labelRect(0.f, 0.f, labelRectWidth, labelRectHeight);
 
-        int width;
-        int height;
+        float width;
+        float height;
 
         if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-            width = 2 * labelRectWidth + 1;
+            width = 2.f * labelRectWidth + 1.f;
             height = m_waveformRenderer->getHeight();
         } else {
             width = m_waveformRenderer->getWidth();
-            height = 2 * labelRectHeight + 1;
+            height = 2.f * labelRectHeight + 1.f;
         }
 
         pMark->m_image = QImage(
@@ -590,15 +595,15 @@ void qopengl::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         Qt::Alignment markAlignV = pMark->m_align & Qt::AlignVertical_Mask;
 
         if (markAlignH == Qt::AlignHCenter) {
-            labelRect.moveLeft((width - labelRectWidth) / 2);
+            labelRect.moveLeft((width - labelRectWidth) / 2.f);
         } else if (markAlignH == Qt::AlignRight) {
-            labelRect.moveRight(width - 1);
+            labelRect.moveRight(width - 1.f);
         }
 
         if (markAlignV == Qt::AlignVCenter) {
-            labelRect.moveTop((height - labelRectHeight) / 2);
+            labelRect.moveTop((height - labelRectHeight) / 2.f);
         } else if (markAlignV == Qt::AlignBottom) {
-            labelRect.moveBottom(height - 1);
+            labelRect.moveBottom(height - 1.f);
         }
 
         pMark->m_label.setAreaRect(labelRect);
@@ -613,7 +618,7 @@ void qopengl::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
 
         // Draw marker lines
         if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-            int middle = width / 2;
+            float middle = width / 2.f;
             pMark->m_linePosition = middle;
             if (markAlignH == Qt::AlignHCenter) {
                 if (labelRect.top() > 0) {
@@ -621,8 +626,8 @@ void qopengl::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
                     painter.drawLine(QLineF(middle, 0, middle, labelRect.top()));
 
                     painter.setPen(pMark->borderColor());
-                    painter.drawLine(QLineF(middle - 1, 0, middle - 1, labelRect.top()));
-                    painter.drawLine(QLineF(middle + 1, 0, middle + 1, labelRect.top()));
+                    painter.drawLine(QLineF(middle - 1.f, 0.f, middle - 1.f, labelRect.top()));
+                    painter.drawLine(QLineF(middle + 1.f, 0.f, middle + 1.f, labelRect.top()));
                 }
 
                 if (labelRect.bottom() < height) {
@@ -630,28 +635,34 @@ void qopengl::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
                     painter.drawLine(QLineF(middle, labelRect.bottom(), middle, height));
 
                     painter.setPen(pMark->borderColor());
-                    painter.drawLine(QLineF(middle - 1, labelRect.bottom(), middle - 1, height));
-                    painter.drawLine(QLineF(middle + 1, labelRect.bottom(), middle + 1, height));
+                    painter.drawLine(QLineF(middle - 1.f,
+                            labelRect.bottom(),
+                            middle - 1.f,
+                            height));
+                    painter.drawLine(QLineF(middle + 1.f,
+                            labelRect.bottom(),
+                            middle + 1.f,
+                            height));
                 }
             } else { // AlignLeft || AlignRight
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(middle, 0, middle, height);
+                painter.drawLine(QLineF(middle, 0.f, middle, height));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(middle - 1, 0, middle - 1, height);
-                painter.drawLine(middle + 1, 0, middle + 1, height);
+                painter.drawLine(QLineF(middle - 1.f, 0, middle - 1.f, height));
+                painter.drawLine(QLineF(middle + 1.f, 0, middle + 1.f, height));
             }
         } else { // Vertical
-            int middle = height / 2;
+            float middle = height / 2.f;
             pMark->m_linePosition = middle;
             if (markAlignV == Qt::AlignVCenter) {
                 if (labelRect.left() > 0) {
                     painter.setPen(pMark->fillColor());
-                    painter.drawLine(QLineF(0, middle, labelRect.left(), middle));
+                    painter.drawLine(QLineF(0.f, middle, labelRect.left(), middle));
 
                     painter.setPen(pMark->borderColor());
-                    painter.drawLine(QLineF(0, middle - 1, labelRect.left(), middle - 1));
-                    painter.drawLine(QLineF(0, middle + 1, labelRect.left(), middle + 1));
+                    painter.drawLine(QLineF(0.f, middle - 1.f, labelRect.left(), middle - 1.f));
+                    painter.drawLine(QLineF(0.f, middle + 1.f, labelRect.left(), middle + 1.f));
                 }
 
                 if (labelRect.right() < width) {
@@ -659,16 +670,16 @@ void qopengl::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
                     painter.drawLine(QLineF(labelRect.right(), middle, width, middle));
 
                     painter.setPen(pMark->borderColor());
-                    painter.drawLine(QLineF(labelRect.right(), middle - 1, width, middle - 1));
-                    painter.drawLine(QLineF(labelRect.right(), middle + 1, width, middle + 1));
+                    painter.drawLine(QLineF(labelRect.right(), middle - 1.f, width, middle - 1.f));
+                    painter.drawLine(QLineF(labelRect.right(), middle + 1.f, width, middle + 1.f));
                 }
             } else { // AlignTop || AlignBottom
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(0, middle, width, middle);
+                painter.drawLine(QLineF(0.f, middle, width, middle));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(0, middle - 1, width, middle - 1);
-                painter.drawLine(0, middle + 1, width, middle + 1);
+                painter.drawLine(QLineF(0.f, middle - 1.f, width, middle - 1.f));
+                painter.drawLine(QLineF(0.f, middle + 1.f, width, middle + 1.f));
             }
         }
 

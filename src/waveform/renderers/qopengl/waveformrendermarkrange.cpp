@@ -113,8 +113,8 @@ void qopengl::WaveformRenderMarkRange::renderGL() {
                         startSample);
         double endPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(endSample);
 
-        startPosition = qRound(startPosition);
-        endPosition = qRound(endPosition);
+        startPosition = std::floor(startPosition);
+        endPosition = std::floor(endPosition);
 
         const double span = std::max(endPosition - startPosition, 1.0);
 

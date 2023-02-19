@@ -96,24 +96,26 @@ void WaveformRenderBeat::renderGL() {
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
-        xBeatPoint = qRound(xBeatPoint);
+        xBeatPoint = std::floor(xBeatPoint);
 
         // If we don't have enough space, double the size.
         if (vertexCount >= m_beatLineVertices.size()) {
             m_beatLineVertices.resize(m_beatLineVertices.size() * 2);
         }
 
+        xBeatPoint -= 0.5f;
+
         m_beatLineVertices[vertexCount++] = xBeatPoint;
         m_beatLineVertices[vertexCount++] = 0.f;
-        m_beatLineVertices[vertexCount++] = xBeatPoint + 1;
+        m_beatLineVertices[vertexCount++] = xBeatPoint + 1.f;
         m_beatLineVertices[vertexCount++] = 0.f;
         m_beatLineVertices[vertexCount++] = xBeatPoint;
         m_beatLineVertices[vertexCount++] = rendererHeight;
         m_beatLineVertices[vertexCount++] = xBeatPoint;
         m_beatLineVertices[vertexCount++] = rendererHeight;
-        m_beatLineVertices[vertexCount++] = xBeatPoint + 1;
+        m_beatLineVertices[vertexCount++] = xBeatPoint + 1.f;
         m_beatLineVertices[vertexCount++] = rendererHeight;
-        m_beatLineVertices[vertexCount++] = xBeatPoint + 1;
+        m_beatLineVertices[vertexCount++] = xBeatPoint + 1.f;
         m_beatLineVertices[vertexCount++] = 0.f;
     }
     m_shaderProgram.bind();

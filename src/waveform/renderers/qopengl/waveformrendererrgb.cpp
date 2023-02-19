@@ -235,7 +235,7 @@ void WaveformRendererRGB::renderGL() {
             blue *= normFactor;
         }
 
-        const float fx = static_cast<float>(x);
+        const float fx = static_cast<float>(x) - 0.5f;
 
         // lines are thin rectangles
         addRectangle(fx,
