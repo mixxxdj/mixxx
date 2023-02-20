@@ -347,6 +347,8 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pOutroEndClear;
     std::unique_ptr<ControlPushButton> m_pOutroEndActivate;
 
+    ControlValueAtomic<double> m_n60dBSoundStartPosition;
+
     std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlMode;
 

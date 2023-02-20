@@ -498,6 +498,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(Cue::kNoPosition);
         m_pOutroEndEnabled->forceSet(0.0);
+        m_n60dBSoundStartPosition.setValue(Cue::kNoPosition);
         setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
         m_usedSeekOnLoadPosition.setValue(mixxx::audio::kStartFramePos);
@@ -660,6 +661,14 @@ void CueControl::loadCuesFromTrack() {
             active_hotcues.insert(hotcue);
             break;
         }
+        case mixxx::CueType::N60dBSound: {
+            Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
+            m_n60dBSoundStartPosition.setValue(pos.startPosition.toEngineSamplePos());
+            break;
+        }
+        case mixxx::CueType::Beat:
+        case mixxx::CueType::Jump:
+        case mixxx::CueType::Invalid:
         default:
             break;
         }
@@ -1241,15 +1250,7 @@ void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
         appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
     }
 
-    TrackPointer pLoadedTrack = m_pLoadedTrack;
-    if (pLoadedTrack) {
-        CuePointer pN60dBSound =
-                pLoadedTrack->findCueByType(mixxx::CueType::N60dBSound);
-        if (pN60dBSound) {
-            const mixxx::audio::FramePos frame = pN60dBSound->getPosition();
-            appendCueHint(pHintList, frame, Hint::Type::FirstSound);
-        }
-    }
+    appendCueHint(pHintList, m_n60dBSoundStartPosition.getValue(), Hint::Type::FirstSound);
     appendCueHint(pHintList, m_pIntroStartPosition->get(), Hint::Type::IntroStart);
     appendCueHint(pHintList, m_pIntroEndPosition->get(), Hint::Type::IntroEnd);
     appendCueHint(pHintList, m_pOutroStartPosition->get(), Hint::Type::OutroStart);
