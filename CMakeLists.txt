@@ -1131,10 +1131,6 @@ target_compile_definitions(mixxx-lib PUBLIC
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
   $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
   $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
-  # Disable assert.h assertions in release mode. Some libraries use
-  # this as a signal for when to enable code that should be disabled
-  # in release mode.
-  $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
 # Mac-specific options
