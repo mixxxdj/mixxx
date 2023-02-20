@@ -311,9 +311,9 @@ QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!currentText().isNull());
         QString text = currentText();
-        QLineEdit* pEdit = lineEdit();
         QCompleter* pCompleter = completer();
-        if (pCompleter && pEdit && pEdit->hasSelectedText()) {
+        if (pCompleter && hasSelectedText()) {
+            QLineEdit* pEdit = lineEdit();
             if (text.startsWith(pCompleter->completionPrefix()) &&
                     pCompleter->completionPrefix().size() == pEdit->cursorPosition()) {
                 // Search for the entered text until the user has accepted the
@@ -388,17 +388,22 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         }
         break;
     case Qt::Key_Left:
-    case Qt::Key_Right:
+    case Qt::Key_Right: {
+        // Both keys may change or clear the selection (suggested completion).
+        const bool hadSelectedTextBeforeKeyPressed = hasSelectedText();
         QComboBox::keyPressEvent(keyEvent);
-        slotTriggerSearch();
+        if (hadSelectedTextBeforeKeyPressed && !hasSelectedText()) {
+            // Selection is removed, search the full text now.
+            triggerSearchDebounced();
+        }
         return;
+    }
     case Qt::Key_Enter:
     case Qt::Key_Return: {
         if (slotClearSearchIfClearButtonHasFocus()) {
             return;
         }
-        QLineEdit* pEdit = lineEdit();
-        if (pEdit && pEdit->hasSelectedText()) {
+        if (hasSelectedText()) {
             QComboBox::keyPressEvent(keyEvent);
             slotTriggerSearch();
             return;
@@ -516,6 +521,12 @@ void WSearchLineEdit::slotRestoreSearch(const QString& text) {
     // we save the current search before we switch to a new text
     slotSaveSearch();
     enableSearch(text);
+}
+
+void WSearchLineEdit::triggerSearchDebounced() {
+    DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
+    DEBUG_ASSERT(s_debouncingTimeoutMillis >= kMinDebouncingTimeoutMillis);
+    m_debouncingTimer.start(s_debouncingTimeoutMillis);
 }
 
 void WSearchLineEdit::slotTriggerSearch() {
@@ -768,15 +779,13 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
             << text;
 #endif // ENABLE_TRACE_LOG
     m_queryEmitted = false;
-    m_debouncingTimer.stop();
     if (!isEnabled()) {
+        m_debouncingTimer.stop();
         setTextBlockSignals(kDisabledText);
         return;
     }
     updateClearAndDropdownButton(text);
-    DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
-    DEBUG_ASSERT(s_debouncingTimeoutMillis >= kMinDebouncingTimeoutMillis);
-    m_debouncingTimer.start(s_debouncingTimeoutMillis);
+    triggerSearchDebounced();
     m_saveTimer.start(kSaveTimeoutMillis);
 }
 
@@ -797,4 +806,12 @@ void WSearchLineEdit::slotSetFont(const QFont& font) {
         // so we immediately refresh the controls manually.
         updateClearAndDropdownButton(getSearchText());
     }
+}
+
+bool WSearchLineEdit::hasSelectedText() const {
+    const QLineEdit* pEdit = lineEdit();
+    VERIFY_OR_DEBUG_ASSERT(pEdit) {
+        return false;
+    }
+    return pEdit->hasSelectedText();
 }
