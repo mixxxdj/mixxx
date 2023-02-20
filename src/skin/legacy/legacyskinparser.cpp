@@ -1301,7 +1301,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
-    if (!CmdlineArgs::Instance().getUseVuMeterGL() |
+    if (!CmdlineArgs::Instance().getUseVuMeterGL() ||
             (!pWaveformWidgetFactory->isOpenGlAvailable() &&
                     !pWaveformWidgetFactory->isOpenGlesAvailable())) {
         // Standard WVuMeter
