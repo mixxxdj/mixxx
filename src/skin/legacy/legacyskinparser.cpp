@@ -988,8 +988,8 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
 
     WWaveformViewer* viewer = new WWaveformViewer(group, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    factory->setWaveformWidget(viewer, node, *m_pContext);
+    WaveformWidgetFactory* pFactory = WaveformWidgetFactory::instance();
+    pFactory->setWaveformWidget(viewer, node, *m_pContext);
 
     //qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
     //qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
@@ -1253,10 +1253,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
 
-    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
 
-    if (!waveformWidgetFactory->isOpenGlAvailable() &&
-            !waveformWidgetFactory->isOpenGlesAvailable()) {
+    if (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+            !pWaveformWidgetFactory->isOpenGlesAvailable()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Spinny can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
@@ -1284,11 +1284,11 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     }
     commonWidgetSetup(node, pSpinny);
 
-    connect(waveformWidgetFactory,
+    connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
             pSpinny,
             &WSpinny::render);
-    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, pSpinny, &WSpinny::swap);
+    connect(pWaveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, pSpinny, &WSpinny::swap);
     connect(pSpinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
     connect(pSpinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1300,10 +1300,13 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
-    if (!CmdlineArgs::Instance().getUseVuMeterGL()) {
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    if (!CmdlineArgs::Instance().getUseVuMeterGL() |
+            (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+                    !pWaveformWidgetFactory->isOpenGlesAvailable())) {
         // Standard WVuMeter
         WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
-        WaveformWidgetFactory::instance()->addVuMeter(pVuMeterWidget);
+        pWaveformWidgetFactory->addVuMeter(pVuMeterWidget);
         return pVuMeterWidget;
     }
 
@@ -1316,9 +1319,8 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
         return dummy;
     }
 
-    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
-    if (!waveformWidgetFactory->isOpenGlAvailable() &&
-            !waveformWidgetFactory->isOpenGlesAvailable()) {
+    if (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+            !pWaveformWidgetFactory->isOpenGlesAvailable()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when VuMeter can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
@@ -1339,7 +1341,7 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     }
     commonWidgetSetup(node, pVuMeterWidget);
 
-    waveformWidgetFactory->addVuMeter(pVuMeterWidget);
+    pWaveformWidgetFactory->addVuMeter(pVuMeterWidget);
 
     pVuMeterWidget->setup(node, *m_pContext);
     pVuMeterWidget->installEventFilter(m_pKeyboard);
