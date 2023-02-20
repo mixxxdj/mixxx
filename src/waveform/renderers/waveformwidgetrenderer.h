@@ -80,6 +80,13 @@ class WaveformWidgetRenderer {
     // stable and deterministic
     // Transform sample index to pixel in track.
     inline double transformSamplePositionInRendererWorld(double samplePosition) const {
+        if (std::abs(samplePosition - m_truePosSample) < 1.f) {
+            // When asked for the sample position that corresponds with the play
+            // marker, return the play market pixel position. This avoids a rare
+            // rounding issue where a marker at that sample position would be
+            // 1 pixel off.
+            return m_playMarkerPosition * getLength();
+        }
         const double relativePosition = samplePosition / m_trackSamples;
         return transformPositionInRendererWorld(relativePosition);
     }
@@ -222,4 +229,5 @@ private:
 
     bool m_passthroughEnabled;
     double m_playPos;
+    double m_truePosSample;
 };

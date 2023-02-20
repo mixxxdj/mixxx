@@ -315,6 +315,7 @@ void qopengl::WaveformRenderMark::renderGL() {
     }
     m_waveformRenderer->setMarkPositions(marksOnScreen);
 
+    // TODO orientation
     double currentMarkPoint = m_waveformRenderer->getPlayMarkerPosition() *
             m_waveformRenderer->getWidth();
     currentMarkPoint = std::floor(currentMarkPoint);
