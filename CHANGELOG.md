@@ -23,6 +23,7 @@
   [#10979](https://github.com/mixxxdj/mixxx/pull/10979)
   [#10973](https://github.com/mixxxdj/mixxx/pull/10973)
   [#10983](https://github.com/mixxxdj/mixxx/pull/10983)
+  [#11288](https://github.com/mixxxdj/mixxx/pull/11288)
 * Prevent wild numbers from appearing during scratching under vinyl control. [#10916](https://github.com/mixxxdj/mixxx/pull/10916)
 * Rekordbox: Fix missing playlists due to invalid child ID [#10955](https://github.com/mixxxdj/mixxx/pull/10955)
 * Fixed a possible crash due to a race condition when editing cue points. [#10976](https://github.com/mixxxdj/mixxx/pull/10976) [#10689](https://github.com/mixxxdj/mixxx/issues/10689)
@@ -44,6 +45,8 @@
 * JACK buffer size fix [#11121](https://github.com/mixxxdj/mixxx/pull/11121)
 * Don't discard file tags with tuning information like "A#m +50" [#10992](https://github.com/mixxxdj/mixxx/pull/10992)
 * Year search: Find also full date entries [#11251](https://github.com/mixxxdj/mixxx/pull/11251) [#11251](https://github.com/mixxxdj/mixxx/issues/11113)
+* Fix visual alignment of beats and waveform in case of decoding issues [#11162](https://github.com/mixxxdj/mixxx/pull/11162)
+* Avoid "active key-value observers" messages during skin parsing on macOS [#11265](https://github.com/mixxxdj/mixxx/pull/11265)
 
 ### New Controller Mappings
 
