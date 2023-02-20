@@ -774,14 +774,8 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
     }
     updateClearAndDropdownButton(text);
     DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
-    if (s_debouncingTimeoutMillis > 0) {
-        m_debouncingTimer.start(s_debouncingTimeoutMillis);
-    } else {
-        // Don't (re-)activate the timer if the timeout is invalid.
-        // Disabling the timer permanently by setting the timeout
-        // to an invalid value is an expected and valid use case.
-        DEBUG_ASSERT(!m_debouncingTimer.isActive());
-    }
+    DEBUG_ASSERT(s_debouncingTimeoutMillis >= kMinDebouncingTimeoutMillis);
+    m_debouncingTimer.start(s_debouncingTimeoutMillis);
     m_saveTimer.start(kSaveTimeoutMillis);
 }
 
