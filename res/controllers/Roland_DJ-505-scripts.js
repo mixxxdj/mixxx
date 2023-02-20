@@ -987,7 +987,7 @@ DJ505.SlipModeButton.prototype.shift = function() {
 
 DJ505.PadMode = {
     HOTCUE: 0x00,
-    FLIP: 0x02,
+    MACRO: 0x02,  // FLIP mode in Serato
     CUELOOP: 0x03,
     TR: 0x04,
     PATTERN: 0x05,
@@ -1041,7 +1041,7 @@ DJ505.PadColorMap = new ColorMapper({
 });
 
 DJ505.PadSection = function(deck, offset) {
-    // TODO: Add support for missing modes (flip, slicer, slicerloop)
+    // TODO: Add support for missing modes (slicer, slicerloop)
     /*
      * The Performance Pad Section on the DJ-505 apparently have two basic
      * modes of operation that determines how the LEDs react to MIDI messages
@@ -1070,7 +1070,7 @@ DJ505.PadSection = function(deck, offset) {
      * Button                         MIDI control Standalone LED   Serato LED   Serato Mode
      * ------------------------------ ------------ ---------------- ------------ -----------
      * [HOT CUE]                      0x00         White            White        Hot Cue
-     * [HOT CUE] (press twice)        0x02         Blue             Orange       Saved Flip
+     * [HOT CUE] (press twice)        0x02         Blue             Orange       Flip (Macro)
      * [SHIFT] + [HOT CUE]            0x03         Orange           Blue         Cue Loop
      * [ROLL]                         0x08         Turqoise         Light Blue   Roll
      * [ROLL] (press twice)           0x0D         Red              Green        Saved Loop
@@ -1132,6 +1132,7 @@ DJ505.PadSection = function(deck, offset) {
         // This need to be an object so that a recursive reconnectComponents
         // call won't influence all modes at once
         "hotcue": new DJ505.HotcueMode(deck, offset),
+        "macro": new DJ505.MacroMode(deck, offset),
         "cueloop": new DJ505.CueLoopMode(deck, offset),
         "edit": new DJ505.EditMode(deck, offset),
         "roll": new DJ505.RollMode(deck, offset),
@@ -1156,12 +1157,9 @@ DJ505.PadSection.prototype.controlToPadMode = function(control) {
     case DJ505.PadMode.HOTCUE:
         mode = this.modes.hotcue;
         break;
-    // FIXME: Mixxx is currently missing support for Serato-style "flips",
-    // hence this mode can only be implemented if this feature is added:
-    // https://bugs.launchpad.net/mixxx/+bug/1768113
-    //case DJ505.PadMode.FLIP:
-    //    mode = this.modes.flip;
-    //    break;
+    case DJ505.PadMode.MACRO:
+        mode = this.modes.macro;
+        break;
     case DJ505.PadMode.CUELOOP:
         if (this.currentMode === this.modes.cueloop) {
             mode = this.modes.edit;
@@ -1347,6 +1345,53 @@ DJ505.HotcueMode = function(deck, offset) {
     });
 };
 DJ505.HotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+DJ505.MacroMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = DJ505.PadMode.HOTCUE;
+    this.color = DJ505.PadColor.ORANGE;
+
+    this.PerformancePad = function(n) {
+        this.midi = [0x94 + offset, 0x14 + n];
+        this.number = n + 1;
+        this.outKey = "macro_" + this.number + "_status";
+
+        components.Button.call(this);
+    };
+    this.PerformancePad.prototype = new components.Button({
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        on: this.color,
+        off: this.color + DJ505.PadColor.DIM_MODIFIER,
+        outConnect: false,
+        outKey: "macro_" + this.number + "_status",
+        unshift: function() {
+            this.inKey = "macro_" + this.number + "_activate";
+        },
+        shift: function() {
+            this.inKey = "macro_" + this.number + "_toggle";
+        },
+        output: function(value, _group, _control) {
+            if (value <= 0) {
+                this.send(DJ505.PadColor.OFF);
+            } else if (value === 1 || value === 2) {
+                this.send(DJ505.PadColor.RED);
+            } else if (value === 4) {
+                this.send(this.on);
+            } else {
+                this.send(this.off);
+            }
+        },
+    });
+
+    this.pads = new components.ComponentContainer();
+    for (var i = 0; i <= 7; i++) {
+        this.pads[i] = new this.PerformancePad(i);
+    }
+};
+DJ505.MacroMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 DJ505.CueLoopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
