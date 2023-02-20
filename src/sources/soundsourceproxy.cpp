@@ -372,6 +372,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPoi
                 kLogger.warning()
                         << "Failed to update stream info from audio "
                            "source before exporting metadata";
+                return ExportTrackMetadataResult::Skipped;
             }
         }
         pMetadataSource = proxy.m_pSoundSource;
