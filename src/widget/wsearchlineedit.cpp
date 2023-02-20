@@ -88,6 +88,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
           m_pConfig(pConfig),
           m_completer(make_parented<QCompleter>(this)),
           m_clearButton(make_parented<QToolButton>(this)),
+          m_completionAccepted(true),
           m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
@@ -144,6 +145,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             &QComboBox::currentTextChanged,
             this,
             &WSearchLineEdit::slotTextChanged);
+    connect(lineEdit(),
+            &QLineEdit::selectionChanged,
+            this,
+            &WSearchLineEdit::slotSelectionChanged);
     connect(this,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -311,15 +316,12 @@ QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!currentText().isNull());
         QString text = currentText();
-        QLineEdit* pEdit = lineEdit();
         QCompleter* pCompleter = completer();
-        if (pCompleter && pEdit && pEdit->hasSelectedText()) {
-            if (text.startsWith(pCompleter->completionPrefix()) &&
-                    pCompleter->completionPrefix().size() == pEdit->cursorPosition()) {
-                // Search for the entered text until the user has confirmed the
-                // completion by -> or enter
-                return pCompleter->completionPrefix();
-            }
+        if (pCompleter && !m_completionAccepted) {
+            // Search for the entered text until the user has accepted the
+            // completion by pressing Enter or changed/deselected the selected
+            // completion text with Right or Left key
+            return pCompleter->completionPrefix();
         }
         return text;
     } else {
@@ -386,11 +388,6 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
             slotSaveSearch();
         }
         break;
-    case Qt::Key_Left:
-    case Qt::Key_Right:
-        QComboBox::keyPressEvent(keyEvent);
-        slotTriggerSearch();
-        return;
     case Qt::Key_Enter:
     case Qt::Key_Return: {
         if (slotClearSearchIfClearButtonHasFocus()) {
@@ -714,6 +711,14 @@ void WSearchLineEdit::updateCompleter() {
 #endif // ENABLE_TRACE_LOG
 
     lineEdit()->setCompleter(s_completionsEnabled ? m_completer.toWeakRef() : nullptr);
+    if (s_completionsEnabled && m_completer) {
+        connect(m_completer,
+                QOverload<const QString&>::of(&QCompleter::highlighted),
+                [this](const QString& text) {
+                    m_completionAccepted = false;
+                });
+    }
+    m_completionAccepted = true;
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {
@@ -783,6 +788,21 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
         DEBUG_ASSERT(!m_debouncingTimer.isActive());
     }
     m_saveTimer.start(kSaveTimeoutMillis);
+}
+
+void WSearchLineEdit::slotSelectionChanged() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace() << "slotSelectionChanged";
+#endif // ENABLE_TRACE_LOG
+    // If the completion is still pending the proposal is still selected.
+    // Any change of that selection is interpreted as acception.
+    // In case the selected text was removed acceptance makes no difference
+    // since the remainder is what we (maybe, debounce timer) already
+    // searched for.
+    if (completer() && !m_completionAccepted) {
+        m_completionAccepted = true;
+        slotTextChanged(currentText());
+    }
 }
 
 void WSearchLineEdit::slotSetShortcutFocus() {

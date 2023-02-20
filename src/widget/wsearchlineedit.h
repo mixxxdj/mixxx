@@ -67,6 +67,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
   private slots:
     void slotSetShortcutFocus();
     void slotTextChanged(const QString& text);
+    void slotSelectionChanged();
     void slotIndexChanged(int index);
 
     void slotTriggerSearch();
@@ -111,5 +112,6 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     QTimer m_debouncingTimer;
     QTimer m_saveTimer;
+    bool m_completionAccepted;
     bool m_queryEmitted;
 };
