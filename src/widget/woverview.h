@@ -77,6 +77,10 @@ class WOverview : public WWidget, public TrackDropTarget {
         return m_pWaveform;
     }
 
+    double getTrackSamples() const {
+        return m_trackSamplesControl->get();
+    }
+
     QImage m_waveformSourceImage;
     QImage m_waveformImageScaled;
 
