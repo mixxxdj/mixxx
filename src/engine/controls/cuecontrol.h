@@ -309,50 +309,50 @@ class CueControl : public EngineControl {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
-    ControlPushButton* m_pCueSet;
-    ControlPushButton* m_pCueClear;
-    ControlPushButton* m_pCueCDJ;
-    ControlPushButton* m_pCueDefault;
-    ControlPushButton* m_pPlayStutter;
-    ControlIndicator* m_pCueIndicator;
-    ControlIndicator* m_pPlayIndicator;
-    ControlObject* m_pPlayLatched;
-    ControlPushButton* m_pCueGoto;
-    ControlPushButton* m_pCueGotoAndPlay;
-    ControlPushButton* m_pCuePlay;
-    ControlPushButton* m_pCueGotoAndStop;
-    ControlPushButton* m_pCuePreview;
+    std::unique_ptr<ControlPushButton> m_pCueSet;
+    std::unique_ptr<ControlPushButton> m_pCueClear;
+    std::unique_ptr<ControlPushButton> m_pCueCDJ;
+    std::unique_ptr<ControlPushButton> m_pCueDefault;
+    std::unique_ptr<ControlPushButton> m_pPlayStutter;
+    std::unique_ptr<ControlIndicator> m_pCueIndicator;
+    std::unique_ptr<ControlIndicator> m_pPlayIndicator;
+    std::unique_ptr<ControlObject> m_pPlayLatched;
+    std::unique_ptr<ControlPushButton> m_pCueGoto;
+    std::unique_ptr<ControlPushButton> m_pCueGotoAndPlay;
+    std::unique_ptr<ControlPushButton> m_pCuePlay;
+    std::unique_ptr<ControlPushButton> m_pCueGotoAndStop;
+    std::unique_ptr<ControlPushButton> m_pCuePreview;
 
-    ControlObject* m_pIntroStartPosition;
-    ControlObject* m_pIntroStartEnabled;
-    ControlPushButton* m_pIntroStartSet;
-    ControlPushButton* m_pIntroStartClear;
-    ControlPushButton* m_pIntroStartActivate;
+    std::unique_ptr<ControlObject> m_pIntroStartPosition;
+    std::unique_ptr<ControlObject> m_pIntroStartEnabled;
+    std::unique_ptr<ControlPushButton> m_pIntroStartSet;
+    std::unique_ptr<ControlPushButton> m_pIntroStartClear;
+    std::unique_ptr<ControlPushButton> m_pIntroStartActivate;
 
-    ControlObject* m_pIntroEndPosition;
-    ControlObject* m_pIntroEndEnabled;
-    ControlPushButton* m_pIntroEndSet;
-    ControlPushButton* m_pIntroEndClear;
-    ControlPushButton* m_pIntroEndActivate;
+    std::unique_ptr<ControlObject> m_pIntroEndPosition;
+    std::unique_ptr<ControlObject> m_pIntroEndEnabled;
+    std::unique_ptr<ControlPushButton> m_pIntroEndSet;
+    std::unique_ptr<ControlPushButton> m_pIntroEndClear;
+    std::unique_ptr<ControlPushButton> m_pIntroEndActivate;
 
-    ControlObject* m_pOutroStartPosition;
-    ControlObject* m_pOutroStartEnabled;
-    ControlPushButton* m_pOutroStartSet;
-    ControlPushButton* m_pOutroStartClear;
-    ControlPushButton* m_pOutroStartActivate;
+    std::unique_ptr<ControlObject> m_pOutroStartPosition;
+    std::unique_ptr<ControlObject> m_pOutroStartEnabled;
+    std::unique_ptr<ControlPushButton> m_pOutroStartSet;
+    std::unique_ptr<ControlPushButton> m_pOutroStartClear;
+    std::unique_ptr<ControlPushButton> m_pOutroStartActivate;
 
-    ControlObject* m_pOutroEndPosition;
-    ControlObject* m_pOutroEndEnabled;
-    ControlPushButton* m_pOutroEndSet;
-    ControlPushButton* m_pOutroEndClear;
-    ControlPushButton* m_pOutroEndActivate;
+    std::unique_ptr<ControlObject> m_pOutroEndPosition;
+    std::unique_ptr<ControlObject> m_pOutroEndEnabled;
+    std::unique_ptr<ControlPushButton> m_pOutroEndSet;
+    std::unique_ptr<ControlPushButton> m_pOutroEndClear;
+    std::unique_ptr<ControlPushButton> m_pOutroEndActivate;
 
-    ControlProxy* m_pVinylControlEnabled;
-    ControlProxy* m_pVinylControlMode;
+    std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
+    std::unique_ptr<ControlProxy> m_pVinylControlMode;
 
-    ControlObject* m_pHotcueFocus;
-    ControlObject* m_pHotcueFocusColorNext;
-    ControlObject* m_pHotcueFocusColorPrev;
+    std::unique_ptr<ControlObject> m_pHotcueFocus;
+    std::unique_ptr<ControlObject> m_pHotcueFocusColorNext;
+    std::unique_ptr<ControlObject> m_pHotcueFocusColorPrev;
 
     parented_ptr<ControlProxy> m_pPassthrough;
 
