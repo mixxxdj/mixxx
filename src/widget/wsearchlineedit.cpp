@@ -316,8 +316,9 @@ QString WSearchLineEdit::getSearchText() const {
         if (pCompleter && pEdit && pEdit->hasSelectedText()) {
             if (text.startsWith(pCompleter->completionPrefix()) &&
                     pCompleter->completionPrefix().size() == pEdit->cursorPosition()) {
-                // Search for the entered text until the user has confirmed the
-                // completion by -> or enter
+                // Search for the entered text until the user has accepted the
+                // completion by pressing Enter or changed/deselected the selected
+                // completion text with Right or Left key
                 return pCompleter->completionPrefix();
             }
         }
