@@ -170,6 +170,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_cmdLineArgs(args),
 #ifdef __LINUX__
           m_recreateMenubarOnFullscreenToggle(false),
+          m_moveMenuBarToWindow(false),
 #endif
           m_pTouchShift(nullptr) {
     m_runtime_timer.start();
@@ -216,6 +217,12 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     initializeKeyboard();
     installEventFilter(m_pKeyboard);
 
+    // Menubar depends on translations.
+    mixxx::Translations::initializeTranslations(
+            m_pSettingsManager->settings(), pApp, args.getLocale());
+
+    createMenuBar();
+
 #ifdef __LINUX__
     // If true this will recreate and reconnect the mainmenu bar when toggling
     // fullscreen in order to fix
@@ -227,13 +234,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // Alternative global menus work without this currently, e.g. vala-panel-appmenu
     m_recreateMenubarOnFullscreenToggle =
             QString::fromLocal8Bit(qgetenv("XDG_SESSION_DESKTOP")) == "unity";
+    m_moveMenuBarToWindow = m_pMenuBar->isNativeMenuBar();
 #endif
 
-    // Menubar depends on translations.
-    mixxx::Translations::initializeTranslations(
-        m_pSettingsManager->settings(), pApp, args.getLocale());
-
-    createMenuBar();
     m_pMenuBar->hide();
 
     initializeWindow();
@@ -281,6 +284,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             ConfigKey("[Config]", "StartInFullscreen"));
     if (args.getStartInFullscreen() || fullscreenPref) {
         showFullScreen();
+#ifdef __LINUX__
+        // If the desktop features a global menubar and we go fullscreen during
+        // startup, move the menubar to the window
+        if (m_moveMenuBarToWindow) {
+            m_pMenuBar->setNativeMenuBar(false);
+        }
+#endif
     }
 
     QString resourcePath = pConfig->getResourcePath();

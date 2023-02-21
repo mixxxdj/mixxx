@@ -183,6 +183,7 @@ class MixxxMainWindow : public QMainWindow {
 
 #ifdef __LINUX__
     bool m_recreateMenubarOnFullscreenToggle;
+    bool m_moveMenuBarToWindow;
 #endif
 
     ControlPushButton* m_pTouchShift;
