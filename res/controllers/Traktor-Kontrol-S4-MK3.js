@@ -98,6 +98,15 @@ const gridButtonBlinkOverBeat = true;
 // less responsive it gets in Mixxx. Default: 5
 const wheelSpeedSample = 5;
 
+// Make the sampler tab a beatlooproll tab instead
+// Default: false
+const useBeatloopRoolInsteadOfSampler = false;
+
+// Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the sratch, and the speed of
+// the motor if enable. Recommended value are 33 + 1/3 or 45.
+// Default: 33 + 1/3
+const baseRevolutionsPerMinute = 33 + 1/3;
+
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
 // Default: false
@@ -115,9 +124,8 @@ const turnTableSpeedSample = 40;
 const tightnessFactor = 0.5;
 
 // Define how much force can the motor use. This defines how much the wheel will "fight" you when you block it in TT mode
-// This will also impact resistance of the wheel if you are using a tight setting (tightnessFactor< 0.5)
-// Default: 24000.
-const maxWheelForce = 24000;
+// This will also im
+const maxWheelForce = 25000;  // Traktor seems to cap the max value at 60000, which just sounds insane
 
 
 
@@ -161,7 +169,7 @@ const quickEffectPresetColors = [
 // assign samplers to the crossfader on startup
 const samplerCrossfaderAssign = true;
 
-const motorWindUpMilliseconds = 600;
+const motorWindUpMilliseconds = 1200;
 const motorWindDownMilliseconds = 900;
 
 /*
@@ -501,6 +509,8 @@ class Button extends Component {
             this.inBitLength = 1;
         }
     }
+    unshift() {}
+    shift() {}
     setKey(key) {
         this.inKey = key;
         if (key === this.outKey) {
@@ -581,7 +591,10 @@ class TriggerButton extends Button {
         super(options);
     }
     onShortPress() {
-        script.triggerControl(this.group, this.inKey, true);
+        engine.setValue(this.group, this.inKey, true);
+    }
+    onShortRelease() {
+        engine.setValue(this.group, this.inKey, false);
     }
 }
 
@@ -636,8 +649,16 @@ class CueButton extends PushButton {
     input(pressed) {
         if (this.deck.moveMode === moveModes.keyboard) {
             this.deck.assignKeyboardPlayMode(this.group, this.inKey);
+        } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.group, "play") && pressed) {
+            engine.setValue(this.group, "cue_goto", pressed);
         } else {
             engine.setValue(this.group, this.inKey, pressed);
+            if (this.deck.wheelMode === wheelModes.motor) {
+                engine.setValue(this.group, "scratch2_enable", false);
+                engine.beginTimer(motorWindDownMilliseconds, function() {
+                    engine.setValue(this.group, "scratch2_enable", true);
+                }, true);
+            }
         }
     }
 }
@@ -772,38 +793,22 @@ class KeyboardButton extends PushButton {
     }
 }
 
-class BeatLoopRollButton extends Button {
+const beatLoopRolls = [0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8];
+class BeatLoopRollButton extends TriggerButton {
     constructor(options) {
-        super(options);
-        if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1 || this.number > 8) {
-            throw Error("BeatLoopRollButton must have a number property of an integer between 1 and 8");
+        if (options.number === undefined || !Number.isInteger(options.number) || options.number < 0 || options.number > 7) {
+            throw Error("BeatLoopRollButton must have a number property of an integer between 0 and 7");
         }
+        options.key = "beatlooproll_"+beatLoopRolls[options.number]+"_activate";
+        super(options);
         if (this.deck === undefined) {
             throw Error("BeatLoopRollButton must have a deck attached to it");
         }
+
         this.outConnect();
     }
-    unshift() {
-        this.outTrigger();
-    }
-    shift() {
-        this.outTrigger();
-    }
     output(value) {
-        // In us
-    }
-    outConnect() {
-        if (undefined !== this.group) {
-            const connection = engine.makeConnection(this.group, "key", (key) => {
-                const offset = this.deck.keyboardOffset - (this.shifted ? 8 : 0);
-                this.output(key === this.number + offset);
-            });
-            if (connection) {
-                this.outConnections[0] = connection;
-            } else {
-                console.warn("Unable to connect '" + this.group + ".key' to the controller output. The control appears to be unaivailable.");
-            }
-        }
+        this.send(LEDColors.white + (value ? this.brightnessOn : this.brightnessOff));
     }
 }
 
@@ -816,8 +821,6 @@ class SamplerButton extends Button {
         this.group = "[Sampler" + this.number + "]";
         this.outConnect();
     }
-    unshift() { }
-    shift() { }
     onShortPress() {
         if (!this.shifted) {
             if (engine.getValue(this.group, "track_loaded") === 0) {
@@ -1275,7 +1278,6 @@ const wheelAbsoluteMax = 2879;
 const wheelTimerMax = 2 ** 32 - 1;
 const wheelTimerTicksPerSecond = 100000000;
 
-const baseRevolutionsPerMinute = 33 + 1 / 3;
 const baseRevolutionsPerSecond = baseRevolutionsPerMinute / 60;
 const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
 
@@ -2043,7 +2045,7 @@ class S4Mk3Deck extends Deck {
         ];
         const hotcuePage2 = Array(8).fill({});
         const hotcuePage3 = Array(8).fill({});
-        const samplerPage = Array(8).fill({});
+        const samplerOrBeatloopRoolPage = Array(8).fill({});
         this.keyboard = Array(8).fill({});
         let i = 0;
         /* eslint no-unused-vars: "off" */
@@ -2051,20 +2053,30 @@ class S4Mk3Deck extends Deck {
             // start with hotcue 5; hotcues 1-4 are in defaultPadLayer
             hotcuePage2[i] = new HotcueButton({number: i + 1});
             hotcuePage3[i] = new HotcueButton({number: i + 13});
-            let samplerNumber = i + 1;
-            if (samplerNumber > 4) {
-                samplerNumber += 4;
-            }
-            if (decks[0] > 1) {
-                samplerNumber += 4;
-            }
-            samplerPage[i] = new SamplerButton({number: samplerNumber});
-            if (samplerCrossfaderAssign) {
-                engine.setValue(
-                    "[Sampler" + samplerNumber + "]",
-                    "orientation",
-                    (decks[0] === 1) ? 0 : 2
-                );
+            if (useBeatloopRoolInsteadOfSampler) {
+                samplerOrBeatloopRoolPage[i] = new BeatLoopRollButton({
+                    number: i,
+                    deck: this,
+                });
+
+            } else {
+                let samplerNumber = i + 1;
+                if (samplerNumber > 4) {
+                    samplerNumber += 4;
+                }
+                if (decks[0] > 1) {
+                    samplerNumber += 4;
+                }
+                samplerOrBeatloopRoolPage[i] = new SamplerButton({
+                    number: samplerNumber,
+                });
+                if (samplerCrossfaderAssign) {
+                    engine.setValue(
+                        "[Sampler" + samplerNumber + "]",
+                        "orientation",
+                        (decks[0] === 1) ? 0 : 2
+                    );
+                }
             }
             this.keyboard[i] = new KeyboardButton({
                 number: i + 1,
@@ -2083,7 +2095,6 @@ class S4Mk3Deck extends Deck {
                 Object.assign(pad, io.pads[index]);
                 if (!(pad instanceof HotcueButton)) {
                     pad.color = deck.color;
-                    pad.unshift();
                 }
                 // don't change the group of SamplerButtons
                 if (!(pad instanceof SamplerButton)) {
@@ -2092,6 +2103,7 @@ class S4Mk3Deck extends Deck {
                 if (pad.inPacket === undefined) {
                     pad.inPacket = inPackets[1];
                 }
+                pad.unshift();
                 pad.outPacket = outPacket;
                 pad.inConnect();
                 pad.outConnect();
@@ -2164,7 +2176,7 @@ class S4Mk3Deck extends Deck {
             deck: this,
             onShortPress: function() {
                 if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage) {
-                    switchPadLayer(this.deck, samplerPage);
+                    switchPadLayer(this.deck, samplerOrBeatloopRoolPage);
                     engine.setValue("[Samplers]", "show_samplers", true);
                     this.deck.currentPadLayer = this.deck.padLayers.samplerPage;
                 } else {
@@ -2368,7 +2380,6 @@ class S4Mk3Deck extends Deck {
 
                 switch (this.deck.wheelMode) {
                 case wheelModes.motor:
-                    // engine.setValue(this.group, "scratch2", 1.0);
                     engine.setValue(this.group, "scratch2", this.ttAvgSpeed / baseRevolutionsPerSecond);
                     break;
                 case wheelModes.loopIn:
@@ -2791,6 +2802,18 @@ class S4MK3 {
         });
         if (useMotors) {
             engine.beginTimer(20, this.motorCallback.bind(this));
+            this.leftVelocityFactor = wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
+            this.rightVelocityFactor = wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
+
+            this.leftFactor = [this.leftVelocityFactor];
+            this.leftFactorIdx = 1;
+            this.rightFactor = [this.rightVelocityFactor];
+            this.rightFactorIdx = 1;
+
+            this.averageLeftCorrectness = [];
+            this.averageLeftCorrectnessIdx = 0;
+            this.averageRightCorrectness = [];
+            this.averageRightCorrectnessIdx = 0;
         }
 
     }
@@ -2800,7 +2823,6 @@ class S4MK3 {
             1, 0x20, 1, 0, 0,
 
         ];
-        const velocityFactor = 4500;
         const maxVelocity = 10;
 
         let velocityLeft = 0;
@@ -2819,15 +2841,15 @@ class S4MK3 {
             expectedRightSpeed = engine.getValue(this.rightDeck.group, "rate_ratio");
         }
 
-        const currentLeftSpeed = (this.leftDeck.wheelRelative.avgSpeed + this.leftDeck.wheelRelative.ttAvgSpeed) / (2 * baseRevolutionsPerSecond);
-        const currentRightSpeed = (this.rightDeck.wheelRelative.avgSpeed + this.rightDeck.wheelRelative.ttAvgSpeed) / (2 * baseRevolutionsPerSecond);
+        const currentLeftSpeed = this.leftDeck.wheelRelative.avgSpeed / baseRevolutionsPerSecond;
+        const currentRightSpeed = this.rightDeck.wheelRelative.avgSpeed / baseRevolutionsPerSecond;
 
         if (expectedLeftSpeed) {
             velocityLeft = expectedLeftSpeed + Math.min(
                 maxVelocity,
                 Math.max(
                     -maxVelocity,
-                    (expectedLeftSpeed - currentLeftSpeed) * 2
+                    (expectedLeftSpeed - currentLeftSpeed)
                 )
             );
         } else {
@@ -2837,12 +2859,12 @@ class S4MK3 {
                 velocityLeft = currentLeftSpeed * reduceFactor;
             } else if (tightnessFactor < 0.5) {
                 // Super tight
-                const reduceFactor = (Math.min(0, tightnessFactor) * 4);
+                const reduceFactor = (2 - Math.max(0, tightnessFactor) * 4);
                 velocityLeft = expectedLeftSpeed + Math.min(
                     maxVelocity,
                     Math.max(
                         -maxVelocity,
-                        (expectedLeftSpeed - currentLeftSpeed) * 2
+                        (expectedLeftSpeed - currentLeftSpeed) * reduceFactor
                     )
                 );
 
@@ -2864,12 +2886,13 @@ class S4MK3 {
                 velocityRight = currentRightSpeed * reduceFactor;
             } else if (tightnessFactor < 0.5) {
                 // Super tight
-                const reduceFactor = (Math.min(0, tightnessFactor) * 4);
+                const reduceFactor = (2 - Math.max(0, tightnessFactor) * 4);
+                console.log(reduceFactor);
                 velocityRight = expectedRightSpeed + Math.min(
                     maxVelocity,
                     Math.max(
                         -maxVelocity,
-                        (expectedRightSpeed - currentRightSpeed) * 2
+                        (expectedRightSpeed - currentRightSpeed) * reduceFactor
                     )
                 );
 
@@ -2888,17 +2911,49 @@ class S4MK3 {
             velocityRight = -velocityRight;
         }
 
+        const roundedCurrentLeftSpeed = Math.round(currentLeftSpeed * 100);
+        const roundedCurrentRightSpeed = Math.round(currentRightSpeed * 100);
 
-        if (expectedLeftSpeed) {
-            velocityLeft = Math.pow(velocityLeft, 2) * velocityFactor;
-        } else {
-            velocityLeft = velocityLeft * velocityFactor;
+        velocityLeft = velocityLeft * this.leftVelocityFactor;
+        velocityRight = velocityRight * this.rightVelocityFactor;
+
+        const minNormalFactor = 0.8 * wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
+        const maxNormalFactor = 1.2 * wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
+
+        if (velocityLeft > minNormalFactor && velocityLeft < maxNormalFactor) {
+            this.averageLeftCorrectness[this.averageLeftCorrectnessIdx] = roundedCurrentLeftSpeed;
+            this.averageLeftCorrectnessIdx = (this.averageLeftCorrectnessIdx + 1) % 10;
+            const averageCorrectness = Math.round(this.averageLeftCorrectness.reduce((a, b) => a+b, 0) / this.averageLeftCorrectness.length);
+            this.leftFactor[this.leftFactorIdx] = velocityLeft;
+            this.leftFactorIdx = (this.leftFactorIdx + 1) % 10;
+            const averageFactor = Math.round(this.leftFactor.reduce((a, b) => a+b, 0) / this.leftFactor.length);
+
+
+            if ((averageCorrectness < 100 && velocityLeft > this.leftVelocityFactor) || (averageCorrectness > 100 && velocityLeft < this.leftVelocityFactor)) {
+                this.leftVelocityFactor = averageFactor;
+            }
         }
 
-        if (expectedRightSpeed) {
-            velocityRight = Math.pow(velocityRight, 2) * velocityFactor;
-        } else {
-            velocityRight = velocityRight * velocityFactor;
+        if (velocityRight > minNormalFactor && velocityRight < maxNormalFactor) {
+            this.averageRightCorrectness[this.averageRightCorrectnessIdx] = roundedCurrentRightSpeed / (expectedRightSpeed || 0.001);
+            this.averageRightCorrectnessIdx = (this.averageRightCorrectnessIdx + 1) % 20;
+            const averageCorrectness = Math.round(this.averageRightCorrectness.reduce((a, b) => a+b, 0) / this.averageRightCorrectness.length);
+            this.rightFactor[this.rightFactorIdx] = velocityRight;
+            this.rightFactorIdx = (this.rightFactorIdx + 1) % 20;
+            const averageFactor = Math.round(this.rightFactor.reduce((a, b) => a+b, 0) / this.rightFactor.length);
+
+
+            if ((averageCorrectness < 100 && velocityRight > this.rightVelocityFactor) || (averageCorrectness > 100 && velocityRight < this.rightVelocityFactor)) {
+                this.rightVelocityFactor = averageFactor;
+            }
+        }
+
+        if (velocityLeft) {
+            velocityLeft += wheelAbsoluteMax / 2;
+        }
+
+        if (velocityRight) {
+            velocityRight += wheelAbsoluteMax / 2;
         }
 
         velocityLeft = Math.min(
@@ -2916,12 +2971,6 @@ class S4MK3 {
 
         motorData[8] = velocityRight & 0xff;
         motorData[9] = velocityRight >> 8;
-
-        //// byte 2 > 127 rotates backward
-        if (Math.round(currentLeftSpeed * 100) !== Math.round(expectedLeftSpeed * 100)) {
-            console.log(expectedLeftSpeed + " " + Math.round(currentLeftSpeed * 100) + " -> " + velocityLeft + "\t" + expectedRightSpeed + " -> " + currentRightSpeed);
-        }
-
         controller.send(motorData, null, 49, true);
     }
     incomingData(data) {
