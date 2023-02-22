@@ -691,6 +691,14 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             &WMainMenuBar::internalOnNewSkinLoaded,
             pConnection,
             &VisibilityControlConnection::slotReconnectControl);
+#ifdef __LINUX__
+    // reconnect when menu bar was recreated after toggling fullscreen
+    // so all hotkeys and menu actions continue to work
+    connect(this,
+            &WMainMenuBar::internalFullScreenStateChange,
+            pConnection,
+            &VisibilityControlConnection::slotReconnectControl);
+#endif
     connect(this,
             &WMainMenuBar::internalOnNewSkinAboutToLoad,
             pConnection,

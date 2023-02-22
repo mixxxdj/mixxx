@@ -265,6 +265,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             ConfigKey("[Config]", "StartInFullscreen"));
     if (args.getStartInFullscreen() || fullscreenPref) {
         showFullScreen();
+#ifdef __LINUX__
+        // If the desktop features a global menubar and we go fullscreen during
+        // startup, move the menubar to the window like in slotViewFullScreen()
+        if (m_pMenuBar->isNativeMenuBar()) {
+            m_pMenuBar->setNativeMenuBar(false);
+        }
+#endif
     }
 
     QString resourcePath = pConfig->getResourcePath();
@@ -1078,7 +1085,6 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
     return soundDeviceErrorDlg(title, text, retryClicked);
 }
 
-
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
         SoundDeviceError err, bool* retryClicked) {
     QString title(tr("Sound Device Error"));
@@ -1378,7 +1384,6 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
     }
 }
 
-
 void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     if (toggle) {
@@ -1645,7 +1650,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     }
     QMainWindow::closeEvent(event);
 }
-
 
 void MixxxMainWindow::checkDirectRendering() {
     // IF
