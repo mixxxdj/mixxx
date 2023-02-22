@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2023-02-18" timestamp="1676676966">
+    <release version="2.3.4" type="development" date="2023-02-20" timestamp="1676912720">
       <description>
  <ul>
   <li>
@@ -278,6 +278,12 @@
   <li>
    Avoid "active key-value observers" messages during skin parsing on macOS
    #11265
+  </li>
+  <li>
+   Fullscreen on Linux: Fix issues caused by Ubuntu Unity workaround
+   #11295
+   #11281
+   #11294
   </li>
  </ul>
  <p>
