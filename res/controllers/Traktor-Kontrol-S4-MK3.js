@@ -90,7 +90,7 @@ const keepLEDWithOneColorDimedWhenInactive = true;
 // 'true' will use "sync+master", 'false' will use "shift+sync". Default: false
 const useKeylockOnMaster = false;
 
-// Define whether the grid button would blink when the playback is going over a detcted beat. Can help to adjust beat grid.
+// Define whether the grid button would blink when the playback is going over a detected beat. Can help to adjust beat grid.
 // Default: true
 const gridButtonBlinkOverBeat = true;
 
@@ -685,9 +685,6 @@ class Encoder extends Component {
             isRight = value > oldValue;
         }
         this.onChange(isRight);
-    }
-    isRightTurn(value) {
-        // detect wrap around
     }
 }
 
@@ -1550,6 +1547,27 @@ class S4Mk3Deck extends Deck {
                     engine.setValue(this.group, this.key, false);
                 }
             },
+            loopModeOff: function(skipRestore) {
+                if (this.previousWheelMode !== null) {
+                    this.indicator(false);
+                    const wheelOutput = Array(40).fill(0);
+                    wheelOutput[0] = decks[0] - 1;
+                    const that = this;
+                    controller.send(wheelOutput, null, 50, true);
+                    if (!skipRestore) {
+                        that.deck.wheelMode = that.previousWheelMode;
+                    }
+                    that.previousWheelMode = null;
+                    if (this.loopModeConnection !== null) {
+                        this.loopModeConnection.disconnect();
+                        this.loopModeConnection = null;
+                    }
+                }
+            },
+            onLoopChange: function(loopEnabled) {
+                if (loopEnabled) { return; }
+                this.loopModeOff();
+            },
             onShortPress: function() {
                 this.indicator(false);
                 if (this.shifted) {
@@ -1561,24 +1579,13 @@ class S4Mk3Deck extends Deck {
                         this.indicator(true);
                         // Else, we enter/exit the loop in wheel mode
                     } else if (this.previousWheelMode === null) {
+                        this.deck.fluxButton.loopModeOff();
+                        engine.setValue(this.group, "scratch2_enable", false);
                         this.previousWheelMode = this.deck.wheelMode;
                         this.deck.wheelMode = wheelModes.loopIn;
 
                         if (this.loopModeConnection === null) {
-                            this.loopModeConnection = engine.makeConnection(this.group, this.outKey, (loopEnabled) => {
-                                if (loopEnabled) { return; }
-
-                                this.indicator(false);
-                                const wheelOutput = Array(40).fill(0);
-                                wheelOutput[0] = decks[0] - 1;
-                                engine.beginTimer(decks[0] * 35, () => {
-                                    controller.send(wheelOutput, null, 50, true);
-                                    this.deck.wheelMode = this.previousWheelMode;
-                                    this.previousWheelMode = null;
-                                }, true);
-                                this.loopModeConnection.disconnect();
-                                this.loopModeConnection = null;
-                            });
+                            this.loopModeConnection = engine.makeConnection(this.group, this.outKey, this.onLoopChange.bind(this));
                         }
 
                         const wheelOutput = Array(40).fill(0);
@@ -1594,17 +1601,7 @@ class S4Mk3Deck extends Deck {
 
                         this.indicator(true);
                     } else if (this.previousWheelMode !== null) {
-                        if (this.loopModeConnection !== null) {
-                            this.loopModeConnection.disconnect();
-                            this.loopModeConnection = null;
-                        }
-                        const wheelOutput = Array(40).fill(0);
-                        wheelOutput[0] = decks[0] - 1;
-                        engine.beginTimer(decks[0] * 35, () => {
-                            controller.send(wheelOutput, null, 50, true);
-                            this.deck.wheelMode = this.previousWheelMode;
-                            this.previousWheelMode = null;
-                        }, true);
+                        this.loopModeOff();
                     }
                 } else {
                     engine.setValue(this.group, this.key, true);
@@ -1640,6 +1637,27 @@ class S4Mk3Deck extends Deck {
                     engine.setValue(this.group, "scratch2_enable", false);
                 }
             },
+            loopModeOff: function(skipRestore) {
+                if (this.previousWheelMode !== null) {
+                    this.indicator(false);
+                    const wheelOutput = Array(40).fill(0);
+                    wheelOutput[0] = decks[0] - 1;
+                    const that = this;
+                    controller.send(wheelOutput, null, 50, true);
+                    if (!skipRestore) {
+                        that.deck.wheelMode = that.previousWheelMode;
+                    }
+                    that.previousWheelMode = null;
+                    if (this.loopModeConnection !== null) {
+                        this.loopModeConnection.disconnect();
+                        this.loopModeConnection = null;
+                    }
+                }
+            },
+            onLoopChange: function(loopEnabled) {
+                if (loopEnabled) { return; }
+                this.loopModeOff();
+            },
             onShortPress: function() {
                 this.indicator(false);
                 if (this.shifted) {
@@ -1650,23 +1668,12 @@ class S4Mk3Deck extends Deck {
                         this.deck.reverseButton.indicator(false);
                         // Else, we enter/exit the loop in wheel mode
                     } else if (this.previousWheelMode === null) {
+                        this.deck.reverseButton.loopModeOff();
+                        engine.setValue(this.group, "scratch2_enable", false);
                         this.previousWheelMode = this.deck.wheelMode;
                         this.deck.wheelMode = wheelModes.loopOut;
                         if (this.loopModeConnection === null) {
-                            this.loopModeConnection = engine.makeConnection(this.group, this.outKey, (loopEnabled) => {
-                                if (loopEnabled) { return; }
-
-                                this.indicator(false);
-                                const wheelOutput = Array(40).fill(0);
-                                wheelOutput[0] = decks[0] - 1;
-                                engine.beginTimer(decks[0] * 35, () => {
-                                    controller.send(wheelOutput, null, 50, true);
-                                    this.deck.wheelMode = this.previousWheelMode;
-                                    this.previousWheelMode = null;
-                                }, true);
-                                this.loopModeConnection.disconnect();
-                                this.loopModeConnection = null;
-                            });
+                            this.loopModeConnection = engine.makeConnection(this.group, this.outKey, this.onLoopChange.bind(this));
                         }
 
                         const wheelOutput = Array(40).fill(0);
@@ -1684,17 +1691,7 @@ class S4Mk3Deck extends Deck {
 
                         this.indicator(true);
                     } else if (this.previousWheelMode !== null) {
-                        if (this.loopModeConnection !== null) {
-                            this.loopModeConnection.disconnect();
-                            this.loopModeConnection = null;
-                        }
-                        const wheelOutput = Array(40).fill(0);
-                        wheelOutput[0] = decks[0] - 1;
-                        engine.beginTimer(decks[0] * 35, () => {
-                            controller.send(wheelOutput, null, 50, true);
-                            this.deck.wheelMode = this.previousWheelMode;
-                            this.previousWheelMode = null;
-                        }, true);
+                        this.loopModeOff();
                     }
                 } else {
                     engine.setValue(this.group, this.key, true);
@@ -2250,6 +2247,8 @@ class S4Mk3Deck extends Deck {
             deck: this,
             input: function(press) {
                 if (press) {
+                    this.deck.reverseButton.loopModeOff(true);
+                    this.deck.fluxButton.loopModeOff(true);
                     if (this.deck.wheelMode === wheelModes.motor) {
                         this.deck.wheelMode = wheelModes.vinyl;
                         motorWindDownTimer = engine.beginTimer(motorWindDownMilliseconds, motorWindDownTimerCallback, true);
@@ -2275,6 +2274,8 @@ class S4Mk3Deck extends Deck {
             deck: this,
             input: function(press) {
                 if (press) {
+                    this.deck.reverseButton.loopModeOff(true);
+                    this.deck.fluxButton.loopModeOff(true);
                     if (this.deck.wheelMode === wheelModes.vinyl) {
                         this.deck.wheelMode = wheelModes.jog;
                     } else {
