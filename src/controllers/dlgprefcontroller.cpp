@@ -614,6 +614,8 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
             }
             enableWizardAndIOTabs(false);
         }
+
+        m_ui.groupBoxSettings->setVisible(false);
     } else { // User picked a mapping
         m_ui.chkEnabledDevice->setEnabled(true);
 
@@ -822,6 +824,22 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_ui.labelLoadedMappingAuthor->setText(mappingAuthor(pMapping));
     m_ui.labelLoadedMappingSupportLinks->setText(mappingSupportLinks(pMapping));
     m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(pMapping));
+
+    if (pMapping) {
+        const QList<std::shared_ptr<AbstractLegacyControllerSetting>>&
+                settings = pMapping->getSettings();
+
+        qDeleteAll(m_ui.groupBoxSettings->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
+
+        foreach (std::shared_ptr<AbstractLegacyControllerSetting> setting, settings) {
+            QWidget* settingWidget = setting->buildWidget(this);
+            // connect(settingWidget, &AbstractLegacyControllerSetting::changed,
+            // this, [this] { setDirty(true); });
+            m_ui.groupBoxSettings->layout()->addWidget(settingWidget);
+        }
+
+        m_ui.groupBoxSettings->setVisible(!settings.isEmpty());
+    }
 
     // We mutate this mapping so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this

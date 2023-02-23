@@ -108,6 +108,35 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
     mapping->setWikiLink(wiki.isNull() ? "" : wiki.text());
 }
 
+void LegacyControllerMappingFileHandler::parseMappingSettings(
+        const QDomElement& root, std::shared_ptr<LegacyControllerMapping> mapping) const {
+    if (root.isNull() || !mapping) {
+        return;
+    }
+
+    QDomElement settings = root.firstChildElement("settings");
+    if (settings.isNull()) {
+        return;
+    }
+
+    for (QDomElement option = settings.firstChildElement("option");
+            !option.isNull();
+            option = option.nextSiblingElement("option")) {
+        AbstractLegacyControllerSetting* setting = LegacyControllerSettingBuilder::build(option);
+        if (setting == nullptr) {
+            qDebug() << "Could not parse the unknown controller setting. Ignoring it.";
+            continue;
+        }
+        if (!setting->valid()) {
+            qDebug() << "The parsed setting appears to be invalid. Discarding it.";
+            delete setting;
+            continue;
+        }
+
+        mapping->addSetting(std::shared_ptr<AbstractLegacyControllerSetting>(setting));
+    }
+}
+
 QDomElement LegacyControllerMappingFileHandler::getControllerNode(
         const QDomElement& root) {
     if (root.isNull()) {

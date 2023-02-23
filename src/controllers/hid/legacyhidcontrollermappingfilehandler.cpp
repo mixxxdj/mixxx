@@ -24,6 +24,7 @@ LegacyHidControllerMappingFileHandler::load(const QDomElement& root,
     auto pMapping = std::make_shared<LegacyHidControllerMapping>();
     pMapping->setFilePath(filePath);
     parseMappingInfo(root, pMapping);
+    parseMappingSettings(root, pMapping);
     addScriptFilesToMapping(controller, pMapping, systemMappingsPath);
     return pMapping;
 }

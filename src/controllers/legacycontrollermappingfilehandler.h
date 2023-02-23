@@ -41,6 +41,9 @@ class LegacyControllerMappingFileHandler {
     void parseMappingInfo(const QDomElement& root,
             std::shared_ptr<LegacyControllerMapping> mapping) const;
 
+    void parseMappingSettings(const QDomElement& root,
+            std::shared_ptr<LegacyControllerMapping> mapping) const;
+
     /// Adds script files from XML to the LegacyControllerMapping.
     ///
     /// This function parses the supplied QDomElement structure, finds the

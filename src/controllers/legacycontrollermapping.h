@@ -1,13 +1,18 @@
 #pragma once
 
+#include <util/assert.h>
+
 #include <QDebug>
 #include <QDir>
+#include <QDomElement>
 #include <QHash>
 #include <QList>
 #include <QSharedPointer>
 #include <QString>
+#include <QtGlobal>
 #include <memory>
 
+#include "controllers/legacycontrollersettings.h"
 #include "defs_urls.h"
 
 /// This class represents a controller mapping, containing the data elements that
@@ -50,8 +55,27 @@ class LegacyControllerMapping {
         setDirty(true);
     }
 
+    /// Adds a setting option to the list of setting option for this mapping.
+    /// The option added must be a valid option.
+    /// @param option The option to add
+    void addSetting(std::shared_ptr<AbstractLegacyControllerSetting> option) {
+        // if (m_settings.contains(option->variableName())){
+        //     qWarning() << QString("Mapping setting duplication detected.
+        //     Keeping the first version of '%1'.").arg(option->variableName());
+        //     return;
+        // }
+        VERIFY_OR_DEBUG_ASSERT(option->valid()) {
+            return;
+        }
+        m_settings.append(option);
+    }
+
     const QList<ScriptFileInfo>& getScriptFiles() const {
         return m_scripts;
+    }
+
+    const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& getSettings() const {
+        return m_settings;
     }
 
     inline void setDirty(bool bDirty) {
@@ -191,5 +215,6 @@ class LegacyControllerMapping {
     QString m_schemaVersion;
     QString m_mixxxVersion;
 
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
     QList<ScriptFileInfo> m_scripts;
 };
