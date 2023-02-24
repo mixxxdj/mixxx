@@ -89,9 +89,14 @@ class WMainMenuBar : public QMenuBar {
 
   private:
     void initialize();
+    /// this ensures the menubar is shown when a menu hotkey is pressed
+    /// while the menubar is hidden
+    void connectMenuToSlotShowMenuBar(const QMenu* pMenu);
     void showMenuBar();
     void hideMenuBar();
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
+
+    bool event(QEvent* pEvent) override;
 
     UserSettingsPointer m_pConfig;
     QAction* m_pViewKeywheel;
