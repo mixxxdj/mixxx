@@ -158,7 +158,11 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     k = QKeySequence(modseq + keyseq);
 
     if (CmdlineArgs::Instance().getDeveloper()) {
-        qDebug() << "keyboard press: " << k.toString();
+        if (e->type() == QEvent::KeyPress) {
+            qDebug() << "keyboard press: " << k.toString();
+        } else if (e->type() == QEvent::KeyRelease) {
+            qDebug() << "keyboard release: " << k.toString();
+        }
     }
     return k;
 }
