@@ -58,6 +58,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void validate_levels();
     void updateBandFilter(int index, double value);
     void setUpMainEQ();
+    void setupMainEqWidgets();
     void applySelections();
 
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
