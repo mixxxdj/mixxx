@@ -371,7 +371,9 @@ void MixxxMainWindow::initialize() {
 
     // Show the menubar after the launch image is replaced by the skin widget,
     // otherwise it would shift the launch image shortly before the skin is visible.
+    // TODO(ronso0) Possible to swap these two to avoid potential flickering?
     m_pMenuBar->show();
+    m_pMenuBar->hideMenuBar();
 
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
@@ -876,6 +878,16 @@ void MixxxMainWindow::connectMenuBar() {
             m_pLibraryExporter.get(),
             &mixxx::LibraryExporter::slotRequestExport,
             Qt::UniqueConnection);
+#endif
+
+#ifndef __APPLE__
+    if (m_pCoreServices->getKeyboardEventFilter()) {
+        connect(m_pCoreServices->getKeyboardEventFilter().get(),
+                &KeyboardEventFilter::altPressedWithoutKeys,
+                m_pMenuBar,
+                &WMainMenuBar::slotToggleMenuBar,
+                Qt::UniqueConnection);
+    }
 #endif
 }
 

@@ -11,6 +11,9 @@ KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfi
         QObject* parent,
         const char* name)
         : QObject(parent),
+#ifndef __APPLE__
+          m_altPressedWithoutKey(false),
+#endif
           m_pKbdConfigObject(nullptr) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
@@ -42,6 +45,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         QKeySequence ks = getKeySeq(ke);
         if (!ks.isEmpty()) {
+#ifndef __APPLE__
+            m_altPressedWithoutKey = false;
+#endif
             ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
             bool result = false;
@@ -68,9 +74,32 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 }
             }
             return result;
+#ifndef __APPLE__
+        } else {
+            // getKeySeq() returns empty string if the press was a modifier only
+            if ((ke->modifiers() & Qt::AltModifier) && !m_altPressedWithoutKey) {
+                // on Linux pressing Alt sends Alt+Qt::Key_Alt, so checking for
+                // Alt modifier is sufficient.
+                // Activate this in case there are issues on Windows
+                // || ke->key() == Qt::Key_Alt) {
+                m_altPressedWithoutKey = true;
+            }
+#endif
         }
     } else if (e->type() == QEvent::KeyRelease) {
         QKeyEvent* ke = (QKeyEvent*)e;
+
+#ifndef __APPLE__
+        // QAction hotkeys are consumed by the object that created them, e.g.
+        // WMainMenuBar, so we will not receive menu hotkey keypress events here.
+        // However, it may happen that we receive a RELEASE event for an Alt+key
+        // combo for which no KEYPRESS was registered.
+        // So react only to Alt-only releases.
+        if (m_altPressedWithoutKey && ke->key() == Qt::Key_Alt) {
+            emit altPressedWithoutKeys();
+        }
+        m_altPressedWithoutKey = false;
+#endif
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty

@@ -702,8 +702,42 @@ void WMainMenuBar::onDeveloperToolsHidden() {
 }
 
 void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
+#ifndef __APPLE__
+    // always try to hide the menubar when we switched
+    hideMenuBar();
+#endif
     emit internalFullScreenStateChange(fullscreen);
 }
+
+#ifndef __APPLE__
+void WMainMenuBar::slotToggleMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+
+    if (height() > 0) {
+        hideMenuBar();
+    } else {
+        showMenuBar();
+    }
+}
+
+void WMainMenuBar::showMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+
+    setMinimumHeight(sizeHint().height());
+}
+
+void WMainMenuBar::hideMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+    // don't use setHidden(true) because Alt hotkeys wouldn't work anymore
+    setFixedHeight(0);
+}
+#endif
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
     VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_vinylControlEnabledActions.size()) {
