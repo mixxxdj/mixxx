@@ -98,47 +98,9 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2022-11-23" timestamp="1669217482">
+    <release version="2.3.4" type="development" date="2023-02-22" timestamp="1677050229">
       <description>
  <ul>
-  <li>
-   Numark DJ2GO2: Fix sliders and knobs
-   #4835
-   lp:1948596
-  </li>
-  <li>
-   Numark DJ2Go2: Support HotCue clear with pad
-   #10841
-  </li>
-  <li>
-   Numark DJ2Go2: Fix inverted tempo fader
-   #10852
-   #10586
-  </li>
-  <li>
-   Numark Party Mix: Mapping added
-   #4720
-  </li>
-  <li>
-   Numark N4: Inverted pitch slider, to match the GUI orientation
-   #11057
-  </li>
-  <li>
-   Ableton Push: Show as one device
-   #10905
-  </li>
-  <li>
-   Traktor S3: Fix issues with sampler and hotcue buttons
-   #4676
-  </li>
-  <li>
-   Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
-   #4495
-  </li>
-  <li>
-   Controller Preferences: Fix some usability issues
-   #10821
-  </li>
   <li>
    Track Properties: Show 'date added' as local time
    #4838
@@ -152,6 +114,10 @@
   <li>
    LateNight: Add a border to the crossfader when Auto DJ is active.
    #10913
+  </li>
+  <li>
+   LateNight: Isolate searchbar so maximize button is attached to tracks view.
+   #11132
   </li>
   <li>
    macOS builds: Perform ad-hoc signing of macOS bundle in Pull request and personal repositories
@@ -172,10 +138,6 @@
   <li>
    EQ preferences: Properly restore 'One EQ for all decks' setting
    #4886
-  </li>
-  <li>
-   MC7000: Fix off-by-one indexing in the controller script
-   #4902
   </li>
   <li>
    Cover Art: Fix picking wrong cover file, when track file name contains extra dots
@@ -206,12 +168,13 @@
    #10889
   </li>
   <li>
-   Use OpenGL VU meter widgets. This aims to improve performaces with macOS.
+   Use OpenGL VU meter widgets. This aims to improve performance with macOS.
    #10893
    #11052
    #10979
    #10973
    #10983
+   #11288
   </li>
   <li>
    Prevent wild numbers from appearing during scratching under vinyl control.
@@ -250,7 +213,7 @@
    #10998
   </li>
   <li>
-   Auto DJ: Added a warning ina message box when it is started without decks with left and a right crossfader orientation
+   Auto DJ: Added a warning in a message box when it is started without decks with left and a right crossfader orientation
    #11018
   </li>
   <li>
@@ -260,6 +223,132 @@
   <li>
    Fixed issue with finding moved library tracks.
    #11051
+  </li>
+  <li>
+   Preserve and synchronize ID3v1 tags (TagLib v1.12)
+   #11163
+   #11123
+  </li>
+  <li>
+   Replay Gain Preferences: Fix the "adjust by" text in case of negative adjustments
+   #11176
+  </li>
+  <li>
+   macOs: Install Qt translation
+   #11134
+   #11110
+  </li>
+  <li>
+   macOs: Fix assuming wrong system language
+   #11218
+   #11195
+  </li>
+  <li>
+   Fix resetting track colors on metadata reimport (Serato metadata):
+   #11217
+   #11213
+  </li>
+  <li>
+   Preferences: Fix incomplete version check in 2.3 during upgrade
+   #11229
+   #9709
+  </li>
+  <li>
+   Allow search in external libraries
+   #11221
+   #11216
+  </li>
+  <li>
+   JACK buffer size fix
+   #11121
+  </li>
+  <li>
+   Don't discard file tags with tuning information like "A#m +50"
+   #10992
+  </li>
+  <li>
+   Year search: Find also full date entries
+   #11251
+   #11251
+  </li>
+  <li>
+   Fix visual alignment of beats and waveform in case of decoding issues
+   #11162
+  </li>
+  <li>
+   Avoid "active key-value observers" messages during skin parsing on macOS
+   #11265
+  </li>
+  <li>
+   Fullscreen on Linux: Fix issues caused by Ubuntu Unity workaround
+   #11295
+   #11281
+   #11294
+  </li>
+ </ul>
+ <p>
+  New Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Traktor Kontrol S2 Mk1: Add controller mapping
+   #3905
+  </li>
+  <li>
+   Numark Party Mix: Mapping added
+   #4720
+  </li>
+ </ul>
+ <p>
+  Controller Fixes
+ </p>
+ <ul>
+  <li>
+   Traktor S3: Fix issues with sampler and hotcue buttons
+   #4676
+  </li>
+  <li>
+   Numark DJ2GO2: Fix sliders and knobs
+   #4835
+   lp:1948596
+  </li>
+  <li>
+   Numark DJ2Go2: Support HotCue clear with pad
+   #10841
+  </li>
+  <li>
+   Numark DJ2Go2: Fix inverted tempo fader
+   #10852
+   #10586
+  </li>
+  <li>
+   Numark N4: Inverted pitch slider, to match the GUI orientation
+   #11057
+  </li>
+  <li>
+   Ableton Push: Show as one device
+   #10905
+  </li>
+  <li>
+   Denon DJ MC7000: off-by-one fix, soft-start/break effect, pitch play, 32 velocity samplers
+   #4902
+   #4729
+  </li>
+  <li>
+   Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
+   #4495
+  </li>
+  <li>
+   Controller Preferences: Fix some usability issues
+   #10821
+  </li>
+  <li>
+   Controller mapping table: show readable/translated strings for script bindings
+   #11139
+  </li>
+  <li>
+   Control picker menu: Added loop_in/out_goto to list
+   #11133
   </li>
  </ul>
  <p>
