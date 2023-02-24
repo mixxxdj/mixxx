@@ -858,6 +858,16 @@ void MixxxMainWindow::connectMenuBar() {
             &mixxx::LibraryExporter::slotRequestExport,
             Qt::UniqueConnection);
 #endif
+
+#ifndef __APPLE__
+    if (m_pCoreServices->getKeyboardEventFilter()) {
+        connect(m_pCoreServices->getKeyboardEventFilter().get(),
+                &KeyboardEventFilter::altPressedWithoutKeys,
+                m_pMenuBar,
+                &WMainMenuBar::slotToggleMenuBar,
+                Qt::UniqueConnection);
+    }
+#endif
 }
 
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {

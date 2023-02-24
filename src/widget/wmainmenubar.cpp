@@ -680,7 +680,40 @@ void WMainMenuBar::onDeveloperToolsHidden() {
 }
 
 void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
+#ifndef __APPLE__
+    if (fullscreen) {
+        hideMenuBar();
+    }
+#endif
     emit internalFullScreenStateChange(fullscreen);
+}
+
+void WMainMenuBar::slotToggleMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+
+    if (height() > 0) {
+        hideMenuBar();
+    } else {
+        showMenuBar();
+    }
+}
+
+void WMainMenuBar::showMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+
+    setMinimumHeight(sizeHint().height());
+}
+
+void WMainMenuBar::hideMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+    // don't use setHidden(bool) because hotkeys wouldn't work anymore
+    setFixedHeight(0);
 }
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {

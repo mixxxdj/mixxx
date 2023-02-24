@@ -49,6 +49,7 @@ class WMainMenuBar : public QMenuBar {
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
     void onKeywheelChange(int state);
+    void slotToggleMenuBar();
 
   signals:
     void createCrate();
@@ -88,6 +89,8 @@ class WMainMenuBar : public QMenuBar {
 
   private:
     void initialize();
+    void showMenuBar();
+    void hideMenuBar();
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;

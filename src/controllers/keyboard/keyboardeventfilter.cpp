@@ -13,6 +13,9 @@ KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfi
         QObject* parent,
         const char* name)
         : QObject(parent),
+#ifndef __APPLE__
+          m_altPressedWithoutKey(false),
+#endif
           m_pKbdConfigObject(nullptr) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
@@ -41,7 +44,6 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         // Run through list of active keys to see if the pressed key is already active
         // Just for returning true if we are consuming this key event
-
         foreach (const KeyDownInformation& keyDownInfo, m_qActiveKeyList) {
             if (keyDownInfo.keyId == keyId) {
                 return true;
@@ -50,6 +52,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         QKeySequence ks = getKeySeq(ke);
         if (!ks.isEmpty()) {
+#ifndef __APPLE__
+            m_altPressedWithoutKey = false;
+#endif
             ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
             bool result = false;
@@ -76,9 +81,31 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 }
             }
             return result;
+#ifndef __APPLE__
+        } else {
+            // getKeySeq() returns empty string if the press was a modifier only
+            if (ke->modifiers() & Qt::AltModifier) {
+                // on Linux pressing Alt sends Alt+Qt::Key_Alt, so checking for
+                // Alt modifier is suffcient.
+                // Activate this in case there are issues on Windows
+                // || ke->key() == Qt::Key_Alt) {
+                m_altPressedWithoutKey = true;
+            }
+#endif
         }
     } else if (e->type()==QEvent::KeyRelease) {
         QKeyEvent* ke = (QKeyEvent*)e;
+
+#ifndef __APPLE__
+        // QAction hotkeys are consumed by the object the created them, so we will
+        // not receive those here, for example WMainMenuBar hotkeys.
+        // However, it may happen that we receive an Alt+[key] combo RELEASE for
+        // which no [key] PRESS was registered.
+        if (m_altPressedWithoutKey && ke->key() == Qt::Key_Alt) {
+            emit altPressedWithoutKeys();
+        }
+        m_altPressedWithoutKey = false;
+#endif
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty

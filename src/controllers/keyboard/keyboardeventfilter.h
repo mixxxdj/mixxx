@@ -24,6 +24,11 @@ class KeyboardEventFilter : public QObject {
     void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 
+#ifndef __APPLE__
+  signals:
+    void altPressedWithoutKeys();
+#endif
+
   private:
     struct KeyDownInformation {
         KeyDownInformation(int keyId, int modifiers, ControlObject* pControl)
@@ -36,6 +41,10 @@ class KeyboardEventFilter : public QObject {
         int modifiers;
         ControlObject* pControl;
     };
+
+#ifndef __APPLE__
+    bool m_altPressedWithoutKey;
+#endif
 
     // Returns a valid QString with modifier keys from a QKeyEvent
     QKeySequence getKeySeq(QKeyEvent *e);
