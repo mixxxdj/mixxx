@@ -123,6 +123,15 @@ bool ControllerScriptEngineLegacy::initialize() {
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
     ControllerScriptInterfaceLegacy* legacyScriptInterface =
             new ControllerScriptInterfaceLegacy(this, m_logger);
+
+    // TODO(acolombier): move into a dedicated protected method
+    QJSValue settingsObject = m_pJSEngine->newObject();
+    foreach (const std::shared_ptr<AbstractLegacyControllerSetting>& setting, m_settings) {
+        settingsObject.setProperty(setting->variableName(), setting->value());
+    }
+    engineGlobalObject.setProperty(
+            "mixxxControllerSettings", settingsObject);
+
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));
 

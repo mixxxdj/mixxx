@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDomElement>
+#include <QJSValue>
 #include <QLabel>
 #include <QLayout>
 #include <QList>
@@ -28,6 +29,8 @@ class AbstractLegacyControllerSetting : public QObject {
     /// The parent widget will own the newly created widget
     /// @return a new widget
     virtual QWidget* buildWidget(QWidget* parent) = 0;
+
+    virtual QJSValue value() const = 0;
 
     // virtual void reset() const = 0;
 
@@ -104,6 +107,10 @@ class LegacyControllerIntegerSetting
     virtual ~LegacyControllerIntegerSetting() = default;
 
     QWidget* buildWidget(QWidget* parent);
+
+    inline QJSValue value() const {
+        return QJSValue(m_currentValue);
+    }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element);
     static bool match(const QDomElement& element);

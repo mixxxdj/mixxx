@@ -76,6 +76,12 @@ bool Controller::applyMapping() {
     }
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
+
+    const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings =
+            pMapping->getSettings();
+    if (!settings.isEmpty()) {
+        m_pScriptEngineLegacy->setSettings(settings);
+    }
     return m_pScriptEngineLegacy->initialize();
 }
 

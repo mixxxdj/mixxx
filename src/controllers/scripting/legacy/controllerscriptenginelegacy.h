@@ -28,6 +28,10 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
   public slots:
     void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts);
+    inline void setSettings(
+            const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings) {
+        m_settings = settings;
+    }
 
   private:
     bool evaluateScriptFile(const QFileInfo& scriptFile);
@@ -44,6 +48,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
     QList<LegacyControllerMapping::ScriptFileInfo> m_scriptFiles;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
 
     QFileSystemWatcher m_fileWatcher;
 
