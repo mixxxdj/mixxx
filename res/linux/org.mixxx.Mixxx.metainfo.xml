@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2023-02-20" timestamp="1676912720">
+    <release version="2.3.4" type="development" date="2023-02-22" timestamp="1677050229">
       <description>
  <ul>
   <li>
@@ -168,7 +168,7 @@
    #10889
   </li>
   <li>
-   Use OpenGL VU meter widgets. This aims to improve performaces with macOS.
+   Use OpenGL VU meter widgets. This aims to improve performance with macOS.
    #10893
    #11052
    #10979
@@ -213,7 +213,7 @@
    #10998
   </li>
   <li>
-   Auto DJ: Added a warning ina message box when it is started without decks with left and a right crossfader orientation
+   Auto DJ: Added a warning in a message box when it is started without decks with left and a right crossfader orientation
    #11018
   </li>
   <li>
