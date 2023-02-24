@@ -82,6 +82,9 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
 void WMainMenuBar::initialize() {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pFileMenu);
+#endif
 
     QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
@@ -130,6 +133,9 @@ void WMainMenuBar::initialize() {
 
     // LIBRARY MENU
     QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pLibraryMenu);
+#endif
 
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
@@ -195,6 +201,7 @@ void WMainMenuBar::initialize() {
     QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"), this);
 #else
     QMenu* pViewMenu = new QMenu(tr("&View"), this);
+    connectMenuToSlotShowMenuBar(pViewMenu);
 #endif
 
     // Skin Settings Menu
@@ -334,6 +341,9 @@ void WMainMenuBar::initialize() {
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pOptionsMenu);
+#endif
 
 #ifdef __VINYLCONTROL__
     QMenu* pVinylControlMenu = new QMenu(tr("&Vinyl Control"), this);
@@ -453,6 +463,9 @@ void WMainMenuBar::initialize() {
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
         QMenu* pDeveloperMenu = new QMenu(tr("&Developer"), this);
+#ifndef __APPLE__
+        connectMenuToSlotShowMenuBar(pDeveloperMenu);
+#endif
 
         QString reloadSkinTitle = tr("&Reload Skin");
         QString reloadSkinText = tr("Reload the skin");
@@ -554,6 +567,9 @@ void WMainMenuBar::initialize() {
 
     // HELP MENU
     QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pHelpMenu);
+#endif
 
     QString externalLinkSuffix;
 #ifndef __APPLE__
@@ -710,6 +726,19 @@ void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
 }
 
 #ifndef __APPLE__
+void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
+    // If a menu hotkey like Alt+F(ile) is pressed while the menubar is hidden,
+    // show the menubar and open the requested menu. See showMenuBar() for details.
+    connect(pMenu,
+            &QMenu::aboutToShow,
+            this,
+            [this]() {
+                if (!isNativeMenuBar() && height() <= 0) {
+                    showMenuBar();
+                }
+            });
+}
+
 void WMainMenuBar::slotToggleMenuBar() {
     if (isNativeMenuBar()) {
         return;
@@ -726,8 +755,24 @@ void WMainMenuBar::showMenuBar() {
     if (isNativeMenuBar()) {
         return;
     }
-
+    // Note: the resulting resizeEvent() calls QMenuBarPrivate::updateGeometries
+    // which resets currentAction() to nullptr. So in case the menubar is shown
+    // in response to a specific menu hotkey (Alt-F), or pressing Alt opens the
+    // first menu (File) (depends on OS / window manager), the current action
+    // will be reset to null and menus can't be switched with Left/Right keys
+    // anymore, i.e. we'd be stuck in the triggered menu.
+    // Workaround: reselect the active action after unhiding. It can be none,
+    // user-requested (hotkey) or auto-selected (first menu's first action).
+    QAction* pAct = activeAction();
     setMinimumHeight(sizeHint().height());
+    // If there was a menu selected before, reselect that.
+    // Note: with nullptr this would be a no-op. Though, even if no menu is
+    // selected, hovering a menu would instantly open that (no click required).
+    if (pAct) {
+        setActiveAction(pAct);
+    }
+    // TODO Alternatively, activate the first menu?
+    // setActiveAction(pAct ? pAct : actions().first());
 }
 
 void WMainMenuBar::hideMenuBar() {
