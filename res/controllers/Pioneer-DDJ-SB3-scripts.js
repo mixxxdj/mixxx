@@ -1411,6 +1411,16 @@ PioneerDDJSB3.EffectUnit = function(unitNumber) {
         },
     });
 
+    this.shiftKnob = new components.Pot({
+        unshift: function() {
+            this.input = function(channel, control, value) {
+                value = (this.MSB << 7) + value;
+
+                engine.setValue(eu.group, "super1", value / this.max);
+            };
+        },
+    });
+
     this.knobSoftTakeoverHandler = engine.makeConnection(eu.group, "focused_effect", function(value) {
         if (value === 0) {
             engine.softTakeoverIgnoreNextValue(eu.group, "mix");
