@@ -1256,6 +1256,46 @@
         </options>
       </control>
       <control>
+        <group>[Master]</group>
+        <key>gain</key>
+        <description>Master Level</description>
+        <status>0xB6</status>
+        <midino>0x08</midino>
+        <options>
+          <fourteen-bit-msb/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>gain</key>
+        <description>Master Level</description>
+        <status>0xB6</status>
+        <midino>0x28</midino>
+        <options>
+          <fourteen-bit-lsb/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headGain</key>
+        <description>Headphones Level</description>
+        <status>0xB6</status>
+        <midino>0x0D</midino>
+        <options>
+          <fourteen-bit-msb/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headGain</key>
+        <description>Headphones Level</description>
+        <status>0xB6</status>
+        <midino>0x2D</midino>
+        <options>
+          <fourteen-bit-lsb/>
+        </options>
+      </control>
+      <control>
         <group>[Playlist]</group>
         <key>PioneerDDJSB3.rotarySelector</key>
         <description>Browser rotate, Knob: BROWSER</description>
