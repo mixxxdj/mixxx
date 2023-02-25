@@ -716,9 +716,6 @@ PioneerDDJFLX4.stopSamplerBlink = function(channel, control) {
     }
 };
 
-//
-// Additional features
-//
 
 PioneerDDJFLX4.toggleQuantize = function(_channel, _control, value, _status, group) {
     if (value) {
