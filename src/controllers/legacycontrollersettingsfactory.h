@@ -23,7 +23,7 @@ class AbstractLegacyControllerSetting;
 template<class T>
 class LegacyControllerSettingFactory {
     inline static LegacyControllerSettingFactory* createFrom(const QDomElement& element) {
-        return T::createFrom(element);
+        return new T(element);
     }
     inline static bool match(const QDomElement& element) {
         return T::match(element);
@@ -52,7 +52,7 @@ class LegacyControllerSettingBuilder {
     /// @return an instance if a a supported setting has been found, null
     /// otherwise
     static AbstractLegacyControllerSetting* build(const QDomElement& element) {
-        foreach (auto settingType, instance()->m_supportedSettings) {
+        for (auto settingType : instance()->m_supportedSettings) {
             if (std::get<0>(settingType)(element)) {
                 return std::get<1>(settingType)(element);
             }
@@ -71,7 +71,9 @@ class LegacyControllerSettingBuilder {
     static LegacyControllerSettingBuilder* __self;
 };
 
-#define REGISTER_LEGACY_CONTROLLER_SETTING(S)                         \
-    bool kSettingRegistered_##T =                                     \
+#define CONCAT_(x, y) x##y
+#define CONCAT(x, y) CONCAT_(x, y)
+#define REGISTER_LEGACY_CONTROLLER_SETTING(...)                       \
+    bool CONCAT(kSettingRegistered_, __COUNTER__) =                   \
             LegacyControllerSettingBuilder::instance()->registerType( \
-                    S::match, S::createFrom)
+                    __VA_ARGS__::match, __VA_ARGS__::createFrom)

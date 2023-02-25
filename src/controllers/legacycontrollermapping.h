@@ -11,16 +11,21 @@
 #include <QString>
 #include <QtGlobal>
 #include <memory>
+#include <vector>
 
 #include "controllers/legacycontrollersettings.h"
 #include "defs_urls.h"
+#include "preferences/usersettings.h"
+
+// TODO (acolombier) is it okay to keep it as it? Or shall we generate a UUID from that pair?
+#define CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY "[ControllerSettings_%1_%2]"
 
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
 class LegacyControllerMapping {
   public:
     LegacyControllerMapping()
-            : m_bDirty(false) {
+            : m_bDirty(false), m_settings() {
     }
     virtual ~LegacyControllerMapping() = default;
 
@@ -197,6 +202,13 @@ class LegacyControllerMapping {
     virtual bool saveMapping(const QString& filename) const = 0;
 
     virtual bool isMappable() const = 0;
+
+    void restoreSettings(const QFileInfo& mappingFile,
+            UserSettingsPointer pConfig,
+            const QString& controllerName);
+    void saveSettings(const QFileInfo& mappingFile,
+            UserSettingsPointer pConfig,
+            const QString& controllerName);
 
     // Optional list of controller device match details
     QList<QHash<QString, QString>> m_productMatches;

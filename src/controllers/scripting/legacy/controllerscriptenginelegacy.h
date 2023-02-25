@@ -30,7 +30,11 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts);
     inline void setSettings(
             const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings) {
-        m_settings = settings;
+        m_settings.clear();
+        for (auto pSetting : settings) {
+            m_settings.append(std::tuple<QString, QJSValue>(
+                    pSetting->variableName(), pSetting->value()));
+        }
     }
 
   private:
@@ -48,7 +52,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
     QList<LegacyControllerMapping::ScriptFileInfo> m_scriptFiles;
-    QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
+    QList<std::tuple<QString, QJSValue>> m_settings;
 
     QFileSystemWatcher m_fileWatcher;
 

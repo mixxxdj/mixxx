@@ -22,6 +22,7 @@
 #include "preferences/usersettings.h"
 #include "util/desktophelper.h"
 #include "util/string.h"
+#include "util/parented_ptr.h"
 
 namespace {
 const QString kMappingExt(".midi.xml");
@@ -533,7 +534,7 @@ void DlgPrefController::slotApply() {
     applyMappingChanges();
 
     // If no changes were made, do nothing
-    if (!(isDirty() || (m_pMapping && m_pMapping->isDirty()))) {
+    if (!(isDirty() || (m_pMapping && (m_pMapping->isDirty())))) {
         return;
     }
 
@@ -558,8 +559,18 @@ void DlgPrefController::slotApply() {
     }
 
     QString mappingPath = mappingPathFromIndex(m_ui.comboBoxMapping->currentIndex());
+    QFileInfo mappingFileInfo(mappingPath);
+
+    m_pMapping->saveSettings(mappingFileInfo, m_pConfig, m_pController->getName());
+
     m_pMapping = LegacyControllerMappingFileHandler::loadMapping(
-            QFileInfo(mappingPath), QDir(resourceMappingsPath(m_pConfig)));
+            mappingFileInfo, QDir(resourceMappingsPath(m_pConfig)));
+
+    if (m_pMapping) {
+        m_pMapping->restoreSettings(mappingFileInfo, m_pConfig, m_pController->getName());
+    }
+
+    slotShowMapping(m_pMapping);
 
     // Load the resulting mapping (which has been mutated by the input/output
     // table models). The controller clones the mapping so we aren't touching
@@ -645,12 +656,14 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         }
     }
 
+    QFileInfo mappingFileInfo(mappingPath);
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    QFileInfo(mappingPath), QDir(resourceMappingsPath(m_pConfig)));
+                    mappingFileInfo, QDir(resourceMappingsPath(m_pConfig)));
 
     if (pMapping) {
         DEBUG_ASSERT(!pMapping->isDirty());
+        pMapping->restoreSettings(mappingFileInfo, m_pConfig, m_pController->getName());
     }
 
     if (previousMappingSaved) {
@@ -826,16 +839,17 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(pMapping));
 
     if (pMapping) {
-        const QList<std::shared_ptr<AbstractLegacyControllerSetting>>&
-                settings = pMapping->getSettings();
+        auto settings = pMapping->getSettings();
 
         qDeleteAll(m_ui.groupBoxSettings->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
 
-        foreach (std::shared_ptr<AbstractLegacyControllerSetting> setting, settings) {
-            QWidget* settingWidget = setting->buildWidget(this);
-            // connect(settingWidget, &AbstractLegacyControllerSetting::changed,
-            // this, [this] { setDirty(true); });
-            m_ui.groupBoxSettings->layout()->addWidget(settingWidget);
+        for (auto setting : settings) {
+            parented_ptr<QWidget> pSettingWidget(setting->buildWidget(m_ui.groupBoxSettings));
+            connect(setting.get(),
+                    &AbstractLegacyControllerSetting::changed,
+                    this,
+                    [this] { setDirty(true); });
+            m_ui.groupBoxSettings->layout()->addWidget(pSettingWidget);
         }
 
         m_ui.groupBoxSettings->setVisible(!settings.isEmpty());

@@ -736,6 +736,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/legacycontrollermappingfilehandler.cpp
+  src/controllers/legacycontrollermapping.cpp
   src/controllers/delegates/controldelegate.cpp
   src/controllers/delegates/midibytedelegate.cpp
   src/controllers/delegates/midichanneldelegate.cpp

@@ -122,18 +122,18 @@ void LegacyControllerMappingFileHandler::parseMappingSettings(
     for (QDomElement option = settings.firstChildElement("option");
             !option.isNull();
             option = option.nextSiblingElement("option")) {
-        AbstractLegacyControllerSetting* setting = LegacyControllerSettingBuilder::build(option);
-        if (setting == nullptr) {
+        std::shared_ptr<AbstractLegacyControllerSetting> pSetting(
+                LegacyControllerSettingBuilder::build(option));
+        if (pSetting.get() == nullptr) {
             qDebug() << "Could not parse the unknown controller setting. Ignoring it.";
             continue;
         }
-        if (!setting->valid()) {
+        if (!pSetting->valid()) {
             qDebug() << "The parsed setting appears to be invalid. Discarding it.";
-            delete setting;
             continue;
         }
 
-        mapping->addSetting(std::shared_ptr<AbstractLegacyControllerSetting>(setting));
+        mapping->addSetting(pSetting);
     }
 }
 
