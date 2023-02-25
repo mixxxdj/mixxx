@@ -3,7 +3,6 @@
 // * Mixxx mapping script file for the Pioneer DDJ-FLX4.
 // * Mostly adapted from the DDJ-400 mapping script
 // * Authors: Warker, nschloe, dj3730, jusko, Robert904
-// * Manual: https://manual.mixxx.org/2.3/en/hardware/controllers/
 // ****************************************************************************
 //
 //  Implemented (as per manufacturer's manual):
