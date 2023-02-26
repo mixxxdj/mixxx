@@ -80,12 +80,15 @@ inline std::size_t wcsnlen_s(
 /// See also: QString::fromWCharArray()
 inline QString convertWCStringToQString(
         const wchar_t* wcs,
-        std::size_t len) {
+        std::size_t maxLen) {
     if (!wcs) {
-        DEBUG_ASSERT(len == 0);
+        DEBUG_ASSERT(maxLen == 0);
         return QString();
     }
-    DEBUG_ASSERT(wcsnlen_s(wcs, len) == len);
+
+    std::size_t len = wcsnlen_s(wcs, maxLen + 1);
+    // Assert when the string wcs has more characters than the specified maximum size
+    DEBUG_ASSERT(len <= maxLen);
     const auto ilen = static_cast<int>(len);
     DEBUG_ASSERT(ilen >= 0); // unsigned -> signed
     switch (sizeof(wchar_t)) {
