@@ -534,7 +534,7 @@ void DlgPrefController::slotApply() {
     applyMappingChanges();
 
     // If no changes were made, do nothing
-    if (!(isDirty() || (m_pMapping && (m_pMapping->isDirty())))) {
+    if (!(isDirty() || (m_pMapping && m_pMapping->isDirty()))) {
         return;
     }
 

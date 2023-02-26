@@ -28,10 +28,30 @@ AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomEleme
     }
 }
 
-QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* parent) {
-    QWidget* pRoot = new QWidget(parent);
+QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
+        LegacyControllerSettingsLayoutContainer::Disposition orientation) {
+    QWidget* pRoot = new QWidget(pParent);
     QBoxLayout* pLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     pLayout->setContentsMargins(0, 0, 0, 0);
+
+    if (orientation == LegacyControllerSettingsLayoutContainer::VERTICAL) {
+        auto* pSettingsContainer = dynamic_cast<WLegacyControllerSettingsContainer*>(pParent);
+        if (pSettingsContainer) {
+            connect(pSettingsContainer,
+                    &WLegacyControllerSettingsContainer::orientationChanged,
+                    this,
+                    [pLayout, pParent](
+                            LegacyControllerSettingsLayoutContainer::Disposition
+                                    disposition) {
+                        pLayout->setDirection(disposition ==
+                                                LegacyControllerSettingsLayoutContainer::
+                                                        HORIZONTAL
+                                        ? QBoxLayout::TopToBottom
+                                        : QBoxLayout::LeftToRight);
+                        pParent->layout()->invalidate();
+                    });
+        }
+    }
 
     QLabel* pLabelWidget = new QLabel(pRoot);
     pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
@@ -60,9 +80,10 @@ LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
     m_dirtyValue = m_defaultValue;
 }
 
-QWidget* LegacyControllerBooleanSetting::buildWidget(QWidget* parent) {
+QWidget* LegacyControllerBooleanSetting::buildWidget(
+        QWidget* parent, LegacyControllerSettingsLayoutContainer::Disposition) {
     QWidget* pRoot = new QWidget(parent);
-    QBoxLayout* pLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    QBoxLayout* pLayout = new QHBoxLayout();
     pLayout->setContentsMargins(0, 0, 0, 0);
 
     QLabel* pLabelWidget = new QLabel(pRoot);
@@ -143,7 +164,7 @@ QWidget* LegacyControllerNumberSetting<SettingType,
         ValueDeserializer,
         InputWidget>::buildInputWidget(QWidget* parent) {
     InputWidget* spinBox = new InputWidget(parent);
-    spinBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    spinBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
     spinBox->setRange(this->m_minValue, this->m_maxValue);
     spinBox->setSingleStep(this->m_stepValue);

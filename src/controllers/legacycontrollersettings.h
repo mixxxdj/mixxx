@@ -16,6 +16,7 @@
 #include <tuple>
 
 #include "controllers/legacycontrollersettingsfactory.h"
+#include "controllers/legacycontrollersettingslayout.h"
 
 /// @brief The abstract controller setting. Any type of setting will have to
 /// implement this base class
@@ -29,7 +30,9 @@ class AbstractLegacyControllerSetting : public QObject {
     /// @param parent The parent widget for which this widget is being created.
     /// The parent widget will own the newly created widget
     /// @return a new widget
-    virtual QWidget* buildWidget(QWidget* parent);
+    virtual QWidget* buildWidget(QWidget* parent,
+            LegacyControllerSettingsLayoutContainer::Disposition orientation =
+                    LegacyControllerSettingsLayoutContainer::HORIZONTAL);
 
     /// @brief Build a JSValue with the current setting value. The JSValue
     /// variant will use the appropriate type
@@ -121,7 +124,10 @@ class LegacyControllerBooleanSetting
 
     virtual ~LegacyControllerBooleanSetting() = default;
 
-    QWidget* buildWidget(QWidget* parent) override;
+    QWidget* buildWidget(QWidget* parent,
+            LegacyControllerSettingsLayoutContainer::Disposition orientation =
+                    LegacyControllerSettingsLayoutContainer::HORIZONTAL)
+            override;
 
     QJSValue value() const override {
         return QJSValue(m_currentValue);

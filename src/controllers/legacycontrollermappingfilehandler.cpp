@@ -136,7 +136,7 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
     for (QDomElement element = current.firstChildElement();
             !element.isNull();
             element = element.nextSiblingElement()) {
-        const QString& tagName = element.tagName();
+        const QString& tagName = element.tagName().toLower();
         if (tagName == "option") {
             std::shared_ptr<AbstractLegacyControllerSetting> pSetting(
                     LegacyControllerSettingBuilder::build(element));
@@ -151,8 +151,15 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
             layout->addItem(pSetting);
             mapping->addSetting(pSetting);
         } else if (tagName == "row") {
+            LegacyControllerSettingsLayoutContainer::Disposition orientation =
+                    element.attribute("orientation").trimmed().toLower() ==
+                            "vertical"
+                    ? LegacyControllerSettingsLayoutContainer::VERTICAL
+                    : LegacyControllerSettingsLayoutContainer::HORIZONTAL;
             std::unique_ptr<LegacyControllerSettingsLayoutContainer> row =
-                    std::make_unique<LegacyControllerSettingsLayoutContainer>();
+                    std::make_unique<LegacyControllerSettingsLayoutContainer>(
+                            LegacyControllerSettingsLayoutContainer::HORIZONTAL,
+                            orientation);
             parseMappingSettingsElement(element, mapping, row);
             layout->addItem(std::move(row));
         } else if (tagName == "group") {

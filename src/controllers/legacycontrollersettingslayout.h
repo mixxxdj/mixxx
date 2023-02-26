@@ -2,6 +2,7 @@
 
 #include <util/assert.h>
 
+#include <QBoxLayout>
 #include <QDebug>
 #include <QDomElement>
 #include <QHash>
@@ -13,11 +14,12 @@
 #include <memory>
 #include <vector>
 
-#include "controllers/legacycontrollersettings.h"
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
 
-#define MIN_SCREEN_SIZE_FOR_CONTROLLER_SETTING_ROW 1280
+#define MIN_SCREEN_SIZE_FOR_CONTROLLER_SETTING_ROW 960
+
+class AbstractLegacyControllerSetting;
 
 class LegacyControllerSettingsLayoutElement {
   public:
@@ -37,8 +39,12 @@ class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsL
         VERTICAL,
     };
 
-    LegacyControllerSettingsLayoutContainer(Disposition disposition = HORIZONTAL)
-            : LegacyControllerSettingsLayoutElement(), m_disposition(disposition) {
+    LegacyControllerSettingsLayoutContainer(
+            Disposition disposition = HORIZONTAL,
+            Disposition widgetOrientation = HORIZONTAL)
+            : LegacyControllerSettingsLayoutElement(),
+              m_disposition(disposition),
+              m_widgetOrientation(widgetOrientation) {
     }
     LegacyControllerSettingsLayoutContainer(const LegacyControllerSettingsLayoutContainer& other) {
         m_elements.reserve(other.m_elements.size());
@@ -62,6 +68,7 @@ class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsL
     QBoxLayout* buildLayout(QWidget* parent) const;
 
     Disposition m_disposition;
+    Disposition m_widgetOrientation;
     std::vector<std::unique_ptr<LegacyControllerSettingsLayoutElement>> m_elements;
 };
 
@@ -80,15 +87,20 @@ class LegacyControllerSettingsGroup : public LegacyControllerSettingsLayoutConta
     }
 
     QWidget* build(QWidget* parent) override;
-
+    
   private:
     QString m_label;
 };
 
 class LegacyControllerSettingsLayoutItem : public LegacyControllerSettingsLayoutElement {
   public:
-    LegacyControllerSettingsLayoutItem(std::shared_ptr<AbstractLegacyControllerSetting> setting)
-            : LegacyControllerSettingsLayoutElement(), m_setting(setting) {
+    LegacyControllerSettingsLayoutItem(
+            std::shared_ptr<AbstractLegacyControllerSetting> setting,
+            LegacyControllerSettingsLayoutContainer::Disposition orientation =
+                    LegacyControllerSettingsGroup::HORIZONTAL)
+            : LegacyControllerSettingsLayoutElement(),
+              m_setting(setting),
+              m_prefferedOrientation(orientation) {
     }
     virtual ~LegacyControllerSettingsLayoutItem() = default;
 
@@ -96,13 +108,29 @@ class LegacyControllerSettingsLayoutItem : public LegacyControllerSettingsLayout
         return std::make_unique<LegacyControllerSettingsLayoutItem>(*this);
     }
 
-    QWidget* build(QWidget* parent) override {
-        VERIFY_OR_DEBUG_ASSERT(m_setting.get() != nullptr) {
-            return nullptr;
-        }
-        return m_setting->buildWidget(parent);
-    }
+    QWidget* build(QWidget* parent) override;
 
   private:
     std::shared_ptr<AbstractLegacyControllerSetting> m_setting;
+    LegacyControllerSettingsLayoutContainer::Disposition m_prefferedOrientation;
+};
+
+class WLegacyControllerSettingsContainer : public QWidget {
+    Q_OBJECT
+  public:
+    WLegacyControllerSettingsContainer(
+            LegacyControllerSettingsLayoutContainer::Disposition
+                    prefferedOrientation,
+            QWidget* parent)
+            : QWidget(parent), m_prefferedOrientation(prefferedOrientation) {
+    }
+
+  protected:
+    void resizeEvent(QResizeEvent* event);
+
+  signals:
+    void orientationChanged(LegacyControllerSettingsLayoutContainer::Disposition);
+
+  private:
+    LegacyControllerSettingsLayoutContainer::Disposition m_prefferedOrientation;
 };
