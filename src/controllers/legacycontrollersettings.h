@@ -31,58 +31,74 @@ class AbstractLegacyControllerSetting : public QObject {
     /// @return a new widget
     virtual QWidget* buildWidget(QWidget* parent);
 
+    /// @brief Build a JSValue with the current setting value. The JSValue
+    /// variant will use the appropriate type
+    /// @return A QJSValue with the current value
     virtual QJSValue value() const = 0;
 
+    /// @brief Serialize the current value in a string format
+    /// @return A String with current setting value
     virtual QString stringify() const = 0;
+
+    /// @brief Parse a string that contains the value in a compatible format.
+    /// @param in The string containing the data
+    /// @param ok A pointer to a boolean in which the result of the
+    /// deserialisation will be stored (true means the operation was successful)
     virtual void parse(const QString&, bool*) = 0;
+
+    /// @brief Indicate if the setting is currently not using a user-specified value
+    /// @return Whether or not the setting is currently set to its default value
     virtual bool isDefault() const = 0;
+
+    /// @brief Indicate if the setting is currently being mutated and if the
+    /// edited value is different than its its currently known value. This would
+    /// indicate that the user may need to save the changes or acknowledge
+    /// otherwise.
+    /// @return Whether or not the setting value is dirty
     virtual bool isDirty() const = 0;
 
+    /// @brief Commit the the edited value to become the currently known value.
+    /// Note that if `isDirty() == false`, this have no effect
     virtual void save() = 0;
-    virtual void reset() = 0;
 
-    // virtual void reset() const = 0;
+    /// @brief Reset the current value, as well as the editing value to use the
+    /// default, as specified in the spec
+    virtual void reset() = 0;
 
     /// @brief Whether of not this setting definition is valid. Validity scope
     /// includes things like default value within range' for example.
     /// @return true if valid
-    virtual inline bool valid() const {
+    virtual bool valid() const {
         return !m_variableName.isEmpty();
     }
 
     /// @brief The variable name as perceived within the mapping definition.
     /// @return a string
-    inline QString variableName() const {
+    QString variableName() const {
         return m_variableName;
     }
 
     /// @brief The user-friendly label to be display in the UI
     /// @return a string
-    inline const QString& label() const {
+    const QString& label() const {
         return m_label;
     }
 
     /// @brief A description of what this setting does
     /// @return a string
-    inline const QString& description() const {
+    const QString& description() const {
         return m_description;
     }
 
   protected:
-    AbstractLegacyControllerSetting(QString variableName, QString label, QString description)
-            : m_variableName(variableName), m_label(label), m_description(description) {
+    AbstractLegacyControllerSetting(const QString& variableName,
+            const QString& label,
+            const QString& description)
+            : m_variableName(variableName),
+              m_label(label),
+              m_description(description) {
     }
-    AbstractLegacyControllerSetting(const QDomElement& element) {
-        m_variableName = element.attribute("variable").trimmed();
-        m_label = element.attribute("label", m_variableName).trimmed();
-
-        QDomElement description = element.firstChildElement("description");
-        if (description.isNull()) {
-            m_description = QString();
-            return;
-        }
-        m_description = description.text().trimmed();
-    }
+    AbstractLegacyControllerSetting(const QDomElement& element);
 
     virtual QWidget* buildInputWidget(QWidget* parent) = 0;
 
@@ -107,36 +123,36 @@ class LegacyControllerBooleanSetting
 
     QWidget* buildWidget(QWidget* parent) override;
 
-    inline QJSValue value() const {
+    QJSValue value() const override {
         return QJSValue(m_currentValue);
     }
 
-    inline QString stringify() const {
+    QString stringify() const override {
         return m_currentValue ? "true" : "false";
     }
-    inline void parse(const QString& in, bool* ok = nullptr) {
+    void parse(const QString& in, bool* ok = nullptr) override {
         if (ok != nullptr)
             *ok = true;
         m_currentValue = parseValue(in);
         m_dirtyValue = m_currentValue;
     }
-    inline bool isDefault() const {
+    bool isDefault() const override {
         return m_currentValue == m_defaultValue;
     }
-    inline bool isDirty() const {
+    bool isDirty() const override {
         return m_currentValue != m_dirtyValue;
     }
 
-    virtual void save() {
+    virtual void save() override {
         m_currentValue = m_dirtyValue;
     }
 
-    virtual void reset() {
+    virtual void reset() override {
         m_currentValue = m_defaultValue;
         m_dirtyValue = m_defaultValue;
     }
 
-    static inline AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
+    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
         return new LegacyControllerBooleanSetting(element);
     }
     static bool match(const QDomElement& element);
@@ -150,16 +166,18 @@ class LegacyControllerBooleanSetting
               m_defaultValue(defaultValue) {
     }
 
-    inline bool parseValue(const QString& in) {
+    bool parseValue(const QString& in) {
         return QString::compare(in, "true", Qt::CaseInsensitive) == 0 || in == "1";
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent);
+    virtual QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
     bool m_currentValue;
     bool m_defaultValue;
     bool m_dirtyValue;
+
+    friend class LegacyControllerMappingSettingsTest_booleanSettingEditing_Test;
 };
 
 template<class SettingType>
@@ -184,35 +202,47 @@ class LegacyControllerNumberSetting
 
     virtual ~LegacyControllerNumberSetting() = default;
 
-    inline QJSValue value() const {
+    QJSValue value() const override {
         return QJSValue(m_currentValue);
     }
 
-    inline QString stringify() const {
+    QString stringify() const override {
         return ValueSerializer(m_currentValue);
     }
-    inline void parse(const QString& in, bool* ok) {
+    void parse(const QString& in, bool* ok) override {
         m_currentValue = ValueDeserializer(in, ok);
         m_dirtyValue = m_currentValue;
     }
 
-    inline bool isDefault() const {
+    bool isDefault() const override {
         return m_currentValue == m_defaultValue;
     }
-    inline bool isDirty() const {
+    bool isDirty() const override {
         return m_currentValue != m_dirtyValue;
     }
 
-    virtual void save() {
+    virtual void save() override {
         m_currentValue = m_dirtyValue;
     }
 
-    virtual void reset() {
+    virtual void reset() override {
         m_currentValue = m_defaultValue;
         m_dirtyValue = m_defaultValue;
     }
 
-    static inline AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
+    /// @brief Whether of not this setting definition and its current state are
+    /// valid. Validity scope includes default/current/dirty value within range
+    /// and a strictly positive step, strictly less than max..
+    /// @return true if valid
+    bool valid() const override {
+        return AbstractLegacyControllerSetting::valid() &&
+                m_defaultValue >= m_minValue && m_currentValue >= m_minValue &&
+                m_dirtyValue >= m_minValue && m_defaultValue <= m_maxValue &&
+                m_currentValue <= m_maxValue && m_dirtyValue <= m_maxValue &&
+                m_stepValue > 0 && m_stepValue < m_maxValue;
+    }
+
+    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
         return new LegacyControllerNumberSetting(element);
     }
     static bool match(const QDomElement& element);
@@ -232,7 +262,7 @@ class LegacyControllerNumberSetting
               m_stepValue(stepValue) {
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent);
+    virtual QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
     SettingType m_currentValue;
@@ -261,6 +291,11 @@ inline QString packSettingDoubleValue(const double& in) {
     return QString::number(in);
 }
 
+using LegacyControllerIntegerSetting = LegacyControllerNumberSetting<int,
+        packSettingIntegerValue,
+        extractSettingIntegerValue,
+        QSpinBox>;
+
 class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
                                             packSettingDoubleValue,
                                             extractSettingDoubleValue,
@@ -268,7 +303,7 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
   public:
     LegacyControllerRealSetting(const QDomElement& element);
 
-    static inline AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
+    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
         return new LegacyControllerRealSetting(element);
     }
 
@@ -286,38 +321,48 @@ class LegacyControllerEnumSetting
 
     virtual ~LegacyControllerEnumSetting() = default;
 
-    inline QJSValue value() const {
+    QJSValue value() const override {
         return QJSValue(stringify());
     }
 
-    QString stringify() const {
+    QString stringify() const override {
         return std::get<0>(m_options.value(m_currentValue));
     }
-    void parse(const QString& in, bool* ok);
-    bool isDefault() const {
+    void parse(const QString& in, bool* ok) override;
+    bool isDefault() const override {
         return m_currentValue == m_defaultValue;
     }
-    inline bool isDirty() const {
+    bool isDirty() const override {
         return m_currentValue != m_dirtyValue;
     }
 
-    virtual void save() {
+    virtual void save() override {
         m_currentValue = m_dirtyValue;
     }
 
-    virtual void reset() {
+    virtual void reset() override {
         m_currentValue = m_defaultValue;
         m_dirtyValue = m_defaultValue;
     }
 
-    static inline AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
+    /// @brief Whether of not this setting definition and its current state are
+    /// valid. Validity scope includes a known default/current/dirty option.
+    /// @return true if valid
+    bool valid() const override {
+        return AbstractLegacyControllerSetting::valid() &&
+                (int)m_defaultValue < m_options.size() &&
+                (int)m_currentValue < m_options.size() &&
+                (int)m_dirtyValue < m_options.size();
+    }
+
+    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
         return new LegacyControllerEnumSetting(element);
     }
     static bool match(const QDomElement& element);
 
   protected:
     LegacyControllerEnumSetting(const QDomElement& element,
-            QList<std::tuple<QString, QString>> options,
+            const QList<std::tuple<QString, QString>>& options,
             size_t currentValue,
             size_t defaultValue)
             : AbstractLegacyControllerSetting(element),
@@ -326,7 +371,7 @@ class LegacyControllerEnumSetting
               m_defaultValue(defaultValue) {
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent);
+    virtual QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
     // We use a QList instead of QHash here because we want to keep the natural order

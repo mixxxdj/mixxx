@@ -559,9 +559,12 @@ void DlgPrefController::slotApply() {
     }
 
     QString mappingPath = mappingPathFromIndex(m_ui.comboBoxMapping->currentIndex());
+
     QFileInfo mappingFileInfo(mappingPath);
 
-    m_pMapping->saveSettings(mappingFileInfo, m_pConfig, m_pController->getName());
+    if (m_pMapping) {
+        m_pMapping->saveSettings(mappingFileInfo, m_pConfig, m_pController->getName());
+    }
 
     m_pMapping = LegacyControllerMappingFileHandler::loadMapping(
             mappingFileInfo, QDir(resourceMappingsPath(m_pConfig)));
@@ -840,16 +843,19 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
 
     if (pMapping) {
         auto settings = pMapping->getSettings();
+        const auto& layout = pMapping->getSettingsLayout();
 
         qDeleteAll(m_ui.groupBoxSettings->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
 
-        for (auto setting : settings) {
-            parented_ptr<QWidget> pSettingWidget(setting->buildWidget(m_ui.groupBoxSettings));
-            connect(setting.get(),
-                    &AbstractLegacyControllerSetting::changed,
-                    this,
-                    [this] { setDirty(true); });
-            m_ui.groupBoxSettings->layout()->addWidget(pSettingWidget);
+        if (layout.get() != nullptr && !settings.isEmpty()) {
+            m_ui.groupBoxSettings->layout()->addWidget(layout->build(m_ui.groupBoxSettings));
+
+            for (const auto& setting : qAsConst(settings)) {
+                connect(setting.get(),
+                        &AbstractLegacyControllerSetting::changed,
+                        this,
+                        [this] { setDirty(true); });
+            }
         }
 
         m_ui.groupBoxSettings->setVisible(!settings.isEmpty());

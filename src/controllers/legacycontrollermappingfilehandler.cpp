@@ -119,21 +119,53 @@ void LegacyControllerMappingFileHandler::parseMappingSettings(
         return;
     }
 
-    for (QDomElement option = settings.firstChildElement("option");
-            !option.isNull();
-            option = option.nextSiblingElement("option")) {
-        std::shared_ptr<AbstractLegacyControllerSetting> pSetting(
-                LegacyControllerSettingBuilder::build(option));
-        if (pSetting.get() == nullptr) {
-            qDebug() << "Could not parse the unknown controller setting. Ignoring it.";
-            continue;
-        }
-        if (!pSetting->valid()) {
-            qDebug() << "The parsed setting appears to be invalid. Discarding it.";
-            continue;
-        }
+    std::unique_ptr<LegacyControllerSettingsLayoutContainer> settingLayout =
+            std::make_unique<LegacyControllerSettingsLayoutContainer>(
+                    LegacyControllerSettingsLayoutContainer::Disposition::
+                            VERTICAL);
+    parseMappingSettingsElement(settings, mapping, settingLayout);
+    mapping->setSettingLayout(std::move(settingLayout));
+}
 
-        mapping->addSetting(pSetting);
+void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
+        const QDomElement& current,
+        std::shared_ptr<LegacyControllerMapping> mapping,
+        const std::unique_ptr<LegacyControllerSettingsLayoutContainer>& layout)
+        const {
+    // TODO (acolombier) Add test for the parser
+    for (QDomElement element = current.firstChildElement();
+            !element.isNull();
+            element = element.nextSiblingElement()) {
+        const QString& tagName = element.tagName();
+        if (tagName == "option") {
+            std::shared_ptr<AbstractLegacyControllerSetting> pSetting(
+                    LegacyControllerSettingBuilder::build(element));
+            if (pSetting.get() == nullptr) {
+                qDebug() << "Could not parse the unknown controller setting. Ignoring it.";
+                continue;
+            }
+            if (!pSetting->valid()) {
+                qDebug() << "The parsed setting appears to be invalid. Discarding it.";
+                continue;
+            }
+            layout->addItem(pSetting);
+            mapping->addSetting(pSetting);
+        } else if (tagName == "row") {
+            std::unique_ptr<LegacyControllerSettingsLayoutContainer> row =
+                    std::make_unique<LegacyControllerSettingsLayoutContainer>();
+            parseMappingSettingsElement(element, mapping, row);
+            layout->addItem(std::move(row));
+        } else if (tagName == "group") {
+            std::unique_ptr<LegacyControllerSettingsLayoutContainer> group =
+                    std::make_unique<LegacyControllerSettingsGroup>(
+                            element.attribute("label"));
+            parseMappingSettingsElement(element, mapping, group);
+            layout->addItem(std::move(group));
+        } else {
+            qDebug() << "Unsupported tag" << tagName
+                     << "for controller layout settings. Discarding it.";
+            continue;
+        }
     }
 }
 

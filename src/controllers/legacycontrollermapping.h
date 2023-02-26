@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "controllers/legacycontrollersettings.h"
+#include "controllers/legacycontrollersettingslayout.h"
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
 
@@ -25,7 +26,26 @@
 class LegacyControllerMapping {
   public:
     LegacyControllerMapping()
-            : m_bDirty(false), m_settings() {
+            : m_bDirty(false) {
+    }
+    LegacyControllerMapping(const LegacyControllerMapping& other)
+            : m_productMatches(other.m_productMatches),
+              m_bDirty(other.m_bDirty),
+              m_deviceId(other.m_deviceId),
+              m_filePath(other.m_filePath),
+              m_name(other.m_name),
+              m_author(other.m_author),
+              m_description(other.m_description),
+              m_forumlink(other.m_forumlink),
+              m_manualPage(other.m_manualPage),
+              m_wikilink(other.m_wikilink),
+              m_schemaVersion(other.m_schemaVersion),
+              m_mixxxVersion(other.m_mixxxVersion),
+              m_settings(other.m_settings),
+              m_settingsLayout(other.m_settingsLayout.get() != nullptr
+                              ? other.m_settingsLayout->clone()
+                              : nullptr),
+              m_scripts(other.m_scripts) {
     }
     virtual ~LegacyControllerMapping() = default;
 
@@ -75,12 +95,26 @@ class LegacyControllerMapping {
         m_settings.append(option);
     }
 
+    /// @brief Set a setting layout as they should be perceived when edited in
+    /// the preference dialog.
+    /// @param layout The layout root element
+    void setSettingLayout(std::unique_ptr<LegacyControllerSettingsLayoutElement>&& layout) {
+        VERIFY_OR_DEBUG_ASSERT(layout.get()) {
+            return;
+        }
+        m_settingsLayout = std::move(layout);
+    }
+
     const QList<ScriptFileInfo>& getScriptFiles() const {
         return m_scripts;
     }
 
-    const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& getSettings() const {
+    inline const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& getSettings() const {
         return m_settings;
+    }
+
+    inline const std::unique_ptr<LegacyControllerSettingsLayoutElement>& getSettingsLayout() const {
+        return m_settingsLayout;
     }
 
     inline void setDirty(bool bDirty) {
@@ -228,5 +262,6 @@ class LegacyControllerMapping {
     QString m_mixxxVersion;
 
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
+    std::unique_ptr<LegacyControllerSettingsLayoutElement> m_settingsLayout;
     QList<ScriptFileInfo> m_scripts;
 };

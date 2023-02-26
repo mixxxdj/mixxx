@@ -11,6 +11,7 @@ std::shared_ptr<LegacyControllerMapping>
 LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
         const QString& filePath,
         const QDir& systemMappingsPath) {
+    // TODO (acolombier): support for controller settings
     if (root.isNull()) {
         return nullptr;
     }

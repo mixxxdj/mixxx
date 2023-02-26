@@ -6,49 +6,50 @@
 #include <QCheckBox>
 #include <QComboBox>
 
+// TODO (acolombier): remove "new" where possible and use parented_ptr
+
 LegacyControllerSettingBuilder* LegacyControllerSettingBuilder::__self = nullptr;
 
 LegacyControllerSettingBuilder* LegacyControllerSettingBuilder::instance() {
-    if (__self == nullptr)
+    if (__self == nullptr) {
         __self = new LegacyControllerSettingBuilder();
+    }
 
     return __self;
 }
 
-QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* parent) {
-    QWidget* root = new QWidget(parent);
-    root->setLayout(new QHBoxLayout());
-    root->layout()->setContentsMargins(0, 0, 0, 0);
+AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomElement& element) {
+    m_variableName = element.attribute("variable").trimmed();
+    m_label = element.attribute("label", m_variableName).trimmed();
 
-    QLabel* labelWidget = new QLabel(root);
-    labelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    labelWidget->setText(label());
+    QDomElement description = element.firstChildElement("description");
+    if (!description.isNull()) {
+        m_description = description.text().trimmed();
+    }
+}
+
+QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* parent) {
+    QWidget* pRoot = new QWidget(parent);
+    QBoxLayout* pLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    pLayout->setContentsMargins(0, 0, 0, 0);
+
+    QLabel* pLabelWidget = new QLabel(pRoot);
+    pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    pLabelWidget->setText(label());
 
     if (!description().isEmpty()) {
-        auto layout = new QVBoxLayout(root);
-
-        root->layout()->setContentsMargins(0, 0, 0, 0);
-
-        auto descriptionWidget = new QLabel(root);
-        descriptionWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-        descriptionWidget->setText(description());
-        QFont descriptionFont;
-        descriptionFont.setPointSize(8);
-        descriptionFont.setItalic(true);
-        descriptionWidget->setFont(descriptionFont);
-
-        layout->addWidget(labelWidget);
-        layout->addWidget(descriptionWidget);
-        root->layout()->addItem(layout);
-    } else {
-        root->layout()->addWidget(labelWidget);
+        pRoot->setToolTip(QString("<p>%1</p>").arg(description()));
     }
 
-    root->layout()->addWidget(buildInputWidget(root));
+    pLayout->addWidget(pLabelWidget);
+    pLayout->addWidget(buildInputWidget(pRoot));
 
-    static_cast<QHBoxLayout*>(root->layout())->setStretch(0, 3);
-    static_cast<QHBoxLayout*>(root->layout())->setStretch(1, 1);
-    return root;
+    pLayout->setStretch(0, 3);
+    pLayout->setStretch(1, 1);
+
+    pRoot->setLayout(pLayout);
+
+    return pRoot;
 }
 
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
@@ -60,38 +61,24 @@ LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
 }
 
 QWidget* LegacyControllerBooleanSetting::buildWidget(QWidget* parent) {
-    QWidget* root = new QWidget(parent);
-    root->setLayout(new QHBoxLayout());
-    root->layout()->setContentsMargins(0, 0, 0, 0);
+    QWidget* pRoot = new QWidget(parent);
+    QBoxLayout* pLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    pLayout->setContentsMargins(0, 0, 0, 0);
 
-    QLabel* labelWidget = new QLabel(root);
-    labelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    labelWidget->setText(label());
-
-    root->layout()->addWidget(buildInputWidget(root));
+    QLabel* pLabelWidget = new QLabel(pRoot);
+    pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    pLabelWidget->setText(label());
 
     if (!description().isEmpty()) {
-        auto layout = new QVBoxLayout();
-
-        layout->setContentsMargins(0, 0, 0, 0);
-
-        auto descriptionWidget = new QLabel(root);
-        descriptionWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-        descriptionWidget->setText(description());
-        QFont descriptionFont;
-        descriptionFont.setPointSize(8);
-        descriptionFont.setItalic(true);
-        descriptionWidget->setFont(descriptionFont);
-
-        layout->addWidget(labelWidget);
-        layout->addWidget(descriptionWidget);
-
-        root->layout()->addItem(layout);
-    } else {
-        root->layout()->addWidget(labelWidget);
+        pRoot->setToolTip(QString("<p>%1</p>").arg(description()));
     }
 
-    return root;
+    pLayout->addWidget(buildInputWidget(pRoot));
+    pLayout->addWidget(pLabelWidget);
+
+    pRoot->setLayout(pLayout);
+
+    return pRoot;
 }
 
 QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* parent) {
@@ -110,8 +97,6 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* parent) {
 }
 
 bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
-    // TODO(acolombier) improve the function so it can detect the type from the
-    // spec if there is no type attribute
     return element.hasAttribute("type") &&
             QString::compare(element.attribute("type"),
                     "boolean",
@@ -188,18 +173,13 @@ bool LegacyControllerNumberSetting<SettingType,
 
 template<>
 bool matchSetting<int>(const QDomElement& element) {
-    // TODO(acolombier) improve the function so it can detect the type from the
-    // spec if there is no type attribute
     return element.hasAttribute("type") &&
             QString::compare(element.attribute("type"),
                     "integer",
                     Qt::CaseInsensitive) == 0;
 }
 
-REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerNumberSetting<int,
-        packSettingIntegerValue,
-        extractSettingIntegerValue,
-        QSpinBox>);
+REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerIntegerSetting);
 
 LegacyControllerRealSetting::LegacyControllerRealSetting(const QDomElement& element)
         : LegacyControllerNumberSetting(element) {
@@ -225,8 +205,6 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* parent) {
 
 template<>
 bool matchSetting<double>(const QDomElement& element) {
-    // TODO(acolombier) improve the function so it can detect the type from the
-    // spec if there is no type attribute
     return element.hasAttribute("type") &&
             QString::compare(element.attribute("type"),
                     "real",
@@ -237,27 +215,33 @@ REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerRealSetting);
 
 LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element), m_options() {
+        : AbstractLegacyControllerSetting(element), m_options(), m_defaultValue(0) {
+    size_t pos = 0;
     for (QDomElement value = element.firstChildElement("value");
             !value.isNull();
             value = value.nextSiblingElement("value")) {
         QString val = value.text();
         m_options.append(std::tuple<QString, QString>(val, value.attribute("label", val)));
+        if (value.hasAttribute("default")) {
+            m_defaultValue = pos;
+        }
+        pos++;
     }
-    m_defaultValue = extractSettingIntegerValue(element.attribute("default"));
     reset();
 }
 
 void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
-    if (ok != nullptr)
+    if (ok != nullptr) {
         *ok = false;
+    }
     reset();
 
     size_t pos = 0;
-    for (const auto& value : m_options) {
+    for (const auto& value : qAsConst(m_options)) {
         if (std::get<0>(value) == in) {
-            if (ok != nullptr)
+            if (ok != nullptr) {
                 *ok = true;
+            }
             m_currentValue = pos;
             m_dirtyValue = m_currentValue;
             return;
@@ -269,7 +253,7 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
 QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* parent) {
     QComboBox* comboBox = new QComboBox(parent);
 
-    for (const auto& value : m_options) {
+    for (const auto& value : qAsConst(m_options)) {
         comboBox->addItem(std::get<1>(value));
     }
     comboBox->setCurrentIndex(m_currentValue);
@@ -286,8 +270,6 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* parent) {
 }
 
 bool LegacyControllerEnumSetting::match(const QDomElement& element) {
-    // TODO(acolombier) improve the function so it can detect the type from the
-    // spec if there is no type attribute
     return element.hasAttribute("type") &&
             QString::compare(element.attribute("type"),
                     "enum",

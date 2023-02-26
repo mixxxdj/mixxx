@@ -41,8 +41,22 @@ class LegacyControllerMappingFileHandler {
     void parseMappingInfo(const QDomElement& root,
             std::shared_ptr<LegacyControllerMapping> mapping) const;
 
+    /// @brief Parse the setting definition block from the root node if any.
+    /// @param root The root node (MixxxControllerPreset)
+    /// @param mapping The mapping object to populate with the gathered data
     void parseMappingSettings(const QDomElement& root,
             std::shared_ptr<LegacyControllerMapping> mapping) const;
+
+    /// @brief Recursively parse setting definition and layout information
+    /// within a setting node
+    /// @param current The setting node (MixxxControllerPreset.settings) or any
+    /// children nodes
+    /// @param mapping The mapping object to populate with the gathered data
+    /// @param layout The currently active layout, on which new setting item
+    /// (leaf) should be attached
+    void parseMappingSettingsElement(const QDomElement& current,
+            std::shared_ptr<LegacyControllerMapping> mapping,
+            const std::unique_ptr<LegacyControllerSettingsLayoutContainer>& layout) const;
 
     /// Adds script files from XML to the LegacyControllerMapping.
     ///

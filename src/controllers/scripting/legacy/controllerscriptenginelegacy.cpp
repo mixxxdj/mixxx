@@ -99,6 +99,15 @@ void ControllerScriptEngineLegacy::setScriptFiles(
     m_scriptFiles = scripts;
 }
 
+void ControllerScriptEngineLegacy::setSettings(
+        const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings) {
+    m_settings.clear();
+    for (const auto& pSetting : qAsConst(settings)) {
+        m_settings.append(std::tuple<QString, QJSValue>(
+                pSetting->variableName(), pSetting->value()));
+    }
+}
+
 bool ControllerScriptEngineLegacy::initialize() {
     if (!ControllerScriptEngineBase::initialize()) {
         return false;
@@ -125,7 +134,7 @@ bool ControllerScriptEngineLegacy::initialize() {
             new ControllerScriptInterfaceLegacy(this, m_logger);
 
     QJSValue settingsObject = m_pJSEngine->newObject();
-    for (auto setting : m_settings) {
+    for (const auto& setting : qAsConst(m_settings)) {
         settingsObject.setProperty(std::get<0>(setting), std::get<1>(setting));
     }
     engineGlobalObject.setProperty(

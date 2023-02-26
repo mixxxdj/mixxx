@@ -28,14 +28,15 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
   public slots:
     void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts);
-    inline void setSettings(
-            const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings) {
-        m_settings.clear();
-        for (auto pSetting : settings) {
-            m_settings.append(std::tuple<QString, QJSValue>(
-                    pSetting->variableName(), pSetting->value()));
-        }
-    }
+
+    /// @brief Set the list of customizable settings and their currently set
+    /// value, ready to be used. This method will generate a JSValue from their
+    /// current state, meaning that any later mutation won't be used, and this
+    /// method should be called again
+    /// @param settings The list of settings in a valid state (initialized and
+    /// restored)
+    void setSettings(
+            const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings);
 
   private:
     bool evaluateScriptFile(const QFileInfo& scriptFile);
