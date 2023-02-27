@@ -177,7 +177,7 @@ Prime4.init = function(id, debug) {
     Prime4.rightDeck = new Prime4.Deck([2, 4], 5);
     Prime4.mixerStrip = new components.ComponentContainer();
 
-    // Register '0x9n' as a button press and 'ox8n' as a button release
+    // Register '0x9n' as a button press and '0x8n' as a button release
     components.Button.prototype.isPress = function(channel, control, value, status) {
         return (status & 0xF0) === 0x90;
     };
