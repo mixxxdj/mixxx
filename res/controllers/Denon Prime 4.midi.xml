@@ -96,6 +96,66 @@
                 <selectknob/>
               </options>
             </control>
+            <control> <!-- Library Scroll Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.encoderLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x06</midino>
+              <options>
+                <selectknob/>
+              </options>
+            </control>
+            <control> <!-- Library Scroll Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.encoderLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x06</midino>
+              <options>
+                <selectknob/>
+              </options>
+            </control>
+            <control> <!-- Load to Deck Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x01</midino>
+              <options>
+                <selectknob/>
+              </options>
+            </control>
+            <control> <!-- Load to Deck Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x01</midino>
+              <options>
+                <selectknob/>
+              </options>
+            </control>
+            <control> <!-- Load to Deck Button -->
+              <group>[Channel2]</group>
+              <key>Prime4.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x02</midino>
+              <options>
+                <selectknob/>
+              </options>
+            </control>
+            <control> <!-- Load to Deck Button -->
+              <group>[Channel2]</group>
+              <key>Prime4.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x02</midino>
+              <options>
+                <selectknob/>
+              </options>
+            </control>
 			<control> <!-- VIEW Button -->
 				<group>[Master]</group>
 				<key>Prime4.maxView.input</key>
@@ -1304,9 +1364,19 @@
             </control>
             <control> <!-- Deck B - Shift Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.shiftState</key>
               <description>Shift Button</description>
               <status>0x95</status>
+              <midino>0x1C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Shift Button -->
+              <group></group>
+              <key>Prime4.shiftState</key>
+              <description>Shift Button</description>
+              <status>0x85</status>
               <midino>0x1C</midino>
               <options>
                 <Script-Binding/>

@@ -92,8 +92,8 @@ Prime4.rgbCode = {
 
 // Map RGB Hex values to MIDI values for Prime 4's colour palette
 const Prime4ColorMapper = new ColorMapper({
-//  0x000055: 0x01, // dark blue
-//  0x0000AA: 0x02, // dim blue
+    //  0x000055: 0x01, // dark blue
+    //  0x0000AA: 0x02, // dim blue
     0x0000FF: 0x03, // blue
     //  0x005500: 0x04, // dark green
     //  0x005555: 0x05, // dark cyan
@@ -168,14 +168,20 @@ const colDeckDark = [
     Prime4.rgbCode[deckColors[3] + "Dark"],
 ];
 
-Prime4.init = function() {
-    midi.sendShortMsg(0x90, 0x75, 0x00); // Turn off all LEDs
+Prime4.init = function(id, debug) {
+    // Turn off all LEDs
+    midi.sendShortMsg(0x90, 0x75, 0x00);
+
+    // Initialise all three physical sections of the unit
     Prime4.leftDeck = new Prime4.Deck([1, 3], 4);
     Prime4.rightDeck = new Prime4.Deck([2, 4], 5);
     Prime4.mixerStrip = new components.ComponentContainer();
+
+    // Register '0x9n' as a button press and 'ox8n' as a button release
     components.Button.prototype.isPress = function(channel, control, value, status) {
         return (status & 0xF0) === 0x90;
     };
+
     /*
 	Prime4.leftDeck.forEachComponent(function (component) {
 		component.trigger();
@@ -199,13 +205,15 @@ Prime4.init = function() {
 };
 
 Prime4.shutdown = function() {
-    midi.sendShortMsg(0x90, 0x75, 0x01); // Return all LEDs to initial dim state
+    // Return all LEDs to initial dim state
+    midi.sendShortMsg(0x90, 0x75, 0x01);
 };
 
 Prime4.Deck = function(deckNumbers, midiChannel) {
 
     components.Deck.call(this, deckNumbers);
 
+    // Censor Button
     this.censorButton = new components.Button({
         midi: [0x90 + midiChannel, 0x01],
         key: "reverseroll",
@@ -223,14 +231,17 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         key: "beatjump_forward",
     });
 
+    // Sync Button
     this.syncButton = new components.SyncButton({
         midi: [0x90 + midiChannel, 0x08],
     });
 
+    // Cue Button
     this.cueButton = new components.CueButton({
         midi: [0x90 + midiChannel, 0x09],
     });
 
+    // Play Button
     this.playButton = new components.PlayButton({
         midi: [0x90 + midiChannel, 0x0A],
         unshift: function() {
@@ -243,6 +254,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         }
     });
 
+    // Hotcue Pads
     this.hotcuePad = [];
     for (let i = 1; i <= 8; i++) {
         this.hotcuePad[i] = new components.HotcueButton({
@@ -250,9 +262,11 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             midi: [0x90 + midiChannel, 0x0E + i],
             colorMapper: Prime4ColorMapper,
             off: 0x00,
+	    on: 0x03,
         });
-    }
+    };
 
+    // Tempo Fader
     this.tempoFader = new components.Pot({
         midi: [0xB0 + midiChannel, 0x1F],
         inKey: "rate",
@@ -269,6 +283,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         }
     };
 
+    // Keylock Button
     this.keylockButton = new components.Button({
         midi: [0x90 + midiChannel, 0x22],
         key: "keylock",
@@ -283,17 +298,20 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
 	});
 	*/
 
+    // Slip Mode Button
     this.slipButton = new components.Button({
         midi: [0x90 + midiChannel, 0x24],
         key: "slip_enabled",
         type: components.Button.prototype.types.toggle,
     });
 
+    // Loop In Button
     this.loopInButton = new components.Button({
         midi: [0x90 + midiChannel, 0x25],
         key: "loop_in",
     });
 
+    // Loop Out Button 
     this.loopOutButton = new components.Button({
         midi: [0x90 + midiChannel, 0x26],
         key: "loop_out",
@@ -348,7 +366,7 @@ for (let i = 1; i <= 4; i++) {
         off: colDeckDark[i - 1],
         type: components.Button.prototype.types.toggle,
     });
-}
+};
 
 // View Button
 Prime4.maxView = new components.Button({
@@ -356,6 +374,19 @@ Prime4.maxView = new components.Button({
     group: "[Master]",
     key: "maximize_library",
     type: components.Button.prototype.types.toggle,
+});
+
+// Load song to deck with library encoder button
+Prime4.encoderLoad = new components.Button({
+    midi: [0x9F, 0x06],
+    group: "[Channel1]",
+    key: "LoadSelectedTrack",
+});
+
+Prime4.deckLoad = new components.Button({
+    midi: [0x9F, 0x01],
+    group: "[Channel1]",
+    key: "LoadSelectedTrack",
 });
 
 Prime4.shift = false;
