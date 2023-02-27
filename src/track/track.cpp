@@ -206,10 +206,14 @@ void Track::replaceMetadataFromSource(
         modified |= keysModified;
 
         // Import track color from Serato tags if available
-        const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
-        const bool colorModified = compareAndSet(m_record.ptrColor(), newColor);
+        const std::optional<mixxx::RgbColor::optional_t> newColor =
+                m_record.getMetadata()
+                        .getTrackInfo()
+                        .getSeratoTags()
+                        .getTrackColor();
+        const bool colorModified = newColor && compareAndSet(m_record.ptrColor(), *newColor);
         modified |= colorModified;
-        DEBUG_ASSERT(!colorModified || m_record.getColor() == newColor);
+        DEBUG_ASSERT(!colorModified || m_record.getColor() == *newColor);
 
         if (!modified) {
             // Unmodified, nothing todo
@@ -228,7 +232,8 @@ void Track::replaceMetadataFromSource(
             emit replayGainUpdated(newReplayGain);
         }
         if (colorModified) {
-            emit colorUpdated(newColor);
+            DEBUG_ASSERT(newColor);
+            emit colorUpdated(*newColor);
         }
 
         emitChangedSignalsForAllMetadata();
@@ -1438,6 +1443,47 @@ CoverInfo Track::getCoverInfoWithLocation() const {
     return CoverInfo(m_record.getCoverInfo(), m_fileAccess.info().location());
 }
 
+bool Track::exportSeratoMetadata() {
+    const auto streamInfo = m_record.getStreamInfoFromSource();
+    VERIFY_OR_DEBUG_ASSERT(streamInfo &&
+            streamInfo->getSignalInfo().isValid() &&
+            streamInfo->getDuration() > mixxx::Duration::empty()) {
+        kLogger.warning() << "Cannot write Serato metadata because signal "
+                             "info and/or duration is not available:"
+                          << getLocation();
+        return false;
+    }
+    mixxx::SeratoTags* pSeratoTags =
+            m_record.refMetadata().refTrackInfo().ptrSeratoTags();
+    VERIFY_OR_DEBUG_ASSERT(pSeratoTags) {
+        return false;
+    }
+    if (pSeratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
+        kLogger.warning()
+                << "Refusing to overwrite Serato metadata that failed to parse:"
+                << getLocation();
+        return false;
+    }
+    pSeratoTags->setTrackColor(getColor());
+    pSeratoTags->setBpmLocked(isBpmLocked());
+
+    const mixxx::audio::SampleRate sampleRate =
+            streamInfo->getSignalInfo().getSampleRate();
+    QList<mixxx::CueInfo> cueInfos;
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+        cueInfos.append(pCue->getCueInfo(sampleRate));
+    }
+
+    const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
+            getLocation(), streamInfo->getSignalInfo());
+    pSeratoTags->setCueInfos(cueInfos, timingOffset);
+    pSeratoTags->setBeats(m_pBeats,
+            streamInfo->getSignalInfo(),
+            streamInfo->getDuration(),
+            timingOffset);
+    return true;
+}
+
 ExportTrackMetadataResult Track::exportMetadata(
         const mixxx::MetadataSource& metadataSource,
         const SyncTrackMetadataParams& syncParams) {
@@ -1503,47 +1549,6 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Failed;
     }
 
-    if (syncParams.syncSeratoMetadata) {
-        const auto streamInfo = m_record.getStreamInfoFromSource();
-        VERIFY_OR_DEBUG_ASSERT(streamInfo &&
-                streamInfo->getSignalInfo().isValid() &&
-                streamInfo->getDuration() > mixxx::Duration::empty()) {
-            kLogger.warning() << "Cannot write Serato metadata because signal "
-                                 "info and/or duration is not available:"
-                              << getLocation();
-            return ExportTrackMetadataResult::Skipped;
-        }
-
-        const mixxx::audio::SampleRate sampleRate =
-                streamInfo->getSignalInfo().getSampleRate();
-
-        mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
-        DEBUG_ASSERT(seratoTags);
-
-        if (seratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
-            kLogger.warning()
-                    << "Refusing to overwrite Serato metadata that failed to parse:"
-                    << getLocation();
-        } else {
-            seratoTags->setTrackColor(getColor());
-            seratoTags->setBpmLocked(isBpmLocked());
-
-            QList<mixxx::CueInfo> cueInfos;
-            for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
-                cueInfos.append(pCue->getCueInfo(sampleRate));
-            }
-
-            const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
-                    getLocation(), streamInfo->getSignalInfo());
-            seratoTags->setCueInfos(cueInfos, timingOffset);
-
-            seratoTags->setBeats(m_pBeats,
-                    streamInfo->getSignalInfo(),
-                    streamInfo->getDuration(),
-                    timingOffset);
-        }
-    }
-
     // Check if the metadata has actually been modified. Otherwise
     // we don't need to write it back. Exporting unmodified metadata
     // would needlessly update the file's time stamp and should be
@@ -1570,6 +1575,10 @@ ExportTrackMetadataResult Track::exportMetadata(
         // that is stored in the database. New columns that need to be populated
         // from file tags cannot be filled during a database migration.
         m_record.mergeExtraMetadataFromSource(importedFromFile);
+
+        if (syncParams.syncSeratoMetadata) {
+            exportSeratoMetadata();
+        }
 
         // Prepare export by cloning and normalizing the metadata
         normalizedFromRecord = m_record.getMetadata();

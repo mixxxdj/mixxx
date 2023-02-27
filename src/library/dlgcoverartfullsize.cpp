@@ -17,7 +17,8 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
         WCoverArtMenu* pCoverMenu)
         : QDialog(parent),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(pCoverMenu) {
+          m_pCoverMenu(pCoverMenu),
+          m_coverPressed(false) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -80,6 +81,19 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     // This must be called after show() to set the window title. Refer to the
     // comment in slotLoadTrack for details.
     slotLoadTrack(pTrack);
+}
+
+void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
+    m_pixmap.loadFromData(fetchedCoverArtBytes);
+
+    // The real size will be calculated later by adjustImageAndDialogSize().
+    resize(100, 100);
+    show();
+    setWindowTitle(tr("Fetched Cover Art"));
+    raise();
+    activateWindow();
+
+    adjustImageAndDialogSize();
 }
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
@@ -158,6 +172,10 @@ void DlgCoverArtFullSize::slotCoverFound(
 
     m_pixmap = pixmap;
 
+    adjustImageAndDialogSize();
+}
+
+void DlgCoverArtFullSize::adjustImageAndDialogSize() {
     if (m_pixmap.isNull()) {
         coverArt->setPixmap(QPixmap());
         hide();

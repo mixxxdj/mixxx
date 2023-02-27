@@ -49,7 +49,6 @@ AbstractButton {
                 target: colorOverlay
                 color: root.normalColor
             }
-
         }
     ]
 
@@ -73,5 +72,4 @@ AbstractButton {
         source: foreground
         color: root.normalColor
     }
-
 }

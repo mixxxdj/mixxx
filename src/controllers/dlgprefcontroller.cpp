@@ -51,6 +51,8 @@ DlgPrefController::DlgPrefController(
     // Create text color for the file and wiki links
     createLinkColor();
 
+    m_pControlPickerMenu = new ControlPickerMenu(this);
+
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
@@ -141,6 +143,23 @@ DlgPrefController::DlgPrefController(
             &QAbstractButton::clicked,
             this,
             &DlgPrefController::clearAllOutputMappings);
+
+    connect(m_ui.inputControlSearch,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgPrefController::slotInputControlSearch);
+    connect(m_ui.inputControlSearchBtn,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefController::slotInputControlSearch);
+    connect(m_ui.outputControlSearch,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgPrefController::slotOutputControlSearch);
+    connect(m_ui.outputControlSearchBtn,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefController::slotOutputControlSearch);
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -173,7 +192,8 @@ void DlgPrefController::showLearningWizard() {
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
-    m_pDlgControllerLearning = new DlgControllerLearning(this, m_pController);
+    m_pDlgControllerLearning =
+            new DlgControllerLearning(this, m_pController, m_pControlPickerMenu);
     m_pDlgControllerLearning->show();
     ControllerLearningEventFilter* pControllerLearning =
             m_pControllerManager->getControllerLearningEventFilter();
@@ -546,6 +566,16 @@ QUrl DlgPrefController::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
+void DlgPrefController::keyPressEvent(QKeyEvent* pEvent) {
+    // Filter Return/Enter keypress in control search boxes so it's not
+    // forwarded to the DlgPreferences button box' default button (Apply)
+    if ((pEvent->key() == Qt::Key_Return || pEvent->key() == Qt::Key_Enter) &&
+            (m_ui.inputControlSearch->hasFocus() || m_ui.inputControlSearch->hasFocus())) {
+        return;
+    }
+    return QWidget::keyPressEvent(pEvent);
+}
+
 void DlgPrefController::enableWizardAndIOTabs(bool enable) {
     // We always enable the Wizard button if this is a MIDI controller so we can
     // create a new mapping from scratch with 'No Mapping'
@@ -790,19 +820,21 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     // copy but if someone did they might not expect it to change.
     m_pMapping = pMapping;
 
+    // Inputs tab
     ControllerInputMappingTableModel* pInputModel =
-            new ControllerInputMappingTableModel(this);
+            new ControllerInputMappingTableModel(this,
+                    m_pControlPickerMenu,
+                    m_ui.m_pInputMappingTableView);
     pInputModel->setMapping(pMapping);
 
-    QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
-    pInputProxyModel->setSortRole(Qt::UserRole);
-    pInputProxyModel->setSourceModel(pInputModel);
+    ControllerMappingTableProxyModel* pInputProxyModel =
+            new ControllerMappingTableProxyModel(pInputModel);
     m_ui.m_pInputMappingTableView->setModel(pInputProxyModel);
 
     for (int i = 0; i < pInputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
             i, m_ui.m_pInputMappingTableView);
-        if (pDelegate != nullptr) {
+        if (pDelegate) {
             qDebug() << "Setting input delegate for column" << i << pDelegate;
             m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
@@ -813,20 +845,24 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_pInputProxyModel = pInputProxyModel;
     delete m_pInputTableModel;
     m_pInputTableModel = pInputModel;
+    // Trigger search when the model was recreated after hitting Apply
+    slotInputControlSearch();
 
+    // Outputs tab
     ControllerOutputMappingTableModel* pOutputModel =
-            new ControllerOutputMappingTableModel(this);
+            new ControllerOutputMappingTableModel(this,
+                    m_pControlPickerMenu,
+                    m_ui.m_pOutputMappingTableView);
     pOutputModel->setMapping(pMapping);
 
-    QSortFilterProxyModel* pOutputProxyModel = new QSortFilterProxyModel(this);
-    pOutputProxyModel->setSortRole(Qt::UserRole);
-    pOutputProxyModel->setSourceModel(pOutputModel);
+    ControllerMappingTableProxyModel* pOutputProxyModel =
+            new ControllerMappingTableProxyModel(pOutputModel);
     m_ui.m_pOutputMappingTableView->setModel(pOutputProxyModel);
 
     for (int i = 0; i < pOutputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pOutputModel->delegateForColumn(
             i, m_ui.m_pOutputMappingTableView);
-        if (pDelegate != nullptr) {
+        if (pDelegate) {
             qDebug() << "Setting output delegate for column" << i << pDelegate;
             m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
@@ -837,6 +873,22 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_pOutputProxyModel = pOutputProxyModel;
     delete m_pOutputTableModel;
     m_pOutputTableModel = pOutputModel;
+    // Trigger search when the model was recreated after hitting Apply
+    slotOutputControlSearch();
+}
+
+void DlgPrefController::slotInputControlSearch() {
+    VERIFY_OR_DEBUG_ASSERT(m_pInputProxyModel) {
+        return;
+    }
+    m_pInputProxyModel->search(m_ui.inputControlSearch->text());
+}
+
+void DlgPrefController::slotOutputControlSearch() {
+    VERIFY_OR_DEBUG_ASSERT(m_pOutputProxyModel) {
+        return;
+    }
+    m_pOutputProxyModel->search(m_ui.outputControlSearch->text());
 }
 
 void DlgPrefController::addInputMapping() {

@@ -395,7 +395,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
             AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
             outputs.append(out);
-            if (m_config.getForceNetworkClock()) {
+            if (m_config.getForceNetworkClock() && !jackApiUsed()) {
                 pNewMasterClockRef = pDevice;
             }
         }
@@ -419,7 +419,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
                 goto closeAndError;
             }
 
-            if (!m_config.getForceNetworkClock()) {
+            if (!m_config.getForceNetworkClock() || jackApiUsed()) {
                 if (out.getType() == AudioOutput::MASTER) {
                     pNewMasterClockRef = pDevice;
                 } else if ((out.getType() == AudioOutput::DECK ||
@@ -440,7 +440,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
         if (mode.isInput || mode.isOutput) {
             pDevice->setSampleRate(m_config.getSampleRate());
-            pDevice->setFramesPerBuffer(m_config.getFramesPerBuffer());
+            pDevice->setConfigFramesPerBuffer(m_config.getFramesPerBuffer());
             toOpen.append(mode);
         }
     }
@@ -604,18 +604,18 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
     }
 }
 
-void SoundManager::writeProcess() const {
+void SoundManager::writeProcess(SINT framesPerBuffer) const {
     for (const auto& pDevice: m_devices) {
         if (pDevice) {
-            pDevice->writeProcess();
+            pDevice->writeProcess(framesPerBuffer);
         }
     }
 }
 
-void SoundManager::readProcess() const {
+void SoundManager::readProcess(SINT framesPerBuffer) const {
     for (const auto& pDevice: m_devices) {
         if (pDevice) {
-            pDevice->readProcess();
+            pDevice->readProcess(framesPerBuffer);
         }
     }
 }
@@ -684,14 +684,14 @@ int SoundManager::getConfiguredDeckCount() const {
     return m_config.getDeckCount();
 }
 
-void SoundManager::processUnderflowHappened() {
+void SoundManager::processUnderflowHappened(SINT framesPerBuffer) {
     if (m_underflowUpdateCount == 0) {
         if (atomicLoadRelaxed(m_underflowHappened)) {
             m_masterAudioLatencyOverload.set(1.0);
             m_masterAudioLatencyOverloadCount.set(
                     m_masterAudioLatencyOverloadCount.get() + 1);
-            m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
-                    / m_config.getFramesPerBuffer() / 1000;
+            m_underflowUpdateCount = CPU_OVERLOAD_DURATION *
+                    m_config.getSampleRate() / framesPerBuffer / 1000;
 
             m_underflowHappened = 0; // resetting here is not thread safe,
                                      // but that is OK, because we count only

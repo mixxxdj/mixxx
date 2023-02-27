@@ -67,29 +67,39 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
           m_cancelImport(false) {
     QString tableName = "itunes_library";
     QString idColumn = "id";
-    QStringList columns;
-    columns << "id"
-            << "artist"
-            << "title"
-            << "album"
-            << "album_artist"
-            << "year"
-            << "genre"
-            << "grouping"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "rating";
+    QStringList columns = {
+            "id",
+            "artist",
+            "title",
+            "album",
+            "album_artist",
+            "year",
+            "genre",
+            "grouping",
+            "tracknumber",
+            "location",
+            "comment",
+            "duration",
+            "bitrate",
+            "bpm",
+            "rating"};
+    QStringList searchColumns = {
+            "artist",
+            "album",
+            "album_artist",
+            "location",
+            "grouping",
+            "comment",
+            "title",
+            "genre"};
 
-    m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
             m_pLibrary->trackCollectionManager()->internalCollection(),
-            tableName,
-            idColumn,
-            columns,
-            false));
+            std::move(tableName),
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
     m_pITunesTrackModel = new BaseExternalTrackModel(this,
             m_pLibrary->trackCollectionManager(),
             "mixxx.db.model.itunes",
@@ -118,6 +128,8 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QFutureWatcher<TreeItem*>::finished,
             this,
             &ITunesFeature::onTrackCollectionLoaded);
+
+    m_pITunesTrackModel->setSearch(""); // enable search.
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -128,8 +140,9 @@ ITunesFeature::~ITunesFeature() {
     delete m_pITunesPlaylistModel;
 }
 
-BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(this,
+std::unique_ptr<BaseSqlTableModel>
+ITunesFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
             m_pLibrary->trackCollectionManager(),
             "mixxx.db.model.itunes_playlist",
             "itunes_playlists",

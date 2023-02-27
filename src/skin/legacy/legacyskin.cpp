@@ -108,10 +108,10 @@ bool LegacySkin::fitsScreenSize(const QScreen& screen) const {
 
     // If regex failed, fall back to skin name parsing.
     QString skinName = name().left(name().indexOf(kDigitRegex));
-    QString resName = name().right(name().count() - skinName.count());
+    QString resName = name().right(name().size() - skinName.size());
     QString res = resName.left(resName.lastIndexOf(kDigitRegex) + 1);
     QString skinWidth = res.left(res.indexOf("x"));
-    QString skinHeight = res.right(res.count() - skinWidth.count() - 1);
+    QString skinHeight = res.right(res.size() - skinWidth.size() - 1);
     return skinWidth.toInt() <= screenSize.width() &&
             skinHeight.toInt() <= screenSize.height();
 }

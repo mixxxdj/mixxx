@@ -127,6 +127,22 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             this,
             &BaseTrackPlayerImpl::slotCloneFromSampler);
 
+    // Load track from other deck/sampler
+    m_pLoadTrackFromDeck = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromDeck"),
+            false);
+    connect(m_pLoadTrackFromDeck.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromDeck);
+    m_pLoadTrackFromSampler = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromSampler"),
+            false);
+    connect(m_pLoadTrackFromSampler.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromSampler);
+
     // Waveform controls
     // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
     // do not work properly with this CO.
@@ -644,6 +660,30 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     TrackPointer pTrack = m_pChannelToCloneFrom->getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         m_pChannelToCloneFrom = nullptr;
+        return;
+    }
+
+    slotLoadTrack(pTrack, false);
+}
+
+void BaseTrackPlayerImpl::slotLoadTrackFromDeck(double d) {
+    int deck = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForDeck(deck - 1));
+}
+
+void BaseTrackPlayerImpl::slotLoadTrackFromSampler(double d) {
+    int sampler = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForSampler(sampler - 1));
+}
+
+void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
+    EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
+    if (!pChannel) {
+        return;
+    }
+
+    TrackPointer pTrack = pChannel->getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
         return;
     }
 

@@ -386,8 +386,8 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
     return m_audioBufferSizeIndex;
 }
 
-// FIXME: This is incorrect when using JACK as the sound API!
-// m_audioBufferSizeIndex does not reflect JACK's buffer size.
+// This reflects the configured value only. In case of JACK the
+// setting of the JACK server is used.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     // endless loop otherwise
     unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
@@ -405,13 +405,6 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     }
     return framesPerBuffer;
 }
-
-// FIXME: This is incorrect when using JACK as the sound API!
-// m_audioBufferSizeIndex does not reflect JACK's buffer size.
-double SoundManagerConfig::getProcessingLatency() const {
-    return static_cast<double>(getFramesPerBuffer()) / m_sampleRate * 1000.0;
-}
-
 
 // Set the audio buffer size
 // @warning This IS NOT a value in milliseconds, or a number of frames per

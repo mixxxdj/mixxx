@@ -62,8 +62,8 @@ jobs:
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=OFF
-              -DWAVPACK=OFF
+              -DMODPLUG=ON
+              -DWAVPACK=ON
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -435,7 +435,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}

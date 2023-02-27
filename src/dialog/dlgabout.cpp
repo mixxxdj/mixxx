@@ -124,7 +124,6 @@ DlgAbout::DlgAbout()
             << "Stefan N&uuml;rnberger"
             << "motific"
             << "Fatih Emre YILDIZ"
-            << "Fredrik Wieczerkowski"
             << "Vincent Duez-Dellac"
             << "Javier Vilalta"
             << "David Chocholat&yacute;"
@@ -134,7 +133,12 @@ DlgAbout::DlgAbout()
             << "Somesh Metri"
             << "Maarten de Boer"
             << "Doteya"
-            << "olafklingt";
+            << "olafklingt"
+            << "Bilal Ahmed Karbelkar"
+            << "Alice Psykose"
+            << "Jakob Leifhelm"
+            << "Florian Goth"
+            << "Chase Durand";
 
     QStringList specialThanks;
     specialThanks

@@ -35,27 +35,40 @@ class StringCollator {
 /// A nullptr-safe variant of the corresponding standard C function.
 ///
 /// Treats nullptr like an empty string and returns 0.
-inline std::size_t strnlen(
+/// The c11 strnlen_s() is not available on all targets
+inline std::size_t strnlen_s(
         const char* str,
-        std::size_t len) {
+        std::size_t maxlen) {
     if (str == nullptr) {
         return 0;
     }
-    // Invoke the global function
-    return ::strnlen(str, len);
+    // Invoke the global function and benefit from SIMD implementations
+    return ::strnlen(str, maxlen);
 }
 
 /// A nullptr-safe variant of the corresponding standard C function.
 ///
 /// Treats nullptr like an empty string and returns 0.
-inline std::size_t wcsnlen(
+/// The c11 wcsnlen_s is not available on all targets
+/// and wcsnlen() is not available on OpenBSD
+inline std::size_t wcsnlen_s(
         const wchar_t* wcs,
-        std::size_t len) {
+        std::size_t maxlen) {
     if (wcs == nullptr) {
         return 0;
     }
-    // Invoke the global function
-    return ::wcsnlen(wcs, len);
+#if !defined(__BSD__) || defined(__USE_XOPEN2K8)
+    // Invoke the global function SIMD implementations
+    return ::wcsnlen(wcs, maxlen);
+#else
+    std::size_t n;
+    for (n = 0; n < maxlen; n++) {
+        if (!wcs[n]) {
+            break;
+        }
+    }
+    return n;
+#endif
 }
 
 /// Convert a wide-character C string to QString.
@@ -72,7 +85,7 @@ inline QString convertWCStringToQString(
         DEBUG_ASSERT(len == 0);
         return QString();
     }
-    DEBUG_ASSERT(wcsnlen(wcs, len) == len);
+    DEBUG_ASSERT(wcsnlen_s(wcs, len) == len);
     const auto ilen = static_cast<int>(len);
     DEBUG_ASSERT(ilen >= 0); // unsigned -> signed
     switch (sizeof(wchar_t)) {

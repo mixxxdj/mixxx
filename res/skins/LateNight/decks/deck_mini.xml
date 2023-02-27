@@ -117,7 +117,7 @@
                   </SingletonContainer>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+                  <ConfigKey>[Skin],show_spinny_or_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- SpinnyCoverContainer_MiniDeck -->

@@ -37,7 +37,7 @@
       </WidgetGroup><!-- MicDuckingStrengthKnob -->
     </Children>
     <Connection>
-      <ConfigKey>[LateNight],show_ducking_controls</ConfigKey>
+      <ConfigKey>[Skin],show_ducking_controls</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- MicDuckingContainer -->

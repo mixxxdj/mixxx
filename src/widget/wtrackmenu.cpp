@@ -2046,6 +2046,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
     if (tracksToKeep.isEmpty()) {
         // All selected tracks could be processed. Finish!
+        emit restoreCurrentIndex();
         return;
     }
     // Else show a message with a list of tracks that could not be deleted.
@@ -2084,6 +2085,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     // Required for being able to close the dialog
     connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
     dlgNotDeleted.exec();
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotShowDlgTrackInfo() {
@@ -2117,7 +2119,7 @@ void WTrackMenu::slotShowDlgTagFetcher() {
     }
     // Create a fresh dialog on invocation
     m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
-            m_pTrackModel);
+            m_pConfig, m_pTrackModel);
     connect(m_pDlgTagFetcher.get(),
             &QDialog::finished,
             this,
@@ -2222,6 +2224,7 @@ void WTrackMenu::slotRemove() {
         return;
     }
     m_pTrackModel->removeTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotHide() {
@@ -2229,6 +2232,7 @@ void WTrackMenu::slotHide() {
         return;
     }
     m_pTrackModel->hideTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotUnhide() {
@@ -2236,6 +2240,7 @@ void WTrackMenu::slotUnhide() {
         return;
     }
     m_pTrackModel->unhideTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotPurge() {
@@ -2243,6 +2248,7 @@ void WTrackMenu::slotPurge() {
         return;
     }
     m_pTrackModel->purgeTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::clearTrackSelection() {

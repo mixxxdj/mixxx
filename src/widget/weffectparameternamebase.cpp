@@ -9,16 +9,14 @@
 
 namespace {
 const QString kMimeTextDelimiter = QStringLiteral("\n");
-// for rounding the value display to 2 decimals
-constexpr int kValDecimals = 100;
 } // anonymous namespace
 
 WEffectParameterNameBase::WEffectParameterNameBase(
         QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
-          m_pEffectsManager(pEffectsManager),
-          m_text("") {
+          m_pEffectsManager(pEffectsManager) {
     setAcceptDrops(true);
+    setCursor(Qt::OpenHandCursor);
     parameterUpdated();
     // When the parameter value changed it is display briefly.
     // Set up the timer that restores the parameter name.
@@ -57,17 +55,42 @@ void WEffectParameterNameBase::parameterUpdated() {
         setBaseTooltip(QString("%1\n%2").arg(
                 m_pParameterSlot->name(),
                 m_pParameterSlot->description()));
+        EffectManifestParameterPointer pManifest = m_pParameterSlot->getManifest();
+        if (!pManifest.isNull()) {
+            m_unitString = m_pParameterSlot->getManifest()->unitString();
+        } else {
+            m_unitString = QString();
+        }
     } else {
+        m_unitString = QString();
         m_text = kNoEffectString;
         setBaseTooltip(tr("No effect loaded."));
     }
     setText(m_text);
+    m_parameterUpdated = true;
 }
 
 void WEffectParameterNameBase::showNewValue(double newValue) {
-    double newValRounded =
-            std::ceil(newValue * kValDecimals) / kValDecimals;
-    setText(QString::number(newValRounded));
+    // Don't show the value for a newly loaded parameter. 'valueChanged' is emitted
+    // if this parameter is linked to the Meta knob
+    if (m_parameterUpdated) {
+        m_parameterUpdated = false;
+        return;
+    }
+    int absVal = abs(static_cast<int>(round(newValue)));
+    int tenPowDecimals = 1; // omit decimals
+    if (absVal < 100) {     // 0-99: round to 2 decimals
+        tenPowDecimals = 100;
+    } else if (absVal < 1000) { // 100-999: round to 1 decimal
+        tenPowDecimals = 10;
+    }
+    double dispVal = round(newValue * tenPowDecimals) / tenPowDecimals;
+
+    if (m_unitString.isEmpty()) {
+        setText(QString::number(dispVal));
+    } else {
+        setText(QString::number(dispVal) + QChar(' ') + m_unitString);
+    }
     m_displayNameResetTimer.start();
 }
 

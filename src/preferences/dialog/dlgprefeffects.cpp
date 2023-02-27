@@ -170,6 +170,12 @@ void DlgPrefEffects::loadChainPresetLists() {
 
     QStringList quickEffectChainPresetNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getQuickEffectPresetsSorted()) {
+        // Don't show the empty '---' preset.
+        // After pushing the changed preferences list back to the preset manager
+        // it is re-added to the root list.
+        if (pChainPreset->name() == kNoEffectString) {
+            continue;
+        }
         quickEffectChainPresetNames << pChainPreset->name();
     }
     pModel = dynamic_cast<EffectChainPresetListModel*>(quickEffectListView->model());

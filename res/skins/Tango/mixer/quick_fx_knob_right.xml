@@ -9,7 +9,6 @@ Variables:
 -->
 <Template>
   <SetVariable name="QuickFxGroup">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="QuickFx">[QuickEffectRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <ObjectName>EQKnobContainerRight</ObjectName>
     <SizePolicy>min,min</SizePolicy>

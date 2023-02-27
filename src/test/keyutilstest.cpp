@@ -53,7 +53,7 @@ TEST_F(KeyUtilsTest, LancelotNotation) {
 
 TEST_F(KeyUtilsTest, KeyNameNotation) {
     // Invalid letter
-    // (actually valid in traditional german notation where B is H and Bb is B -
+    // (actually valid in traditional German notation where B is H and Bb is B -
     //  everyone confused?)
     EXPECT_EQ(mixxx::track::io::key::INVALID,
               KeyUtils::guessKeyFromText("H"));
@@ -142,6 +142,47 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
               KeyUtils::guessKeyFromText("cb"));
     EXPECT_EQ(mixxx::track::io::key::C_MINOR,
               KeyUtils::guessKeyFromText("b#"));
+
+    // Rapid Evolution test cases
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("Am"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("08A"));
+    EXPECT_EQ(mixxx::track::io::key::B_FLAT_MINOR,
+            KeyUtils::guessKeyFromText("A#m"));
+    EXPECT_EQ(mixxx::track::io::key::B_FLAT_MINOR,
+            KeyUtils::guessKeyFromText("Bbm"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11B"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("G#+50"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("Ab +50"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("Ab +50cents"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("04B +50cents"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("G#-50"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("Ab -50"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("Ab -50cents"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("04B -50cents"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("    4b    -50   cents    "));
+    // Mixxx does not allow this but Rapid Evolution
+    // EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+    //          KeyUtils::guessKeyFromText("    g  #    -    50   cents    "));
+    // EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+    //          KeyUtils::guessKeyFromText("    g  #    +    50   cents    "));
+    EXPECT_EQ(mixxx::track::io::key::INVALID, // ionian
+            KeyUtils::guessKeyFromText(" "));
+    EXPECT_EQ(mixxx::track::io::key::INVALID, // ionian
+            KeyUtils::guessKeyFromText(""));
+    EXPECT_EQ(mixxx::track::io::key::INVALID, // ionian
+            KeyUtils::guessKeyFromText("xyz"));
 }
 
 mixxx::track::io::key::ChromaticKey incrementKey(

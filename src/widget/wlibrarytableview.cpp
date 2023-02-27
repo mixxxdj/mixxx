@@ -20,6 +20,8 @@ constexpr int kModelCacheSize = 1000;
 WLibraryTableView::WLibraryTableView(QWidget* parent,
         UserSettingsPointer pConfig)
         : QTableView(parent),
+          m_prevRow(0),
+          m_prevColumn(0),
           m_pConfig(pConfig),
           m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
@@ -164,13 +166,53 @@ bool WLibraryTableView::restoreTrackModelState(
     }
 
     QModelIndex currIndex = state->currentIndex;
-    if (currIndex.isValid()) {
-        selection->setCurrentIndex(currIndex, QItemSelectionModel::NoUpdate);
-    }
+    restoreCurrentIndex(currIndex);
 
     // reinsert the state into the cache
     m_modelStateCache.insert(key, state, 1);
     return true;
+}
+
+void WLibraryTableView::saveCurrentIndex() {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (!pSelectionModel) {
+        return;
+    }
+    QModelIndexList indices = pSelectionModel->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    m_prevRow = indices.first().row();
+    m_prevColumn = currentIndex().isValid() ? currentIndex().column() : columnAt(0);
+}
+
+void WLibraryTableView::restoreCurrentIndex(const QModelIndex& index) {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (!pSelectionModel) {
+        return;
+    }
+    int row = index.isValid() ? index.row() : m_prevRow;
+    int col = index.isValid() ? index.column() : m_prevColumn;
+    if (model()->rowCount() == 0 || row < 0 || col < 0) {
+        // nothing to select
+        return;
+    }
+    if (model()->rowCount() < row + 1) {
+        // select last row
+        row = model()->rowCount() - 1;
+    }
+    if (isColumnHidden(col)) {
+        // select first column
+        col = columnAt(0);
+    }
+    QModelIndex idx = model()->index(row, col);
+    if (idx.isValid()) {
+        pSelectionModel->setCurrentIndex(idx, QItemSelectionModel::NoUpdate);
+        scrollTo(idx);
+    }
+    m_prevRow = 0;
+    m_prevColumn = 0;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
@@ -244,14 +286,17 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
                     // Select the first row if no row is focused
                     selectRow(0);
                     DEBUG_ASSERT(currentIndex().row() == 0);
-                } else {
-                    // Select the row of the currently focused index.
-                    // For some reason selectRow(currentIndex().row()) would not
-                    // select for the first Qt::BacktabFocusReason in a session
-                    // even though currentIndex() is valid.
-                    selectionModel()->select(currentIndex(),
-                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                    // Unfortunately, even though we now have a valid currentIndex(),
+                    // that would still not be selected by now if we're here because of
+                    // the first Qt::BacktabFocusReason to tracks in this session. (Qt 5.12.8)
+                    // So let's use the currentIndex below.
                 }
+                // Select the row of the currently focused index.
+                // For some reason selectRow(currentIndex().row()) would not
+                // select for the first Qt::BacktabFocusReason in a session
+                // even though currentIndex() is valid.
+                selectionModel()->select(currentIndex(),
+                        QItemSelectionModel::Select | QItemSelectionModel::Rows);
             }
             DEBUG_ASSERT(currentIndex().isValid());
             DEBUG_ASSERT(selectionModel()->isSelected(currentIndex()));
@@ -263,50 +308,83 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
 
 QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
         Qt::KeyboardModifiers modifiers) {
-    // The up and down cursor keys should wrap the list around. This behavior
-    // also applies to the `[Library],MoveVertical` action that is usually bound
-    // to the library browse encoder on controllers. Otherwise browsing a
-    // key-sorted library list requires either a serious workout or the user
-    // needs to reach for the mouse or keyboard when moving between 12/C#m/E and
-    // 1/G#m/B.
     QAbstractItemModel* pModel = model();
-    if (pModel &&
-            (cursorAction == QAbstractItemView::MoveUp ||
-                    cursorAction == QAbstractItemView::MoveDown)) {
-        // This is very similar to `moveSelection()`, except that it doesn't
-        // actually modify the selection
-        const QModelIndex current = currentIndex();
-        if (current.isValid()) {
-            const int row = currentIndex().row();
-            const int column = currentIndex().column();
-            if (cursorAction == QAbstractItemView::MoveDown) {
-                if (row + 1 < pModel->rowCount()) {
-                    return pModel->index(row + 1, column);
+    if (pModel) {
+        switch (cursorAction) {
+        // The up and down cursor keys should wrap the list around. This
+        // behavior also applies to the `[Library],MoveVertical` action that is
+        // usually bound to the library browse encoder on controllers. Otherwise
+        // browsing a key-sorted library list requires either a serious workout
+        // or the user needs to reach for the mouse or keyboard when moving
+        // between 12/C#m/E and 1/G#m/B. This is very similar to
+        // `moveSelection()`, except that it doesn't actually modify the
+        // selection. It simply returns a new cursor that the keyboard event
+        // handler in `QAbstractItemView` uses to either move the cursor, move
+        // the selection, or extend the selection depending on which modifier
+        // keys are held down.
+        case QAbstractItemView::MoveUp:
+        case QAbstractItemView::MoveDown: {
+            const QModelIndex current = currentIndex();
+            if (current.isValid()) {
+                const int row = currentIndex().row();
+                const int column = currentIndex().column();
+                if (cursorAction == QAbstractItemView::MoveDown) {
+                    if (row + 1 < pModel->rowCount()) {
+                        return pModel->index(row + 1, column);
+                    } else {
+                        return pModel->index(0, column);
+                    }
                 } else {
-                    return pModel->index(0, column);
+                    if (row - 1 >= 0) {
+                        return pModel->index(row - 1, column);
+                    } else {
+                        return pModel->index(pModel->rowCount() - 1, column);
+                    }
                 }
             } else {
-                if (row - 1 >= 0) {
-                    return pModel->index(row - 1, column);
-                } else {
-                    return pModel->index(pModel->rowCount() - 1, column);
+                // If the cursor does not yet exist (because the view has not
+                // yet been interacted with) then this selects the first or last
+                // row
+                const int row = cursorAction == QAbstractItemView::MoveUp
+                        ? pModel->rowCount() - 1
+                        : 0;
+
+                // Selecting a hidden column doesn't work, so we'll need to find
+                // the first non-hidden column here
+                int column = 0;
+                while (isColumnHidden(column) && column < pModel->columnCount()) {
+                    column++;
+                }
+
+                return pModel->index(row, column);
+            }
+        } break;
+        // Make the home and end keys move to the first and last row rather than
+        // the first and last column (QAbstractItemView default)
+        case QAbstractItemView::MoveHome:
+        case QAbstractItemView::MoveEnd: {
+            const QModelIndex current = currentIndex();
+
+            // We don't want to change the selected column if a column has
+            // already been selected
+            int column = current.column();
+            if (!current.isValid()) {
+                // Selecting a hidden column doesn't work, so we'll need to find
+                // the first non-hidden column here
+                int column = 0;
+                while (isColumnHidden(column) && column < pModel->columnCount()) {
+                    column++;
                 }
             }
-        } else {
-            // Selecting a hidden column doesn't work, so we'll need to find the
-            // first non-hidden column here
-            int column = 0;
-            while (isColumnHidden(column) && column < pModel->columnCount()) {
-                column++;
-            }
 
-            // If the cursor does not yet exist (because the view has not yet
-            // been interacted with) then this selects the first/last row
-            if (cursorAction == QAbstractItemView::MoveDown) {
+            if (cursorAction == QAbstractItemView::MoveHome) {
                 return pModel->index(0, column);
             } else {
                 return pModel->index(pModel->rowCount() - 1, column);
             }
+        } break;
+        default:
+            break;
         }
     }
 
