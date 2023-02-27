@@ -802,7 +802,7 @@
             <control> <!-- Deck A - Parameter Left Button -->
               <group></group>
               <key></key>
-              <description>Paramater Left</description>
+              <description>Parameter Left</description>
               <status>0x94</status>
               <midino>0x17</midino>
               <options>
@@ -1315,7 +1315,7 @@
             <control> <!-- Deck B - Parameter Left Button -->
               <group></group>
               <key></key>
-              <description>Paramater Left</description>
+              <description>Parameter Left</description>
               <status>0x95</status>
               <midino>0x17</midino>
               <options>
