@@ -1,6 +1,7 @@
 #include "widget/wmainmenubar.h"
 
 #include <QUrl>
+#include <QWidgetAction>
 
 #include "config.h"
 #include "control/controlproxy.h"
@@ -325,6 +326,13 @@ void WMainMenuBar::initialize() {
             pViewFullScreen,
             &QAction::setChecked);
     pViewMenu->addAction(pViewFullScreen);
+
+    if (!isNativeMenuBar()) {
+        auto* pAltDummyAction = new QWidgetAction(this);
+        pAltDummyAction->setText(tr("Toggle menu bar with Alt key"));
+        pAltDummyAction->setDisabled(true);
+        pViewMenu->addAction(pAltDummyAction);
+    }
 
     addMenu(pViewMenu);
 
