@@ -6,7 +6,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 
-// TODO (acolombier): remove "new" where possible and use parented_ptr
+#include "util/parented_ptr.h"
 
 LegacyControllerSettingBuilder* LegacyControllerSettingBuilder::__self = nullptr;
 
@@ -30,8 +30,9 @@ AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomEleme
 
 QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
         LegacyControllerSettingsLayoutContainer::Disposition orientation) {
-    QWidget* pRoot = new QWidget(pParent);
+    auto pRoot = make_parented<QWidget>(pParent);
     QBoxLayout* pLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+
     pLayout->setContentsMargins(0, 0, 0, 0);
 
     if (orientation == LegacyControllerSettingsLayoutContainer::VERTICAL) {
@@ -53,7 +54,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
         }
     }
 
-    QLabel* pLabelWidget = new QLabel(pRoot);
+    auto pLabelWidget = make_parented<QLabel>(pRoot);
     pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     pLabelWidget->setText(label());
 
@@ -81,40 +82,27 @@ LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
 }
 
 QWidget* LegacyControllerBooleanSetting::buildWidget(
-        QWidget* parent, LegacyControllerSettingsLayoutContainer::Disposition) {
-    QWidget* pRoot = new QWidget(parent);
-    QBoxLayout* pLayout = new QHBoxLayout();
-    pLayout->setContentsMargins(0, 0, 0, 0);
-
-    QLabel* pLabelWidget = new QLabel(pRoot);
-    pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    pLabelWidget->setText(label());
-
-    if (!description().isEmpty()) {
-        pRoot->setToolTip(QString("<p>%1</p>").arg(description()));
-    }
-
-    pLayout->addWidget(buildInputWidget(pRoot));
-    pLayout->addWidget(pLabelWidget);
-
-    pRoot->setLayout(pLayout);
-
-    return pRoot;
+        QWidget* pParent, LegacyControllerSettingsLayoutContainer::Disposition) {
+    return buildInputWidget(pParent);
 }
 
-QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* parent) {
-    QCheckBox* checkBox = new QCheckBox("", parent);
-    checkBox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
+    auto pCheckBox = make_parented<QCheckBox>(label(), pParent);
+    pCheckBox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     if (m_currentValue) {
-        checkBox->setCheckState(Qt::Checked);
+        pCheckBox->setCheckState(Qt::Checked);
     }
 
-    connect(checkBox, &QCheckBox::stateChanged, this, [this](int state) {
+    if (!description().isEmpty()) {
+        pCheckBox->setToolTip(QString("<p>%1</p>").arg(description()));
+    }
+
+    connect(pCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
         m_dirtyValue = state == Qt::Checked;
         emit changed();
     });
 
-    return checkBox;
+    return pCheckBox;
 }
 
 bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
@@ -162,8 +150,8 @@ template<class SettingType,
 QWidget* LegacyControllerNumberSetting<SettingType,
         ValueSerializer,
         ValueDeserializer,
-        InputWidget>::buildInputWidget(QWidget* parent) {
-    InputWidget* spinBox = new InputWidget(parent);
+        InputWidget>::buildInputWidget(QWidget* pParent) {
+    auto spinBox = make_parented<InputWidget>(pParent);
     spinBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
     spinBox->setRange(this->m_minValue, this->m_maxValue);
@@ -211,12 +199,12 @@ LegacyControllerRealSetting::LegacyControllerRealSetting(const QDomElement& elem
     }
 }
 
-QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* parent) {
+QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
     QDoubleSpinBox* spinBox = dynamic_cast<QDoubleSpinBox*>(
-            LegacyControllerNumberSetting::buildInputWidget(parent));
+            LegacyControllerNumberSetting::buildInputWidget(pParent));
     VERIFY_OR_DEBUG_ASSERT(spinBox != nullptr) {
-        qWarning() << "Unable to set precision on the controller setting "
-                      "input: tt does not appear to be a valid QDoubleSpinBox";
+        qWarning() << "Unable to set precision on the input widget "
+                      "input: it does not appear to be a valid QDoubleSpinBox";
         return spinBox;
     }
     spinBox->setDecimals(m_precisionValue);
@@ -271,8 +259,8 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
     }
 }
 
-QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* parent) {
-    QComboBox* comboBox = new QComboBox(parent);
+QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
+    auto comboBox = make_parented<QComboBox>(pParent);
 
     for (const auto& value : qAsConst(m_options)) {
         comboBox->addItem(std::get<1>(value));

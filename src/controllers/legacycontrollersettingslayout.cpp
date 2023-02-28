@@ -11,6 +11,7 @@
 #include <QWindow>
 
 #include "controllers/legacycontrollersettings.h"
+#include "util/parented_ptr.h"
 
 void LegacyControllerSettingsLayoutContainer::addItem(
         std::shared_ptr<AbstractLegacyControllerSetting> setting) {
@@ -19,7 +20,7 @@ void LegacyControllerSettingsLayoutContainer::addItem(
 }
 
 QBoxLayout* LegacyControllerSettingsLayoutContainer::buildLayout(QWidget* pParent) const {
-    QBoxLayout* pLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+    auto pLayout = make_parented<QBoxLayout>(QBoxLayout::TopToBottom);
 
     pParent->setLayout(pLayout);
 
@@ -27,20 +28,27 @@ QBoxLayout* LegacyControllerSettingsLayoutContainer::buildLayout(QWidget* pParen
 }
 
 QWidget* LegacyControllerSettingsLayoutContainer::build(QWidget* pParent) {
-    QWidget* pContainer = new WLegacyControllerSettingsContainer(m_disposition, pParent);
+    auto pContainer = make_parented<WLegacyControllerSettingsContainer>(m_disposition, pParent);
     QBoxLayout* pLayout = buildLayout(pContainer);
 
     pLayout->setContentsMargins(0, 0, 0, 0);
 
+    auto& lastElement = m_elements.back();
     for (auto& element : m_elements) {
-        pLayout->addWidget(element->build(pContainer));
+        auto* pWidget = element->build(pContainer);
+        pWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        pLayout->addWidget(pWidget);
+        if (element != lastElement) {
+            pLayout->addItem(new QSpacerItem(
+                    10, 10, QSizePolicy::Expanding, QSizePolicy::Fixed));
+        }
     }
 
     return pContainer;
 }
 
 QWidget* LegacyControllerSettingsGroup::build(QWidget* pParent) {
-    QWidget* pContainer = new QGroupBox(m_label, pParent);
+    auto pContainer = make_parented<QGroupBox>(m_label, pParent);
     QBoxLayout* pLayout = buildLayout(pContainer);
 
     for (auto& element : m_elements) {

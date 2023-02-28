@@ -47,17 +47,6 @@ class LegacyControllerMappingFileHandler {
     void parseMappingSettings(const QDomElement& root,
             std::shared_ptr<LegacyControllerMapping> mapping) const;
 
-    /// @brief Recursively parse setting definition and layout information
-    /// within a setting node
-    /// @param current The setting node (MixxxControllerPreset.settings) or any
-    /// children nodes
-    /// @param mapping The mapping object to populate with the gathered data
-    /// @param layout The currently active layout, on which new setting item
-    /// (leaf) should be attached
-    void parseMappingSettingsElement(const QDomElement& current,
-            std::shared_ptr<LegacyControllerMapping> mapping,
-            const std::unique_ptr<LegacyControllerSettingsLayoutContainer>& layout) const;
-
     /// Adds script files from XML to the LegacyControllerMapping.
     ///
     /// This function parses the supplied QDomElement structure, finds the
@@ -78,8 +67,21 @@ class LegacyControllerMappingFileHandler {
     bool writeDocument(const QDomDocument& root, const QString& fileName) const;
 
   private:
+    /// @brief Recursively parse setting definition and layout information
+    /// within a setting node
+    /// @param current The setting node (MixxxControllerPreset.settings) or any
+    /// children nodes
+    /// @param mapping The mapping object to populate with the gathered data
+    /// @param layout The currently active layout, on which new setting item
+    /// (leaf) should be attached
+    void parseMappingSettingsElement(const QDomElement& current,
+            std::shared_ptr<LegacyControllerMapping> mapping,
+            const std::unique_ptr<LegacyControllerSettingsLayoutContainer>& layout) const;
+
     // Sub-classes implement this.
     virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
             const QDir& systemMappingPath) = 0;
+
+    friend class LegacyControllerMappingSettingsTest_parseSettingBlock_Test;
 };

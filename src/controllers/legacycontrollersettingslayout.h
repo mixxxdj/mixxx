@@ -21,6 +21,7 @@
 
 class AbstractLegacyControllerSetting;
 
+/// @brief Layout information used for controller setting when rendered in the Preference Dialog
 class LegacyControllerSettingsLayoutElement {
   public:
     LegacyControllerSettingsLayoutElement() {
@@ -32,8 +33,14 @@ class LegacyControllerSettingsLayoutElement {
     virtual QWidget* build(QWidget* parent) = 0;
 };
 
+/// @brief This layout element can hold others element. It is also the one used
+/// to represent a `row` in the settings
 class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsLayoutElement {
   public:
+    /// @brief This is a simplified representation of disposition orientation. This used to
+    /// define how a container orients its children. This is also used by layout
+    /// items to decide how the label should be rendered alongside the input
+    /// widget
     enum Disposition {
         HORIZONTAL = 0,
         VERTICAL,
@@ -57,6 +64,11 @@ class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsL
         return std::make_unique<LegacyControllerSettingsLayoutContainer>(*this);
     }
 
+    /// @brief This helper method allows to add a LegacyControllerSetting
+    /// directly, without to have it to wrap within an item object. This is
+    /// helpful as the item that will be create to wrap will be initialised with
+    /// the right parameters
+    /// @param setting The controller setting to add to the layout container
     void addItem(std::shared_ptr<AbstractLegacyControllerSetting> setting);
     void addItem(std::unique_ptr<LegacyControllerSettingsLayoutContainer>&& container) {
         m_elements.push_back(std::move(container));
@@ -87,7 +99,7 @@ class LegacyControllerSettingsGroup : public LegacyControllerSettingsLayoutConta
     }
 
     QWidget* build(QWidget* parent) override;
-    
+
   private:
     QString m_label;
 };

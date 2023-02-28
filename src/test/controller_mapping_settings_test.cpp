@@ -6,6 +6,8 @@
 // FIXME (acolombier): here we need the CPP file so the templated methods gets
 // built. AFAIK, there is an alternate solution which is to include the cpp file
 // in the CMake build list
+#include "controllers/legacycontrollermapping.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/legacycontrollersettings.cpp"
 #include "test/mixxxtest.h"
 
@@ -26,6 +28,11 @@ const char* const kValidInteger =
 const char* const kValidDouble =
         "<option variable=\"myReal1\" type=\"real\" default=\"%1\" min=\"%"
         "2\" max=\"%3\" step=\"%4\" precision=\"2\"/>";
+
+const char* const kValidEnum =
+        " <option variable=\"myEnum1\" type=\"enum\" label=\"Test "
+        "label\">%3<description>Test description</description></option>";
+const char* const kValidEnumOption = "<value label=\"%1\">%2</value>";
 
 TEST_F(LegacyControllerMappingSettingsTest, booleanSettingParsing) {
     QDomDocument doc;
@@ -79,6 +86,8 @@ TEST_F(LegacyControllerMappingSettingsTest, booleanSettingEditing) {
     EXPECT_TRUE(ok);
     EXPECT_FALSE(setting->isDirty());
     EXPECT_EQ(setting->stringify(), "true");
+    EXPECT_TRUE(setting->value().isBool());
+    EXPECT_TRUE(setting->value().toBool());
     EXPECT_FALSE(setting->isDefault());
     setting->parse("1", &ok);
     EXPECT_TRUE(ok);
@@ -89,9 +98,14 @@ TEST_F(LegacyControllerMappingSettingsTest, booleanSettingEditing) {
     setting->parse("TRUE", &ok);
     EXPECT_TRUE(ok);
     EXPECT_EQ(setting->stringify(), "true");
+    EXPECT_TRUE(setting->value().isBool());
+    EXPECT_TRUE(setting->value().toBool());
     setting->reset();
     EXPECT_EQ(setting->stringify(), "false");
     EXPECT_TRUE(setting->isDefault());
+
+    EXPECT_TRUE(setting->value().isBool());
+    EXPECT_FALSE(setting->value().toBool());
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, integerSettingParsing) {
@@ -151,7 +165,46 @@ TEST_F(LegacyControllerMappingSettingsTest, integerSettingParsing) {
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, integerSettingEditing) {
-    // TODO (acolombier) Add test for setting edition
+    QDomDocument doc;
+    doc.setContent(
+            QByteArray("<option variable=\"myInteger1\" type=\"integer\" label=\"Test label\"/>"));
+
+    LegacyControllerIntegerSetting* setting = (LegacyControllerIntegerSetting*)
+            LegacyControllerIntegerSetting::createFrom(doc.documentElement());
+    EXPECT_TRUE(setting->valid()) << "Unable to create an integer setting";
+
+    setting->m_dirtyValue = true;
+    EXPECT_TRUE(setting->isDirty());
+    setting->save();
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_EQ(setting->m_currentValue, true);
+
+    bool ok;
+    setting->parse("42", &ok);
+    EXPECT_TRUE(ok);
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_EQ(setting->stringify(), "42");
+    EXPECT_TRUE(setting->value().isNumber());
+    EXPECT_EQ(setting->value().toInt(), 42);
+    EXPECT_FALSE(setting->isDefault());
+    setting->parse("-15", &ok);
+    EXPECT_TRUE(ok);
+    setting->parse("0", &ok);
+    EXPECT_TRUE(ok);
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_EQ(setting->stringify(), "0");
+    setting->parse("30 ", &ok);
+    EXPECT_TRUE(ok);
+    EXPECT_EQ(setting->stringify(), "30");
+    EXPECT_TRUE(setting->value().isNumber());
+    EXPECT_EQ(setting->value().toInt(), 30);
+    setting->reset();
+    EXPECT_EQ(setting->stringify(), "0");
+    EXPECT_TRUE(setting->isDefault());
+    setting->parse("abc ", &ok);
+    EXPECT_FALSE(ok);
+    EXPECT_TRUE(setting->value().isNumber());
+    EXPECT_EQ(setting->value().toInt(), 0);
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, doubleSettingParsing) {
@@ -210,5 +263,246 @@ TEST_F(LegacyControllerMappingSettingsTest, doubleSettingParsing) {
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, doubleSettingEditing) {
-    // TODO (acolombier) Add test for setting edition
+    QDomDocument doc;
+    doc.setContent(
+            QByteArray("<option variable=\"myReal1\" type=\"real\" label=\"Test label\"/>"));
+
+    LegacyControllerRealSetting* setting = (LegacyControllerRealSetting*)
+            LegacyControllerRealSetting::createFrom(doc.documentElement());
+    EXPECT_TRUE(setting->valid()) << "Unable to create a double setting";
+
+    setting->m_dirtyValue = 1.0;
+    EXPECT_TRUE(setting->isDirty());
+    setting->save();
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_EQ(setting->m_currentValue, true);
+
+    bool ok;
+    setting->parse("0.001", &ok);
+    EXPECT_TRUE(ok);
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_EQ(setting->stringify(), "0.001");
+    EXPECT_TRUE(setting->value().isNumber());
+    EXPECT_EQ(setting->value().toNumber(), 0.001);
+    EXPECT_FALSE(setting->isDefault());
+    setting->parse("-15", &ok);
+    EXPECT_TRUE(ok);
+    setting->parse("0", &ok);
+    EXPECT_TRUE(ok);
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_EQ(setting->stringify(), "0");
+    setting->parse("30.0 ", &ok);
+    EXPECT_TRUE(ok);
+    EXPECT_EQ(setting->stringify(), "30");
+    EXPECT_TRUE(setting->value().isNumber());
+    EXPECT_EQ(setting->value().toNumber(), 30.0);
+    setting->reset();
+    EXPECT_EQ(setting->stringify(), "0");
+    EXPECT_TRUE(setting->isDefault());
+    setting->parse("abc ", &ok);
+    EXPECT_FALSE(ok);
+    EXPECT_TRUE(setting->value().isNumber());
+    EXPECT_EQ(setting->value().toNumber(), .0);
+}
+
+TEST_F(LegacyControllerMappingSettingsTest, enumSettingParsing) {
+    QDomDocument doc;
+    doc.setContent(QString(kValidEnum)
+                           .arg(QList({QString(kValidEnumOption)
+                                                      .arg("My option label",
+                                                              "myOptionValue")})
+                                           .join(""))
+                           .toLatin1());
+
+    EXPECT_TRUE(LegacyControllerEnumSetting::match(doc.documentElement()));
+    LegacyControllerEnumSetting* setting = (LegacyControllerEnumSetting*)
+            LegacyControllerEnumSetting::createFrom(doc.documentElement());
+    EXPECT_TRUE(setting->valid()) << "Unable to create an enum setting";
+
+    EXPECT_EQ(setting->variableName(), "myEnum1");
+    EXPECT_EQ(setting->label(), "Test label");
+    EXPECT_EQ(setting->description(), "Test description");
+
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_TRUE(setting->isDefault());
+    EXPECT_EQ(setting->stringify(), "myOptionValue");
+    EXPECT_TRUE(setting->valid());
+
+    delete setting;
+
+    doc.setContent(QString(kValidEnum).arg("").toLatin1());
+    setting = (LegacyControllerEnumSetting*)
+            LegacyControllerEnumSetting::createFrom(doc.documentElement());
+    EXPECT_FALSE(setting->valid());
+
+    delete setting;
+}
+
+TEST_F(LegacyControllerMappingSettingsTest, enumSettingEditing) {
+    QDomDocument doc;
+    doc.setContent(QString(kValidEnum)
+                           .arg(QList({
+                                              QString(kValidEnumOption)
+                                                      .arg("My option label",
+                                                              "myOptionValue1"),
+                                              QString(kValidEnumOption)
+                                                      .arg("My option label",
+                                                              "myOptionValue2"),
+                                              QString(kValidEnumOption)
+                                                      .arg("My option label",
+                                                              "myOptionValue3"),
+                                      })
+                                           .join(""))
+                           .toLatin1());
+
+    EXPECT_TRUE(LegacyControllerEnumSetting::match(doc.documentElement()));
+    LegacyControllerEnumSetting* setting = (LegacyControllerEnumSetting*)
+            LegacyControllerEnumSetting::createFrom(doc.documentElement());
+    EXPECT_TRUE(setting->valid()) << "Unable to create an enum setting";
+
+    setting->m_dirtyValue = 2;
+    EXPECT_TRUE(setting->isDirty());
+    setting->save();
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_EQ(setting->m_currentValue, 2);
+    EXPECT_EQ(setting->stringify(), "myOptionValue3");
+    EXPECT_TRUE(setting->value().isString());
+    EXPECT_EQ(setting->value().toString(), "myOptionValue3");
+
+    bool ok;
+    setting->parse("myOptionValue2", &ok);
+    EXPECT_TRUE(ok);
+    EXPECT_FALSE(setting->isDirty());
+    EXPECT_EQ(setting->stringify(), "myOptionValue2");
+    EXPECT_TRUE(setting->value().isString());
+    EXPECT_EQ(setting->value().toString(), "myOptionValue2");
+    EXPECT_FALSE(setting->isDefault());
+    setting->reset();
+    EXPECT_EQ(setting->stringify(), "myOptionValue1");
+    EXPECT_TRUE(setting->isDefault());
+    setting->parse("abc ", &ok);
+    EXPECT_FALSE(ok);
+    EXPECT_TRUE(setting->value().isString());
+    EXPECT_EQ(setting->value().toString(), "myOptionValue1");
+}
+
+class LegacyDummyMapping : public LegacyControllerMapping {
+  public:
+    LegacyDummyMapping() {
+    }
+
+    std::shared_ptr<LegacyControllerMapping> clone() const override {
+        return std::make_shared<LegacyDummyMapping>(*this);
+    }
+
+    bool saveMapping(const QString&) const override {
+        return false;
+    }
+
+    bool isMappable() const override {
+        return false;
+    }
+};
+
+class LegacyDummyMappingFileHandler : public LegacyControllerMappingFileHandler {
+  public:
+    LegacyDummyMappingFileHandler(){};
+    virtual ~LegacyDummyMappingFileHandler(){};
+
+    static std::shared_ptr<LegacyControllerMapping> loadDummyMapping(
+            const QDomElement& root, const QString& filePath) {
+        LegacyDummyMappingFileHandler handler;
+        return handler.load(root, filePath, QDir());
+    }
+
+  private:
+    virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
+            const QString& filePath,
+            const QDir&) {
+        auto pMapping = std::make_shared<LegacyDummyMapping>();
+        pMapping->setFilePath(filePath);
+        parseMappingSettings(root, pMapping);
+        return pMapping;
+    }
+};
+
+TEST_F(LegacyControllerMappingSettingsTest, parseSimpleSettingBlock) {
+    QDomDocument doc;
+    QString dom;
+    QTextStream(&dom)
+            << QString(kValidBoolean).arg("true")
+            << QString(kValidInteger).arg("42", "1", "99", "1")
+            << QString(kValidDouble).arg("42", "1", "99", "1")
+            << QString(kValidEnum)
+                       .arg(QList({
+                                          QString(kValidEnumOption)
+                                                  .arg("My option label",
+                                                          "myOptionValue1"),
+                                          QString(kValidEnumOption)
+                                                  .arg("My option label",
+                                                          "myOptionValue2"),
+                                          QString(kValidEnumOption)
+                                                  .arg("My option label",
+                                                          "myOptionValue3"),
+                                  })
+                                       .join(""));
+    doc.setContent(
+            QString("<?xml version=\"1.0\" "
+                    "encoding=\"utf-8\"?><MixxxControllerPreset><settings>%1</"
+                    "settings></MixxxControllerPreset>")
+                    .arg(dom));
+
+    auto pMapping = LegacyDummyMappingFileHandler::loadDummyMapping(
+            doc.documentElement(), "/fake/path");
+
+    const auto& settings = pMapping->getSettings();
+
+    ASSERT_EQ(settings.size(), 4);
+    ASSERT_EQ(settings.at(0)->variableName(), "myToggle1");
+    ASSERT_EQ(settings.at(1)->variableName(), "myInteger1");
+    ASSERT_EQ(settings.at(2)->variableName(), "myReal1");
+    ASSERT_EQ(settings.at(3)->variableName(), "myEnum1");
+}
+
+TEST_F(LegacyControllerMappingSettingsTest, discardDuplicateSettings) {
+    QDomDocument doc;
+    QString dom;
+    QTextStream(&dom)
+            << QString(kValidBoolean).arg("true")
+            << QString(kValidBoolean).arg("false")
+            << QString(kValidInteger).arg("50", "0", "100", "1")
+            << QString(kValidInteger).arg("500", "0", "1000", "10")
+            << QString(kValidEnum)
+                       .arg(QList({
+                                          QString(kValidEnumOption)
+                                                  .arg("My option label",
+                                                          "myOptionValue1"),
+                                  })
+                                       .join(""))
+            << QString(kValidEnum)
+                       .arg(QList({
+                                          QString(kValidEnumOption)
+                                                  .arg("My option label",
+                                                          "myOtherOptionValue1"),
+                                  })
+                                       .join(""));
+    doc.setContent(
+            QString("<?xml version=\"1.0\" "
+                    "encoding=\"utf-8\"?><MixxxControllerPreset><settings>%1</"
+                    "settings></MixxxControllerPreset>")
+                    .arg(dom));
+
+    auto pMapping = LegacyDummyMappingFileHandler::loadDummyMapping(
+            doc.documentElement(), "/fake/path");
+
+    const auto& settings = pMapping->getSettings();
+
+    ASSERT_EQ(settings.size(), 3);
+    ASSERT_EQ(settings.at(0)->variableName(), "myToggle1");
+    ASSERT_EQ(settings.at(1)->variableName(), "myInteger1");
+    ASSERT_EQ(settings.at(2)->variableName(), "myEnum1");
+
+    ASSERT_TRUE(settings.at(0)->value().toBool());
+    ASSERT_EQ(settings.at(1)->value().toNumber(), 50);
+    ASSERT_EQ(settings.at(2)->value().toString(), "myOptionValue1");
 }

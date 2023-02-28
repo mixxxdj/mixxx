@@ -23,7 +23,7 @@ void LegacyControllerMapping::restoreSettings(const QFileInfo& mappingFile,
             pConfig->remove(key);
             continue;
         }
-        auto& pSetting = availableSettings.at(availableSettingKeys.indexOf(key.item));
+        const auto& pSetting = availableSettings.at(availableSettingKeys.indexOf(key.item));
         QString value = pConfig->getValueString(key);
         if (!pSetting->valid()) {
             qWarning() << "The setting" << pSetting->variableName()

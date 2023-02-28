@@ -93,6 +93,10 @@ class AbstractLegacyControllerSetting : public QObject {
         return m_description;
     }
 
+    bool operator==(const AbstractLegacyControllerSetting& other) const noexcept {
+        return variableName() == other.variableName();
+    }
+
   protected:
     AbstractLegacyControllerSetting(const QString& variableName,
             const QString& label,
@@ -278,6 +282,9 @@ class LegacyControllerNumberSetting
     SettingType m_stepValue;
 
     SettingType m_dirtyValue;
+
+    friend class LegacyControllerMappingSettingsTest_integerSettingEditing_Test;
+    friend class LegacyControllerMappingSettingsTest_doubleSettingEditing_Test;
 };
 
 template<class T>
@@ -332,7 +339,7 @@ class LegacyControllerEnumSetting
     }
 
     QString stringify() const override {
-        return std::get<0>(m_options.value(m_currentValue));
+        return std::get<0>(m_options.value((int)m_currentValue));
     }
     void parse(const QString& in, bool* ok) override;
     bool isDefault() const override {
@@ -386,4 +393,6 @@ class LegacyControllerEnumSetting
     size_t m_defaultValue;
 
     size_t m_dirtyValue;
+
+    friend class LegacyControllerMappingSettingsTest_enumSettingEditing_Test;
 };

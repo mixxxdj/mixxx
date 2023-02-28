@@ -66,6 +66,9 @@ std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loa
 
     std::shared_ptr<LegacyControllerMapping> pMapping = pHandler->load(
             mappingFile.absoluteFilePath(), systemMappingsPath);
+
+    // FIXME(acolombier): is `delete pHandler;` not missing?
+
     if (pMapping) {
         pMapping->setDirty(false);
     }
@@ -129,10 +132,9 @@ void LegacyControllerMappingFileHandler::parseMappingSettings(
 
 void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
         const QDomElement& current,
-        std::shared_ptr<LegacyControllerMapping> mapping,
+        std::shared_ptr<LegacyControllerMapping> pMapping,
         const std::unique_ptr<LegacyControllerSettingsLayoutContainer>& layout)
         const {
-    // TODO (acolombier) Add test for the parser
     for (QDomElement element = current.firstChildElement();
             !element.isNull();
             element = element.nextSiblingElement()) {
@@ -141,15 +143,25 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
             std::shared_ptr<AbstractLegacyControllerSetting> pSetting(
                     LegacyControllerSettingBuilder::build(element));
             if (pSetting.get() == nullptr) {
-                qDebug() << "Could not parse the unknown controller setting. Ignoring it.";
+                qDebug() << "Ignoring unsupported controller setting in file"
+                         << pMapping->filePath() << "at line"
+                         << element.lineNumber() << ".";
                 continue;
             }
             if (!pSetting->valid()) {
-                qDebug() << "The parsed setting appears to be invalid. Discarding it.";
+                qDebug() << "The parsed setting in file" << pMapping->filePath()
+                         << "at line" << element.lineNumber()
+                         << "appears to be invalid. It will be ignored.";
                 continue;
             }
-            layout->addItem(pSetting);
-            mapping->addSetting(pSetting);
+            if (pMapping->addSetting(pSetting)) {
+                layout->addItem(pSetting);
+            } else {
+                qDebug() << "The parsed setting in file" << pMapping->filePath()
+                         << "at line" << element.lineNumber()
+                         << "couldn't be added. Its layout information will also be ignored.";
+                continue;
+            }
         } else if (tagName == "row") {
             LegacyControllerSettingsLayoutContainer::Disposition orientation =
                     element.attribute("orientation").trimmed().toLower() ==
@@ -160,17 +172,19 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
                     std::make_unique<LegacyControllerSettingsLayoutContainer>(
                             LegacyControllerSettingsLayoutContainer::HORIZONTAL,
                             orientation);
-            parseMappingSettingsElement(element, mapping, row);
+            parseMappingSettingsElement(element, pMapping, row);
             layout->addItem(std::move(row));
         } else if (tagName == "group") {
             std::unique_ptr<LegacyControllerSettingsLayoutContainer> group =
                     std::make_unique<LegacyControllerSettingsGroup>(
                             element.attribute("label"));
-            parseMappingSettingsElement(element, mapping, group);
+            parseMappingSettingsElement(element, pMapping, group);
             layout->addItem(std::move(group));
         } else {
-            qDebug() << "Unsupported tag" << tagName
-                     << "for controller layout settings. Discarding it.";
+            qDebug() << "Ignoring unsupported tag" << tagName
+                     << "in file" << pMapping->filePath()
+                     << "on line" << element.lineNumber()
+                     << "for controller layout settings. Check the documentation supported tags.";
             continue;
         }
     }
@@ -261,7 +275,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     QString blank =
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
             "<MixxxControllerPreset>\n"
-            "</<MixxxControllerPreset>\n";
+            "</MixxxControllerPreset>\n";
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();

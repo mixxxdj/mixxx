@@ -18,7 +18,6 @@
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
 
-// TODO (acolombier) is it okay to keep it as it? Or shall we generate a UUID from that pair?
 #define CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY "[ControllerSettings_%1_%2]"
 
 /// This class represents a controller mapping, containing the data elements that
@@ -83,16 +82,22 @@ class LegacyControllerMapping {
     /// Adds a setting option to the list of setting option for this mapping.
     /// The option added must be a valid option.
     /// @param option The option to add
-    void addSetting(std::shared_ptr<AbstractLegacyControllerSetting> option) {
-        // if (m_settings.contains(option->variableName())){
-        //     qWarning() << QString("Mapping setting duplication detected.
-        //     Keeping the first version of '%1'.").arg(option->variableName());
-        //     return;
-        // }
+    /// @return whether or not the setting was added successfully.
+    bool addSetting(std::shared_ptr<AbstractLegacyControllerSetting> option) {
         VERIFY_OR_DEBUG_ASSERT(option->valid()) {
-            return;
+            return false;
+        }
+        for (const auto& setting : qAsConst(m_settings)) {
+            if (*setting == *option) {
+                qWarning() << "Mapping setting duplication detected for "
+                              "setting with name"
+                           << option->variableName()
+                           << ". Keeping the first occurrence.";
+                return false;
+            }
         }
         m_settings.append(option);
+        return true;
     }
 
     /// @brief Set a setting layout as they should be perceived when edited in
