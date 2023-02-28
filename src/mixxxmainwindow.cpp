@@ -1,5 +1,6 @@
 #include "mixxxmainwindow.h"
 
+#include <QCheckBox>
 #include <QDesktopServices>
 #include <QFileDialog>
 
@@ -106,6 +107,9 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
         : m_pCoreServices(pCoreServices),
           m_pCentralWidget(nullptr),
           m_pLaunchImage(nullptr),
+#ifndef __APPLE__
+          m_pFullScreenHint(nullptr),
+#endif
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
           m_supportsGlobalMenuBar(supportsGlobalMenu()),
@@ -373,6 +377,13 @@ void MixxxMainWindow::initialize() {
     // otherwise it would shift the launch image shortly before the skin is visible.
     m_pMenuBar->show();
 
+    // Show the fullscreen hotkey hint if we went fullscreen earlier.
+    // This should make users aware of the new feature (press Alt to show/hide menu bar)
+    // if they upgraded Mixxx with 'Start in fullscreen mode'.
+    // Show the hint now so it doesn't interfere with other popups, e.g. the
+    // sound device warnings.
+    showFullScreenHotkeyHint();
+
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
     m_pLaunchImage = nullptr;
@@ -398,6 +409,14 @@ void MixxxMainWindow::initialize() {
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
+
+    if (m_pCoreServices->getSettings()->getValueString(
+                ConfigKey("[Config]", "hide_fullscreen_hint")) != "1") {
+        connect(this,
+                &MixxxMainWindow::fullScreenChanged,
+                this,
+                &MixxxMainWindow::showFullScreenHotkeyHint);
+    }
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -1270,4 +1289,128 @@ void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& 
         m_pLaunchImage->progress(progress, serviceName);
     }
     qApp->processEvents();
+}
+
+void MixxxMainWindow::showFullScreenHotkeyHint() {
+    if (!isFullScreen()) {
+        return;
+    }
+    if (m_pCoreServices->getSettings()->getValueString(
+                ConfigKey("[Config]", "hide_fullscreen_hint")) == "1") {
+        return;
+    }
+    // don't show fullscreen hotkey hint during startup
+    if (centralWidget() == m_pLaunchImage) {
+        return;
+    }
+
+    if (!m_pFullScreenHint) {
+        m_pFullScreenHint = new WFullScreenHint(this, m_pCoreServices->getSettings());
+    }
+    if (m_pFullScreenHint->isVisible()) {
+        return;
+    }
+    // apply skin stylesheet
+    m_pFullScreenHint->setStyleSheet(m_pCentralWidget->styleSheet());
+    m_pFullScreenHint->popup();
+}
+
+WFullScreenHint::WFullScreenHint(QWidget* parent, UserSettingsPointer pConfig)
+        : QWidget(parent),
+          m_pConfig(pConfig) {
+    QWidget::hide();
+    // stay on top, remove OS window frame
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    // block the GUI as long as it is open
+    setWindowModality(Qt::ApplicationModal);
+    // allow custom styles? at least the custom border is not applied without this
+    setAttribute(Qt::WA_StyledBackground);
+    // name it like the class so /tools/qsscheck.py can pick it up
+    setObjectName("WFullScreenHint");
+
+    QVBoxLayout* pLabelLayout = new QVBoxLayout();
+    pLabelLayout->addStretch();
+
+    auto* fullScreenTitle = new QLabel(tr("<b>Mixxx is now fullscreen</b>"), this);
+    fullScreenTitle->setObjectName("FullScreenTitle");
+    pLabelLayout->addWidget(fullScreenTitle);
+
+    // list all fullscreen keyboard shortcuts
+    const QList<QKeySequence> fsshortcuts = WMainMenuBar::s_fullScreenShortcuts;
+    if (!fsshortcuts.isEmpty()) {
+        QString fssString;
+        int i = 1;
+        for (const auto& shortcut : fsshortcuts) {
+            if (i > 1) { // separate multiple shortcuts
+                fssString.append(" / ");
+            }
+            fssString.append(QStringLiteral("<b>%1</b>").arg(shortcut.toString()));
+            i++;
+        }
+        QLabel* fullScreenHotkeys = new QLabel(this);
+        fullScreenHotkeys->setObjectName("FullScreenHotkeyLabel");
+        fullScreenHotkeys->setText(tr("Press %1 to toggle fullscreen").arg(fssString));
+        pLabelLayout->addWidget(fullScreenHotkeys);
+    }
+
+#ifndef __APPLE__
+    auto* menuHotkey = new QLabel(tr("Press <b>Alt</b> to toggle the menu bar"), this);
+    menuHotkey->setObjectName("MenuHotkeyLabel");
+    pLabelLayout->addWidget(menuHotkey);
+#endif
+
+    pLabelLayout->addStretch();
+
+    m_pRemindCheckBox = new QCheckBox(tr("&Remind me again"), this);
+    m_pRemindCheckBox->setObjectName("RemindAgainCheckBox");
+    m_pRemindCheckBox->setChecked(true);
+    pLabelLayout->addWidget(m_pRemindCheckBox);
+
+    pLabelLayout->addStretch();
+
+    m_pOkayBtn = new QPushButton(tr("&Okay"), this);
+    connect(m_pOkayBtn,
+            &QPushButton::clicked,
+            this,
+            &WFullScreenHint::close);
+    pLabelLayout->addWidget(m_pOkayBtn);
+
+    QHBoxLayout* pMainLayout = new QHBoxLayout();
+    // center the labels horizontally
+    pMainLayout->addStretch();
+    pMainLayout->addLayout(pLabelLayout);
+    pMainLayout->addStretch();
+    setLayout(pMainLayout);
+
+    // we need to update the the layout here since the size is used to
+    // calculate the positioning later
+    layout()->update();
+    layout()->activate();
+}
+
+void WFullScreenHint::popup() {
+    const QWidget* pParentWidget = parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(pParentWidget) {
+        qWarning() << "WFullScreenHint: no parent widget!";
+    }
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*pParentWidget);
+    int dlgWidth = 400;
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        qWarning() << "No screen detectable, assuming screen size of 800x600px.";
+    }
+    else {
+        dlgWidth = pScreen->geometry().width() / 2;
+    }
+    setFixedWidth(dlgWidth);
+    setFixedHeight(static_cast<int>(sizeHint().height() * 1.2));
+    // Show the hint centered in the upper part of the window.
+    move(dlgWidth / 2, 100);
+    QWidget::show();
+    m_pOkayBtn->setFocus();
+}
+
+void WFullScreenHint::closeEvent(QCloseEvent* event) {
+    int remind = m_pRemindCheckBox->isChecked() ? 0 : 1;
+    m_pConfig->set(ConfigKey("[Config]", "hide_fullscreen_hint"), ConfigValue(remind));
+    QWidget::closeEvent(event);
 }

@@ -70,6 +70,8 @@ QUrl documentationUrl(
 }
 }  // namespace
 
+QList<QKeySequence> WMainMenuBar::s_fullScreenShortcuts = {};
+
 WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                            ConfigObject<ConfigValueKbd>* pKbdConfig)
         : QMenuBar(pParent),
@@ -313,7 +315,7 @@ void WMainMenuBar::initialize() {
     if (!osShortcut.isEmpty() && !shortcuts.contains(osShortcut)) {
         shortcuts << osShortcut;
     }
-
+    s_fullScreenShortcuts = shortcuts;
     pViewFullScreen->setShortcuts(shortcuts);
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     pViewFullScreen->setCheckable(true);

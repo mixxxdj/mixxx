@@ -36,6 +36,8 @@ class WMainMenuBar : public QMenuBar {
     WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
 
+    static QList<QKeySequence> s_fullScreenShortcuts;
+
   public slots:
     void onLibraryScanStarted();
     void onLibraryScanFinished();

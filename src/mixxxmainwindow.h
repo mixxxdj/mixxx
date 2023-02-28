@@ -17,7 +17,9 @@ class DlgKeywheel;
 class GuiTick;
 class LaunchImage;
 class VisualsManager;
+class WFullScreenHint;
 class WMainMenuBar;
+class QCheckBox;
 
 namespace mixxx {
 
@@ -103,6 +105,9 @@ class MixxxMainWindow : public QMainWindow {
     bool loadConfiguredSkin();
 
     bool confirmExit();
+
+    void showFullScreenHotkeyHint();
+
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
     QDialog::DialogCode soundDeviceBusyDlg(bool* retryClicked);
@@ -114,6 +119,7 @@ class MixxxMainWindow : public QMainWindow {
 
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
+    WFullScreenHint* m_pFullScreenHint;
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;
@@ -139,4 +145,20 @@ class MixxxMainWindow : public QMainWindow {
     mixxx::ScreenSaverPreference m_inhibitScreensaver;
 
     QSet<ControlObject*> m_skinCreatedControls;
+};
+
+class WFullScreenHint : public QWidget {
+    Q_OBJECT
+  public:
+    WFullScreenHint(QWidget* parent, UserSettingsPointer pConfig);
+
+    void popup();
+
+  protected:
+    void closeEvent(QCloseEvent* event) override;
+
+  private:
+    QCheckBox* m_pRemindCheckBox;
+    QPushButton* m_pOkayBtn;
+    UserSettingsPointer m_pConfig;
 };
