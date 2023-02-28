@@ -167,3 +167,20 @@ WEffectChainPresetButton QMenu QCheckBox::indicator {
   width: 0.7em;
   height: 0.7em;
 }
+
+
+/* The popup that is shown when going fullscreen */
+WFullScreenHint {
+  font-family: "Open Sans";
+  font-weight: normal;
+  font-style: normal;
+  padding: 200px;
+  border-radius: 5px;
+  border: 1px solid white;
+}
+WFullScreenHint QLabel,
+WFullScreenHint QCheckBox,
+WFullScreenHint QPushButton {
+  /*font-size: 3em;*/
+  font-size: 20px;
+}

@@ -341,8 +341,10 @@ WOverview QLabel {
 /************** font sizes / alignment ****************************************/
 /************** font settings *************************************************/
 
-
-
+WFullScreenHint QPushButton {
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skin:/classic/buttons/spinbox_elevated_border.svg) 2 2 2 2;
+}
 
 
 

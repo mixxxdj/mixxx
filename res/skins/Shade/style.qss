@@ -14,6 +14,8 @@
   padding: 5px 0px;
 }
 #Mixxx, WWidget,
+WFullScreenHint QLabel,
+WFullScreenHint QCheckBox,
 WEffectName,
 WKey,
 WLabel,
@@ -92,10 +94,17 @@ WBeatSpinBox::down-button {
 
 
 
+WFullScreenHint {
+  border: 1px solid white;
+}
+
 /* common colors for WEffectSelector, QMenu, QToolTip */
 #MainMenu QMenu,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
+WFullScreenHint,
+WFullScreenHint QLabel,
+WFullScreenHint QCheckBox,
 QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,

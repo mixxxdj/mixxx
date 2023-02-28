@@ -1200,6 +1200,9 @@ WLibrarySidebar,
 #LibraryFeatureControls QRadioButton,
 /* Tooltip and menus */
 QToolTip,
+WFullScreenHint QLabel,
+WFullScreenHint QCheckBox,
+WFullScreenHint QPushButton,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
 WLibraryTextBrowser QMenu,
@@ -2920,6 +2923,10 @@ WSearchLineEdit QAbstractScrollArea,
   border-radius: 1px;
 }
 
+
+WFullScreenHint,
+WFullScreenHint QLabel,
+WFullScreenHint QCheckBox,
 QToolTip,
 #MainMenu,
 #MainMenu::item,

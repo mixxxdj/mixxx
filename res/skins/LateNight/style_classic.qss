@@ -1480,7 +1480,8 @@ WPushButton#FxParameterButton[displayValue="0"] {
 #VinylCueButton[displayValue="2"],
 #FxParameterButton[displayValue="1"],
 #SplitCue[value="1"],
-QPushButton#pushButtonRepeatPlaylist:checked {
+QPushButton#pushButtonRepeatPlaylist:checked,
+WFullScreenHint QPushButton {
   background-color: #888;
 }
 
