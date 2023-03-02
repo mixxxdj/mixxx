@@ -20,25 +20,31 @@ WaveformRendererRGB::~WaveformRendererRGB() {
 void WaveformRendererRGB::onSetup(const QDomNode& /* node */) {
 }
 
-void WaveformRendererRGB::draw(QPainter* painter,
-                                          QPaintEvent* /*event*/) {
-    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+void WaveformRendererRGB::draw(
+        QPainter* painter,
+        QPaintEvent* /*event*/) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    ConstWaveformPointer waveform = trackInfo->getWaveform();
-    if (waveform.isNull()) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
         return;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
+        return;
+    }
+
+    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
         return;
     }
 
@@ -54,8 +60,12 @@ void WaveformRendererRGB::draw(QPainter* painter,
         painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            audioVisualRatio;
 
     const double offset = firstVisualIndex;
 

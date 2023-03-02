@@ -127,6 +127,9 @@ void MixxxMainWindow::initialize() {
     bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
     if (CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) {
+        // If the desktop features a global menubar and we go fullscreen during
+        // startup, we need to move the menubar to the window, so instead of
+        // showFullScreen() simply call slotViewFullScreen(true)
         slotViewFullScreen(true);
     }
 
@@ -1083,7 +1086,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     }
     QMainWindow::closeEvent(event);
 }
-
 
 void MixxxMainWindow::checkDirectRendering() {
     // IF

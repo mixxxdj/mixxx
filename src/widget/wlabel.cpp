@@ -12,7 +12,8 @@ WLabel::WLabel(QWidget* pParent)
           m_longText(),
           m_elideMode(Qt::ElideNone),
           m_scaleFactor(1.0),
-          m_highlight(0) {
+          m_highlight(0),
+          m_widthHint(0) {
 }
 
 void WLabel::setup(const QDomNode& node, const SkinContext& context) {
@@ -94,12 +95,12 @@ void WLabel::setText(const QString& text) {
     m_longText = text;
     if (m_elideMode != Qt::ElideNone) {
         QFontMetrics metrics(font());
-        // Measure the text for label width
-        // it turns out, that "-2" is required to make the text actually fit
-        // (Tested on Ubuntu Trusty)
-        // TODO(lp#:1434865): Fix elide width calculation for cases where
-        // this text is next to an expanding widget.
-        QString elidedText = metrics.elidedText(m_longText, m_elideMode, width() - 2);
+        // Measure the text for the optimum label width
+        // frameWidth() is the maximum of the sum of margin, border and padding
+        // width of the left and the right side.
+        m_widthHint = metrics.size(0, m_longText).width() + 2 * frameWidth();
+        QString elidedText = metrics.elidedText(
+                m_longText, m_elideMode, width() - 2 * frameWidth());
         QLabel::setText(elidedText);
     } else {
         QLabel::setText(m_longText);
@@ -145,4 +146,13 @@ void WLabel::setHighlight(int highlight) {
     }
     m_highlight = highlight;
     emit highlightChanged(m_highlight);
+}
+
+QSize WLabel::sizeHint() const {
+    // make sure the sizeHint fits for the entire string.
+    QSize size = QLabel::sizeHint();
+    if (m_elideMode != Qt::ElideNone) {
+        size.setWidth(m_widthHint);
+    }
+    return size;
 }

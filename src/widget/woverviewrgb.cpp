@@ -27,7 +27,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
     }
 
     const int dataSize = pWaveform->getDataSize();
-    if (dataSize == 0) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (dataSize <= 0 || audioVisualRatio <= 0) {
         return false;
     }
 
@@ -36,8 +37,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
         // by total_gain
         // We keep full range waveform data to scale it on paint
         m_waveformSourceImage = QImage(
-                dataSize / 2,
-                static_cast<int>(2 * 255 * m_devicePixelRatio),
+                static_cast<int>(getTrackSamples() / audioVisualRatio / 2),
+                2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
     }
@@ -96,8 +97,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(QPointF(currentCompletion / 2, -left * m_devicePixelRatio),
-                             QPointF(currentCompletion / 2, 0));
+            painter.drawLine(QPointF(currentCompletion / 2, -left),
+                    QPointF(currentCompletion / 2, 0));
         }
 
         // Retrieve "raw" LMH values from waveform
@@ -116,7 +117,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
             painter.drawLine(QPointF(currentCompletion / 2, 0),
-                             QPointF(currentCompletion / 2, right * m_devicePixelRatio));
+                    QPointF(currentCompletion / 2, right));
         }
     }
 

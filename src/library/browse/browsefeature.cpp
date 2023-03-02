@@ -463,7 +463,7 @@ void BrowseFeature::loadQuickLinks() {
 }
 
 QString BrowseFeature::extractNameFromPath(const QString& spath) {
-    return QFileInfo(spath).fileName();
+    return QDir(spath).dirName();
 }
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {

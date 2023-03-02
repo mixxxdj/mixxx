@@ -191,6 +191,7 @@ WSearchLineEdit::item:selected,
 #LatencyLabel {
   font-size: 10px;
   text-align: center;
+  qproperty-alignment: AlignCenter;
 }
 
 WPushButton,
@@ -284,13 +285,6 @@ WRecordingDuration {
 #SamplerBpmMini {
   text-align: right;
 }
-
-#KnobLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  qproperty-alignment: 'AlignLeft | AlignVCenter';
-}
-
 
 WTrackTableViewHeader::item {
   /* Don't set a font size to pick up the system font size. */
