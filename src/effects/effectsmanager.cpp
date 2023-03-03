@@ -37,7 +37,7 @@ EffectsManager::EffectsManager(
                     kEffectMessagePipeFifoSize, kEffectMessagePipeFifoSize);
     m_pMessenger = EffectsMessengerPointer(new EffectsMessenger(
             requestPipes.first, requestPipes.second));
-    m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
+    m_pEngineEffectsManager = std::make_unique<EngineEffectsManager>(requestPipes.second);
 
     m_pEffectPresetManager = EffectPresetManagerPointer(
             new EffectPresetManager(pConfig, m_pBackendManager));

@@ -37,7 +37,7 @@ class EffectsManager {
     EffectChainPointer getOutputEffectChain() const;
 
     EngineEffectsManager* getEngineEffectsManager() const {
-        return m_pEngineEffectsManager;
+        return m_pEngineEffectsManager.get();
     }
 
     const ChannelHandle getMasterHandle() const {
@@ -95,7 +95,7 @@ class EffectsManager {
     EffectsBackendManagerPointer m_pBackendManager;
     std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
 
-    EngineEffectsManager* m_pEngineEffectsManager;
+    std::unique_ptr<EngineEffectsManager> m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;
     VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectPresetManagerPointer m_pEffectPresetManager;
