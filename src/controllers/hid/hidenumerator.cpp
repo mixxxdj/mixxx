@@ -34,12 +34,12 @@ bool recognizeDevice(const hid_device_info& device_info) {
     const int denylist_len = sizeof(hid_denylisted) / sizeof(hid_denylisted[0]);
     for (int bl_index = 0; bl_index < denylist_len; bl_index++) {
         hid_denylist_t denylisted = hid_denylisted[bl_index];
-        // If vendor ids do not match, skip.
-        if (device_info.vendor_id != denylisted.vendor_id) {
+        // If vendor ids are specified and do not match, skip.
+        if (denylisted.vendor_id && device_info.vendor_id != denylisted.vendor_id) {
             continue;
         }
-        // If product IDs do not match, skip.
-        if (device_info.product_id != denylisted.product_id) {
+        // If product IDs are specified and do not match, skip.
+        if (denylisted.product_id && device_info.product_id != denylisted.product_id) {
             continue;
         }
         // Denylist entry based on interface number
