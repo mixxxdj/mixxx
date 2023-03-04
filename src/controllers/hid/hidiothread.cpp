@@ -188,7 +188,7 @@ QByteArray HidIoThread::getInputReport(quint8 reportID) {
 
 void HidIoThread::updateCachedOutputReportData(quint8 reportID,
         const QByteArray& data,
-        bool resendUnchangedReport) {
+        bool useNonSkippingFIFO) {
     auto mapLock = lockMutex(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
         std::unique_ptr<HidIoOutputReport> pNewOutputReport;
@@ -205,7 +205,7 @@ void HidIoThread::updateCachedOutputReportData(quint8 reportID,
     mapLock.unlock();
 
     actualOutputReportIterator->second->updateCachedData(
-            data, m_deviceInfo, m_logOutput, resendUnchangedReport);
+            data, m_deviceInfo, m_logOutput, useNonSkippingFIFO);
 }
 
 bool HidIoThread::sendNextCachedOutputReport() {

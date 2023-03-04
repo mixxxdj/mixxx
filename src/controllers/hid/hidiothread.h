@@ -44,7 +44,7 @@ class HidIoThread : public QThread {
 
     void updateCachedOutputReportData(quint8 reportID,
             const QByteArray& reportData,
-            bool resendUnchangedReport);
+            bool useNonSkippingFIFO);
     QByteArray getInputReport(quint8 reportID);
     void sendFeatureReport(quint8 reportID, const QByteArray& reportData);
     QByteArray getFeatureReport(quint8 reportID);
