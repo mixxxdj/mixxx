@@ -11,7 +11,6 @@ class HidIoOutputReport {
 
     /// Caches new report data, which will later send by the IO thread
     void updateCachedData(const QByteArray& data,
-
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput,
             bool resendUnchangedReport);
@@ -28,12 +27,11 @@ class HidIoOutputReport {
     QByteArray m_lastSentData;
 
     /// Mutex must be locked when reading/writing m_cachedData
-    /// or m_possiblyUnsentDataCached, m_resendUnchangedReport
+    /// or m_possiblyUnsentDataCached
     QMutex m_cachedDataMutex;
 
     QByteArray m_cachedData;
     bool m_possiblyUnsentDataCached;
-    bool m_resendUnchangedReport;
 
     /// Due to swapping of the QbyteArrays, we need to store
     /// this information independent of the QBytearray size
