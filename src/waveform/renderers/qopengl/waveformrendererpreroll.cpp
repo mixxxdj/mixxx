@@ -101,15 +101,17 @@ void WaveformRendererPreroll::renderGL() {
                     numberOfVSamples * playMarkerPositionFrac -
                     currentVSamplePosition;
 
-            float x = triangleTipVSamplePosition / vSamplesPerPixel;
+            double x = triangleTipVSamplePosition / vSamplesPerPixel;
 
             for (; triangleTipVSamplePosition > 0;
                     triangleTipVSamplePosition -= polyVSampleOffset) {
-                m_vertices[vertexCount++] = x;
+                const float x1 = static_cast<float>(x);
+                const float x2 = static_cast<float>(x - polyPixelWidth);
+                m_vertices[vertexCount++] = x1;
                 m_vertices[vertexCount++] = halfBreadth;
-                m_vertices[vertexCount++] = x - polyPixelWidth;
+                m_vertices[vertexCount++] = x2;
                 m_vertices[vertexCount++] = halfBreadth - halfPolyBreadth;
-                m_vertices[vertexCount++] = x - polyPixelWidth;
+                m_vertices[vertexCount++] = x2;
                 m_vertices[vertexCount++] = halfBreadth + halfPolyBreadth;
 
                 x -= polyPixelOffset;
@@ -123,15 +125,17 @@ void WaveformRendererPreroll::renderGL() {
                     playMarkerPositionFrac * numberOfVSamples +
                     remainingVSamples;
 
-            float x = triangleTipVSamplePosition / vSamplesPerPixel;
+            double x = triangleTipVSamplePosition / vSamplesPerPixel;
 
             for (; triangleTipVSamplePosition < numberOfVSamples;
                     triangleTipVSamplePosition += polyVSampleOffset) {
-                m_vertices[vertexCount++] = x;
+                const float x1 = static_cast<float>(x);
+                const float x2 = static_cast<float>(x + polyPixelWidth);
+                m_vertices[vertexCount++] = x1;
                 m_vertices[vertexCount++] = halfBreadth;
-                m_vertices[vertexCount++] = x + polyPixelWidth;
+                m_vertices[vertexCount++] = x2;
                 m_vertices[vertexCount++] = halfBreadth - halfPolyBreadth;
-                m_vertices[vertexCount++] = x + polyPixelWidth;
+                m_vertices[vertexCount++] = x2;
                 m_vertices[vertexCount++] = halfBreadth + halfPolyBreadth;
 
                 x += polyPixelOffset;

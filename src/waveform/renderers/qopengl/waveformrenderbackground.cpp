@@ -35,9 +35,9 @@ void WaveformRenderBackground::renderGL() {
     // If there is no background image, just fill the painter with the
     // background color.
     if (m_backgroundImage.isNull()) {
-        glClearColor(m_backgroundColor.redF(),
-                m_backgroundColor.greenF(),
-                m_backgroundColor.blueF(),
+        glClearColor(static_cast<float>(m_backgroundColor.redF()),
+                static_cast<float>(m_backgroundColor.greenF()),
+                static_cast<float>(m_backgroundColor.blueF()),
                 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
         return;

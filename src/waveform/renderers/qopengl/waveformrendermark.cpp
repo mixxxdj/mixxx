@@ -131,15 +131,15 @@ void qopengl::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* 
     const float texy2 = 1.f;
 
     const float posx1 = x;
-    const float posx2 = x + texture->width() / devicePixelRatio;
+    const float posx2 = x + static_cast<float>(texture->width() / devicePixelRatio);
     const float posy1 = y;
-    const float posy2 = y + texture->height() / devicePixelRatio;
+    const float posy2 = y + static_cast<float>(texture->height() / devicePixelRatio);
 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
     const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
 
     QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
+    matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
 
     m_textureShaderProgram.bind();
 
@@ -171,16 +171,16 @@ void qopengl::WaveformRenderMark::fillRectWithGradient(
     const float grdx2 = orientation == Qt::Horizontal ? 1.f : 0.f;
     const float grdy2 = orientation == Qt::Vertical ? 1.f : 0.f;
 
-    const float posx1 = rect.x();
-    const float posx2 = rect.x() + rect.width();
-    const float posy1 = rect.y();
-    const float posy2 = rect.y() + rect.height();
+    const float posx1 = static_cast<float>(rect.x());
+    const float posx2 = static_cast<float>(rect.x() + rect.width());
+    const float posy1 = static_cast<float>(rect.y());
+    const float posy2 = static_cast<float>(rect.y() + rect.height());
 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
     const float grdarray[] = {grdx1, grdy1, grdx2, grdy1, grdx1, grdy2, grdx2, grdy2};
 
     QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
+    matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
     m_gradientShaderProgram.bind();
 
     int matrixLocation = m_gradientShaderProgram.uniformLocation("matrix");
@@ -225,11 +225,10 @@ void qopengl::WaveformRenderMark::renderGL() {
 
         const double samplePosition = pMark->getSamplePosition();
         if (samplePosition != Cue::kNoPosition) {
-            double currentMarkPoint =
-                    m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
+            const float currentMarkPoint = std::floor(static_cast<float>(
+                    m_waveformRenderer->transformSamplePositionInRendererWorld(
+                            samplePosition)));
             const double sampleEndPosition = pMark->getSampleEndPosition();
-
-            currentMarkPoint = std::floor(currentMarkPoint);
 
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // Pixmaps are expected to have the mark stroke at the center,
@@ -250,11 +249,11 @@ void qopengl::WaveformRenderMark::renderGL() {
                 // Check if the range needs to be displayed.
                 if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
                     DEBUG_ASSERT(samplePosition < sampleEndPosition);
-                    double currentMarkEndPoint =
-                            m_waveformRenderer->transformSamplePositionInRendererWorld(
-                                    sampleEndPosition);
-
-                    currentMarkEndPoint = std::floor(currentMarkEndPoint);
+                    const float currentMarkEndPoint = std::floor(static_cast<
+                            float>(
+                            m_waveformRenderer
+                                    ->transformSamplePositionInRendererWorld(
+                                            sampleEndPosition)));
 
                     if (visible || currentMarkEndPoint > 0) {
                         QColor color = pMark->fillColor();
@@ -290,15 +289,16 @@ void qopengl::WaveformRenderMark::renderGL() {
                 // Check if the range needs to be displayed.
                 if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
                     DEBUG_ASSERT(samplePosition < sampleEndPosition);
-                    double currentMarkEndPoint =
+                    const float currentMarkEndPoint = std::floor(static_cast<
+                            float>(
                             m_waveformRenderer
                                     ->transformSamplePositionInRendererWorld(
-                                            sampleEndPosition);
+                                            sampleEndPosition)));
                     if (currentMarkEndPoint < m_waveformRenderer->getHeight()) {
                         QColor color = pMark->fillColor();
                         color.setAlphaF(0.4);
                         fillRectWithGradient(
-                                QRectF(QPointF(0, currentMarkPoint),
+                                QRectF(QPointF(0.0, currentMarkPoint),
                                         QPointF(m_waveformRenderer->getWidth(),
                                                 currentMarkEndPoint)),
                                 color,
@@ -316,12 +316,12 @@ void qopengl::WaveformRenderMark::renderGL() {
     m_waveformRenderer->setMarkPositions(marksOnScreen);
 
     // TODO orientation
-    double currentMarkPoint = m_waveformRenderer->getPlayMarkerPosition() *
-            m_waveformRenderer->getWidth();
-    currentMarkPoint = std::floor(currentMarkPoint);
+    const float currentMarkPoint = std::floor(
+            static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
+                    m_waveformRenderer->getWidth()));
 
     const float markHalfWidth = m_pPlayPosMarkTexture->width() / devicePixelRatio / 2.f;
-    const float drawOffset = static_cast<float>(currentMarkPoint) - markHalfWidth;
+    const float drawOffset = currentMarkPoint - markHalfWidth;
 
     drawTexture(drawOffset, 0.f, m_pPlayPosMarkTexture.get());
 }
@@ -330,22 +330,22 @@ void qopengl::WaveformRenderMark::generatePlayPosMarkTexture() {
     float imgwidth;
     float imgheight;
 
-    const auto width = m_waveformRenderer->getWidth();
-    const auto height = m_waveformRenderer->getHeight();
+    const float width = m_waveformRenderer->getWidth();
+    const float height = m_waveformRenderer->getHeight();
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
     //    const auto playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
     const auto orientation = m_waveformRenderer->getOrientation();
 
-    const float lineX = 5.5;
-    const float lineY = 5.5;
+    const float lineX = 5.5f;
+    const float lineY = 5.5f;
 
     if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-        imgwidth = 11;
+        imgwidth = 11.f;
         imgheight = height;
     } else {
         imgwidth = width;
-        imgheight = 11;
+        imgheight = 11.f;
     }
 
     QImage image(static_cast<int>(imgwidth * devicePixelRatio),
@@ -570,8 +570,8 @@ void qopengl::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
                 static_cast<float>(wordRect.height()));
         // even wordrect to have an even Image >> draw the line in the middle !
 
-        float labelRectWidth = wordRectF.width() + 2 * marginX + 4;
-        float labelRectHeight = wordRectF.height() + 2 * marginY + 4;
+        float labelRectWidth = static_cast<float>(wordRectF.width()) + 2.f * marginX + 4.f;
+        float labelRectHeight = static_cast<float>(wordRectF.height()) + 2.f * marginY + 4.f;
 
         QRectF labelRect(0.f, 0.f, labelRectWidth, labelRectHeight);
 

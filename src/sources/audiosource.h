@@ -311,12 +311,13 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
 
     bool initSampleRateOnce(audio::SampleRate sampleRate);
     bool initSampleRateOnce(SINT sampleRate) {
-        return initSampleRateOnce(audio::SampleRate(sampleRate));
+        return initSampleRateOnce(audio::SampleRate(
+                static_cast<audio::SampleRate::value_t>(sampleRate)));
     }
 
     bool initBitrateOnce(audio::Bitrate bitrate);
     bool initBitrateOnce(SINT bitrate) {
-        return initBitrateOnce(audio::Bitrate(bitrate));
+        return initBitrateOnce(audio::Bitrate(static_cast<audio::Bitrate::value_t>(bitrate)));
     }
 
     bool initFrameIndexRangeOnce(

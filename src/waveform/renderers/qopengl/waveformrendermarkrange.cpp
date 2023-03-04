@@ -44,10 +44,10 @@ void main()
 
 void qopengl::WaveformRenderMarkRange::fillRect(
         const QRectF& rect, QColor color) {
-    const float posx1 = rect.x();
-    const float posx2 = rect.x() + rect.width();
-    const float posy1 = rect.y();
-    const float posy2 = rect.y() + rect.height();
+    const float posx1 = static_cast<float>(rect.x());
+    const float posx2 = static_cast<float>(rect.x() + rect.width());
+    const float posy1 = static_cast<float>(rect.y());
+    const float posy2 = static_cast<float>(rect.y() + rect.height());
 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
 
@@ -86,7 +86,7 @@ void qopengl::WaveformRenderMarkRange::renderGL() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
+    matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
     m_shaderProgram.bind();
 
     int matrixLocation = m_shaderProgram.uniformLocation("matrix");

@@ -130,6 +130,16 @@ void WaveformRendererRGB::renderGL() {
 
     const float heightFactor = allGain * halfBreadth / std::sqrt(3.f * 256.f * 256.f);
 
+    const float low_r = static_cast<float>(m_rgbLowColor_r);
+    const float mid_r = static_cast<float>(m_rgbMidColor_r);
+    const float high_r = static_cast<float>(m_rgbHighColor_r);
+    const float low_g = static_cast<float>(m_rgbLowColor_g);
+    const float mid_g = static_cast<float>(m_rgbMidColor_g);
+    const float high_g = static_cast<float>(m_rgbHighColor_g);
+    const float low_b = static_cast<float>(m_rgbLowColor_b);
+    const float mid_b = static_cast<float>(m_rgbMidColor_b);
+    const float high_b = static_cast<float>(m_rgbHighColor_b);
+
     // Effective visual index of x
     double xVisualSampleIndex = firstVisualIndex;
 
@@ -212,12 +222,13 @@ void WaveformRendererRGB::renderGL() {
         maxLow *= lowGain;
         maxMid *= midGain;
         maxHigh *= highGain;
-        float red = maxLow * m_rgbLowColor_r + maxMid * m_rgbMidColor_r +
-                maxHigh * m_rgbHighColor_r;
-        float green = maxLow * m_rgbLowColor_g + maxMid * m_rgbMidColor_g +
-                maxHigh * m_rgbHighColor_g;
-        float blue = maxLow * m_rgbLowColor_b + maxMid * m_rgbMidColor_b +
-                maxHigh * m_rgbHighColor_b;
+
+        float red = maxLow * low_r + maxMid * mid_r +
+                maxHigh * high_r;
+        float green = maxLow * low_g + maxMid * mid_g +
+                maxHigh * high_g;
+        float blue = maxLow * low_b + maxMid * mid_b +
+                maxHigh * high_b;
 
         // Normalize red, green, blue, using the maximum of the three
 
@@ -250,7 +261,7 @@ void WaveformRendererRGB::renderGL() {
     }
 
     QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0, 0, n, m_waveformRenderer->getHeight()));
+    matrix.ortho(QRectF(0.0, 0.0, n, m_waveformRenderer->getHeight()));
 
     m_shaderProgram.bind();
 

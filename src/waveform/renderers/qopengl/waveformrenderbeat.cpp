@@ -103,19 +103,22 @@ void WaveformRenderBeat::renderGL() {
             m_beatLineVertices.resize(m_beatLineVertices.size() * 2);
         }
 
-        xBeatPoint -= 0.5f;
+        xBeatPoint -= 0.5;
 
-        m_beatLineVertices[vertexCount++] = xBeatPoint;
+        const float x1 = static_cast<float>(xBeatPoint);
+        const float x2 = x1 + 1.f;
+
+        m_beatLineVertices[vertexCount++] = x1;
         m_beatLineVertices[vertexCount++] = 0.f;
-        m_beatLineVertices[vertexCount++] = xBeatPoint + 1.f;
+        m_beatLineVertices[vertexCount++] = x2;
         m_beatLineVertices[vertexCount++] = 0.f;
-        m_beatLineVertices[vertexCount++] = xBeatPoint;
+        m_beatLineVertices[vertexCount++] = x1;
         m_beatLineVertices[vertexCount++] = rendererHeight;
-        m_beatLineVertices[vertexCount++] = xBeatPoint;
+        m_beatLineVertices[vertexCount++] = x1;
         m_beatLineVertices[vertexCount++] = rendererHeight;
-        m_beatLineVertices[vertexCount++] = xBeatPoint + 1.f;
+        m_beatLineVertices[vertexCount++] = x2;
         m_beatLineVertices[vertexCount++] = rendererHeight;
-        m_beatLineVertices[vertexCount++] = xBeatPoint + 1.f;
+        m_beatLineVertices[vertexCount++] = x2;
         m_beatLineVertices[vertexCount++] = 0.f;
     }
     m_shaderProgram.bind();
@@ -125,7 +128,7 @@ void WaveformRenderBeat::renderGL() {
     int colorLocation = m_shaderProgram.uniformLocation("color");
 
     QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
+    matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
 
     m_shaderProgram.enableAttributeArray(vertexLocation);
     m_shaderProgram.setAttributeArray(
