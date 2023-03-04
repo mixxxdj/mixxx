@@ -29,6 +29,7 @@ HidIoOutputReport::HidIoOutputReport(
 void HidIoOutputReport::updateCachedData(const QByteArray& data,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput,
+        HidIoGlobalOutputReportFifo* pGlobalOutputReportFifo,
         bool useNonSkippingFIFO) {
     auto cacheLock = lockMutex(&m_cachedDataMutex);
 
@@ -37,7 +38,7 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
         m_lastCachedDataSize = data.size();
 
     } else {
-        if (m_possiblyUnsentDataCached) {
+        if (m_possiblyUnsentDataCached && !useNonSkippingFIFO) {
             qCDebug(logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
                                << "skipped superseded OutputReport data for ReportID"
                                << m_reportId;
@@ -52,6 +53,15 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
                     << "- This indicates a bug in the mapping code!";
             m_lastCachedDataSize = data.size();
         }
+    }
+
+    // m_possiblyUnsentDataCached must be set while m_cachedDataMutex is locked
+    // This step covers the case that data for the report are cached in skipping mode,
+    // succeed by a non-skipping send of the same report
+    if (useNonSkippingFIFO) {
+        m_possiblyUnsentDataCached = false;
+        m_lastSentData.clear();
+        return;
     }
 
     // Deep copy with reusing the already allocated heap memory

@@ -43,6 +43,7 @@ HidIoThread::HidIoThread(
           m_pHidDevice(pHidDevice),
           m_lastPollSize(0),
           m_pollingBufferIndex(0),
+          m_globalOutputReportFifo(),
           m_runLoopSemaphore(1) {
     // Initializing isn't strictly necessary but is good practice.
     for (int i = 0; i < kNumBuffers; i++) {
@@ -204,11 +205,30 @@ void HidIoThread::updateCachedOutputReportData(quint8 reportID,
 
     mapLock.unlock();
 
+    // If useNonSkippingFIFO is false, the report data are cached here
+    // If useNonSkippingFIFO is true, this cache is cleared
     actualOutputReportIterator->second->updateCachedData(
-            data, m_deviceInfo, m_logOutput, useNonSkippingFIFO);
+            data, m_deviceInfo, m_logOutput, &m_globalOutputReportFifo, useNonSkippingFIFO);
+
+    // If useNonSkippingFIFO is true, put the new report dataset on the FIFO
+    if (useNonSkippingFIFO) {
+        m_globalOutputReportFifo.addReportDatasetToFifo(reportID, data, m_deviceInfo, m_logOutput);
+    }
 }
 
 bool HidIoThread::sendNextCachedOutputReport() {
+    // 1.) Send non-skipping reports from FIFO
+    if (m_globalOutputReportFifo.sendNextReportDataset(&m_hidDeviceAndPollMutex,
+                m_pHidDevice,
+                m_deviceInfo,
+                m_logOutput)) {
+        // Return after each time consuming sendCachedData
+        return true;
+    }
+
+    // 2.) If non non-skipping reports were in the FIFO, send the skipable reports
+    // from the m_outputReports cache
+
     // m_outputReports.size() doesn't need mutex protection, because the value of i is not used.
     // i is just a counter to prevent infinite loop execution.
     // If the map size increases, this loop will execute one iteration more,
