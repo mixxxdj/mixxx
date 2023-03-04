@@ -70,7 +70,10 @@ void main()
 }
 
 void WVuMeterGL::renderGL() {
-    glClearColor(m_qBgColor.redF(), m_qBgColor.greenF(), m_qBgColor.blueF(), 1.f);
+    glClearColor(static_cast<float>(m_qBgColor.redF()),
+            static_cast<float>(m_qBgColor.greenF()),
+            static_cast<float>(m_qBgColor.blueF()),
+            1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glDisable(GL_DEPTH_TEST);
@@ -175,15 +178,17 @@ void WVuMeterGL::cleanupGL() {
 void WVuMeterGL::drawTexture(QOpenGLTexture* texture,
         const QRectF& targetRect,
         const QRectF& sourceRect) {
-    const float texx1 = sourceRect.x() / texture->width();
-    const float texy1 = sourceRect.y() / texture->height();
-    const float texx2 = (sourceRect.x() + sourceRect.width()) / texture->width();
-    const float texy2 = (sourceRect.y() + sourceRect.height()) / texture->height();
+    const float texx1 = static_cast<float>(sourceRect.x() / texture->width());
+    const float texy1 = static_cast<float>(sourceRect.y() / texture->height());
+    const float texx2 = static_cast<float>(
+            (sourceRect.x() + sourceRect.width()) / texture->width());
+    const float texy2 = static_cast<float>(
+            (sourceRect.y() + sourceRect.height()) / texture->height());
 
-    const float posx1 = targetRect.x();
-    const float posy1 = targetRect.y();
-    const float posx2 = targetRect.x() + targetRect.width();
-    const float posy2 = targetRect.y() + targetRect.height();
+    const float posx1 = static_cast<float>(targetRect.x());
+    const float posy1 = static_cast<float>(targetRect.y());
+    const float posx2 = static_cast<float>(targetRect.x() + targetRect.width());
+    const float posy2 = static_cast<float>(targetRect.y() + targetRect.height());
 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
     const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
