@@ -196,13 +196,13 @@ void WaveformRendererRGB::renderGL() {
             const WaveformData& waveformData = data[i];
             const WaveformData& waveformDataNext = data[i + 1];
 
-            const float filteredLow = static_cast<const float>(waveformData.filtered.low);
-            const float filteredMid = static_cast<const float>(waveformData.filtered.mid);
-            const float filteredHigh = static_cast<const float>(waveformData.filtered.high);
+            const float filteredLow = static_cast<float>(waveformData.filtered.low);
+            const float filteredMid = static_cast<float>(waveformData.filtered.mid);
+            const float filteredHigh = static_cast<float>(waveformData.filtered.high);
 
-            const float nextFilteredLow = static_cast<const float>(waveformDataNext.filtered.low);
-            const float nextFilteredMid = static_cast<const float>(waveformDataNext.filtered.mid);
-            const float nextFilteredHigh = static_cast<const float>(waveformDataNext.filtered.high);
+            const float nextFilteredLow = static_cast<float>(waveformDataNext.filtered.low);
+            const float nextFilteredMid = static_cast<float>(waveformDataNext.filtered.mid);
+            const float nextFilteredHigh = static_cast<float>(waveformDataNext.filtered.high);
 
             maxLow = math_max3(maxLow, filteredLow, nextFilteredLow);
             maxMid = math_max3(maxMid, filteredMid, nextFilteredMid);
