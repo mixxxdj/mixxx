@@ -1,6 +1,8 @@
+#include <QMouseEvent>
 #include <QResizeEvent>
 
 #include "widget/openglwindow.h"
+#include "widget/tooltipqopengl.h"
 #include "widget/wglwidget.h"
 
 WGLWidget::WGLWidget(QWidget* parent)
@@ -8,6 +10,7 @@ WGLWidget::WGLWidget(QWidget* parent)
 }
 
 WGLWidget::~WGLWidget() {
+    ToolTipQOpenGL::singleton()->stop(this);
     if (m_pOpenGLWindow) {
         m_pOpenGLWindow->widgetDestroyed();
     }
@@ -24,6 +27,7 @@ void WGLWidget::showEvent(QShowEvent* event) {
         m_pContainerWidget = createWindowContainer(m_pOpenGLWindow, this);
         m_pContainerWidget->resize(size());
         m_pContainerWidget->show();
+        m_pContainerWidget->setAutoFillBackground(true);
     }
     QWidget::showEvent(event);
 }
@@ -35,6 +39,12 @@ void WGLWidget::resizeEvent(QResizeEvent* event) {
 }
 
 void WGLWidget::handleEventFromWindow(QEvent* e) {
+    if (e->type() == QEvent::MouseMove) {
+        ToolTipQOpenGL::singleton()->start(this, dynamic_cast<QMouseEvent*>(e)->globalPos());
+    }
+    if (e->type() == QEvent::Leave) {
+        ToolTipQOpenGL::singleton()->stop(this);
+    }
     event(e);
 }
 

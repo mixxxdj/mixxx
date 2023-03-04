@@ -47,6 +47,7 @@ bool OpenGLWindow::event(QEvent* ev) {
         // Forward the following events to the WGLWidget
         if (t == QEvent::MouseButtonDblClick || t == QEvent::MouseButtonPress ||
                 t == QEvent::MouseButtonRelease || t == QEvent::MouseMove ||
+                t == QEvent::Enter || t == QEvent::Leave ||
                 t == QEvent::DragEnter || t == QEvent::DragLeave ||
                 t == QEvent::DragMove || t == QEvent::Drop || t == QEvent::Wheel) {
             m_pWidget->handleEventFromWindow(ev);

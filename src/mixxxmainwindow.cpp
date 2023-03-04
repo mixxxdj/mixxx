@@ -5,7 +5,9 @@
 
 #include "widget/wglwidget.h"
 
-#ifndef MIXXX_USE_QOPENGL
+#ifdef MIXXX_USE_QOPENGL
+#include "widget/tooltipqopengl.h"
+#else
 #include <QGLFormat>
 #endif
 
@@ -153,6 +155,9 @@ void MixxxMainWindow::initialize() {
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
             pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
                     static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+#ifdef MIXXX_USE_QOPENGL
+    ToolTipQOpenGL::singleton()->setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+#endif
 
 #ifdef __ENGINEPRIME__
     // Initialise library exporter
@@ -466,6 +471,9 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pGuiTick;
     delete m_pVisualsManager;
+#ifdef MIXXX_USE_QOPENGL
+    delete ToolTipQOpenGL::singleton();
+#endif
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -1035,6 +1043,9 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
     m_toolTipsCfg = tt;
+#ifdef MIXXX_USE_QOPENGL
+    ToolTipQOpenGL::singleton()->setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+#endif
 }
 
 void MixxxMainWindow::rebootMixxxView() {
