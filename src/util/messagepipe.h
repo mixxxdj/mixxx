@@ -82,16 +82,16 @@ class TwoWayMessagePipe {
                         sender_fifo_size, receiver_fifo_size));
 
         return {
-                std::move(std::make_unique<MessagePipe<SenderMessageType, ReceiverMessageType>>(
+                std::make_unique<MessagePipe<SenderMessageType, ReceiverMessageType>>(
                         pipe->m_receiver_messages,
                         pipe->m_sender_messages,
                         new ReferenceHolder<TwoWayMessagePipe<SenderMessageType,
-                                ReceiverMessageType>>(pipe))),
-                std::move(std::make_unique<MessagePipe<ReceiverMessageType, SenderMessageType>>(
+                                ReceiverMessageType>>(pipe)),
+                std::make_unique<MessagePipe<ReceiverMessageType, SenderMessageType>>(
                         pipe->m_sender_messages,
                         pipe->m_receiver_messages,
                         new ReferenceHolder<TwoWayMessagePipe<SenderMessageType,
-                                ReceiverMessageType>>(pipe)))};
+                                ReceiverMessageType>>(pipe))};
     }
 
   private:
