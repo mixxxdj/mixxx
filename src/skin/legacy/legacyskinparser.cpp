@@ -717,7 +717,6 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
     ControlObject* pNextControl = controlFromConfigNode(node.toElement(), "NextControl");
-    ;
     ConfigKey nextConfigKey;
     if (pNextControl != nullptr) {
         nextConfigKey = pNextControl->getKey();

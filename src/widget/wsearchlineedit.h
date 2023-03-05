@@ -73,7 +73,5 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     parented_ptr<QToolButton> const m_clearButton;
 
     int m_frameWidth;
-    int m_innerHeight;
-
     QTimer m_debouncingTimer;
 };
