@@ -143,6 +143,7 @@ void WCoverArt::slotReset() {
 }
 
 void WCoverArt::slotTrackCoverArtUpdated() {
+    qWarning() << "   CoverArt cover update";
     if (m_loadedTrack) {
         CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
@@ -156,21 +157,25 @@ void WCoverArt::slotCoverFound(
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
-    if (!m_bEnable) {
+    if (!m_bEnable ||
+            pRequestor != this ||
+            !m_loadedTrack ||
+            m_loadedTrack->getLocation() != coverInfo.trackLocation) {
         return;
     }
 
-    if (pRequestor == this &&
-            m_loadedTrack &&
-            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
-        m_lastRequestedCover = coverInfo;
-        m_loadedCover = pixmap;
-        m_loadedCoverScaled = scaledCoverArt(pixmap);
-        update();
+    qWarning() << "    CoverArt cover found";
+    m_lastRequestedCover = coverInfo;
+    m_loadedCover = pixmap;
+    m_loadedCoverScaled = scaledCoverArt(pixmap);
+    update();
+    if (m_pDlgFullSize->isVisible()) {
+        m_pDlgFullSize->showTrackCoverArt(m_loadedTrack);
     }
 }
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
+    qWarning() << "   CoverArt load track";
     if (m_loadedTrack) {
         disconnect(m_loadedTrack.get(),
                 &Track::coverArtUpdated,
@@ -186,6 +191,8 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
                 &Track::coverArtUpdated,
                 this,
                 &WCoverArt::slotTrackCoverArtUpdated);
+    } else {
+        qWarning() << "            track == NULL";
     }
 
     if (!m_bEnable) {
@@ -265,15 +272,15 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
     }
 
     if (event->button() == Qt::LeftButton && m_loadedTrack &&
-            m_clickTimer.isActive()) { // init/close fullsize cover
+            m_clickTimer.isActive()) { // show/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else if (!m_loadedCover.isNull()) {
             // Only show the fullsize cover art dialog if the current track
-            // actually has a cover.  The `init` method already shows the
-            // window and then emits a signal to load the cover, so this can't
-            // be handled by the method itself.
-            m_pDlgFullSize->init(m_loadedTrack);
+            // actually has a cover. showTrackCoverArt first shows the
+            // window and then emits a signal to load the cover, though hide()
+            // after pixmap.isNull() doesn't work unfortunately
+            m_pDlgFullSize->showTrackCoverArt(m_loadedTrack);
         }
     } // else it was a long leftclick or a right click that's already been processed
 }

@@ -7,6 +7,7 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dlgtrackinfo.h"
 #include "moc_dlgcoverartfullsize.cpp"
 #include "track/track.h"
 #include "util/widgethelper.h"
@@ -18,7 +19,8 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
         : QDialog(parent),
           m_pPlayer(pPlayer),
           m_pCoverMenu(pCoverMenu),
-          m_coverPressed(false) {
+          m_coverPressed(false),
+          m_wasVisible(false) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -32,7 +34,13 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
             &DlgCoverArtFullSize::customContextMenuRequested,
             this,
             &DlgCoverArtFullSize::slotCoverMenu);
-    if (m_pCoverMenu != nullptr) {
+
+    qWarning() << "       FullSize::";
+    // Only connect to the menu signals if this is not a grandchild of DlgTrackInfo.
+    // DlgTrackInfo is already connected to these signals, and catching these signals
+    // here would apply cover changes immediately, thus circumvent the Apply button there.
+    if (m_pCoverMenu && !(parent && qobject_cast<DlgTrackInfo*>(parent->parent()))) {
+        qWarning() << "                  connect to cover menu signals";
         connect(m_pCoverMenu,
                 &WCoverArtMenu::coverInfoSelected,
                 this,
@@ -41,9 +49,13 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
                 &WCoverArtMenu::reloadCoverArt,
                 this,
                 &DlgCoverArtFullSize::slotReloadCoverArt);
+    } else if (m_pCoverMenu) {
+        qWarning() << "                  dlgTI, don't connect to cover menu signals";
+    } else {
+        qWarning() << "                  no cover menu to connect to";
     }
 
-    if (m_pPlayer != nullptr) {
+    if (m_pPlayer) {
         connect(pPlayer,
                 &BaseTrackPlayer::newTrackLoaded,
                 this,
@@ -54,10 +66,16 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
 }
 
 void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
+    qWarning() << "   FullSize closeEvent";
     if (parentWidget()) {
         // Since the widget has a parent, this instance will be reused again.
         // We need to prevent qt from destroying it's children
+        m_wasVisible = false;
         hide();
+        // If you zoom in so the window is larger then the desktop, close the
+        // window and reopen, the window will not be resized correctly
+        // by slotCoverFound. Setting a small fixed size when hiding fixes this.
+        resize(100, 100);
         slotLoadTrack(nullptr);
         event->ignore();
     } else {
@@ -65,29 +83,58 @@ void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
     }
 }
 
-void DlgCoverArtFullSize::init(TrackPointer pTrack) {
+void DlgCoverArtFullSize::showTrackCoverArt(TrackPointer pTrack) {
+    qWarning() << "   FullSize show from track";
     if (!pTrack) {
+        qWarning() << "   FullSize show from track";
+        qWarning() << "            track == NULL";
         return;
     }
-    // The real size will be calculated later.
-    // If you zoom in so the window is larger then the desktop, close the
-    // window and reopen, the window will not be resized correctly
-    // by slotCoverFound. Setting a small fixed size before show fixes this
-    resize(100, 100);
     show();
     raise();
-    activateWindow();
+    if (!m_wasVisible) {
+        // Only activate (set keyboard focus) if this wasn't visible before.
+        // This will e.g. keep the tracks table focused when scrolling through tracks.
+        activateWindow();
+    }
 
-    // This must be called after show() to set the window title. Refer to the
-    // comment in slotLoadTrack for details.
-    slotLoadTrack(pTrack);
+    loadTrack(pTrack);
+    setWindowTitleFromTrack();
+    slotTrackCoverArtUpdated();
+    // slotCoverFound() calls adjustImageAndDialogSize()
 }
 
-void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
+void DlgCoverArtFullSize::showTrackCoverArt(TrackPointer pTrack,
+        const CoverInfo& coverInfo) {
+    qWarning() << "   FullSize show from coverInfo";
+    qWarning() << "       type:" << static_cast<int>(coverInfo.type)
+               << "hasTrLoc:" << bool(!coverInfo.trackLocation.isEmpty())
+               << "hasImg:" << coverInfo.hasImage();
+    if (!pTrack) {
+        qWarning() << "            track == NULL";
+        return;
+    }
+
+    show();
+    raise();
+    if (!m_wasVisible) {
+        activateWindow();
+    }
+
+    loadTrack(pTrack);
+    setWindowTitleFromTrack();
+    if (coverInfo.trackLocation.isEmpty() || !coverInfo.hasImage()) {
+        m_pixmap = QPixmap();
+        adjustImageAndDialogSize();
+    } else {
+        CoverArtCache::requestCover(this, coverInfo);
+        // slotCoverFound() calls adjustImageAndDialogSize()
+    }
+}
+
+void DlgCoverArtFullSize::showFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
     m_pixmap.loadFromData(fetchedCoverArtBytes);
 
-    // The real size will be calculated later by adjustImageAndDialogSize().
-    resize(100, 100);
     show();
     setWindowTitle(tr("Fetched Cover Art"));
     raise();
@@ -96,63 +143,86 @@ void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtB
     adjustImageAndDialogSize();
 }
 
-void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
-    if (m_pLoadedTrack != nullptr) {
+void DlgCoverArtFullSize::loadTrack(TrackPointer pTrack) {
+    if (m_pLoadedTrack == pTrack) {
+        return;
+    }
+    if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
                 &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
     }
     m_pLoadedTrack = pTrack;
-    if (m_pLoadedTrack != nullptr) {
+    if (m_pLoadedTrack) {
         connect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
                 &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
-
-        // Somehow setting the widow title triggered a bug in Xlib that resulted
-        // in a deadlock before the check for isVisible() was added.
-        // Unfortunately the original bug was difficult to reproduce, so I am
-        // not sure if checking isVisible() before setting the window title
-        // actually works around the Xlib bug or merely makes it much less
-        // likely to be triggered. Before the isVisible() check was added,
-        // the window title was getting set on DlgCoverArtFullSize instances
-        // that had never been shown whenever a track was loaded.
-        // https://bugs.launchpad.net/mixxx/+bug/1789059
-        // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
-        if (isVisible()) {
-            QString windowTitle;
-            const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
-            const QString artist = m_pLoadedTrack->getArtist();
-            const QString album = m_pLoadedTrack->getAlbum();
-            const QString year = m_pLoadedTrack->getYear();
-            if (!albumArtist.isEmpty()) {
-                windowTitle = albumArtist;
-            } else if (!artist.isEmpty()) {
-                windowTitle += artist;
-            }
-            if (!album.isEmpty()) {
-                if (!windowTitle.isEmpty()) {
-                    windowTitle += " - ";
-                }
-                windowTitle += album;
-            }
-            if (!year.isEmpty()) {
-                if (!windowTitle.isEmpty()) {
-                    windowTitle += " ";
-                }
-                windowTitle += QString("(%1)").arg(year);
-            }
-            setWindowTitle(windowTitle);
-        }
     }
+}
+
+void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
+    if (sender()) {
+        qWarning() << "   FullSize slotLoadTrack (signal from" << sender();
+    } else {
+        qWarning() << "   FullSize slotLoadTrack (internal)";
+    }
+    if (!pTrack) {
+        qWarning() << "            track is NULL";
+    }
+    loadTrack(pTrack);
+    setWindowTitleFromTrack();
     slotTrackCoverArtUpdated();
 }
 
+void DlgCoverArtFullSize::setWindowTitleFromTrack() {
+    // Somehow setting the widow title triggered a bug in Xlib that resulted
+    // in a deadlock before the check for isVisible() was added.
+    // Unfortunately the original bug was difficult to reproduce, so I am
+    // not sure if checking isVisible() before setting the window title
+    // actually works around the Xlib bug or merely makes it much less
+    // likely to be triggered. Before the isVisible() check was added,
+    // the window title was getting set on DlgCoverArtFullSize instances
+    // that had never been shown whenever a track was loaded.
+    // https://bugs.launchpad.net/mixxx/+bug/1789059
+    // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
+    if (!isVisible() || !m_pLoadedTrack) {
+        qWarning() << "    (FullSize setWindowTitleFromTrack)";
+        return;
+    }
+    qWarning() << "    FullSize setWindowTitleFromTrack";
+    QString windowTitle;
+    const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
+    const QString artist = m_pLoadedTrack->getArtist();
+    const QString album = m_pLoadedTrack->getAlbum();
+    const QString year = m_pLoadedTrack->getYear();
+    if (!albumArtist.isEmpty()) {
+        windowTitle = albumArtist;
+    } else if (!artist.isEmpty()) {
+        windowTitle += artist;
+    }
+    if (!album.isEmpty()) {
+        if (!windowTitle.isEmpty()) {
+            windowTitle += " - ";
+        }
+        windowTitle += album;
+    }
+    if (!year.isEmpty()) {
+        if (!windowTitle.isEmpty()) {
+            windowTitle += " ";
+        }
+        windowTitle += QString("(%1)").arg(year);
+    }
+    setWindowTitle(windowTitle);
+}
+
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
+    qWarning() << "     FullSize slotTrackCoverArtUpdated";
     if (m_pLoadedTrack) {
         CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     } else {
+        qWarning() << "            track is NULL";
         coverArt->setPixmap(QPixmap());
     }
 }
@@ -169,6 +239,7 @@ void DlgCoverArtFullSize::slotCoverFound(
             m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
         return;
     }
+    qWarning() << "      FullSize coverFound";
 
     m_pixmap = pixmap;
 
@@ -177,50 +248,68 @@ void DlgCoverArtFullSize::slotCoverFound(
 
 void DlgCoverArtFullSize::adjustImageAndDialogSize() {
     if (m_pixmap.isNull()) {
+        qWarning() << "       FullSize adjustImageAndDialogSize";
+        qWarning() << "            pix == Null, hide";
         coverArt->setPixmap(QPixmap());
-        hide();
+        close();
         return;
     }
 
-    // Scale down dialog if the pixmap is larger than the screen.
+    if (!isVisible()) {
+        qWarning() << "       (FullSize adjustImageAndDialogSize)";
+        return;
+    }
+    qWarning() << "       FullSize adjustImageAndDialogSize";
+    qWarning() << "                wasVisible:" << m_wasVisible;
+    // Keep dialog position and size and fit in the image if the dialog was already
+    // visible while loading the new cover.
+    // Otherwise, try to show the cover in full size. Scale down the dialog if
+    // the pixmap is larger than the screen.
     // Use 90% of screen size instead of 100% to prevent an issue with
     // whitespace appearing on the side when resizing a window whose
     // borders touch the edges of the screen.
-    QSize dialogSize = m_pixmap.size();
-    QWidget* centerOverWidget = parentWidget();
-    VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
-        qWarning() << "DlgCoverArtFullSize does not have a parent.";
-        centerOverWidget = this;
-    }
-
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+    QSize dialogSize;
     QRect screenGeometry;
-    VERIFY_OR_DEBUG_ASSERT(pScreen) {
-        qWarning() << "Assuming screen size of 800x600px.";
-        screenGeometry = QRect(0, 0, 800, 600);
-    }
-    else {
-        screenGeometry = pScreen->geometry();
+    if (!m_wasVisible) {
+        dialogSize = m_pixmap.size();
+        QWidget* centerOverWidget = parentWidget();
+        VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
+            qWarning() << "DlgCoverArtFullSize does not have a parent.";
+            centerOverWidget = this;
+        }
+
+        const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+        VERIFY_OR_DEBUG_ASSERT(pScreen) {
+            qWarning() << "Assuming screen size of 800x600px.";
+            screenGeometry = QRect(0, 0, 800, 600);
+        }
+        else {
+            screenGeometry = pScreen->geometry();
+        }
+
+        const QSize availableScreenSpace = screenGeometry.size() * 0.9;
+        if (dialogSize.height() > availableScreenSpace.height()) {
+            dialogSize.scale(dialogSize.width(), screenGeometry.height(), Qt::KeepAspectRatio);
+        } else if (dialogSize.width() > screenGeometry.width()) {
+            dialogSize.scale(screenGeometry.width(), dialogSize.height(), Qt::KeepAspectRatio);
+        }
     }
 
-    const QSize availableScreenSpace = screenGeometry.size() * 0.9;
-    if (dialogSize.height() > availableScreenSpace.height()) {
-        dialogSize.scale(dialogSize.width(), screenGeometry.height(), Qt::KeepAspectRatio);
-    } else if (dialogSize.width() > screenGeometry.width()) {
-        dialogSize.scale(screenGeometry.width(), dialogSize.height(), Qt::KeepAspectRatio);
-    }
     QPixmap resizedPixmap = m_pixmap.scaled(size() * devicePixelRatioF(),
             Qt::KeepAspectRatio,
             Qt::SmoothTransformation);
     resizedPixmap.setDevicePixelRatio(devicePixelRatioF());
     coverArt->setPixmap(resizedPixmap);
 
-    // center the window
-    setGeometry(QStyle::alignedRect(
-            Qt::LeftToRight,
-            Qt::AlignCenter,
-            dialogSize,
-            screenGeometry));
+    if (!m_wasVisible) {
+        // center the window
+        setGeometry(QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                dialogSize,
+                screenGeometry));
+    }
+    m_wasVisible = true;
 }
 
 // slots to handle signals from the context menu
@@ -236,8 +325,11 @@ void DlgCoverArtFullSize::slotReloadCoverArt() {
 void DlgCoverArtFullSize::slotCoverInfoSelected(
         const CoverInfoRelative& coverInfo) {
     if (!m_pLoadedTrack) {
+        qWarning() << "   FullSize coverInfoSelected";
+        qWarning() << "            track == NULL";
         return;
     }
+    qWarning() << "   FullSize coverInfoSelected (other parent" << parent();
     m_pLoadedTrack->setCoverInfo(coverInfo);
 }
 
@@ -245,7 +337,7 @@ void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    if ((m_pCoverMenu != nullptr && !m_pCoverMenu->isVisible()) || m_pCoverMenu == nullptr) {
+    if ((m_pCoverMenu && !m_pCoverMenu->isVisible()) || !m_pCoverMenu) {
         m_clickTimer.setSingleShot(true);
         m_clickTimer.start(500);
         m_coverPressed = true;
@@ -260,7 +352,7 @@ void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
 
 void DlgCoverArtFullSize::mouseReleaseEvent(QMouseEvent* event) {
     m_coverPressed = false;
-    if (m_pCoverMenu != nullptr && m_pCoverMenu->isVisible()) {
+    if (m_pCoverMenu && m_pCoverMenu->isVisible()) {
         return;
     }
 
@@ -291,7 +383,7 @@ void DlgCoverArtFullSize::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void DlgCoverArtFullSize::slotCoverMenu(const QPoint& pos) {
-    if (m_pCoverMenu != nullptr) {
+    if (m_pCoverMenu) {
         m_pCoverMenu->popup(mapToGlobal(pos));
     }
 }

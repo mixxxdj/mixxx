@@ -21,8 +21,9 @@ class DlgCoverArtFullSize
             WCoverArtMenu* pCoverMenu = nullptr);
     ~DlgCoverArtFullSize() override = default;
 
-    void init(TrackPointer pTrack);
-    void initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes);
+    void showTrackCoverArt(TrackPointer pTrack);
+    void showTrackCoverArt(TrackPointer pTrack, const CoverInfo& coverInfo);
+    void showFetchedCoverArt(const QByteArray& fetchedCoverArtBytes);
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* ) override;
     void mouseMoveEvent(QMouseEvent* ) override;
@@ -39,7 +40,6 @@ class DlgCoverArtFullSize
             mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotTrackCoverArtUpdated();
-    void adjustImageAndDialogSize();
 
     // slots that handle signals from WCoverArtMenu
     void slotCoverMenu(const QPoint& pos);
@@ -47,6 +47,10 @@ class DlgCoverArtFullSize
     void slotReloadCoverArt();
 
   private:
+    void loadTrack(TrackPointer);
+    void setWindowTitleFromTrack();
+    void adjustImageAndDialogSize();
+
     QPixmap m_pixmap;
     TrackPointer m_pLoadedTrack;
     BaseTrackPlayer* m_pPlayer;
@@ -54,4 +58,5 @@ class DlgCoverArtFullSize
     QTimer m_clickTimer;
     QPoint m_dragStartPosition;
     bool m_coverPressed;
+    bool m_wasVisible;
 };

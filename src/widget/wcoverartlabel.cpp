@@ -39,13 +39,23 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent, WCoverArtMenu* pCoverMenu)
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
     setPixmap(m_defaultCover);
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this,
+            &WCoverArtLabel::customContextMenuRequested,
+            this,
+            &WCoverArtLabel::slotCoverMenu);
 }
 
 WCoverArtLabel::~WCoverArtLabel() = default;
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
         const QPixmap& px) {
-    if (m_pCoverMenu != nullptr) {
+    qWarning() << "   CoverLabel setCoverArt, coverInfo:";
+    qWarning() << "       type:" << static_cast<int>(coverInfo.type)
+               << "hasTrLoc:" << bool(!coverInfo.trackLocation.isEmpty())
+               << "hasImg:" << coverInfo.hasImage();
+    m_coverInfo = coverInfo;
+    if (m_pCoverMenu) {
         m_pCoverMenu->setCoverArt(coverInfo);
     }
     if (px.isNull()) {
@@ -63,21 +73,19 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
     frameSize += QSize(2, 2); // margin
     setMinimumSize(frameSize);
     setMaximumSize(frameSize);
+
+    // Update the full-size cover if it is visible.
+    // Used only if this belongs to DlgTrackInfo.
+    if (m_pDlgFullSize->isVisible() && m_pLoadedTrack) {
+        qWarning() << "              isVis > showTrackCover";
+        m_pDlgFullSize->showTrackCoverArt(m_pLoadedTrack, m_coverInfo);
+    }
 }
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
-    if (m_pCoverMenu == nullptr) {
-        return;
+    if (m_pCoverMenu) {
+        m_pCoverMenu->popup(mapToGlobal(pos));
     }
-    m_pCoverMenu->popup(mapToGlobal(pos));
-}
-
-void WCoverArtLabel::contextMenuEvent(QContextMenuEvent* event) {
-    if (m_pCoverMenu == nullptr) {
-        return;
-    }
-    event->accept();
-    m_pCoverMenu->popup(event->globalPos());
 }
 
 void WCoverArtLabel::loadTrack(TrackPointer pTrack) {
@@ -89,7 +97,7 @@ void WCoverArtLabel::loadData(const QByteArray& data) {
 }
 
 void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
-    if (m_pCoverMenu != nullptr && m_pCoverMenu->isVisible()) {
+    if (m_pCoverMenu && m_pCoverMenu->isVisible()) {
         return;
     }
 
@@ -100,9 +108,9 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
             if (m_loadedCover.isNull()) {
                 return;
             } else if (!m_pLoadedTrack && !m_Data.isNull()) {
-                m_pDlgFullSize->initFetchedCoverArt(m_Data);
+                m_pDlgFullSize->showFetchedCoverArt(m_Data);
             } else {
-                m_pDlgFullSize->init(m_pLoadedTrack);
+                m_pDlgFullSize->showTrackCoverArt(m_pLoadedTrack, m_coverInfo);
             }
         }
     }
