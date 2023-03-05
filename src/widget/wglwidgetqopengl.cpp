@@ -80,6 +80,10 @@ void WGLWidget::resizeGL(int w, int h) {
     // to be implemented in derived widgets if needed
 }
 
+void WGLWidget::windowExposed() {
+    // to be implemented in derived widgets if needed
+}
+
 void WGLWidget::swapBuffers() {
     if (shouldRender()) {
         m_pOpenGLWindow->context()->swapBuffers(m_pOpenGLWindow->context()->surface());

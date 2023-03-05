@@ -41,6 +41,7 @@ class WGLWidget : public QWidget {
     virtual void resizeGL(int w, int h);
     virtual void handleEventFromWindow(QEvent* ev);
     virtual void initializeGL();
+    virtual void windowExposed();
 
   protected:
     QPaintDevice* paintDevice();

@@ -7,6 +7,7 @@
 
 #ifdef MIXXX_USE_QOPENGL
 #include "widget/tooltipqopengl.h"
+#include "widget/winitialglwidget.h"
 #else
 #include <QGLFormat>
 #endif
@@ -146,6 +147,27 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
     m_pVisualsManager = new VisualsManager();
 }
 
+#ifdef MIXXX_USE_QOPENGL
+void MixxxMainWindow::initializeQOpenGL() {
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+        // This widget and its QOpenGLWindow will be used to query QOpenGL
+        // information (version, driver, etc) in WaveformWidgetFactory.
+        // The "SharedGLContext" terminology here doesn't really apply,
+        // but allows us to take advantage of the existing classes.
+        WInitialGLWidget* widget = new WInitialGLWidget(this);
+        widget->setGeometry(QRect(0, 0, 3, 3));
+        SharedGLContext::setWidget(widget);
+        // When the widget's QOpenGLWindow has been exposed, we continue
+        // with the actual initialization
+        connect(widget, &WInitialGLWidget::onWindowExposed, this, &MixxxMainWindow::initialize);
+        widget->show();
+        // note: the format is set in the WGLWidget's OpenGLWindow constructor
+    } else {
+        initialize();
+    }
+}
+#endif
+
 void MixxxMainWindow::initialize() {
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
@@ -205,19 +227,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
-#ifdef MIXXX_USE_QOPENGL
-    if (!CmdlineArgs::Instance().getSafeMode()) {
-        // This widget and its QOpenGLWindow will be used to query QOpenGL
-        // information (version, driver, etc) in WaveformWidgetFactory.
-        // The widget is temporary and will be deleted there after use.
-        // The "SharedGLContext" terminology here doesn't really apply,
-        // but allows us to take advantage of the existing classes.
-        WGLWidget* widget = new WGLWidget(this);
-        widget->setGeometry(QRect(0, 0, 3, 3));
-        SharedGLContext::setWidget(widget);
-        // note: the format is set in the WGLWidget's OpenGLWindow constructor
-    }
-#else
+#ifndef MIXXX_USE_QOPENGL
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {

@@ -59,7 +59,15 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                 &mainWindow,
                 &MixxxMainWindow::initializationProgressUpdate);
         pCoreServices->initialize(pApp);
+
+#ifdef MIXXX_USE_QOPENGL
+        // Will call initialize when the initial wglwidget's
+        // qopenglwindow has been exposed
+        mainWindow.initializeQOpenGL();
+#else
         mainWindow.initialize();
+#endif
+
         pCoreServices->getControllerManager()->setUpDevices();
 
         // If startup produced a fatal error, then don't even start the

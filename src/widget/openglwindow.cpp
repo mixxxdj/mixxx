@@ -52,6 +52,9 @@ bool OpenGLWindow::event(QEvent* ev) {
                 t == QEvent::DragMove || t == QEvent::Drop || t == QEvent::Wheel) {
             m_pWidget->handleEventFromWindow(ev);
         }
+        if (t == QEvent::Expose) {
+            m_pWidget->windowExposed();
+        }
     }
 
     return result;
