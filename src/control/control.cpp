@@ -38,6 +38,7 @@ ControlDoublePrivate::ControlDoublePrivate()
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
           // default CO is read only
           m_confirmRequired(true) {
+    m_value.setValue(0.0);
 }
 
 ControlDoublePrivate::ControlDoublePrivate(
