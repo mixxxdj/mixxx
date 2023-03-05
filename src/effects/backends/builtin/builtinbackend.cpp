@@ -27,6 +27,7 @@
 #include "effects/backends/builtin/pitchshifteffect.h"
 #include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
+#include "effects/backends/builtin/glitcheffect.h"
 
 BuiltInBackend::BuiltInBackend() {
     // Keep this list in a reasonable order
@@ -58,6 +59,7 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<TremoloEffect>();
     registerEffect<PitchShiftEffect>();
     registerEffect<DistortionEffect>();
+    registerEffect<GlitchEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(
