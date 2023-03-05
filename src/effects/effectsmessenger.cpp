@@ -4,10 +4,9 @@
 #include "engine/effects/engineeffectchain.h"
 
 EffectsMessenger::EffectsMessenger(
-        EffectsRequestPipe* pRequestPipe, EffectsResponsePipe* pResponsePipe)
+        EffectsRequestPipe* pRequestPipe)
         : m_bShuttingDown(false),
           m_pRequestPipe(pRequestPipe),
-          m_pResponsePipe(pResponsePipe),
           m_nextRequestId(0) {
 }
 

@@ -14,7 +14,7 @@
 /// for why this design is used for effects rather than alternatives.
 class EffectsMessenger {
   public:
-    EffectsMessenger(EffectsRequestPipe* pRequestPipe, EffectsResponsePipe* m_pResponsePipe);
+    EffectsMessenger(EffectsRequestPipe* pRequestPipe);
     ~EffectsMessenger();
     /// Write an EffectsRequest to the EngineEffectsManager. EffectsMessenger takes
     /// ownership of request and deletes it once a response is received.
@@ -33,7 +33,6 @@ class EffectsMessenger {
     bool m_bShuttingDown;
 
     QScopedPointer<EffectsRequestPipe> m_pRequestPipe;
-    QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
     qint64 m_nextRequestId;
     QHash<qint64, EffectsRequest*> m_activeRequests;
 };
