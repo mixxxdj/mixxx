@@ -13,9 +13,6 @@ EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
     m_effects.reserve(256);
 }
 
-EngineEffectsManager::~EngineEffectsManager() {
-}
-
 void EngineEffectsManager::onCallbackStart() {
     EffectsRequest* request = nullptr;
     while (m_pResponsePipe->readMessage(&request)) {

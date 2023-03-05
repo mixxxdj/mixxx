@@ -23,7 +23,7 @@ class EngineEffect;
 class EngineEffectsManager final : public EffectsRequestHandler {
   public:
     EngineEffectsManager(EffectsResponsePipe* pResponsePipe);
-    ~EngineEffectsManager();
+    ~EngineEffectsManager() override = default;
 
     void onCallbackStart();
 
