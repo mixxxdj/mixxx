@@ -37,6 +37,8 @@ class EffectsManager {
     EffectChainPointer getOutputEffectChain() const;
 
     EngineEffectsManager* getEngineEffectsManager() const {
+        // Must only be called from Engine classes which have a shorter
+        // lifetime than this EffectsManager. See CoreServices::finalize()
         return m_pEngineEffectsManager.get();
     }
 
