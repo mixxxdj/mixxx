@@ -217,6 +217,15 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     mixxx::Translations::initializeTranslations(
         m_pSettingsManager->settings(), pApp, args.getLocale());
 
+#ifdef __LINUX__
+    // If the desktop features a global menubar and we go fullscreen during
+    // startup, move the menubar to the window like in slotViewFullScreen()
+    bool fullscreenPref = m_pSettingsManager->settings()->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    QApplication::setAttribute(
+            Qt::AA_DontUseNativeMenuBar,
+            args.getStartInFullscreen() || fullscreenPref);
+#endif // __LINUX__
     createMenuBar();
     m_pMenuBar->hide();
 
@@ -265,13 +274,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             ConfigKey("[Config]", "StartInFullscreen"));
     if (args.getStartInFullscreen() || fullscreenPref) {
         showFullScreen();
-#ifdef __LINUX__
-        // If the desktop features a global menubar and we go fullscreen during
-        // startup, move the menubar to the window like in slotViewFullScreen()
-        if (m_pMenuBar->isNativeMenuBar()) {
-            m_pMenuBar->setNativeMenuBar(false);
-        }
-#endif
     }
 
     QString resourcePath = pConfig->getResourcePath();
@@ -1438,14 +1440,13 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
         // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
         // #885890 and Bug #1076789. Before touching anything here, please read
         // those bugs.
+        QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, true);
         createMenuBar();
         connectMenuBar();
-        if (m_pMenuBar->isNativeMenuBar()) {
-            m_pMenuBar->setNativeMenuBar(false);
-        }
 #endif
     } else {
 #ifdef __LINUX__
+        QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, false);
         createMenuBar();
         connectMenuBar();
 #endif
