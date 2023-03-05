@@ -22,7 +22,7 @@ class EngineEffect;
 ///                                      PFL switch --> QuickEffectChains & StandardEffectChains --> mix channels into headphone mix --> headphone effect processing
 class EngineEffectsManager final : public EffectsRequestHandler {
   public:
-    EngineEffectsManager(EffectsResponsePipe* pResponsePipe);
+    EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> pResponsePipe);
     ~EngineEffectsManager() override = default;
 
     void onCallbackStart();
@@ -97,7 +97,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
             bool fadeout = false);
 
-    QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
+    std::unique_ptr<EffectsResponsePipe> m_pResponsePipe;
     QHash<SignalProcessingStage, QList<EngineEffectChain*>> m_chainsByStage;
     QList<EngineEffect*> m_effects;
 

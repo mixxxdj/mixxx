@@ -4,9 +4,9 @@
 #include "engine/effects/engineeffectchain.h"
 
 EffectsMessenger::EffectsMessenger(
-        EffectsRequestPipe* pRequestPipe)
+        std::unique_ptr<EffectsRequestPipe> pRequestPipe)
         : m_bShuttingDown(false),
-          m_pRequestPipe(pRequestPipe),
+          m_pRequestPipe(std::move(pRequestPipe)),
           m_nextRequestId(0) {
 }
 
@@ -27,7 +27,7 @@ bool EffectsMessenger::writeRequest(EffectsRequest* request) {
         collectGarbage(request);
     }
 
-    if (m_pRequestPipe.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pRequestPipe) {
         delete request;
         return false;
     }
@@ -47,7 +47,7 @@ bool EffectsMessenger::writeRequest(EffectsRequest* request) {
 }
 
 void EffectsMessenger::processEffectsResponses() {
-    if (m_pRequestPipe.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pRequestPipe) {
         return;
     }
 
