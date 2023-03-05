@@ -68,7 +68,7 @@ void WSpinny::renderGL() {
 
     if (paintGhost) {
         QMatrix4x4 rotate;
-        rotate.rotate(m_fAngle, 0, 0, -1);
+        rotate.rotate(m_fGhostAngle, 0, 0, -1);
         m_shaderProgram.setUniformValue(matrixLocation, rotate);
 
         drawTexture(m_pGhostTextureScaled.get());
