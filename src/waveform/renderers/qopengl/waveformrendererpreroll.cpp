@@ -90,11 +90,6 @@ void WaveformRendererPreroll::renderGL() {
         const double polyPixelOffset = polyPixelWidth; // TODO @m0dB + painter->pen().widthF();
         const double polyVSampleOffset = polyPixelOffset * vSamplesPerPixel;
 
-        // Rotate if drawing vertical waveforms
-        // if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-        //    painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
-        //}
-
         if (preRollVisible) {
             // VSample position of the right-most triangle's tip
             double triangleTipVSamplePosition =
@@ -151,6 +146,10 @@ void WaveformRendererPreroll::renderGL() {
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
+    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
+        matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
+    }
 
     m_shaderProgram.enableAttributeArray(vertexLocation);
     m_shaderProgram.setAttributeArray(

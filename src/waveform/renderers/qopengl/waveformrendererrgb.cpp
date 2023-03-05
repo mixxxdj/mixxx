@@ -1,5 +1,7 @@
 #include "waveform/renderers/qopengl/waveformrendererrgb.h"
 
+#include <iostream>
+
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
@@ -107,8 +109,7 @@ void WaveformRendererRGB::renderGL() {
     }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int n = static_cast<int>(static_cast<float>(
-            m_waveformRenderer->getLength() * devicePixelRatio));
+    const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
 
     // Not multiplying with devicePixelRatio will also work, and on retina
     // displays 2 pixels will be used to represent each block of samples. This
@@ -119,13 +120,13 @@ void WaveformRendererRGB::renderGL() {
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
     // Represents the # of waveform data points per horizontal pixel.
-    const double gain = (lastVisualIndex - firstVisualIndex) / static_cast<double>(n);
+    const double gain = (lastVisualIndex - firstVisualIndex) / static_cast<double>(length);
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
+    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / std::sqrt(3.f * 256.f * 256.f);
@@ -146,18 +147,18 @@ void WaveformRendererRGB::renderGL() {
     m_lineIndex = 0;
     m_colorIndex = 0;
 
-    m_lines.resize(6 * 2 * (n + 1));
-    m_colors.resize(6 * 3 * (n + 1));
+    m_lines.resize(6 * 2 * (length + 1));
+    m_colors.resize(6 * 3 * (length + 1));
 
     addRectangle(0.f,
-            halfBreadth - 0.5f,
-            static_cast<float>(n),
-            halfBreadth + 0.5f,
+            halfBreadth - 0.5f * devicePixelRatio,
+            static_cast<float>(length),
+            halfBreadth + 0.5f * devicePixelRatio,
             1.f,
             1.f,
             1.f);
 
-    for (int x = 0; x < n; ++x) {
+    for (int pos = 0; pos < length; ++pos) {
         // Our current pixel (x) corresponds to a number of visual samples
         // (visualSamplerPerPixel) in our waveform object. We take the max of
         // all the data points on either side of xVisualSampleIndex within a
@@ -246,12 +247,12 @@ void WaveformRendererRGB::renderGL() {
             blue *= normFactor;
         }
 
-        const float fx = static_cast<float>(x) - 0.5f;
+        const float fpos = static_cast<float>(pos);
 
         // lines are thin rectangles
-        addRectangle(fx,
+        addRectangle(fpos - 0.5f,
                 halfBreadth - heightFactor * std::sqrt(maxAll),
-                fx + 1.f,
+                fpos + 0.5f,
                 halfBreadth + heightFactor * std::sqrt(maxAllNext),
                 red,
                 green,
@@ -261,7 +262,14 @@ void WaveformRendererRGB::renderGL() {
     }
 
     QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0.0, 0.0, n, m_waveformRenderer->getHeight()));
+    matrix.ortho(QRectF(0.0,
+            0.0,
+            m_waveformRenderer->getWidth() * devicePixelRatio,
+            m_waveformRenderer->getHeight() * devicePixelRatio));
+    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
+        matrix.translate(0.f, -m_waveformRenderer->getWidth() * devicePixelRatio, 0.f);
+    }
 
     m_shaderProgram.bind();
 

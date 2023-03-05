@@ -54,22 +54,22 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
 
 void WaveformRendererEndOfTrack::initializeGL() {
     QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
 attribute vec4 position;
-varying vec2 vposition;
+attribute float gradient;
+varying float vgradient;
 void main()
 {
-    vposition = position.xy;
+    vgradient = gradient;
     gl_Position = position;
 }
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform vec4 color;
-varying vec2 vposition;
+varying float vgradient;
 void main()
 {
-    gl_FragColor = vec4(color.x, color.y, color.z, color.w * (0.5 + 0.33 * max(0.,vposition.x)));
+    gl_FragColor = vec4(color.x, color.y, color.z, color.w * (0.5 + 0.33 * max(0.,vgradient)));
 }
 )--");
 
@@ -77,18 +77,28 @@ void main()
 }
 
 void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
-    const float posarray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
+    const float positionArray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
+    const float verticalGradientArray[] = {1.f, 1.f, -1.f, -1.f};
+    const float horizontalGradientArray[] = {-1.f, 1.f, -1.f, 1.f};
 
     m_shaderProgram.bind();
 
     int colorLocation = m_shaderProgram.uniformLocation("color");
     int positionLocation = m_shaderProgram.attributeLocation("position");
+    int gradientLocation = m_shaderProgram.attributeLocation("gradient");
 
     m_shaderProgram.setUniformValue(colorLocation, color);
 
     m_shaderProgram.enableAttributeArray(positionLocation);
     m_shaderProgram.setAttributeArray(
-            positionLocation, GL_FLOAT, posarray, 2);
+            positionLocation, GL_FLOAT, positionArray, 2);
+    m_shaderProgram.enableAttributeArray(gradientLocation);
+    m_shaderProgram.setAttributeArray(gradientLocation,
+            GL_FLOAT,
+            m_waveformRenderer->getOrientation() == Qt::Vertical
+                    ? verticalGradientArray
+                    : horizontalGradientArray,
+            1);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
@@ -97,9 +107,6 @@ void WaveformRendererEndOfTrack::renderGL() {
     if (!m_pEndOfTrackControl->toBool()) {
         return;
     }
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
@@ -112,8 +119,15 @@ void WaveformRendererEndOfTrack::renderGL() {
     const double criticalIntensity = (remainingTimeTriggerSeconds - remainingTime) /
             remainingTimeTriggerSeconds;
 
-    QColor color = m_color;
-    color.setAlphaF(criticalIntensity * blinkIntensity);
+    const double alpha = criticalIntensity * blinkIntensity;
 
-    fillWithGradient(color);
+    if (alpha != 0.0) {
+        QColor color = m_color;
+        color.setAlphaF(alpha);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        fillWithGradient(color);
+    }
 }

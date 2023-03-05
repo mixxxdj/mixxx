@@ -87,6 +87,11 @@ void qopengl::WaveformRenderMarkRange::renderGL() {
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
+    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
+        matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
+    }
+
     m_shaderProgram.bind();
 
     int matrixLocation = m_shaderProgram.uniformLocation("matrix");
@@ -126,6 +131,6 @@ void qopengl::WaveformRenderMarkRange::renderGL() {
         QColor color = markRange.enabled() ? markRange.m_activeColor : markRange.m_disabledColor;
         color.setAlphaF(0.3);
 
-        fillRect(QRectF(startPosition, 0, span, m_waveformRenderer->getHeight()), color);
+        fillRect(QRectF(startPosition, 0, span, m_waveformRenderer->getBreadth()), color);
     }
 }

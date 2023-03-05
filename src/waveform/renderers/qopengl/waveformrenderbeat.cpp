@@ -82,10 +82,7 @@ void WaveformRenderBeat::renderGL() {
     const auto endPosition = mixxx::audio::FramePos::fromEngineSamplePos(
             lastDisplayedPosition * trackSamples);
 
-    // TODO @m0dB use rendererWidth for vertical orientation
-    // and apply a 90 degrees rotation to the matrix
-    // const float rendererWidth = m_waveformRenderer->getWidth();
-    const float rendererHeight = m_waveformRenderer->getHeight();
+    const float rendererBreadth = m_waveformRenderer->getBreadth();
 
     int vertexCount = 0;
 
@@ -113,11 +110,11 @@ void WaveformRenderBeat::renderGL() {
         m_beatLineVertices[vertexCount++] = x2;
         m_beatLineVertices[vertexCount++] = 0.f;
         m_beatLineVertices[vertexCount++] = x1;
-        m_beatLineVertices[vertexCount++] = rendererHeight;
+        m_beatLineVertices[vertexCount++] = rendererBreadth;
         m_beatLineVertices[vertexCount++] = x1;
-        m_beatLineVertices[vertexCount++] = rendererHeight;
+        m_beatLineVertices[vertexCount++] = rendererBreadth;
         m_beatLineVertices[vertexCount++] = x2;
-        m_beatLineVertices[vertexCount++] = rendererHeight;
+        m_beatLineVertices[vertexCount++] = rendererBreadth;
         m_beatLineVertices[vertexCount++] = x2;
         m_beatLineVertices[vertexCount++] = 0.f;
     }
@@ -129,6 +126,10 @@ void WaveformRenderBeat::renderGL() {
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
+    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
+        matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
+    }
 
     m_shaderProgram.enableAttributeArray(vertexLocation);
     m_shaderProgram.setAttributeArray(
