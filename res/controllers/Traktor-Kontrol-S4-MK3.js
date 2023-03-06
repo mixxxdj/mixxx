@@ -104,7 +104,7 @@ const LOOP_ENCODER_SHIFTMOVE_FACTOR = 2500; // LOOP_ENCODER_SHIFTMOVE_FACTOR
 const TempoFaderSoftTakeoverColorLow = LedColors.white;
 const TempoFaderSoftTakeoverColorHigh = LedColors.green;
 
-// Define whether or not to keep LED that have only one color (reverse, flux, play) dimmed if they are inactive.
+// Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
 const KeepLEDWithOneColorDimedWhenInactive = true;
 
@@ -117,8 +117,8 @@ const UseKeylockOnMaster = false;
 const GridButtonBlinkOverBeat = false;
 
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
-// less responsive it gets in Mixxx. Default: 5
-const WheelSpeedSample = 5;
+// less responsive it gets in Mixxx. Default: 3
+const WheelSpeedSample = 3;
 
 // Make the sampler tab a beatlooproll tab instead
 // Default: false
@@ -137,8 +137,8 @@ const UseMotors = true;
 // Define how many wheel moves are sampled to compute the speed when using the motor. This is helpful to mitigate delay that
 // occurs in communication as well as Mixxx limitation to 20ms latency.
 // The more you have, the more the speed is accurate.
-// less responsive it gets in Mixxx. Default: 40
-const TurnTableSpeedSample = 40;
+// less responsive it gets in Mixxx. Default: 20
+const TurnTableSpeedSample = 20;
 
 // Define how much the wheel will resist. It is a similar setting that the Grid+Wheel in Tracktor
 // Value must defined between 0 to 1. 0 is very tight, 1 is very loose.
@@ -404,6 +404,9 @@ class ComponentContainer extends Component {
                 component.outConnect();
             }
             component.outTrigger();
+            if (component.unshift !== undefined && typeof component.unshift === "function") {
+                component.unshift();
+            }
         }
     }
     unshift() {
@@ -531,8 +534,6 @@ class Button extends Component {
             this.inBitLength = 1;
         }
     }
-    unshift() {}
-    shift() {}
     setKey(key) {
         this.inKey = key;
         if (key === this.outKey) {
@@ -540,6 +541,15 @@ class Button extends Component {
         }
         this.outDisconnect();
         this.outKey = key;
+        this.outConnect();
+        this.outTrigger();
+    }
+    setGroup(group) {
+        if (group === this.group) {
+            return;
+        }
+        this.outDisconnect();
+        this.group = group;
         this.outConnect();
         this.outTrigger();
     }
@@ -1407,7 +1417,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 outByte: io.buttons[index].outByte,
                 outPacket: outPacket,
                 onShortPress: function() {
-                    if (!this.shifted) {
+                    if (!this.shifted || this.unit.focusedEffect !== null) {
                         script.toggleControl(this.group, this.inKey);
                     }
                 },
@@ -1417,7 +1427,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
                     }
                 },
                 onShortRelease: function() {
-                    if (this.shifted) {
+                    if (this.shifted && this.unit.focusedEffect === null) {
                         script.triggerControl(this.group, "next_effect");
                     }
                 },
@@ -1447,9 +1457,18 @@ class S4Mk3EffectUnit extends ComponentContainer {
 
         const effectGroup = "[EffectRack1_EffectUnit" + this.unitNumber + "_Effect" + (this.focusedEffect + 1) + "]";
         for (const index of [0, 1, 2]) {
+            const unfocusGroup = "[EffectRack1_EffectUnit" + this.unitNumber + "_Effect" + (index + 1) + "]";
             this.buttons[index].outDisconnect();
-            this.buttons[index].group = this.focusedEffect === null ? "[EffectRack1_EffectUnit" + this.unitNumber + "_Effect" + (index + 1) + "]" : effectGroup;
+            this.buttons[index].group = this.focusedEffect === null ? unfocusGroup : effectGroup;
             this.buttons[index].inKey = this.focusedEffect === null ? "enabled" : "button_parameter" + (index + 1);
+            this.buttons[index].shift = this.focusedEffect === null ? undefined : function() {
+                this.setGroup(unfocusGroup);
+                this.setKey("enabled");
+            };
+            this.buttons[index].unshift = this.focusedEffect === null ? undefined : function() {
+                this.setGroup(effectGroup);
+                this.setKey("button_parameter" + (index + 1));
+            };
             this.buttons[index].outKey = this.buttons[index].inKey;
             this.knobs[index].group = this.buttons[index].group;
             this.knobs[index].inKey = this.focusedEffect === null ? "meta" : "parameter" + (index + 1);
@@ -1724,6 +1743,9 @@ class S4Mk3Deck extends Deck {
             key: GridButtonBlinkOverBeat ? "beat_active" : undefined,
             deck: this,
             previousMoveMode: null,
+            unshift: !GridButtonBlinkOverBeat ? function() {
+                this.output(false);
+            } : undefined,
             onShortPress: function() {
                 this.deck.libraryEncoder.gridButtonPressed = true;
             },
@@ -1785,16 +1807,20 @@ class S4Mk3Deck extends Deck {
 
         this.shiftButton = new PushButton({
             deck: this,
+            output: KeepLEDWithOneColorDimedWhenInactive ? undefined : Button.prototype.uncoloredOutput,
+            unshift: function() {
+                this.output(false);
+            },
+            shift: function() {
+                this.output(true);
+            },
             input: function(pressed) {
                 if (pressed) {
                     this.deck.shift();
-                    // This button only has one color.
-                    this.send(LedColors.white + this.brightnessOn);
                 } else {
                     this.deck.unshift();
-                    this.send(LedColors.white + this.brightnessOff);
                 }
-            },
+            }
         });
 
         this.leftEncoder = new Encoder({
@@ -2122,7 +2148,6 @@ class S4Mk3Deck extends Deck {
                 if (pad.inPacket === undefined) {
                     pad.inPacket = inPackets[1];
                 }
-                pad.unshift();
                 pad.outPacket = outPacket;
                 pad.inConnect();
                 pad.outConnect();
@@ -2225,6 +2250,10 @@ class S4Mk3Deck extends Deck {
                     this.previousMoveMode = null;
                 }
             },
+            // hack to switch the LED color when changing decks
+            outTrigger: function() {
+                this.deck.lightPadMode();
+            }
         });
 
         this.wheelMode = wheelModes.vinyl;
@@ -2456,10 +2485,12 @@ class S4Mk3Deck extends Deck {
                     component.inConnect();
                     component.outConnect();
                     component.outTrigger();
+                    if (this.unshift !== undefined && typeof this.unshift === "function") {
+                        this.unshift();
+                    }
                 }
             }
         }
-        this.shiftButton.send(LedColors.white + this.brightnessOff);
     }
 
     assignKeyboardPlayMode(group, action) {
