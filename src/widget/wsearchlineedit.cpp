@@ -685,7 +685,7 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
 
     // Ensure the text is not obscured by the clear button. Otherwise no text,
     // no clear button, so the placeholder should use the entire width.
-    int innerHeight = height() - 2 * kBorderWidth;
+    const int innerHeight = height() - 2 * kBorderWidth;
     const int paddingPx = text.isEmpty() ? 0 : innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
 
