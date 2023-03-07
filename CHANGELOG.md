@@ -847,7 +847,7 @@
   [#8818](https://github.com/mixxxdj/mixxx/pull/8818)
   [#4907](https://github.com/mixxxdj/mixxx/pull/4907)
 
-## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (unreleased)
+## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (2023-03-03)
 
 * Track Properties: Show 'date added' as local time [#4838](https://github.com/mixxxdj/mixxx/pull/4838) [lp:1980658](https://bugs.launchpad.net/mixxx/+bug/1980658)
 * Shade: Fix library sidebar splitter glitch [#4828](https://github.com/mixxxdj/mixxx/pull/4828) [lp:1979823](https://bugs.launchpad.net/mixxx/+bug/1979823)

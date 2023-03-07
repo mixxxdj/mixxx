@@ -284,12 +284,12 @@ void WSearchLineEdit::saveQueriesInConfig() {
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QComboBox::resizeEvent(e);
-    m_innerHeight = height() - 2 * kBorderWidth;
+    int innerHeight = height() - 2 * kBorderWidth;
     // Test if this is a vertical resize due to changed library font.
     // Assuming current button height is innerHeight from last resize,
     // we will resize the Clear button icon only if height has changed.
-    if (m_clearButton->size().height() != m_innerHeight) {
-        QSize newSize = QSize(m_innerHeight, m_innerHeight);
+    if (m_clearButton->size().height() != innerHeight) {
+        QSize newSize = QSize(innerHeight, innerHeight);
         m_clearButton->resize(newSize);
         m_clearButton->setIconSize(newSize);
         // Needed to update the Clear button and the down arrow
@@ -299,10 +299,10 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     int top = rect().top() + kBorderWidth;
     if (layoutDirection() == Qt::LeftToRight) {
         m_clearButton->move(rect().right() -
-                        static_cast<int>(1.7 * m_innerHeight) - kBorderWidth,
+                        static_cast<int>(1.7 * innerHeight) - kBorderWidth,
                 top);
     } else {
-        m_clearButton->move(static_cast<int>(0.7 * m_innerHeight) + kBorderWidth,
+        m_clearButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
                 top);
     }
 }
@@ -685,11 +685,12 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
 
     // Ensure the text is not obscured by the clear button. Otherwise no text,
     // no clear button, so the placeholder should use the entire width.
-    const int paddingPx = text.isEmpty() ? 0 : m_innerHeight;
+    int innerHeight = height() - 2 * kBorderWidth;
+    const int paddingPx = text.isEmpty() ? 0 : innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
 
     // Hide the nonfunctional drop-down button (set width to 0) if the search is disabled.
-    const int dropDownWidth = isEnabled() ? static_cast<int>(m_innerHeight * 0.7) : 0;
+    const int dropDownWidth = isEnabled() ? static_cast<int>(innerHeight * 0.7) : 0;
 
     const QString styleSheet = QStringLiteral(
             "WSearchLineEdit { padding-%1: %2px; }"
@@ -703,7 +704,7 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
                                        .arg(clearPos,
                                                QString::number(paddingPx),
                                                QString::number(dropDownWidth),
-                                               QString::number(m_innerHeight));
+                                               QString::number(innerHeight));
     setStyleSheet(styleSheet);
 }
 
