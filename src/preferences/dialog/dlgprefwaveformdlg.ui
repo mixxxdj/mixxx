@@ -72,6 +72,9 @@
        <property name="text">
         <string/>
        </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
       </widget>
      </item>
      <item row="3" column="3">
