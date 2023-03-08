@@ -3,7 +3,6 @@
 #include <QtDebug>
 
 #include "util/math.h"
-#include "util/rampingvalue.h"
 #include "util/sample.h"
 
 QString GlitchEffect::getId() {
@@ -79,6 +78,8 @@ void GlitchEffect::processChannel(
     double period = m_pDelayParameter->value();
 
     int delay_frames;
+    double max_delay;
+    double min_delay;
     if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         if (m_pQuantizeParameter->toBool()) {
@@ -91,22 +92,33 @@ void GlitchEffect::processChannel(
         }
         delay_frames = static_cast<int>(period * groupFeatures.beat_length_sec *
                 engineParameters.sampleRate());
+        max_delay = 2 * groupFeatures.beat_length_sec * engineParameters.sampleRate();
+        min_delay = 1 / 8.0 * groupFeatures.beat_length_sec * engineParameters.sampleRate();
     } else {
         // period is a number of seconds
         period = std::max(period, 1 / 8.0);
         delay_frames = static_cast<int>(period * engineParameters.sampleRate());
-    }
-    VERIFY_OR_DEBUG_ASSERT(delay_frames > 0) {
-        delay_frames = 1;
+        max_delay = 2 * engineParameters.sampleRate();
+        min_delay = 1 / 8.0 * engineParameters.sampleRate();
     }
 
+    // Scale the delay so that the knob starts at no glitch and ends at the maximum delay.
+    delay_frames = static_cast<int>((delay_frames - min_delay) *
+            (max_delay - min_delay) / (max_delay - min_delay));
     int delay_samples = delay_frames * engineParameters.channelCount();
 
     pGroupState->sample_count += engineParameters.samplesPerBuffer();
     if (pGroupState->sample_count >= delay_samples) {
-        SampleUtil::copy(pGroupState->repeat_buf.data(), pInput, engineParameters.samplesPerBuffer());
+        if (m_pDelayParameter->value() < 2.0) {
+            SampleUtil::copy(pGroupState->repeat_buf.data(),
+                    pInput,
+                    engineParameters.samplesPerBuffer());
+        }
         pGroupState->sample_count = 0;
     }
 
-    SampleUtil::copy(pOutput, pGroupState->repeat_buf.data(), engineParameters.samplesPerBuffer());
+    SampleUtil::copy(
+            pOutput,
+            pGroupState->repeat_buf.data(),
+            engineParameters.samplesPerBuffer());
 }
