@@ -1086,7 +1086,7 @@
             </control>
 
             <control>
-                <description>BEAT FX ON/OFF - press - Toggle FX in the selected Slot</description>
+                <description>BEAT FX ON/OFF - press - Toggle FX in the selected Slot (when on CHAN1/1+2)</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJFLX4.beatFxOnOffPressed</key>
                 <status>0x94</status>
@@ -1096,10 +1096,30 @@
                 </options>
             </control>
             <control>
-                <description>BEAT FX ON/OFF +SHIFT - press - Disable all enabled Beat FX Slots</description>
+                <description>BEAT FX ON/OFF - press - Toggle FX in the selected Slot (when on CHAN2)</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJFLX4.beatFxOnOffPressed</key>
+                <status>0x95</status>
+                <midino>0x47</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>BEAT FX ON/OFF +SHIFT - press - Disable all enabled Beat FX Slots (when on CHAN1/1+2)</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJFLX4.beatFxOnOffShiftPressed</key>
                 <status>0x94</status>
+                <midino>0x43</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>BEAT FX ON/OFF +SHIFT - press - Disable all enabled Beat FX Slots (when on CHAN12)</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJFLX4.beatFxOnOffShiftPressed</key>
+                <status>0x95</status>
                 <midino>0x43</midino>
                 <options>
                     <Script-Binding/>
