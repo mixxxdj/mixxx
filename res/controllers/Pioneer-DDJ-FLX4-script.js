@@ -637,9 +637,26 @@ PioneerDDJFLX4.decreaseBeatjumpSizes = function(_channel, control, value, _statu
 PioneerDDJFLX4.samplerPlayOutputCallbackFunction = function(value, group, _control) {
     if (value === 1) {
         var curPad = group.match(script.samplerRegEx)[1];
+        var deckIndex = 0;
+        var padIndex = 0;
+
+        if (curPad >=1 && curPad <= 4) {
+            deckIndex = 0;
+            padIndex = curPad - 1;
+        } else if (curPad >=5 && curPad <= 8) {
+            deckIndex = 2;
+            padIndex = curPad - 5;
+        } else if (curPad >=9 && curPad <= 12) {
+            deckIndex = 0;
+            padIndex = curPad - 5;
+        } else if (curPad >=13 && curPad <= 16) {
+            deckIndex = 2;
+            padIndex = curPad - 9;
+        }
+
         PioneerDDJFLX4.startSamplerBlink(
-            0x97 + (curPad > 8 ? 2 : 0),
-            0x30 + ((curPad > 8 ? curPad - 8 : curPad) - 1),
+            0x97 + deckIndex,
+            0x30 + padIndex,
             group);
     }
 };
