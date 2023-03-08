@@ -80,7 +80,7 @@ class AutoPanGroupState : public EffectState {
 class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
   public:
     AutoPanEffect() = default;
-    virtual ~AutoPanEffect();
+    ~AutoPanEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

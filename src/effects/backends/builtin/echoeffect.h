@@ -49,6 +49,7 @@ class EchoGroupState : public EffectState {
 class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
   public:
     EchoEffect() = default;
+    ~EchoEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

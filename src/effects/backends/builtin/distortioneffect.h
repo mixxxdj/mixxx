@@ -23,6 +23,7 @@ class DistortionGroupState : public EffectState {
 class DistortionEffect : public EffectProcessorImpl<DistortionGroupState> {
   public:
     DistortionEffect() = default;
+    ~DistortionEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

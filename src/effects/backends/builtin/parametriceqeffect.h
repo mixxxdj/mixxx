@@ -42,7 +42,7 @@ class ParametricEQEffectGroupState final : public EffectState {
 class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupState> {
   public:
     ParametricEQEffect() = default;
-    virtual ~ParametricEQEffect();
+    ~ParametricEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

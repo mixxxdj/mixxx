@@ -24,7 +24,7 @@ struct BitCrusherGroupState : public EffectState {
 class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
   public:
     BitCrusherEffect() = default;
-    virtual ~BitCrusherEffect();
+    ~BitCrusherEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

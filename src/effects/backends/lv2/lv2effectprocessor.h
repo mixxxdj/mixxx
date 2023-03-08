@@ -38,7 +38,7 @@ class LV2EffectGroupState final : public EffectState {
 class LV2EffectProcessor final : public EffectProcessorImpl<LV2EffectGroupState> {
   public:
     LV2EffectProcessor(LV2EffectManifestPointer pManifest);
-    ~LV2EffectProcessor();
+    ~LV2EffectProcessor() override;
 
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;

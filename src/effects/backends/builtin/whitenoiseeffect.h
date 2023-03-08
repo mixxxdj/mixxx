@@ -30,6 +30,7 @@ class WhiteNoiseGroupState final : public EffectState {
 class WhiteNoiseEffect : public EffectProcessorImpl<WhiteNoiseGroupState> {
   public:
     WhiteNoiseEffect() = default;
+    ~WhiteNoiseEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

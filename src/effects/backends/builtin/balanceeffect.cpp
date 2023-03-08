@@ -94,9 +94,6 @@ void BalanceEffect::loadEngineEffectParameters(
     m_pBypassFreqParameter = parameters.value("bypassFreq");
 }
 
-BalanceEffect::~BalanceEffect() {
-}
-
 void BalanceEffect::processChannel(
         BalanceGroupState* pGroupState,
         const CSAMPLE* pInput,

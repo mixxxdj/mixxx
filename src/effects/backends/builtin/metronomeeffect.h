@@ -26,7 +26,7 @@ class MetronomeGroupState final : public EffectState {
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
   public:
     MetronomeEffect() = default;
-    virtual ~MetronomeEffect();
+    ~MetronomeEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

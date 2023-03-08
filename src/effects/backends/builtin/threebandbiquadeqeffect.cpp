@@ -134,9 +134,6 @@ void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
     m_pKillHigh = parameters.value("killHigh");
 }
 
-ThreeBandBiquadEQEffect::~ThreeBandBiquadEQEffect() {
-}
-
 void ThreeBandBiquadEQEffect::processChannel(
         ThreeBandBiquadEQEffectGroupState* pState,
         const CSAMPLE* pInput,

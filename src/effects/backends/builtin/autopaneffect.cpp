@@ -75,9 +75,6 @@ void AutoPanEffect::loadEngineEffectParameters(
     m_pWidthParameter = parameters.value("width");
 }
 
-AutoPanEffect::~AutoPanEffect() {
-}
-
 void AutoPanEffect::processChannel(
         AutoPanGroupState* pGroupState,
         const CSAMPLE* pInput,

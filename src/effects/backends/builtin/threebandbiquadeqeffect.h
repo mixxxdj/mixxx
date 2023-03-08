@@ -43,7 +43,7 @@ class ThreeBandBiquadEQEffectGroupState final : public EffectState {
 class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffectGroupState> {
   public:
     ThreeBandBiquadEQEffect();
-    ~ThreeBandBiquadEQEffect() override;
+    ~ThreeBandBiquadEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

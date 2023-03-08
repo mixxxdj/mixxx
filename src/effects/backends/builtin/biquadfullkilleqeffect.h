@@ -59,6 +59,7 @@ class BiquadFullKillEQEffectGroupState : public EffectState {
 class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffectGroupState> {
   public:
     BiquadFullKillEQEffect();
+    ~BiquadFullKillEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();
