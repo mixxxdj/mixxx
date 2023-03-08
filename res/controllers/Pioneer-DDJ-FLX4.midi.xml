@@ -2,7 +2,7 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.3">
     <info>
         <name>Pioneer DDJ-FLX4</name>
-        <author>Warker/nschloe/dj3730/jusko/Robert904</author>
+        <author>Robert904</author>
         <description>Midi Mapping for the Pioneer DDJ-FLX4 (based on DDJ-400 mapping)</description>
         <manual>pioneer_ddj_FLX4</manual>
         <forums>https://mixxx.discourse.group/t/pioneer-ddj-flx4</forums>

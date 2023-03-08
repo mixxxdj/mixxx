@@ -504,6 +504,8 @@ PioneerDDJFLX4.cycleTempoRange = function(_channel, _control, value, _status, gr
 
     for (var i = 0; i < this.tempoRanges.length; i++) {
         if (currRange === this.tempoRanges[i]) {
+            // idx get the index of the value in tempoRanges following the currently configured one
+            // or cycle back to 0 if the current is the last value of the list.
             idx = (i + 1) % this.tempoRanges.length;
             break;
         }
