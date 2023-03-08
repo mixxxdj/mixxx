@@ -31,7 +31,7 @@ class ReverbGroupState : public EffectState {
 
     float sampleRate;
     float sendPrevious;
-    MixxxPlateX2 reverb{};
+    MixxxPlateX2 reverb;
 };
 
 class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {

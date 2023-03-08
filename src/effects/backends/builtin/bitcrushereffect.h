@@ -18,7 +18,8 @@ struct BitCrusherGroupState : public EffectState {
     }
     ~BitCrusherGroupState() override = default;
 
-    CSAMPLE hold_l, hold_r;
+    CSAMPLE hold_l;
+    CSAMPLE hold_r;
     // Accumulated fractions of a samplerate period.
     CSAMPLE accumulator;
 };
