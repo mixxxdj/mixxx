@@ -35,6 +35,8 @@ struct FlangerGroupState : public EffectState {
         SampleUtil::clear(delayLeft, kBufferLenth);
         SampleUtil::clear(delayRight, kBufferLenth);
     }
+    ~FlangerGroupState() override = default;
+
     CSAMPLE delayLeft[kBufferLenth];
     CSAMPLE delayRight[kBufferLenth];
     unsigned int delayPos;

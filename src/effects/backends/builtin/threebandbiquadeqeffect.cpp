@@ -96,9 +96,6 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
             engineParameters.sampleRate(), kStartupHiFreq / 2, kQKillShelve);
 }
 
-ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
-}
-
 void ThreeBandBiquadEQEffectGroupState::setFilters(
         int sampleRate, double lowFreqCorner, double highFreqCorner) {
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);

@@ -22,6 +22,7 @@ class EchoGroupState : public EffectState {
         audioParametersChanged(engineParameters);
         clear();
     }
+    ~EchoGroupState() override = default;
 
     void audioParametersChanged(const mixxx::EngineParameters& engineParameters) {
         delay_buf = mixxx::SampleBuffer(kMaxDelaySeconds *

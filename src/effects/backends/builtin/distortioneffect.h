@@ -11,6 +11,7 @@
 class DistortionGroupState : public EffectState {
   public:
     DistortionGroupState(const mixxx::EngineParameters& engineParameters);
+    ~DistortionGroupState() override = default;
 
     CSAMPLE_GAIN m_driveGain;
     CSAMPLE m_crossfadeParameter;

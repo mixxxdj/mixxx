@@ -15,7 +15,8 @@ class LV2EffectGroupState final : public EffectState {
             : EffectState(engineParameters),
               m_pInstance(nullptr) {
     }
-    ~LV2EffectGroupState() {
+
+    ~LV2EffectGroupState() override {
         if (m_pInstance) {
             lilv_instance_deactivate(m_pInstance);
             lilv_instance_free(m_pInstance);

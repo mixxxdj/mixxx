@@ -16,6 +16,7 @@ class PhaserGroupState final : public EffectState {
             : EffectState(engineParameters) {
         clear();
     }
+    ~PhaserGroupState() override = default;
 
     void clear() {
         leftPhase = 0;

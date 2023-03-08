@@ -69,8 +69,8 @@ class AutoPanGroupState : public EffectState {
         delay = new EngineFilterPanSingle<panMaxDelay>();
         m_dPreviousPeriod = -1.0;
     }
-    ~AutoPanGroupState() {
-    }
+    ~AutoPanGroupState() override = default;
+
     unsigned int time;
     RampedSample frac;
     EngineFilterPanSingle<panMaxDelay>* delay;

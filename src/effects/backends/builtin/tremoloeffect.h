@@ -11,6 +11,8 @@ class TremoloState : public EffectState {
   public:
     TremoloState(const mixxx::EngineParameters& engineParameters)
             : EffectState(engineParameters){};
+    ~TremoloState() override = default;
+
     double gain;
     unsigned int currentFrame;
     bool quantizeEnabled = false;

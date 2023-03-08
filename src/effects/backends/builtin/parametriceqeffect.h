@@ -24,6 +24,7 @@
 class ParametricEQEffectGroupState final : public EffectState {
   public:
     ParametricEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
+    ~ParametricEQEffectGroupState() override = default;
 
     void setFilters(int sampleRate);
 

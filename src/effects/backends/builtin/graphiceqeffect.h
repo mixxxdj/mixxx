@@ -15,7 +15,7 @@
 class GraphicEQEffectGroupState : public EffectState {
   public:
     GraphicEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
-    virtual ~GraphicEQEffectGroupState();
+    ~GraphicEQEffectGroupState() override;
 
     void setFilters(int sampleRate);
 

@@ -12,7 +12,7 @@
 
 struct FilterGroupState : public EffectState {
     FilterGroupState(const mixxx::EngineParameters& engineParameters);
-    ~FilterGroupState();
+    ~FilterGroupState() override;
 
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 

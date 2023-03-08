@@ -22,6 +22,7 @@ class ReverbGroupState : public EffectState {
               sampleRate(engineParameters.sampleRate()),
               sendPrevious(0) {
     }
+    ~ReverbGroupState() override = default;
 
     void engineParametersChanged(const mixxx::EngineParameters& engineParameters) {
         sampleRate = engineParameters.sampleRate();

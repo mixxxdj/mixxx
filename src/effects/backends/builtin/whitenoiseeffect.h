@@ -19,8 +19,7 @@ class WhiteNoiseGroupState final : public EffectState {
               previous_drywet(0.0),
               gen(rs()) {
     }
-    ~WhiteNoiseGroupState() {
-    }
+    ~WhiteNoiseGroupState() override = default;
 
     CSAMPLE_GAIN previous_drywet;
     std::random_device rs;

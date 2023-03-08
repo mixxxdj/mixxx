@@ -15,7 +15,7 @@
 class LinkwitzRiley8EQEffectGroupState : public EffectState {
   public:
     LinkwitzRiley8EQEffectGroupState(const mixxx::EngineParameters& engineParameters);
-    virtual ~LinkwitzRiley8EQEffectGroupState();
+    ~LinkwitzRiley8EQEffectGroupState() override;
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 

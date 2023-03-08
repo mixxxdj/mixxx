@@ -17,8 +17,7 @@ class MetronomeGroupState final : public EffectState {
             : EffectState(engineParameters),
               m_framesSinceClickStart(0) {
     }
-    ~MetronomeGroupState() {
-    }
+    ~MetronomeGroupState() override = default;
 
     SINT m_framesSinceClickStart;
 };
