@@ -2065,7 +2065,7 @@
             </control>
             <control>
                 <description>PAD 5 (LEFT) SAMPLE MODE - press - Play Sample or Load Track</description>
-                <group>[Sampler5]</group>
+                <group>[Sampler9]</group>
                 <key>PioneerDDJFLX4.samplerPadPressed</key>
                 <status>0x97</status>
                 <midino>0x34</midino>
@@ -2075,7 +2075,7 @@
             </control>
             <control>
                 <description>PAD 5 (LEFT)+SHIFT SAMPLE MODE - press - Stop Playback or Eject Track</description>
-                <group>[Sampler5]</group>
+                <group>[Sampler9]</group>
                 <key>PioneerDDJFLX4.samplerPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x34</midino>
@@ -2085,7 +2085,7 @@
             </control>
             <control>
                 <description>PAD 6 (LEFT) SAMPLE MODE - press - Play Sample or Load Track</description>
-                <group>[Sampler6]</group>
+                <group>[Sampler10]</group>
                 <key>PioneerDDJFLX4.samplerPadPressed</key>
                 <status>0x97</status>
                 <midino>0x35</midino>
@@ -2095,7 +2095,7 @@
             </control>
             <control>
                 <description>PAD 6 (LEFT)+SHIFT SAMPLE MODE - press - Stop Playback or Eject Track</description>
-                <group>[Sampler6]</group>
+                <group>[Sampler10]</group>
                 <key>PioneerDDJFLX4.samplerPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x35</midino>
@@ -2105,7 +2105,7 @@
             </control>
             <control>
                 <description>PAD 7 (LEFT) SAMPLE MODE - press - Play Sample or Load Track</description>
-                <group>[Sampler7]</group>
+                <group>[Sampler11]</group>
                 <key>PioneerDDJFLX4.samplerPadPressed</key>
                 <status>0x97</status>
                 <midino>0x36</midino>
@@ -2115,7 +2115,7 @@
             </control>
             <control>
                 <description>PAD 7 (LEFT)+SHIFT SAMPLE MODE - press - Stop Playback or Eject Track</description>
-                <group>[Sampler7]</group>
+                <group>[Sampler11]</group>
                 <key>PioneerDDJFLX4.samplerPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x36</midino>
@@ -2125,7 +2125,7 @@
             </control>
             <control>
                 <description>PAD 8 (LEFT) SAMPLE MODE - press - Play Sample or Load Track</description>
-                <group>[Sampler8]</group>
+                <group>[Sampler12]</group>
                 <key>PioneerDDJFLX4.samplerPadPressed</key>
                 <status>0x97</status>
                 <midino>0x37</midino>
@@ -2135,7 +2135,7 @@
             </control>
             <control>
                 <description>PAD 8 (LEFT)+SHIFT SAMPLE MODE - press - Stop Playback or Eject Track</description>
-                <group>[Sampler8]</group>
+                <group>[Sampler12]</group>
                 <key>PioneerDDJFLX4.samplerPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x37</midino>
@@ -2147,7 +2147,7 @@
 
             <control>
                 <description>PAD 1 (RIGHT) SAMPLE MODE - press - Play Sample or Load Track</description>
-                <group>[Sampler9]</group>
+                <group>[Sampler5]</group>
                 <key>PioneerDDJFLX4.samplerPadPressed</key>
                 <status>0x99</status>
                 <midino>0x30</midino>
@@ -2157,7 +2157,7 @@
             </control>
             <control>
                 <description>PAD 1 (Right)+SHIFT SAMPLE MODE - press - Stop Playback or Eject Track</description>
-                <group>[Sampler9]</group>
+                <group>[Sampler5]</group>
                 <key>PioneerDDJFLX4.samplerPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x30</midino>
@@ -2167,7 +2167,7 @@
             </control>
             <control>
                 <description>PAD 2 (RIGHT) SAMPLE MODE - press - Play Sample or Load Track</description>
-                <group>[Sampler10]</group>
+                <group>[Sampler6]</group>
                 <key>PioneerDDJFLX4.samplerPadPressed</key>
                 <status>0x99</status>
                 <midino>0x31</midino>
@@ -2177,7 +2177,7 @@
             </control>
             <control>
                 <description>PAD 2 (Right)+SHIFT SAMPLE MODE - press - Stop Playback or Eject Track</description>
-                <group>[Sampler10]</group>
+                <group>[Sampler6]</group>
                 <key>PioneerDDJFLX4.samplerPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x31</midino>
@@ -2187,7 +2187,7 @@
             </control>
             <control>
                 <description>PAD 3 (RIGHT) SAMPLE MODE - press - Play Sample or Load Track</description>
-                <group>[Sampler11]</group>
+                <group>[Sampler7]</group>
                 <key>PioneerDDJFLX4.samplerPadPressed</key>
                 <status>0x99</status>
                 <midino>0x32</midino>
@@ -2197,7 +2197,7 @@
             </control>
             <control>
                 <description>PAD 3 (Right)+SHIFT SAMPLE MODE - press - Stop Playback or Eject Track</description>
-                <group>[Sampler11]</group>
+                <group>[Sampler7]</group>
                 <key>PioneerDDJFLX4.samplerPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x32</midino>
@@ -2207,7 +2207,7 @@
             </control>
             <control>
                 <description>PAD 4 (RIGHT) SAMPLE MODE - press - Play Sample or Load Track</description>
-                <group>[Sampler12]</group>
+                <group>[Sampler8]</group>
                 <key>PioneerDDJFLX4.samplerPadPressed</key>
                 <status>0x99</status>
                 <midino>0x33</midino>
@@ -2217,7 +2217,7 @@
             </control>
             <control>
                 <description>PAD 4 (Right)+SHIFT SAMPLE MODE - press - Stop Playback or Eject Track</description>
-                <group>[Sampler12]</group>
+                <group>[Sampler8]</group>
                 <key>PioneerDDJFLX4.samplerPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x33</midino>
