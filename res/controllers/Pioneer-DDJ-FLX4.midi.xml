@@ -3009,7 +3009,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler5]</group>
+                <group>[Sampler9]</group>
                 <key>track_loaded</key>
                 <status>0x97</status>
                 <midino>0x34</midino>
@@ -3017,7 +3017,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler6]</group>
+                <group>[Sampler10]</group>
                 <key>track_loaded</key>
                 <status>0x97</status>
                 <midino>0x35</midino>
@@ -3025,7 +3025,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler7]</group>
+                <group>[Sampler11]</group>
                 <key>track_loaded</key>
                 <status>0x97</status>
                 <midino>0x36</midino>
@@ -3033,7 +3033,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler8]</group>
+                <group>[Sampler12]</group>
                 <key>track_loaded</key>
                 <status>0x97</status>
                 <midino>0x37</midino>
@@ -3043,7 +3043,7 @@
             <!-- SAMPLER Mode Pads (while SHIFT is NOT pressed)-->
             <!-- Deck 2 pads -->
             <output>
-                <group>[Sampler9]</group>
+                <group>[Sampler5]</group>
                 <key>track_loaded</key>
                 <status>0x99</status>
                 <midino>0x30</midino>
@@ -3051,7 +3051,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler10]</group>
+                <group>[Sampler6]</group>
                 <key>track_loaded</key>
                 <status>0x99</status>
                 <midino>0x31</midino>
@@ -3059,7 +3059,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler11]</group>
+                <group>[Sampler7]</group>
                 <key>track_loaded</key>
                 <status>0x99</status>
                 <midino>0x32</midino>
@@ -3067,7 +3067,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler12]</group>
+                <group>[Sampler8]</group>
                 <key>track_loaded</key>
                 <status>0x99</status>
                 <midino>0x33</midino>
@@ -3143,7 +3143,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler5]</group>
+                <group>[Sampler9]</group>
                 <key>track_loaded</key>
                 <status>0x98</status>
                 <midino>0x34</midino>
@@ -3151,7 +3151,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler6]</group>
+                <group>[Sampler10]</group>
                 <key>track_loaded</key>
                 <status>0x98</status>
                 <midino>0x35</midino>
@@ -3159,7 +3159,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler7]</group>
+                <group>[Sampler11]</group>
                 <key>track_loaded</key>
                 <status>0x98</status>
                 <midino>0x36</midino>
@@ -3167,7 +3167,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler8]</group>
+                <group>[Sampler12]</group>
                 <key>track_loaded</key>
                 <status>0x98</status>
                 <midino>0x37</midino>
@@ -3179,7 +3179,7 @@
             <!-- Deck 2 pads -->
 
             <output>
-                <group>[Sampler9]</group>
+                <group>[Sampler5]</group>
                 <key>track_loaded</key>
                 <status>0x9A</status>
                 <midino>0x30</midino>
@@ -3187,7 +3187,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler10]</group>
+                <group>[Sampler6]</group>
                 <key>track_loaded</key>
                 <status>0x9A</status>
                 <midino>0x31</midino>
@@ -3195,7 +3195,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler11]</group>
+                <group>[Sampler7]</group>
                 <key>track_loaded</key>
                 <status>0x9A</status>
                 <midino>0x32</midino>
@@ -3203,7 +3203,7 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler12]</group>
+                <group>[Sampler8]</group>
                 <key>track_loaded</key>
                 <status>0x9A</status>
                 <midino>0x33</midino>
