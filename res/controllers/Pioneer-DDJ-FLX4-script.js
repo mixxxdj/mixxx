@@ -271,7 +271,7 @@ PioneerDDJFLX4.init = function() {
 //
 
 PioneerDDJFLX4.vuMeterUpdate = function(value, group) {
-    var newVal = value * 150;
+    var newVal = value * 127;
 
     switch (group) {
     case "[Channel1]":
