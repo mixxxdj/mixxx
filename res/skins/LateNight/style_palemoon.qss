@@ -653,22 +653,12 @@ WBeatSpinBox {
   border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
 }
 #spinBoxTransition {
-  border-width: 3px 19px 2px 3px;
-  border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
-}
-
-WBeatSpinBox {
-  margin: 1px 0px 1px 1px;
-  padding: 0px -17px 2px 1px;
-}
-
-#spinBoxTransition {
   width: 24px;
   height: 19px;
   padding: 0px -15px 0px 0px;
   margin: 0px 2px 3px 5px;
   border-width: 3px 19px 2px 3px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
   }
   WBeatSpinBox:focus,
   #spinBoxTransition:focus {

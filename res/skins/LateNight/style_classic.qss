@@ -1705,19 +1705,11 @@ WPushButton#SamplerExpand[displayValue="0"],
   }
 
 #SyncLeader[value="0"] {
-  image: url(skin:/classic/buttons/btn__sync_leader.svg) no-repeat center center;
+  image: url(skin:../LateNight/classic/buttons/btn__sync_leader.svg) no-repeat center center;
   }
   #SyncLeader[value="1"],
   #SyncLeader[value="2"] {
-    image: url(skin:/classic/buttons/btn__sync_leader_active.svg) no-repeat center center;
-  }
-
-#SyncLeader[value="0"] {
-  image: url(skin:/classic/buttons/btn__sync_leader.svg) no-repeat center center;
-  }
-  #SyncLeader[value="1"],
-  #SyncLeader[value="2"] {
-    image: url(skin:/classic/buttons/btn__sync_leader_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/classic/buttons/btn__sync_leader_active.svg) no-repeat center center;
   }
 
   #SyncSampler {
@@ -2555,13 +2547,6 @@ QLineEdit QMenu::item:disabled {
   WEffectChainPresetButton QMenu QCheckBox::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     image: url(skin:../LateNight/classic/buttons/btn__lib_checkmark_orange.svg);
-    }
-    WEffectSelector::indicator:checked,
-    WEffectChainPresetSelector::indicator:checked,
-    #fadeModeCombobox::indicator:checked {
-      width: 13px;
-      height: 13px;
-      margin-left: 8px;
     }
     WEffectSelector::indicator:checked,
     WEffectChainPresetSelector::indicator:checked,
