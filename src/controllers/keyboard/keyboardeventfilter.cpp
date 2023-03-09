@@ -127,9 +127,15 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 }
 
 QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
-    QString modseq;
     QKeySequence k;
 
+    if (e->key() >= 0x01000020 && e->key() <= 0x01000023) {
+        // Do not act on Modifier only
+        // avoid returning "khmer vowel sign ie (U+17C0)"
+        return k;
+    }
+
+    QString modseq;
     // TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
 
     if (e->modifiers() & Qt::ShiftModifier) {
@@ -146,12 +152,6 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 
     if (e->modifiers() & Qt::MetaModifier) {
         modseq += "Meta+";
-    }
-
-    if (e->key() >= 0x01000020 && e->key() <= 0x01000023) {
-        // Do not act on Modifier only
-        // avoid returning "khmer vowel sign ie (U+17C0)"
-        return k;
     }
 
     QString keyseq = QKeySequence(e->key()).toString();
