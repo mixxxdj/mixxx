@@ -136,9 +136,6 @@ void ParametricEQEffect::loadEngineEffectParameters(
     m_pPotCenter.append(parameters.value("center2"));
 }
 
-ParametricEQEffect::~ParametricEQEffect() {
-}
-
 void ParametricEQEffect::processChannel(
         ParametricEQEffectGroupState* pState,
         const CSAMPLE* pInput,

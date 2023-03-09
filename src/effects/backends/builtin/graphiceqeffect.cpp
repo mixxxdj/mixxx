@@ -131,9 +131,6 @@ void GraphicEQEffect::loadEngineEffectParameters(
     m_pPotHigh = parameters.value("high");
 }
 
-GraphicEQEffect::~GraphicEQEffect() {
-}
-
 void GraphicEQEffect::processChannel(
         GraphicEQEffectGroupState* pState,
         const CSAMPLE* pInput,

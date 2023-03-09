@@ -85,10 +85,6 @@ void FilterEffect::loadEngineEffectParameters(
     m_pHPF = parameters.value("hpf");
 }
 
-FilterEffect::~FilterEffect() {
-    //qDebug() << debugString() << "destroyed";
-}
-
 void FilterEffect::processChannel(
         FilterGroupState* pState,
         const CSAMPLE* pInput,
