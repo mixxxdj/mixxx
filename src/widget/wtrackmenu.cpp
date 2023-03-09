@@ -33,6 +33,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "preferences/configobject.h"
 #include "preferences/dialog/dlgprefdeck.h"
+#include "preferences/keyboardconfig.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/defs.h"
@@ -53,7 +54,7 @@
 WTrackMenu::WTrackMenu(
         QWidget* parent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         Features flags,
         TrackModel* trackModel)

@@ -12,6 +12,7 @@
 #include "library/library.h"
 #include "mixer/playermanager.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
@@ -25,7 +26,7 @@ namespace skin {
 
 using legacy::LegacySkin;
 
-SkinLoader::SkinLoader(UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
+SkinLoader::SkinLoader(UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig)
         : m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig),
           m_spinnyCoverControlsCreated(false),

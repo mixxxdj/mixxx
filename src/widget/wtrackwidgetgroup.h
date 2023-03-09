@@ -1,6 +1,7 @@
 #pragma once
 
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -16,7 +17,7 @@ class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
   public:
     WTrackWidgetGroup(QWidget* pParent,
             UserSettingsPointer pConfig,
-            ConfigObject<ConfigValueKbd>* pKbdConfig,
+            KeyboardConfigPointer pKbdConfig,
             Library* pLibrary,
             const QString& group);
     ~WTrackWidgetGroup() override;

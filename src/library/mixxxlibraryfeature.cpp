@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #ifdef __ENGINEPRIME__
 #include <QMenu>
 #endif
@@ -29,7 +30,7 @@
 
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-        UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
+        UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig)
         : LibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("tracks")),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),

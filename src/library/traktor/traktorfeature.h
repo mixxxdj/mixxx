@@ -12,6 +12,7 @@
 #include "library/baseexternalplaylistmodel.h"
 #include "library/treeitemmodel.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 
 class TraktorTrackModel : public BaseExternalTrackModel {
     Q_OBJECT
@@ -34,7 +35,7 @@ class TraktorPlaylistModel : public BaseExternalPlaylistModel {
 class TraktorFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig);
+    TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
     virtual ~TraktorFeature();
 
     QVariant title() override;

@@ -7,6 +7,7 @@
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
 #include "moc_wmainmenubar.cpp"
+#include "preferences/keyboardconfig.h"
 #include "util/cmdlineargs.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -70,7 +71,7 @@ QUrl documentationUrl(
 }  // namespace
 
 WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                           ConfigObject<ConfigValueKbd>* pKbdConfig)
+                           KeyboardConfigPointer pKbdConfig)
         : QMenuBar(pParent),
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig) {

@@ -3,6 +3,7 @@
 #include "analyzer/analyzerscheduledtrack.h"
 #include "library/libraryfeature.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/parented_ptr.h"
 
 class BaseTrackSetFeature : public LibraryFeature {
@@ -11,7 +12,7 @@ class BaseTrackSetFeature : public LibraryFeature {
   public:
     BaseTrackSetFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
-            ConfigObject<ConfigValueKbd>* pKbdConfig,
+            KeyboardConfigPointer pKbdConfig,
             const QString& rootViewName,
             const QString& iconName);
 

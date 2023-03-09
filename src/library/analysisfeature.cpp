@@ -12,6 +12,7 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_analysisfeature.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "sources/soundsourceproxy.h"
 #include "util/debug.h"
 #include "util/dnd.h"
@@ -52,7 +53,7 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 AnalysisFeature::AnalysisFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig)
+        KeyboardConfigPointer pKbdConfig)
         : LibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("prepare")),
           m_baseTitle(tr("Analyze")),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),

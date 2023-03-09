@@ -5,6 +5,7 @@
 #include "library/library.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
+#include "preferences/keyboardconfig.h"
 #include "moc_libraryfeature.cpp"
 #include "util/logger.h"
 
@@ -22,7 +23,7 @@ const QString kIconPath = QStringLiteral(":/images/library/ic_library_%1.svg");
 LibraryFeature::LibraryFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         const QString& iconName)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),

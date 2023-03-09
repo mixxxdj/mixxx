@@ -4,6 +4,7 @@
 
 #include "coreservices.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "skin/legacy/legacyskinparser.h"
 
 namespace {
@@ -117,7 +118,7 @@ bool LegacySkin::fitsScreenSize(const QScreen& screen) const {
             skinHeight.toInt() <= screenSize.height();
 }
 
-LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig) const {
+LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return nullptr;
     }
@@ -128,7 +129,7 @@ LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent, UserSettingsPointer p
 
 QWidget* LegacySkin::loadSkin(QWidget* pParent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         QSet<ControlObject*>* pSkinCreatedControls,
         mixxx::CoreServices* pCoreServices) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {

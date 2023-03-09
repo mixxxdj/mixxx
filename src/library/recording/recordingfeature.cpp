@@ -6,6 +6,7 @@
 #include "library/treeitem.h"
 #include "moc_recordingfeature.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "recording/recordingmanager.h"
 #include "track/track.h"
 #include "widget/wlibrary.h"
@@ -18,7 +19,7 @@ const QString kViewName = QStringLiteral("Recording");
 
 RecordingFeature::RecordingFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         RecordingManager* pRecordingManager)
         : LibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("recordings")),
           m_pRecordingManager(pRecordingManager),

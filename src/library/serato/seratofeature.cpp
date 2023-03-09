@@ -14,6 +14,7 @@
 #include "library/treeitem.h"
 #include "moc_seratofeature.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "util/assert.h"
@@ -849,7 +850,7 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 SeratoFeature::SeratoFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig)
+        KeyboardConfigPointer pKbdConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("serato")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
     QString idColumn = LIBRARYTABLE_ID;

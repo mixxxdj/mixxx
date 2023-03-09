@@ -13,6 +13,7 @@
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -23,7 +24,7 @@ class AnalysisFeature : public LibraryFeature {
   public:
     AnalysisFeature(Library* pLibrary,
                     UserSettingsPointer pConfig,
-                    ConfigObject<ConfigValueKbd>* pKbdConfig);
+                    KeyboardConfigPointer pKbdConfig);
     ~AnalysisFeature() override = default;
 
     QVariant title() override {

@@ -20,6 +20,7 @@
 #include "preferences/configobject.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/keyboardconfig.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "track/trackref.h"
@@ -46,7 +47,7 @@ const QColor kDefaultFocusBorderColor = Qt::white;
 
 WTrackTableView::WTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         double backgroundColorOpacity,
         bool sorting)

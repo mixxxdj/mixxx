@@ -11,6 +11,7 @@
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
@@ -23,7 +24,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
   public:
     DlgAutoDJ(WLibrary* parent,
             UserSettingsPointer pConfig,
-            ConfigObject<ConfigValueKbd>* pKbdConfig,
+            KeyboardConfigPointer pKbdConfig,
             Library* pLibrary,
             AutoDJProcessor* pProcessor,
             KeyboardEventFilter* pKeyboard);
@@ -64,7 +65,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void keyPressEvent(QKeyEvent* pEvent) override;
 
     const UserSettingsPointer m_pConfig;
-    ConfigObject<ConfigValueKbd>* m_pKbdConfig;
+    const KeyboardConfigPointer m_pKbdConfig;
 
     AutoDJProcessor* const m_pAutoDJProcessor;
     WTrackTableView* const m_pTrackTableView;

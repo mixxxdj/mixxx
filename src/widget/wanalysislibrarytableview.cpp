@@ -1,11 +1,12 @@
 #include "library/trackcollection.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "widget/wanalysislibrarytableview.h"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         QWidget* parent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         double trackTableBackgroundColorOpacity)
         : WTrackTableView(parent,

@@ -7,6 +7,7 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgautodj.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/duration.h"
@@ -20,7 +21,7 @@ const char* kRepeatPlaylistPreference = "Requeue";
 
 DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         AutoDJProcessor* pProcessor,
         KeyboardEventFilter* pKeyboard)

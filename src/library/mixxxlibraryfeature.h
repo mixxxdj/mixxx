@@ -16,6 +16,7 @@
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -30,7 +31,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
   public:
     MixxxLibraryFeature(Library* pLibrary,
                         UserSettingsPointer pConfig,
-                        ConfigObject<ConfigValueKbd>* pKbdConfig);
+                        KeyboardConfigPointer pKbdConfig);
     ~MixxxLibraryFeature() override = default;
 
     QVariant title() override;

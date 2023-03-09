@@ -8,6 +8,7 @@
 
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 
 class VisibilityControlConnection : public QObject {
@@ -34,7 +35,7 @@ class WMainMenuBar : public QMenuBar {
     Q_OBJECT
   public:
     WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                 ConfigObject<ConfigValueKbd>* pKbdConfig);
+                 KeyboardConfigPointer pKbdConfig);
 
   public slots:
     void onLibraryScanStarted();
@@ -92,7 +93,7 @@ class WMainMenuBar : public QMenuBar {
 
     UserSettingsPointer m_pConfig;
     QAction* m_pViewKeywheel;
-    ConfigObject<ConfigValueKbd>* m_pKbdConfig;
+    const KeyboardConfigPointer m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
 };

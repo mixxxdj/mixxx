@@ -35,6 +35,7 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/treeitemmodel.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/parented_ptr.h"
 
 class TrackCollectionManager;
@@ -57,7 +58,7 @@ class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
 class RekordboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    RekordboxFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig);
+    RekordboxFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
     ~RekordboxFeature() override;
 
     QVariant title() override;

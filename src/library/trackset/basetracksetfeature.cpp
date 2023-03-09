@@ -1,12 +1,13 @@
 #include "library/trackset/basetracksetfeature.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 
 #include "moc_basetracksetfeature.cpp"
 
 BaseTrackSetFeature::BaseTrackSetFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         const QString& rootViewName,
         const QString& iconName)
         : LibraryFeature(pLibrary, pConfig, pKbdConfig, iconName),

@@ -6,6 +6,7 @@
 #include "control/controlobject.h"
 #include "moc_wtracktext.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
@@ -29,7 +30,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
 
 WTrackText::WTrackText(QWidget* pParent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         const QString& group)
         : WLabel(pParent),

@@ -5,6 +5,7 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgrecording.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wskincolor.h"
@@ -14,7 +15,7 @@
 DlgRecording::DlgRecording(
         WLibrary* parent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         RecordingManager* pRecordingManager,
         KeyboardEventFilter* pKeyboard)

@@ -9,6 +9,7 @@
 #include "library/libraryview.h"
 #include "library/ui_dlganalysis.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 
 class AnalysisLibraryTableModel;
@@ -21,7 +22,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
   public:
     DlgAnalysis(WLibrary *parent,
                UserSettingsPointer pConfig,
-               ConfigObject<ConfigValueKbd>* pKbdConfig,
+               KeyboardConfigPointer pKbdConfig,
                Library* pLibrary);
     ~DlgAnalysis() override = default;
 

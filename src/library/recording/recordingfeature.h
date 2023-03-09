@@ -4,6 +4,7 @@
 #include <QSortFilterProxyModel>
 
 #include "preferences/usersettings.h"
+#include "preferences/keyboardconfig.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
@@ -15,7 +16,7 @@ class RecordingFeature final : public LibraryFeature {
   public:
     RecordingFeature(Library* parent,
                      UserSettingsPointer pConfig,
-                     ConfigObject<ConfigValueKbd>* pKbdConfig,
+                     KeyboardConfigPointer pKbdConfig,
                      RecordingManager* pRecordingManager);
     ~RecordingFeature() override = default;
 

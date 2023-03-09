@@ -5,6 +5,7 @@
 #include "control/controlpushbutton.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/settingsmanager.h"
 #include "soundio/sounddevicestatus.h"
 #include "util/cmdlineargs.h"
@@ -47,7 +48,7 @@ class CoreServices : public QObject {
         return m_pKeyboardEventFilter;
     }
 
-    std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig() const {
+    std::shared_ptr<KeyboardConfig> getKeyboardConfig() const {
         return m_pKbdConfig;
     }
 
@@ -146,8 +147,8 @@ class CoreServices : public QObject {
     std::shared_ptr<Library> m_pLibrary;
 
     std::shared_ptr<KeyboardEventFilter> m_pKeyboardEventFilter;
-    std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
-    std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfigEmpty;
+    std::shared_ptr<KeyboardConfig> m_pKbdConfig;
+    std::shared_ptr<KeyboardConfig> m_pKbdConfigEmpty;
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 

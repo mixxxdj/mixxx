@@ -4,6 +4,7 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_dlghidden.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -11,7 +12,7 @@
 DlgHidden::DlgHidden(
         WLibrary* parent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         KeyboardEventFilter* pKeyboard)
         : QWidget(parent),

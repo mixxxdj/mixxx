@@ -11,6 +11,7 @@
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
@@ -19,7 +20,7 @@ class BaseExternalPlaylistModel;
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig);
+    RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
     virtual ~RhythmboxFeature();
     static bool isSupported();
 

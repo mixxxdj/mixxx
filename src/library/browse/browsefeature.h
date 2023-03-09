@@ -9,6 +9,7 @@
 #include <QPoint>
 #include <QString>
 
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
@@ -27,7 +28,7 @@ class BrowseFeature : public LibraryFeature {
   public:
     BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
-            ConfigObject<ConfigValueKbd>* pKbdConfig,
+            KeyboardConfigPointer pKbdConfig,
             RecordingManager* pRecordingManager);
     virtual ~BrowseFeature();
 

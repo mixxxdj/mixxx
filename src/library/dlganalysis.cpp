@@ -9,6 +9,7 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_dlganalysis.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/assert.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "widget/wlibrary.h"
@@ -17,7 +18,7 @@
 
 DlgAnalysis::DlgAnalysis(WLibrary* parent,
                        UserSettingsPointer pConfig,
-                       ConfigObject<ConfigValueKbd>* pKbdConfig,
+                       KeyboardConfigPointer pKbdConfig,
                        Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),

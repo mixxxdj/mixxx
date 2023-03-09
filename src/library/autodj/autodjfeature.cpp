@@ -16,6 +16,7 @@
 #include "mixer/playermanager.h"
 #include "moc_autodjfeature.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/dnd.h"
@@ -47,7 +48,7 @@ constexpr int kMaxRetrieveAttempts = 3;
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         PlayerManagerInterface* pPlayerManager)
         : LibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("autodj")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),

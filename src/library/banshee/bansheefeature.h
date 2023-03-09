@@ -12,6 +12,7 @@
 #include "library/treeitem.h"
 #include "library/banshee/bansheedbconnection.h"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 
 
 class BansheePlaylistModel;
@@ -19,7 +20,7 @@ class BansheePlaylistModel;
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig);
+    BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);

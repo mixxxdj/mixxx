@@ -37,6 +37,7 @@
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
 #include "moc_library.cpp"
+#include "preferences/keyboardconfig.h"
 #include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
@@ -65,7 +66,7 @@ const int Library::kDefaultRowHeightPx = 20;
 Library::Library(
         QObject* parent,
         UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         TrackCollectionManager* pTrackCollectionManager,
         PlayerManager* pPlayerManager,

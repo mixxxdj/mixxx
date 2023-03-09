@@ -21,6 +21,7 @@
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/colorschemeparser.h"
 #include "skin/legacy/launchimage.h"
@@ -161,7 +162,7 @@ ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& elemen
     return controlFromConfigKey(key, bPersist, pCreated);
 }
 
-LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
+LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig)
         : m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig),
           m_pSkinCreatedControls(nullptr),
@@ -176,7 +177,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig, ConfigObject<Con
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
-        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        KeyboardConfigPointer pKbdConfig,
         QSet<ControlObject*>* pSkinCreatedControls,
         KeyboardEventFilter* pKeyboard,
         PlayerManager* pPlayerManager,

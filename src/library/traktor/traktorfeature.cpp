@@ -17,6 +17,7 @@
 #include "library/treeitem.h"
 #include "moc_traktorfeature.cpp"
 #include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "track/keyutils.h"
 #include "util/sandbox.h"
 #include "util/semanticversion.h"
@@ -64,7 +65,7 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
+TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("traktor")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
