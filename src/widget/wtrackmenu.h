@@ -9,6 +9,7 @@
 #include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/trackref.h"
@@ -65,6 +66,7 @@ class WTrackMenu : public QMenu {
 
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig,
             Library* pLibrary,
             Features flags = Feature::All,
             TrackModel* trackModel = nullptr);
@@ -310,6 +312,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pClearAllMetadataAction{};
 
     const UserSettingsPointer m_pConfig;
+    ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     Library* const m_pLibrary;
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;

@@ -13,6 +13,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_playlistfeature.cpp"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
 #include "util/dnd.h"
@@ -36,9 +37,10 @@ QString createPlaylistLabel(
 
 } // anonymous namespace
 
-PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
+PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
+                  pKbdConfig,
                   new PlaylistTableModel(nullptr,
                           pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),

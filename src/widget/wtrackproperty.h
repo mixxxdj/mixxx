@@ -4,6 +4,7 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
@@ -21,6 +22,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     WTrackProperty(
             QWidget* pParent,
             UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig,
             Library* pLibrary,
             const QString& group);
     ~WTrackProperty() override;

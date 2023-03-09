@@ -75,6 +75,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         m_pLibrary = std::make_shared<Library>(
                 nullptr,
                 m_pConfig,
+                m_pKbdConfig,
                 dbConnectionPooler(),
                 m_pTrackCollectionManager.get(),
                 m_pPlayerManager.get(),

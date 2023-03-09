@@ -14,6 +14,7 @@
 #include "library/libraryfeature.h"
 #include "library/trackset/crate/crate.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -30,6 +31,7 @@ class AutoDJFeature : public LibraryFeature {
   public:
     AutoDJFeature(Library* pLibrary,
                   UserSettingsPointer pConfig,
+                  ConfigObject<ConfigValueKbd>* pKbdConfig,
                   PlayerManagerInterface* pPlayerManager);
     virtual ~AutoDJFeature();
 

@@ -22,10 +22,12 @@ const QString kIconPath = QStringLiteral(":/images/library/ic_library_%1.svg");
 LibraryFeature::LibraryFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         const QString& iconName)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
           m_pConfig(pConfig),
+          m_pKbdConfig(pKbdConfig),
           m_iconName(iconName) {
     if (!m_iconName.isEmpty()) {
         m_icon = QIcon(kIconPath.arg(m_iconName));

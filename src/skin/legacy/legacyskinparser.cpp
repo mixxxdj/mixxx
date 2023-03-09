@@ -20,6 +20,7 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
+#include "preferences/configobject.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/colorschemeparser.h"
 #include "skin/legacy/launchimage.h"
@@ -160,8 +161,9 @@ ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& elemen
     return controlFromConfigKey(key, bPersist, pCreated);
 }
 
-LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
+LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
         : m_pConfig(pConfig),
+          m_pKbdConfig(pKbdConfig),
           m_pSkinCreatedControls(nullptr),
           m_pKeyboard(nullptr),
           m_pPlayerManager(nullptr),
@@ -174,6 +176,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         QSet<ControlObject*>* pSkinCreatedControls,
         KeyboardEventFilter* pKeyboard,
         PlayerManager* pPlayerManager,
@@ -183,6 +186,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
         EffectsManager* pEffectsManager,
         RecordingManager* pRecordingManager)
         : m_pConfig(pConfig),
+          m_pKbdConfig(pKbdConfig),
           m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
@@ -1053,6 +1057,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
 
     WTrackText* pTrackText = new WTrackText(m_pParent,
             m_pConfig,
+            m_pKbdConfig,
             m_pLibrary,
             group);
     setupLabelWidget(node, pTrackText);
@@ -1084,6 +1089,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     WTrackProperty* pTrackProperty = new WTrackProperty(
             m_pParent,
             m_pConfig,
+            m_pKbdConfig,
             m_pLibrary,
             group);
     setupLabelWidget(node, pTrackProperty);
@@ -1124,6 +1130,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     WTrackWidgetGroup* pGroup = new WTrackWidgetGroup(
             m_pParent,
             m_pConfig,
+            m_pKbdConfig,
             m_pLibrary,
             group);
     commonWidgetSetup(node, pGroup);

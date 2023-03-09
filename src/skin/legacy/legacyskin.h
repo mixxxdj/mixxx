@@ -7,6 +7,7 @@
 #include <QScreen>
 #include <QString>
 
+#include "preferences/configobject.h"
 #include "skin/skin.h"
 
 namespace mixxx {
@@ -32,9 +33,10 @@ class LegacySkin : public mixxx::skin::Skin {
     QList<QString> colorschemes() const override;
 
     bool fitsScreenSize(const QScreen& screen) const override;
-    LaunchImage* loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig) const override;
+    LaunchImage* loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig) const override;
     QWidget* loadSkin(QWidget* pParent,
             UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig,
             QSet<ControlObject*>* pSkinCreatedControls,
             mixxx::CoreServices* pCoreServices) const override;
 

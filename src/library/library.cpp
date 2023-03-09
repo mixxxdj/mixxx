@@ -12,6 +12,7 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
+#include "preferences/configobject.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -64,12 +65,14 @@ const int Library::kDefaultRowHeightPx = 20;
 Library::Library(
         QObject* parent,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         TrackCollectionManager* pTrackCollectionManager,
         PlayerManager* pPlayerManager,
         RecordingManager* pRecordingManager)
         : QObject(parent),
           m_pConfig(pConfig),
+          m_pKbdConfig(pKbdConfig),
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pSidebarModel(make_parented<SidebarModel>(this)),
@@ -93,7 +96,8 @@ Library::Library(
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(
             this,
-            m_pConfig);
+            m_pConfig,
+            m_pKbdConfig);
     addFeature(m_pMixxxLibraryFeature);
 #ifdef __ENGINEPRIME__
     connect(m_pMixxxLibraryFeature,
@@ -103,12 +107,12 @@ Library::Library(
             Qt::DirectConnection /* signal-to-signal */);
 #endif
 
-    addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
+    addFeature(new AutoDJFeature(this, m_pConfig, m_pKbdConfig, pPlayerManager));
 
-    m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
+    m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig), m_pKbdConfig);
     addFeature(m_pPlaylistFeature);
 
-    m_pCrateFeature = new CrateFeature(this, m_pConfig);
+    m_pCrateFeature = new CrateFeature(this, m_pConfig, m_pKbdConfig);
     addFeature(m_pCrateFeature);
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
@@ -124,7 +128,7 @@ Library::Library(
 #endif
 
     BrowseFeature* browseFeature = new BrowseFeature(
-            this, m_pConfig, pRecordingManager);
+            this, m_pConfig, m_pKbdConfig, pRecordingManager);
     connect(browseFeature,
             &BrowseFeature::scanLibrary,
             m_pTrackCollectionManager,
@@ -139,11 +143,11 @@ Library::Library(
             &BrowseFeature::slotLibraryScanFinished);
     addFeature(browseFeature);
 
-    addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
+    addFeature(new RecordingFeature(this, m_pConfig, m_pKbdConfig, pRecordingManager));
 
-    addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
+    addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig), m_pKbdConfig));
 
-    m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
+    m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig, m_pKbdConfig);
     connect(m_pPlaylistFeature,
             &PlaylistFeature::analyzeTracks,
             m_pAnalysisFeature,
@@ -174,24 +178,24 @@ Library::Library(
     if (RhythmboxFeature::isSupported() &&
             m_pConfig->getValue(
                     ConfigKey(kConfigGroup, "ShowRhythmboxLibrary"), true)) {
-        addFeature(new RhythmboxFeature(this, m_pConfig));
+        addFeature(new RhythmboxFeature(this, m_pConfig, m_pKbdConfig));
     }
     if (m_pConfig->getValue(
                 ConfigKey(kConfigGroup, "ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(m_pConfig);
         if (BansheeFeature::isSupported()) {
-            addFeature(new BansheeFeature(this, m_pConfig));
+            addFeature(new BansheeFeature(this, m_pConfig, m_pKbdConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
             m_pConfig->getValue(
                     ConfigKey(kConfigGroup, "ShowITunesLibrary"), true)) {
-        addFeature(new ITunesFeature(this, m_pConfig));
+        addFeature(new ITunesFeature(this, m_pConfig, m_pKbdConfig));
     }
     if (TraktorFeature::isSupported() &&
             m_pConfig->getValue(
                     ConfigKey(kConfigGroup, "ShowTraktorLibrary"), true)) {
-        addFeature(new TraktorFeature(this, m_pConfig));
+        addFeature(new TraktorFeature(this, m_pConfig, m_pKbdConfig));
     }
 
     // TODO(XXX) Rekordbox feature added persistently as the only way to enable it to
@@ -200,12 +204,12 @@ Library::Library(
     // periodically. Not ideal performance wise.
     if (m_pConfig->getValue(
                 ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
-        addFeature(new RekordboxFeature(this, m_pConfig));
+        addFeature(new RekordboxFeature(this, m_pConfig, m_pKbdConfig));
     }
 
     if (m_pConfig->getValue(
                 ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
-        addFeature(new SeratoFeature(this, m_pConfig));
+        addFeature(new SeratoFeature(this, m_pConfig, m_pKbdConfig));
     }
 
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
@@ -386,6 +390,7 @@ void Library::bindLibraryWidget(
     m_pLibraryWidget = pLibraryWidget;
     WTrackTableView* pTrackTableView = new WTrackTableView(m_pLibraryWidget,
             m_pConfig,
+            m_pKbdConfig,
             this,
             m_pLibraryWidget->getTrackTableBackgroundColorOpacity(),
             true);

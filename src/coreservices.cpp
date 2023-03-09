@@ -341,6 +341,7 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pLibrary = std::make_shared<Library>(
             this,
             pConfig,
+            m_pKbdConfig.get(),
             m_pDbConnectionPool,
             m_pTrackCollectionManager.get(),
             m_pPlayerManager.get(),

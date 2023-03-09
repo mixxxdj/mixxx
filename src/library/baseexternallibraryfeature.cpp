@@ -7,6 +7,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_baseexternallibraryfeature.cpp"
+#include "preferences/configobject.h"
 #include "util/logger.h"
 #include "widget/wlibrarysidebar.h"
 
@@ -19,8 +20,9 @@ const mixxx::Logger kLogger("BaseExternalLibraryFeature");
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         const QString& iconName)
-        : LibraryFeature(pLibrary, pConfig, iconName),
+        : LibraryFeature(pLibrary, pConfig, pKbdConfig, iconName),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
     m_pAddToAutoDJAction = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,

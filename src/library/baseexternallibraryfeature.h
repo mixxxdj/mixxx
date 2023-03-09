@@ -7,6 +7,7 @@
 
 #include "library/dao/playlistdao.h"
 #include "library/libraryfeature.h"
+#include "preferences/configobject.h"
 #include "util/parented_ptr.h"
 
 class BaseSqlTableModel;
@@ -18,6 +19,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     BaseExternalLibraryFeature(
             Library* pLibrary,
             UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig,
             const QString& iconName);
     ~BaseExternalLibraryFeature() override = default;
 

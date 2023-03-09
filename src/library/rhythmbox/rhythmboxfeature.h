@@ -10,6 +10,7 @@
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
 #include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
@@ -18,7 +19,7 @@ class BaseExternalPlaylistModel;
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig);
+    RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig);
     virtual ~RhythmboxFeature();
     static bool isSupported();
 

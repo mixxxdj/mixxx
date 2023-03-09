@@ -11,6 +11,7 @@
 #include "library/librarytablemodel.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_analysisfeature.cpp"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
 #include "util/debug.h"
 #include "util/dnd.h"
@@ -50,8 +51,9 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 
 AnalysisFeature::AnalysisFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig, QStringLiteral("prepare")),
+        UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig)
+        : LibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("prepare")),
           m_baseTitle(tr("Analyze")),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
@@ -76,6 +78,7 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                  KeyboardEventFilter* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                       m_pConfig,
+                                      m_pKbdConfig,
                                       m_pLibrary);
     connect(m_pAnalysisView,
             &DlgAnalysis::loadTrack,

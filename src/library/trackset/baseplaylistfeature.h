@@ -12,6 +12,7 @@
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
+#include "preferences/configobject.h"
 #include "track/trackid.h"
 
 class WLibrary;
@@ -29,6 +30,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
   public:
     BasePlaylistFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig,
             PlaylistTableModel* pModel,
             const QString& rootViewName,
             const QString& iconName);

@@ -6,6 +6,7 @@
 #include "library/playlisttablemodel.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgautodj.cpp"
+#include "preferences/configobject.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/duration.h"
@@ -19,15 +20,18 @@ const char* kRepeatPlaylistPreference = "Requeue";
 
 DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         Library* pLibrary,
         AutoDJProcessor* pProcessor,
         KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pConfig(pConfig),
+          m_pKbdConfig(pKbdConfig),
           m_pAutoDJProcessor(pProcessor),
           m_pTrackTableView(new WTrackTableView(this,
                   m_pConfig,
+                  m_pKbdConfig,
                   pLibrary,
                   parent->getTrackTableBackgroundColorOpacity(),
                   /*no sorting*/ false)),

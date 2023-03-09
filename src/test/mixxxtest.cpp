@@ -4,6 +4,7 @@
 
 #include "control/control.h"
 #include "library/coverartutils.h"
+#include "preferences/configobject.h"
 #include "util/cmdlineargs.h"
 #include "util/logging.h"
 
@@ -57,6 +58,8 @@ MixxxTest::MixxxTest() {
     DEBUG_ASSERT(m_testDataDir.isValid());
     m_pConfig = UserSettingsPointer(new UserSettings(
             makeTestConfigFile(getTestDataDir().filePath("test.cfg"))));
+    m_pKbdConfig = new ConfigObject<ConfigValueKbd>(
+            makeTestConfigFile(getTestDataDir().filePath("testKbd.cfg")));
     ControlDoublePrivate::setUserConfig(m_pConfig);
 }
 
@@ -73,6 +76,9 @@ void MixxxTest::saveAndReloadConfig() {
     m_pConfig->save();
     m_pConfig = UserSettingsPointer(
             new UserSettings(getTestDataDir().filePath("test.cfg")));
+    m_pKbdConfig->save();
+    m_pKbdConfig = new ConfigObject<ConfigValueKbd>(
+            makeTestConfigFile(getTestDataDir().filePath("testKbd.cfg")));
     ControlDoublePrivate::setUserConfig(m_pConfig);
 }
 

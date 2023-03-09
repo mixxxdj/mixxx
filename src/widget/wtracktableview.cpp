@@ -17,6 +17,7 @@
 #include "mixer/playermanager.h"
 #include "moc_wtracktableview.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/configobject.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "sources/soundsourceproxy.h"
@@ -45,11 +46,13 @@ const QColor kDefaultFocusBorderColor = Qt::white;
 
 WTrackTableView::WTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         Library* pLibrary,
         double backgroundColorOpacity,
         bool sorting)
         : WLibraryTableView(parent, pConfig),
           m_pConfig(pConfig),
+          m_pKbdConfig(pKbdConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
           m_pFocusBorderColor(kDefaultFocusBorderColor),
@@ -331,6 +334,7 @@ void WTrackTableView::initTrackMenu() {
 
     m_pTrackMenu = make_parented<WTrackMenu>(this,
             m_pConfig,
+            m_pKbdConfig,
             m_pLibrary,
             WTrackMenu::Feature::All,
             trackModel);

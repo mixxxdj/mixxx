@@ -15,6 +15,7 @@ class RecordingFeature final : public LibraryFeature {
   public:
     RecordingFeature(Library* parent,
                      UserSettingsPointer pConfig,
+                     ConfigObject<ConfigValueKbd>* pKbdConfig,
                      RecordingManager* pRecordingManager);
     ~RecordingFeature() override = default;
 

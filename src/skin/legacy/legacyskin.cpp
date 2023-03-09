@@ -3,6 +3,7 @@
 #include <QRegularExpression>
 
 #include "coreservices.h"
+#include "preferences/configobject.h"
 #include "skin/legacy/legacyskinparser.h"
 
 namespace {
@@ -116,23 +117,25 @@ bool LegacySkin::fitsScreenSize(const QScreen& screen) const {
             skinHeight.toInt() <= screenSize.height();
 }
 
-LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig) const {
+LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return nullptr;
     }
-    LegacySkinParser parser(pConfig);
+    LegacySkinParser parser(pConfig, pKbdConfig);
     LaunchImage* pLaunchImage = parser.parseLaunchImage(m_path.absoluteFilePath(), pParent);
     return pLaunchImage;
 }
 
 QWidget* LegacySkin::loadSkin(QWidget* pParent,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         QSet<ControlObject*>* pSkinCreatedControls,
         mixxx::CoreServices* pCoreServices) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return nullptr;
     }
     LegacySkinParser legacy(pConfig,
+            pKbdConfig,
             pSkinCreatedControls,
             pCoreServices->getKeyboardEventFilter().get(),
             pCoreServices->getPlayerManager().get(),

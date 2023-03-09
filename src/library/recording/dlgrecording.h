@@ -7,6 +7,7 @@
 #include "library/proxytrackmodel.h"
 #include "library/recording/ui_dlgrecording.h"
 #include "library/trackcollection.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "recording/recordingmanager.h"
 #include "track/track_decl.h"
@@ -18,7 +19,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     Q_OBJECT
   public:
     DlgRecording(WLibrary *parent, UserSettingsPointer pConfig,
-                 Library* pLibrary,
+                 ConfigObject<ConfigValueKbd>* pKbdConfig, Library* pLibrary,
                  RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
     ~DlgRecording() override;
 

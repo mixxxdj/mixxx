@@ -13,9 +13,10 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_rhythmboxfeature.cpp"
+#include "preferences/configobject.h"
 
-RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rhythmbox")),
+RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("rhythmbox")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     QString tableName = "rhythmbox_library";

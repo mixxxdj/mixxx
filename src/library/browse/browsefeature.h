@@ -27,6 +27,7 @@ class BrowseFeature : public LibraryFeature {
   public:
     BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig,
             RecordingManager* pRecordingManager);
     virtual ~BrowseFeature();
 

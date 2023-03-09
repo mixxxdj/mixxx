@@ -11,13 +11,14 @@
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_bansheefeature.cpp"
+#include "preferences/configobject.h"
 #include "track/track.h"
 
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
 
-BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("banshee")),
+BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("banshee")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     Q_UNUSED(pConfig);

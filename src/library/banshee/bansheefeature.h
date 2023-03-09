@@ -11,6 +11,7 @@
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
 #include "library/banshee/bansheedbconnection.h"
+#include "preferences/configobject.h"
 
 
 class BansheePlaylistModel;
@@ -18,7 +19,7 @@ class BansheePlaylistModel;
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig);
+    BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);

@@ -13,6 +13,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_browsefeature.cpp"
+#include "preferences/configobject.h"
 #include "track/track.h"
 #include "util/memory.h"
 #include "widget/wlibrary.h"
@@ -28,8 +29,9 @@ const QString kQuickLinksSeparator = QStringLiteral("-+-");
 BrowseFeature::BrowseFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary, pConfig, QString("computer")),
+        : LibraryFeature(pLibrary, pConfig, pKbdConfig, QString("computer")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel, true),

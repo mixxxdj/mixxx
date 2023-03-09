@@ -6,6 +6,7 @@
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "library/ui_dlghidden.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
 class WLibrary;
@@ -17,7 +18,7 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
 
   public:
     DlgHidden(WLibrary* parent, UserSettingsPointer pConfig,
-              Library* pLibrary,
+              ConfigObject<ConfigValueKbd>* pKbdConfig, Library* pLibrary,
               KeyboardEventFilter* pKeyboard);
     ~DlgHidden() override;
 

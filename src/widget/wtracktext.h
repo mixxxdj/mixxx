@@ -4,6 +4,7 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -20,6 +21,7 @@ class WTrackText : public WLabel, public TrackDropTarget {
     WTrackText(
             QWidget* pParent,
             UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig,
             Library* pLibrary,
             const QString& group);
     ~WTrackText() override;

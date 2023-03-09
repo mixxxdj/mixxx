@@ -11,6 +11,7 @@
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
 #include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
@@ -20,7 +21,7 @@ class WLibrarySidebar;
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig);
+    ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig);
     virtual ~ITunesFeature();
     static bool isSupported();
 

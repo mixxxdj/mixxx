@@ -53,12 +53,14 @@
 WTrackMenu::WTrackMenu(
         QWidget* parent,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         Library* pLibrary,
         Features flags,
         TrackModel* trackModel)
         : QMenu(parent),
           m_pTrackModel(trackModel),
           m_pConfig(pConfig),
+          m_pKbdConfig(pKbdConfig),
           m_pLibrary(pLibrary),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),

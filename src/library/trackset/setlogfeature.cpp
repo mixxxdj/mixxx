@@ -15,6 +15,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_setlogfeature.cpp"
+#include "preferences/configobject.h"
 #include "track/track.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -28,10 +29,12 @@ using namespace mixxx::library::prefs;
 
 SetlogFeature::SetlogFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
+        UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig)
         : BasePlaylistFeature(
                   pLibrary,
                   pConfig,
+                  pKbdConfig,
                   new PlaylistTableModel(
                           nullptr,
                           pLibrary->trackCollectionManager(),

@@ -12,6 +12,7 @@
 #include "library/trackset/crate/cratestorage.h"
 #include "library/trackset/crate/cratetablemodel.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
@@ -25,7 +26,8 @@ class CrateFeature : public BaseTrackSetFeature {
 
   public:
     CrateFeature(Library* pLibrary,
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig);
     ~CrateFeature() override = default;
 
     QVariant title() override;

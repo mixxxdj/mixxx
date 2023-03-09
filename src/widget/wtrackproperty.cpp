@@ -5,6 +5,7 @@
 
 #include "control/controlobject.h"
 #include "moc_wtrackproperty.cpp"
+#include "preferences/configobject.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
@@ -30,13 +31,14 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
 WTrackProperty::WTrackProperty(
         QWidget* pParent,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         Library* pLibrary,
         const QString& group)
         : WLabel(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
+                  this, pConfig, pKbdConfig, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 

@@ -11,6 +11,7 @@
 #include "effects/effectsmanager.h"
 #include "library/library.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
@@ -24,8 +25,9 @@ namespace skin {
 
 using legacy::LegacySkin;
 
-SkinLoader::SkinLoader(UserSettingsPointer pConfig)
+SkinLoader::SkinLoader(UserSettingsPointer pConfig, ConfigObject<ConfigValueKbd>* pKbdConfig)
         : m_pConfig(pConfig),
+          m_pKbdConfig(pKbdConfig),
           m_spinnyCoverControlsCreated(false),
           m_micDuckingControlsCreated(false),
           m_numMicsEnabled(1) {
@@ -157,7 +159,7 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
     // the skin was loaded.
     setupMicDuckingControls();
 
-    QWidget* pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
+    QWidget* pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, m_pKbdConfig, pSkinCreatedControls, pCoreServices);
 
     // If the skin exists but failed to load, try to fall back to the default skin.
     if (pLoadedSkin == nullptr) {
@@ -178,7 +180,7 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
             }
 
             // This might also fail, but
-            pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
+            pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, m_pKbdConfig, pSkinCreatedControls, pCoreServices);
         }
         DEBUG_ASSERT(pLoadedSkin);
     }
@@ -195,7 +197,7 @@ LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) const {
         return nullptr;
     }
 
-    LaunchImage* pLaunchImage = pSkin->loadLaunchImage(pParent, m_pConfig);
+    LaunchImage* pLaunchImage = pSkin->loadLaunchImage(pParent, m_pConfig, m_pKbdConfig);
     if (pLaunchImage == nullptr) {
         // Construct default LaunchImage
         pLaunchImage = new LaunchImage(pParent, QString());

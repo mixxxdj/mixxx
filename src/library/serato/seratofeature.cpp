@@ -13,6 +13,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_seratofeature.cpp"
+#include "preferences/configobject.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "util/assert.h"
@@ -847,8 +848,9 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 
 SeratoFeature::SeratoFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("serato")),
+        UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("serato")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {

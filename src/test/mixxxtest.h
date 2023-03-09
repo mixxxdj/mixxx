@@ -7,6 +7,7 @@
 #include <QTemporaryDir>
 
 #include "mixxxapplication.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
 #define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
@@ -73,6 +74,7 @@ class MixxxTest : public testing::Test {
 
   protected:
     UserSettingsPointer m_pConfig;
+    ConfigObject<ConfigValueKbd>* m_pKbdConfig;
 };
 
 namespace mixxxtest {

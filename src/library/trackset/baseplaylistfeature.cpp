@@ -20,6 +20,7 @@
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "moc_baseplaylistfeature.cpp"
+#include "preferences/configobject.h"
 #include "track/track.h"
 #include "track/trackid.h"
 #include "util/assert.h"
@@ -41,10 +42,11 @@ using namespace mixxx::library::prefs;
 BasePlaylistFeature::BasePlaylistFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         PlaylistTableModel* pModel,
         const QString& rootViewName,
         const QString& iconName)
-        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
+        : BaseTrackSetFeature(pLibrary, pConfig, pKbdConfig, rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
                                 ->internalCollection()
                                 ->getPlaylistDAO()),

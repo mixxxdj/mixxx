@@ -12,6 +12,7 @@
 #include "library/dlganalysis.h"
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -21,7 +22,8 @@ class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AnalysisFeature(Library* pLibrary,
-                    UserSettingsPointer pConfig);
+                    UserSettingsPointer pConfig,
+                    ConfigObject<ConfigValueKbd>* pKbdConfig);
     ~AnalysisFeature() override = default;
 
     QVariant title() override {

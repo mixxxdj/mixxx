@@ -1,13 +1,16 @@
 #include "library/trackcollection.h"
+#include "preferences/configobject.h"
 #include "widget/wanalysislibrarytableview.h"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         QWidget* parent,
         UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
         Library* pLibrary,
         double trackTableBackgroundColorOpacity)
         : WTrackTableView(parent,
                   pConfig,
+                  pKbdConfig,
                   pLibrary,
                   trackTableBackgroundColorOpacity,
                   true) {
