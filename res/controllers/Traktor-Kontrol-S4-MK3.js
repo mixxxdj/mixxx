@@ -203,7 +203,7 @@ class HIDInputPacket {
         this.fields = [];
     }
 
-    registerCallback(callback, byteOffset, bitOffset, bitLength, signed) {
+    registerCallback(callback, byteOffset, bitOffset, bitLength, defaultOldData) {
         if (typeof callback !== "function") {
             throw Error("callback must be a function");
         }
@@ -226,16 +226,12 @@ class HIDInputPacket {
             throw Error("bitLength must be an integer between 1 and 32");
         }
 
-        if (signed === undefined) {
-            signed = false;
-        }
-
         const field = {
             callback: callback,
             byteOffset: byteOffset,
             bitOffset: bitOffset,
             bitLength: bitLength,
-            oldData: 0
+            oldData: defaultOldData
         };
         this.fields.push(field);
 
@@ -248,9 +244,10 @@ class HIDInputPacket {
         };
     }
 
-    handleInput(byteArray) {
+    handleInput(byteArray, bufferHasNoReportID) {
+        const offset = bufferHasNoReportID ? -1 : 0;
         const view = new DataView(byteArray);
-        if (view.getUint8(0) !== this.reportId) {
+        if (!bufferHasNoReportID && view.getUint8(0) !== this.reportId) {
             return;
         }
 
@@ -262,13 +259,13 @@ class HIDInputPacket {
             // The HID standard allows signed integers as well, but I am not aware
             // of any HID DJ controllers which use signed integers.
             if (numBytes === 1) {
-                data = view.getUint8(field.byteOffset);
+                data = view.getUint8(field.byteOffset + offset);
             } else if (numBytes === 2) {
-                data = view.getUint16(field.byteOffset, true);
+                data = view.getUint16(field.byteOffset + offset, true);
             } else if (numBytes === 3) {
-                data = view.getUint32(field.byteOffset, true) >>> 8;
+                data = view.getUint32(field.byteOffset + offset, true) >>> 8;
             } else if (numBytes === 4) {
-                data = view.getUint32(field.byteOffset, true);
+                data = view.getUint32(field.byteOffset + offset, true);
             } else {
                 throw Error("field bitLength must be between 1 and 32");
             }
@@ -332,7 +329,7 @@ class Component {
         if (typeof callback === "function") {
             this.input = callback;
         }
-        this.inConnection = this.inPacket.registerCallback(this.input.bind(this), this.inByte, this.inBit, this.inBitLength);
+        this.inConnection = this.inPacket.registerCallback(this.input.bind(this), this.inByte, this.inBit, this.inBitLength, this.oldDataDefault);
     }
     inDisconnect() {
         if (this.inConnection !== undefined) {
@@ -510,6 +507,8 @@ class Deck extends ComponentContainer {
 
 class Button extends Component {
     constructor(options) {
+        options.oldDataDefault = 0;
+
         super(options);
 
         if (this.input === undefined) {
@@ -930,6 +929,17 @@ class Pot extends Component {
     constructor(options) {
         super(options);
         this.hardwarePosition = null;
+        this.shiftedHardwarePosition = null;
+    }
+    setGroupKey(group, key) {
+        this.inKey = key;
+        if (key === this.outKey && group === this.group) {
+            return;
+        }
+        this.outDisconnect();
+        this.group = group;
+        this.outKey = key;
+        this.outConnect();
     }
     input(value) {
         const receivingFirstValue = this.hardwarePosition === null;
@@ -944,6 +954,7 @@ class Pot extends Component {
             engine.softTakeover(this.group, this.inKey, true);
         }
         engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+        super.outDisconnect();
     }
 }
 
@@ -1472,6 +1483,12 @@ class S4Mk3EffectUnit extends ComponentContainer {
             this.buttons[index].outKey = this.buttons[index].inKey;
             this.knobs[index].group = this.buttons[index].group;
             this.knobs[index].inKey = this.focusedEffect === null ? "meta" : "parameter" + (index + 1);
+            this.knobs[index].shift = this.focusedEffect === null ? undefined : function() {
+                this.setGroupKey(unfocusGroup, "meta");
+            };
+            this.knobs[index].unshift = this.focusedEffect === null ? undefined : function() {
+                this.setGroupKey(effectGroup, "parameter" + (index + 1));
+            };
             this.buttons[index].outConnect();
         }
     }
@@ -1634,11 +1651,7 @@ class S4Mk3Deck extends Deck {
                         wheelOutput[1] = wheelLEDmodes.ringFlash;
                         wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                        // hack around https://github.com/mixxxdj/mixxx/issues/10828
-                        // This isn't directly needed, but because we used this hack for
-                        // the track progression, we must make sure we are in sync with it's
-                        // delayed updated
-                        engine.beginTimer(decks[0] * 35, () => { controller.send(wheelOutput, null, 50, true); }, true);
+                        controller.send(wheelOutput, null, 50, true);
 
                         this.indicator(true);
                     } else if (this.previousWheelMode !== null) {
@@ -1722,13 +1735,7 @@ class S4Mk3Deck extends Deck {
                         wheelOutput[1] = wheelLEDmodes.ringFlash;
                         wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                        // hack around https://github.com/mixxxdj/mixxx/issues/10828
-                        // This isn't directly needed, but because we used this hack for
-                        // the track progression, we must make sure we are in sync with it's
-                        // delayed updated
-                        engine.beginTimer(decks[0] * 35, () => {
-                            controller.send(wheelOutput, null, 50, true);
-                        }, true);
+                        controller.send(wheelOutput, null, 50, true);
 
                         this.indicator(true);
                     } else if (this.previousWheelMode !== null) {
@@ -2458,8 +2465,7 @@ class S4Mk3Deck extends Deck {
                 wheelOutput[3] = LEDposition >> 8;
                 wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                // FIXME glitch, likely related to https://github.com/mixxxdj/mixxx/issues/10828
-                engine.beginTimer(decks[0] * 35, () => { controller.send(wheelOutput, null, 50, true); }, true);
+                controller.send(wheelOutput, null, 50, true);
 
             }
         });
@@ -2574,8 +2580,7 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
         // FIXME: Why is output not working for these?
         this.saveGain = new PushButton({
-            key: "update_replaygain_from_pregain",
-            group: group,
+            key: "update_replaygain_from_pregain"
         });
 
         this.crossfaderSwitch = new Component({
@@ -2995,12 +3000,12 @@ class S4MK3 {
         motorData[9] = velocityRight >> 8;
         controller.send(motorData, null, 49, true);
     }
-    incomingData(data) {
-        const reportId = data[0];
+    incomingData(data, _, forceReportId) {
+        const reportId = forceReportId || data[0];
         if (reportId === 1) {
-            this.inPackets[1].handleInput(data.buffer);
+            this.inPackets[1].handleInput(data.buffer, !!forceReportId);
         } else if (reportId === 2) {
-            this.inPackets[2].handleInput(data.buffer);
+            this.inPackets[2].handleInput(data.buffer, !!forceReportId);
             // The master volume, booth volume, headphone mix, and headphone volume knobs
             // control the controller's audio interface in hardware, so they are not mapped.
         } else if (reportId === 3) {
@@ -3020,6 +3025,8 @@ class S4MK3 {
 
             this.leftDeck.wheelRelative.input(view.getUint16(12, true));
             this.rightDeck.wheelRelative.input(view.getUint16(40, true));
+        } else {
+            console.warn("Unsupported HID repord with ID "+ reportId + ". Contains: "+data);
         }
     }
     init() {
@@ -3027,17 +3034,17 @@ class S4MK3 {
         const wheelLEDinitPacket = Array(26).fill(0);
         wheelLEDinitPacket[1] = 1;
         wheelLEDinitPacket[2] = 3;
-        controller.send(wheelLEDinitPacket, null, 48);
+        controller.send(wheelLEDinitPacket, null, 48, true);
         wheelLEDinitPacket[0] = 1;
-        // hack around https://github.com/mixxxdj/mixxx/issues/10828
-        engine.beginTimer(35, () => { controller.send(wheelLEDinitPacket, null, 48); }, true);
+        controller.send(wheelLEDinitPacket, null, 48);
 
         // Init wheel timer data
         wheelTimer = null;
         wheelTimerDelta = 0;
 
         // get state of knobs and faders
-        this.incomingData(new Uint8Array(controller.getInputReport(2)));
+        this.incomingData(new Uint8Array(controller.getInputReport(1)), null, 1);
+        this.incomingData(new Uint8Array(controller.getInputReport(2)), null, 2);
     }
     shutdown() {
         // button LEDs
@@ -3048,12 +3055,10 @@ class S4MK3 {
 
         const wheelOutput = Array(40).fill(0);
         // left wheel LEDs
-        // FIXME this data gets ignored due to https://github.com/mixxxdj/mixxx/issues/10828
-        // Unfortunately, because this is the teardown function, we cannot use a timer to delay the send
-        controller.send(wheelOutput, null, 50);
+        controller.send(wheelOutput, null, 50, true);
         // right wheel LEDs
         wheelOutput[0] = 1;
-        controller.send(wheelOutput, null, 50);
+        controller.send(wheelOutput, null, 50, true);
     }
 }
 
