@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QStringListModel>
 #include <QSortFilterProxyModel>
+#include <QStringListModel>
 
-#include "preferences/usersettings.h"
-#include "preferences/keyboardconfig.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
+#include "preferences/keyboardconfig.h"
+#include "preferences/usersettings.h"
 
 class RecordingManager;
 
@@ -15,9 +15,9 @@ class RecordingFeature final : public LibraryFeature {
     Q_OBJECT
   public:
     RecordingFeature(Library* parent,
-                     UserSettingsPointer pConfig,
-                     KeyboardConfigPointer pKbdConfig,
-                     RecordingManager* pRecordingManager);
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            RecordingManager* pRecordingManager);
     ~RecordingFeature() override = default;
 
     QVariant title() override;

@@ -17,9 +17,9 @@
 #include "widget/wwidget.h"
 
 DlgAnalysis::DlgAnalysis(WLibrary* parent,
-                       UserSettingsPointer pConfig,
-                       KeyboardConfigPointer pKbdConfig,
-                       Library* pLibrary)
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig,
+        Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
           m_bAnalysisActive(false) {

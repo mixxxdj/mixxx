@@ -1,7 +1,8 @@
+#include "widget/wanalysislibrarytableview.h"
+
 #include "library/trackcollection.h"
 #include "preferences/configobject.h"
 #include "preferences/keyboardconfig.h"
-#include "widget/wanalysislibrarytableview.h"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         QWidget* parent,

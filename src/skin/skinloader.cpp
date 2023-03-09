@@ -160,7 +160,11 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
     // the skin was loaded.
     setupMicDuckingControls();
 
-    QWidget* pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, m_pKbdConfig, pSkinCreatedControls, pCoreServices);
+    QWidget* pLoadedSkin = pSkin->loadSkin(pParent,
+            m_pConfig,
+            m_pKbdConfig,
+            pSkinCreatedControls,
+            pCoreServices);
 
     // If the skin exists but failed to load, try to fall back to the default skin.
     if (pLoadedSkin == nullptr) {
@@ -181,7 +185,11 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
             }
 
             // This might also fail, but
-            pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, m_pKbdConfig, pSkinCreatedControls, pCoreServices);
+            pLoadedSkin = pSkin->loadSkin(pParent,
+                    m_pConfig,
+                    m_pKbdConfig,
+                    pSkinCreatedControls,
+                    pCoreServices);
         }
         DEBUG_ASSERT(pLoadedSkin);
     }

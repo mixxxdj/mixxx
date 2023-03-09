@@ -118,7 +118,9 @@ bool LegacySkin::fitsScreenSize(const QScreen& screen) const {
             skinHeight.toInt() <= screenSize.height();
 }
 
-LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig) const {
+LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return nullptr;
     }

@@ -78,9 +78,9 @@ void AnalysisFeature::setTitleProgress(int currentTrackNumber, int totalTracksCo
 void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                  KeyboardEventFilter* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
-                                      m_pConfig,
-                                      m_pKbdConfig,
-                                      m_pLibrary);
+            m_pConfig,
+            m_pKbdConfig,
+            m_pLibrary);
     connect(m_pAnalysisView,
             &DlgAnalysis::loadTrack,
             this,

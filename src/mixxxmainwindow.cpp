@@ -85,7 +85,9 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
     initializeWindow();
 
     // Show launch image immediately so the user knows Mixxx is starting
-    m_pSkinLoader = std::make_unique<mixxx::skin::SkinLoader>(m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig());
+    m_pSkinLoader = std::make_unique<mixxx::skin::SkinLoader>(
+            m_pCoreServices->getSettings(),
+            m_pCoreServices->getKeyboardConfig());
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
     m_pCentralWidget = (QWidget*)m_pLaunchImage;
     setCentralWidget(m_pCentralWidget);

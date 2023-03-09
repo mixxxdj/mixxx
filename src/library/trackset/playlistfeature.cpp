@@ -38,7 +38,9 @@ QString createPlaylistLabel(
 
 } // anonymous namespace
 
-PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig)
+PlaylistFeature::PlaylistFeature(Library* pLibrary,
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
                   pKbdConfig,

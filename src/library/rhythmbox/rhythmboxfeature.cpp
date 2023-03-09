@@ -16,8 +16,11 @@
 #include "preferences/configobject.h"
 #include "preferences/keyboardconfig.h"
 
-RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("rhythmbox")),
+RhythmboxFeature::RhythmboxFeature(Library* pLibrary,
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig)
+        : BaseExternalLibraryFeature(
+                  pLibrary, pConfig, pKbdConfig, QStringLiteral("rhythmbox")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     QString tableName = "rhythmbox_library";

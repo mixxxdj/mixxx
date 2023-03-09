@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
-#include <QXmlStreamReader>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QStringListModel>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
+#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
 #include "library/treeitemmodel.h"
 #include "preferences/configobject.h"
 #include "preferences/keyboardconfig.h"
@@ -35,7 +35,9 @@ class TraktorPlaylistModel : public BaseExternalPlaylistModel {
 class TraktorFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
+    TraktorFeature(Library* pLibrary,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig);
     virtual ~TraktorFeature();
 
     QVariant title() override;

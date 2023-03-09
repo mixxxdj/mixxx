@@ -58,7 +58,9 @@ class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
 class RekordboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    RekordboxFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
+    RekordboxFeature(Library* pLibrary,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig);
     ~RekordboxFeature() override;
 
     QVariant title() override;

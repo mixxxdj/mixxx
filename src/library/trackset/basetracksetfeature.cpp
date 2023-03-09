@@ -1,8 +1,8 @@
 #include "library/trackset/basetracksetfeature.h"
-#include "preferences/configobject.h"
-#include "preferences/keyboardconfig.h"
 
 #include "moc_basetracksetfeature.cpp"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 
 BaseTrackSetFeature::BaseTrackSetFeature(
         Library* pLibrary,

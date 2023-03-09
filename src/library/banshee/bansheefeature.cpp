@@ -18,8 +18,11 @@
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
 
-BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("banshee")),
+BansheeFeature::BansheeFeature(Library* pLibrary,
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig)
+        : BaseExternalLibraryFeature(
+                  pLibrary, pConfig, pKbdConfig, QStringLiteral("banshee")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     Q_UNUSED(pConfig);

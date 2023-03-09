@@ -31,9 +31,9 @@ class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AutoDJFeature(Library* pLibrary,
-                  UserSettingsPointer pConfig,
-                  KeyboardConfigPointer pKbdConfig,
-                  PlayerManagerInterface* pPlayerManager);
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            PlayerManagerInterface* pPlayerManager);
     virtual ~AutoDJFeature();
 
     QVariant title() override;

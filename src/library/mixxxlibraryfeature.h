@@ -30,8 +30,8 @@ class MixxxLibraryFeature final : public LibraryFeature {
     Q_OBJECT
   public:
     MixxxLibraryFeature(Library* pLibrary,
-                        UserSettingsPointer pConfig,
-                        KeyboardConfigPointer pKbdConfig);
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig);
     ~MixxxLibraryFeature() override = default;
 
     QVariant title() override;

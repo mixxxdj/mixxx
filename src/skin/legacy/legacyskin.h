@@ -34,7 +34,9 @@ class LegacySkin : public mixxx::skin::Skin {
     QList<QString> colorschemes() const override;
 
     bool fitsScreenSize(const QScreen& screen) const override;
-    LaunchImage* loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig) const override;
+    LaunchImage* loadLaunchImage(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig) const override;
     QWidget* loadSkin(QWidget* pParent,
             UserSettingsPointer pConfig,
             KeyboardConfigPointer pKbdConfig,

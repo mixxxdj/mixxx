@@ -43,7 +43,9 @@ class Skin {
 
     virtual bool fitsScreenSize(const QScreen& screen) const = 0;
 
-    virtual LaunchImage* loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig) const = 0;
+    virtual LaunchImage* loadLaunchImage(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig) const = 0;
     virtual QWidget* loadSkin(QWidget* pParent,
             UserSettingsPointer pConfig,
             KeyboardConfigPointer pKbdConfig,

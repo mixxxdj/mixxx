@@ -18,9 +18,11 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     Q_OBJECT
 
   public:
-    DlgHidden(WLibrary* parent, UserSettingsPointer pConfig,
-              KeyboardConfigPointer pKbdConfig, Library* pLibrary,
-              KeyboardEventFilter* pKeyboard);
+    DlgHidden(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            Library* pLibrary,
+            KeyboardEventFilter* pKeyboard);
     ~DlgHidden() override;
 
     void onShow() override;

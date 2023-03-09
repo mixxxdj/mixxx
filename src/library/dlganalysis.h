@@ -20,10 +20,10 @@ class WLibrary;
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgAnalysis(WLibrary *parent,
-               UserSettingsPointer pConfig,
-               KeyboardConfigPointer pKbdConfig,
-               Library* pLibrary);
+    DlgAnalysis(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            Library* pLibrary);
     ~DlgAnalysis() override = default;
 
     void onSearch(const QString& text) override;

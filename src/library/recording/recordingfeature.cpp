@@ -38,11 +38,11 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                   KeyboardEventFilter *keyboard) {
     //The view will be deleted by LibraryWidget
     DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
-                                                    m_pConfig,
-                                                    m_pKbdConfig,
-                                                    m_pLibrary,
-                                                    m_pRecordingManager,
-                                                    keyboard);
+            m_pConfig,
+            m_pKbdConfig,
+            m_pLibrary,
+            m_pRecordingManager,
+            keyboard);
 
     pRecordingView->installEventFilter(keyboard);
     pLibraryWidget->registerView(kViewName, pRecordingView);

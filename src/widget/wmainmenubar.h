@@ -34,8 +34,7 @@ class VisibilityControlConnection : public QObject {
 class WMainMenuBar : public QMenuBar {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                 KeyboardConfigPointer pKbdConfig);
+    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
 
   public slots:
     void onLibraryScanStarted();

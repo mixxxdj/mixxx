@@ -23,8 +23,8 @@ class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AnalysisFeature(Library* pLibrary,
-                    UserSettingsPointer pConfig,
-                    KeyboardConfigPointer pKbdConfig);
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig);
     ~AnalysisFeature() override = default;
 
     QVariant title() override {

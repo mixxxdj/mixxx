@@ -19,9 +19,12 @@ class WTrackTableView;
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgRecording(WLibrary *parent, UserSettingsPointer pConfig,
-                 KeyboardConfigPointer pKbdConfig, Library* pLibrary,
-                 RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
+    DlgRecording(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            Library* pLibrary,
+            RecordingManager* pRecManager,
+            KeyboardEventFilter* pKeyboard);
     ~DlgRecording() override;
 
     void onSearch(const QString& text) override;

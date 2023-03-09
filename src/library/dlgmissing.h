@@ -18,9 +18,11 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     Q_OBJECT
 
   public:
-    DlgMissing(WLibrary* parent, UserSettingsPointer pConfig,
-               KeyboardConfigPointer pKbdConfig, Library* pLibrary,
-               KeyboardEventFilter* pKeyboard);
+    DlgMissing(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            Library* pLibrary,
+            KeyboardEventFilter* pKeyboard);
     ~DlgMissing() override;
 
     void onShow() override;

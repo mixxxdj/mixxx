@@ -1,26 +1,27 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QStringListModel>
+#include <QtConcurrentRun>
+#include <QtSql>
 
+#include "library/banshee/bansheedbconnection.h"
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
 #include "library/treeitem.h"
-#include "library/banshee/bansheedbconnection.h"
+#include "library/treeitemmodel.h"
 #include "preferences/configobject.h"
 #include "preferences/keyboardconfig.h"
-
 
 class BansheePlaylistModel;
 
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
+    BansheeFeature(Library* pLibrary,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);

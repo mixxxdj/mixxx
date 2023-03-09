@@ -5,8 +5,8 @@
 #include "library/library.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
-#include "preferences/keyboardconfig.h"
 #include "moc_libraryfeature.cpp"
+#include "preferences/keyboardconfig.h"
 #include "util/logger.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
