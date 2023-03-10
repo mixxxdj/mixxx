@@ -154,18 +154,20 @@ ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
 }
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
-    ITunesImport iTunesImport;
-    iTunesImport.isMusicFolderLocatedAfterTracks = false;
+    @autoreleasepool {
+        ITunesImport iTunesImport;
+        iTunesImport.isMusicFolderLocatedAfterTracks = false;
 
-    NSError* error = nil;
-    ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0" error:&error];
+        NSError* error = nil;
+        ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0" error:&error];
 
-    if (library) {
-        ImporterImpl impl(m_parentFeature, m_database, m_cancelImport);
+        if (library) {
+            ImporterImpl impl(m_parentFeature, m_database, m_cancelImport);
 
-        iTunesImport.playlistRoot = impl.importPlaylists(library.allPlaylists);
-        impl.importMediaItems(library.allMediaItems);
+            iTunesImport.playlistRoot = impl.importPlaylists(library.allPlaylists);
+            impl.importMediaItems(library.allMediaItems);
+        }
+
+        return iTunesImport;
     }
-
-    return iTunesImport;
 }
