@@ -92,11 +92,9 @@ void importMediaItems(NSArray<ITLibMediaItem*>* items, QSqlDatabase& database, b
 }  // anonymous namespace
 
 ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
-                                         QString iTunesFile,
                                          QSqlDatabase& database,
                                          bool& cancelImport)
     : m_parentFeature(parentFeature),
-      m_iTunesFile(iTunesFile),
       m_database(database),
       m_cancelImport(cancelImport) {
 }

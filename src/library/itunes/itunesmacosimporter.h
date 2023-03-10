@@ -9,14 +9,12 @@
 class ITunesMacOSImporter : public ITunesImporter {
   public:
     ITunesMacOSImporter(LibraryFeature* parentFeature,
-            QString iTunesFile,
             QSqlDatabase& database,
             bool& cancelImport);
 
     ITunesImport importLibrary() override;
   private:
     LibraryFeature* m_parentFeature;
-    QString m_iTunesFile;
     QSqlDatabase& m_database;
     bool& m_cancelImport;
 };
