@@ -13,6 +13,7 @@ class ITunesMacOSImporter : public ITunesImporter {
             bool& cancelImport);
 
     ITunesImport importLibrary() override;
+
   private:
     LibraryFeature* m_parentFeature;
     QSqlDatabase& m_database;
