@@ -1,6 +1,7 @@
 #include "library/itunes/itunesmacosimporter.h"
 
 #import <iTunesLibrary/iTunesLibrary.h>
+#include <qsqldatabase.h>
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -14,11 +15,21 @@
 
 namespace {
 
+struct State {
+    LibraryFeature* parentFeature;
+    QSqlDatabase& database;
+    bool& cancelImport;
+
+    State(LibraryFeature* parentFeature, QSqlDatabase& database, bool& cancelImport)
+        : parentFeature(parentFeature),
+          database(database),
+          cancelImport(cancelImport) {}
+};
+
 void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
                     QSqlQuery& queryInsertToPlaylistTracks,
-                    QSqlDatabase& database,
                     TreeItem& treeItem,
-                    bool& cancelImport) {
+                    State state) {
     // TODO: Support folders and smart playlists
 
     if (playlist.kind != ITLibPlaylistKindRegular) {
@@ -42,7 +53,7 @@ void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
 
     int i = 0;
     for (ITLibMediaItem* item in playlist.items) {
-        if (cancelImport) {
+        if (state.cancelImport) {
             return;
         }
 
@@ -59,7 +70,7 @@ void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
     }
 }
 
-void importMediaItem(ITLibMediaItem* item, QSqlQuery& query, QSqlDatabase& database) {
+void importMediaItem(ITLibMediaItem* item, QSqlQuery& query, State state) {
     query.bindValue(":id", [item.persistentID longLongValue]);
     query.bindValue(":artist", [item.artist.name cStringUsingEncoding:NSUTF8StringEncoding]);
     query.bindValue(":title", [item.title cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -84,16 +95,13 @@ void importMediaItem(ITLibMediaItem* item, QSqlQuery& query, QSqlDatabase& datab
     }
 }
 
-std::unique_ptr<TreeItem> importPlaylists(NSArray<ITLibPlaylist*>* playlists,
-                                          LibraryFeature* parentFeature,
-                                          QSqlDatabase& database,
-                                          bool& cancelImport) {
-    std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(parentFeature);
+std::unique_ptr<TreeItem> importPlaylists(NSArray<ITLibPlaylist*>* playlists, State state) {
+    std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(state.parentFeature);
 
-    QSqlQuery queryInsertToPlaylists(database);
+    QSqlQuery queryInsertToPlaylists(state.database);
     queryInsertToPlaylists.prepare("INSERT INTO itunes_playlists (id, name) VALUES (:id, :name)");
 
-    QSqlQuery queryInsertToPlaylistTracks(database);
+    QSqlQuery queryInsertToPlaylistTracks(state.database);
     queryInsertToPlaylists.prepare(
         "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
         "VALUES (:playlist_id, :track_id, :position)");
@@ -101,19 +109,19 @@ std::unique_ptr<TreeItem> importPlaylists(NSArray<ITLibPlaylist*>* playlists,
     qDebug() << "Importing playlists via native iTunesLibrary framework";
 
     for (ITLibPlaylist* playlist in playlists) {
-        if (cancelImport) {
+        if (state.cancelImport) {
             break;
         }
 
         importPlaylist(playlist, queryInsertToPlaylists,
-                       queryInsertToPlaylistTracks, database, *rootItem, cancelImport);
+                       queryInsertToPlaylistTracks, *rootItem, state);
     }
 
     return rootItem;
 }
 
-void importMediaItems(NSArray<ITLibMediaItem*>* items, QSqlDatabase& database, bool& cancelImport) {
-    QSqlQuery query(database);
+void importMediaItems(NSArray<ITLibMediaItem*>* items, State state) {
+    QSqlQuery query(state.database);
     query.prepare(
         "INSERT INTO itunes_library (id, artist, title, album, album_artist, "
         "genre, grouping, year, duration, location, rating, comment, "
@@ -124,11 +132,11 @@ void importMediaItems(NSArray<ITLibMediaItem*>* items, QSqlDatabase& database, b
     qDebug() << "Importing media items via native iTunesLibrary framework";
 
     for (ITLibMediaItem* item in items) {
-        if (cancelImport) {
+        if (state.cancelImport) {
             break;
         }
 
-        importMediaItem(item, query, database);
+        importMediaItem(item, query, state);
     }
 }
 
@@ -150,9 +158,11 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
     ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0" error:&error];
 
     if (library) {
+        State state(m_parentFeature, m_database, m_cancelImport);
+
         iTunesImport.playlistRoot = importPlaylists(
-            library.allPlaylists, m_parentFeature, m_database, m_cancelImport);
-        importMediaItems(library.allMediaItems, m_database, m_cancelImport);
+            library.allPlaylists, state);
+        importMediaItems(library.allMediaItems, state);
     }
 
     return iTunesImport;
