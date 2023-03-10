@@ -17,6 +17,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
+#include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
@@ -27,8 +28,6 @@
 
 #ifdef __MACOS_ITUNES_LIBRARY__
 #include "library/itunes/itunesmacosimporter.h"
-#else
-#include "library/itunes/itunesxmlimporter.h"
 #endif
 
 namespace {
@@ -171,32 +170,37 @@ void ITunesFeature::activate(bool forceReload) {
         if (!dbSetting.isEmpty() && QFile::exists(dbSetting)) {
             m_dbfile = dbSetting;
         } else {
+#ifndef __MACOS_ITUNES_LIBRARY__
             // No Path in settings, try the default
+            // if not on macOS, where we use the ITunesMacOSImporter if m_dbfile is empty
             m_dbfile = getiTunesMusicPath();
+#endif
         }
 
-        mixxx::FileInfo fileInfo(m_dbfile);
-        if (fileInfo.checkFileExists()) {
-            // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
-            // and using a custom iTunes path then we have to ask for access to this
-            // file.
-            Sandbox::askForAccess(&fileInfo);
-        } else {
-            // if the path we got between the default and the database doesn't
-            // exist, ask for a new one and use/save it if it exists
-            m_dbfile = showOpenDialog();
+        if (!m_dbfile.isEmpty()) {
             mixxx::FileInfo fileInfo(m_dbfile);
-            if (!fileInfo.checkFileExists()) {
-                return;
-            }
+            if (fileInfo.checkFileExists()) {
+                // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
+                // and using a custom iTunes path then we have to ask for access to this
+                // file.
+                Sandbox::askForAccess(&fileInfo);
+            } else {
+                // if the path we got between the default and the database doesn't
+                // exist, ask for a new one and use/save it if it exists
+                m_dbfile = showOpenDialog();
+                mixxx::FileInfo fileInfo(m_dbfile);
+                if (!fileInfo.checkFileExists()) {
+                    return;
+                }
 
-            // The user has picked a new directory via a file dialog. This means the
-            // system sandboxer (if we are sandboxed) has granted us permission to
-            // this folder. Create a security bookmark while we have permission so
-            // that we can access the folder on future runs. We need to canonicalize
-            // the path so we first wrap the directory string with a QDir.
-            Sandbox::createSecurityToken(&fileInfo);
-            settings.setValue(ITDB_PATH_KEY, m_dbfile);
+                // The user has picked a new directory via a file dialog. This means the
+                // system sandboxer (if we are sandboxed) has granted us permission to
+                // this folder. Create a security bookmark while we have permission so
+                // that we can access the folder on future runs. We need to canonicalize
+                // the path so we first wrap the directory string with a QDir.
+                Sandbox::createSecurityToken(&fileInfo);
+                settings.setValue(ITDB_PATH_KEY, m_dbfile);
+            }
         }
         m_isActivated =  true;
         // Let a worker thread do the XML parsing
@@ -232,7 +236,7 @@ QString ITunesFeature::showOpenDialog() {
     return QFileDialog::getOpenFileName(nullptr,
             tr("Select your iTunes library"),
             QDir::homePath(),
-            "iTunes XML (*.xml);;Music.app Library (*.musiclibrary)");
+            "iTunes XML (*.xml)");
 }
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
@@ -302,14 +306,21 @@ TreeItem* ITunesFeature::importLibrary() {
     m_pathMapping.dbITunesRoot = iTunesLocalhostToken();
 
     ITunesImport iTunesImport;
+    std::unique_ptr<ITunesImporter> importer;
 
 #ifdef __MACOS_ITUNES_LIBRARY__
-    ITunesMacOSImporter importer(this, m_database, m_cancelImport);
+    if (m_dbfile.isEmpty()) {
+        importer = std::make_unique<ITunesMacOSImporter>(this, m_database, m_cancelImport);
+    } else {
+        importer = std::make_unique<ITunesXMLImporter>(
+                this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
+    }
 #else
-    ITunesXMLImporter importer(this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
+    importer = std::make_unique<ITunesXMLImporter>(
+            this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
 #endif
 
-    iTunesImport = importer.importLibrary();
+    iTunesImport = importer->importLibrary();
 
     if (iTunesImport.isMusicFolderLocatedAfterTracks) {
         qDebug() << "Updating iTunes real path from "
