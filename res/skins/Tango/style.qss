@@ -1901,7 +1901,7 @@ decks, samplers, mic, aux, fx */
   margin-right: 1px;
 }
   #FxParameterKnobName {
-    qproperty-alignment: 'AlignLeft | AlignTop';
+    qproperty-alignment: 'AlignHCenter | AlignTop';
     font-size: 10px/10px;
     font-weight: bold;
     color: #999999;

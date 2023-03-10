@@ -22,6 +22,7 @@ class DlgCoverArtFullSize
     ~DlgCoverArtFullSize() override = default;
 
     void init(TrackPointer pTrack);
+    void initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes);
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* ) override;
     void mouseMoveEvent(QMouseEvent* ) override;
@@ -38,6 +39,7 @@ class DlgCoverArtFullSize
             mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotTrackCoverArtUpdated();
+    void adjustImageAndDialogSize();
 
     // slots that handle signals from WCoverArtMenu
     void slotCoverMenu(const QPoint& pos);

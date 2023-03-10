@@ -5,15 +5,12 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
-EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
-        : m_pResponsePipe(pResponsePipe),
+EngineEffectsManager::EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> pResponsePipe)
+        : m_pResponsePipe(std::move(pResponsePipe)),
           m_buffer1(MAX_BUFFER_LEN),
           m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
-}
-
-EngineEffectsManager::~EngineEffectsManager() {
 }
 
 void EngineEffectsManager::onCallbackStart() {
@@ -24,7 +21,7 @@ void EngineEffectsManager::onCallbackStart() {
         switch (request->type) {
         case EffectsRequest::ADD_EFFECT_CHAIN:
         case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            if (processEffectsRequest(*request, m_pResponsePipe.data())) {
+            if (processEffectsRequest(*request, m_pResponsePipe.get())) {
                 processed = true;
             }
             break;
@@ -46,7 +43,7 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             }
             processed = request->pTargetChain->processEffectsRequest(
-                    *request, m_pResponsePipe.data());
+                    *request, m_pResponsePipe.get());
             if (processed) {
                 // When an effect becomes active (part of a chain), keep
                 // it in our master list so that we can respond to
@@ -73,7 +70,7 @@ void EngineEffectsManager::onCallbackStart() {
             }
 
             processed = request->pTargetEffect
-                                ->processEffectsRequest(*request, m_pResponsePipe.data());
+                                ->processEffectsRequest(*request, m_pResponsePipe.get());
 
             if (!processed) {
                 // If we got here, the message was not handled for an

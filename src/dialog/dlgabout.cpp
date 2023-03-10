@@ -133,7 +133,13 @@ DlgAbout::DlgAbout()
             << "Somesh Metri"
             << "Maarten de Boer"
             << "Doteya"
-            << "olafklingt";
+            << "olafklingt"
+            << "Bilal Ahmed Karbelkar"
+            << "Alice Psykose"
+            << "Jakob Leifhelm"
+            << "Florian Goth"
+            << "Chase Durand"
+            << "John Last";
 
     QStringList specialThanks;
     specialThanks

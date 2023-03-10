@@ -79,6 +79,19 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
     DEBUG_ASSERT(pCoreServices);
     // These depend on the settings
+#ifdef __LINUX__
+    // If the desktop features a global menubar and we'll go fullscreen during
+    // startup, set Qt::AA_DontUseNativeMenuBar so the menubar is placed in the
+    // window like it's done in slotViewFullScreen(). On other desktops this
+    // attribute has no effect. This is a safe alternative to setNativeMenuBar()
+    // which can cause a crash when using menu shortcuts like Alt+F after resetting
+    // the menubar. See https://github.com/mixxxdj/mixxx/issues/11320
+    bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    QApplication::setAttribute(
+            Qt::AA_DontUseNativeMenuBar,
+            CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref);
+#endif // __LINUX__
     createMenuBar();
     m_pMenuBar->hide();
 
@@ -127,7 +140,7 @@ void MixxxMainWindow::initialize() {
     bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
     if (CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) {
-        slotViewFullScreen(true);
+        showFullScreen();
     }
 
     initializationProgressUpdate(65, tr("skin"));
@@ -865,17 +878,18 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
     if (toggle) {
         showFullScreen();
 #ifdef __LINUX__
-        // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
-        // #885890 and Bug #1076789. Before touching anything here, please read
+        // Fix for "No menu bar with ubuntu unity in full screen mode" (issues
+        // #885890 and #1076789. Before touching anything here, please read
         // those bugs.
+        // Set this attribute instead of calling setNativeMenuBar(false), see
+        // https://github.com/mixxxdj/mixxx/issues/11320
+        QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, true);
         createMenuBar();
         connectMenuBar();
-        if (m_pMenuBar->isNativeMenuBar()) {
-            m_pMenuBar->setNativeMenuBar(false);
-        }
 #endif
     } else {
 #ifdef __LINUX__
+        QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, false);
         createMenuBar();
         connectMenuBar();
 #endif
@@ -1083,7 +1097,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     }
     QMainWindow::closeEvent(event);
 }
-
 
 void MixxxMainWindow::checkDirectRendering() {
     // IF

@@ -528,13 +528,15 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
 QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     qDebug() << "CrateFeature::rebuildChildModel()" << selectedCrateId;
 
+    m_lastRightClickedIndex = QModelIndex();
+
     TreeItem* pRootItem = m_pSidebarModel->getRootItem();
     VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
         return QModelIndex();
     }
     m_pSidebarModel->removeRows(0, pRootItem->childRows());
 
-    QList<TreeItem*> modelRows;
+    std::vector<std::unique_ptr<TreeItem>> modelRows;
     modelRows.reserve(m_pTrackCollection->crates().countCrates());
 
     int selectedRow = -1;
@@ -542,9 +544,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
             m_pTrackCollection->crates().selectCrateSummaries());
     CrateSummary crateSummary;
     while (crateSummaries.populateNext(&crateSummary)) {
-        auto pTreeItem = newTreeItemForCrateSummary(crateSummary);
-        modelRows.append(pTreeItem.get());
-        pTreeItem.release();
+        modelRows.push_back(newTreeItemForCrateSummary(crateSummary));
         if (selectedCrateId == crateSummary.getId()) {
             // save index for selection
             selectedRow = modelRows.size() - 1;
@@ -552,7 +552,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_pSidebarModel->insertTreeItemRows(modelRows, 0);
+    m_pSidebarModel->insertTreeItemRows(std::move(modelRows), 0);
 
     // Update rendering of crates depending on the currently selected track
     slotTrackSelected(m_selectedTrackId);
