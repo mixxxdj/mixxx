@@ -1,7 +1,6 @@
 #include "library/itunes/itunesmacosimporter.h"
 
 #import <iTunesLibrary/iTunesLibrary.h>
-#include <qsqlquery.h>
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -26,7 +25,7 @@ void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
         return;
     }
 
-    int playlistId = [playlist.persistentID intValue];
+    long long playlistId = [playlist.persistentID longLongValue];
     QString playlistName = [playlist.name cStringUsingEncoding:NSUTF8StringEncoding];
 
     queryInsertToPlaylists.bindValue(":id", playlistId);
@@ -48,7 +47,7 @@ void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
         }
 
         queryInsertToPlaylistTracks.bindValue(":playlist_id", playlistId);
-        queryInsertToPlaylistTracks.bindValue(":track_id", [item.persistentID intValue]);
+        queryInsertToPlaylistTracks.bindValue(":track_id", [item.persistentID longLongValue]);
         queryInsertToPlaylistTracks.bindValue(":position", i);
 
         if (!queryInsertToPlaylistTracks.exec()) {
@@ -61,7 +60,7 @@ void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
 }
 
 void importMediaItem(ITLibMediaItem* item, QSqlQuery& query, QSqlDatabase& database) {
-    query.bindValue(":id", [item.persistentID intValue]);
+    query.bindValue(":id", [item.persistentID longLongValue]);
     query.bindValue(":artist", [item.artist.name cStringUsingEncoding:NSUTF8StringEncoding]);
     query.bindValue(":title", [item.title cStringUsingEncoding:NSUTF8StringEncoding]);
     query.bindValue(":album", [item.album.title cStringUsingEncoding:NSUTF8StringEncoding]);
