@@ -1,6 +1,7 @@
 #include "library/itunes/itunesmacosimporter.h"
 
 #import <iTunesLibrary/iTunesLibrary.h>
+#include <qsqlquery.h>
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -16,8 +17,47 @@ namespace {
 
 void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
                     QSqlQuery& queryInsertToPlaylistTracks,
-                    QSqlDatabase& database) {
-    // TODO
+                    QSqlDatabase& database,
+                    TreeItem& treeItem,
+                    bool& cancelImport) {
+    // TODO: Support folders and smart playlists
+
+    if (playlist.kind != ITLibPlaylistKindRegular) {
+        return;
+    }
+
+    int playlistId = [playlist.persistentID intValue];
+    QString playlistName = [playlist.name cStringUsingEncoding:NSUTF8StringEncoding];
+
+    queryInsertToPlaylists.bindValue(":id", playlistId);
+    queryInsertToPlaylists.bindValue(":name", playlistName);
+
+    // TODO: Handle duplicate playlists by appending id (see xml importer)
+
+    if (!queryInsertToPlaylists.exec()) {
+        LOG_FAILED_QUERY(queryInsertToPlaylists);
+        return;
+    }
+
+    treeItem.appendChild(playlistName);
+
+    int i = 0;
+    for (ITLibMediaItem* item in playlist.items) {
+        if (cancelImport) {
+            return;
+        }
+
+        queryInsertToPlaylistTracks.bindValue(":playlist_id", playlistId);
+        queryInsertToPlaylistTracks.bindValue(":track_id", [item.persistentID intValue]);
+        queryInsertToPlaylistTracks.bindValue(":position", i);
+
+        if (!queryInsertToPlaylistTracks.exec()) {
+            LOG_FAILED_QUERY(queryInsertToPlaylistTracks);
+            return;
+        }
+
+        i++;
+    }
 }
 
 void importMediaItem(ITLibMediaItem* item, QSqlQuery& query, QSqlDatabase& database) {
@@ -39,9 +79,7 @@ void importMediaItem(ITLibMediaItem* item, QSqlQuery& query, QSqlDatabase& datab
     query.bindValue(":bpm", static_cast<int>(item.beatsPerMinute));
     query.bindValue(":bitrate", static_cast<int>(item.bitrate));
 
-    bool success = query.exec();
-
-    if (!success) {
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
     }
@@ -53,7 +91,13 @@ std::unique_ptr<TreeItem> importPlaylists(NSArray<ITLibPlaylist*>* playlists,
                                           bool& cancelImport) {
     std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(parentFeature);
 
-    // TODO: Create queries
+    QSqlQuery queryInsertToPlaylists(database);
+    queryInsertToPlaylists.prepare("INSERT INTO itunes_playlists (id, name) VALUES (:id, :name)");
+
+    QSqlQuery queryInsertToPlaylistTracks(database);
+    queryInsertToPlaylists.prepare(
+        "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
+        "VALUES (:playlist_id, :track_id, :position)");
 
     qDebug() << "Importing playlists via native iTunesLibrary framework";
 
@@ -62,14 +106,14 @@ std::unique_ptr<TreeItem> importPlaylists(NSArray<ITLibPlaylist*>* playlists,
             break;
         }
 
-        // TODO: importPlaylist(playlist, ..., database);
+        importPlaylist(playlist, queryInsertToPlaylists,
+                       queryInsertToPlaylistTracks, database, *rootItem, cancelImport);
     }
 
     return rootItem;
 }
 
 void importMediaItems(NSArray<ITLibMediaItem*>* items, QSqlDatabase& database, bool& cancelImport) {
-    // TODO: More fields
     QSqlQuery query(database);
     query.prepare(
         "INSERT INTO itunes_library (id, artist, title, album, album_artist, "
