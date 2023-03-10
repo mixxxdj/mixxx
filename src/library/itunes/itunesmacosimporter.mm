@@ -99,7 +99,7 @@ class ImporterImpl {
             "INSERT INTO itunes_playlists (id, name) VALUES (:id, :name)");
 
         QSqlQuery queryInsertToPlaylistTracks(m_database);
-        queryInsertToPlaylists.prepare(
+        queryInsertToPlaylistTracks.prepare(
             "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
 
