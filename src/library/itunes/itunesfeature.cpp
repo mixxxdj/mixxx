@@ -304,7 +304,7 @@ TreeItem* ITunesFeature::importLibrary() {
     ITunesImport iTunesImport;
 
 #ifdef __MACOS_ITUNES_LIBRARY__
-    ITunesMacOSImporter importer(m_dbfile);
+    ITunesMacOSImporter importer(this, m_dbfile, m_database, m_cancelImport);
 #else
     ITunesXMLImporter importer(this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
 #endif
