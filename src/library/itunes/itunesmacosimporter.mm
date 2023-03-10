@@ -31,9 +31,9 @@ void importMediaItem(ITLibMediaItem* item, QSqlQuery& query, QSqlDatabase& datab
     query.bindValue(":genre", [item.genre cStringUsingEncoding:NSUTF8StringEncoding]);
     query.bindValue(":grouping", [item.grouping cStringUsingEncoding:NSUTF8StringEncoding]);
     query.bindValue(":year", static_cast<int>(item.year));
-    query.bindValue(":duration", static_cast<int>(item.totalTime));
+    query.bindValue(":duration", static_cast<int>(item.totalTime / 1000));
     query.bindValue(":location", [[item.location path] cStringUsingEncoding:NSUTF8StringEncoding]);
-    query.bindValue(":rating", static_cast<int>(item.rating));
+    query.bindValue(":rating", static_cast<int>(item.rating / 20));
     query.bindValue(":comment", [item.comments cStringUsingEncoding:NSUTF8StringEncoding]);
     query.bindValue(":tracknumber", static_cast<int>(item.trackNumber));
     query.bindValue(":bpm", static_cast<int>(item.beatsPerMinute));
