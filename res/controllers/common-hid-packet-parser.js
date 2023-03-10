@@ -415,18 +415,27 @@ class HIDPacket {
         }
 
         const dataView = new DataView(data.buffer);
-        if (field.pack === "b") {
+        switch (field.pack) {
+        case "b":
             dataView.setInt8(field.offset, value);
-        } else if (field.pack === "B") {
+            break;
+        case "B":
             dataView.setUint8(field.offset, value);
-        } else if (field.pack === "h") {
+            break;
+        case "h":
             dataView.setInt16(field.offset, value, true);
-        } else if (field.pack === "H") {
+            break;
+        case "H":
             dataView.setUint16(field.offset, value, true);
-        } else if (field.pack === "i") {
+            break;
+        case "i":
             dataView.setInt32(field.offset, value, true);
-        } else if (field.pack === "I") {
+            break;
+        case "I":
             dataView.setUint32(field.offset, value, true);
+            break;
+        default:
+              // Impossible, because range checked at beginning of the function
         }
     }
     /**
@@ -446,19 +455,20 @@ class HIDPacket {
      */
     unpack(data, field) {
         const dataView = new DataView(data.buffer);
-        if (field.pack === "b") {
+        switch (field.pack) {
+        case "b":
             return dataView.getInt8(field.offset);
-        } else if (field.pack === "B") {
+        case "B":
             return dataView.getUint8(field.offset);
-        } else if (field.pack === "h") {
+        case "h":
             return dataView.getInt16(field.offset, true);
-        } else if (field.pack === "H") {
+        case "H":
             return dataView.getUint16(field.offset, true);
-        } else if (field.pack === "i") {
+        case "i":
             return dataView.getInt32(field.offset, true);
-        } else if (field.pack === "I") {
+        case "I":
             return dataView.getUint32(field.offset, true);
-        } else {
+        default:
             console.error(`HIDPacket.unpack - Parsing packed value: invalid pack format ${field.pack}`);
             return undefined;
         }
