@@ -19,7 +19,8 @@ class ImporterImpl {
     ImporterImpl(LibraryFeature* parentFeature, QSqlDatabase& database, bool& cancelImport)
         : m_parentFeature(parentFeature),
           m_database(database),
-          m_cancelImport(cancelImport) {}
+          m_cancelImport(cancelImport),
+          m_persistentIdToDbId([[NSMutableDictionary alloc] init]) {}
 
     void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
                         QSqlQuery& queryInsertToPlaylistTracks,
@@ -30,7 +31,7 @@ class ImporterImpl {
             return;
         }
 
-        long long playlistId = [playlist.persistentID longLongValue];
+        int playlistId = persistentIdToDbId(playlist.persistentID);
         QString playlistName = [playlist.name cStringUsingEncoding:NSUTF8StringEncoding];
 
         queryInsertToPlaylists.bindValue(":id", playlistId);
@@ -52,7 +53,8 @@ class ImporterImpl {
             }
 
             queryInsertToPlaylistTracks.bindValue(":playlist_id", playlistId);
-            queryInsertToPlaylistTracks.bindValue(":track_id", [item.persistentID longLongValue]);
+            queryInsertToPlaylistTracks.bindValue(
+                ":track_id", persistentIdToDbId(item.persistentID));
             queryInsertToPlaylistTracks.bindValue(":position", i);
 
             if (!queryInsertToPlaylistTracks.exec()) {
@@ -65,7 +67,7 @@ class ImporterImpl {
     }
 
     void importMediaItem(ITLibMediaItem* item, QSqlQuery& query) {
-        query.bindValue(":id", [item.persistentID longLongValue]);
+        query.bindValue(":id", persistentIdToDbId(item.persistentID));
         query.bindValue(":artist", [item.artist.name cStringUsingEncoding:NSUTF8StringEncoding]);
         query.bindValue(":title", [item.title cStringUsingEncoding:NSUTF8StringEncoding]);
         query.bindValue(":album", [item.album.title cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -141,6 +143,22 @@ class ImporterImpl {
     LibraryFeature* m_parentFeature;
     QSqlDatabase& m_database;
     bool& m_cancelImport;
+    NSMutableDictionary<NSNumber*, NSNumber*>* m_persistentIdToDbId;
+
+    int persistentIdToDbId(NSNumber* persistentId) {
+        // TODO: Unfortunately the ids iTunes uses are occasionally larger than 64-bit integers,
+        // hand-rolling an indexing scheme however comes with the drawback of instability across
+        // executions and may require a lot of space for large libraries. Perhaps some form of
+        // hashing would be a better option with some strategy to avoid collisions?
+        NSNumber* existing = m_persistentIdToDbId[persistentId];
+        if (existing) {
+            return [existing intValue];
+        } else {
+            int dbId = [m_persistentIdToDbId count];
+            m_persistentIdToDbId[persistentId] = [NSNumber numberWithInt:dbId];
+            return dbId;
+        }
+    }
 };
 
 }  // anonymous namespace
