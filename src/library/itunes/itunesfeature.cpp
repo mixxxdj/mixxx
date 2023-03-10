@@ -184,8 +184,7 @@ void ITunesFeature::activate(bool forceReload) {
         } else {
             // if the path we got between the default and the database doesn't
             // exist, ask for a new one and use/save it if it exists
-            m_dbfile = QFileDialog::getOpenFileName(
-                    nullptr, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
+            m_dbfile = showOpenDialog();
             mixxx::FileInfo fileInfo(m_dbfile);
             if (!fileInfo.checkFileExists()) {
                 return;
@@ -229,6 +228,13 @@ TreeItemModel* ITunesFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
 
+QString ITunesFeature::showOpenDialog() {
+    return QFileDialog::getOpenFileName(nullptr,
+            tr("Select your iTunes library"),
+            QDir::homePath(),
+            "iTunes XML (*.xml);;Music.app Library (*.musiclibrary)");
+}
+
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
     QMenu menu(m_pSidebarWidget);
@@ -243,8 +249,7 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
         activate(true); // clears tables before parsing
     } else if (chosen == &chooseNew) {
         SettingsDAO settings(m_database);
-        QString dbfile = QFileDialog::getOpenFileName(
-                nullptr, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
+        QString dbfile = showOpenDialog();
 
         mixxx::FileInfo dbFileInfo(dbfile);
         if (!dbFileInfo.checkFileExists()) {

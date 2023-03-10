@@ -53,6 +53,8 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void clearTable(const QString& table_name);
     bool readNextStartElement(QXmlStreamReader& xml);
 
+    QString showOpenDialog();
+
     BaseExternalTrackModel* m_pITunesTrackModel;
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;
     parented_ptr<TreeItemModel> m_pSidebarModel;
