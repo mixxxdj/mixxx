@@ -1166,7 +1166,7 @@ if(APPLE)
     target_sources(mixxx-lib PRIVATE
       src/library/itunes/itunesmacosimporter.mm
     )
-    target_link_libraries(mixxx-lib PRIVATE "-framework iTunesLibrary")
+    target_link_libraries(mixxx-lib PRIVATE "-weak_framework iTunesLibrary")
     target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
   endif()
 endif()
