@@ -6,7 +6,7 @@
 ITunesMacOSImporter::ITunesMacOSImporter(QString iTunesFile)
     : m_iTunesFile(iTunesFile) {}
 
-ITunesImport importLibrary() {
+ITunesImport ITunesMacOSImporter::importLibrary() {
     ITunesImport iTunesImport;
     iTunesImport.isMusicFolderLocatedAfterTracks = false;
 

@@ -12,7 +12,7 @@
 class ITunesXMLImporter : public ITunesImporter {
   public:
     ITunesXMLImporter(LibraryFeature* parentFeature,
-            QXmlStreamReader& xml,
+            QString filePath,
             QSqlDatabase& database,
             ITunesPathMapping& pathMapping,
             bool& cancelImport);
@@ -21,7 +21,8 @@ class ITunesXMLImporter : public ITunesImporter {
 
   private:
     LibraryFeature* m_parentFeature;
-    QXmlStreamReader& m_xml;
+    QFile m_file;
+    QXmlStreamReader m_xml;
     QString m_dbfile;
     QSqlDatabase& m_database;
     ITunesPathMapping& m_pathMapping;

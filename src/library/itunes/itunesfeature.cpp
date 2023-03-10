@@ -17,7 +17,6 @@
 #include "library/dao/settingsdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
-#include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
@@ -25,6 +24,12 @@
 #include "moc_itunesfeature.cpp"
 #include "util/sandbox.h"
 #include "widget/wlibrarysidebar.h"
+
+#ifdef __MACOS_ITUNES_LIBRARY__
+#include "library/itunes/itunesmacosimporter.h"
+#else
+#include "library/itunes/itunesxmlimporter.h"
+#endif
 
 namespace {
 
@@ -291,20 +296,15 @@ TreeItem* ITunesFeature::importLibrary() {
     m_pathMapping.mixxxITunesRoot = "";
     m_pathMapping.dbITunesRoot = iTunesLocalhostToken();
 
-    QFile iTunesFile(m_dbfile);
-    if (!iTunesFile.open(QIODevice::ReadOnly)) {
-        qDebug() << "Cannot open iTunes music collection";
-        return nullptr;
-    }
-
     ITunesImport iTunesImport;
 
-    QXmlStreamReader xml(&iTunesFile);
-    ITunesXMLImporter importer(this, xml, m_database, m_pathMapping, m_cancelImport);
+#ifdef __MACOS_ITUNES_LIBRARY__
+    ITunesMacOSImporter importer(m_dbfile);
+#else
+    ITunesXMLImporter importer(this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
+#endif
 
     iTunesImport = importer.importLibrary();
-
-    iTunesFile.close();
 
     if (iTunesImport.isMusicFolderLocatedAfterTracks) {
         qDebug() << "Updating iTunes real path from "

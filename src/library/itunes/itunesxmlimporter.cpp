@@ -4,6 +4,7 @@
 #include <QString>
 #include <QUrl>
 #include <memory>
+#include <utility>
 
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
@@ -43,12 +44,13 @@ const QString kRemote = "Remote";
 } // anonymous namespace
 
 ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
-        QXmlStreamReader& xml,
+        QString filePath,
         QSqlDatabase& database,
         ITunesPathMapping& pathMapping,
         bool& cancelImport)
         : m_parentFeature(parentFeature),
-          m_xml(xml),
+          m_file(filePath),
+          m_xml(&m_file),
           m_database(database),
           m_pathMapping(pathMapping),
           m_cancelImport(cancelImport) {
@@ -59,6 +61,11 @@ ITunesImport ITunesXMLImporter::importLibrary() {
 
     ITunesImport iTunesImport;
     iTunesImport.isMusicFolderLocatedAfterTracks = false;
+
+    if (!m_file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Could not open iTunes music collection";
+        return iTunesImport;
+    }
 
     while (!m_xml.atEnd() && !m_cancelImport) {
         m_xml.readNext();
