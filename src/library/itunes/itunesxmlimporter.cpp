@@ -44,7 +44,7 @@ const QString kRemote = "Remote";
 } // anonymous namespace
 
 ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
-        QString filePath,
+        const QString& filePath,
         QSqlDatabase& database,
         ITunesPathMapping& pathMapping,
         bool& cancelImport)
