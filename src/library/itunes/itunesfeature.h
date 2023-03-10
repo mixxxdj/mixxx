@@ -8,6 +8,7 @@
 #include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
+#include "library/itunes/itunesimporter.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
@@ -65,8 +66,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QFuture<TreeItem*> m_future;
     QString m_title;
 
-    QString m_dbItunesRoot;
-    QString m_mixxxItunesRoot;
+    ITunesPathMapping m_pathMapping;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
