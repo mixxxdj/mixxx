@@ -16,7 +16,7 @@
 #include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
 #include "library/itunes/itunesimporter.h"
-#include "library/itunes/itunesutils.h"
+#include "library/itunes/ituneslocalhosttoken.h"
 #include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
 #include "library/queryutil.h"

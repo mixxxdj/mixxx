@@ -9,6 +9,7 @@
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/itunes/itunesimporter.h"
+#include "library/itunes/itunespathmapping.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"

@@ -1,4 +1,4 @@
-#include "library/itunes/itunesutils.h"
+#include "library/itunes/ituneslocalhosttoken.h"
 
 #include <QString>
 

@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "library/itunes/itunesimporter.h"
-#include "library/itunes/itunesutils.h"
+#include "library/itunes/itunespathmapping.h"
 #include "library/libraryfeature.h"
 
 /// An importer that parses an iTunes XML library.

@@ -6,7 +6,8 @@
 #include <memory>
 
 #include "library/itunes/itunesimporter.h"
-#include "library/itunes/itunesutils.h"
+#include "library/itunes/ituneslocalhosttoken.h"
+#include "library/itunes/itunespathmapping.h"
 #include "library/queryutil.h"
 #include "library/treeitemmodel.h"
 #include "util/lcs.h"

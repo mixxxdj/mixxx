@@ -3,7 +3,6 @@
 #include <memory>
 #include <optional>
 
-#include "library/itunes/itunesutils.h"
 #include "library/treeitem.h"
 
 struct ITunesImport {

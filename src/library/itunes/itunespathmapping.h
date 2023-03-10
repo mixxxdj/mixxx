@@ -6,5 +6,3 @@ struct ITunesPathMapping {
     QString dbITunesRoot;
     QString mixxxITunesRoot;
 };
-
-QString iTunesLocalhostToken();
