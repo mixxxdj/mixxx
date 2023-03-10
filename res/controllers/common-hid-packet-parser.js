@@ -1445,12 +1445,7 @@ class HIDController {
      *     can't be found.
      */
     getOutputField(m_group, m_name) {
-        const field = this.OutputFieldLookup.get([m_group, m_name].toString());
-        if (field) {
-            return field;
-        }
-
-        return undefined;
+        return this.OutputFieldLookup.get([m_group, m_name].toString());
     }
     /**
      * Find input packet matching given name.
