@@ -24,8 +24,7 @@ class ImporterImpl {
    public:
     ImporterImpl(QSqlDatabase& database, bool& cancelImport)
         : m_database(database),
-          m_cancelImport(cancelImport),
-          m_dbIdByPersistentId([[NSMutableDictionary alloc] init]) {}
+          m_cancelImport(cancelImport) {}
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
         QSqlQuery queryInsertToPlaylists(m_database);
@@ -84,22 +83,24 @@ class ImporterImpl {
     QSqlDatabase& m_database;
     bool& m_cancelImport;
 
-    NSMutableDictionary<NSNumber*, NSNumber*>* m_dbIdByPersistentId;
+    QHash<unsigned long long, int> m_dbIdByPersistentId;
     QHash<QString, int> m_playlistDuplicatesByName;
     QHash<int, QString> m_playlistNameByDbId;
     QMultiHash<int, int> m_playlistChildsByDbId;
 
-    int persistentIdToDbId(NSNumber* persistentId) {
-        // TODO: Unfortunately the ids iTunes uses are occasionally larger than 64-bit integers,
-        // hand-rolling an indexing scheme however comes with the drawback of instability across
-        // executions and may require a lot of space for large libraries. Perhaps some form of
-        // hashing would be a better option with some strategy to avoid collisions?
-        NSNumber* existing = m_dbIdByPersistentId[persistentId];
-        if (existing) {
-            return [existing intValue];
+    int persistentIdToDbId(NSNumber* boxedPersistentId) {
+        // Map a persistent ID as used by iTunes to an (incrementing) database ID
+        // The persistent IDs used by iTunes occasionally exceed signed 64-bit ints,
+        // so we cannot use them directly, unfortunately (also we currently use the
+        // fact that our deterministic indexing scheme starts at 0 to represent the
+        // root of the playlist tree with -1 in appendPlaylistTree).
+        unsigned long long persistentId = [boxedPersistentId unsignedLongLongValue];
+        auto existing = m_dbIdByPersistentId.find(persistentId);
+        if (existing != m_dbIdByPersistentId.end()) {
+            return existing.value();
         } else {
-            int dbId = [m_dbIdByPersistentId count];
-            m_dbIdByPersistentId[persistentId] = [NSNumber numberWithInt:dbId];
+            int dbId = m_dbIdByPersistentId.size();
+            m_dbIdByPersistentId[persistentId] = dbId;
             return dbId;
         }
     }
