@@ -1,6 +1,9 @@
 #include "library/itunes/itunesmacosimporter.h"
 
 #import <iTunesLibrary/iTunesLibrary.h>
+#include <unordered_map>
+#include <utility>
+#include "library/treeitem.h"
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -16,15 +19,12 @@ namespace {
 
 class ImporterImpl {
    public:
-    ImporterImpl(LibraryFeature* parentFeature, QSqlDatabase& database, bool& cancelImport)
-        : m_parentFeature(parentFeature),
-          m_database(database),
+    ImporterImpl(QSqlDatabase& database, bool& cancelImport)
+        : m_database(database),
           m_cancelImport(cancelImport),
           m_persistentIdToDbId([[NSMutableDictionary alloc] init]) {}
 
-    std::unique_ptr<TreeItem> importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
-        std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
-
+    void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
         QSqlQuery queryInsertToPlaylists(m_database);
         queryInsertToPlaylists.prepare(
             "INSERT INTO itunes_playlists (id, name) VALUES (:id, :name)");
@@ -42,10 +42,8 @@ class ImporterImpl {
             }
 
             importPlaylist(playlist, queryInsertToPlaylists,
-                           queryInsertToPlaylistTracks, *rootItem);
+                           queryInsertToPlaylistTracks);
         }
-
-        return rootItem;
     }
 
     void importMediaItems(NSArray<ITLibMediaItem*>* items) {
@@ -68,8 +66,16 @@ class ImporterImpl {
         }
     }
 
+    void insertIntoTree(NSArray<ITLibPlaylist*>* playlists, TreeItem& treeItem) {
+        for (ITLibPlaylist* playlist in playlists) {
+            if (isPlaylistShown(playlist)) {
+                QString name = [[playlist name] cStringUsingEncoding:NSUTF8StringEncoding];
+                treeItem.appendChild(name);
+            }
+        }
+    }
+
    private:
-    LibraryFeature* m_parentFeature;
     QSqlDatabase& m_database;
     bool& m_cancelImport;
     NSMutableDictionary<NSNumber*, NSNumber*>* m_persistentIdToDbId;
@@ -134,8 +140,7 @@ class ImporterImpl {
     }
 
     void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
-                        QSqlQuery& queryInsertToPlaylistTracks,
-                        TreeItem& treeItem) {
+                        QSqlQuery& queryInsertToPlaylistTracks) {
         if (!isPlaylistShown(playlist)) {
             return;
         }
@@ -152,8 +157,6 @@ class ImporterImpl {
             LOG_FAILED_QUERY(queryInsertToPlaylists);
             return;
         }
-
-        treeItem.appendChild(playlistName);
 
         int i = 0;
         for (ITLibMediaItem* item in playlist.items) {
@@ -222,10 +225,14 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
         ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0" error:&error];
 
         if (library) {
-            ImporterImpl impl(m_parentFeature, m_database, m_cancelImport);
+            ImporterImpl impl(m_database, m_cancelImport);
+            std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
 
-            iTunesImport.playlistRoot = impl.importPlaylists(library.allPlaylists);
+            impl.importPlaylists(library.allPlaylists);
             impl.importMediaItems(library.allMediaItems);
+            impl.insertIntoTree(library.allPlaylists, *rootItem);
+
+            iTunesImport.playlistRoot = std::move(rootItem);
         }
 
         return iTunesImport;
