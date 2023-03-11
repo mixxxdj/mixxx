@@ -1,27 +1,28 @@
 #include "library/itunes/itunesmacosimporter.h"
 
 #import <iTunesLibrary/iTunesLibrary.h>
-#include <unordered_map>
-#include <utility>
-#include "library/treeitem.h"
 
+#include <QMap>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
 #include <memory>
+#include <utility>
 
 #include "library/itunes/itunesimporter.h"
 #include "library/libraryfeature.h"
 #include "library/queryutil.h"
+#include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 
 namespace {
 
 class ImporterImpl {
    public:
-    ImporterImpl(QSqlDatabase& database, bool& cancelImport)
+    ImporterImpl(QSqlDatabase& database, bool& cancelImport, TreeItem& rootItem)
         : m_database(database),
           m_cancelImport(cancelImport),
+          m_rootItem(rootItem),
           m_persistentIdToDbId([[NSMutableDictionary alloc] init]) {}
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
@@ -66,19 +67,12 @@ class ImporterImpl {
         }
     }
 
-    void insertIntoTree(NSArray<ITLibPlaylist*>* playlists, TreeItem& treeItem) {
-        for (ITLibPlaylist* playlist in playlists) {
-            if (isPlaylistShown(playlist)) {
-                QString name = [[playlist name] cStringUsingEncoding:NSUTF8StringEncoding];
-                treeItem.appendChild(name);
-            }
-        }
-    }
-
    private:
     QSqlDatabase& m_database;
     bool& m_cancelImport;
+    TreeItem& m_rootItem;
     NSMutableDictionary<NSNumber*, NSNumber*>* m_persistentIdToDbId;
+    QMap<QString, int> m_playlistDuplicatesByName;
 
     int persistentIdToDbId(NSNumber* persistentId) {
         // TODO: Unfortunately the ids iTunes uses are occasionally larger than 64-bit integers,
@@ -92,6 +86,17 @@ class ImporterImpl {
             int dbId = [m_persistentIdToDbId count];
             m_persistentIdToDbId[persistentId] = [NSNumber numberWithInt:dbId];
             return dbId;
+        }
+    }
+
+    QString uniquifyPlaylistName(QString name) {
+        auto existing = m_playlistDuplicatesByName.find(name);
+        if (existing != m_playlistDuplicatesByName.end()) {
+            m_playlistDuplicatesByName[name] += 1;
+            return QString("%1 #%2").arg(name).arg(m_playlistDuplicatesByName[name]);
+        } else {
+            m_playlistDuplicatesByName[name] = 1;
+            return name;
         }
     }
 
@@ -146,17 +151,18 @@ class ImporterImpl {
         }
 
         int playlistId = persistentIdToDbId(playlist.persistentID);
-        QString playlistName = [playlist.name cStringUsingEncoding:NSUTF8StringEncoding];
+        QString playlistName = uniquifyPlaylistName(
+            [playlist.name cStringUsingEncoding:NSUTF8StringEncoding]);
 
         queryInsertToPlaylists.bindValue(":id", playlistId);
         queryInsertToPlaylists.bindValue(":name", playlistName);
-
-        // TODO: Handle duplicate playlists by appending id (see xml importer)
 
         if (!queryInsertToPlaylists.exec()) {
             LOG_FAILED_QUERY(queryInsertToPlaylists);
             return;
         }
+
+        m_rootItem.appendChild(playlistName);
 
         int i = 0;
         for (ITLibMediaItem* item in playlist.items) {
@@ -225,12 +231,11 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
         ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0" error:&error];
 
         if (library) {
-            ImporterImpl impl(m_database, m_cancelImport);
             std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
+            ImporterImpl impl(m_database, m_cancelImport, *rootItem);
 
             impl.importPlaylists(library.allPlaylists);
             impl.importMediaItems(library.allMediaItems);
-            impl.insertIntoTree(library.allPlaylists, *rootItem);
 
             iTunesImport.playlistRoot = std::move(rootItem);
         }
