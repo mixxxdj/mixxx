@@ -106,6 +106,18 @@ class ImporterImpl {
     }
 
     QString uniquifyPlaylistName(QString name) {
+        // iTunes permits users to have multiple playlists with the same name, our
+        // data model (both the database schema and the tree items) however require
+        // unique names since they identify the playlist via this name. We therefore
+        // keep track of duplicates and append a suffix accordingly. E.g. if the user
+        // has three playlists named 'House' in their library, the playlists would get
+        // named (in this order):
+        //
+        //     House
+        //     House #2
+        //     House #3
+        //
+
         // Avoid empty playlist names
         if (name.isEmpty()) {
             name = "(empty)";
