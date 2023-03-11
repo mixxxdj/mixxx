@@ -1,3 +1,9 @@
+mixxx (2.3.3-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.3
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Tue, 21 Jun 2022 21:24:47 +0000
+
 mixxx (2.3.2-1~bionic) bionic; urgency=medium
 
   * Build of 2.3.2

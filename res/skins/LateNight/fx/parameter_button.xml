@@ -52,25 +52,16 @@
 
       <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>AlignBottom</ObjectName>
-        <Layout>horizontal</Layout>
+      <EffectButtonParameterName>
+        <ObjectName>FxButtonLabel</ObjectName>
         <SizePolicy>me,f</SizePolicy>
         <MinimumSize>40,10</MinimumSize>
         <MaximumSize>58,10</MaximumSize>
-        <Children>
-          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
-          <EffectButtonParameterName>
-            <ObjectName>FxButtonLabel</ObjectName>
-            <EffectUnitGroup><Variable name="FxUnitGroup"/></EffectUnitGroup>
-            <Effect><Variable name="FxNum"/></Effect>
-            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-            <Alignment>center</Alignment>
-          </EffectButtonParameterName>
-          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
-        </Children>
-      </WidgetGroup>
-
+        <EffectUnitGroup><Variable name="FxUnitGroup"/></EffectUnitGroup>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
+        <Alignment>center</Alignment>
+      </EffectButtonParameterName>
 
     </Children>
     <Connection>
