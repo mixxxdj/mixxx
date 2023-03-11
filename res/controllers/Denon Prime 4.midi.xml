@@ -103,7 +103,7 @@
               <status>0x9F</status>
               <midino>0x06</midino>
               <options>
-                <selectknob/>
+                <Script-Binding/>
               </options>
             </control>
             <control> <!-- Library Scroll Button -->
@@ -113,47 +113,47 @@
               <status>0x8F</status>
               <midino>0x06</midino>
               <options>
-                <selectknob/>
+                <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Load to Deck Button -->
-              <group>[Channel1]</group>
-              <key>Prime4.deckLoad.input</key>
-              <description>MIDI Learned from 210 messages.</description>
-              <status>0x8F</status>
-              <midino>0x01</midino>
-              <options>
-                <selectknob/>
-              </options>
-            </control>
-            <control> <!-- Load to Deck Button -->
-              <group>[Channel1]</group>
-              <key>Prime4.deckLoad.input</key>
+            <control> <!-- Load to Left Deck Button -->
+              <group></group>
+              <key>Prime4.leftDeck.deckLoad.input</key>
               <description>MIDI Learned from 210 messages.</description>
               <status>0x9F</status>
               <midino>0x01</midino>
               <options>
-                <selectknob/>
+                <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Load to Deck Button -->
-              <group>[Channel2]</group>
-              <key>Prime4.deckLoad.input</key>
+            <control> <!-- Load to Right Deck Button -->
+              <group></group>
+              <key>Prime4.rightDeck.deckLoad.input</key>
               <description>MIDI Learned from 210 messages.</description>
               <status>0x9F</status>
               <midino>0x02</midino>
               <options>
-                <selectknob/>
+                <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Load to Deck Button -->
-              <group>[Channel2]</group>
-              <key>Prime4.deckLoad.input</key>
+            <control> <!-- Load to Left Deck Button -->
+              <group></group>
+              <key>Prime4.leftDeck.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Load to Right Deck Button -->
+              <group></group>
+              <key>Prime4.rightDeck.deckLoad.input</key>
               <description>MIDI Learned from 210 messages.</description>
               <status>0x8F</status>
               <midino>0x02</midino>
               <options>
-                <selectknob/>
+                <Script-Binding/>
               </options>
             </control>
 			<control> <!-- VIEW Button -->
@@ -289,12 +289,12 @@
             </control>
             <control> <!-- Deck 1 - PFL Button -->
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>Prime4.mixerA.headphoneCue.input</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 1 - Volume Fader -->
@@ -380,12 +380,12 @@
             </control>
             <control> <!-- Deck 2 - PFL Button -->
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>Prime4.mixerB.headphoneCue.input</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x91</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 2 - Volume Fader -->
@@ -471,12 +471,12 @@
             </control>
             <control> <!-- Deck 3 - PFL Button -->
                 <group>[Channel3]</group>
-                <key>pfl</key>
+                <key>Prime4.mixerC.headphoneCue.input</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x92</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 3 - Volume Fader -->
@@ -562,12 +562,12 @@
             </control>
             <control> <!-- Deck 4 - PFL Button -->
                 <group>[Channel4]</group>
-                <key>pfl</key>
+                <key>Prime4.mixerD.headphoneCue.input</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x93</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 4 - Volume Fader -->
@@ -1254,7 +1254,7 @@
             </control>
             <control> <!-- Deck B - Beat Jump Back Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.bjumpBackButton.input</key>
               <description>Beat-Jump Back</description>
               <status>0x95</status>
               <midino>0x06</midino>
@@ -1262,11 +1262,31 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control>
+              <group></group>
+              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <description>Beat-Jump Back</description>
+              <status>0x85</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck B - Beat Jump Forward Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.bjumpBackButton.input</key>
               <description>Beat-Jump Forward</description>
               <status>0x95</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <description>Beat-Jump Forward</description>
+              <status>0x85</status>
               <midino>0x07</midino>
               <options>
                 <Script-Binding/>
@@ -1394,6 +1414,14 @@
 				<key>Prime4.rightDeck.tempoFader.inputMSB</key>
 				<status>0xB5</status>
 				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.rightDeck.tempoFeedback</key>
+				<status>0xB5</status>
+				<midino>0x1f</midino>
 				<options>
 					<Script-Binding/>
 				</options>

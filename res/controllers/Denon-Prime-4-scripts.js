@@ -1,7 +1,7 @@
 // eslint-disable-next-line-no-var
 var Prime4 = {};
 
-/*
+/**
  * DENON DJ PRIME 4 - CONTROLLER MAPPING FOR MIXXX
  *
  * When you boot up the Prime 4, it will be in standalone mode,
@@ -39,16 +39,16 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "cyan",
+    "red",
 
     // Deck 2
-    "cyan",
+    "blue",
 
     // Deck 3
     "magenta",
 
     // Deck 4
-    "magenta",
+    "yellow",
 
 ];
 
@@ -168,40 +168,40 @@ const colDeckDark = [
     Prime4.rgbCode[deckColors[3] + "Dark"],
 ];
 
-Prime4.init = function(id, debug) {
+// Register '0x9n' as a button press and 'ox8n' as a button release
+components.Button.prototype.isPress = function(channel, control, value, status) {
+    return (status & 0xF0) === 0x90;
+};
+
+Prime4.init = function(_id, _debug) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
 
     // Initialise all three physical sections of the unit
     Prime4.leftDeck = new Prime4.Deck([1, 3], 4);
     Prime4.rightDeck = new Prime4.Deck([2, 4], 5);
-    Prime4.mixerStrip = new components.ComponentContainer();
+    Prime4.mixerA = new mixerStrip(1, 1);
+    Prime4.mixerB = new mixerStrip(2, 2);
+    Prime4.mixerC = new mixerStrip(3, 3);
+    Prime4.mixerD = new mixerStrip(4, 4);
 
-    // Register '0x9n' as a button press and 'ox8n' as a button release
-    components.Button.prototype.isPress = function(channel, control, value, status) {
-        return (status & 0xF0) === 0x90;
-    };
-
-    /*
-	Prime4.leftDeck.forEachComponent(function (component) {
-		component.trigger();
-	});
-	Prime4.rightDeck.forEachComponent(function (component) {
-		component.trigger();
-	});
-    */
-    midi.sendShortMsg(0x90, 0x0D, colDeckDark[0]); // PFL 1
-    midi.sendShortMsg(0x91, 0x0D, colDeckDark[1]); // PFL 2
-    midi.sendShortMsg(0x92, 0x0D, colDeckDark[2]); // PFL 3
-    midi.sendShortMsg(0x93, 0x0D, colDeckDark[3]); // PFL 4
-    midi.sendShortMsg(0x9F, 0x1C, colDeck[0]); // Deck 1 Toggle
-    midi.sendShortMsg(0x9F, 0x1D, colDeck[1]); // Deck 2 Toggle
-    midi.sendShortMsg(0x9F, 0x1E, colDeckDark[2]); // Deck 3 Toggle
-    midi.sendShortMsg(0x9F, 0x1F, colDeckDark[3]); // Deck 4 Toggle
-    midi.sendShortMsg(0x94, 0x21, colDeck[0]); // Left Jog Wheel
-    midi.sendShortMsg(0x95, 0x21, colDeck[1]); // Right Jog Wheel
-    midi.sendShortMsg(0x94, 0x0B, colDeck[0]); // Hot-Cue Button - Left Deck
-    midi.sendShortMsg(0x95, 0x0B, colDeck[1]); // Hot-Cue Button - Right Deck
+    // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
+    midi.sendShortMsg(0x90, 0x0D, colDeckDark[0]);                    // PFL 1
+    midi.sendShortMsg(0x91, 0x0D, colDeckDark[1]);                    // PFL 2
+    midi.sendShortMsg(0x92, 0x0D, colDeckDark[2]);                    // PFL 3
+    midi.sendShortMsg(0x93, 0x0D, colDeckDark[3]);                    // PFL 4
+    midi.sendShortMsg(0x9F, 0x1C, colDeck[0]);                        // Deck 1 Toggle
+    midi.sendShortMsg(0x9F, 0x1D, colDeck[1]);                        // Deck 2 Toggle
+    midi.sendShortMsg(0x9F, 0x1E, colDeckDark[2]);                    // Deck 3 Toggle
+    midi.sendShortMsg(0x9F, 0x1F, colDeckDark[3]);                    // Deck 4 Toggle
+    midi.sendShortMsg(0x94, 0x21, colDeck[0]);                        // Left Jog Wheel
+    midi.sendShortMsg(0x95, 0x21, colDeck[1]);                        // Right Jog Wheel
+    midi.sendShortMsg(0x94, 0x0B, Prime4.rgbCode.orange);             // Hot-Cue Button - Left Deck
+    midi.sendShortMsg(0x95, 0x0B, Prime4.rgbCode.orange);             // Hot-Cue Button - Right Deck
+    midi.sendShortMsg(0x9F, 0x0B, 1);                                 // Headphone Split Button
+    midi.sendShortMsg(0x9F, 0x0C, 2);                                 // Filter Sweep FX Button
+    midi.sendShortMsg(0x94, 0x1C, 1);                                 // Left Shift Button
+    midi.sendShortMsg(0x95, 0x1C, 1);                                 // Right Shift Button
 };
 
 Prime4.shutdown = function() {
@@ -209,38 +209,54 @@ Prime4.shutdown = function() {
     midi.sendShortMsg(0x90, 0x75, 0x01);
 };
 
+// All components contained in each mixer strip
+const mixerStrip = function(deckNumber, midiChannel) {
+    components.Deck.call(this, deckNumber);
+
+    this.headphoneCue = new components.Button({
+        midi: [0x8F + midiChannel, 0x0D],
+        group: "[Channel" + midiChannel + "]",
+        key: "pfl",
+        on: colDeck[midiChannel - 1],
+        off: colDeckDark[midiChannel - 1],
+        type: components.Button.prototype.types.toggle,
+    });
+
+    this.reconnectComponents(function(c) {
+        if (c.group === undefined) {
+            c.group = this.currentDeck;
+        }
+    });
+};
+
+mixerStrip.prototype = new components.Deck();
+
+// All components contained on each deck
 Prime4.Deck = function(deckNumbers, midiChannel) {
-
     components.Deck.call(this, deckNumbers);
-
     // Censor Button
     this.censorButton = new components.Button({
         midi: [0x90 + midiChannel, 0x01],
         key: "reverseroll",
     });
-
     // Beatjump Backward
     this.bjumpBackButton = new components.Button({
         midi: [0x90 + midiChannel, 0x06],
         key: "beatjump_backward",
     });
-
     // Beatjump Forward
     this.bjumpFwdButton = new components.Button({
         midi: [0x90 + midiChannel, 0x07],
         key: "beatjump_forward",
     });
-
     // Sync Button
     this.syncButton = new components.SyncButton({
         midi: [0x90 + midiChannel, 0x08],
     });
-
     // Cue Button
     this.cueButton = new components.CueButton({
         midi: [0x90 + midiChannel, 0x09],
     });
-
     // Play Button
     this.playButton = new components.PlayButton({
         midi: [0x90 + midiChannel, 0x0A],
@@ -253,7 +269,6 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             this.type = components.Button.prototype.types.push;
         }
     });
-
     // Hotcue Pads
     this.hotcuePad = [];
     for (let i = 1; i <= 8; i++) {
@@ -262,17 +277,15 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             midi: [0x90 + midiChannel, 0x0E + i],
             colorMapper: Prime4ColorMapper,
             off: 0x00,
-	    on: 0x03,
+            on: 0x03,
         });
-    };
-
+    }
     // Tempo Fader
     this.tempoFader = new components.Pot({
         midi: [0xB0 + midiChannel, 0x1F],
         inKey: "rate",
         invert: true,
     });
-
     // LED indicator when pitch fader is at centre. slightly buggy when switching decks.
     this.tempoFeedback = function() {
         const currentRate = engine.getParameter(this.currentDeck, "rate");
@@ -282,7 +295,6 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x00);
         }
     };
-
     // Keylock Button
     this.keylockButton = new components.Button({
         midi: [0x90 + midiChannel, 0x22],
@@ -291,12 +303,12 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     });
 
     /*
-	this.vinylButton = new components.Button({
-		midi: [0x90 + midiChannel, 0x23],
-		//TODO: Jog Wheel Functionality First
-		type: components.Button.prototype.types.toggle,
-	});
-	*/
+    this.vinylButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x23],
+        //TODO: Jog Wheel Functionality First
+        type: components.Button.prototype.types.toggle,
+    });
+    */
 
     // Slip Mode Button
     this.slipButton = new components.Button({
@@ -304,43 +316,56 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         key: "slip_enabled",
         type: components.Button.prototype.types.toggle,
     });
-
     // Loop In Button
     this.loopInButton = new components.Button({
         midi: [0x90 + midiChannel, 0x25],
         key: "loop_in",
     });
-
-    // Loop Out Button 
+    // Loop Out Button
     this.loopOutButton = new components.Button({
         midi: [0x90 + midiChannel, 0x26],
         key: "loop_out",
     });
 
+    this.deckLoad = new components.Button({
+        midi: [0x9F, midiChannel - 3],
+        key: "LoadSelectedTrack",
+
+        // TODO: Make load buttons reflect colour of currently active deck.
+        //       This is harder than expected due to the fact that I rely on the MIDI channel
+        //       of each physical deck component to determine which deck it's manipulating in
+        //       Mixxx. The deck load buttons, however, are both on MIDI channel 16, so I need
+        //       a better way to determine this.
+        off: Prime4.rgbCode.greenDark,
+        on: Prime4.rgbCode.green,
+    });
+
     // Change from Deck 3/4 to Deck 1/2
     this.deckToggleButtonA = function(value) {
         if (value > 0) {
+            // Each physical deck has its own MIDI channel, which channelCheck converts to the appropriate deck
             const channelCheck = midiChannel - 1;
             if (this.currentDeck === "[Channel" + channelCheck + "]") {
                 this.toggle();
+
+                // Update Jog Wheel and Toggle Button LEDs to reflect active deck
                 midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4]); // Jog Wheel LED
                 midi.sendShortMsg(0x9F, 0x18 + midiChannel, colDeck[midiChannel - 4]); // Active deck - bright LED
                 midi.sendShortMsg(0x9F, 0x1A + midiChannel, colDeckDark[midiChannel - 2]); // Inactive deck - dark LED
-                midi.sendShortMsg(0x90 + midiChannel, 0x0B, colDeck[midiChannel - 4]); // Hot-Cue Button
             }
         }
     };
-
     // Change from Deck 1/2 to Deck 3/4
     this.deckToggleButtonB = function(value) {
         if (value > 0) {
             const channelCheck = midiChannel - 3;
             if (this.currentDeck === "[Channel" + channelCheck + "]") {
                 this.toggle();
+
+                // Update Jog Wheel and Toggle Button LEDs to reflect active deck
                 midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 2]); // Jog Wheel LED
                 midi.sendShortMsg(0x9F, 0x18 + midiChannel, colDeckDark[midiChannel - 4]); // Inactive deck - dark LED
                 midi.sendShortMsg(0x9F, 0x1A + midiChannel, colDeck[midiChannel - 2]); // Active deck - bright LED
-                midi.sendShortMsg(0x90 + midiChannel, 0x0B, colDeck[midiChannel - 2]); // Hot-Cue Button
             }
         }
     };
@@ -352,21 +377,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     });
 };
 
-
 Prime4.Deck.prototype = new components.Deck();
-
-// Headphone Cue / PFL buttons for Decks 1 and 2
-const headphoneCue = [];
-for (let i = 1; i <= 4; i++) {
-    headphoneCue[i] = new components.Button({
-        midi: [0x8F + i, 0x0D],
-        group: "[Channel" + i + "]",
-        key: "pfl",
-        on: colDeck[i - 1],
-        off: colDeckDark[i - 1],
-        type: components.Button.prototype.types.toggle,
-    });
-};
 
 // View Button
 Prime4.maxView = new components.Button({
@@ -376,26 +387,24 @@ Prime4.maxView = new components.Button({
     type: components.Button.prototype.types.toggle,
 });
 
+/*
 // Load song to deck with library encoder button
 Prime4.encoderLoad = new components.Button({
     midi: [0x9F, 0x06],
     group: "[Channel1]",
     key: "LoadSelectedTrack",
 });
-
-Prime4.deckLoad = new components.Button({
-    midi: [0x9F, 0x01],
-    group: "[Channel1]",
-    key: "LoadSelectedTrack",
-});
+*/
 
 Prime4.shift = false;
 Prime4.shiftState = function(channel, control, value) {
     Prime4.shift = value === 0x7F;
     if (Prime4.shift) {
+        midi.sendShortMsg(0x90 + channel, control, 0x02);
         Prime4.leftDeck.shift();
         Prime4.rightDeck.shift();
     } else {
+        midi.sendShortMsg(0x90 + channel, control, 0x01);
         Prime4.leftDeck.unshift();
         Prime4.rightDeck.unshift();
     }
