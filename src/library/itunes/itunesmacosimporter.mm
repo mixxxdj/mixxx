@@ -110,9 +110,14 @@ class ImporterImpl {
                 break;
         }
 
-        // Filter out non-audio content
+        // Filter out automatically generated 'category' playlists,
+        // most of these are either redundant (e.g. the 'Music' playlist)
+        // or include non-audio content.
         switch (playlist.distinguishedKind) {
+            case ITLibDistinguishedPlaylistKindMusic:
             case ITLibDistinguishedPlaylistKindMovies:
+            case ITLibDistinguishedPlaylistKindPodcasts:
+            case ITLibDistinguishedPlaylistKindAudiobooks:
             case ITLibDistinguishedPlaylistKindTVShows:
             case ITLibDistinguishedPlaylistKindiTunesU:
             case ITLibDistinguishedPlaylistKindMusicVideos:
