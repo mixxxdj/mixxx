@@ -2,11 +2,14 @@
 
 #import <iTunesLibrary/iTunesLibrary.h>
 
-#include <QMap>
+#include <QHash>
+#include <QMultiHash>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
+#include <QVariant>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "library/itunes/itunesimporter.h"
@@ -19,11 +22,10 @@ namespace {
 
 class ImporterImpl {
    public:
-    ImporterImpl(QSqlDatabase& database, bool& cancelImport, TreeItem& rootItem)
+    ImporterImpl(QSqlDatabase& database, bool& cancelImport)
         : m_database(database),
           m_cancelImport(cancelImport),
-          m_rootItem(rootItem),
-          m_persistentIdToDbId([[NSMutableDictionary alloc] init]) {}
+          m_dbIdByPersistentId([[NSMutableDictionary alloc] init]) {}
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
         QSqlQuery queryInsertToPlaylists(m_database);
@@ -67,29 +69,47 @@ class ImporterImpl {
         }
     }
 
+    void appendPlaylistTree(TreeItem& item, int playlistId = -1) {
+        for (auto it = m_playlistChildsByDbId.find(playlistId);
+             it != m_playlistChildsByDbId.end() && it.key() == playlistId;
+             ++it) {
+            int childId = it.value();
+            QString childName = m_playlistNameByDbId[childId];
+            TreeItem* child = item.appendChild(childName);
+            appendPlaylistTree(*child, childId);
+        }
+    }
+
    private:
     QSqlDatabase& m_database;
     bool& m_cancelImport;
-    TreeItem& m_rootItem;
-    NSMutableDictionary<NSNumber*, NSNumber*>* m_persistentIdToDbId;
-    QMap<QString, int> m_playlistDuplicatesByName;
+
+    NSMutableDictionary<NSNumber*, NSNumber*>* m_dbIdByPersistentId;
+    QHash<QString, int> m_playlistDuplicatesByName;
+    QHash<int, QString> m_playlistNameByDbId;
+    QMultiHash<int, int> m_playlistChildsByDbId;
 
     int persistentIdToDbId(NSNumber* persistentId) {
         // TODO: Unfortunately the ids iTunes uses are occasionally larger than 64-bit integers,
         // hand-rolling an indexing scheme however comes with the drawback of instability across
         // executions and may require a lot of space for large libraries. Perhaps some form of
         // hashing would be a better option with some strategy to avoid collisions?
-        NSNumber* existing = m_persistentIdToDbId[persistentId];
+        NSNumber* existing = m_dbIdByPersistentId[persistentId];
         if (existing) {
             return [existing intValue];
         } else {
-            int dbId = [m_persistentIdToDbId count];
-            m_persistentIdToDbId[persistentId] = [NSNumber numberWithInt:dbId];
+            int dbId = [m_dbIdByPersistentId count];
+            m_dbIdByPersistentId[persistentId] = [NSNumber numberWithInt:dbId];
             return dbId;
         }
     }
 
     QString uniquifyPlaylistName(QString name) {
+        // Avoid empty playlist names
+        if (name.isEmpty()) {
+            name = "(empty)";
+        }
+
         auto existing = m_playlistDuplicatesByName.find(name);
         if (existing != m_playlistDuplicatesByName.end()) {
             m_playlistDuplicatesByName[name] += 1;
@@ -111,14 +131,6 @@ class ImporterImpl {
         }
         if (isPrimary) {
             return false;
-        }
-
-        // Filter out folders for now
-        switch (playlist.kind) {
-            case ITLibPlaylistKindFolder:
-                return false;
-            default:
-                break;
         }
 
         // Filter out automatically generated 'category' playlists,
@@ -151,6 +163,8 @@ class ImporterImpl {
         }
 
         int playlistId = persistentIdToDbId(playlist.persistentID);
+        int parentId = playlist.parentID ? persistentIdToDbId(playlist.parentID) : -1;
+
         QString playlistName = uniquifyPlaylistName(
             [playlist.name cStringUsingEncoding:NSUTF8StringEncoding]);
 
@@ -162,7 +176,8 @@ class ImporterImpl {
             return;
         }
 
-        m_rootItem.appendChild(playlistName);
+        m_playlistNameByDbId.insert(playlistId, playlistName);
+        m_playlistChildsByDbId.insert(parentId, playlistId);
 
         int i = 0;
         for (ITLibMediaItem* item in playlist.items) {
@@ -232,10 +247,11 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
 
         if (library) {
             std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
-            ImporterImpl impl(m_database, m_cancelImport, *rootItem);
+            ImporterImpl impl(m_database, m_cancelImport);
 
             impl.importPlaylists(library.allPlaylists);
             impl.importMediaItems(library.allMediaItems);
+            impl.appendPlaylistTree(*rootItem);
 
             iTunesImport.playlistRoot = std::move(rootItem);
         }
