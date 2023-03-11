@@ -114,9 +114,9 @@ class ImporterImpl {
         auto existing = m_playlistDuplicatesByName.find(name);
         if (existing != m_playlistDuplicatesByName.end()) {
             m_playlistDuplicatesByName[name] += 1;
-            return QString("%1 #%2").arg(name).arg(m_playlistDuplicatesByName[name]);
+            return QString("%1 #%2").arg(name).arg(m_playlistDuplicatesByName[name] + 1);
         } else {
-            m_playlistDuplicatesByName[name] = 1;
+            m_playlistDuplicatesByName[name] = 0;
             return name;
         }
     }
