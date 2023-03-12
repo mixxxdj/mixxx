@@ -39,7 +39,7 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "red",
+    "white",
 
     // Deck 2
     "blue",
@@ -277,8 +277,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             number: i,
             midi: [0x90 + midiChannel, 0x0E + i],
             colorMapper: Prime4ColorMapper,
-            off: 0x00,
-            on: 0x03,
+            off: Prime4.rgbCode.whiteDark,
         });
     }
     // Tempo Fader
@@ -353,6 +352,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4]); // Jog Wheel LED
                 midi.sendShortMsg(0x9F, 0x18 + midiChannel, colDeck[midiChannel - 4]); // Active deck - bright LED
                 midi.sendShortMsg(0x9F, 0x1A + midiChannel, colDeckDark[midiChannel - 2]); // Inactive deck - dark LED
+                midi.sendShortMsg(0x9F, midiChannel - 3, colDeckDark[midiChannel - 4]); // Inactive deck - dark LED
             }
         }
     };
@@ -367,6 +367,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 2]); // Jog Wheel LED
                 midi.sendShortMsg(0x9F, 0x18 + midiChannel, colDeckDark[midiChannel - 4]); // Inactive deck - dark LED
                 midi.sendShortMsg(0x9F, 0x1A + midiChannel, colDeck[midiChannel - 2]); // Active deck - bright LED
+                midi.sendShortMsg(0x9F, midiChannel - 3, colDeckDark[midiChannel - 2]); // Inactive deck - dark LED
             }
         }
     };
