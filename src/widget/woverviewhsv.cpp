@@ -39,7 +39,7 @@ bool WOverviewHSV::drawNextPixmapPart() {
         // by total_gain
         // We keep full range waveform data to scale it on paint
         m_waveformSourceImage = QImage(
-                static_cast<int>(trackSamples / audioVisualRatio / 2),
+                static_cast<int>(trackSamples / audioVisualRatio / 2) + 1,
                 2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
