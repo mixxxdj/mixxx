@@ -213,6 +213,7 @@ Prime4.shutdown = function() {
 const mixerStrip = function(deckNumber, midiChannel) {
     components.Deck.call(this, deckNumber);
 
+    // PFL Button
     this.headphoneCue = new components.Button({
         midi: [0x8F + midiChannel, 0x0D],
         group: "[Channel" + midiChannel + "]",

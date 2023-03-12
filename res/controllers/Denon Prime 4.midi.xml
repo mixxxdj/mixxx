@@ -217,6 +217,47 @@
               </options>
             </control>
 
+	    <control> <!-- Deck 1 - Crossfader Assign Switch -->
+	      <group>[Channel1]</group>
+	      <key></key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0x90</status>
+	      <midino>0x0F</midino>
+	      <options>
+		<Script-Binding/>
+	      </options>
+	    </control>
+	    <control> <!-- Deck 2 - Crossfader Assign Switch -->
+	      <group>[Channel2]</group>
+	      <key></key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0x91</status>
+	      <midino>0x0F</midino>
+	      <options>
+		<Script-Binding/>
+	      </options>
+	    </control>
+	    <control> <!-- Deck 3 - Crossfader Assign Switch -->
+	      <group>[Channel3]</group>
+	      <key></key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0x92</status>
+	      <midino>0x0F</midino>
+	      <options>
+		<Script-Binding/>
+	      </options>
+	    </control>
+	    <control> <!-- Deck 4 - Crossfader Assign Switch -->
+	      <group>[Channel4]</group>
+	      <key></key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0x93</status>
+	      <midino>0x0F</midino>
+	      <options>
+		<Script-Binding/>
+	      </options>
+	    </control>
+
             <control> <!-- Deck 1 - FX1 Button -->
               <group>[EffectRack1_EffectUnit1]</group>
               <key>group_[Channel1]_enable</key>
@@ -1254,7 +1295,7 @@
             </control>
             <control> <!-- Deck B - Beat Jump Back Button -->
               <group></group>
-              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <key>Prime4.rightDeck.bjumpBackButton.input</key>
               <description>Beat-Jump Back</description>
               <status>0x95</status>
               <midino>0x06</midino>
@@ -1264,7 +1305,7 @@
             </control>
             <control>
               <group></group>
-              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <key>Prime4.rightDeck.bjumpBackButton.input</key>
               <description>Beat-Jump Back</description>
               <status>0x85</status>
               <midino>0x06</midino>
@@ -1274,7 +1315,7 @@
             </control>
             <control> <!-- Deck B - Beat Jump Forward Button -->
               <group></group>
-              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <key>Prime4.rightDeck.bjumpFwdButton.input</key>
               <description>Beat-Jump Forward</description>
               <status>0x95</status>
               <midino>0x07</midino>
@@ -1284,7 +1325,7 @@
             </control>
             <control>
               <group></group>
-              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <key>Prime4.rightDeck.bjumpFwdButton.input</key>
               <description>Beat-Jump Forward</description>
               <status>0x85</status>
               <midino>0x07</midino>
@@ -1294,9 +1335,19 @@
             </control>
             <control> <!-- Deck B - Sync Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.syncButton.input</key>
               <description>Sync</description>
               <status>0x95</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Sync Button -->
+              <group></group>
+              <key>Prime4.rightDeck.syncButton.input</key>
+              <description>Sync</description>
+              <status>0x85</status>
               <midino>0x08</midino>
               <options>
                 <Script-Binding/>
