@@ -320,6 +320,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 &Track::waveformSummaryUpdated,
                 this,
                 &WOverview::slotWaveformSummaryUpdated);
+        disconnect(m_pCurrentTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WOverview::receiveCuesUpdated);
     }
 
     m_waveformSourceImage = QImage();
