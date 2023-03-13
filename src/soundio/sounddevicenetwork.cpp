@@ -30,9 +30,10 @@ const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 } // namespace
 
-SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
-                                       SoundManager *sm,
-                                       QSharedPointer<EngineNetworkStream> pNetworkStream)
+SoundDeviceNetwork::SoundDeviceNetwork(
+        UserSettingsPointer config,
+        SoundManager* sm,
+        QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
           m_inputDrift(false),
@@ -132,6 +133,7 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
     if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) {
         return;
     }
+    DEBUG_ASSERT(m_configFramesPerBuffer >= framesPerBuffer);
 
     int inChunkSize = framesPerBuffer * m_iNumInputChannels;
     int readAvailable = m_pNetworkStream->getReadExpected()
@@ -223,9 +225,10 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
 }
 
 void SoundDeviceNetwork::writeProcess(SINT framesPerBuffer) {
-    if (!m_outputFifo || !m_pNetworkStream) {
+    if (!m_outputFifo || !m_pNetworkStream || !m_iNumOutputChannels) {
         return;
     }
+    DEBUG_ASSERT(m_configFramesPerBuffer >= framesPerBuffer);
 
     int outChunkSize = framesPerBuffer * m_iNumOutputChannels;
     int writeAvailable = m_outputFifo->writeAvailable();
