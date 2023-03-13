@@ -81,6 +81,8 @@ class WOverview : public WWidget, public TrackDropTarget {
         if (m_trackLoaded) {
             return m_trackSamplesControl->get();
         } else {
+            // Ignore the value, because the engine can still have the old track
+            // during loading
             return 0.0;
         }
     }

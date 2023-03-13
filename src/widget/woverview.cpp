@@ -331,6 +331,9 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
+    // Note: Here we already have the new track, but the engine and it's
+    // Control Objects may still have the old one until the slotTrackLoaded()
+    // signal has been received.
     m_trackLoaded = false;
     m_endOfTrack = false;
 
