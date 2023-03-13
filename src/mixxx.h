@@ -166,6 +166,9 @@ class MixxxMainWindow : public QMainWindow {
     Library* m_pLibrary;
 
     parented_ptr<WMainMenuBar> m_pMenuBar;
+#ifdef __LINUX__
+    const bool m_supportsNativeMenuBar;
+#endif
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
