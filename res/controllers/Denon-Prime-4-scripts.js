@@ -185,6 +185,14 @@ Prime4.init = function(_id, _debug) {
     Prime4.mixerC = new mixerStrip(3, 3);
     Prime4.mixerD = new mixerStrip(4, 4);
 
+    // View Button
+    Prime4.maxView = new components.Button({
+        midi: [0x9F, 0x07],
+        group: "[Master]",
+        key: "maximize_library",
+        type: components.Button.prototype.types.toggle,
+    });
+
     // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
     midi.sendShortMsg(0x90, 0x0D, colDeckDark[0]);                    // PFL 1
     midi.sendShortMsg(0x91, 0x0D, colDeckDark[1]);                    // PFL 2
@@ -380,14 +388,6 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
 };
 
 Prime4.Deck.prototype = new components.Deck();
-
-// View Button
-Prime4.maxView = new components.Button({
-    midi: [0x9F, 0x07],
-    group: "[Master]",
-    key: "maximize_library",
-    type: components.Button.prototype.types.toggle,
-});
 
 /*
 // Load song to deck with library encoder button
