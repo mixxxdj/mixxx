@@ -1,5 +1,8 @@
 #include "effects/presets/effectpreset.h"
 
+#include <QHash>
+#include <functional>
+
 #include "effects/backends/effectsbackend.h"
 #include "effects/effectslot.h"
 #include "effects/presets/effectxmlelements.h"
@@ -102,19 +105,25 @@ const QDomElement EffectPreset::toXml(QDomDocument* doc) const {
 void EffectPreset::updateParametersFrom(const EffectPreset& other) {
     DEBUG_ASSERT(backendType() == other.backendType());
 
-    // technically algorithmically inefficient solution O(n²). May be
-    // optimizable by sorting first, gains depend on parameter count
-    for (const auto& parameterToCopy : other.m_effectParameterPresets) {
-        auto currentParameterIt =
-                std::find_if(m_effectParameterPresets.begin(),
-                        m_effectParameterPresets.end(),
-                        [&](const auto& ourParameter) {
-                            return ourParameter.id() == parameterToCopy.id();
-                        });
-        if (currentParameterIt == m_effectParameterPresets.end()) {
-            continue;
+    // we use a std::reference_wrapper as optimization so we don't copy and
+    // store the entire object when we need to copy later anyways
+    // TODO(XXX): Replace QHash with <std::flat_map>
+    QHash<QString, std::reference_wrapper<const EffectParameterPreset>> parameterPresetLookup;
+    // we build temporary hashtable to reduce the algorithmic complexity of the
+    // lookup later. A plain std::find_if (O(n)) would've resulted in O(n^n)
+    // parameter updating. The hashtable has O(1) lookup with O(n) updating,
+    // though with more constant overhead. Since 3rd-party EffectPresets could
+    // have hundreds of parameters, we can't afford O(n^2) lookups.
+    // TODO(XXX): measure overhead and possibly implement fallback to lower
+    // overhead O(n^2) solution for small presets.
+    for (const EffectParameterPreset& preset : other.m_effectParameterPresets) {
+        parameterPresetLookup.insert(preset.id(), std::ref(preset));
+    }
+
+    for (EffectParameterPreset& parameterToUpdate : m_effectParameterPresets) {
+        const auto parameterToCopyIt = parameterPresetLookup.constFind(parameterToUpdate.id());
+        if (parameterToCopyIt != parameterPresetLookup.constEnd()) {
+            parameterToUpdate = *parameterToCopyIt;
         }
-        // overwrite our parameter by taking a copy of the same parameter from `other`
-        *currentParameterIt = parameterToCopy;
     }
 }
