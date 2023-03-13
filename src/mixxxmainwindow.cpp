@@ -4,7 +4,9 @@
 #include <QFileDialog>
 #include <QGLFormat>
 #include <QUrl>
+#ifdef __LINUX__
 #include <QtDBus>
+#endif
 #include <QtDebug>
 
 #include "dialog/dlgabout.h"
