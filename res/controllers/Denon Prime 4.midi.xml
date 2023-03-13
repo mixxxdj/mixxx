@@ -27,7 +27,8 @@
             </control>
 
             <control> <!-- FX1 - Effect 1 Button -->
-			  <group>[EffectRack1_EffectUnit1_Effect1]</group>
+	      <group>[EffectRack1_EffectUnit1_Effect1]</group>
+              <key>enabled</key>
               <status>0x96</status>
               <midino>0x06</midino>
               <options>
