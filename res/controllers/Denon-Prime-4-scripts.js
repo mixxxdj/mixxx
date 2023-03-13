@@ -288,21 +288,25 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             off: Prime4.rgbCode.whiteDark,
         });
     }
+
     // Tempo Fader
     this.tempoFader = new components.Pot({
         midi: [0xB0 + midiChannel, 0x1F],
         inKey: "rate",
         invert: true,
     });
+
     // LED indicator when pitch fader is at centre. slightly buggy when switching decks.
-    this.tempoFeedback = function() {
-        const currentRate = engine.getParameter(this.currentDeck, "rate");
-        if (currentRate >= 0.49 && currentRate <= 0.51) {
-            midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x7F);
-        } else {
-            midi.sendShortMsg(0x90 + midiChannel, 0x34, 0x00);
-        }
-    };
+    this.tempoFeedback = new components.Button({
+        midi: [0x90 + midiChannel, 0x34],
+        outKey: "rate",
+        on: 0x02,
+        off: 0x00,
+        outValueScale: function(value) {
+            return value === 0 ? this.on : this.off;
+        },
+    });
+
     // Keylock Button
     this.keylockButton = new components.Button({
         midi: [0x90 + midiChannel, 0x22],
