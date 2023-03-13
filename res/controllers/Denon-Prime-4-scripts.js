@@ -155,6 +155,7 @@ const Prime4ColorMapper = new ColorMapper({
     0xFFFFFF: 0x3F, // white
 });
 
+// Set active + inactive values for user-defined deck colours
 const colDeck = [
     Prime4.rgbCode[deckColors[0]],
     Prime4.rgbCode[deckColors[1]],
@@ -180,10 +181,10 @@ Prime4.init = function(_id, _debug) {
     // Initialise all three physical sections of the unit
     Prime4.leftDeck = new Prime4.Deck([1, 3], 4);
     Prime4.rightDeck = new Prime4.Deck([2, 4], 5);
-    Prime4.mixerA = new mixerStrip(1, 1);
-    Prime4.mixerB = new mixerStrip(2, 2);
-    Prime4.mixerC = new mixerStrip(3, 3);
-    Prime4.mixerD = new mixerStrip(4, 4);
+    Prime4.mixerA = new mixerStrip(1, 0);
+    Prime4.mixerB = new mixerStrip(2, 1);
+    Prime4.mixerC = new mixerStrip(3, 2);
+    Prime4.mixerD = new mixerStrip(4, 3);
 
     // View Button
     Prime4.maxView = new components.Button({
@@ -219,12 +220,21 @@ const mixerStrip = function(deckNumber, midiOffset) {
 
     // PFL Button
     this.headphoneCue = new components.Button({
-        midi: [0x90 + midiOffset - 1, 0x0D],
-        group: "[Channel" + midiOffset + "]",
+        midi: [0x90 + midiOffset, 0x0D],
+        group: "[Channel" + (midiOffset + 1) + "]",
         key: "pfl",
-        on: colDeck[midiOffset - 1],
-        off: colDeckDark[midiOffset - 1],
+        on: colDeck[midiOffset],
+        off: colDeckDark[midiOffset],
         type: components.Button.prototype.types.toggle,
+    });
+
+    // Crossfader Assign Switch
+    this.xFaderSwitch = new components.Button({
+        midi: [0x90 + midiOffset, 0x0F],
+        inKey: "orientation",
+        input: function(_channel, _control, value, _status, _group) {
+            this.inSetValue(value);
+        },
     });
 
     this.reconnectComponents(function(c) {
@@ -239,29 +249,35 @@ mixerStrip.prototype = new components.Deck();
 // All components contained on each deck
 Prime4.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
+
     // Censor Button
     this.censorButton = new components.Button({
         midi: [0x90 + midiChannel, 0x01],
         key: "reverseroll",
     });
+
     // Beatjump Backward
     this.bjumpBackButton = new components.Button({
         midi: [0x90 + midiChannel, 0x06],
         key: "beatjump_backward",
     });
+
     // Beatjump Forward
     this.bjumpFwdButton = new components.Button({
         midi: [0x90 + midiChannel, 0x07],
         key: "beatjump_forward",
     });
+
     // Sync Button
     this.syncButton = new components.SyncButton({
         midi: [0x90 + midiChannel, 0x08],
     });
+
     // Cue Button
     this.cueButton = new components.CueButton({
         midi: [0x90 + midiChannel, 0x09],
     });
+
     // Play Button
     this.playButton = new components.PlayButton({
         midi: [0x90 + midiChannel, 0x0A],

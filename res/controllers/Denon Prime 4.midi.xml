@@ -220,7 +220,7 @@
 
 	    <control> <!-- Deck 1 - Crossfader Assign Switch -->
 	      <group>[Channel1]</group>
-	      <key></key>
+	      <key>Prime4.mixerA.xFaderSwitch.input</key>
 	      <description>Entered manually with Emacs</description>
 	      <status>0x90</status>
 	      <midino>0x0F</midino>
@@ -230,7 +230,7 @@
 	    </control>
 	    <control> <!-- Deck 2 - Crossfader Assign Switch -->
 	      <group>[Channel2]</group>
-	      <key></key>
+	      <key>Prime4.mixerB.xFaderSwitch.input</key>
 	      <description>Entered manually with Emacs</description>
 	      <status>0x91</status>
 	      <midino>0x0F</midino>
@@ -240,7 +240,7 @@
 	    </control>
 	    <control> <!-- Deck 3 - Crossfader Assign Switch -->
 	      <group>[Channel3]</group>
-	      <key></key>
+	      <key>Prime4.mixerC.xFaderSwitch.input</key>
 	      <description>Entered manually with Emacs</description>
 	      <status>0x92</status>
 	      <midino>0x0F</midino>
@@ -250,7 +250,7 @@
 	    </control>
 	    <control> <!-- Deck 4 - Crossfader Assign Switch -->
 	      <group>[Channel4]</group>
-	      <key></key>
+	      <key>Prime4.mixerD.xFaderSwitch.input</key>
 	      <description>Entered manually with Emacs</description>
 	      <status>0x93</status>
 	      <midino>0x0F</midino>
