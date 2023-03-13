@@ -218,6 +218,87 @@
               </options>
             </control>
 
+            <control> <!-- Sweep FX - Filter -->
+              <group></group>
+              <key>Prime4.sweepFilter.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Echo -->
+              <group></group>
+              <key>Prime4.sweepEcho.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Wash -->
+              <group></group>
+              <key>Prime4.sweepWash.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Noise -->
+              <group></group>
+              <key>Prime4.sweepNoise.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Filter -->
+              <group></group>
+              <key>Prime4.sweepFilter.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Echo -->
+              <group></group>
+              <key>Prime4.sweepEcho.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Wash -->
+              <group></group>
+              <key>Prime4.sweepWash.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Noise -->
+              <group></group>
+              <key>Prime4.sweepNoise.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
 	    <control> <!-- Deck 1 - Crossfader Assign Switch -->
 	      <group>[Channel1]</group>
 	      <key>Prime4.mixerA.xFaderSwitch.input</key>
@@ -339,6 +420,16 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control> <!-- Deck 1 - PFL Button -->
+                <group>[Channel1]</group>
+                <key>Prime4.mixerA.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x80</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
             <control> <!-- Deck 1 - Volume Fader -->
                 <group>[Channel1]</group>
                 <key>volume</key>
@@ -425,6 +516,16 @@
                 <key>Prime4.mixerB.headphoneCue.input</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 2 - PFL Button -->
+                <group>[Channel2]</group>
+                <key>Prime4.mixerB.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x81</status>
                 <midino>0x0D</midino>
                 <options>
                     <Script-Binding/>
@@ -521,6 +622,16 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control> <!-- Deck 3 - PFL Button -->
+                <group>[Channel3]</group>
+                <key>Prime4.mixerC.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x82</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
             <control> <!-- Deck 3 - Volume Fader -->
                 <group>[Channel3]</group>
                 <key>volume</key>
@@ -607,6 +718,16 @@
                 <key>Prime4.mixerD.headphoneCue.input</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x93</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 4 - PFL Button -->
+                <group>[Channel4]</group>
+                <key>Prime4.mixerD.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x83</status>
                 <midino>0x0D</midino>
                 <options>
                     <Script-Binding/>

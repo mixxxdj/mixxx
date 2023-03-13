@@ -42,7 +42,7 @@ const deckColors = [
     "green",
 
     // Deck 2
-    "green",
+    "yellow",
 
     // Deck 3
     "blue",
@@ -194,6 +194,39 @@ Prime4.init = function(_id, _debug) {
         type: components.Button.prototype.types.toggle,
     });
 
+    // Sweep FX - Filter Button
+    Prime4.sweepFilter = new components.Button({
+        midi: [0x9F, 0x0C],
+        group: "[QuickEffectRack1_[Channel1]]",
+        key: "enabled",
+        on: 0x02,
+        off: 0x01,
+        input: function(_channel, _control, value, _status, _group) {
+            for (let i = 1; i <= 4; i++) {
+                if (value > 0) {
+                    const effect = "[QuickEffectRack1_[Channel" + i + "]]";
+                    if (engine.getParameter(effect, "enabled") > 0) {
+                        engine.setParameter(effect, "enabled", 0);
+                    } else {
+                        engine.setParameter(effect, "enabled", 1);
+                    }
+                }
+            }
+        },
+    });
+    // Sweep FX - Echo Button
+    Prime4.sweepEcho = new components.Button({
+        midi: [0x9F, 0x0D],
+    });
+    // Sweep FX - Wash Button
+    Prime4.sweepWash = new components.Button({
+        midi: [0x9F, 0x0E],
+    });
+    // Sweep FX - Noise Button
+    Prime4.sweepNoise = new components.Button({
+        midi: [0x9F, 0x0F],
+    });
+
     // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
     midi.sendShortMsg(0x9F, 0x1C, colDeck[0]);                        // Deck 1 Toggle
     midi.sendShortMsg(0x9F, 0x1D, colDeck[1]);                        // Deck 2 Toggle
@@ -201,10 +234,9 @@ Prime4.init = function(_id, _debug) {
     midi.sendShortMsg(0x9F, 0x1F, colDeckDark[3]);                    // Deck 4 Toggle
     midi.sendShortMsg(0x94, 0x21, colDeck[0]);                        // Left Jog Wheel
     midi.sendShortMsg(0x95, 0x21, colDeck[1]);                        // Right Jog Wheel
-    midi.sendShortMsg(0x94, 0x0B, Prime4.rgbCode.orange);             // Hot-Cue Button - Left Deck
-    midi.sendShortMsg(0x95, 0x0B, Prime4.rgbCode.orange);             // Hot-Cue Button - Right Deck
+    midi.sendShortMsg(0x94, 0x0B, Prime4.rgbCode.blue);             // Hot-Cue Button - Left Deck
+    midi.sendShortMsg(0x95, 0x0B, Prime4.rgbCode.blue);             // Hot-Cue Button - Right Deck
     midi.sendShortMsg(0x9F, 0x0B, 1);                                 // Headphone Split Button
-    midi.sendShortMsg(0x9F, 0x0C, 2);                                 // Filter Sweep FX Button
     midi.sendShortMsg(0x94, 0x1C, 1);                                 // Left Shift Button
     midi.sendShortMsg(0x95, 0x1C, 1);                                 // Right Shift Button
 };
@@ -221,7 +253,6 @@ const mixerStrip = function(deckNumber, midiOffset) {
     // PFL Button
     this.headphoneCue = new components.Button({
         midi: [0x90 + midiOffset, 0x0D],
-        group: "[Channel" + (midiOffset + 1) + "]",
         key: "pfl",
         on: colDeck[midiOffset],
         off: colDeckDark[midiOffset],
