@@ -210,16 +210,16 @@ Prime4.shutdown = function() {
 };
 
 // All components contained in each mixer strip
-const mixerStrip = function(deckNumber, midiChannel) {
+const mixerStrip = function(deckNumber, midiOffset) {
     components.Deck.call(this, deckNumber);
 
     // PFL Button
     this.headphoneCue = new components.Button({
-        midi: [0x8F + midiChannel, 0x0D],
-        group: "[Channel" + midiChannel + "]",
+        midi: [0x90 + midiOffset - 1, 0x0D],
+        group: "[Channel" + midiOffset + "]",
         key: "pfl",
-        on: colDeck[midiChannel - 1],
-        off: colDeckDark[midiChannel - 1],
+        on: colDeck[midiOffset - 1],
+        off: colDeckDark[midiOffset - 1],
         type: components.Button.prototype.types.toggle,
     });
 
