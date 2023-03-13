@@ -39,16 +39,16 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "white",
+    "green",
 
     // Deck 2
-    "blue",
+    "green",
 
     // Deck 3
-    "magenta",
+    "blue",
 
     // Deck 4
-    "yellow",
+    "blue",
 
 ];
 
@@ -194,10 +194,6 @@ Prime4.init = function(_id, _debug) {
     });
 
     // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
-    midi.sendShortMsg(0x90, 0x0D, colDeckDark[0]);                    // PFL 1
-    midi.sendShortMsg(0x91, 0x0D, colDeckDark[1]);                    // PFL 2
-    midi.sendShortMsg(0x92, 0x0D, colDeckDark[2]);                    // PFL 3
-    midi.sendShortMsg(0x93, 0x0D, colDeckDark[3]);                    // PFL 4
     midi.sendShortMsg(0x9F, 0x1C, colDeck[0]);                        // Deck 1 Toggle
     midi.sendShortMsg(0x9F, 0x1D, colDeck[1]);                        // Deck 2 Toggle
     midi.sendShortMsg(0x9F, 0x1E, colDeckDark[2]);                    // Deck 3 Toggle
