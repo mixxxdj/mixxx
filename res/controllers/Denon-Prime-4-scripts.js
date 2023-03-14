@@ -39,7 +39,7 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "green",
+    "red",
 
     // Deck 2
     "yellow",
@@ -349,7 +349,25 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Performance Pads
     // TODO: Figure out how to work with different pad modes
     this.performancePad = [];
-    const padMode = "HOT CUE";
+
+    let padMode = "HOT CUE"; // Set to Hotcue mode by default for now, while I work on handling other pad modes.
+
+    /********* BEGIN REVIEW REQUEST **********/
+    // These are my attempt at handling the pad modes being switched. Unsuccessful so far.
+    // I can call the functions OK, but the padMode variable changing doesn't seem
+    // to update the pads themselves. Not sure how to handle this with Components
+    // yet.
+    this.hotcueMode = function() {
+        midi.sendShortMsg(0x94, 0x0B, Prime4.rgbCode.yellow);
+        midi.sendShortMsg(0x94, 0x0C, Prime4.rgbCode.blueDark);
+        padMode = "HOT CUE";
+    };
+    this.loopMode = function() {
+        midi.sendShortMsg(0x94, 0x0B, Prime4.rgbCode.blueDark);
+        midi.sendShortMsg(0x94, 0x0C, Prime4.rgbCode.yellow);
+        padMode = "LOOP";
+    };
+
     if (padMode === "HOT CUE") {
         for (let i = 1; i <= 8; i++) {
             this.performancePad[i] = new components.HotcueButton({
@@ -359,7 +377,18 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 off: Prime4.rgbCode.whiteDark,
             });
         }
+    } else if (padMode === "LOOP") {
+        for (let i = 1; i <= 8; i++) {
+            this.performancePad[i] = new components.Button({
+                midi: [0x90 + midiChannel, 0x0E + i],
+
+                // Placeholder just to confirm that I can actually switch between pad modes.
+                group: "[QuickEffectRack1_[Channel1]]",
+                outKey: "enabled",
+            });
+        }
     }
+    /********* END REVIEW REQUEST **********/
 
     // Tempo Fader
     this.tempoFader = new components.Pot({
