@@ -23,8 +23,7 @@ namespace {
 class ImporterImpl {
    public:
     ImporterImpl(QSqlDatabase& database, bool& cancelImport)
-        : m_database(database),
-          m_cancelImport(cancelImport) {}
+        : m_database(database), m_cancelImport(cancelImport) {}
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
         QSqlQuery queryInsertToPlaylists(m_database);
@@ -33,8 +32,8 @@ class ImporterImpl {
 
         QSqlQuery queryInsertToPlaylistTracks(m_database);
         queryInsertToPlaylistTracks.prepare(
-            "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
-            "VALUES (:playlist_id, :track_id, :position)");
+            "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, "
+            "position) VALUES (:playlist_id, :track_id, :position)");
 
         qDebug() << "Importing playlists via native iTunesLibrary framework";
 
@@ -51,11 +50,11 @@ class ImporterImpl {
     void importMediaItems(NSArray<ITLibMediaItem*>* items) {
         QSqlQuery query(m_database);
         query.prepare(
-            "INSERT INTO itunes_library (id, artist, title, album, album_artist, "
-            "genre, grouping, year, duration, location, rating, comment, "
-            "tracknumber, bpm, bitrate) VALUES (:id, :artist, :title, :album, "
-            ":album_artist, :genre, :grouping, :year, :duration, :location, "
-            ":rating, :comment, :tracknumber, :bpm, :bitrate)");
+            "INSERT INTO itunes_library (id, artist, title, album, "
+            "album_artist, genre, grouping, year, duration, location, rating, "
+            "comment, tracknumber, bpm, bitrate) VALUES (:id, :artist, :title, "
+            ":album, :album_artist, :genre, :grouping, :year, :duration, "
+            ":location, :rating, :comment, :tracknumber, :bpm, :bitrate)");
 
         qDebug() << "Importing media items via native iTunesLibrary framework";
 
@@ -89,12 +88,14 @@ class ImporterImpl {
     QMultiHash<int, int> m_playlistChildsByDbId;
 
     int persistentIdToDbId(NSNumber* boxedPersistentId) {
-        // Map a persistent ID as used by iTunes to an (incrementing) database ID
-        // The persistent IDs used by iTunes occasionally exceed signed 64-bit ints,
-        // so we cannot use them directly, unfortunately (also we currently use the
-        // fact that our deterministic indexing scheme starts at 0 to represent the
-        // root of the playlist tree with -1 in appendPlaylistTree).
-        unsigned long long persistentId = [boxedPersistentId unsignedLongLongValue];
+        // Map a persistent ID as used by iTunes to an (incrementing) database
+        // ID The persistent IDs used by iTunes occasionally exceed signed
+        // 64-bit ints, so we cannot use them directly, unfortunately (also we
+        // currently use the fact that our deterministic indexing scheme starts
+        // at 0 to represent the root of the playlist tree with -1 in
+        // appendPlaylistTree).
+        unsigned long long persistentId =
+            [boxedPersistentId unsignedLongLongValue];
         auto existing = m_dbIdByPersistentId.find(persistentId);
         if (existing != m_dbIdByPersistentId.end()) {
             return existing.value();
@@ -106,12 +107,12 @@ class ImporterImpl {
     }
 
     QString uniquifyPlaylistName(QString name) {
-        // iTunes permits users to have multiple playlists with the same name, our
-        // data model (both the database schema and the tree items) however require
-        // unique names since they identify the playlist via this name. We therefore
-        // keep track of duplicates and append a suffix accordingly. E.g. if the user
-        // has three playlists named 'House' in their library, the playlists would get
-        // named (in this order):
+        // iTunes permits users to have multiple playlists with the same name,
+        // our data model (both the database schema and the tree items) however
+        // require unique names since they identify the playlist via this name.
+        // We therefore keep track of duplicates and append a suffix
+        // accordingly. E.g. if the user has three playlists named 'House' in
+        // their library, the playlists would get named (in this order):
         //
         //     House
         //     House #2
@@ -126,7 +127,8 @@ class ImporterImpl {
         auto existing = m_playlistDuplicatesByName.find(name);
         if (existing != m_playlistDuplicatesByName.end()) {
             m_playlistDuplicatesByName[name] += 1;
-            return QString("%1 #%2").arg(name).arg(m_playlistDuplicatesByName[name] + 1);
+            return QString("%1 #%2").arg(name).arg(
+                m_playlistDuplicatesByName[name] + 1);
         } else {
             m_playlistDuplicatesByName[name] = 0;
             return name;
@@ -169,14 +171,16 @@ class ImporterImpl {
         return true;
     }
 
-    void importPlaylist(ITLibPlaylist* playlist, QSqlQuery& queryInsertToPlaylists,
+    void importPlaylist(ITLibPlaylist* playlist,
+                        QSqlQuery& queryInsertToPlaylists,
                         QSqlQuery& queryInsertToPlaylistTracks) {
         if (!isPlaylistShown(playlist)) {
             return;
         }
 
         int playlistId = persistentIdToDbId(playlist.persistentID);
-        int parentId = playlist.parentID ? persistentIdToDbId(playlist.parentID) : -1;
+        int parentId =
+            playlist.parentID ? persistentIdToDbId(playlist.parentID) : -1;
 
         QString playlistName = uniquifyPlaylistName(
             [playlist.name cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -214,21 +218,31 @@ class ImporterImpl {
 
     void importMediaItem(ITLibMediaItem* item, QSqlQuery& query) {
         query.bindValue(":id", persistentIdToDbId(item.persistentID));
-        query.bindValue(":artist", [item.artist.name cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(":title", [item.title cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(":album", [item.album.title cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(
+            ":artist",
+            [item.artist.name cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(":title",
+                        [item.title cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(
+            ":album",
+            [item.album.title cStringUsingEncoding:NSUTF8StringEncoding]);
         query.bindValue(
             ":album_artist",
             [item.album.albumArtist cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(":genre", [item.genre cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(":grouping", [item.grouping cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(":genre",
+                        [item.genre cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(
+            ":grouping",
+            [item.grouping cStringUsingEncoding:NSUTF8StringEncoding]);
         query.bindValue(":year", static_cast<int>(item.year));
         query.bindValue(":duration", static_cast<int>(item.totalTime / 1000));
         query.bindValue(
             ":location",
             [[item.location path] cStringUsingEncoding:NSUTF8StringEncoding]);
         query.bindValue(":rating", static_cast<int>(item.rating / 20));
-        query.bindValue(":comment", [item.comments cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(
+            ":comment",
+            [item.comments cStringUsingEncoding:NSUTF8StringEncoding]);
         query.bindValue(":tracknumber", static_cast<int>(item.trackNumber));
         query.bindValue(":bpm", static_cast<int>(item.beatsPerMinute));
         query.bindValue(":bitrate", static_cast<int>(item.bitrate));
@@ -247,8 +261,7 @@ ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
                                          bool& cancelImport)
     : m_parentFeature(parentFeature),
       m_database(database),
-      m_cancelImport(cancelImport) {
-}
+      m_cancelImport(cancelImport) {}
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
     @autoreleasepool {
@@ -256,10 +269,12 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
         iTunesImport.isMusicFolderLocatedAfterTracks = false;
 
         NSError* error = nil;
-        ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0" error:&error];
+        ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0"
+                                                             error:&error];
 
         if (library) {
-            std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
+            std::unique_ptr<TreeItem> rootItem =
+                TreeItem::newRoot(m_parentFeature);
             ImporterImpl impl(m_database, m_cancelImport);
 
             impl.importPlaylists(library.allPlaylists);
