@@ -204,6 +204,20 @@ Prime4.init = function(_id, _debug) {
         type: components.Button.prototype.types.toggle,
     });
 
+    // BACK Button
+    Prime4.moveBack = new components.Button({
+        midi: [0x9F, 0x03],
+        group: "[Library]",
+        key: "MoveFocusBackward",
+    });
+
+    // FWD Button
+    Prime4.moveForward = new components.Button({
+        midi: [0x9F, 0x04],
+        group: "[Library]",
+        key: "MoveFocusForward",
+    });
+
     // Sweep FX - Filter Button
     Prime4.sweepFilter = new components.Button({
         midi: [0x9F, 0x0C],

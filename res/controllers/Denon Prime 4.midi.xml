@@ -117,12 +117,42 @@
                 <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Load to Left Deck Button -->
+            <control> <!-- BACK Button -->
               <group></group>
-              <key>Prime4.leftDeck.deckLoad.input</key>
+              <key>Prime4.moveBack.input</key>
               <description>MIDI Learned from 210 messages.</description>
               <status>0x9F</status>
-              <midino>0x01</midino>
+              <midino>0x03</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>n
+            <control> <!-- FWD Button -->
+              <group></group>
+              <key>Prime4.moveForward.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- BACK Button -->
+              <group></group>
+              <key>Prime4.moveBack.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x03</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>n
+            <control> <!-- FWD Button -->
+              <group></group>
+              <key>Prime4.moveForward.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x04</midino>
               <options>
                 <Script-Binding/>
               </options>
@@ -1321,7 +1351,7 @@
             <!-- RIGHT DECK (Deck B)-->
             <control> <!-- Deck B - Loop In Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.loopInButton.input</key>
               <description>Deck 2-4 Loop In</description>
               <status>0x95</status>
               <midino>0x25</midino>
@@ -1331,9 +1361,29 @@
             </control>
             <control> <!-- Deck B - Loop Out Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.loopOutButton.input</key>
               <description>Deck 2-4 Loop Out</description>
               <status>0x95</status>
+              <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop In Button -->
+              <group></group>
+              <key>Prime4.rightDeck.loopInButton.input</key>
+              <description>Deck 2-4 Loop In</description>
+              <status>0x85</status>
+              <midino>0x25</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Out Button -->
+              <group></group>
+              <key>Prime4.rightDeck.loopOutButton.input</key>
+              <description>Deck 2-4 Loop Out</description>
+              <status>0x85</status>
               <midino>0x26</midino>
               <options>
                 <Script-Binding/>
