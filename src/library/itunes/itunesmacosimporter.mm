@@ -91,7 +91,7 @@ class ImporterImpl {
     QHash<int, QString> m_playlistNameByDbId;
     QMultiHash<int, int> m_playlistChildsByDbId;
 
-    int persistentIdToDbId(NSNumber* boxedPersistentId) {
+    int dbIdFromPersistentId(NSNumber* boxedPersistentId) {
         // Map a persistent ID as used by iTunes to an (incrementing) database
         // ID The persistent IDs used by iTunes occasionally exceed signed
         // 64-bit ints, so we cannot use them directly, unfortunately (also we
@@ -182,9 +182,9 @@ class ImporterImpl {
             return;
         }
 
-        int playlistId = persistentIdToDbId(playlist.persistentID);
+        int playlistId = dbIdFromPersistentId(playlist.persistentID);
         int parentId =
-            playlist.parentID ? persistentIdToDbId(playlist.parentID) : -1;
+            playlist.parentID ? dbIdFromPersistentId(playlist.parentID) : -1;
 
         QString playlistName = uniquifyPlaylistName(qStringFrom(playlist.name));
 
@@ -207,7 +207,7 @@ class ImporterImpl {
 
             queryInsertToPlaylistTracks.bindValue(":playlist_id", playlistId);
             queryInsertToPlaylistTracks.bindValue(
-                ":track_id", persistentIdToDbId(item.persistentID));
+                ":track_id", dbIdFromPersistentId(item.persistentID));
             queryInsertToPlaylistTracks.bindValue(":position", i);
 
             if (!queryInsertToPlaylistTracks.exec()) {
@@ -220,7 +220,7 @@ class ImporterImpl {
     }
 
     void importMediaItem(ITLibMediaItem* item, QSqlQuery& query) {
-        query.bindValue(":id", persistentIdToDbId(item.persistentID));
+        query.bindValue(":id", dbIdFromPersistentId(item.persistentID));
         query.bindValue(":artist", qStringFrom(item.artist.name));
         query.bindValue(":title", qStringFrom(item.title));
         query.bindValue(":album", qStringFrom(item.album.title));
