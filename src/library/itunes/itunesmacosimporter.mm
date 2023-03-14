@@ -20,6 +20,10 @@
 
 namespace {
 
+QString qStringFrom(NSString* nsString) {
+    return [nsString cStringUsingEncoding:NSUTF8StringEncoding];
+}
+
 class ImporterImpl {
    public:
     ImporterImpl(QSqlDatabase& database, bool& cancelImport)
@@ -182,8 +186,7 @@ class ImporterImpl {
         int parentId =
             playlist.parentID ? persistentIdToDbId(playlist.parentID) : -1;
 
-        QString playlistName = uniquifyPlaylistName(
-            [playlist.name cStringUsingEncoding:NSUTF8StringEncoding]);
+        QString playlistName = uniquifyPlaylistName(qStringFrom(playlist.name));
 
         queryInsertToPlaylists.bindValue(":id", playlistId);
         queryInsertToPlaylists.bindValue(":name", playlistName);
@@ -218,31 +221,17 @@ class ImporterImpl {
 
     void importMediaItem(ITLibMediaItem* item, QSqlQuery& query) {
         query.bindValue(":id", persistentIdToDbId(item.persistentID));
-        query.bindValue(
-            ":artist",
-            [item.artist.name cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(":title",
-                        [item.title cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(
-            ":album",
-            [item.album.title cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(
-            ":album_artist",
-            [item.album.albumArtist cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(":genre",
-                        [item.genre cStringUsingEncoding:NSUTF8StringEncoding]);
-        query.bindValue(
-            ":grouping",
-            [item.grouping cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(":artist", qStringFrom(item.artist.name));
+        query.bindValue(":title", qStringFrom(item.title));
+        query.bindValue(":album", qStringFrom(item.album.title));
+        query.bindValue(":album_artist", qStringFrom(item.album.albumArtist));
+        query.bindValue(":genre", qStringFrom(item.genre));
+        query.bindValue(":grouping", qStringFrom(item.grouping));
         query.bindValue(":year", static_cast<int>(item.year));
         query.bindValue(":duration", static_cast<int>(item.totalTime / 1000));
-        query.bindValue(
-            ":location",
-            [[item.location path] cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(":location", qStringFrom([item.location path]));
         query.bindValue(":rating", static_cast<int>(item.rating / 20));
-        query.bindValue(
-            ":comment",
-            [item.comments cStringUsingEncoding:NSUTF8StringEncoding]);
+        query.bindValue(":comment", qStringFrom(item.comments));
         query.bindValue(":tracknumber", static_cast<int>(item.trackNumber));
         query.bindValue(":bpm", static_cast<int>(item.beatsPerMinute));
         query.bindValue(":bitrate", static_cast<int>(item.bitrate));
