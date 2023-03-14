@@ -186,6 +186,16 @@ Prime4.init = function(_id, _debug) {
     Prime4.mixerC = new mixerStrip(3, 2);
     Prime4.mixerD = new mixerStrip(4, 3);
 
+    // Load song to deck with library encoder button
+    // NOTE: This only works on Deck 1. I intend on making it load
+    //       to the first available deck in the future, but haven't
+    //       figured that behaviour out yet.
+    Prime4.encoderLoad = new components.Button({
+        midi: [0x9F, 0x06],
+        group: "[Channel1]",
+        key: "LoadSelectedTrack",
+    });
+
     // View Button
     Prime4.maxView = new components.Button({
         midi: [0x9F, 0x07],
@@ -321,15 +331,20 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             this.type = components.Button.prototype.types.push;
         }
     });
-    // Hotcue Pads
-    this.hotcuePad = [];
-    for (let i = 1; i <= 8; i++) {
-        this.hotcuePad[i] = new components.HotcueButton({
-            number: i,
-            midi: [0x90 + midiChannel, 0x0E + i],
-            colorMapper: Prime4ColorMapper,
-            off: Prime4.rgbCode.whiteDark,
-        });
+
+    // Performance Pads
+    // TODO: Figure out how to work with different pad modes
+    this.performancePad = [];
+    const padMode = "HOT CUE";
+    if (padMode === "HOT CUE") {
+        for (let i = 1; i <= 8; i++) {
+            this.performancePad[i] = new components.HotcueButton({
+                number: i,
+                midi: [0x90 + midiChannel, 0x0E + i],
+                colorMapper: Prime4ColorMapper,
+                off: Prime4.rgbCode.whiteDark,
+            });
+        }
     }
 
     // Tempo Fader
@@ -435,15 +450,6 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
 };
 
 Prime4.Deck.prototype = new components.Deck();
-
-/*
-// Load song to deck with library encoder button
-Prime4.encoderLoad = new components.Button({
-    midi: [0x9F, 0x06],
-    group: "[Channel1]",
-    key: "LoadSelectedTrack",
-});
-*/
 
 Prime4.shift = false;
 Prime4.shiftState = function(channel, control, value) {
