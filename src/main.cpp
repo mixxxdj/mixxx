@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "config.h"
+#include "controllers/controllermanager.h"
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
@@ -59,6 +60,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                 &MixxxMainWindow::initializationProgressUpdate);
         pCoreServices->initialize(pApp);
         mainWindow.initialize();
+        pCoreServices->getControllerManager()->setUpDevices();
 
         // If startup produced a fatal error, then don't even start the
         // Qt event loop.
