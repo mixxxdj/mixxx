@@ -20,7 +20,7 @@ var Prime4 = {};
  *  - Click "Controllers" to expand the list of USB devices Mixxx is detecting
  *  - Click "PRIME 4 Control Surface MIDI" from the list
  *  - In the "Load Mapping" dropdown list, select "Denon Prime 4 - Mixxx Mapping"
- *  - Make sure the "Enabled box is ticked"
+ *  - Make sure the "Enabled" box is ticked
  *  - Click "Apply" or "OK"
  *
  * If everything works, you should see the LEDs on your Prime 4
