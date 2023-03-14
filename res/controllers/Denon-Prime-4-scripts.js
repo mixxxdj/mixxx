@@ -187,13 +187,10 @@ Prime4.init = function(_id, _debug) {
     Prime4.mixerD = new mixerStrip(4, 3);
 
     // Load song to deck with library encoder button
-    // NOTE: This only works on Deck 1. I intend on making it load
-    //       to the first available deck in the future, but haven't
-    //       figured that behaviour out yet.
     Prime4.encoderLoad = new components.Button({
         midi: [0x9F, 0x06],
-        group: "[Channel1]",
-        key: "LoadSelectedTrack",
+        group: "[Library]",
+        key: "GoToItem",
     });
 
     // View Button
