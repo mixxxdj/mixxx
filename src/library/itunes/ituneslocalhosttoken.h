@@ -3,8 +3,8 @@
 #include <QString>
 
 static const QString kiTunesLocalhostToken =
-        "//localhost"
 #if defined(__WINDOWS__)
-        "/"
+        QStringLiteral("//localhost/");
+#else
+        QStringLiteral("//localhost");
 #endif
-        ;
