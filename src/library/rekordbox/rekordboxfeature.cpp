@@ -497,7 +497,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     // There are other types of tables (eg. COLOR), these are the only ones we are
     // interested at the moment. Perhaps when/if
-    // https://bugs.launchpad.net/mixxx/+bug/1100882
+    // https://github.com/mixxxdj/mixxx/issues/6852
     // is completed, this can be revisited.
     // Attempt was made to also recover HISTORY
     // playlists (which are found on removable Rekordbox devices), however
@@ -1493,7 +1493,7 @@ QString RekordboxFeature::formatRootViewHtml() const {
 
     //Colorize links in lighter blue, instead of QT default dark blue.
     //Links are still different from regular text, but readable on dark/light backgrounds.
-    //https://bugs.launchpad.net/mixxx/+bug/1744816
+    //https://github.com/mixxxdj/mixxx/issues/9103
     html.append(QString("<a style=\"color:#0496FF;\" href=\"refresh\">%1</a>")
                         .arg(refreshLink));
     return html;

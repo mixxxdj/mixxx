@@ -583,7 +583,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
 }
 
 void EngineBuffer::ejectTrack() {
-    // clear track values in any case, may fix https://bugs.launchpad.net/mixxx/+bug/1450424
+    // clear track values in any case, may fix https://github.com/mixxxdj/mixxx/issues/8000
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineBuffer::ejectTrack()";
     }

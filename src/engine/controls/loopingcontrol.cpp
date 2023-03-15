@@ -1543,7 +1543,7 @@ void LoopingControl::slotLoopMove(double beats) {
 
         // The track would stop as soon as the playhead crosses track end,
         // so we don't allow moving a loop beyond end.
-        // https://bugs.launchpad.net/mixxx/+bug/1799574
+        // https://github.com/mixxxdj/mixxx/issues/9478
         const auto trackEndPosition =
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         m_pTrackSamples->get());

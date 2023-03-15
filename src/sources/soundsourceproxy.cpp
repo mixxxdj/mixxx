@@ -550,7 +550,7 @@ SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
         bool resetMissingTagMetadata) {
     if (!trackFileAccess.info().checkFileExists()) {
         // Silently ignore missing files to avoid spaming the log:
-        // https://bugs.launchpad.net/mixxx/+bug/1875237
+        // https://github.com/mixxxdj/mixxx/issues/9944
         return importTrackMetadataAndCoverImageUnavailable();
     }
     TrackPointer pTrack;

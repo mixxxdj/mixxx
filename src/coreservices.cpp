@@ -74,7 +74,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
 }
 
 // hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
-// https://bugs.launchpad.net/mixxx/+bug/1805559
+// https://github.com/mixxxdj/mixxx/issues/9533
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
@@ -425,7 +425,7 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
-    // https://bugs.launchpad.net/mixxx/+bug/1758189
+    // https://github.com/mixxxdj/mixxx/issues/9188
     m_pPlayerManager->loadSamplers();
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
