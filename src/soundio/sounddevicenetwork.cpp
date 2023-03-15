@@ -298,7 +298,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
     if (copyCount > 0) {
         if (writeAvailable - copyCount > outChunkSize) {
             // Underflow
-            //kLogger.debug() << "workerWriteProcess: buffer empty";
+            // kLogger.debug() << "workerWriteProcess: buffer empty";
             // catch up by filling buffer until we are synced
             workerWriteSilence(pWorker, writeAvailable - copyCount);
             m_pSoundManager->underflowHappened(24);
@@ -306,8 +306,9 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
             // try to keep PAs buffer filled up to 0.5 chunks
             if (pWorker->outputDrift()) {
                 // duplicate one frame
-                //kLogger.debug() << "workerWriteProcess() duplicate one frame"
-                //                << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
+                // kLogger.debug() << "workerWriteProcess() duplicate one frame"
+                //                << (float)writeAvailable / outChunkSize <<
+                //                (float)readAvailable / outChunkSize;
                 workerWrite(pWorker, dataPtr1, 1);
             } else {
                 pWorker->setOutputDrift(true);
@@ -318,8 +319,10 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
             // We are not able to store at least the half of the new frames
             // or we have a risk of an m_outputFifo overflow
             if (pWorker->outputDrift()) {
-                //kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() skip one frame"
-                //                << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
+                // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess()
+                // skip one frame"
+                //                 << (float)writeAvailable / outChunkSize <<
+                //                 (float)readAvailable / outChunkSize;
                 copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
             } else {
                 pWorker->setOutputDrift(true);
