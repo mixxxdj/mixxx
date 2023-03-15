@@ -1169,7 +1169,7 @@
 
             <control> <!-- Deck A - Hot Cue Pad -->
               <group></group>
-              <key>Prime4.leftDeck.hotcueMode</key>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
               <description>HOT CUE</description>
               <status>0x94</status>
               <midino>0x0B</midino>
@@ -1179,7 +1179,7 @@
             </control>
             <control> <!-- Deck A - Loop Pad / Autoloop Pad -->
               <group></group>
-              <key>Prime4.leftDeck.loopMode</key>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
               <description>LOOP / AUTOLOOP</description>
               <status>0x94</status>
               <midino>0x0C</midino>
@@ -1189,7 +1189,7 @@
             </control>
             <control> <!-- Deck A - Roll Pad -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
               <description>ROLL</description>
               <status>0x94</status>
               <midino>0x0D</midino>
@@ -1199,7 +1199,7 @@
             </control>
             <control> <!-- Deck A - Slicer Pad / Slicer Loop Pad -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
               <description>SLICER / SLICER LOOP</description>
               <status>0x94</status>
               <midino>0x0E</midino>
@@ -1207,9 +1207,50 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck A - Hot Cue Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>HOT CUE</description>
+              <status>0x84</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Pad / Autoloop Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>LOOP / AUTOLOOP</description>
+              <status>0x84</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Roll Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>ROLL</description>
+              <status>0x84</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Slicer Pad / Slicer Loop Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>SLICER / SLICER LOOP</description>
+              <status>0x84</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
             <control> <!-- Deck A - Performance Pad 1 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[1].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 1</description>
               <status>0x94</status>
               <midino>0x0F</midino>
@@ -1219,7 +1260,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 2 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[2].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 2</description>
               <status>0x94</status>
               <midino>0x10</midino>
@@ -1229,7 +1270,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 3 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[3].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 3</description>
               <status>0x94</status>
               <midino>0x11</midino>
@@ -1239,7 +1280,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 4 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[4].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 4</description>
               <status>0x94</status>
               <midino>0x12</midino>
@@ -1249,7 +1290,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 5 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[5].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 5</description>
               <status>0x94</status>
               <midino>0x13</midino>
@@ -1259,7 +1300,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 6 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[6].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 6</description>
               <status>0x94</status>
               <midino>0x14</midino>
@@ -1269,7 +1310,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 7 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[7].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 7</description>
               <status>0x94</status>
               <midino>0x15</midino>
@@ -1279,7 +1320,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 8 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[8].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 8</description>
               <status>0x94</status>
               <midino>0x16</midino>
@@ -1289,7 +1330,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 1 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[1].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 1</description>
               <status>0x84</status>
               <midino>0x0F</midino>
@@ -1299,7 +1340,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 2 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[2].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 2</description>
               <status>0x84</status>
               <midino>0x10</midino>
@@ -1309,7 +1350,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 3 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[3].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 3</description>
               <status>0x84</status>
               <midino>0x11</midino>
@@ -1319,7 +1360,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 4 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[4].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 4</description>
               <status>0x84</status>
               <midino>0x12</midino>
@@ -1329,7 +1370,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 5 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[5].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 5</description>
               <status>0x84</status>
               <midino>0x13</midino>
@@ -1339,7 +1380,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 6 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[6].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 6</description>
               <status>0x84</status>
               <midino>0x14</midino>
@@ -1349,7 +1390,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 7 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[7].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 7</description>
               <status>0x84</status>
               <midino>0x15</midino>
@@ -1359,7 +1400,7 @@
             </control>
             <control> <!-- Deck A - Performance Pad 8 -->
               <group></group>
-              <key>Prime4.leftDeck.performancePad[8].input</key>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
               <description>Hotcue 8</description>
               <status>0x84</status>
               <midino>0x16</midino>
@@ -1722,7 +1763,7 @@
 
             <control> <!-- Deck B - Hot Cue Pad -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
               <description>HOT CUE</description>
               <status>0x95</status>
               <midino>0x0B</midino>
@@ -1732,7 +1773,7 @@
             </control>
             <control> <!-- Deck B - Loop Pad / Autoloop Pad -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
               <description>LOOP / AUTOLOOP</description>
               <status>0x95</status>
               <midino>0x0C</midino>
@@ -1742,7 +1783,7 @@
             </control>
             <control> <!-- Deck B - Roll Pad -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
               <description>ROLL</description>
               <status>0x95</status>
               <midino>0x0D</midino>
@@ -1750,9 +1791,9 @@
                 <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Deck B - SLicer Pad / Loop SLicer Pad -->
+            <control> <!-- Deck B - Slicer Pad / Slicer Loop Pad -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
               <description>SLICER / SLICER LOOP</description>
               <status>0x95</status>
               <midino>0x0E</midino>
@@ -1760,9 +1801,49 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck B - Hot Cue Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>HOT CUE</description>
+              <status>0x85</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Pad / Autoloop Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>LOOP / AUTOLOOP</description>
+              <status>0x85</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Roll Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>ROLL</description>
+              <status>0x85</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Slicer Pad / Slicer Loop Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>SLICER / SLICER LOOP</description>
+              <status>0x85</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck B - Performance Pad 1 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[1].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 1</description>
               <status>0x95</status>
               <midino>0x0F</midino>
@@ -1772,7 +1853,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 2 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[2].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 2</description>
               <status>0x95</status>
               <midino>0x10</midino>
@@ -1782,7 +1863,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 3 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[3].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 3</description>
               <status>0x95</status>
               <midino>0x11</midino>
@@ -1792,7 +1873,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 4 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[4].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 4</description>
               <status>0x95</status>
               <midino>0x12</midino>
@@ -1802,7 +1883,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 5 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[5].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 5</description>
               <status>0x95</status>
               <midino>0x13</midino>
@@ -1812,7 +1893,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 6 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[6].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 6</description>
               <status>0x95</status>
               <midino>0x14</midino>
@@ -1822,7 +1903,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 7 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[7].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 7</description>
               <status>0x95</status>
               <midino>0x15</midino>
@@ -1832,7 +1913,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 8 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[8].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 8</description>
               <status>0x95</status>
               <midino>0x16</midino>
@@ -1842,7 +1923,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 1 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[1].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 1</description>
               <status>0x85</status>
               <midino>0x0F</midino>
@@ -1852,7 +1933,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 2 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[2].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 2</description>
               <status>0x85</status>
               <midino>0x10</midino>
@@ -1862,7 +1943,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 3 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[3].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 3</description>
               <status>0x85</status>
               <midino>0x11</midino>
@@ -1872,7 +1953,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 4 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[4].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 4</description>
               <status>0x85</status>
               <midino>0x12</midino>
@@ -1882,7 +1963,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 5 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[5].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 5</description>
               <status>0x85</status>
               <midino>0x13</midino>
@@ -1892,7 +1973,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 6 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[6].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 6</description>
               <status>0x85</status>
               <midino>0x14</midino>
@@ -1902,7 +1983,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 7 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[7].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 7</description>
               <status>0x85</status>
               <midino>0x15</midino>
@@ -1912,7 +1993,7 @@
             </control>
             <control> <!-- Deck B - Performance Pad 8 -->
               <group></group>
-              <key>Prime4.rightDeck.performancePad[8].input</key>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
               <description>Hotcue 8</description>
               <status>0x85</status>
               <midino>0x16</midino>
@@ -1920,6 +2001,7 @@
                 <Script-Binding/>
               </options>
             </control>
+
           </controls>
         <outputs>
         </outputs>
