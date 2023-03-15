@@ -43,6 +43,11 @@ class ImporterImpl {
 
         qDebug() << "Importing playlists via native iTunesLibrary framework";
 
+        // We prefer Objective-C-style for-in loops over C++ loops when dealing
+        // with Objective-C types (both here and in the methods below) since
+        // they use Objective-C's enumeration protocols and are guaranteed to
+        // interact well with Objective-C collections.
+
         for (ITLibPlaylist* playlist in playlists) {
             if (m_cancelImport) {
                 break;
