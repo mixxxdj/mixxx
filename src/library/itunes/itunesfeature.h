@@ -6,6 +6,7 @@
 #include <QStringListModel>
 #include <QtConcurrentRun>
 #include <QtSql>
+#include <atomic>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/itunes/itunesimporter.h"
@@ -61,7 +62,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QStringList m_playlists;
     // a new DB connection for the worker thread
     QSqlDatabase m_database;
-    bool m_cancelImport;
+    std::atomic<bool> m_cancelImport;
     bool m_isActivated;
     QString m_dbfile;
 

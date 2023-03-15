@@ -47,7 +47,7 @@ ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
         const QString& filePath,
         QSqlDatabase& database,
         ITunesPathMapping& pathMapping,
-        bool& cancelImport)
+        std::atomic<bool>& cancelImport)
         : m_parentFeature(parentFeature),
           m_file(filePath),
           m_xml(&m_file),

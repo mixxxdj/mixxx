@@ -2,6 +2,7 @@
 
 #include <QSqlDatabase>
 #include <QXmlStreamReader>
+#include <atomic>
 #include <memory>
 
 #include "library/itunes/itunesimporter.h"
@@ -15,7 +16,7 @@ class ITunesXMLImporter : public ITunesImporter {
             const QString& filePath,
             QSqlDatabase& database,
             ITunesPathMapping& pathMapping,
-            bool& cancelImport);
+            std::atomic<bool>& cancelImport);
 
     ITunesImport importLibrary() override;
 
@@ -26,7 +27,7 @@ class ITunesXMLImporter : public ITunesImporter {
     QString m_dbfile;
     QSqlDatabase& m_database;
     ITunesPathMapping& m_pathMapping;
-    bool& m_cancelImport;
+    std::atomic<bool>& m_cancelImport;
 
     void parseTracks();
     void guessMusicLibraryMountpoint();
