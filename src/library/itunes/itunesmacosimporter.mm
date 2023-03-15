@@ -25,19 +25,20 @@ QString qStringFrom(NSString* nsString) {
 }
 
 class ImporterImpl {
-   public:
+  public:
     ImporterImpl(QSqlDatabase& database, bool& cancelImport)
-        : m_database(database), m_cancelImport(cancelImport) {}
+            : m_database(database), m_cancelImport(cancelImport) {
+    }
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
         QSqlQuery queryInsertToPlaylists(m_database);
         queryInsertToPlaylists.prepare(
-            "INSERT INTO itunes_playlists (id, name) VALUES (:id, :name)");
+                "INSERT INTO itunes_playlists (id, name) VALUES (:id, :name)");
 
         QSqlQuery queryInsertToPlaylistTracks(m_database);
         queryInsertToPlaylistTracks.prepare(
-            "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, "
-            "position) VALUES (:playlist_id, :track_id, :position)");
+                "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, "
+                "position) VALUES (:playlist_id, :track_id, :position)");
 
         qDebug() << "Importing playlists via native iTunesLibrary framework";
 
@@ -46,19 +47,20 @@ class ImporterImpl {
                 break;
             }
 
-            importPlaylist(playlist, queryInsertToPlaylists,
-                           queryInsertToPlaylistTracks);
+            importPlaylist(playlist,
+                    queryInsertToPlaylists,
+                    queryInsertToPlaylistTracks);
         }
     }
 
     void importMediaItems(NSArray<ITLibMediaItem*>* items) {
         QSqlQuery query(m_database);
-        query.prepare(
-            "INSERT INTO itunes_library (id, artist, title, album, "
-            "album_artist, genre, grouping, year, duration, location, rating, "
-            "comment, tracknumber, bpm, bitrate) VALUES (:id, :artist, :title, "
-            ":album, :album_artist, :genre, :grouping, :year, :duration, "
-            ":location, :rating, :comment, :tracknumber, :bpm, :bitrate)");
+        query.prepare("INSERT INTO itunes_library (id, artist, title, album, "
+                      "album_artist, genre, grouping, year, duration, "
+                      "location, rating, comment, tracknumber, bpm, bitrate) "
+                      "VALUES (:id, :artist, :title, :album, :album_artist, "
+                      ":genre, :grouping, :year, :duration, :location, "
+                      ":rating, :comment, :tracknumber, :bpm, :bitrate)");
 
         qDebug() << "Importing media items via native iTunesLibrary framework";
 
@@ -73,8 +75,8 @@ class ImporterImpl {
 
     void appendPlaylistTree(TreeItem& item, int playlistId = -1) {
         for (auto it = m_playlistChildsByDbId.find(playlistId);
-             it != m_playlistChildsByDbId.end() && it.key() == playlistId;
-             ++it) {
+                it != m_playlistChildsByDbId.end() && it.key() == playlistId;
+                ++it) {
             int childId = it.value();
             QString childName = m_playlistNameByDbId[childId];
             TreeItem* child = item.appendChild(childName);
@@ -82,7 +84,7 @@ class ImporterImpl {
         }
     }
 
-   private:
+  private:
     QSqlDatabase& m_database;
     bool& m_cancelImport;
 
@@ -99,7 +101,7 @@ class ImporterImpl {
         // at 0 to represent the root of the playlist tree with -1 in
         // appendPlaylistTree).
         unsigned long long persistentId =
-            [boxedPersistentId unsignedLongLongValue];
+                [boxedPersistentId unsignedLongLongValue];
         auto existing = m_dbIdByPersistentId.find(persistentId);
         if (existing != m_dbIdByPersistentId.end()) {
             return existing.value();
@@ -132,7 +134,7 @@ class ImporterImpl {
         if (existing != m_playlistDuplicatesByName.end()) {
             m_playlistDuplicatesByName[name] += 1;
             return QString("%1 #%2").arg(name).arg(
-                m_playlistDuplicatesByName[name] + 1);
+                    m_playlistDuplicatesByName[name] + 1);
         } else {
             m_playlistDuplicatesByName[name] = 0;
             return name;
@@ -156,35 +158,36 @@ class ImporterImpl {
         // most of these are either redundant (e.g. the 'Music' playlist)
         // or include non-audio content.
         switch (playlist.distinguishedKind) {
-            case ITLibDistinguishedPlaylistKindMusic:
-            case ITLibDistinguishedPlaylistKindMovies:
-            case ITLibDistinguishedPlaylistKindPodcasts:
-            case ITLibDistinguishedPlaylistKindAudiobooks:
-            case ITLibDistinguishedPlaylistKindTVShows:
-            case ITLibDistinguishedPlaylistKindiTunesU:
-            case ITLibDistinguishedPlaylistKindMusicVideos:
-            case ITLibDistinguishedPlaylistKindLibraryMusicVideos:
-            case ITLibDistinguishedPlaylistKindHomeVideos:
-            case ITLibDistinguishedPlaylistKindApplications:
-            case ITLibDistinguishedPlaylistKindMusicShowsAndMovies:
-                return false;
-            default:
-                break;
+        case ITLibDistinguishedPlaylistKindMusic:
+        case ITLibDistinguishedPlaylistKindMovies:
+        case ITLibDistinguishedPlaylistKindPodcasts:
+        case ITLibDistinguishedPlaylistKindAudiobooks:
+        case ITLibDistinguishedPlaylistKindTVShows:
+        case ITLibDistinguishedPlaylistKindiTunesU:
+        case ITLibDistinguishedPlaylistKindMusicVideos:
+        case ITLibDistinguishedPlaylistKindLibraryMusicVideos:
+        case ITLibDistinguishedPlaylistKindHomeVideos:
+        case ITLibDistinguishedPlaylistKindApplications:
+        case ITLibDistinguishedPlaylistKindMusicShowsAndMovies:
+            return false;
+        default:
+            break;
         }
 
         return true;
     }
 
     void importPlaylist(ITLibPlaylist* playlist,
-                        QSqlQuery& queryInsertToPlaylists,
-                        QSqlQuery& queryInsertToPlaylistTracks) {
+            QSqlQuery& queryInsertToPlaylists,
+            QSqlQuery& queryInsertToPlaylistTracks) {
         if (!isPlaylistShown(playlist)) {
             return;
         }
 
         int playlistId = dbIdFromPersistentId(playlist.persistentID);
-        int parentId =
-            playlist.parentID ? dbIdFromPersistentId(playlist.parentID) : -1;
+        int parentId = playlist.parentID
+                ? dbIdFromPersistentId(playlist.parentID)
+                : -1;
 
         QString playlistName = uniquifyPlaylistName(qStringFrom(playlist.name));
 
@@ -207,7 +210,7 @@ class ImporterImpl {
 
             queryInsertToPlaylistTracks.bindValue(":playlist_id", playlistId);
             queryInsertToPlaylistTracks.bindValue(
-                ":track_id", dbIdFromPersistentId(item.persistentID));
+                    ":track_id", dbIdFromPersistentId(item.persistentID));
             queryInsertToPlaylistTracks.bindValue(":position", i);
 
             if (!queryInsertToPlaylistTracks.exec()) {
@@ -243,14 +246,15 @@ class ImporterImpl {
     }
 };
 
-}  // anonymous namespace
+} // anonymous namespace
 
 ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
-                                         QSqlDatabase& database,
-                                         bool& cancelImport)
-    : m_parentFeature(parentFeature),
-      m_database(database),
-      m_cancelImport(cancelImport) {}
+        QSqlDatabase& database,
+        bool& cancelImport)
+        : m_parentFeature(parentFeature),
+          m_database(database),
+          m_cancelImport(cancelImport) {
+}
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
     @autoreleasepool {
@@ -263,7 +267,7 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
 
         if (library) {
             std::unique_ptr<TreeItem> rootItem =
-                TreeItem::newRoot(m_parentFeature);
+                    TreeItem::newRoot(m_parentFeature);
             ImporterImpl impl(m_database, m_cancelImport);
 
             impl.importPlaylists(library.allPlaylists);
