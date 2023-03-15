@@ -10889,8 +10889,8 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="409"/>
-        <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
-        <translation>Katso lisätietoja sivulla https://bugs.launchpad.net/mixxx/+bug/686212 olevasta vikailmoituksesta.</translation>
+        <source>See https://github.com/mixxxdj/mixxx/issues/5701 for more information.</source>
+        <translation>Katso lisätietoja sivulla https://github.com/mixxxdj/mixxx/issues/5701 olevasta vikailmoituksesta.</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="418"/>

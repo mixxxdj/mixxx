@@ -889,7 +889,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #ifdef __SSE__
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
-        // https://bugs.launchpad.net/mixxx/+bug/1404401
+        // https://github.com/mixxxdj/mixxx/issues/7747
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);

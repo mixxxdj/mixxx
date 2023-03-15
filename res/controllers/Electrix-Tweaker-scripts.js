@@ -255,7 +255,7 @@ ElectrixTweaker.initDeck = function (group) {
     }
     disconnectDeck = '[Channel' + disconnectDeck + ']'
     ElectrixTweaker.connectDeckControls(disconnectDeck, true)
-    // workaround for https://bugs.launchpad.net/mixxx/+bug/1466606
+    // workaround for https://github.com/mixxxdj/mixxx/issues/8104
     for (i=1; i <= 32; i++) {
         engine.setValue(disconnectDeck, 'hotcue_'+i+'_activate', 0)
     }

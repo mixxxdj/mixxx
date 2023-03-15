@@ -132,7 +132,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             // Note (TagLib 1.1.11): TagLib::MPEG::File::tag() returns a
             // valid pointer even if neither an ID3v2 nor an ID3v1 tag is
             // present!
-            // See also: https://bugs.launchpad.net/mixxx/+bug/1865957
+            // See also: https://github.com/mixxxdj/mixxx/issues/9891
             const TagLib::Tag* pTag = file.tag();
             if (pTag) {
                 taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
@@ -462,7 +462,7 @@ class OggTagSaver : public TagSaver {
         (TAGLIB_PATCH_VERSION == 1)
         // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
         // when writing tags: https://github.com/taglib/taglib/issues/864
-        // Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/1833190
+        // Launchpad issue: https://github.com/mixxxdj/mixxx/issues/9680
         Q_UNUSED(pFile);
         Q_UNUSED(trackMetadata);
         kLogger.warning() << "Skipping export of metadata into Ogg file due to "

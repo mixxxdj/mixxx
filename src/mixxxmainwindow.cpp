@@ -374,8 +374,8 @@ MixxxMainWindow::~MixxxMainWindow() {
     // On next start restoreGeometry would enable fullscreen mode even though that
     // might not be requested (no '--fullscreen' command line arg and
     // [Config],StartInFullscreen is '0'.
-    // https://bugs.launchpad.net/mixxx/+bug/1882474
-    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // https://github.com/mixxxdj/mixxx/issues/10005
+    // https://github.com/mixxxdj/mixxx/issues/10265
     // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
     bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
@@ -1058,7 +1058,7 @@ void MixxxMainWindow::rebootMixxxView() {
 #ifdef __LINUX__
     // don't adjustSize() on Linux as this wouldn't use the entire available area
     // to paint the new skin with X11
-    // https://bugs.launchpad.net/mixxx/+bug/1773587
+    // https://github.com/mixxxdj/mixxx/issues/9309
 #else
     adjustSize();
 #endif

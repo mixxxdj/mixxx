@@ -739,7 +739,7 @@ void WSearchLineEdit::slotClearSearch() {
     // and gives the user the chance for entering a new search
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
+    // See also: https://github.com/mixxxdj/mixxx/issues/8665
     // Note that just clear() would also erase all combobox items,
     // thus clear the entire search history.
     lineEdit()->clear();
