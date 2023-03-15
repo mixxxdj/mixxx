@@ -2,4 +2,9 @@
 
 #include <QString>
 
-QString iTunesLocalhostToken();
+static const QString kiTunesLocalhostToken = QStringLiteral(
+        "//localhost"
+#if defined(__WINDOWS__)
+        "/"
+#endif
+);

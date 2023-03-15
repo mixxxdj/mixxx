@@ -303,7 +303,7 @@ TreeItem* ITunesFeature::importLibrary() {
     // location of the user's iTunes path but the defaults are necessary in case
     // their iTunes XML does not include the "Music Folder" key.
     m_pathMapping.mixxxITunesRoot = "";
-    m_pathMapping.dbITunesRoot = iTunesLocalhostToken();
+    m_pathMapping.dbITunesRoot = kiTunesLocalhostToken;
 
     ITunesImport iTunesImport;
     std::unique_ptr<ITunesImporter> importer;
@@ -330,7 +330,7 @@ TreeItem* ITunesFeature::importLibrary() {
         QSqlQuery query(m_database);
         query.prepare("UPDATE itunes_library SET location = replace( location, :itunes_path, :mixxx_path )");
         query.bindValue(":itunes_path",
-                m_pathMapping.dbITunesRoot.replace(iTunesLocalhostToken(), ""));
+                m_pathMapping.dbITunesRoot.replace(kiTunesLocalhostToken, ""));
         query.bindValue(":mixxx_path", m_pathMapping.mixxxITunesRoot);
         bool success = query.exec();
 

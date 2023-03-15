@@ -108,7 +108,7 @@ void ITunesXMLImporter::guessMusicLibraryMountpoint() {
     QString music_folder = QUrl(m_xml.readElementText()).toLocalFile();
 
     QString music_folder_test = music_folder;
-    music_folder_test.replace(iTunesLocalhostToken(), "");
+    music_folder_test.replace(kiTunesLocalhostToken, "");
     QDir music_folder_dir(music_folder_test);
 
     // The music folder exists, so a simple transformation
