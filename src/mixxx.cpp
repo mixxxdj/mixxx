@@ -768,16 +768,14 @@ void MixxxMainWindow::finalize() {
     // On next start restoreGeometry would enable fullscreen mode even though that
     // might not be requested (no '--fullscreen' command line arg and
     // [Config],StartInFullscreen is '0'.
-    // https://bugs.launchpad.net/mixxx/+bug/1882474
-    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // https://github.com/mixxxdj/mixxx/issues/10005
     // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
     bool fullscreenPref = m_pSettingsManager->settings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
     if (isFullScreen() && !fullscreenPref) {
-        slotViewFullScreen(false);
-        // After returning from fullscreen the main window incl. window decoration
-        // may be too large for the screen.
-        // Maximize the window so we can store a geometry that fits the screen.
+        // Simply maximize the window so we can store a geometry that fits the screen.
+        // Don't call slotViewFullScreen(false) (calls showNormal()) because that
+        // can make the main window incl. window decoration too large for the screen.
         showMaximized();
     }
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
