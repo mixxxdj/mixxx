@@ -194,12 +194,12 @@ ElectrixTweaker.init = function () {
     if (engine.getValue('[Master]', 'num_samplers') < 8) {
         engine.setValue('[Master]', 'num_samplers', 8)
     }
-    for (var group in ElectrixTweaker.encoders) { // loop over each [Channel]
-//         engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
-//         engine.softTakeover(group, 'volume', true)
-        // uncomment the line below when Bug #1472868 is fixed
-//         ElectrixTweaker.vinylMode[group] = engine.getValue(group, 'vinylcontrol_enabled')
-        engine.setValue(group, 'vinylcontrol_enabled', ElectrixTweaker.vinylMode[group])
+    for (const group in ElectrixTweaker.encoders) { // loop over each [Channel]
+        //         engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
+        //         engine.softTakeover(group, 'volume', true)
+        // uncomment the line below when issue #8142 is fixed
+        //         ElectrixTweaker.vinylMode[group] = engine.getValue(group, 'vinylcontrol_enabled')
+        engine.setValue(group, "vinylcontrol_enabled", ElectrixTweaker.vinylMode[group]);
     }
     ElectrixTweaker.initDeck('[Channel1]')
     ElectrixTweaker.initDeck('[Channel2]')

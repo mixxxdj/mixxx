@@ -608,7 +608,7 @@ ReloopBeatmix24.FxModeLedFlash = function(step, mode) {
                 i + "]_enable");
             engine.trigger("[EffectRack1_EffectUnit2]", "group_[Channel" +
                 i + "]_enable");
-            // Workaround for bug #1607277 as engine.trigger doesn't work well
+            // Workaround for issue #8620 as engine.trigger doesn't work well
             var newValue = engine.getValue("[EffectRack1_EffectUnit1]",
                 "group_[Channel" + i + "]_enable");
             midi.sendShortMsg(0x90 + i, 0x25, newValue ? ON : OFF);
