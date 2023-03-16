@@ -174,6 +174,7 @@ void MixxxMainWindow::initializeQOpenGL() {
 #endif
 
 void MixxxMainWindow::initialize() {
+    qWarning() << "     $ initialize";
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
@@ -209,6 +210,7 @@ void MixxxMainWindow::initialize() {
     if ((CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) &&
             // could be we're fullscreen already after setGeomtery(previousGeometry)
             !isFullScreen()) {
+        qWarning() << "     init: go fullscreen";
         showFullScreen();
     }
 
@@ -520,6 +522,7 @@ MixxxMainWindow::~MixxxMainWindow() {
 }
 
 void MixxxMainWindow::initializeWindow() {
+    qWarning() << "     $ initializeWindow";
     // be sure createMenuBar() is called first
     DEBUG_ASSERT(m_pMenuBar);
 
@@ -720,6 +723,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 }
 
 void MixxxMainWindow::createMenuBar() {
+    qWarning() << "     $ createMenuBar";
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
     m_pMenuBar = make_parented<WMainMenuBar>(
@@ -733,6 +737,7 @@ void MixxxMainWindow::createMenuBar() {
 void MixxxMainWindow::connectMenuBar() {
     // This function might be invoked multiple times on startup
     // so all connections must be unique!
+    qWarning() << "     $ connectMenuBar";
 
     ScopedTimer t("MixxxMainWindow::connectMenuBar");
     connect(this,
@@ -987,15 +992,19 @@ void MixxxMainWindow::slotDeveloperToolsClosed() {
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
+    qWarning() << "     $ slotViewFullScreen" << toggle;
     if (isFullScreen() == toggle) {
+        qWarning() << "     (no-op)";
         return;
     }
 
     // Just switch the window state here. eventFilter() will catch the
     // QWindowStateChangeEvent and inform the menu bar that fullscreen changed.
     if (toggle) {
+        qWarning() << "     > showFullScreen()";
         showFullScreen();
     } else {
+        qWarning() << "     > showNormal()";
         showNormal();
     }
 }
