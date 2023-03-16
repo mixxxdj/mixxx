@@ -375,15 +375,13 @@ MixxxMainWindow::~MixxxMainWindow() {
     // might not be requested (no '--fullscreen' command line arg and
     // [Config],StartInFullscreen is '0'.
     // https://github.com/mixxxdj/mixxx/issues/10005
-    // https://github.com/mixxxdj/mixxx/issues/10265
     // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
     bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
     if (isFullScreen() && !fullscreenPref) {
-        slotViewFullScreen(false);
-        // After returning from fullscreen the main window incl. window decoration
-        // may be too large for the screen.
-        // Maximize the window so we can store a geometry that fits the screen.
+        // Simply maximize the window so we can store a geometry that fits the screen.
+        // Don't call slotViewFullScreen(false) (calls showNormal()) because that
+        // can make the main window incl. window decoration too large for the screen.
         showMaximized();
     }
     m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "geometry"),

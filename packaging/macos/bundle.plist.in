@@ -29,6 +29,9 @@
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2001-@MIXXX_YEAR@ Mixxx Development Team</string>
 
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Mixxx requires microphone access for microphone and vinyl input.</string>
+
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 
