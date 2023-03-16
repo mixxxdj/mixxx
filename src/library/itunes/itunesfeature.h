@@ -54,6 +54,8 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void clearTable(const QString& table_name);
     bool readNextStartElement(QXmlStreamReader& xml);
 
+    /// Presents an 'open file' dialog for selecting an iTunes library XML and
+    /// returns the file path.
     QString showOpenDialog();
 
     BaseExternalTrackModel* m_pITunesTrackModel;
