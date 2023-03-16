@@ -109,6 +109,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_pLaunchImage(nullptr),
 #ifndef __APPLE__
           m_pFullScreenHint(nullptr),
+          m_prevState(Qt::WindowNoState),
 #endif
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
@@ -447,6 +448,11 @@ MixxxMainWindow::~MixxxMainWindow() {
         // Simply maximize the window so we can store a geometry that fits the screen.
         // Don't call slotViewFullScreen(false) (calls showNormal()) because that
         // can make the main window incl. window decoration too large for the screen.
+#ifndef __APPLE__
+        // Before, store the expected window state so eventFilter() will ignore
+        // the following QWindowChangeEvent and not recreate & re-sync the menu bar.
+        m_prevState = Qt::WindowMaximized;
+#endif
         showMaximized();
     }
     m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "geometry"),
@@ -1110,6 +1116,11 @@ void MixxxMainWindow::rebootMixxxView() {
     // it is not fullscreen, but acts as if it is.
     bool wasFullScreen = isFullScreen();
     if (wasFullScreen) {
+#ifndef __APPLE__
+        // We'll return to fullscreen soon anyway so avoid triggering
+        // recreating & reconnecting the menu bar.
+        m_prevState = Qt::WindowNoState;
+#endif
         showNormal();
     }
 
@@ -1132,6 +1143,9 @@ void MixxxMainWindow::rebootMixxxView() {
 #endif
 
     if (wasFullScreen) {
+#ifndef __APPLE__
+        m_prevState = Qt::WindowFullScreen;
+#endif
         showFullScreen();
     } else {
         // Programmatic placement at this point is very problematic.
@@ -1184,6 +1198,17 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             }
         }
     } else if (event->type() == QEvent::WindowStateChange) {
+#ifndef __APPLE__
+        if (windowState() == m_prevState) {
+            // Ignore no-op. This happens if another window is raised above
+            // MixxxMianWindow,  e.g. DlgPeferences. In such a case event->oldState()
+            // will be Qt::WindowNoState which is wrong anyway, so there is nothing
+            // to do internally.
+            qWarning() << "$ WindowStateChange IGNORE";
+            return QMainWindow::eventFilter(obj, event);
+        }
+        m_prevState = windowState();
+#endif
         // Detect if we entered or quit fullscreen mode.
         QWindowStateChangeEvent* changeEvent =
                 static_cast<QWindowStateChangeEvent*>(event);

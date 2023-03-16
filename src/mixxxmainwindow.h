@@ -125,6 +125,7 @@ class MixxxMainWindow : public QMainWindow {
     LaunchImage* m_pLaunchImage;
 #ifndef __APPLE__
     WFullScreenHint* m_pFullScreenHint;
+    Qt::WindowStates m_prevState;
 #endif
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
