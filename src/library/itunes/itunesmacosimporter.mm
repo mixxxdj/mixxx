@@ -281,6 +281,9 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
             impl.appendPlaylistTree(*rootItem);
 
             iTunesImport.playlistRoot = std::move(rootItem);
+        } else if (error) {
+            qWarning() << "Error reading default iTunes library: "
+                       << qStringFrom([error localizedDescription]);
         }
 
         return iTunesImport;
