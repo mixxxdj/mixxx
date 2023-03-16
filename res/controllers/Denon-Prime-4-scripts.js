@@ -42,10 +42,10 @@ const deckColors = [
     "red",
 
     // Deck 2
-    "yellow",
+    "magenta",
 
     // Deck 3
-    "blue",
+    "green",
 
     // Deck 4
     "blue",
@@ -360,7 +360,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     */
 
     // Performance Pads
-    this.padGrid = new Prime4.padSection(this, midiChannel - 4);
+    this.padGrid = new Prime4.PadSection(this, midiChannel - 4);
 
     // Tempo Fader
     this.tempoFader = new components.Pot({
@@ -482,6 +482,7 @@ Prime4.shiftState = function(channel, control, value) {
 
 //========== PERFORMANCE PADS ==========//
 
+// Access the appropriate mode-select pad without remembering MIDI values
 Prime4.padMode = {
     HOTCUE: 0x0B,
     LOOP: 0x0C,
@@ -489,7 +490,7 @@ Prime4.padMode = {
     SLICER: 0x0E,
 };
 
-Prime4.padSection = function(deck, offset) {
+Prime4.PadSection = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.modes = {
         "hotcue": new Prime4.hotcueMode(deck, offset),
@@ -500,16 +501,47 @@ Prime4.padSection = function(deck, offset) {
     };
     this.offset = offset;
 
+
+    this.setPadMode = function(control) {
+        const newMode = this.controlToPadMode(control);
+
+        // Exit early if requested mode is already active or unavailable
+        if (newMode === this.currentMode || newMode === undefined) {
+            return;
+        }
+
+        // Disable LED of current mode button
+        if (this.currentMode) {
+            midi.sendShortMsg(0x94 + this.offset, this.currentMode.ledControl, this.currentMode.colourOff);
+
+            // Disconnect pads from current mode
+            this.currentMode.forEachComponent(function(component) {
+                component.disconnect();
+            });
+        }
+
+        // Enable LED of new mode to switch to
+        midi.sendShortMsg(0x94 + this.offset, newMode.ledControl, newMode.colourOn);
+
+        // Connect pads to new mode
+        newMode.forEachComponent(function(component) {
+            component.connect();
+            component.trigger();
+        });
+
+        this.currentMode = newMode;
+    };
+
     // Start in Hotcue mode
     this.setPadMode(Prime4.padMode.HOTCUE);
     //midi.sendShortMsg(0x94 + offset, 0x0C, Prime4.rgbCode.whiteDark); // Loop mode, not implemented yet
-    midi.sendShortMsg(0x94 + offset, 0x0D, Prime4.rgbCode.whiteDark);
+    midi.sendShortMsg(0x94 + offset, 0x0D, Prime4.rgbCode.greenDark);
     //midi.sendShortMsg(0x94 + offset, 0x0E, Prime4.rgbCode.whiteDark); // Slicer mode, not implemented yet
 };
 
-Prime4.padSection.prototype = Object.create(components.ComponentContainer.prototype);
+Prime4.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
 
-Prime4.padSection.prototype.controlToPadMode = function(control) {
+Prime4.PadSection.prototype.controlToPadMode = function(control) {
     let mode;
     switch (control) {
     case Prime4.padMode.HOTCUE:
@@ -533,47 +565,17 @@ Prime4.padSection.prototype.controlToPadMode = function(control) {
     return mode;
 };
 
-Prime4.padSection.prototype.padModeButtonPressed = function(channel, control, value, _status, _group) {
+Prime4.PadSection.prototype.padModeButtonPressed = function(channel, control, value, _status, _group) {
     if (value) {
         this.setPadMode(control);
     }
 };
 
 // Worry about parameter buttons later
-//Prime4.padSection.prototype.paramButtonPressed = function(channel, control, value, status, group) {};
+//Prime4.PadSection.prototype.paramButtonPressed = function(channel, control, value, status, group) {};
 
-Prime4.padSection.prototype.setPadMode = function(control) {
-    const newMode = this.controlToPadMode(control);
 
-    // Exit early if requested mode is already active or unavailable
-    if (newMode === this.currentMode || newMode === undefined) {
-        return;
-    }
-
-    // Disable LED of current mode button
-    if (this.currentMode) {
-        midi.sendShortMsg(0x94 + this.offset, this.currentMode.ledControl, Prime4.rgbCode.whiteDark);
-
-        // Disconnect pads from current mode
-        this.currentMode.forEachComponent(function(component) {
-            component.disconnect();
-        });
-    }
-
-    // Enable LED of new mode to switch to
-    midi.sendShortMsg(0x94 + this.offset, newMode.ledControl, newMode.colour);
-
-    // Connect pads to new mode
-    newMode.forEachComponent(function(component) {
-        component.connect();
-        component.trigger();
-    });
-
-    this.currentMode = newMode;
-
-};
-
-Prime4.padSection.prototype.performancePad = function(channel, control, value, status, group) {
+Prime4.PadSection.prototype.performancePad = function(channel, control, value, status, group) {
     const i = (control - 0x0E);
     this.currentMode.pads[i].input(channel, control, value, status, group);
 };
@@ -581,7 +583,8 @@ Prime4.padSection.prototype.performancePad = function(channel, control, value, s
 Prime4.hotcueMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.HOTCUE;
-    this.colour = Prime4.rgbCode.blue;
+    this.colourOn = Prime4.rgbCode.blue;
+    this.colourOff = Prime4.rgbCode.blueDark;
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
         this.pads[i] = new components.HotcueButton({
@@ -591,6 +594,7 @@ Prime4.hotcueMode = function(deck, offset) {
             colorMapper: Prime4ColorMapper,
             on: this.colour,
             off: Prime4.rgbCode.whiteDark,
+            outConnect: false,
         });
     }
 };
@@ -600,7 +604,8 @@ Prime4.hotcueMode.prototype = Object.create(components.ComponentContainer.protot
 Prime4.rollMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.ROLL;
-    this.colour = Prime4.rgbCode.blue;
+    this.colourOn = Prime4.rgbCode.green;
+    this.colourOff = Prime4.rgbCode.greenDark;
     this.pads = new components.ComponentContainer();
     // NOTE: The Prime 4's standalone Roll mode includes triplet loop rolls, but
     //       Mixxx doesn't support those yet.
@@ -613,7 +618,8 @@ Prime4.rollMode = function(deck, offset) {
             outKey: "beatloop_" + loopSize + "_enabled",
             inKey: "beatlooproll_" + loopSize + "_activate",
             on: Prime4.rgbCode.white,
-            off: Prime4.rgbCode.green,
+            off: Prime4.rgbCode.greenDim,
+            outConnect: false,
         });
     }
 };

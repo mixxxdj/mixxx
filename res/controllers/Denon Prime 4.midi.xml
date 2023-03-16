@@ -383,10 +383,9 @@
 	      <group></group>
 	      <key></key>
 	      <description>Entered manually with Emacs</description>
-	      <status>0x93</status>
-	      <midino>0x0F</midino>
+	      <status>0xBF</status>
+	      <midino>0x1A</midino>
 	      <options>
-		<Script-Binding/>
 	      </options>
 	    </control>
 
