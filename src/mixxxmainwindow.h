@@ -17,7 +17,9 @@ class DlgKeywheel;
 class GuiTick;
 class LaunchImage;
 class VisualsManager;
+#ifndef __APPLE__
 class WFullScreenHint;
+#endif
 class WMainMenuBar;
 class QCheckBox;
 
@@ -106,7 +108,9 @@ class MixxxMainWindow : public QMainWindow {
 
     bool confirmExit();
 
+#ifndef __APPLE__
     void showFullScreenHotkeyHint();
+#endif
 
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
@@ -119,7 +123,9 @@ class MixxxMainWindow : public QMainWindow {
 
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
+#ifndef __APPLE__
     WFullScreenHint* m_pFullScreenHint;
+#endif
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;
@@ -147,6 +153,7 @@ class MixxxMainWindow : public QMainWindow {
     QSet<ControlObject*> m_skinCreatedControls;
 };
 
+#ifndef __APPLE__
 class WFullScreenHint : public QWidget {
     Q_OBJECT
   public:
@@ -162,3 +169,4 @@ class WFullScreenHint : public QWidget {
     QPushButton* m_pOkayBtn;
     UserSettingsPointer m_pConfig;
 };
+#endif

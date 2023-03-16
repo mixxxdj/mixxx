@@ -377,12 +377,14 @@ void MixxxMainWindow::initialize() {
     // otherwise it would shift the launch image shortly before the skin is visible.
     m_pMenuBar->show();
 
+#ifndef __APPLE__
     // Show the fullscreen hotkey hint if we went fullscreen earlier.
     // This should make users aware of the new feature (press Alt to show/hide menu bar)
     // if they upgraded Mixxx with 'Start in fullscreen mode'.
     // Show the hint now so it doesn't interfere with other popups, e.g. the
     // sound device warnings.
     showFullScreenHotkeyHint();
+#endif
 
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
@@ -410,6 +412,7 @@ void MixxxMainWindow::initialize() {
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
 
+#ifndef __APPLE__
     if (m_pCoreServices->getSettings()->getValueString(
                 ConfigKey("[Config]", "hide_fullscreen_hint")) != "1") {
         connect(this,
@@ -417,6 +420,7 @@ void MixxxMainWindow::initialize() {
                 this,
                 &MixxxMainWindow::showFullScreenHotkeyHint);
     }
+#endif
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -1291,6 +1295,7 @@ void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& 
     qApp->processEvents();
 }
 
+#ifndef __APPLE__
 void MixxxMainWindow::showFullScreenHotkeyHint() {
     if (!isFullScreen()) {
         return;
@@ -1353,11 +1358,9 @@ WFullScreenHint::WFullScreenHint(QWidget* parent, UserSettingsPointer pConfig)
         pLabelLayout->addWidget(fullScreenHotkeys);
     }
 
-#ifndef __APPLE__
     auto* menuHotkey = new QLabel(tr("Press <b>Alt</b> to toggle the menu bar"), this);
     menuHotkey->setObjectName("MenuHotkeyLabel");
     pLabelLayout->addWidget(menuHotkey);
-#endif
 
     pLabelLayout->addStretch();
 
@@ -1414,3 +1417,4 @@ void WFullScreenHint::closeEvent(QCloseEvent* event) {
     m_pConfig->set(ConfigKey("[Config]", "hide_fullscreen_hint"), ConfigValue(remind));
     QWidget::closeEvent(event);
 }
+#endif
