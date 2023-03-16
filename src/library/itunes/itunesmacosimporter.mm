@@ -263,29 +263,26 @@ ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
 }
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
-    @autoreleasepool {
-        ITunesImport iTunesImport;
-        iTunesImport.isMusicFolderLocatedAfterTracks = false;
+    ITunesImport iTunesImport;
+    iTunesImport.isMusicFolderLocatedAfterTracks = false;
 
-        NSError* error = nil;
-        ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0"
-                                                             error:&error];
+    NSError* error = nil;
+    ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0"
+                                                         error:&error];
 
-        if (library) {
-            std::unique_ptr<TreeItem> rootItem =
-                    TreeItem::newRoot(m_parentFeature);
-            ImporterImpl impl(m_database, m_cancelImport);
+    if (library) {
+        std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
+        ImporterImpl impl(m_database, m_cancelImport);
 
-            impl.importPlaylists(library.allPlaylists);
-            impl.importMediaItems(library.allMediaItems);
-            impl.appendPlaylistTree(*rootItem);
+        impl.importPlaylists(library.allPlaylists);
+        impl.importMediaItems(library.allMediaItems);
+        impl.appendPlaylistTree(*rootItem);
 
-            iTunesImport.playlistRoot = std::move(rootItem);
-        } else if (error) {
-            qWarning() << "Error reading default iTunes library: "
-                       << qStringFrom([error localizedDescription]);
-        }
-
-        return iTunesImport;
+        iTunesImport.playlistRoot = std::move(rootItem);
+    } else if (error) {
+        qWarning() << "Error reading default iTunes library: "
+                   << qStringFrom([error localizedDescription]);
     }
+
+    return iTunesImport;
 }
