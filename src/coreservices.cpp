@@ -419,7 +419,7 @@ void CoreServices::initialize(QApplication* pApp) {
             supportedFileSuffixes.join(","));
 
     // Scan the library directory. Do this after the skinloader has
-    // loaded a skin, see Bug #1047435
+    // loaded a skin, see issue #6625
     if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
         m_pTrackCollectionManager->startLibraryScan();
     }

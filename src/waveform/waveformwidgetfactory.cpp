@@ -728,7 +728,7 @@ void WaveformWidgetFactory::swap() {
                 // Don't swap invalid / invisible widgets or widgets with an
                 // unexposed window. Prevents continuous log spew of
                 // "QOpenGLContext::swapBuffers() called with non-exposed
-                // window, behavior is undefined" on Qt5. See Bug #1779487.
+                // window, behavior is undefined" on Qt5. See issue #9360.
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }

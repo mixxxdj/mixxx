@@ -2767,9 +2767,9 @@ if(BROADCAST)
   # https://github.com/mixxxdj/mixxx/issues/9681
   # https://github.com/mixxxdj/mixxx/issues/10305
   if(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.4)
-      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from bug lp1833225")
+      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from issue #9681")
   elseif(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.6)
-      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
+      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from issue #10305")
   endif()
   if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
     # Fall back to internal library in the lib tree

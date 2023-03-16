@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2023-03-15" timestamp="1678888231">
+    <release version="2.4.0" type="development" date="2023-03-16" timestamp="1678991453">
       <description>
  <p>
   Cover Art
@@ -534,7 +534,7 @@
   <li>
    Fix synchronization of main cue point/position
    #4137
-   lp1937074
+   #10478
    #4153
   </li>
   <li>
@@ -1025,7 +1025,7 @@
    #10762
    #4884
    #10802
-   lp1983764
+   #10801
    #4899
    #8817
    #10868
@@ -1741,7 +1741,7 @@
   <li>
    Numark DJ2GO2: Fix sliders and knobs
    #4835
-   lp:1948596
+   #10586
   </li>
   <li>
    Numark DJ2Go2: Support HotCue clear with pad
@@ -1942,7 +1942,7 @@
   <li>
    Preserve file creation time when writing metadata on Windows
    #4586
-   lp1955314
+   #10619
   </li>
   <li>
    Fix handling of file extension when importing and exporting sampler settings
@@ -2042,12 +2042,12 @@
   </li>
   <li>
    Add support for HiDPI scale factors of 125% and 175% (only with Qt 5.14+)
-   lp1938102
+   #10485
    #4161
   </li>
   <li>
    Fix unhandled exception when parsing corrupt Rekordbox PDB files
-   lp1933853
+   #10452
    #4040
   </li>
   <li>
@@ -2056,7 +2056,7 @@
   </li>
   <li>
    Fix bad phase seek when starting from preroll
-   lp1930143
+   #10423
    #4093
   </li>
   <li>
@@ -2073,7 +2073,7 @@
   </li>
   <li>
    Fix wrong track being recorded in History
-   lp1933991
+   #10454
    #4041
    #4059
    #4107
@@ -2146,12 +2146,12 @@
   <li>
    Fix Auto DJ skipping tracks randomly
    #4319
-   lp1941989
+   #10505
   </li>
   <li>
    Fix high CPU load due to extremely high internal sync clock values
    #4312
-   lp1943320
+   #10520
   </li>
   <li>
    Fix preference option for re-analyzing beatgrids imported from other software
@@ -2680,7 +2680,7 @@
   <li>
    Fix Pioneer DDJ-SB2 controller mapping auto tempo going to infinity bug
    #2559
-   lp:1846403
+   #9838
   </li>
   <li>
    Fix Numark Mixtrack Pro 3 controller mapping inverted FX on/off control
