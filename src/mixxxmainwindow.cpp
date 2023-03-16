@@ -985,31 +985,13 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
         return;
     }
 
+    // Just switch the window state here. eventFilter() will catch the
+    // QWindowStateChangeEvent and inform the menu bar that fullscreen changed.
     if (toggle) {
         showFullScreen();
-#ifdef __LINUX__
-        // Fix for "No menu bar with ubuntu unity in full screen mode" (issues
-        // #6072 and #6689. Before touching anything here, please read
-        // those bugs.
-        // Set this attribute instead of calling setNativeMenuBar(false), see
-        // https://github.com/mixxxdj/mixxx/issues/11320
-        if (m_supportsGlobalMenuBar) {
-            QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, true);
-            createMenuBar();
-            connectMenuBar();
-        }
-#endif
     } else {
-#ifdef __LINUX__
-        if (m_supportsGlobalMenuBar) {
-            QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, false);
-            createMenuBar();
-            connectMenuBar();
-        }
-#endif
         showNormal();
     }
-    emit fullScreenChanged(toggle);
 }
 
 void MixxxMainWindow::slotOptionsPreferences() {
@@ -1199,6 +1181,35 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             default:
                 DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
                 return true;
+            }
+        }
+    } else if (event->type() == QEvent::WindowStateChange) {
+        // Detect if we entered or quit fullscreen mode.
+        QWindowStateChangeEvent* changeEvent =
+                static_cast<QWindowStateChangeEvent*>(event);
+        const bool wasFullScreen = changeEvent->oldState() & Qt::WindowFullScreen;
+        const bool isFullScreenNow = windowState() & Qt::WindowFullScreen;
+        if ((isFullScreenNow && !wasFullScreen) ||
+                (!isFullScreenNow && wasFullScreen)) {
+#ifdef __LINUX__
+            // Fix for "No menu bar with ubuntu unity in full screen mode" (issues
+            // #885890 and #1076789). Before touching anything here, please read
+            // those bugs.
+            // Set this attribute instead of calling setNativeMenuBar(false), see
+            // https://github.com/mixxxdj/mixxx/issues/11320
+            if (m_supportsGlobalMenuBar) {
+                QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, isFullScreenNow);
+                createMenuBar();
+                connectMenuBar();
+            }
+#endif
+            // This will toggle the Fullscreen checkbox and hide the menubar if
+            // we go fullscreen.
+            // Skip this during startup or the launchimage will be shifted
+            // up & down when the menu is shown menu and 'hidden'. The menu
+            // will be updated when the skin finished loading.
+            if (centralWidget() != m_pLaunchImage) {
+                emit fullScreenChanged(isFullScreen());
             }
         }
     }
