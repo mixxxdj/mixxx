@@ -2,6 +2,7 @@
 
 #include <QColor>
 #include <QTime>
+#include <memory>
 
 #include "util/class.h"
 #include "util/performancetimer.h"
