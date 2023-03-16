@@ -190,10 +190,12 @@ void MixxxMainWindow::initialize() {
     // Turn on fullscreen mode
     // if we were told to start in fullscreen mode on the command-line
     // or if the user chose to always start in fullscreen mode.
-    // Remember to refresh the Fullscreen menu item after connectMenuBar()
+    // The Fullscreen menu item is refreshed in connectMenuBar()
     bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
-    if (CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) {
+    if ((CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) &&
+            // could be we're fullscreen already after setGeomtery(previousGeometry)
+            !isFullScreen()) {
         showFullScreen();
     }
 
@@ -373,6 +375,11 @@ void MixxxMainWindow::initialize() {
     // Show the menubar after the launch image is replaced by the skin widget,
     // otherwise it would shift the launch image shortly before the skin is visible.
     m_pMenuBar->show();
+#ifndef __APPLE__
+    // If we went fullscreen earlier and the desktop features a global menu
+    // this will signal the menu to move into the window and hide itself
+    emit fullScreenChanged(isFullScreen());
+#endif
 
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
@@ -498,7 +505,11 @@ void MixxxMainWindow::initializeWindow() {
     Pal.setColor(QPalette::Window, MenuBarBackground);
     m_pMenuBar->setPalette(Pal);
 
-    // Restore the current window state (position, maximized, etc)
+    // Restore the current window state (position, maximized, etc).
+    // This will also restore fullscreen and thereby create a seamless
+    // start if we did shut down while in fullscreen mode and with
+    // [Config],StartInFullscreen = 1
+    // (slotViewFullScreen(true) in  initialize() is a no-op then)
     restoreGeometry(QByteArray::fromBase64(
             m_pCoreServices->getSettings()
                     ->getValueString(ConfigKey("[MainWindow]", "geometry"))
@@ -728,7 +739,8 @@ void MixxxMainWindow::connectMenuBar() {
     connect(m_pMenuBar,
             &WMainMenuBar::showKeywheel,
             this,
-            &MixxxMainWindow::slotShowKeywheel);
+            &MixxxMainWindow::slotShowKeywheel,
+            Qt::UniqueConnection);
 
     // Fullscreen
     connect(m_pMenuBar,
@@ -1086,7 +1098,9 @@ void MixxxMainWindow::rebootMixxxView() {
     // window returns to 0,0 but and the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
     bool wasFullScreen = isFullScreen();
-    slotViewFullScreen(false);
+    if (wasFullScreen) {
+        showNormal();
+    }
 
     if (!loadConfiguredSkin()) {
         QMessageBox::critical(this,
@@ -1107,7 +1121,7 @@ void MixxxMainWindow::rebootMixxxView() {
 #endif
 
     if (wasFullScreen) {
-        slotViewFullScreen(true);
+        showFullScreen();
     } else {
         // Programmatic placement at this point is very problematic.
         // The screen() method returns stale data (primary screen)
