@@ -15,7 +15,7 @@
 class LinkwitzRiley8EQEffectGroupState : public EffectState {
   public:
     LinkwitzRiley8EQEffectGroupState(const mixxx::EngineParameters& engineParameters);
-    virtual ~LinkwitzRiley8EQEffectGroupState();
+    ~LinkwitzRiley8EQEffectGroupState() override;
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 
@@ -40,7 +40,7 @@ class LinkwitzRiley8EQEffectGroupState : public EffectState {
 class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffectGroupState> {
   public:
     LinkwitzRiley8EQEffect();
-    virtual ~LinkwitzRiley8EQEffect();
+    ~LinkwitzRiley8EQEffect() override;
 
     static QString getId();
     static EffectManifestPointer getManifest();

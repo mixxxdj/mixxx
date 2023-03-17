@@ -3,6 +3,7 @@
 #include <QtQml/qqmlextensionplugin.h>
 
 #include "control/controlsortfiltermodel.h"
+#include "controllers/controllermanager.h"
 #include "moc_qmlapplication.cpp"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlconfigproxy.h"
@@ -86,6 +87,8 @@ QmlApplication::QmlApplication(
     QmlLibraryProxy::s_pInstance = new QmlLibraryProxy(pCoreServices->getLibrary(), this);
 
     loadQml(m_mainFilePath);
+
+    pCoreServices->getControllerManager()->setUpDevices();
 
     connect(&m_fileWatcher,
             &QFileSystemWatcher::fileChanged,

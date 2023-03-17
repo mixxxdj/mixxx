@@ -2,7 +2,7 @@
 
 #Mixxx {  /*
   AlignRight just for testing, to attach SkinSettings to right edge.
-  Not working. See https://bugs.launchpad.net/mixxx/+bug/1623997 */
+  Not working. See https://github.com/mixxxdj/mixxx/issues/8646 */
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   background-color: #1e1e1e;
   font-size: 12px/12px;
@@ -10,7 +10,7 @@
 
 #SkinContainer {  /*
   AlignRight just for testing, to attach SkinSettings to right edge.
-  Not working. See https://bugs.launchpad.net/mixxx/+bug/1623997 */
+  Not working. See https://github.com/mixxxdj/mixxx/issues/8646 */
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   background-color: #1e1e1e;
 }

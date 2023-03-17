@@ -2297,7 +2297,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     // All following database queries assume that the list is
     // not empty. Otherwise the played history of all tracks
     // might be reset!!!
-    // https://bugs.launchpad.net/mixxx/+bug/1955159
+    // https://github.com/mixxxdj/mixxx/issues/10617
     VERIFY_OR_DEBUG_ASSERT(!trackIds.isEmpty()) {
         return false;
     }
@@ -2311,7 +2311,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     //
     // https://www.sqlite.org/lang_update.html#upfrom
     // UPDATE-FROM is supported beginning in SQLite version 3.33.0 (2020-08-14)
-    // https://bugs.launchpad.net/mixxx/+bug/1937941
+    // https://github.com/mixxxdj/mixxx/issues/10482
 #ifdef __SQLITE3__
     if (sqlite3_libversion_number() >= 3033000) {
 #endif // __SQLITE3__

@@ -91,7 +91,7 @@ void importTrackMetadataFromTag(
             pTrackMetadata,
             tag);
 
-    // NOTE(uklotzde, 2018-01-28, https://bugs.launchpad.net/mixxx/+bug/1745847)
+    // NOTE(uklotzde, 2018-01-28, https://github.com/mixxxdj/mixxx/issues/9112)
     // It turns out that the keys for APEv2 tags are case-sensitive and
     // some tag editors seem to write UPPERCASE Vorbis keys instead of
     // the CamelCase APEv2 keys suggested by the Picard Mapping table:

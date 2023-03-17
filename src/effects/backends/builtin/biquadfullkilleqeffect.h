@@ -18,6 +18,7 @@
 class BiquadFullKillEQEffectGroupState : public EffectState {
   public:
     BiquadFullKillEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
+    ~BiquadFullKillEQEffectGroupState() override = default;
 
     void setFilters(
             mixxx::audio::SampleRate sampleRate,
@@ -59,6 +60,7 @@ class BiquadFullKillEQEffectGroupState : public EffectState {
 class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffectGroupState> {
   public:
     BiquadFullKillEQEffect();
+    ~BiquadFullKillEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();
