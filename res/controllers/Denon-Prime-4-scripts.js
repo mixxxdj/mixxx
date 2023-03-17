@@ -39,16 +39,16 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "red",
+    "yellow",
 
     // Deck 2
-    "magenta",
+    "cyan",
 
     // Deck 3
     "green",
 
     // Deck 4
-    "blue",
+    "red",
 
 ];
 
@@ -496,7 +496,7 @@ Prime4.PadSection = function(deck, offset) {
     // Create component containers for each pad mode
     this.modes = {
         "hotcue": new Prime4.hotcueMode(deck, offset),
-        // "loop": new Prime4.loopMode(deck, offset),
+        "loop": new Prime4.loopMode(deck, offset),
         // "autoloop": new Prime4.autoloopMode(deck, offset),
         "roll": new Prime4.rollMode(deck, offset),
         "sampler": new Prime4.samplerMode(deck, offset),
@@ -536,7 +536,7 @@ Prime4.PadSection = function(deck, offset) {
 
     // Start in Hotcue mode
     this.setPadMode(Prime4.padMode.HOTCUE);
-    //midi.sendShortMsg(0x94 + offset, 0x0C, Prime4.rgbCode.whiteDark); // Loop mode, not implemented yet
+    midi.sendShortMsg(0x94 + offset, 0x0C, Prime4.rgbCode.redDark);
     midi.sendShortMsg(0x94 + offset, 0x0D, Prime4.rgbCode.greenDark);
     midi.sendShortMsg(0x94 + offset, 0x0E, Prime4.rgbCode.yellowDark);
 };
@@ -597,13 +597,49 @@ Prime4.hotcueMode = function(deck, offset) {
             group: deck.currentDeck,
             midi: [0x94 + offset, 0x0E + i],
             colorMapper: Prime4ColorMapper,
-            on: this.colour,
-            off: Prime4.rgbCode.whiteDark,
+            on: this.colourOn,
+            off: this.colourOff,
             outConnect: false,
         });
     }
 };
 Prime4.hotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+// LOOP MODE
+Prime4.loopMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = Prime4.padMode.LOOP;
+    this.colourOn = Prime4.rgbCode.red;
+    this.colourOff = Prime4.rgbCode.redDark;
+    this.PerformancePad = function(n) {
+        this.midi = [0x94 + offset, 0x0E + n];
+        this.number = n;
+        this.outKey = "hotcue_" + this.number + "_enabled";
+        this.colorKey = "hotcue_" + this.number + "_color";
+        components.Button.call(this);
+    };
+    this.PerformancePad.prototype = new components.Button({
+        group: deck.currentDeck,
+        on: this.colourOn,
+        off: this.colourOff,
+        colorMapper: Prime4ColorMapper,
+        outConnect: false,
+        unshift: function() {
+            this.inKey = "hotcue_" + this.number + "_cueloop";
+        },
+        shift: function() {
+            this.inKey = "hotcue_" + this.number + "_cueloop";
+        },
+        output: components.HotcueButton.prototype.output,
+        outputColor: components.HotcueButton.prototype.outputColor,
+        connect: components.HotcueButton.prototype.connect,
+    });
+    this.pads = new components.ComponentContainer();
+    for (let i = 1; i <= 8; i++) {
+        this.pads[i] = new this.PerformancePad(i);
+    }
+};
+Prime4.loopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 // ROLL MODE
 Prime4.rollMode = function(deck, offset) {
@@ -622,8 +658,8 @@ Prime4.rollMode = function(deck, offset) {
             group: deck.currentDeck,
             outKey: "beatloop_" + loopSize + "_enabled",
             inKey: "beatlooproll_" + loopSize + "_activate",
-            on: Prime4.rgbCode.white,
-            off: Prime4.rgbCode.greenDim,
+            on: this.colourOn,
+            off: this.colourOff,
             outConnect: false,
         });
     }
