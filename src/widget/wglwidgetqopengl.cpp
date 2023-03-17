@@ -18,6 +18,7 @@ WGLWidget::~WGLWidget() {
 
 QPaintDevice* WGLWidget::paintDevice() {
     makeCurrentIfNeeded();
+    m_pOpenGLWindow->clear();
     return m_pOpenGLWindow;
 }
 

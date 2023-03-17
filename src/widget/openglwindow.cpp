@@ -15,6 +15,10 @@ OpenGLWindow::OpenGLWindow(WGLWidget* widget)
 OpenGLWindow::~OpenGLWindow() {
 }
 
+void OpenGLWindow::clear() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
 void OpenGLWindow::initializeGL() {
     if (m_pWidget) {
         m_pWidget->initializeGL();
