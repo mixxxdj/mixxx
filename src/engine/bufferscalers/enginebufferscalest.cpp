@@ -158,8 +158,8 @@ double EngineBufferScaleST::scaleBuffer(
                     // Add silence that allows to Flush the last samples out of Soundtouch
                     // m_pSoundTouch->flush(); must not be used, because it allocates a
                     // temporary buffer in the heap which maybe locking
-                    SampleUtil::clear(m_bufferBack.data(), m_bufferBack.size());
-                    m_pSoundTouch->putSamples(m_bufferBack.data(), m_bufferBack.size());
+                    SampleUtil::clear(buffer_back.data(), buffer_back.size());
+                    m_pSoundTouch->putSamples(buffer_back.data(), buffer_back.size());
                 }
                 last_read_failed = true;
             }

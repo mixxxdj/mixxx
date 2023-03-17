@@ -219,7 +219,6 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     SINT unscaled_frames_needed = static_cast<SINT>(frames +
             m_dNextFrame - floor(m_dNextFrame));
 
-    int read_failed_count = 0;
     CSAMPLE floor_sample[2];
     CSAMPLE ceil_sample[2];
 
@@ -289,14 +288,11 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
                         rate_new == 0 ? rate_old : rate_new,
                         m_bufferInt, samples_to_read);
 
-                if (m_bufferIntSize == 0) {
-                    if (++read_failed_count > 1) {
-                        DEBUG_ASSERT(!"getNextSamples must never fail");
-                        SampleUtil::clear(m_bufferInt, samples_to_read);
-                        m_bufferIntSize = getOutputSignal().samples2frames(samples_to_read);
-                    } else {
-                        continue;
-                    }
+                VERIFY_OR_DEBUG_ASSERT(m_bufferIntSize != 0) {
+                    // getNextSamples() must never fail,
+                    // using silence as a last resort
+                    SampleUtil::clear(m_bufferInt, samples_to_read);
+                    m_bufferIntSize = getOutputSignal().samples2frames(samples_to_read);
                 }
 
                 frames_read += getOutputSignal().samples2frames(m_bufferIntSize);
@@ -306,11 +302,6 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
                 m_dCurrentFrame -= getOutputSignal().samples2frames(old_bufsize);
                 currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
             } while (getOutputSignal().frames2samples(currentFrameFloor) + 3 >= m_bufferIntSize);
-
-            // I guess?
-            if (read_failed_count > 1) {
-                break;
-            }
 
             // Now that the buffer is up to date, we can get the value of the sample
             // at the floor of our position.
