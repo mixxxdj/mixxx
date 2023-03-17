@@ -492,16 +492,18 @@ Prime4.padMode = {
 
 Prime4.PadSection = function(deck, offset) {
     components.ComponentContainer.call(this);
+
+    // Create component containers for each pad mode
     this.modes = {
         "hotcue": new Prime4.hotcueMode(deck, offset),
         // "loop": new Prime4.loopMode(deck, offset),
         // "autoloop": new Prime4.autoloopMode(deck, offset),
         "roll": new Prime4.rollMode(deck, offset),
-        // "sampler": new Prime4.samplerMode(deck, offset),
+        "sampler": new Prime4.samplerMode(deck, offset),
     };
     this.offset = offset;
 
-
+    // Function for switching between pad modes
     this.setPadMode = function(control) {
         const newMode = this.controlToPadMode(control);
 
@@ -536,10 +538,11 @@ Prime4.PadSection = function(deck, offset) {
     this.setPadMode(Prime4.padMode.HOTCUE);
     //midi.sendShortMsg(0x94 + offset, 0x0C, Prime4.rgbCode.whiteDark); // Loop mode, not implemented yet
     midi.sendShortMsg(0x94 + offset, 0x0D, Prime4.rgbCode.greenDark);
-    //midi.sendShortMsg(0x94 + offset, 0x0E, Prime4.rgbCode.whiteDark); // Slicer mode, not implemented yet
+    midi.sendShortMsg(0x94 + offset, 0x0E, Prime4.rgbCode.yellowDark);
 };
 
 Prime4.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
+
 
 Prime4.PadSection.prototype.controlToPadMode = function(control) {
     let mode;
@@ -565,6 +568,7 @@ Prime4.PadSection.prototype.controlToPadMode = function(control) {
     return mode;
 };
 
+// Assign mode select buttons in XML file
 Prime4.PadSection.prototype.padModeButtonPressed = function(channel, control, value, _status, _group) {
     if (value) {
         this.setPadMode(control);
@@ -574,12 +578,13 @@ Prime4.PadSection.prototype.padModeButtonPressed = function(channel, control, va
 // Worry about parameter buttons later
 //Prime4.PadSection.prototype.paramButtonPressed = function(channel, control, value, status, group) {};
 
-
+// Assign pads mapped in XML file
 Prime4.PadSection.prototype.performancePad = function(channel, control, value, status, group) {
     const i = (control - 0x0E);
     this.currentMode.pads[i].input(channel, control, value, status, group);
 };
 
+// HOTCUE MODE
 Prime4.hotcueMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.HOTCUE;
@@ -598,9 +603,9 @@ Prime4.hotcueMode = function(deck, offset) {
         });
     }
 };
-
 Prime4.hotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
 
+// ROLL MODE
 Prime4.rollMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.ROLL;
@@ -623,5 +628,24 @@ Prime4.rollMode = function(deck, offset) {
         });
     }
 };
-
 Prime4.rollMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+// SAMPLER MODE
+Prime4.samplerMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = Prime4.padMode.SLICER;
+    this.colourOn = Prime4.rgbCode.yellow;
+    this.colourOff = Prime4.rgbCode.yellowDark;
+    this.pads = new components.ComponentContainer();
+    for (let i = 1; i <= 8; i++) {
+        this.pads[i] = new components.SamplerButton({
+            number: i,
+            midi: [0x94 + offset, 0x0E + i],
+            colorMapper: Prime4ColorMapper,
+            on: this.colourOn,
+            off: this.colourOff,
+            outConnect: false,
+        });
+    }
+};
+Prime4.samplerMode.prototype = Object.create(components.ComponentContainer.prototype);
