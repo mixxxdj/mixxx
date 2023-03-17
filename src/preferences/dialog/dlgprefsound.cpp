@@ -58,10 +58,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::sampleRateChanged);
-    connect(sampleRateComboBox,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefSound::updateAudioBufferSizes);
     connect(audioBufferComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -562,6 +558,7 @@ void DlgPrefSound::sampleRateChanged(int index) {
     m_config.setSampleRate(
             sampleRateComboBox->itemData(index).toUInt());
     m_bLatencyChanged = true;
+    updateAudioBufferSizes(index);
     checkLatencyCompensation();
 }
 
