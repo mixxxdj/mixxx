@@ -39,16 +39,16 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "yellow",
+    "cyan",
 
     // Deck 2
     "cyan",
 
     // Deck 3
-    "green",
+    "magenta",
 
     // Deck 4
-    "red",
+    "magenta",
 
 ];
 
@@ -60,6 +60,18 @@ const deckColors = [
  *       UNLESS YOU KNOW WHAT YOU'RE DOING.       *
  *                                                *
  **************************************************/
+
+// Component re-jigging for pad mode purposes
+components.ComponentContainer.prototype.reconnectComponents = function(operation, recursive) {
+    this.forEachComponent(function(component) {
+        component.disconnect();
+        if (typeof operation === "function") {
+            operation.call(this, component);
+        }
+        if (component.outConnect) { component.connect(); }
+        if (component.outTrigger) { component.trigger(); }
+    }, recursive);
+};
 
 // 'Off' value sets lights to dim instead of off
 components.Button.prototype.off = 0x01;
@@ -494,13 +506,13 @@ Prime4.PadSection = function(deck, offset) {
     components.ComponentContainer.call(this);
 
     // Create component containers for each pad mode
-    this.modes = {
+    this.modes = new components.ComponentContainer({
         "hotcue": new Prime4.hotcueMode(deck, offset),
         "loop": new Prime4.loopMode(deck, offset),
         // "autoloop": new Prime4.autoloopMode(deck, offset),
         "roll": new Prime4.rollMode(deck, offset),
         "sampler": new Prime4.samplerMode(deck, offset),
-    };
+    });
     this.offset = offset;
 
     // Function for switching between pad modes
@@ -519,6 +531,7 @@ Prime4.PadSection = function(deck, offset) {
             // Disconnect pads from current mode
             this.currentMode.forEachComponent(function(component) {
                 component.disconnect();
+                component.outConnect = false;
             });
         }
 
@@ -527,6 +540,7 @@ Prime4.PadSection = function(deck, offset) {
 
         // Connect pads to new mode
         newMode.forEachComponent(function(component) {
+            component.outConnect = true;
             component.connect();
             component.trigger();
         });
@@ -542,7 +556,6 @@ Prime4.PadSection = function(deck, offset) {
 };
 
 Prime4.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
-
 
 Prime4.PadSection.prototype.controlToPadMode = function(control) {
     let mode;
