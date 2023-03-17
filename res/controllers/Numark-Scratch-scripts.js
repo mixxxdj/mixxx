@@ -1,11 +1,12 @@
 var NumarkScratch = {};
 
-/////////////////
-// Tweakables. //
-/////////////////
+/*
+ * USER CONFIGURABLE SETTINGS.
+ */
 
-// Beatloop Roll sizes for the 4 pads, for available values see:
-// https://manual.mixxx.org/2.3/en/chapters/appendix/mixxx_controls.html#control-[ChannelN]-beatloop_X_toggle
+// Defines the Beatloop Roll sizes for the 4 pads, for available values see:
+// https://manual.mixxx.org/2.4/en/chapters/appendix/mixxx_controls.html#control-[ChannelN]-beatlooproll_X_activate
+// Default: [0.25, 0.5, 1, 2]
 NumarkScratch.autoLoopSizes = [
     "0.25",
     "0.5",
@@ -13,17 +14,20 @@ NumarkScratch.autoLoopSizes = [
     "2",
 ];
 
-// Default is false. When set to false, the EncoderKnob manages looping. Shift + EncoderKnob scrolls the library/loads track
-// If set to true, the EncoderKnob scrolls the library/loads track. Shift + EncoderKnob manages looping.
+// Defines how the Loop Encoder functions.
+// If 'true' the Encoder scrolls the library/loads track. Shift + Encoder manages looping.
+// If 'false' the Encoder manages looping. Shift + Encoder scrolls the library/loads track (Serato default).
+// Default: false
 NumarkScratch.invertLoopEncoderFunction = false;
 
-// Turn off all when inactive instead default is 0x00 (Off)
-// Set to 0x01 is you want lights to be dim
+// Defines the bightness of button LEDs when they inactive.
+// '0x00' sets the LEDSs to completely off. '0x01 sets the LEDs to dim.
+// Default: 0x00
 NumarkScratch.LOW_LIGHT = 0x00;
 
-///////////
-// Code. //
-///////////
+/*
+ * CODE
+ */
 
 // State variable, don't touch
 NumarkScratch.shifted = false;
