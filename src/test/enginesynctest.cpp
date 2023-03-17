@@ -2184,7 +2184,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     mixxx::BeatsPointer pBeats3 = mixxx::Beats::fromConstTempo(
             m_pTrack3->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(140));
     m_pTrack3->trySetBeats(pBeats3);
-    // This will sync to the first deck here and not the second (lp1784185)
+    // This will sync to the first deck here and not the second #9397
     pButtonSyncEnabled3->set(1.0);
     EXPECT_TRUE(isSoftLeader(m_sGroup3));
     ProcessBuffer();
@@ -2743,7 +2743,7 @@ TEST_F(EngineSyncTest, ScratchEndOtherPlayingTrackStayInPhase) {
 }
 
 TEST_F(EngineSyncTest, SyncWithoutBeatgrid) {
-    // this tests bug lp1783020, notresetting rate when other deck has no beatgrid
+    // this tests issue #9391, notresetting rate when other deck has no beatgrid
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(128));
     m_pTrack1->trySetBeats(pBeats1);

@@ -938,7 +938,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #ifdef __WINDOWS__
     // We need to refresh the denormals flags every callback since some
     // driver + API combinations will reset them (known: DirectSound + Realtec)
-    // Fixes Bug #1495047
+    // Fixes issue #8220
     // (Both calls are very fast)
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);

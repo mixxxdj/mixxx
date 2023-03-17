@@ -156,7 +156,7 @@ int main(int argc, char * argv[]) {
 
     // Create the ErrorDialogHandler in the main thread, otherwise it will be
     // created in the thread of the first caller to instance(), which may not be
-    // the main thread. Bug #1748636.
+    // the main thread. Issue #9130.
     ErrorDialogHandler::instance();
 
 #ifdef __APPLE__
