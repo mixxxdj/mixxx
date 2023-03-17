@@ -667,7 +667,7 @@
       <!-- Loop Encoder knob (turn) -->
       <control>
         <group>[Channel1]</group>
-        <key>NumarkScratch.deck[0].loopEncoder.input</key>
+        <key>NumarkScratch.deck[0].loopMinus.input</key>
         <status>0x94</status>
         <midino>0x34</midino>
         <options>
@@ -676,7 +676,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkScratch.deck[0].loopEncoder.input</key>
+        <key>NumarkScratch.deck[0].loopPlus.input</key>
         <status>0x94</status>
         <midino>0x35</midino>
         <options>
@@ -685,7 +685,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkScratch.deck[1].loopEncoder.input</key>
+        <key>NumarkScratch.deck[1].loopMinus.input</key>
         <status>0x95</status>
         <midino>0x34</midino>
         <options>
@@ -694,54 +694,16 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkScratch.deck[1].loopEncoder.input</key>
+        <key>NumarkScratch.deck[1].loopPlus.input</key>
         <status>0x95</status>
         <midino>0x35</midino>
         <options>
           <script-binding/>
         </options>
       </control>
-      <!-- Loop Encoder knob (release)
       <control>
         <group>[Channel1]</group>
-        <key>NumarkScratch.deck[0].loopEncoder.input</key>
-        <status>0x84</status>
-        <midino>0x34</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>NumarkScratch.deck[0].loopEncoder.input</key>
-        <status>0x84</status>
-        <midino>0x35</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>NumarkScratch.deck[1].loopEncoder.input</key>
-        <status>0x85</status>
-        <midino>0x34</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>NumarkScratch.deck[1].loopEncoder.input</key>
-        <status>0x85</status>
-        <midino>0x35</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control> -->
-      <!-- Loop Encoder knob button (press) -->
-      <control>
-        <group>[Channel1]</group>
-        <key>NumarkScratch.deck[0].loopEncoderButton.input</key>
+        <key>NumarkScratch.deck[0].loopButton.input</key>
         <status>0x94</status>
         <midino>0x3F</midino>
         <options>
@@ -750,7 +712,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkScratch.deck[1].loopEncoderButton.input</key>
+        <key>NumarkScratch.deck[1].loopButton.input</key>
         <status>0x95</status>
         <midino>0x3F</midino>
         <options>
@@ -760,7 +722,7 @@
       <!-- Loop Encoder knob button (release) -->
       <control>
         <group>[Channel1]</group>
-        <key>NumarkScratch.deck[0].loopEncoderButton.input</key>
+        <key>NumarkScratch.deck[0].loopButton.input</key>
         <status>0x84</status>
         <midino>0x3F</midino>
         <options>
@@ -769,7 +731,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkScratch.deck[1].loopEncoderButton.input</key>
+        <key>NumarkScratch.deck[1].loopButton.input</key>
         <status>0x85</status>
         <midino>0x3F</midino>
         <options>

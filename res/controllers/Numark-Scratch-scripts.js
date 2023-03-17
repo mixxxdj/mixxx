@@ -34,7 +34,7 @@ NumarkScratch.init = function() {
     // Initialize component containers
     NumarkScratch.deck = new components.ComponentContainer();
     NumarkScratch.effect = new components.ComponentContainer();
-    for (var i = 0; i < 2; i++) {
+    for (let i = 0; i < 2; i++) {
         NumarkScratch.deck[i] = new NumarkScratch.Deck(i + 1);
         NumarkScratch.effect[i] = new NumarkScratch.EffectUnit(i + 1);
     }
@@ -42,7 +42,7 @@ NumarkScratch.init = function() {
     // Send Serato SysEx messages to request initial state and unlock pads
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7]);
 
-    var createVuCallback = function(deckOffset) {
+    const createVuCallback = function(deckOffset) {
         return function(value) {
             midi.sendShortMsg(0xB0 + deckOffset, 0x1F, value * 90);
         };
@@ -94,8 +94,8 @@ NumarkScratch.allEffectOff = function() {
 };
 
 NumarkScratch.FxUpdateLEDs = function() {
-    var newStates1=[false, false, false];
-    var newStates2=[false, false, false];
+    let newStates1=[false, false, false];
+    let newStates2=[false, false, false];
     newStates1=NumarkScratch.effect[0].effects;
     newStates2=NumarkScratch.effect[1].effects;
     midi.sendShortMsg(0x98, 0x00, newStates1[0] ? 0x7F:NumarkScratch.LOW_LIGHT);
@@ -113,7 +113,7 @@ NumarkScratch.EffectUnit = function(deckNumber) {
     this.isSwitchHoldOn = false;
 
     this.updateEffects = function() {
-        for (var i = 1; i <= this.effects.length; i++) {
+        for (let i = 1; i <= this.effects.length; i++) {
             engine.setValue("[EffectRack1_EffectUnit" + deckNumber + "_Effect"+i+"]", "enabled", this.effects[i-1]);
         }
     };
@@ -199,8 +199,8 @@ NumarkScratch.crossfader.xFaderReverse = function(channel, control, value, _stat
 };
 
 NumarkScratch.setChannelInput = function(channel, control, value, _status, _group) {
-    var number = (control === 0x57) ? 1 : 2;
-    var channelgroup = "[Channel" + number + "]";
+    const number = (control === 0x57) ? 1 : 2;
+    const channelgroup = "[Channel" + number + "]";
 
     switch (value) {
     case 0x00:  // PC and turn on vinyl control
@@ -217,14 +217,13 @@ NumarkScratch.setChannelInput = function(channel, control, value, _status, _grou
 NumarkScratch.Deck = function(number) {
     components.Deck.call(this, number);
 
-    var channel = number - 1;
-    //var deck = this;
+    const channel = number;
 
     this.pflButton = new components.Button({
         midi: [0x90 + channel, 0x1B],
         key: "pfl",
         output: function(value) {
-            var note = (value === 0x00 ? 0x80 : 0x90) + channel;
+            const note = (value === 0x00 ? 0x80 : 0x90) + channel;
             midi.sendShortMsg(note, 0x1B, this.outValueScale(value));
         }
     });
@@ -257,59 +256,52 @@ NumarkScratch.Deck = function(number) {
         inKey: "pregain"
     });
 
-    this.loopEncoder = new components.Encoder({
-        unshift: function() {
-            if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
-                this.input = function(channel, control, _value, _status, _group) {
-                    var loopSize = engine.getValue(this.group, "beatloop_size");
-                    if (control === 52 && loopSize >= (1/16)) { //turn left
-                        engine.setValue(this.group, "beatloop_size", loopSize / 2);
-                    } else if (control === 53 && loopSize < 256) { // turn right
-                        engine.setValue(this.group, "beatloop_size", loopSize * 2);
-                    }
-                };
-            } else {
-                this.input = function(channel, control, _value, _status, _group) { // if set to true invert function
-                    var direction = (control === 52) ? "Down" : "Up"; //turn left: turn right
-                    script.triggerControl("[Library]", "Move" + direction);
-                };
-            }
-        },
-        shift: function() {
-            if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
-                this.input = function(channel, control, _value, _status, _group) {
-                    var direction = (control === 52) ? "Down" : "Up"; //turn left: turn right
-                    script.triggerControl("[Library]", "Move" + direction);
-                };
-            } else {
-                this.input = function(channel, control, _value, _status, _group) { // if set to true invert function
-                    var loopSize = engine.getValue(this.group, "beatloop_size");
-                    if (control === 52 && loopSize >= (1/16)) { //turn left
-                        engine.setValue(this.group, "beatloop_size", loopSize / 2);
-                    } else if (control === 53 && loopSize < 256) { //turn  right
-                        engine.setValue(this.group, "beatloop_size", loopSize * 2);
-                    }
-                };
-            }
-        },
-    });
-
-    this.loopEncoderButton = new components.Button({
-        shift: function() {
-            if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
-                this.inKey = "LoadSelectedTrack";
-            } else {
-                this.inKey = "beatloop_activate"; // if set to true invert function
-            }
-        },
-        unshift: function() {
-            if (!NumarkScratch.invertLoopEncoderFunction) { //if set to false then normal function
-                this.inKey = "beatloop_activate";
-            } else {
-                this.inKey = "LoadSelectedTrack"; // if set to true invert function
-            }
+    const encoderInvert = function(key) {
+        if (NumarkScratch.invertloopFunction) {
+            return key === "unshift" ? "shift" : "unshift";
         }
-    });
+        return key;
+    };
+
+    const loopPlusEncoderConf = {
+        midi: [0x93 + channel, 0x35],
+    };
+    loopPlusEncoderConf[encoderInvert("unshift")] = function() {
+        this.group = "[Channel" + channel + "]";
+        this.inKey = "loop_double";
+    };
+    loopPlusEncoderConf[encoderInvert("shift")] = function() {
+        this.group = "[Library]";
+        this.inKey = "MoveDown";
+    };
+    this.loopPlus = new components.Encoder(loopPlusEncoderConf);
+
+    const loopMinusEncoderConf = {
+        midi: [0x93 + channel, 0x34],
+    };
+    loopMinusEncoderConf[encoderInvert("unshift")] = function() {
+        this.group = "[Channel" + channel + "]";
+        this.inKey = "loop_halve";
+    };
+    loopMinusEncoderConf[encoderInvert("shift")] = function() {
+        this.group = "[Library]";
+        this.inKey = "MoveUp";
+    };
+    this.loopMinus = new components.Encoder(loopMinusEncoderConf);
+
+    const loopButtonConf = {
+        midi: [0x93 + channel, 0x3F],
+    };
+
+    loopButtonConf[encoderInvert("unshift")] = function() {
+        this.group = "[Channel" + channel + "]";
+        this.inKey = "beatloop_activate";
+    };
+    loopButtonConf[encoderInvert("shift")] = function() {
+        this.group = "[Channel" + channel + "]";
+        this.inKey = "LoadSelectedTrack";
+    };
+    this.loopButton = new components.Button(loopButtonConf);
 
     this.padSection = new NumarkScratch.PadSection(number);
 
@@ -355,12 +347,12 @@ NumarkScratch.PadSection = function(deckNumber) {
     };
 
     this.padPress = function(channel, control, value, status, group) {
-        var i = (control - 0x14) % 8;
+        const i = (control - 0x14) % 8;
         this.currentMode.pads[i].input(channel, control, value, status, group);
     };
 
     this.setMode = function(_channel, control) {
-        var newMode = this.modes[control];
+        const newMode = this.modes[control];
         this.currentMode.forEachComponent(function(component) {
             component.disconnect();
         });
@@ -383,7 +375,7 @@ NumarkScratch.ModeHotcue = function(deckNumber) {
     this.control = NumarkScratch.PadModeControls.HOTCUE;
 
     this.pads = new components.ComponentContainer();
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         this.pads[i] = new components.HotcueButton({
             group: "[Channel" + deckNumber + "]",
             midi: [0x93 + deckNumber, 0x14 + i],
@@ -403,7 +395,7 @@ NumarkScratch.ModeRoll = function(deckNumber) {
     this.control = NumarkScratch.PadModeControls.ROLL;
 
     this.pads = new components.ComponentContainer();
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         this.pads[i] = new components.Button({
             group: "[Channel" + deckNumber + "]",
             midi: [0x93 + deckNumber, 0x14 + i],
@@ -425,7 +417,7 @@ NumarkScratch.ModeSampler = function(deckNumber) {
     this.control = NumarkScratch.PadModeControls.SAMPLER;
 
     this.pads = new components.ComponentContainer();
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         this.pads[i] = new components.SamplerButton({
             midi: [0x93 + deckNumber, 0x14 + i],
             number: i + 1,
