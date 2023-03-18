@@ -3,6 +3,7 @@
 #include <QList>
 #include <QObject>
 
+#include "control/controlproxy.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/coverart.h"
 #include "mixer/playermanager.h"
@@ -21,6 +22,8 @@ class MacOSMediaPlayerService : public QObject {
 
   private:
     QList<DeckAttributes*> m_deckAttributes;
+    ControlProxy* m_pCPAutoDjEnabled;
+    ControlProxy* m_pCPFadeNow;
     double m_lastSentPosition;
 
     DeckAttributes* getCurrentDeck();
@@ -29,6 +32,7 @@ class MacOSMediaPlayerService : public QObject {
     bool togglePlayState();
     bool updatePlayState(bool playing);
     bool updatePlayPosition(double absolutePosition);
+    bool skipToNextTrack();
 
   private slots:
     void slotPlayChanged(DeckAttributes* attributes, bool playing);
