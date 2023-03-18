@@ -32,6 +32,9 @@ class MacOSMediaPlayerService : public QObject {
     ControlProxy* m_pCPFadeNow;
     double m_lastSentPosition;
 
+    /// Sets up the callbacks for controlling playback externally.
+    void setupCommandHandlers();
+
     /// Fetches the currently playing deck. Returns a `nullptr` if nothing plays.
     DeckAttributes* getCurrentDeck();
     /// Checks whether the given deck is the currently playing one.
