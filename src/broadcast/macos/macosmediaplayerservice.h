@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QObject.h>
-#include <qlist.h>
+#include <QList>
+#include <QObject>
 
 #include "library/autodj/autodjprocessor.h"
 #include "library/coverart.h"
@@ -23,7 +23,12 @@ class MacOSMediaPlayerService : public QObject {
     QList<DeckAttributes*> m_deckAttributes;
     double m_lastSentPosition;
 
+    DeckAttributes* getCurrentDeck();
     bool isCurrentDeck(DeckAttributes* attributes);
+
+    bool togglePlayState();
+    bool updatePlayState(bool playing);
+    bool updatePlayPosition(double absolutePosition);
 
   private slots:
     void slotPlayChanged(DeckAttributes* attributes, bool playing);

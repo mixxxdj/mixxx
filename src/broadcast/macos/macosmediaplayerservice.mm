@@ -5,6 +5,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
+#include "track/track_decl.h"
 #include "util/assert.h"
 
 #import <AppKit/AppKit.h>
@@ -17,9 +18,18 @@
 
 constexpr int coverArtSize = 128;
 
+namespace {
+
+MPRemoteCommandHandlerStatus commandHandlerStatusFor(bool success) {
+    return success ? MPRemoteCommandHandlerStatusSuccess
+                   : MPRemoteCommandHandlerStatusCommandFailed;
+}
+
+} // anonymous namespace
+
 MacOSMediaPlayerService::MacOSMediaPlayerService(
         PlayerManagerInterface& pPlayerManager) {
-    // Set up deck attributes for control
+    // Set up deck attributes to track and control playback state
     for (unsigned i = 1; i <= pPlayerManager.numberOfDecks(); i++) {
         DeckAttributes* attributes =
                 new DeckAttributes(i, pPlayerManager.getDeck(i));
@@ -34,15 +44,36 @@ MacOSMediaPlayerService::MacOSMediaPlayerService(
                 &MacOSMediaPlayerService::slotPlayPositionChanged);
     }
 
-    // Register command handlers.
-    // At least one handler must be registered, otherwise the now playing info
-    // will not show up.
+    // Register command handlers for controlling Mixxx's playback state
+    // externally (i.e. via the command center). At least one handler must be
+    // registered, otherwise the now playing info will not show up.
     MPRemoteCommandCenter* center = [MPRemoteCommandCenter sharedCommandCenter];
     [center.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
             MPRemoteCommandEvent* event) {
-      // TODO: Implement play
-      return MPRemoteCommandHandlerStatusCommandFailed;
+        bool success = updatePlayState(true);
+        return commandHandlerStatusFor(success);
     }];
+    [center.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+            MPRemoteCommandEvent* event) {
+        bool success = updatePlayState(false);
+        return commandHandlerStatusFor(success);
+    }];
+    [center.togglePlayPauseCommand
+            addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+                    MPRemoteCommandEvent* event) {
+                bool success = togglePlayState();
+                return commandHandlerStatusFor(success);
+            }];
+    [center.changePlaybackPositionCommand
+            addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+                    MPRemoteCommandEvent* event) {
+                auto positionEvent =
+                        (MPChangePlaybackPositionCommandEvent*)event;
+                bool success = updatePlayPosition(positionEvent.positionTime);
+                return commandHandlerStatusFor(success);
+            }];
+
+    // TODO: Hook up 'next track' to Auto DJ
 
     // Write up player info so we get notified about track updates
     connect(&PlayerInfo::instance(),
@@ -131,9 +162,52 @@ void MacOSMediaPlayerService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     m_lastSentPosition = 0;
 }
 
+DeckAttributes* MacOSMediaPlayerService::getCurrentDeck() {
+    int i = PlayerInfo::instance().getCurrentPlayingDeck();
+    if (i >= 0) {
+        return m_deckAttributes[i];
+    } else {
+        return nullptr;
+    }
+}
+
 bool MacOSMediaPlayerService::isCurrentDeck(DeckAttributes* attributes) {
     return attributes->index ==
             PlayerInfo::instance().getCurrentPlayingDeck() + 1;
+}
+
+bool MacOSMediaPlayerService::togglePlayState() {
+    DeckAttributes* deck = getCurrentDeck();
+    if (deck != nullptr) {
+        return updatePlayState(!deck->isPlaying());
+    }
+    return false;
+}
+
+bool MacOSMediaPlayerService::updatePlayState(bool playing) {
+    DeckAttributes* deck = getCurrentDeck();
+    if (deck != nullptr) {
+        if (playing) {
+            deck->play();
+        } else {
+            deck->stop();
+        }
+        return true;
+    }
+    return false;
+}
+
+bool MacOSMediaPlayerService::updatePlayPosition(double absolutePosition) {
+    DeckAttributes* deck = getCurrentDeck();
+    if (deck != nullptr) {
+        TrackPointer track = deck->getLoadedTrack();
+        DEBUG_ASSERT(track != nullptr);
+        DEBUG_ASSERT(track->getDuration() > 0);
+        double position = absolutePosition / track->getDuration();
+        deck->setPlayPosition(position);
+        return true;
+    }
+    return false;
 }
 
 void MacOSMediaPlayerService::slotPlayChanged(
