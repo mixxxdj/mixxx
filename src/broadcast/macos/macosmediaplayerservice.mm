@@ -9,7 +9,9 @@
 
 #import <AppKit/AppKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-#include <qpixmap.h>
+
+#include <QPixmap>
+#include <cstdlib>
 
 constexpr int coverArtSize = 128;
 
@@ -131,6 +133,8 @@ void MacOSMediaPlayerService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     }
 
     [center setNowPlayingInfo:nowPlayingInfo];
+
+    m_lastSentPosition = 0;
 }
 
 bool MacOSMediaPlayerService::isCurrentDeck(DeckAttributes* attributes) {
@@ -149,14 +153,20 @@ void MacOSMediaPlayerService::slotPlayChanged(
 
 void MacOSMediaPlayerService::slotPlayPositionChanged(
         DeckAttributes* attributes, double position) {
-    if (isCurrentDeck(attributes)) {
+    // We throttle play position updates by keeping track of the last sent
+    // position to avoid spamming the now playing center.
+    bool hasChangedEnough = std::abs(position - m_lastSentPosition) > 0.01;
+
+    if (isCurrentDeck(attributes) && hasChangedEnough) {
+        m_lastSentPosition = position;
+
         MPNowPlayingInfoCenter* center = [MPNowPlayingInfoCenter defaultCenter];
         NSDictionary* existingInfo = [center nowPlayingInfo];
         NSMutableDictionary* nowPlayingInfo = existingInfo == nil
                 ? [[NSMutableDictionary alloc] init]
                 : [[NSMutableDictionary alloc] initWithDictionary:existingInfo];
 
-        // TODO: Don't spam the now playing center
+        // Compute and set absolute position from track duration
         TrackPointer track = attributes->getLoadedTrack();
         DEBUG_ASSERT(track != nullptr);
         [nowPlayingInfo setObject:@(position * track->getDuration())

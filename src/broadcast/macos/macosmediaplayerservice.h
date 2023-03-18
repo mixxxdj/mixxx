@@ -21,6 +21,7 @@ class MacOSMediaPlayerService : public QObject {
 
   private:
     QList<DeckAttributes*> m_deckAttributes;
+    double m_lastSentPosition;
 
     bool isCurrentDeck(DeckAttributes* attributes);
 
