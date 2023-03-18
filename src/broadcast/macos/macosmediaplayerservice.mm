@@ -25,6 +25,25 @@ MPRemoteCommandHandlerStatus commandHandlerStatusFor(bool success) {
                    : MPRemoteCommandHandlerStatusCommandFailed;
 }
 
+void setCoverArt(NSMutableDictionary* nowPlayingInfo, const QPixmap& pixmap) {
+    if (@available(macOS 10.13.2, *)) {
+        // Convert the Qt image to a Cocoa image
+        CGImageRef cgImage = pixmap.toImage().toCGImage();
+        NSImage* nsImage = [[NSImage alloc] initWithCGImage:cgImage
+                                                       size:NSZeroSize];
+
+        // Wrap the converted image in an artwork object as required
+        // Since the block escapes, we need to de-stackify it with 'copy'
+        auto fetchArtworkImage = ^NSImage*(CGSize size) {
+            return nsImage;
+        };
+        MPMediaItemArtwork* artwork = [[MPMediaItemArtwork alloc]
+                initWithBoundsSize:CGSizeMake(coverArtSize, coverArtSize)
+                    requestHandler:[fetchArtworkImage copy]];
+        [nowPlayingInfo setObject:artwork forKey:MPMediaItemPropertyArtwork];
+    }
+}
+
 } // anonymous namespace
 
 MacOSMediaPlayerService::MacOSMediaPlayerService(
@@ -93,27 +112,6 @@ MacOSMediaPlayerService::~MacOSMediaPlayerService() {
         delete attributes;
     }
 }
-
-namespace {
-void setCoverArt(NSMutableDictionary* nowPlayingInfo, const QPixmap& pixmap) {
-    if (@available(macOS 10.13.2, *)) {
-        // Convert the Qt image to a Cocoa image
-        CGImageRef cgImage = pixmap.toImage().toCGImage();
-        NSImage* nsImage = [[NSImage alloc] initWithCGImage:cgImage
-                                                       size:NSZeroSize];
-
-        // Wrap the converted image in an artwork object as required
-        // Since the block escapes, we need to de-stackify it with 'copy'
-        auto fetchArtworkImage = ^NSImage*(CGSize size) {
-            return nsImage;
-        };
-        MPMediaItemArtwork* artwork = [[MPMediaItemArtwork alloc]
-                initWithBoundsSize:CGSizeMake(coverArtSize, coverArtSize)
-                    requestHandler:[fetchArtworkImage copy]];
-        [nowPlayingInfo setObject:artwork forKey:MPMediaItemPropertyArtwork];
-    }
-}
-} // namespace
 
 void MacOSMediaPlayerService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     MPNowPlayingInfoCenter* center = [MPNowPlayingInfoCenter defaultCenter];
