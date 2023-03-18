@@ -1,8 +1,11 @@
 #include "broadcast/macos/macosmediaplayerservice.h"
+#include "library/autodj/autodjprocessor.h"
 #include "library/coverartcache.h"
+#include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
+#include "util/assert.h"
 
 #import <AppKit/AppKit.h>
 #import <MediaPlayer/MediaPlayer.h>
@@ -12,7 +15,23 @@
 
 constexpr int coverArtSize = 128;
 
-MacOSMediaPlayerService::MacOSMediaPlayerService() {
+MacOSMediaPlayerService::MacOSMediaPlayerService(
+        PlayerManagerInterface& pPlayerManager) {
+    // Set up deck attributes for control
+    for (unsigned i = 1; i <= pPlayerManager.numberOfDecks(); i++) {
+        DeckAttributes* attributes =
+                new DeckAttributes(i, pPlayerManager.getDeck(i));
+        m_deckAttributes.append(attributes);
+        connect(attributes,
+                &DeckAttributes::playChanged,
+                this,
+                &MacOSMediaPlayerService::slotPlayChanged);
+        connect(attributes,
+                &DeckAttributes::playPositionChanged,
+                this,
+                &MacOSMediaPlayerService::slotPlayPositionChanged);
+    }
+
     // Register command handlers.
     // At least one handler must be registered, otherwise the now playing info
     // will not show up.
@@ -34,6 +53,12 @@ MacOSMediaPlayerService::MacOSMediaPlayerService() {
             &CoverArtCache::coverFound,
             this,
             &MacOSMediaPlayerService::slotCoverFound);
+}
+
+MacOSMediaPlayerService::~MacOSMediaPlayerService() {
+    for (DeckAttributes* attributes : qAsConst(m_deckAttributes)) {
+        delete attributes;
+    }
 }
 
 namespace {
@@ -90,9 +115,7 @@ void MacOSMediaPlayerService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
         [nowPlayingInfo setObject:duration
                            forKey:MPMediaItemPropertyPlaybackDuration];
 
-        // TODO: Use actual play time and (relative) tempo for rate
-        [nowPlayingInfo setObject:@(0.0)
-                           forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        // Use actual playback rate (based on bpm adjustment)
         [nowPlayingInfo setObject:@(1.0)
                            forKey:MPNowPlayingInfoPropertyDefaultPlaybackRate];
         [nowPlayingInfo setObject:@(1.0)
@@ -102,6 +125,39 @@ void MacOSMediaPlayerService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     }
 
     [center setNowPlayingInfo:nowPlayingInfo];
+}
+
+bool MacOSMediaPlayerService::isCurrentDeck(DeckAttributes* attributes) {
+    return attributes->index ==
+            PlayerInfo::instance().getCurrentPlayingDeck() + 1;
+}
+
+void MacOSMediaPlayerService::slotPlayChanged(
+        DeckAttributes* attributes, bool playing) {
+    if (isCurrentDeck(attributes)) {
+        MPNowPlayingInfoCenter* center = [MPNowPlayingInfoCenter defaultCenter];
+        [center setPlaybackState:playing ? MPNowPlayingPlaybackStatePlaying
+                                         : MPNowPlayingPlaybackStatePaused];
+    }
+}
+
+void MacOSMediaPlayerService::slotPlayPositionChanged(
+        DeckAttributes* attributes, double position) {
+    if (isCurrentDeck(attributes)) {
+        MPNowPlayingInfoCenter* center = [MPNowPlayingInfoCenter defaultCenter];
+        NSDictionary* existingInfo = [center nowPlayingInfo];
+        NSMutableDictionary* nowPlayingInfo = existingInfo == nil
+                ? [[NSMutableDictionary alloc] init]
+                : [[NSMutableDictionary alloc] initWithDictionary:existingInfo];
+
+        // TODO: Don't spam the now playing center
+        TrackPointer track = attributes->getLoadedTrack();
+        DEBUG_ASSERT(track != nullptr);
+        [nowPlayingInfo setObject:@(position * track->getDuration())
+                           forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+
+        [center setNowPlayingInfo:nowPlayingInfo];
+    }
 }
 
 void MacOSMediaPlayerService::slotCoverFound(const QObject* pRequestor,
