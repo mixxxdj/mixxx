@@ -356,7 +356,7 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
 
 #ifdef __MACOS_MEDIAPLAYER__
-    m_pMacOSMediaPlayerService = std::make_shared<MacOSMediaPlayerService>();
+    m_pMacOSMediaPlayerService = std::make_shared<MacOSMediaPlayerService>(*m_pPlayerManager);
 #endif
 
     bool hasChanged_MusicDir = false;
