@@ -611,9 +611,15 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
         // we cannot calc the resulting buffer size in ms because the
         // Sample rate is not known yet. We assume 48000 KHz here
         // to calculate the buffer size index
-        audioBufferComboBox->addItem(tr("auto (<= 1024 frames/period)"), 5);
-        audioBufferComboBox->addItem(tr("2048 frames/period"), 6);
-        audioBufferComboBox->addItem(tr("4096 frames/period"), 7);
+        audioBufferComboBox->addItem(tr("auto (<= 1024 frames/period)"),
+                static_cast<unsigned int>(SoundManagerConfig::
+                                JackAudioBufferSizeIndex::SizeAuto));
+        audioBufferComboBox->addItem(tr("2048 frames/period"),
+                static_cast<unsigned int>(SoundManagerConfig::
+                                JackAudioBufferSizeIndex::Size2048fpp));
+        audioBufferComboBox->addItem(tr("4096 frames/period"),
+                static_cast<unsigned int>(SoundManagerConfig::
+                                JackAudioBufferSizeIndex::Size4096fpp));
     } else {
         double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
         unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
