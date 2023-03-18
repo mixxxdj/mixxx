@@ -13,7 +13,6 @@ using namespace qopengl;
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget)
         : WaveformShaderRenderer(waveformWidget) {
-    m_beatLineVertices.resize(1024);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -84,7 +83,8 @@ void WaveformRenderBeat::renderGL() {
 
     const float rendererBreadth = m_waveformRenderer->getBreadth();
 
-    int vertexCount = 0;
+    m_beatLineVertices.clear();
+    m_beatLineVertices.reserve(trackBeats->numBeatsInRange(startPosition, endPosition));
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -95,28 +95,23 @@ void WaveformRenderBeat::renderGL() {
 
         xBeatPoint = std::floor(xBeatPoint);
 
-        // If we don't have enough space, double the size.
-        if (vertexCount >= m_beatLineVertices.size()) {
-            m_beatLineVertices.resize(m_beatLineVertices.size() * 2);
-        }
-
         xBeatPoint -= 0.5;
 
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        m_beatLineVertices[vertexCount++] = x1;
-        m_beatLineVertices[vertexCount++] = 0.f;
-        m_beatLineVertices[vertexCount++] = x2;
-        m_beatLineVertices[vertexCount++] = 0.f;
-        m_beatLineVertices[vertexCount++] = x1;
-        m_beatLineVertices[vertexCount++] = rendererBreadth;
-        m_beatLineVertices[vertexCount++] = x1;
-        m_beatLineVertices[vertexCount++] = rendererBreadth;
-        m_beatLineVertices[vertexCount++] = x2;
-        m_beatLineVertices[vertexCount++] = rendererBreadth;
-        m_beatLineVertices[vertexCount++] = x2;
-        m_beatLineVertices[vertexCount++] = 0.f;
+        m_beatLineVertices.push_back(x1);
+        m_beatLineVertices.push_back(0.f);
+        m_beatLineVertices.push_back(x2);
+        m_beatLineVertices.push_back(0.f);
+        m_beatLineVertices.push_back(x1);
+        m_beatLineVertices.push_back(rendererBreadth);
+        m_beatLineVertices.push_back(x1);
+        m_beatLineVertices.push_back(rendererBreadth);
+        m_beatLineVertices.push_back(x2);
+        m_beatLineVertices.push_back(rendererBreadth);
+        m_beatLineVertices.push_back(x2);
+        m_beatLineVertices.push_back(0.f);
     }
     m_shaderProgram.bind();
 
@@ -138,5 +133,5 @@ void WaveformRenderBeat::renderGL() {
     m_shaderProgram.setUniformValue(matrixLocation, matrix);
     m_shaderProgram.setUniformValue(colorLocation, m_beatColor);
 
-    glDrawArrays(GL_TRIANGLES, 0, vertexCount / 2);
+    glDrawArrays(GL_TRIANGLES, 0, m_beatLineVertices.size() / 2);
 }
