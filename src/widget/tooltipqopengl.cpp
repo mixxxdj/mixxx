@@ -9,7 +9,7 @@
 ToolTipQOpenGL::ToolTipQOpenGL()
         : m_timer(new QTimer()) {
     m_timer->setSingleShot(true);
-    connect(m_timer.get(), SIGNAL(timeout()), this, SLOT(onTimeout()));
+    connect(m_timer.get(), &QTimer::timeout, this, &ToolTipQOpenGL::onTimeout);
 }
 
 void ToolTipQOpenGL::onTimeout() {
