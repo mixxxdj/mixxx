@@ -1194,6 +1194,7 @@ else()
       src/waveform/renderers/qopengl/waveformrenderbeat.cpp
       src/waveform/renderers/qopengl/waveformrenderer.cpp
       src/waveform/renderers/qopengl/waveformrendererendoftrack.cpp
+      src/waveform/renderers/qopengl/waveformrendererfiltered.cpp
       src/waveform/renderers/qopengl/waveformrendererpreroll.cpp
       src/waveform/renderers/qopengl/waveformrendererrgb.cpp
       src/waveform/renderers/qopengl/waveformrenderersignalbase.cpp
@@ -1201,8 +1202,7 @@ else()
       src/waveform/renderers/qopengl/waveformrendermarkrange.cpp
       src/waveform/widgets/qopengl/waveformwidget.cpp
       src/waveform/widgets/qopengl/rgbwaveformwidget.cpp
-      src/waveform/widgets/qopengl/waveformwidget.cpp
-      src/waveform/widgets/qopengl/rgbwaveformwidget.cpp
+      src/waveform/widgets/qopengl/filteredwaveformwidget.cpp
     )
   else()
     target_sources(mixxx-lib PRIVATE

@@ -42,6 +42,7 @@
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #ifdef MIXXX_USE_QOPENGL
+#include "waveform/widgets/qopengl/filteredwaveformwidget.h"
 #include "waveform/widgets/qopengl/rgbwaveformwidget.h"
 #endif
 #include "widget/wvumeter.h"
@@ -954,6 +955,13 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = qopengl::RGBWaveformWidget::useOpenGLShaders();
             developerOnly = qopengl::RGBWaveformWidget::developerOnly();
             break;
+        case WaveformWidgetType::QOpenGLFilteredWaveform:
+            widgetName = qopengl::FilteredWaveformWidget::getWaveformWidgetName();
+            useOpenGl = qopengl::FilteredWaveformWidget::useOpenGl();
+            useOpenGles = qopengl::FilteredWaveformWidget::useOpenGles();
+            useOpenGLShaders = qopengl::FilteredWaveformWidget::useOpenGLShaders();
+            developerOnly = qopengl::FilteredWaveformWidget::developerOnly();
+            break;
 #endif
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
@@ -1064,6 +1072,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
 #ifdef MIXXX_USE_QOPENGL
         case WaveformWidgetType::QOpenGLRGBWaveform:
             widget = new qopengl::RGBWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QOpenGLFilteredWaveform:
+            widget = new qopengl::FilteredWaveformWidget(viewer->getGroup(), viewer);
             break;
 #endif
         default:
