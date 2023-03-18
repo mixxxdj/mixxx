@@ -128,7 +128,7 @@ void WaveformRendererFiltered::renderGL() {
     // low, mid, high
     for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
         m_lineValues[bandIndex].clear();
-        reserved[bandIndex] = numValuesPerLine * (length + 1);
+        reserved[bandIndex] = numValuesPerLine * length;
         m_lineValues[bandIndex].reserve(reserved[bandIndex]);
     }
 
