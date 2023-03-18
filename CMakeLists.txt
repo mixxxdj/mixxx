@@ -109,8 +109,8 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
-option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 
+option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
 endif()
