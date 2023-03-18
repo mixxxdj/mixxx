@@ -382,10 +382,6 @@ void CoreServices::initialize(QApplication* pApp) {
 
 #ifdef __MACOS_MEDIAPLAYER__
     m_pMacOSMediaPlayerService = std::make_shared<MacOSMediaPlayerService>();
-    connect(&PlayerInfo::instance(),
-            &PlayerInfo::currentPlayingTrackChanged,
-            m_pMacOSMediaPlayerService.get(),
-            &MacOSMediaPlayerService::slotBroadcastCurrentTrack);
 #endif
 
     bool musicDirAdded = false;

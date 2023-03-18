@@ -1,5 +1,6 @@
 #include "broadcast/macos/macosmediaplayerservice.h"
 #include "library/coverartcache.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
 
@@ -22,9 +23,14 @@ MacOSMediaPlayerService::MacOSMediaPlayerService() {
       return MPRemoteCommandHandlerStatusCommandFailed;
     }];
 
+    // Write up player info so we get notified about track updates
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::currentPlayingTrackChanged,
+            this,
+            &MacOSMediaPlayerService::slotBroadcastCurrentTrack);
+
     // Wire up cover art cache so loaded covers get passed to our slot
-    CoverArtCache* coverArtCache = CoverArtCache::instance();
-    connect(coverArtCache,
+    connect(CoverArtCache::instance(),
             &CoverArtCache::coverFound,
             this,
             &MacOSMediaPlayerService::slotCoverFound);
