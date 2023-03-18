@@ -69,40 +69,6 @@ MacOSMediaPlayerService::MacOSMediaPlayerService(
             new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
     m_pCPFadeNow = new ControlProxy(ConfigKey("[AutoDJ]", "fade_now"), this);
 
-    // Register command handlers for controlling Mixxx's playback state
-    // externally (i.e. via the command center). At least one handler must be
-    // registered, otherwise the now playing info will not show up.
-    MPRemoteCommandCenter* center = [MPRemoteCommandCenter sharedCommandCenter];
-    [center.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-            MPRemoteCommandEvent* event) {
-        bool success = updatePlayState(true);
-        return commandHandlerStatusFor(success);
-    }];
-    [center.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-            MPRemoteCommandEvent* event) {
-        bool success = updatePlayState(false);
-        return commandHandlerStatusFor(success);
-    }];
-    [center.togglePlayPauseCommand
-            addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-                    MPRemoteCommandEvent* event) {
-                bool success = togglePlayState();
-                return commandHandlerStatusFor(success);
-            }];
-    [center.changePlaybackPositionCommand
-            addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-                    MPRemoteCommandEvent* event) {
-                auto positionEvent =
-                        (MPChangePlaybackPositionCommandEvent*)event;
-                bool success = updatePlayPosition(positionEvent.positionTime);
-                return commandHandlerStatusFor(success);
-            }];
-    [center.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-            MPRemoteCommandEvent* event) {
-        bool success = skipToNextTrack();
-        return commandHandlerStatusFor(success);
-    }];
-
     // Write up player info so we get notified about track updates
     connect(&PlayerInfo::instance(),
             &PlayerInfo::currentPlayingTrackChanged,
@@ -114,12 +80,55 @@ MacOSMediaPlayerService::MacOSMediaPlayerService(
             &CoverArtCache::coverFound,
             this,
             &MacOSMediaPlayerService::slotCoverFound);
+
+    // Register command handlers for controlling Mixxx's playback state
+    // externally (i.e. via the command center). At least one handler must be
+    // registered, otherwise the now playing info will not show up.
+    setupCommandHandlers();
 }
 
 MacOSMediaPlayerService::~MacOSMediaPlayerService() {
     for (DeckAttributes* attributes : qAsConst(m_deckAttributes)) {
         delete attributes;
     }
+}
+
+void MacOSMediaPlayerService::setupCommandHandlers() {
+    MPRemoteCommandCenter* center = [MPRemoteCommandCenter sharedCommandCenter];
+
+    [center.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+            MPRemoteCommandEvent* event) {
+        bool success = updatePlayState(true);
+        return commandHandlerStatusFor(success);
+    }];
+
+    [center.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+            MPRemoteCommandEvent* event) {
+        bool success = updatePlayState(false);
+        return commandHandlerStatusFor(success);
+    }];
+
+    [center.togglePlayPauseCommand
+            addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+                    MPRemoteCommandEvent* event) {
+                bool success = togglePlayState();
+                return commandHandlerStatusFor(success);
+            }];
+
+    [center.changePlaybackPositionCommand
+            addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+                    MPRemoteCommandEvent* event) {
+                auto positionEvent =
+                        (MPChangePlaybackPositionCommandEvent*)event;
+                bool success = updatePlayPosition(positionEvent.positionTime);
+                return commandHandlerStatusFor(success);
+            }];
+
+    [center.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+            MPRemoteCommandEvent* event) {
+        bool success = skipToNextTrack();
+        return commandHandlerStatusFor(success);
+    }];
 }
 
 void MacOSMediaPlayerService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
