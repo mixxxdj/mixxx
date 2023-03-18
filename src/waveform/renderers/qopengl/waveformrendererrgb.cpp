@@ -62,28 +62,28 @@ inline void WaveformRendererRGB::addRectangle(
         float r,
         float g,
         float b) {
-    m_lines[m_lineIndex++] = x1;
-    m_lines[m_lineIndex++] = y1;
+    m_lineValues.push_back(x1);
+    m_lineValues.push_back(y1);
 
-    m_lines[m_lineIndex++] = x2;
-    m_lines[m_lineIndex++] = y1;
+    m_lineValues.push_back(x2);
+    m_lineValues.push_back(y1);
 
-    m_lines[m_lineIndex++] = x1;
-    m_lines[m_lineIndex++] = y2;
+    m_lineValues.push_back(x1);
+    m_lineValues.push_back(y2);
 
-    m_lines[m_lineIndex++] = x1;
-    m_lines[m_lineIndex++] = y2;
+    m_lineValues.push_back(x1);
+    m_lineValues.push_back(y2);
 
-    m_lines[m_lineIndex++] = x2;
-    m_lines[m_lineIndex++] = y2;
+    m_lineValues.push_back(x2);
+    m_lineValues.push_back(y2);
 
-    m_lines[m_lineIndex++] = x2;
-    m_lines[m_lineIndex++] = y1;
+    m_lineValues.push_back(x2);
+    m_lineValues.push_back(y1);
 
     for (int i = 0; i < 6; i++) {
-        m_colors[m_colorIndex++] = r;
-        m_colors[m_colorIndex++] = g;
-        m_colors[m_colorIndex++] = b;
+        m_colorValues.push_back(r);
+        m_colorValues.push_back(g);
+        m_colorValues.push_back(b);
     }
 }
 
@@ -144,11 +144,16 @@ void WaveformRendererRGB::renderGL() {
     // Effective visual index of x
     double xVisualSampleIndex = firstVisualIndex;
 
-    m_lineIndex = 0;
-    m_colorIndex = 0;
+    const int numValuesPerLine = 12;  // 2 values per vertex, 3 vertices per triangle, 2 triangles
+    const int numValuesPerColor = 18; // 3 values per color, 3 per triangle, 2 triangles
 
-    m_lines.resize(6 * 2 * (length + 1));
-    m_colors.resize(6 * 3 * (length + 1));
+    const int linesReserved = numValuesPerLine * (length + 1);
+    const int colorsReserved = numValuesPerColor * (length + 1);
+
+    m_lineValues.clear();
+    m_lineValues.reserve(linesReserved);
+    m_colorValues.clear();
+    m_colorValues.reserve(colorsReserved);
 
     addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
@@ -261,6 +266,9 @@ void WaveformRendererRGB::renderGL() {
         xVisualSampleIndex += gain;
     }
 
+    DEBUG_ASSERT(linesReserved == m_lineValues.size());
+    DEBUG_ASSERT(colorsReserved == m_colorValues.size());
+
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0.0,
             0.0,
@@ -281,10 +289,10 @@ void WaveformRendererRGB::renderGL() {
 
     m_shaderProgram.enableAttributeArray(positionLocation);
     m_shaderProgram.setAttributeArray(
-            positionLocation, GL_FLOAT, m_lines.constData(), 2);
+            positionLocation, GL_FLOAT, m_lineValues.constData(), 2);
     m_shaderProgram.enableAttributeArray(colorLocation);
     m_shaderProgram.setAttributeArray(
-            colorLocation, GL_FLOAT, m_colors.constData(), 3);
+            colorLocation, GL_FLOAT, m_colorValues.constData(), 3);
 
-    glDrawArrays(GL_TRIANGLES, 0, m_lineIndex / 2);
+    glDrawArrays(GL_TRIANGLES, 0, m_lineValues.size() / 2);
 }
