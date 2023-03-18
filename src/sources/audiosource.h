@@ -311,6 +311,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
 
     bool initSampleRateOnce(audio::SampleRate sampleRate);
     bool initSampleRateOnce(SINT sampleRate) {
+        DEBUG_ASSERT(sampleRate >= 0);
         return initSampleRateOnce(audio::SampleRate(
                 static_cast<audio::SampleRate::value_t>(sampleRate)));
     }
