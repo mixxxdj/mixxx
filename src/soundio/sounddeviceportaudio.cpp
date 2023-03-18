@@ -213,14 +213,17 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     }
 
     SINT framesPerBuffer = m_configFramesPerBuffer;
-    if (m_deviceTypeId == paJACK) {
-        // PortAudio's JACK back end has its own buffering to split or merge the buffer
-        // received from JACK to the desired size.
-        // However, we use here paFramesPerBufferUnspecified to use the JACK buffer size
+    if (m_deviceTypeId == paJACK && framesPerBuffer <= 1024) {
+        // Up to a Jack buffer size of 1024 frames/period, PortAudio is able to
+        // follow the Jack buffer size dynamically.
+        // We make use of it by requesting paFramesPerBufferUnspecified
         // which offers the best response time without additional jitter due to two
         // successive callback without the expected pause.
         framesPerBuffer = paFramesPerBufferUnspecified;
         qDebug() << "Using JACK server's frames per period";
+        // in case of bigger buffers, the user need to select the same buffers
+        // size in Mixxx and Jack to avoid buffer underflow/overflow during broadcasting
+        // This fixes https://github.com/mixxxdj/mixxx/issues/11341
     } else {
         qDebug() << "framesPerBuffer:" << framesPerBuffer;
     }
