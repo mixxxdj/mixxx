@@ -267,7 +267,7 @@ if(MSVC)
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
       # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
-      # /O2 this implies /Od2
+      # /O2 is applied by CMake and this implies /Od2
       string(REPLACE "/Ob1" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
       string(REPLACE "/Ob1" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
 
