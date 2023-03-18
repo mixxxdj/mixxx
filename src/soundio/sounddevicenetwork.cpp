@@ -65,12 +65,8 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
     }
 
     const SINT framesPerBuffer = m_configFramesPerBuffer;
-    qDebug() << "framesPerBuffer:" << framesPerBuffer;
-
     const auto requestedBufferTime = mixxx::Duration::fromSeconds(
             framesPerBuffer / m_dSampleRate);
-    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
-             << requestedBufferTime;
 
     // Feed the network device buffer directly from the
     // clock reference device callback
@@ -88,6 +84,9 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
 
     // Create the callback Thread if requested
     if (isClkRefDevice) {
+        kLogger.debug() << "Clock Reference with:" << framesPerBuffer << "frames/buffer @"
+                        << m_dSampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
+
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"),
@@ -101,8 +100,10 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
 
         m_pThread = std::make_unique<SoundDeviceNetworkThread>(this);
         m_pThread->start(QThread::TimeCriticalPriority);
+    } else {
+        kLogger.debug() << "Maximum:" << framesPerBuffer << "frames/buffer @"
+                        << m_dSampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
     }
-
     return SOUNDDEVICE_ERROR_OK;
 }
 
