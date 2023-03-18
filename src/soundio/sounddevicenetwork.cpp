@@ -294,6 +294,16 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
             pWorker->getStreamTimeFrames() - pWorker->framesWritten());
 
     int writeExpected = writeExpectedFrames * m_iNumOutputChannels;
+
+    if (writeExpected <= 0) {
+        // Overflow
+        // kLogger.debug() << "workerWriteProcess: buffer full"
+        //                 << "outChunkSize" << outChunkSize
+        //                 << "readAvailable" << readAvailable
+        //                 << "writeExpected" << writeExpected << pWorker->getStreamTimeFrames();
+        // catch up by skipping chunk
+        m_pSoundManager->underflowHappened(25);
+    }
     int copyCount = qMin(readAvailable, writeExpected);
 
     if (copyCount > 0) {
