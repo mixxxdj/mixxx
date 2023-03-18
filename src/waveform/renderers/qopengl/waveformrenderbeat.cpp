@@ -83,8 +83,14 @@ void WaveformRenderBeat::renderGL() {
 
     const float rendererBreadth = m_waveformRenderer->getBreadth();
 
+    const int numVerticesPerLine = 12; // 2 vertices per point, 2 points per
+                                       // line, 3 per triangle (2 triangles)
+    const int reserved =
+            trackBeats->numBeatsInRange(startPosition, endPosition) *
+            numVerticesPerLine;
+
     m_beatLineVertices.clear();
-    m_beatLineVertices.reserve(trackBeats->numBeatsInRange(startPosition, endPosition));
+    m_beatLineVertices.reserve(reserved);
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -113,6 +119,9 @@ void WaveformRenderBeat::renderGL() {
         m_beatLineVertices.push_back(x2);
         m_beatLineVertices.push_back(0.f);
     }
+
+    DEBUG_ASSERT(reserved == m_beatLineVertices.size());
+
     m_shaderProgram.bind();
 
     int vertexLocation = m_shaderProgram.attributeLocation("position");
