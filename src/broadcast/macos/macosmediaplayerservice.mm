@@ -14,14 +14,12 @@ MacOSMediaPlayerService::MacOSMediaPlayerService() {
     // Register command handlers.
     // At least one handler must be registered, otherwise the now playing info
     // will not show up.
-    MPRemoteCommandCenter* commandCenter =
-            [MPRemoteCommandCenter sharedCommandCenter];
-    [commandCenter.playCommand
-            addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-                    MPRemoteCommandEvent* event) {
-              // TODO: Implement play
-              return MPRemoteCommandHandlerStatusCommandFailed;
-            }];
+    MPRemoteCommandCenter* center = [MPRemoteCommandCenter sharedCommandCenter];
+    [center.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+            MPRemoteCommandEvent* event) {
+      // TODO: Implement play
+      return MPRemoteCommandHandlerStatusCommandFailed;
+    }];
 
     // Write up player info so we get notified about track updates
     connect(&PlayerInfo::instance(),
