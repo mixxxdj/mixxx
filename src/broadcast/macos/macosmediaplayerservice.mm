@@ -63,6 +63,12 @@ MacOSMediaPlayerService::MacOSMediaPlayerService(
                 &MacOSMediaPlayerService::slotPlayPositionChanged);
     }
 
+    // Set up control proxies for Auto-DJ (used to implemented 'skip to next
+    // track')
+    m_pCPAutoDjEnabled =
+            new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
+    m_pCPFadeNow = new ControlProxy(ConfigKey("[AutoDJ]", "fade_now"), this);
+
     // Register command handlers for controlling Mixxx's playback state
     // externally (i.e. via the command center). At least one handler must be
     // registered, otherwise the now playing info will not show up.
@@ -91,8 +97,11 @@ MacOSMediaPlayerService::MacOSMediaPlayerService(
                 bool success = updatePlayPosition(positionEvent.positionTime);
                 return commandHandlerStatusFor(success);
             }];
-
-    // TODO: Hook up 'next track' to Auto DJ
+    [center.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+            MPRemoteCommandEvent* event) {
+        bool success = skipToNextTrack();
+        return commandHandlerStatusFor(success);
+    }];
 
     // Write up player info so we get notified about track updates
     connect(&PlayerInfo::instance(),
@@ -203,6 +212,14 @@ bool MacOSMediaPlayerService::updatePlayPosition(double absolutePosition) {
         DEBUG_ASSERT(track->getDuration() > 0);
         double position = absolutePosition / track->getDuration();
         deck->setPlayPosition(position);
+        return true;
+    }
+    return false;
+}
+
+bool MacOSMediaPlayerService::skipToNextTrack() {
+    if (m_pCPAutoDjEnabled->toBool()) {
+        m_pCPFadeNow->set(true);
         return true;
     }
     return false;
