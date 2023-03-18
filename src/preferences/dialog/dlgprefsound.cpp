@@ -47,7 +47,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::apiChanged);
 
     sampleRateComboBox->clear();
-    foreach (unsigned int srate, m_pSoundManager->getSampleRates()) {
+    for (auto& srate : m_pSoundManager->getSampleRates()) {
         if (srate > 0) {
             // no ridiculous sample rate values. prohibiting zero means
             // avoiding a potential div-by-0 error in ::updateLatencies
@@ -58,10 +58,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::sampleRateChanged);
-    connect(sampleRateComboBox,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefSound::updateAudioBufferSizes);
     connect(audioBufferComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -516,22 +512,24 @@ void DlgPrefSound::apiChanged(int index) {
     m_config.setAPI(apiComboBox->itemData(index).toString());
     refreshDevices();
     // JACK sets its own buffer size and sample rate that Mixxx cannot change.
+    // PortAudio is able to chop/combine the buffer but that will mess up the
+    // timing in Mixxx. When we request 0 (paFramesPerBufferUnspecified)
+    // https://github.com/PortAudio/portaudio/blob/v19.7.0/src/common/pa_process.c#L54
+    // PortAudio passes buffers up to 1024 frames through.
+    // For bigger buffers the user has to manually match the value with Jack.
     // TODO(Be): Get the buffer size from JACK and update audioBufferComboBox.
-    // PortAudio does not have a way to get the buffer size from JACK as of July 2017.
+    // PortAudio as off v19.7.0 does not have a way to get the buffer size from JACK.
     if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
         sampleRateComboBox->setEnabled(false);
-        latencyLabel->setEnabled(false);
-        audioBufferComboBox->setEnabled(false);
         deviceSyncComboBox->setEnabled(false);
         engineClockComboBox->setEnabled(false);
 
     } else {
         sampleRateComboBox->setEnabled(true);
-        latencyLabel->setEnabled(true);
-        audioBufferComboBox->setEnabled(true);
         deviceSyncComboBox->setEnabled(true);
         engineClockComboBox->setEnabled(true);
     }
+    updateAudioBufferSizes(sampleRateComboBox->currentIndex());
 }
 
 /**
@@ -562,6 +560,7 @@ void DlgPrefSound::sampleRateChanged(int index) {
     m_config.setSampleRate(
             sampleRateComboBox->itemData(index).toUInt());
     m_bLatencyChanged = true;
+    updateAudioBufferSizes(index);
     checkLatencyCompensation();
 }
 
@@ -605,30 +604,50 @@ void DlgPrefSound::engineClockChanged(int index) {
 // of 2 (so the values displayed in ms won't be constant between sample rates,
 // but they'll be close).
 void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
-    double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
-    int oldSizeIndex = audioBufferComboBox->currentIndex();
-    unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
-    // we don't want to display any sub-1ms buffer sizes (well maybe we do but I
-    // don't right now!), so we iterate over all the buffer sizes until we
-    // find the first that gives us a buffer size >= 1 ms -- bkgood
-    // no div-by-0 in the next line because we don't allow srates of 0 in our
-    // srate list when we construct it in the ctor -- bkgood
-    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
-    }
+    QVariant oldSizeIndex = audioBufferComboBox->currentData();
     audioBufferComboBox->clear();
-    for (unsigned int i = 0; i < SoundManagerConfig::kMaxAudioBufferSizeIndex; ++i) {
-        const auto latency = static_cast<float>(framesPerBuffer / sampleRate * 1000);
-        // i + 1 in the next line is a latency index as described in SSConfig
-        audioBufferComboBox->addItem(tr("%1 ms").arg(latency,0,'g',3), i + 1);
-        framesPerBuffer <<= 1; // *= 2
-    }
-    if (oldSizeIndex < audioBufferComboBox->count() && oldSizeIndex >= 0) {
-        audioBufferComboBox->setCurrentIndex(oldSizeIndex);
+    if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
+        // in case of jack we configure the frames/period
+        // we cannot calc the resulting buffer size in ms because the
+        // Sample rate is not known yet. We assume 48000 KHz here
+        // to calculate the buffer size index
+        audioBufferComboBox->addItem(tr("auto (<= 1024 frames/period)"),
+                static_cast<unsigned int>(SoundManagerConfig::
+                                JackAudioBufferSizeIndex::SizeAuto));
+        audioBufferComboBox->addItem(tr("2048 frames/period"),
+                static_cast<unsigned int>(SoundManagerConfig::
+                                JackAudioBufferSizeIndex::Size2048fpp));
+        audioBufferComboBox->addItem(tr("4096 frames/period"),
+                static_cast<unsigned int>(SoundManagerConfig::
+                                JackAudioBufferSizeIndex::Size4096fpp));
     } else {
-        // set it to the max, let the user dig if they need better latency. better
-        // than having a user get the pops on first use and thinking poorly of mixxx
-        // because of it -- bkgood
-        audioBufferComboBox->setCurrentIndex(audioBufferComboBox->count() - 1);
+        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
+        unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
+        // we don't want to display any sub-1ms buffer sizes (well maybe we do but I
+        // don't right now!), so we iterate over all the buffer sizes until we
+        // find the first that gives us a buffer size >= 1 ms -- bkgood
+        // no div-by-0 in the next line because we don't allow srates of 0 in our
+        // srate list when we construct it in the ctor -- bkgood
+        for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
+        }
+        for (unsigned int i = 0; i < SoundManagerConfig::kMaxAudioBufferSizeIndex; ++i) {
+            const auto latency = static_cast<float>(framesPerBuffer / sampleRate * 1000);
+            // i + 1 in the next line is a latency index as described in SSConfig
+            audioBufferComboBox->addItem(tr("%1 ms").arg(latency, 0, 'g', 3), i + 1);
+            framesPerBuffer <<= 1; // *= 2
+        }
+    }
+    int selectionIndex = audioBufferComboBox->findData(oldSizeIndex);
+    if (selectionIndex > -1) {
+        audioBufferComboBox->setCurrentIndex(selectionIndex);
+    } else {
+        // use our default of 5 (23 ms @ 48 kHz)
+        selectionIndex = audioBufferComboBox->findData(
+                SoundManagerConfig::kDefaultAudioBufferSizeIndex);
+        VERIFY_OR_DEBUG_ASSERT(selectionIndex > -1) {
+            return;
+        }
+        audioBufferComboBox->setCurrentIndex(selectionIndex);
     }
 }
 

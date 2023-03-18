@@ -8,16 +8,11 @@
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 
-// this (7) represents latency values from 1 ms to about 80 ms -- bkgood
-const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;
-
 const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 // Sample Rate even the cheap sound Devices will support most likely
 const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
-// audioBufferSizeIndex=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
-const int SoundManagerConfig::kDefaultAudioBufferSizeIndex = 5;
 
 const int SoundManagerConfig::kDefaultSyncBuffers = 2;
 
@@ -393,6 +388,25 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 // This reflects the configured value only. In case of JACK the
 // setting of the JACK server is used.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
+    if (m_api == MIXXX_PORTAUDIO_JACK_STRING) {
+        // in case of jack we configure the frames/period
+        if (m_audioBufferSizeIndex ==
+                static_cast<unsigned int>(
+                        JackAudioBufferSizeIndex::Size4096fpp)) {
+            return 4096;
+        } else if (m_audioBufferSizeIndex ==
+                static_cast<unsigned int>(
+                        JackAudioBufferSizeIndex::Size2048fpp)) {
+            return 2048;
+        }
+        // default is auto <= 1024
+        // The Jack buffer size can change at any time, so we
+        // need buffers for the maximum of 1024 (limited by Portaudio).
+        return 1024;
+    }
+
+    // With the other APIs we calc the frames per buffer form the sample rate
+
     // endless loop otherwise
     unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
     VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
