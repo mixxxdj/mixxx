@@ -290,40 +290,41 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         int outChunkSize, int readAvailable,
         CSAMPLE* dataPtr1, ring_buffer_size_t size1,
         CSAMPLE* dataPtr2, ring_buffer_size_t size2) {
-    int writeExpected = static_cast<int>(pWorker->getStreamTimeFrames() - pWorker->framesWritten());
+    int writeExpectedFrames = static_cast<int>(
+            pWorker->getStreamTimeFrames() - pWorker->framesWritten());
 
-    int writeAvailable = writeExpected * m_iNumOutputChannels;
-    int copyCount = qMin(readAvailable, writeAvailable);
+    int writeExpected = writeExpectedFrames * m_iNumOutputChannels;
+    int copyCount = qMin(readAvailable, writeExpected);
 
     if (copyCount > 0) {
-        if (writeAvailable - copyCount > outChunkSize) {
+        if (writeExpected - copyCount > outChunkSize) {
             // Underflow
             // kLogger.debug() << "workerWriteProcess: buffer empty";
             // catch up by filling buffer until we are synced
-            workerWriteSilence(pWorker, writeAvailable - copyCount);
+            workerWriteSilence(pWorker, writeExpected - copyCount);
             m_pSoundManager->underflowHappened(24);
-        } else if (writeAvailable - copyCount > outChunkSize / 2) {
+        } else if (writeExpected - copyCount > outChunkSize / 2) {
             // try to keep PAs buffer filled up to 0.5 chunks
             if (pWorker->outputDrift()) {
                 // duplicate one frame
                 // kLogger.debug() << "workerWriteProcess() duplicate one frame"
-                //                << (float)writeAvailable / outChunkSize <<
-                //                (float)readAvailable / outChunkSize;
+                //                 << (float)writeExpected / outChunkSize
+                //                 << (float)readAvailable / outChunkSize;
                 workerWrite(pWorker, dataPtr1, 1);
             } else {
                 pWorker->setOutputDrift(true);
             }
-        } else if (writeAvailable < outChunkSize / 2 ||
-                readAvailable > outChunkSize * 1.5
-           ) {
-            // We are not able to store at least the half of the new frames
-            // or we have a risk of an m_outputFifo overflow
+        } else if (writeExpected < outChunkSize / 2) {
+            // We are will overshoot by more than a half of the new frames
             if (pWorker->outputDrift()) {
-                // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess()
-                // skip one frame"
-                //                 << (float)writeAvailable / outChunkSize <<
-                //                 (float)readAvailable / outChunkSize;
-                copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
+                // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() "
+                //                    "skip one frame"
+                //                 << (float)writeAvailable / outChunkSize
+                //                 << (float)readAvailable / outChunkSize;
+                if (size1 >= m_iNumOutputChannels) {
+                    dataPtr1 += m_iNumOutputChannels;
+                    size1 -= m_iNumOutputChannels;
+                }
             } else {
                 pWorker->setOutputDrift(true);
             }
