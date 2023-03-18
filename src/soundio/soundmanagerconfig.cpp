@@ -393,6 +393,21 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 // This reflects the configured value only. In case of JACK the
 // setting of the JACK server is used.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
+    if (m_api == MIXXX_PORTAUDIO_JACK_STRING) {
+        // in case of jack we configure the frames/period
+        if (m_audioBufferSizeIndex == 7) {
+            return 4096;
+        } else if (m_audioBufferSizeIndex == 7) {
+            return 2048;
+        }
+        // default is auto <= 1024
+        // The Jack buffer size can change at any time, so we
+        // need buffers for the maximum of 1024 (limited by Portaudio).
+        return 1024;
+    }
+
+    // With the other APIs we calc the frames per buffer form the sample rate
+
     // endless loop otherwise
     unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
     VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
