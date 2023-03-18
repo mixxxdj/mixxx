@@ -1,24 +1,28 @@
 #pragma once
 
-#include <QStyle>
-#include <QTimer>
+#include <QPoint>
 #include <QToolTip>
 
-#include "widget/wglwidget.h"
+class QTimer;
+class WGLWidget;
 
 // Tooltips don't work for the qopengl-based WGLWidget. This
 // singleton mimics the standard tooltip behaviour for them.
 class ToolTipQOpenGL : public QObject {
+    Q_OBJECT
+
     bool m_active{true};
-    QTimer* m_timer{};
+    std::unique_ptr<QTimer> m_timer;
     QPoint m_pos{};
     WGLWidget* m_widget{};
     ToolTipQOpenGL();
 
   public:
     ~ToolTipQOpenGL();
-    static ToolTipQOpenGL* singleton();
+    static ToolTipQOpenGL& singleton();
     void setActive(bool active);
     void start(WGLWidget* widget, QPoint pos);
     void stop(WGLWidget* widget);
+  private slots:
+    void onTimeout();
 };

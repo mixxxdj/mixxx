@@ -1,25 +1,28 @@
 #include "widget/tooltipqopengl.h"
 
+#include <widget/wglwidget.h>
+
 #include <QStyle>
 #include <QTimer>
 #include <QToolTip>
 
-ToolTipQOpenGL::ToolTipQOpenGL() {
-    m_timer = new QTimer();
+ToolTipQOpenGL::ToolTipQOpenGL()
+        : m_timer(new QTimer()) {
     m_timer->setSingleShot(true);
-    m_timer->callOnTimeout(this, [this]() {
-        if (m_widget) {
-            QToolTip::showText(m_pos, m_widget->toolTip(), m_widget);
-        }
-    });
+    connect(m_timer.get(), SIGNAL(timeout()), this, SLOT(onTimeout()));
+}
+
+void ToolTipQOpenGL::onTimeout() {
+    if (m_widget) {
+        QToolTip::showText(m_pos, m_widget->toolTip(), m_widget);
+    }
 }
 
 ToolTipQOpenGL::~ToolTipQOpenGL() {
-    delete m_timer;
 }
 
-ToolTipQOpenGL* ToolTipQOpenGL::singleton() {
-    static ToolTipQOpenGL* instance = new ToolTipQOpenGL();
+ToolTipQOpenGL& ToolTipQOpenGL::singleton() {
+    static ToolTipQOpenGL instance;
     return instance;
 }
 

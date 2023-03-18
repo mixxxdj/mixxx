@@ -178,7 +178,7 @@ void MixxxMainWindow::initialize() {
             pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
                     static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 #ifdef MIXXX_USE_QOPENGL
-    ToolTipQOpenGL::singleton()->setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
 #endif
 
 #ifdef __ENGINEPRIME__
@@ -481,9 +481,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pGuiTick;
     delete m_pVisualsManager;
-#ifdef MIXXX_USE_QOPENGL
-    delete ToolTipQOpenGL::singleton();
-#endif
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -1054,7 +1051,7 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
     m_toolTipsCfg = tt;
 #ifdef MIXXX_USE_QOPENGL
-    ToolTipQOpenGL::singleton()->setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
 #endif
 }
 
