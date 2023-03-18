@@ -54,7 +54,7 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     m_frameShaderProgram->removeAllShaders();
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-                GL_SHADER_CLASS::Vertex,
+                Shader::Vertex,
                 ":/shaders/passthrough.vert")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
@@ -62,7 +62,7 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     }
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-                GL_SHADER_CLASS::Fragment,
+                Shader::Fragment,
                 m_pFragShader)) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
@@ -185,7 +185,7 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
             static_cast<int>(
                     m_waveformRenderer->getHeight() * devicePixelRatio);
 
-    m_framebuffer = std::make_unique<GL_FBO_CLASS>(bufferWidth,
+    m_framebuffer = std::make_unique<FrameBufferObject>(bufferWidth,
             bufferHeight);
 
     if (!m_framebuffer->isValid()) {
@@ -198,7 +198,7 @@ void GLSLWaveformRendererSignal::onInitializeGL() {
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
-        m_frameShaderProgram = std::make_unique<GL_SHADER_PROGRAM_CLASS>();
+        m_frameShaderProgram = std::make_unique<ShaderProgram>();
     }
 
     if (!loadShaders()) {
