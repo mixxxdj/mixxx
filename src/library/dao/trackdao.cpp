@@ -1082,141 +1082,118 @@ void TrackDAO::afterPurgingTracks(
 }
 
 namespace {
-typedef bool (*TrackPopulatorFn)(const QSqlRecord& record,
+
+typedef void (*TrackPopulatorFn)(
+        const QSqlRecord& record,
         const int column,
         Track* pTrack);
 
-bool setTrackArtist(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackArtist(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setArtist(record.value(column).toString());
-    return false;
 }
 
-bool setTrackTitle(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackTitle(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setTitle(record.value(column).toString());
-    return false;
 }
 
-bool setTrackAlbum(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackAlbum(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setAlbum(record.value(column).toString());
-    return false;
 }
 
-bool setTrackAlbumArtist(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackAlbumArtist(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setAlbumArtist(record.value(column).toString());
-    return false;
 }
 
-bool setTrackYear(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackYear(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setYear(record.value(column).toString());
-    return false;
 }
 
-bool setTrackGenre(const QSqlRecord& record,
-        const int column,
-        Track* pTrack) {
+void setTrackGenre(const QSqlRecord& record, const int column, Track* pTrack) {
     TrackDAO::setTrackGenreInternal(pTrack, record.value(column).toString());
-    return false;
 }
 
-bool setTrackComposer(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackComposer(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setComposer(record.value(column).toString());
-    return false;
 }
 
-bool setTrackGrouping(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackGrouping(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setGrouping(record.value(column).toString());
-    return false;
 }
 
-bool setTrackNumber(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackNumber(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setTrackNumber(record.value(column).toString());
-    return false;
 }
 
-bool setTrackTotal(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackTotal(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setTrackTotal(record.value(column).toString());
-    return false;
 }
 
-bool setTrackColor(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackColor(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setColor(mixxx::RgbColor::fromQVariant(record.value(column)));
-    return false;
 }
 
-bool setTrackComment(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackComment(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setComment(record.value(column).toString());
-    return false;
 }
 
-bool setTrackUrl(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackUrl(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setURL(record.value(column).toString());
-    return false;
 }
 
-bool setTrackRating(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackRating(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setRating(record.value(column).toInt());
-    return false;
 }
 
-bool setTrackCuePoint(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackCuePoint(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setMainCuePosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
             record.value(column).toDouble()));
-    return false;
 }
 
-bool setTrackReplayGainRatio(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackReplayGainRatio(const QSqlRecord& record, const int column, Track* pTrack) {
     mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setRatio(record.value(column).toDouble());
     pTrack->setReplayGain(replayGain);
-    return false;
 }
 
-bool setTrackReplayGainPeak(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackReplayGainPeak(const QSqlRecord& record, const int column, Track* pTrack) {
     mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setPeak(record.value(column).toFloat());
     pTrack->setReplayGain(replayGain);
-    return false;
 }
 
-bool setTrackTimesPlayed(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackTimesPlayed(const QSqlRecord& record, const int column, Track* pTrack) {
     PlayCounter playCounter(pTrack->getPlayCounter());
     playCounter.setTimesPlayed(record.value(column).toInt());
     pTrack->setPlayCounter(playCounter);
-    return false;
 }
 
-bool setTrackPlayed(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackPlayed(const QSqlRecord& record, const int column, Track* pTrack) {
     PlayCounter playCounter(pTrack->getPlayCounter());
     playCounter.setPlayedFlag(record.value(column).toBool());
     pTrack->setPlayCounter(playCounter);
-    return false;
 }
 
-bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackLastPlayedAt(const QSqlRecord& record, const int column, Track* pTrack) {
     auto playCounter = pTrack->getPlayCounter();
     playCounter.setLastPlayedAt(
             mixxx::sqlite::readGeneratedTimestamp(record.value(column)));
     pTrack->setPlayCounter(playCounter);
-    return false;
 }
 
-bool setTrackDateAdded(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackDateAdded(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setDateAdded(
             mixxx::convertVariantToDateTime(record.value(column)));
-    return false;
 }
 
-bool setTrackFiletype(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackFiletype(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setType(record.value(column).toString());
-    return false;
 }
 
-bool setTrackHeaderParsed(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackHeaderParsed(const QSqlRecord& record, const int column, Track* pTrack) {
     TrackDAO::setTrackHeaderParsedInternal(pTrack, record.value(column).toBool());
-    return false;
 }
 
-bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Track* pTrack) {
     QDateTime sourceSynchronizedAt;
     const QVariant value = record.value(column);
     // Observation (Qt 5.15): QVariant::isValid() may return true even
@@ -1229,10 +1206,9 @@ bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Tr
         sourceSynchronizedAt.setMSecsSinceEpoch(msecsSinceEpoch);
     }
     pTrack->setSourceSynchronizedAt(sourceSynchronizedAt);
-    return false;
 }
 
-bool setTrackAudioProperties(
+void setTrackAudioProperties(
         const QSqlRecord& record,
         const int firstColumn,
         Track* pTrack) {
@@ -1245,10 +1221,9 @@ bool setTrackAudioProperties(
             mixxx::audio::SampleRate(samplerate),
             mixxx::audio::Bitrate(bitrate),
             mixxx::Duration::fromSeconds(duration));
-    return false; // shouldDirty
 }
 
-bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     const auto bpm = mixxx::Bpm(record.value(column).toDouble());
     QString beatsVersion = record.value(column + 1).toString();
     QString beatsSubVersion = record.value(column + 2).toString();
@@ -1256,7 +1231,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     if (beatsVersion.isEmpty()) {
         DEBUG_ASSERT(beatsSubVersion.isEmpty());
         DEBUG_ASSERT(beatsBlob.isEmpty());
-        return false;
+        return;
     }
     bool bpmLocked = record.value(column + 4).toBool();
     const mixxx::BeatsPointer pBeats = mixxx::Beats::fromByteArray(
@@ -1275,10 +1250,9 @@ bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     } else {
         pTrack->trySetBeats(nullptr);
     }
-    return false; // shouldDirty
 }
 
-bool setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
     QString keyText = record.value(column).toString();
     QString keysVersion = record.value(column + 1).toString();
     QString keysSubVersion = record.value(column + 2).toString();
@@ -1293,14 +1267,10 @@ bool setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
         // version of Mixxx that didn't support Keys. We treat all legacy data
         // as user-generated because that way it will be treated sensitively.
         pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
-        // The in-database data would change because of this. Mark the track
-        // dirty so we save it when it is deleted.
-        return true;
     }
-    return false; // shouldDirty;
 }
 
-bool setTrackCoverInfo(const QSqlRecord& record, const int column, Track* pTrack) {
+void setTrackCoverInfo(const QSqlRecord& record, const int column, Track* pTrack) {
     CoverInfoRelative coverInfo;
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
@@ -1319,7 +1289,6 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column, Track* pTrack
             record.value(column + 4).toByteArray(),
             record.value(column + 5).toUInt());
     pTrack->setCoverInfo(coverInfo);
-    return false; // shouldDirty
 }
 
 struct ColumnPopulator {
@@ -1503,7 +1472,6 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // of the properties has finished.
 
     // For every column run its populator to fill the track in with the data.
-    bool shouldDirty = false;
     {
         int recordCount = queryRecord.count();
         if (recordCount != columnsCount) {
@@ -1512,64 +1480,56 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         }
         for (int i = 0; i < recordCount; ++i) {
             TrackPopulatorFn populator = columns[i].populator;
-            if (populator && (*populator)(queryRecord, i, pTrack.get())) {
-                // If any populator says the track should be dirty then we dirty it.
-                shouldDirty = true;
+            if (populator) {
+                (*populator)(queryRecord, i, pTrack.get());
             }
         }
     }
 
     // Populate track cues from the cues table.
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
+    pTrack->markClean();
 
-    // Normally we will set the track as clean but sometimes when loading from
-    // the database we need to perform upkeep that ought to be written back to
-    // the database when the track is deleted.
-    if (shouldDirty) {
-        pTrack->markDirty();
-    } else {
-        pTrack->markClean();
-        // Synchronize the track's metadata with the corresponding source
-        // file. This import might have never been completed successfully
-        // before, so just check and try for every track that has been
-        // freshly loaded from the database.
-        auto updateTrackFromSourceMode =
-                SoundSourceProxy::UpdateTrackFromSourceMode::Once;
-        if (m_pConfig &&
-                m_pConfig->getValue(
-                        mixxx::library::prefs::kSyncTrackMetadataConfigKey,
-                        false)) {
-            // An implicit re-import and update is performed if the
-            // user has enabled export of file tags in the preferences.
-            // Either they want to keep their file tags synchronized or
-            // not, no exceptions!
-            updateTrackFromSourceMode =
-                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
-        }
-        DEBUG_ASSERT(!pTrack->isDirty());
-        const auto sourceSynchronizedAtBefore = pTrack->getSourceSynchronizedAt();
-        const auto result =
-                SoundSourceProxy(pTrack).updateTrackFromSource(
-                        updateTrackFromSourceMode,
-                        SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
-        if (result == SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated) {
-            // At least the source synchronization time stamp must have changed
-            DEBUG_ASSERT(pTrack->isDirty());
-            const auto sourceSynchronizedAtAfter = pTrack->getSourceSynchronizedAt();
-            DEBUG_ASSERT(sourceSynchronizedAtAfter.isValid());
-            if (sourceSynchronizedAtBefore.isValid()) {
-                // Only log subsequent re-imports but not the initial import of metadata
-                DEBUG_ASSERT(updateTrackFromSourceMode ==
-                        SoundSourceProxy::UpdateTrackFromSourceMode::Newer);
-                DEBUG_ASSERT(sourceSynchronizedAtBefore < sourceSynchronizedAtAfter);
-                kLogger.info()
-                        << "Re-imported and updated outdated track metadata in library ("
-                        << sourceSynchronizedAtBefore.toString(Qt::ISODateWithMs)
-                        << ") with tags from modified file ("
-                        << sourceSynchronizedAtAfter.toString(Qt::ISODateWithMs)
-                        << "):"
-                        << pTrack->getMetadata();
-            }
+    // Synchronize the track's metadata with the corresponding source
+    // file. This import might have never been completed successfully
+    // before, so just check and try for every track that has been
+    // freshly loaded from the database.
+    auto updateTrackFromSourceMode =
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once;
+    if (m_pConfig &&
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+                    false)) {
+        // An implicit re-import and update is performed if the
+        // user has enabled export of file tags in the preferences.
+        // Either they want to keep their file tags synchronized or
+        // not, no exceptions!
+        updateTrackFromSourceMode =
+                SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
+    }
+    DEBUG_ASSERT(!pTrack->isDirty());
+    const auto sourceSynchronizedAtBefore = pTrack->getSourceSynchronizedAt();
+    const auto result =
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    updateTrackFromSourceMode,
+                    SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
+    if (result == SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated) {
+        // At least the source synchronization time stamp must have changed
+        DEBUG_ASSERT(pTrack->isDirty());
+        const auto sourceSynchronizedAtAfter = pTrack->getSourceSynchronizedAt();
+        DEBUG_ASSERT(sourceSynchronizedAtAfter.isValid());
+        if (sourceSynchronizedAtBefore.isValid()) {
+            // Only log subsequent re-imports but not the initial import of metadata
+            DEBUG_ASSERT(updateTrackFromSourceMode ==
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer);
+            DEBUG_ASSERT(sourceSynchronizedAtBefore < sourceSynchronizedAtAfter);
+            kLogger.info()
+                    << "Re-imported and updated outdated track metadata in library ("
+                    << sourceSynchronizedAtBefore.toString(Qt::ISODateWithMs)
+                    << ") with tags from modified file ("
+                    << sourceSynchronizedAtAfter.toString(Qt::ISODateWithMs)
+                    << "):"
+                    << pTrack->getMetadata();
         }
     }
 
