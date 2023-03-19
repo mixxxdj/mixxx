@@ -1,9 +1,13 @@
 // Name: Reloop Mixage
 // Author: Bim Overbohm
-// Version: 1.0.3 needs Mixxx 2.1+
+// Version: 1.0.4 needs Mixxx 2.1+
 
 var Mixage = {};
 
+// ----- User-configurable settings -----
+Mixage.scratchByWheelTouch = false; // turn on scratching by touching the wheel instead of having to press the disc button
+
+// ----- Internal variables (don't touch) -----
 Mixage.vuMeterConnection = [];
 Mixage.libraryHideTimer = 0;
 Mixage.libraryReducedHideTimeout = 500;
@@ -11,7 +15,6 @@ Mixage.libraryHideTimeout = 4000;
 Mixage.libraryRemainingTime = 0;
 Mixage.scratchPressed = false;
 Mixage.scrollPressed = false;
-Mixage.scratchByWheelTouch = false;
 Mixage.beatMovePressed = false;
 Mixage.effectRackSelected = [[true, false], [true, false]]; // if effect rack 1/2 is selected for channel 1/2
 Mixage.effectRackEnabled = [false, false]; // if effect rack 1/2 is enabled for channel 1/2
@@ -186,7 +189,7 @@ Mixage.scratchActive = function(channel, control, value/*, status, group*/) {
         Mixage.scratchPressed = true;
         var alpha = 1.0 / 8.0;
         var beta = alpha / 32.0;
-        engine.scratchEnable(deckNr, 620, 20.0/*33.0+1.0/3.0*/, alpha, beta);
+        engine.scratchEnable(deckNr, 620, 33.0 + 1.0 / 3.0, alpha, beta);
     } else {
         Mixage.scratchPressed = false;
         engine.scratchDisable(deckNr);
@@ -207,7 +210,7 @@ Mixage.wheelTouch = function(channel, control, value/*, status, group*/) {
     // check if scratching through wheel touch is enabled
     if (Mixage.scratchByWheelTouch) {
         // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
-        var deckNr = control - 0x24 + 1;
+        var deckNr = (control - 0x24) + 1;
         if (value === 0x7F) {
             var alpha = 1.0 / 8;
             var beta = alpha / 32.0;
@@ -221,17 +224,18 @@ Mixage.wheelTouch = function(channel, control, value/*, status, group*/) {
 // The wheel that actually controls the scratching / jogging
 Mixage.wheelTurn = function(channel, control, value/*, status, group*/) {
     // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
-    var deckNr = control - 0x24 + 1;
+    var deckNr = (control - 0x24) + 1;
     // Control centers on 0x40 (64), calculate difference to that value
     var newValue = value - 64;
     // In either case, register the movement
-    if (Mixage.scratchPressed) {
+    if (Mixage.scrollPressed) {
+        Mixage.scrollLibrary(newValue);
+        return;
+    }
+    if (Mixage.scratchPressed || Mixage.scratchByWheelTouch) {
         engine.scratchTick(deckNr, newValue); // scratch
     } else {
         engine.scratchDisable(deckNr);
-    }
-    if (Mixage.scrollPressed) {
-        Mixage.scrollLibrary(newValue);
     }
     //engine.setValue('[Channel'+deckNr+']', 'jog', newValue); // Pitch bend
 };
