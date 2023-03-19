@@ -4,6 +4,7 @@
 #include <QStringBuilder>
 #include <QTreeWidget>
 #include <QtDebug>
+#include <QColorDialog>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
@@ -736,4 +737,35 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
     }
     m_pDlgTagFetcher->show();
+}
+
+btnTrackColor::btnTrackColor( QWidget* parent )
+    : QPushButton(parent)
+{
+    connect( this, SIGNAL(clicked()), this, SLOT(changeColor()) );
+}
+
+void btnTrackColor::updateColor()
+{
+    setStyleSheet( "background-color: " + color.name() );
+}
+
+void btnTrackColor::changeColor()
+{
+    QColor newColor = QColorDialog::getColor(color, parentWidget());
+    if ( newColor != color )
+    {
+        setColor( newColor );
+    }
+}
+
+void btnTrackColor::setColor( const QColor& color )
+{
+    this->color = color;
+    updateColor();
+}
+
+const QColor& btnTrackColor::getColor() const
+{
+    return color;
 }

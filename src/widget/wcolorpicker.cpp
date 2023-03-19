@@ -37,8 +37,7 @@ inline int idealColumnCount(int numItems) {
     return numColumns;
 }
 
-WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget* parent)
-        : QWidget(parent),
+WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget* parent) : QWidget(parent),
           m_options(options),
           m_palette(palette),
           m_pNoColorButton(nullptr),

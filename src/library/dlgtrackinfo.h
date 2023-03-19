@@ -19,6 +19,22 @@ class DlgTagFetcher;
 class WCoverArtLabel;
 class WCoverArtMenu;
 class WStarRating;
+class btnTrackColor : public QPushButton
+{
+    Q_OBJECT
+public:
+    btnTrackColor( QWidget* parent );
+
+    void setColor( const QColor& color );
+    const QColor& getColor() const;
+
+public slots:
+    void updateColor();
+    void changeColor();
+
+private:
+    QColor color;
+};
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
