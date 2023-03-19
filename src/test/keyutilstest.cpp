@@ -159,9 +159,9 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
             KeyUtils::guessKeyFromText("Ab -50cents"));
     EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
             KeyUtils::guessKeyFromText("04B -50cents"));
-    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
-            KeyUtils::guessKeyFromText("    4b    -50   cents    "));
     // Mixxx does not allow this but Rapid Evolution
+    // EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+    //      KeyUtils::guessKeyFromText("    4b    -50   cents    "));
     // EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
     //          KeyUtils::guessKeyFromText("    g  #    -    50   cents    "));
     // EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
