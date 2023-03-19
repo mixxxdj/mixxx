@@ -313,9 +313,8 @@ QString WSearchLineEdit::getSearchText() const {
         QString text = currentText();
         QCompleter* pCompleter = completer();
         if (pCompleter && hasSelectedText()) {
-            QLineEdit* pEdit = lineEdit();
             if (text.startsWith(pCompleter->completionPrefix()) &&
-                    pCompleter->completionPrefix().size() == pEdit->cursorPosition()) {
+                    pCompleter->completionPrefix().size() == lineEdit()->cursorPosition()) {
                 // Search for the entered text until the user has accepted the
                 // completion by pressing Enter or changed/deselected the selected
                 // completion text with Right or Left key
@@ -800,18 +799,12 @@ void WSearchLineEdit::slotSetShortcutFocus() {
 // Use the same font as the library table and the sidebar
 void WSearchLineEdit::slotSetFont(const QFont& font) {
     setFont(font);
-    if (lineEdit()) {
-        lineEdit()->setFont(font);
-        // Decreasing the font doesn't trigger a resizeEvent,
-        // so we immediately refresh the controls manually.
-        updateClearAndDropdownButton(getSearchText());
-    }
+    lineEdit()->setFont(font);
+    // Decreasing the font doesn't trigger a resizeEvent,
+    // so we immediately refresh the controls manually.
+    updateClearAndDropdownButton(getSearchText());
 }
 
 bool WSearchLineEdit::hasSelectedText() const {
-    const QLineEdit* pEdit = lineEdit();
-    VERIFY_OR_DEBUG_ASSERT(pEdit) {
-        return false;
-    }
-    return pEdit->hasSelectedText();
+    return lineEdit()->hasSelectedText();
 }
