@@ -91,7 +91,7 @@ Mixage.connectionMap = {
 
 // Set or remove functions to call when the state of a mixxx control changes
 Mixage.connectControlsToFunctions = function(group, remove) {
-    remove = (typeof remove !== "undefined") ? remove : false;
+    remove = (remove !== undefined) ? remove : false;
     for (var control in Mixage.connectionMap) {
         engine.connectControl(group, control, Mixage.connectionMap[control], remove);
         if (!remove) {
@@ -182,7 +182,7 @@ Mixage.libraryCheckTimeout = function() {
 };
 
 // The "record" button that enables/disables scratching
-Mixage.scratchActive = function(channel, control, value/*, status, group*/) {
+Mixage.scratchActive = function(channel, control, value, _status, _group) {
     // calculate deck number from MIDI control. 0x04 controls deck 1, 0x12 deck 2
     var deckNr = control === 0x04 ? 1 : 2;
     if (value === 0x7F) {
