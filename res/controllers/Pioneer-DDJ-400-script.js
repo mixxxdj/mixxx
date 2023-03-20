@@ -1,7 +1,7 @@
 // Pioneer-DDJ-400-script.js
 // ****************************************************************************
 // * Mixxx mapping script file for the Pioneer DDJ-400.
-// * Authors: Warker, nschloe, dj3730, jusko
+// * Authors: Warker, nschloe, dj3730, jusko, tiesjan
 // * Reviewers: Be-ing, Holzhaus
 // * Manual: https://manual.mixxx.org/2.3/en/hardware/controllers/pioneer_ddj_400.html
 // ****************************************************************************
@@ -19,14 +19,14 @@
 //
 //  Custom (Mixxx specific mappings):
 //      * BeatFX: Assigned Effect Unit 1
-//                < LEFT focus EFFECT1
-//                > RIGHT focus EFFECT2
-//                v FX_SELECT focus EFFECT3.
+//                < LEFT toggles focus between Effects 1, 2 and 3 leftward
+//                > RIGHT toggles focus between Effects 1, 2 and 3 rightward
+//                v DOWN loads next effect entry for focused Effect
+//                SHIFT + v UP loads previous effect entry for focused Effect
+//                LEVEL/DEPTH controls the Mix knob of the Effect Unit
+//                SHIFT + LEVEL/DEPTH controls the Meta knob of the focused Effect
 //                ON/OFF toggles focused effect slot
 //                SHIFT + ON/OFF disables all three effect slots.
-//                SHIFT + < loads previous effect
-//                SHIFT + > loads next effect
-//
 //      * 32 beat jump forward & back (Shift + </> CUE/LOOP CALL arrows)
 //      * Toggle quantize (Shift + channel cue)
 //
@@ -34,7 +34,6 @@
 //      * Loop Section:
 //        * -4BEAT auto loop (hacky---prefer a clean way to set a 4 beat loop
 //                            from a previous position on long press)
-//
 //        * CUE/LOOP CALL - memory & delete (complex and not useful. Hot cues are sufficient)
 //
 //      * Secondary pad modes (trial attempts complex and too experimental)
@@ -243,30 +242,44 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
     }
 };
 
-PioneerDDJ400.beatFxSelectPreviousEffect = function(_channel, _control, value) {
-    engine.setValue(PioneerDDJ400.focusedFxGroup(), "prev_effect", value);
-};
+PioneerDDJ400.changeFocusedEffectBy = function(numberOfSteps) {
+    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
 
-PioneerDDJ400.beatFxSelectNextEffect = function(_channel, _control, value) {
-    engine.setValue(PioneerDDJ400.focusedFxGroup(), "next_effect", value);
+    // Convert to zero-based index
+    focusedEffect -= 1;
+
+    // Standard Euclidean modulo by use of two plain modulos
+    var numberOfEffectsPerEffectUnit = 3;
+    focusedEffect = (((focusedEffect + numberOfSteps) % numberOfEffectsPerEffectUnit) + numberOfEffectsPerEffectUnit) % numberOfEffectsPerEffectUnit;
+
+    // Convert back to one-based index
+    focusedEffect += 1;
+
+    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", focusedEffect);
 };
 
 PioneerDDJ400.beatFxLeftPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 1);
+    PioneerDDJ400.changeFocusedEffectBy(-1);
 };
 
 PioneerDDJ400.beatFxRightPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 2);
+    PioneerDDJ400.changeFocusedEffectBy(1);
 };
 
 PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 3);
+    engine.setValue(PioneerDDJ400.focusedFxGroup(), "next_effect", value);
+};
+
+PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value) {
+    if (value === 0) { return; }
+
+    engine.setValue(PioneerDDJ400.focusedFxGroup(), "prev_effect", value);
 };
 
 PioneerDDJ400.beatFxOnOffPressed = function(_channel, _control, value) {
@@ -426,7 +439,7 @@ PioneerDDJ400.syncLongPressed = function(channel, control, value, status, group)
 };
 
 PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
-    if (value === 0) return; // ignore release
+    if (value === 0) { return; } // ignore release
 
     var currRange = engine.getValue(group, "rateRange");
     var idx = 0;
