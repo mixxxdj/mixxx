@@ -242,32 +242,32 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
     }
 };
 
+PioneerDDJ400.changeFocusedEffectBy = function(numberOfSteps) {
+    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
+
+    // Convert to zero-based index
+    focusedEffect -= 1;
+
+    // Standard Euclidean modulo by use of two plain modulos
+    var numberOfEffectsPerEffectUnit = 3;
+    focusedEffect = (((focusedEffect + numberOfSteps) % numberOfEffectsPerEffectUnit) + numberOfEffectsPerEffectUnit) % numberOfEffectsPerEffectUnit;
+
+    // Convert back to one-based index
+    focusedEffect += 1;
+
+    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", focusedEffect);
+};
+
 PioneerDDJ400.beatFxLeftPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
-
-    if (focusedEffect <= 1) {
-        focusedEffect = 3;
-    } else {
-        focusedEffect -= 1;
-    }
-
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", focusedEffect);
+    PioneerDDJ400.changeFocusedEffectBy(-1);
 };
 
 PioneerDDJ400.beatFxRightPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
-
-    if (focusedEffect >= 3) {
-        focusedEffect = 1;
-    } else {
-        focusedEffect += 1;
-    }
-
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", focusedEffect);
+    PioneerDDJ400.changeFocusedEffectBy(1);
 };
 
 PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
