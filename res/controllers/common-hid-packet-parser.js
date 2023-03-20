@@ -399,11 +399,10 @@ class HIDPacket {
                 console.error("HIDPacket.pack - Packing multibyte bit vectors not yet supported");
                 return;
             }
-            const bitVectorKeyArr = Object.keys(bitVector.bits);
-            let bitVectorIdx = bitVectorKeyArr.length;
-            while (bitVectorIdx--) {
-                data[field.offset] |= bitVector.bits[bitVectorKeyArr[bitVectorIdx]].value;
+            HIDController.fastForIn(bitVector.bits, (bit) => {
+                data[field.offset] |= bitVector.bits[bit].value;
             }
+            );
             return;
         }
 
@@ -604,6 +603,7 @@ class HIDPacket {
         const bitVector = /** @type {HIDBitVector} */ (field.value);
         const bit_id = `${group}.${name}`;
 
+        // Fast loop implementation over bitvector.bits object
         const bitVectorKeyArr = Object.keys(bitVector.bits);
         let bitVectorKeyIdx = bitVectorKeyArr.length;
         while (bitVectorKeyIdx--) {
@@ -967,17 +967,15 @@ class HIDPacket {
         }
         const bitVector = /** @type {HIDBitVector} */ (field.value);
 
-
-        const bitVectorKeyArr = Object.keys(bitVector.bits);
-        let bitVectorKeyIdx = bitVectorKeyArr.length;
-        while (bitVectorKeyIdx--) {
-            const bit = bitVector.bits[bitVectorKeyArr[bitVectorKeyIdx]];
+        HIDController.fastForIn(bitVector.bits, (bit_id) => {
+            const bit = bitVector.bits[bit_id];
             const new_value = (bit.bitmask & value) >> bit.bit_offset;
             if (bit.value !== undefined && bit.value !== new_value) {
-                bits[bitVectorKeyArr[bitVectorKeyIdx]] = bit;
+                bits[bit_id] = bit;
             }
             bit.value = new_value;
         }
+        );
         return bits;
     }
     /**
@@ -996,11 +994,13 @@ class HIDPacket {
          */
         const field_changes = {};
 
+        // Fast loop implementation over this.groups object
         const groupKeyArr = Object.keys(this.groups);
         let groupKeyIdx = groupKeyArr.length;
         while (groupKeyIdx--) {
             const group = this.groups[groupKeyArr[groupKeyIdx]];
 
+            // Fast loop implementation over group object
             const fieldKeyArr = Object.keys(group);
             let fieldKeyIdx = fieldKeyArr.length;
             while (fieldKeyIdx--) {
@@ -1020,11 +1020,11 @@ class HIDPacket {
                     // Bitvector deltas are checked in parseBitVector
                     const changedBits = this.parseBitVector(field, value);
 
-                    const changedBitsKeyArr = Object.keys(changedBits);
-                    let changedBitsKeyIdx = changedBitsKeyArr.length;
-                    while (changedBitsKeyIdx--) {
-                        field_changes[changedBitsKeyArr[changedBitsKeyIdx]] = changedBits[changedBitsKeyArr[changedBitsKeyIdx]];
+
+                    HIDController.fastForIn(changedBits, (changedBit) => {
+                        field_changes[changedBit] = changedBits[changedBit];
                     }
+                    );
 
                 } else if (field.type === "control") {
                     if (field.value === value && field.mindelta !== undefined) {
@@ -1076,19 +1076,18 @@ class HIDPacket {
                 data[header_byte] = this.header[header_byte];
             }
         }
-        const groupKeyArr = Object.keys(this.groups);
-        let groupKeyIdx = groupKeyArr.length;
-        while (groupKeyIdx--) {
-            const group = this.groups[groupKeyArr[groupKeyIdx]];
 
-            const fieldKeyArr = Object.keys(group);
-            let fieldKeyIdx = fieldKeyArr.length;
-            while (fieldKeyIdx--) {
-                const field = group[fieldKeyArr[fieldKeyIdx]];
+        HIDController.fastForIn(this.groups, (group_name) => {
+            const group = this.groups[group_name];
+
+            HIDController.fastForIn(group, (field_name) => {
+                const field = group[field_name];
 
                 this.pack(data, field);
             }
+            );
         }
+        );
 
         if (debug) {
             let packet_string = "";
@@ -1697,6 +1696,8 @@ class HIDController {
         if (this.InputPackets === undefined) {
             return;
         }
+
+        // Fast loop implementation over this.InputPackets object
         const InputPacketsKeyArr = Object.keys(this.InputPackets);
         let InputPacketsIdx = InputPacketsKeyArr.length;
         while (InputPacketsIdx--) {
@@ -1770,17 +1771,15 @@ class HIDController {
      */
     processIncomingPacket(packet, delta) {
 
-        const deltaKeyArr = Object.keys(delta);
-        let deltaIdx = deltaKeyArr.length;
-        while (deltaIdx--) {
+        HIDController.fastForIn(delta, (field_name) => {
             // @ts-ignore ignoredControlChanges should be defined in the users mapping
             // see EKS-Otus.js for an example
             if (this.ignoredControlChanges !== undefined &&
-                // @ts-ignore
-                this.ignoredControlChanges.indexOf(deltaKeyArr[deltaIdx]) !== -1) {
-                continue;
+                    // @ts-ignore
+                    this.ignoredControlChanges.indexOf(field_name) !== -1) {
+                return; // continue loop - by returning to fastForIn
             }
-            const field = delta[deltaKeyArr[deltaIdx]];
+            const field = delta[field_name];
             if (field.type === "button") {
                 // Button/Boolean field
                 this.processButton(field);
@@ -1791,6 +1790,7 @@ class HIDController {
                 console.warn(`HIDController.processIncomingPacket - Unknown field ${field.name} type ${field.type}`);
             }
         }
+        );
     }
     /**
      * Get active group for this field
@@ -2320,6 +2320,23 @@ class HIDController {
         field.value = toggle_value << field.bit_offset;
         field.toggle = toggle_value << field.bit_offset;
         field.packet.send();
+    }
+    /**
+     * Fast loop implementation over object
+     *
+     * Don't use 'continue' and 'break' don't work as in normal loops,
+     * because body is a function
+     * 'return' statements in the body function behaves as 'continue' in normal loops
+     *
+     * @param {Object.<string, any>} object
+     * @param {function (string):void } body
+     */
+    static fastForIn(object, body) {
+        const objKeyArray = Object.keys(object);
+        let objKeyArrayIdx = objKeyArray.length;
+        while (objKeyArrayIdx--) {
+            body(objKeyArray[objKeyArrayIdx]);
+        }
     }
 }
 // Add class HIDController to the Global JavaScript object
