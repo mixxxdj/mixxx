@@ -118,10 +118,11 @@ repos:
     hooks:
       - id: prettier
         types: [yaml]
-  - repo: https://github.com/qarmin/qml_formatter.git
-    rev: 0.2.0
-    hooks:
-      - id: qml_formatter
+  # disabled until  https://github.com/mixxxdj/mixxx/issues/11386 is fixed
+  #- repo: https://github.com/qarmin/qml_formatter.git
+  #  rev: 0.2.0
+  #  hooks:
+  #    - id: qml_formatter
   - repo: local
     hooks:
       - id: qsscheck
