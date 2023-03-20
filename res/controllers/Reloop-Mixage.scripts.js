@@ -19,7 +19,7 @@ Mixage.beatMovePressed = false;
 Mixage.effectRackSelected = [[true, false], [true, false]]; // if effect rack 1/2 is selected for channel 1/2
 Mixage.effectRackEnabled = [false, false]; // if effect rack 1/2 is enabled for channel 1/2
 
-Mixage.init = function(/*id, debugging*/) {
+Mixage.init = function(_id, _debugging) {
     Mixage.connectControlsToFunctions("[Channel1]");
     Mixage.connectControlsToFunctions("[Channel2]");
     // all button LEDs off
@@ -119,7 +119,7 @@ Mixage.scrollLibrary = function(value) {
 };
 
 // A button for the playlist was pressed
-Mixage.handleLibrary = function(channel, control, value, status/*, group*/) {
+Mixage.handleLibrary = function(channel, control, value, status, _group) {
     // "push2browse" button was moved somehow
     if (control === 0x1F) { // "push2browse" button was pushed
         if (status === 0x90 && value === 0x7F) {
@@ -197,7 +197,7 @@ Mixage.scratchActive = function(channel, control, value, _status, _group) {
 };
 
 // The "magnifying glass" button that enables/disables playlist scrolling
-Mixage.scrollActive = function(channel, control, value/*, status, group*/) {
+Mixage.scrollActive = function(channel, control, value, _status, _group) {
     // calculate deck number from MIDI control. 0x04 controls deck 1, 0x12 deck 2
     Mixage.scrollPressed = value === 0x7F;
     if (Mixage.scrollPressed) {
@@ -206,7 +206,7 @@ Mixage.scrollActive = function(channel, control, value/*, status, group*/) {
 };
 
 // The touch function on the wheels that enables/disables scratching
-Mixage.wheelTouch = function(channel, control, value/*, status, group*/) {
+Mixage.wheelTouch = function(channel, control, value, _status, _group) {
     // check if scratching through wheel touch is enabled
     if (Mixage.scratchByWheelTouch) {
         // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
@@ -222,7 +222,7 @@ Mixage.wheelTouch = function(channel, control, value/*, status, group*/) {
 };
 
 // The wheel that actually controls the scratching / jogging
-Mixage.wheelTurn = function(channel, control, value/*, status, group*/) {
+Mixage.wheelTurn = function(channel, control, value, _status, _group) {
     // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
     var deckNr = (control - 0x24) + 1;
     // Control centers on 0x40 (64), calculate difference to that value
@@ -241,7 +241,7 @@ Mixage.wheelTurn = function(channel, control, value/*, status, group*/) {
 };
 
 // The MASTER button that toggles routing master through effects
-Mixage.handleEffectMasterOn = function(channel, control, value/*, status, group*/) {
+Mixage.handleEffectMasterOn = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x46 controls unit 1, 0x54 unit 2
     var unitNr = control === 0x46 ? 1 : 2;
     // react only on first message / keydown
@@ -256,7 +256,7 @@ Mixage.handleEffectMasterOn = function(channel, control, value/*, status, group*
 };
 
 // The FX ON button that toggles routing channel 1/2 through effects
-Mixage.handleEffectChannelOn = function(channel, control, value/*, status, group*/) {
+Mixage.handleEffectChannelOn = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x08 controls unit 1, 0x16 unit 2
     var unitNr = control === 0x08 ? 1 : 2;
     // react only on first message / keydown
@@ -273,7 +273,7 @@ Mixage.handleEffectChannelOn = function(channel, control, value/*, status, group
 };
 
 // The FX SEL button that selects which effects are enabled for channel 1/2
-Mixage.handleEffectChannelSelect = function(channel, control, value/*, status, group*/) {
+Mixage.handleEffectChannelSelect = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x07 controls unit 1, 0x15 unit 2
     var unitNr = control === 0x07 ? 1 : 2;
     // react only on first message / keydown
@@ -301,7 +301,7 @@ Mixage.handleEffectChannelSelect = function(channel, control, value/*, status, g
     }
 };
 
-Mixage.handleEffectDryWet = function(channel, control, value/*, status, group*/) {
+Mixage.handleEffectDryWet = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x21 controls unit 1, 0x25 unit 2
     var unitNr = control === 0x21 ? 1 : 2;
     // Control centers on 0x40 (64), calculate difference to that value and multiply by 4
@@ -313,7 +313,7 @@ Mixage.handleEffectDryWet = function(channel, control, value/*, status, group*/)
 };
 
 // The PAN rotary control used here for the overall effect super control
-Mixage.handleEffectSuper = function(channel, control, value/*, status, group*/) {
+Mixage.handleEffectSuper = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x60 controls unit 1, 0x62 unit 2
     var unitNr = control === 0x60 ? 1 : 2;
     // Control centers on 0x40 (64), calculate difference to that value and multiply by 4
@@ -325,11 +325,11 @@ Mixage.handleEffectSuper = function(channel, control, value/*, status, group*/) 
 };
 
 // The BEAT MOVE rotary control is used as an extra "shift" key when pushed down
-Mixage.handleBeatMovePressed = function(channel, control, value/*, status, group*/) {
+Mixage.handleBeatMovePressed = function(channel, control, value, _status, _group) {
     Mixage.beatMovePressed = value === 0x7f;
 };
 
-Mixage.handleBeatMoveLength = function(channel, control, value/*, status, group*/) {
+Mixage.handleBeatMoveLength = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x20 controls unit 1, 0x22 unit 2
     var unitNr = control === 0x20 ? 1 : 2;
     var direction = unitNr === 1 ? 1 : -1;
@@ -346,7 +346,7 @@ Mixage.handleBeatMoveLength = function(channel, control, value/*, status, group*
     }
 };
 
-Mixage.handleBeatMove = function(channel, control, value/*, status, group*/) {
+Mixage.handleBeatMove = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x5f controls unit 1, 0x61 unit 2
     var unitNr = control === 0x5f ? 1 : 2;
     var direction = unitNr === 1 ? 1 : -1;
