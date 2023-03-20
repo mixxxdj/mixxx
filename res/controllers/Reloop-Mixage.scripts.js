@@ -5,7 +5,8 @@
 var Mixage = {};
 
 // ----- User-configurable settings -----
-Mixage.scratchByWheelTouch = false; // turn on scratching by touching the wheel instead of having to press the disc button
+Mixage.scratchByWheelTouch = false; // Set to true to scratch by touching the wheel instead of having to press the disc button
+Mixage.autoMaximizeLibrary = false; // Set to true to automatically max- and minimize the library when the browse button is used
 
 // ----- Internal variables (don't touch) -----
 Mixage.vuMeterConnection = [];
@@ -46,7 +47,6 @@ Mixage.init = function(_id, _debugging) {
 Mixage.shutdown = function() {
     Mixage.vuMeterConnection[0].disconnect();
     Mixage.vuMeterConnection[1].disconnect();
-    Mixage.setLibraryMaximized(false);
     Mixage.connectControlsToFunctions("[Channel1]", true);
     Mixage.connectControlsToFunctions("[Channel2]", true);
     // all button LEDs off
@@ -113,8 +113,10 @@ Mixage.handlePlay = function(value, group, control) {
 
 // Helper function to scroll the playlist
 Mixage.scrollLibrary = function(value) {
-    Mixage.setLibraryMaximized(true);
-    //engine.setValue('[Library]', 'MoveVertical', value);
+    if (Mixage.autoMaximizeLibrary) {
+        Mixage.setLibraryMaximized(true);
+    }
+    //engine.setValue('[Library]', 'MoveVertical', value); // this does not work for me
     engine.setValue("[Playlist]", "SelectTrackKnob", value); // for Mixxx < 2.1
 };
 
@@ -123,7 +125,9 @@ Mixage.handleLibrary = function(channel, control, value, status, _group) {
     // "push2browse" button was moved somehow
     if (control === 0x1F) { // "push2browse" button was pushed
         if (status === 0x90 && value === 0x7F) {
-            Mixage.setLibraryMaximized(true);
+            if (Mixage.autoMaximizeLibrary) {
+                Mixage.setLibraryMaximized(true);
+            }
             // stop the currently playing track. if it wasn't playing, start it
             if (engine.getValue("[PreviewDeck1]", "play")) {
                 engine.setValue("[PreviewDeck1]", "stop", true);
@@ -200,7 +204,7 @@ Mixage.scratchActive = function(channel, control, value, _status, _group) {
 Mixage.scrollActive = function(channel, control, value, _status, _group) {
     // calculate deck number from MIDI control. 0x04 controls deck 1, 0x12 deck 2
     Mixage.scrollPressed = value === 0x7F;
-    if (Mixage.scrollPressed) {
+    if (Mixage.scrollPressed && Mixage.autoMaximizeLibrary) {
         Mixage.setLibraryMaximized(true);
     }
 };
