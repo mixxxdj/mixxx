@@ -15,8 +15,8 @@ Mixage.vuMeterConnection = [];
 Mixage.libraryHideTimer = 0;
 Mixage.libraryRemainingTime = 0;
 Mixage.beatMovePressed = false;
-Mixage.effectRackSelected = [[true, false], [true, false]]; // if effect rack 1/2 is selected for channel 1/2
-Mixage.effectRackEnabled = [false, false]; // if effect rack 1/2 is enabled for channel 1/2
+Mixage.effectRackSelected = [[true, false], [true, false], [true, false]]; // if effect rack 1/2 is selected for channel 1/2
+Mixage.effectRackEnabled = [false, false, false]; // if effect rack 1/2 is enabled for channel 1/2
 
 Mixage.init = function(_id, _debugging) {
     Mixage.connectControlsToFunctions("[Channel1]");
@@ -271,12 +271,12 @@ Mixage.handleEffectChannelOn = function(channel, control, value, _status, _group
     // react only on first message / keydown
     if (value === 0x7F) {
         // check and toggle enablement
-        Mixage.effectRackEnabled[unitNr - 1] = !Mixage.effectRackEnabled[unitNr - 1];
-        var isEnabled = Mixage.effectRackEnabled[unitNr - 1];
+        Mixage.effectRackEnabled[unitNr] = !Mixage.effectRackEnabled[unitNr];
+        var isEnabled = Mixage.effectRackEnabled[unitNr];
         // update controls
         var keyString = "group_[Channel" + unitNr + "]_enable";
-        engine.setValue("[EffectRack1_EffectUnit1]", keyString, isEnabled && Mixage.effectRackSelected[unitNr - 1][0]);
-        engine.setValue("[EffectRack1_EffectUnit2]", keyString, isEnabled && Mixage.effectRackSelected[unitNr - 1][1]);
+        engine.setValue("[EffectRack1_EffectUnit1]", keyString, isEnabled && Mixage.effectRackSelected[unitNr][0]);
+        engine.setValue("[EffectRack1_EffectUnit2]", keyString, isEnabled && Mixage.effectRackSelected[unitNr][1]);
         Mixage.toggleLED(isEnabled ? 1 : 0, "[Channel" + unitNr + "]", "fx_on");
     }
 };
@@ -288,8 +288,8 @@ Mixage.handleEffectChannelSelect = function(channel, control, value, _status, _g
     // react only on first message / keydown
     if (value === 0x7F) {
         // check and toggle select state
-        var selected1 = Mixage.effectRackSelected[unitNr - 1][0];
-        var selected2 = Mixage.effectRackSelected[unitNr - 1][1];
+        var selected1 = Mixage.effectRackSelected[unitNr][0];
+        var selected2 = Mixage.effectRackSelected[unitNr][1];
         if (selected1 && selected2) {
             selected1 = true;
             selected2 = false;
@@ -300,13 +300,13 @@ Mixage.handleEffectChannelSelect = function(channel, control, value, _status, _g
             selected1 = true;
             selected2 = true;
         }
-        Mixage.effectRackSelected[unitNr - 1][0] = selected1;
-        Mixage.effectRackSelected[unitNr - 1][1] = selected2;
+        Mixage.effectRackSelected[unitNr][0] = selected1;
+        Mixage.effectRackSelected[unitNr][1] = selected2;
         // update controls
-        var isEnabled = Mixage.effectRackEnabled[unitNr - 1];
+        var isEnabled = Mixage.effectRackEnabled[unitNr];
         var keyString = "group_[Channel" + unitNr + "]_enable";
-        engine.setValue("[EffectRack1_EffectUnit1]", keyString, isEnabled && Mixage.effectRackSelected[unitNr - 1][0]);
-        engine.setValue("[EffectRack1_EffectUnit2]", keyString, isEnabled && Mixage.effectRackSelected[unitNr - 1][1]);
+        engine.setValue("[EffectRack1_EffectUnit1]", keyString, isEnabled && Mixage.effectRackSelected[unitNr][0]);
+        engine.setValue("[EffectRack1_EffectUnit2]", keyString, isEnabled && Mixage.effectRackSelected[unitNr][1]);
     }
 };
 
