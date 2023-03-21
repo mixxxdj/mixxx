@@ -59,6 +59,7 @@ Mixage.ledMap = {
         "cue_indicator": 0x0A,
         "cue_default": 0x0B,
         "play_indicator": 0x0C,
+        "load_indicator": 0x0D,
         "pfl": 0x0E,
         "loop_enabled": 0x06,
         "sync_enabled": 0x09,
@@ -69,6 +70,7 @@ Mixage.ledMap = {
         "cue_indicator": 0x18,
         "cue_default": 0x19,
         "play_indicator": 0x1A,
+        "load_indicator": 0x1B,
         "pfl": 0x1C,
         "loop_enabled": 0x14,
         "sync_enabled": 0x17,
@@ -106,8 +108,12 @@ Mixage.toggleLED = function(value, group, control) {
 
 // Toggle the LED on play button and make sure the preview deck stops when starting to play in a deck
 Mixage.handlePlay = function(value, group, control) {
+    // toggle the play indicator LED
     Mixage.toggleLED(value, group, control);
+    // make sure to stop preview deck
     engine.setValue("[PreviewDeck1]", "stop", true);
+    // toggle the LOAD button LED for the deck
+    Mixage.toggleLED(value, group, "load_indicator");
 };
 
 // Helper function to scroll the playlist
