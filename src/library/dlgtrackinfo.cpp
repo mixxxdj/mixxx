@@ -48,7 +48,13 @@ DlgTrackInfo::DlgTrackInfo(
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
-          m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
+          m_pWStarRating(make_parented<WStarRating>(nullptr, this)),
+          m_pColorPicker(make_parented<WColorPickerAction>(
+                  WColorPicker::Option::AllowNoColor |
+                          // TODO(xxx) remove this once the preferences are themed via QSS
+                          WColorPicker::Option::NoExtStyleSheet,
+                  ColorPaletteSettings(m_pUserSettings).getTrackColorPalette(),
+                  this)) {
     init();
 }
 
@@ -245,6 +251,20 @@ void DlgTrackInfo::init() {
             &WCoverArtMenu::reloadCoverArt,
             this,
             &DlgTrackInfo::slotReloadCoverArt);
+
+    btnColorPicker->setStyle(QStyleFactory::create(QStringLiteral("fusion")));
+    QMenu* pColorPickerMenu = new QMenu(this);
+    pColorPickerMenu->addAction(m_pColorPicker);
+    btnColorPicker->setMenu(pColorPickerMenu);
+
+    connect(btnColorPicker,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotColorButtonClicked);
+    connect(m_pColorPicker.get(),
+            &WColorPickerAction::colorPicked,
+            this,
+            &DlgTrackInfo::slotColorPicked);
 }
 
 void DlgTrackInfo::slotApply() {
@@ -310,6 +330,9 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
     replaceTrackRecord(
             track.getRecord(),
             track.getLocation());
+
+    // paint the color selector and check the respective color picker button
+    slotColorPicked(track.getColor());
 
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
 
@@ -491,8 +514,39 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
     if (!m_pLoadedTrack) {
         return;
     }
-
     mixxx::DesktopHelper::openInFileBrowser(QStringList(m_pLoadedTrack->getLocation()));
+}
+
+void DlgTrackInfo::slotColorButtonClicked() {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    btnColorPicker->showMenu();
+}
+
+void DlgTrackInfo::slotColorPicked(const mixxx::RgbColor::optional_t& newColor) {
+    m_pColorPicker->setSelectedColor(newColor);
+    btnColorPicker->menu()->close();
+
+    m_trackRecord.setColor(newColor);
+
+    if (newColor) {
+        btnColorPicker->setText("");
+        const QColor ccolor = mixxx::RgbColor::toQColor(newColor);
+        const QString styleSheet =
+                QStringLiteral(
+                        "QPushButton { background-color: %1; color: %2; }")
+                        .arg(ccolor.name(QColor::HexRgb),
+                                Color::isDimColor(ccolor)
+                                        ? "white"
+                                        : "black");
+        btnColorPicker->setStyleSheet(styleSheet);
+    } else { // no color
+        btnColorPicker->setText(tr("(no color)"));
+        // clear custom stylesheet, i.e. restore Fusion style,
+        btnColorPicker->setStyleSheet("");
+        ;
+    }
 }
 
 void DlgTrackInfo::saveTrack() {

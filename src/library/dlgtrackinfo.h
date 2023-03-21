@@ -13,12 +13,14 @@
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
+#include "widget/wcolorpickeraction.h"
 
 class TrackModel;
 class DlgTagFetcher;
 class WCoverArtLabel;
 class WCoverArtMenu;
 class WStarRating;
+class WColorPickerAction;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -67,6 +69,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
+    void slotColorButtonClicked();
+    void slotColorPicked(const mixxx::RgbColor::optional_t& color);
 
     void slotCoverFound(
             const QObject* pRequestor,
@@ -122,6 +126,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;
+    parented_ptr<WColorPickerAction> m_pColorPicker;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 };
