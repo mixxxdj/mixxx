@@ -81,21 +81,22 @@ Mixage.ledMap = {
 
 // Maps mixxx controls to a function that toggles their LEDs
 Mixage.connectionMap = {
-    "cue_indicator": "Mixage.toggleLED",
-    "cue_default": "Mixage.toggleLED",
-    "play_indicator": "Mixage.handlePlay",
-    "pfl": "Mixage.toggleLED",
-    "loop_enabled": "Mixage.toggleLED",
-    "sync_enabled": "Mixage.toggleLED"
+    "cue_indicator": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+    "cue_default": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+    "play_indicator": [function(v, g, c) { Mixage.handlePlay(v, g, c); }, null],
+    "pfl": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+    "loop_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+    "sync_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null]
 };
 
 // Set or remove functions to call when the state of a mixxx control changes
 Mixage.connectControlsToFunctions = function(group, remove) {
     remove = (remove !== undefined) ? remove : false;
     for (var control in Mixage.connectionMap) {
-        engine.connectControl(group, control, Mixage.connectionMap[control], remove);
-        if (!remove) {
-            engine.trigger(group, control);
+        if (remove) {
+            Mixage.connectionMap[control][1].disconnect();
+        } else {
+            Mixage.connectionMap[control][1] = engine.makeConnection(group, control, Mixage.connectionMap[control][0]);
         }
     }
 };
