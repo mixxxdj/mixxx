@@ -7,15 +7,13 @@ var Mixage = {};
 // ----- User-configurable settings -----
 Mixage.scratchByWheelTouch = false; // Set to true to scratch by touching the wheel instead of having to press the disc button
 Mixage.autoMaximizeLibrary = false; // Set to true to automatically max- and minimize the library when the browse button is used
+Mixage.libraryHideTimeout = 4000; // Time in ms after which the library will automatically minimized
+Mixage.libraryReducedHideTimeout = 500; // Time in ms after which the library will be minimized after loading a song into a deck
 
 // ----- Internal variables (don't touch) -----
 Mixage.vuMeterConnection = [];
 Mixage.libraryHideTimer = 0;
-Mixage.libraryReducedHideTimeout = 500;
-Mixage.libraryHideTimeout = 4000;
 Mixage.libraryRemainingTime = 0;
-Mixage.scratchPressed = false;
-Mixage.scrollPressed = false;
 Mixage.beatMovePressed = false;
 Mixage.effectRackSelected = [[true, false], [true, false]]; // if effect rack 1/2 is selected for channel 1/2
 Mixage.effectRackEnabled = [false, false]; // if effect rack 1/2 is enabled for channel 1/2
