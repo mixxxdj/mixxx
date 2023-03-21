@@ -15,16 +15,21 @@ Mixage.vuMeterConnection = [];
 Mixage.libraryHideTimer = 0;
 Mixage.libraryRemainingTime = 0;
 Mixage.beatMovePressed = false;
+// Note that the following lists have 3 entries, but we use only 2 decks / effect units. This saves us having to write "deckNr - 1" everywhere...
+Mixage.scratchToggleLastState = [0, 0, 0]; // helper array to enable scratch toggling by disc button
+Mixage.isScratchActive = [false, false, false]; // true if scratching currently enabled for deck
+Mixage.scrollToggleLastState = [0, 0, 0]; // helper array to enable scroll toggling by loupe button
+Mixage.isScrollActive = [false, false, false]; // true if scrolling currently enabled for deck
 Mixage.effectRackSelected = [[true, false], [true, false], [true, false]]; // if effect rack 1/2 is selected for channel 1/2
 Mixage.effectRackEnabled = [false, false, false]; // if effect rack 1/2 is enabled for channel 1/2
 
 Mixage.init = function(_id, _debugging) {
-    Mixage.connectControlsToFunctions("[Channel1]");
-    Mixage.connectControlsToFunctions("[Channel2]");
     // all button LEDs off
     for (var i = 0; i < 255; i++) {
         midi.sendShortMsg(0x90, i, 0);
     }
+    Mixage.connectControlsToFunctions("[Channel1]");
+    Mixage.connectControlsToFunctions("[Channel2]");
     // start timers for updating the VU meters
     Mixage.vuMeterConnection[0] = engine.makeConnection("[Channel1]", "VuMeter", function(val) {
         midi.sendShortMsg(0x90, 29, val * 7);
@@ -32,9 +37,11 @@ Mixage.init = function(_id, _debugging) {
     Mixage.vuMeterConnection[1] = engine.makeConnection("[Channel2]", "VuMeter", function(val) {
         midi.sendShortMsg(0x90, 30, val * 7);
     });
-    // disable scrating on both decks
-    engine.scratchDisable(1);
-    engine.scratchDisable(2);
+    // initially disable scratching for both decks
+    if (!Mixage.scratchByWheelTouch) {
+        engine.scratchDisable(1);
+        engine.scratchDisable(2);
+    }
     // disable effects for both channels
     engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", false);
     engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", false);
@@ -64,7 +71,9 @@ Mixage.ledMap = {
         "loop_enabled": 0x06,
         "sync_enabled": 0x09,
         "master_on": 0x07,
-        "fx_on": 0x08
+        "fx_on": 0x08,
+        "scratch_active": 0x04,
+        "scroll_active": 0x03,
     },
     "[Channel2]": {
         "cue_indicator": 0x18,
@@ -75,7 +84,9 @@ Mixage.ledMap = {
         "loop_enabled": 0x14,
         "sync_enabled": 0x17,
         "master_on": 0x15,
-        "fx_on": 0x16
+        "fx_on": 0x16,
+        "scratch_active": 0x12,
+        "scroll_active": 0x11
     }
 };
 
@@ -190,63 +201,95 @@ Mixage.libraryCheckTimeout = function() {
     }
 };
 
-// The "record" button that enables/disables scratching
-Mixage.scratchActive = function(channel, control, value, _status, _group) {
-    // calculate deck number from MIDI control. 0x04 controls deck 1, 0x12 deck 2
-    var deckNr = control === 0x04 ? 1 : 2;
-    if (value === 0x7F) {
-        Mixage.scratchPressed = true;
-        var alpha = 1.0 / 8.0;
-        var beta = alpha / 32.0;
-        engine.scratchEnable(deckNr, 620, 33.0 + 1.0 / 3.0, alpha, beta);
-    } else {
-        Mixage.scratchPressed = false;
-        engine.scratchDisable(deckNr);
+// Switch the controller and Mixxx state for scratching
+Mixage.setScratching = function(deckNr, active) {
+    // check if setting changed
+    if (Mixage.isScratchActive[deckNr] !== active) {
+        Mixage.isScratchActive[deckNr] = active;
+        if (active) {
+            // turn off scrolling first
+            Mixage.setScrolling(deckNr, false);
+        } else {
+            engine.scratchDisable(deckNr);
+        }
+        var controlString = "[Channel" + deckNr + "]";
+        Mixage.toggleLED(Mixage.isScratchActive[deckNr] ? 1 : 0, controlString, "scratch_active");
     }
 };
 
-// The "magnifying glass" button that enables/disables playlist scrolling
-Mixage.scrollActive = function(channel, control, value, _status, _group) {
+// The "disc" button that enables/disables scratching
+Mixage.scratchToggle = function(channel, control, value, _status, _group) {
     // calculate deck number from MIDI control. 0x04 controls deck 1, 0x12 deck 2
-    Mixage.scrollPressed = value === 0x7F;
-    if (Mixage.scrollPressed && Mixage.autoMaximizeLibrary) {
-        Mixage.setLibraryMaximized(true);
+    var deckNr = control === 0x04 ? 1 : 2;
+    // check for pressed->release or released->press
+    if (Mixage.scratchToggleLastState[deckNr] !== value) {
+        Mixage.scratchToggleLastState[deckNr] = value;
+        if (value === 0) {
+            return;
+        }
+        Mixage.setScratching(deckNr, !Mixage.isScratchActive[deckNr]);
+    }
+};
+
+// Switch the controller and Mixxx state for scrolling
+Mixage.setScrolling = function(deckNr, active) {
+    // check if setting changed
+    if (Mixage.isScrollActive[deckNr] !== active) {
+        Mixage.isScrollActive[deckNr] = active;
+        if (active) {
+            // turn off scratching first
+            Mixage.setScratching(deckNr, false);
+        } else {
+            engine.scratchDisable(deckNr);
+        }
+        var controlString = "[Channel" + deckNr + "]";
+        Mixage.toggleLED(Mixage.isScrollActive[deckNr] ? 1 : 0, controlString, "scroll_active");
+    }
+};
+
+// The "loupe" button that enables/disables track scrolling
+Mixage.scrollToggle = function(channel, control, value, _status, _group) {
+    // calculate deck number from MIDI control. 0x03 controls deck 1, 0x12 deck 2
+    var deckNr = control === 0x03 ? 1 : 2;
+    // check for pressed->release or released->press
+    if (Mixage.scrollToggleLastState[deckNr] !== value) {
+        Mixage.scrollToggleLastState[deckNr] = value;
+        if (value === 0) {
+            return;
+        }
+        Mixage.setScrolling(deckNr, !Mixage.isScrollActive[deckNr]);
     }
 };
 
 // The touch function on the wheels that enables/disables scratching
 Mixage.wheelTouch = function(channel, control, value, _status, _group) {
-    // check if scratching through wheel touch is enabled
-    if (Mixage.scratchByWheelTouch) {
-        // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
-        var deckNr = (control - 0x24) + 1;
+    // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
+    var deckNr = control === 0x24 ? 1 : 2;
+    // check if scratching or scrolling should be enabled
+    if (Mixage.scratchByWheelTouch || Mixage.isScratchActive[deckNr] || Mixage.isScrollActive[deckNr]) {
         if (value === 0x7F) {
-            var alpha = 1.0 / 8;
+            // turn on scratching or scrolling on this deck
+            var alpha = Mixage.isScrollActive[deckNr] ? 1.0 / 2.0 : 1.0 / 8.0;
             var beta = alpha / 32.0;
-            engine.scratchEnable(deckNr, 620, 33.0 + 1.0 / 3.0, alpha, beta);
+            var ticksPerRevolution = Mixage.isScrollActive[deckNr] ? 128 : 620;
+            engine.scratchEnable(deckNr, ticksPerRevolution, 33.0 + 1.0 / 3.0, alpha, beta);
         } else {
             engine.scratchDisable(deckNr);
         }
     }
 };
 
-// The wheel that actually controls the scratching / jogging
+// The wheel that actually controls the scratching / jogging / library browsing
 Mixage.wheelTurn = function(channel, control, value, _status, _group) {
     // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
-    var deckNr = (control - 0x24) + 1;
-    // Control centers on 0x40 (64), calculate difference to that value
+    var deckNr = control === 0x24 ? 1 : 2;
+    // control centers on 0x40 (64), calculate difference to that value
     var newValue = value - 64;
-    // In either case, register the movement
-    if (Mixage.scrollPressed) {
-        Mixage.scrollLibrary(newValue);
-        return;
-    }
-    if (Mixage.scratchPressed || Mixage.scratchByWheelTouch) {
-        engine.scratchTick(deckNr, newValue); // scratch
+    if (engine.isScratching(deckNr)) {
+        engine.scratchTick(deckNr, newValue); // scratch or scroll deck
     } else {
-        engine.scratchDisable(deckNr);
+        engine.setValue("[Channel" + deckNr + "]", "jog", newValue); // pitch bend deck
     }
-    //engine.setValue('[Channel'+deckNr+']', 'jog', newValue); // Pitch bend
 };
 
 // The MASTER button that toggles routing master through effects

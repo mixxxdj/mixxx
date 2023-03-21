@@ -311,7 +311,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>Mixage.scrollActive</key>
+        <key>Mixage.scrollToggle</key>
         <status>0x90</status>
         <midino>0x03</midino>
         <options>
@@ -320,7 +320,25 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>Mixage.scratchActive</key>
+        <key>Mixage.scrollToggle</key>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.scratchToggle</key>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.scratchToggle</key>
         <status>0x90</status>
         <midino>0x12</midino>
         <options>
@@ -499,15 +517,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>Mixage.scrollActive</key>
-        <status>0x90</status>
-        <midino>0x11</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
         <group>[Channel1]</group>
         <key>Mixage.wheelTouch</key>
         <status>0x90</status>
@@ -632,15 +641,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>Mixage.scrollActive</key>
-        <status>0x90</status>
-        <midino>0x11</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
         <group>[PreviewDeck1]</group>
         <key>play</key>
         <status>0x90</status>
@@ -656,15 +656,6 @@
         <midino>0x5B</midino>
         <options>
           <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>Mixage.scratchActive</key>
-        <status>0x90</status>
-        <midino>0x04</midino>
-        <options>
-          <script-binding />
         </options>
       </control>
       <control>
