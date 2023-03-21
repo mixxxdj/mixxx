@@ -19,9 +19,10 @@ realpath() {
 THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
-MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
+BUILDENV_NAME="mixxx-deps-2.4-x64-osx-min1012-8f8342a"
+BUILDENV_SHA256="6738f2fc5e4ef2156e363e84b1f8705db3d25350b44126d00e4c78285dfa82ef"
 
-read -r -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/packaging/macos/build_environment"
+MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
@@ -40,7 +41,7 @@ case "$1" in
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
-                curl "https://downloads.mixxx.org/dependencies/2.4/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
+                curl "https://downloads.mixxx.org/dependencies/2.4-rel/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
                 OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.zip"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
                     echo "Download matched expected SHA256 sum $BUILDENV_SHA256"

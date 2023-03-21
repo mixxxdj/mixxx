@@ -9,10 +9,6 @@ IF NOT DEFINED PLATFORM (
     SET PLATFORM=x64
 )
 
-IF NOT DEFINED CONFIGURATION (
-    SET CONFIGURATION=release-fastbuild
-)
-
 IF NOT DEFINED BUILDENV_BASEPATH (
     SET BUILDENV_BASEPATH=%MIXXX_ROOT%\buildenv
 )
@@ -24,6 +20,8 @@ IF NOT DEFINED BUILD_ROOT (
 IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
 )
+
+SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-8f8342a
 
 IF "%~1"=="" (
     REM In case of manual start by double click no arguments are specified: Default to COMMAND_setup
@@ -39,15 +37,12 @@ ENDLOCAL & SET "MIXXX_VCPKG_ROOT=%MIXXX_VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLE
 EXIT /B 0
 
 :COMMAND_name
-    CALL :READ_ENVNAME
     IF DEFINED GITHUB_ENV (
-        ECHO BUILDENV_NAME=!RETVAL! >> !GITHUB_ENV!
+        ECHO BUILDENV_NAME=%BUILDENV_NAME% >> !GITHUB_ENV!
     )
     GOTO :EOF
 
 :COMMAND_setup
-    CALL :READ_ENVNAME
-    SET BUILDENV_NAME=%RETVAL%
     SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
 
     IF NOT EXIST "%BUILDENV_BASEPATH%" (
@@ -56,7 +51,7 @@ EXIT /B 0
     )
 
     IF NOT EXIST "%BUILDENV_PATH%" (
-        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/2.4/Windows/!BUILDENV_NAME!.zip
+        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/2.4-rel/Windows/!BUILDENV_NAME!.zip
         IF NOT EXIST "!BUILDENV_PATH!.zip" (
             ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
             REM TODO: The /DYNAMIC parameter is required because our server does not yet support HTTP range headers
@@ -147,15 +142,6 @@ EXIT /B 0
     SET RETVAL=%~f1
     GOTO :EOF
 
-
-:READ_ENVNAME
-    ECHO Reading name of prebuild environment from "%MIXXX_ROOT%\packaging\windows\build_environment"
-    SET /P BUILDENV_NAME=<"%MIXXX_ROOT%\packaging\windows\build_environment"
-    SET BUILDENV_NAME=!BUILDENV_NAME:PLATFORM=%PLATFORM%!
-    SET BUILDENV_NAME=!BUILDENV_NAME:CONFIGURATION=%CONFIGURATION%!
-    SET RETVAL=%BUILDENV_NAME%
-    ECHO Environment name: %RETVAL%
-    GOTO :EOF
 
 :GENERATE_CMakeSettings_JSON
 REM Generate CMakeSettings.json which is read by MS Visual Studio to determine the supported CMake build environments
