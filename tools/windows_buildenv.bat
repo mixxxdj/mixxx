@@ -23,6 +23,7 @@ IF NOT DEFINED INSTALL_ROOT (
 
 SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-8f8342a
 SET BUILDENV_BRANCH=2.4-rel
+SET BUILDENV_SHA256=8dc9f310cde271e20e9dc21563aeb5fc7f618a316eae3dcb77f41cf18fc310f3
 
 IF "%~1"=="" (
     REM In case of manual start by double click no arguments are specified: Default to COMMAND_setup
@@ -57,8 +58,14 @@ EXIT /B 0
             ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
             REM TODO: The /DYNAMIC parameter is required because our server does not yet support HTTP range headers
             BITSADMIN /transfer buildenvjob /download /priority normal /DYNAMIC !BUILDENV_URL! "!BUILDENV_PATH!.zip"
-            REM TODO: verify download using sha256sum?
             ECHO ^Download complete.
+            certutil -hashfile "!BUILDENV_PATH!.zip" SHA256 | FIND /C "!BUILDENV_SHA256!"
+            IF errorlevel 1 (
+                ECHO ^ERROR: Download did not match expected SHA256 checksum!
+                certutil -hashfile "!BUILDENV_PATH!.zip" SHA256
+                echo ^Expected: "!BUILDENV_SHA256!"
+                EXIT /B 1
+            )
         ) else (
             ECHO ^Using cached archive at "!BUILDENV_PATH!.zip".
         )
