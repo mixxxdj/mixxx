@@ -67,7 +67,7 @@ ITunesImport ITunesXMLImporter::importLibrary() {
         return iTunesImport;
     }
 
-    while (!m_xml.atEnd() && !m_cancelImport) {
+    while (!m_xml.atEnd() && !m_cancelImport.load()) {
         m_xml.readNext();
         if (m_xml.isStartElement()) {
             if (m_xml.name() == QLatin1String("key")) {
@@ -201,7 +201,7 @@ void ITunesXMLImporter::parseTracks() {
     qDebug() << "Parse iTunes music collection";
 
     // read all sunsequent <dict> until we reach the closing ENTRY tag
-    while (!m_xml.atEnd() && !m_cancelImport) {
+    while (!m_xml.atEnd() && !m_cancelImport.load()) {
         m_xml.readNext();
 
         if (m_xml.isStartElement()) {
@@ -390,7 +390,7 @@ std::unique_ptr<TreeItem> ITunesXMLImporter::parsePlaylists() {
             "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
 
-    while (!m_xml.atEnd() && !m_cancelImport) {
+    while (!m_xml.atEnd() && !m_cancelImport.load()) {
         m_xml.readNext();
         // We process and iterate the <dict> tags holding playlist summary information here
         if (m_xml.isStartElement() && m_xml.name() == kDict) {
@@ -433,7 +433,7 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& query_insert_to_playlists,
     bool isPlaylistItemsStarted = false;
 
     // We process and iterate the <dict> tags holding playlist summary information here
-    while (!m_xml.atEnd() && !m_cancelImport) {
+    while (!m_xml.atEnd() && !m_cancelImport.load()) {
         m_xml.readNext();
 
         if (m_xml.isStartElement()) {

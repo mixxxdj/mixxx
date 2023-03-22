@@ -50,7 +50,7 @@ class ImporterImpl {
         // interact well with Objective-C collections.
 
         for (ITLibPlaylist* playlist in playlists) {
-            if (m_cancelImport) {
+            if (m_cancelImport.load()) {
                 break;
             }
 
@@ -72,7 +72,7 @@ class ImporterImpl {
         qDebug() << "Importing media items via native iTunesLibrary framework";
 
         for (ITLibMediaItem* item in items) {
-            if (m_cancelImport) {
+            if (m_cancelImport.load()) {
                 break;
             }
 
@@ -211,7 +211,7 @@ class ImporterImpl {
 
         int i = 0;
         for (ITLibMediaItem* item in playlist.items) {
-            if (m_cancelImport) {
+            if (m_cancelImport.load()) {
                 return;
             }
 
