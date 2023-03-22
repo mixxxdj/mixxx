@@ -30,7 +30,7 @@ Mixage.init = function(_id, _debugging) {
     }
     Mixage.connectControlsToFunctions("[Channel1]");
     Mixage.connectControlsToFunctions("[Channel2]");
-    // start timers for updating the VU meters
+    // make connection for updating the VU meters
     Mixage.vuMeterConnection[0] = engine.makeConnection("[Channel1]", "VuMeter", function(val) {
         midi.sendShortMsg(0x90, 29, val * 7);
     });
@@ -42,11 +42,21 @@ Mixage.init = function(_id, _debugging) {
         engine.scratchDisable(1);
         engine.scratchDisable(2);
     }
-    // disable effects for both channels
-    engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", false);
-    engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", false);
-    engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", false);
-    engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", false);
+    // restore master effect states from user preferences
+    var isMasterFx1Enabled = engine.getValue("[EffectRack1_EffectUnit1]", "group_[Master]_enable");
+    Mixage.toggleLED(isMasterFx1Enabled ? 1 : 0, "[Channel1]", "master_on");
+    var isMasterFx2Enabled = engine.getValue("[EffectRack1_EffectUnit2]", "group_[Master]_enable");
+    Mixage.toggleLED(isMasterFx2Enabled ? 1 : 0, "[Channel2]", "master_on");
+    // restore deck 1 effect states from user preferences
+    Mixage.effectRackSelected[1][0] = engine.getValue("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable");
+    Mixage.effectRackSelected[1][1] = engine.getValue("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable");
+    Mixage.effectRackEnabled[1] = Mixage.effectRackSelected[1][0] || Mixage.effectRackSelected[1][1];
+    Mixage.toggleLED(Mixage.effectRackEnabled[1] ? 1 : 0, "[Channel1]", "fx_on");
+    // restore deck 2 effect states from user preferences
+    Mixage.effectRackSelected[2][0] = engine.getValue("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable");
+    Mixage.effectRackSelected[2][1] = engine.getValue("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable");
+    Mixage.effectRackEnabled[2] = Mixage.effectRackSelected[2][0] || Mixage.effectRackSelected[2][1];
+    Mixage.toggleLED(Mixage.effectRackEnabled[2] ? 1 : 0, "[Channel2]", "fx_on");
 };
 
 Mixage.shutdown = function() {
