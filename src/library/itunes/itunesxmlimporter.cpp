@@ -45,9 +45,9 @@ const QString kRemote = "Remote";
 
 ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
         const QString& filePath,
-        QSqlDatabase& database,
+        const QSqlDatabase& database,
         ITunesPathMapping& pathMapping,
-        std::atomic<bool>& cancelImport)
+        const std::atomic<bool>& cancelImport)
         : m_parentFeature(parentFeature),
           m_file(filePath),
           m_xml(&m_file),

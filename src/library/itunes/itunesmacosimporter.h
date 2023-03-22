@@ -10,13 +10,13 @@
 class ITunesMacOSImporter : public ITunesImporter {
   public:
     ITunesMacOSImporter(LibraryFeature* parentFeature,
-            QSqlDatabase& database,
-            std::atomic<bool>& cancelImport);
+            const QSqlDatabase& database,
+            const std::atomic<bool>& cancelImport);
 
     ITunesImport importLibrary() override;
 
   private:
     LibraryFeature* m_parentFeature;
-    QSqlDatabase& m_database;
-    std::atomic<bool>& m_cancelImport;
+    const QSqlDatabase& m_database;
+    const std::atomic<bool>& m_cancelImport;
 };

@@ -27,7 +27,8 @@ QString qStringFrom(NSString* nsString) {
 
 class ImporterImpl {
   public:
-    ImporterImpl(QSqlDatabase& database, std::atomic<bool>& cancelImport)
+    ImporterImpl(
+            const QSqlDatabase& database, const std::atomic<bool>& cancelImport)
             : m_database(database), m_cancelImport(cancelImport) {
     }
 
@@ -91,8 +92,8 @@ class ImporterImpl {
     }
 
   private:
-    QSqlDatabase& m_database;
-    std::atomic<bool>& m_cancelImport;
+    const QSqlDatabase& m_database;
+    const std::atomic<bool>& m_cancelImport;
 
     QHash<unsigned long long, int> m_dbIdByPersistentId;
     QHash<QString, int> m_playlistDuplicatesByName;
@@ -255,8 +256,8 @@ class ImporterImpl {
 } // anonymous namespace
 
 ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
-        QSqlDatabase& database,
-        std::atomic<bool>& cancelImport)
+        const QSqlDatabase& database,
+        const std::atomic<bool>& cancelImport)
         : m_parentFeature(parentFeature),
           m_database(database),
           m_cancelImport(cancelImport) {

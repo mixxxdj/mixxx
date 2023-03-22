@@ -14,9 +14,9 @@ class ITunesXMLImporter : public ITunesImporter {
   public:
     ITunesXMLImporter(LibraryFeature* parentFeature,
             const QString& filePath,
-            QSqlDatabase& database,
+            const QSqlDatabase& database,
             ITunesPathMapping& pathMapping,
-            std::atomic<bool>& cancelImport);
+            const std::atomic<bool>& cancelImport);
 
     ITunesImport importLibrary() override;
 
@@ -25,9 +25,9 @@ class ITunesXMLImporter : public ITunesImporter {
     QFile m_file;
     QXmlStreamReader m_xml;
     QString m_dbfile;
-    QSqlDatabase& m_database;
+    const QSqlDatabase& m_database;
     ITunesPathMapping& m_pathMapping;
-    std::atomic<bool>& m_cancelImport;
+    const std::atomic<bool>& m_cancelImport;
 
     void parseTracks();
     void guessMusicLibraryMountpoint();
