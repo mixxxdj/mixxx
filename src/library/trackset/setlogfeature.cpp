@@ -445,9 +445,9 @@ void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
     }
 
     QSet<int> ids;
-    for (auto* child : qAsConst(yearChildren)) {
+    for (const auto& pChild : yearChildren) {
         bool ok = false;
-        int childId = child->getData().toInt(&ok);
+        int childId = pChild->getData().toInt(&ok);
         if (ok && childId != kInvalidPlaylistId) {
             ids.insert(childId);
         }
@@ -493,11 +493,11 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
     }
 
     QStringList ids;
-    for (auto* child : qAsConst(yearChildren)) {
+    for (const auto& pChild : yearChildren) {
         bool ok = false;
-        int childId = child->getData().toInt(&ok);
+        int childId = pChild->getData().toInt(&ok);
         if (ok && childId != kInvalidPlaylistId) {
-            ids.append(child->getData().toString());
+            ids.append(pChild->getData().toString());
         }
     }
     m_playlistDao.deletePlaylists(ids, PlaylistDAO::PLHT_SET_LOG);

@@ -732,7 +732,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
         TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
         if (pTreeItem->hasChildren()) {
-            for (TreeItem* pChild : qAsConst(pTreeItem->children())) {
+            for (TreeItem* pChild : pTreeItem->children()) {
                 id = pChild->getData().toInt(&ok);
                 if (ok && id != kInvalidPlaylistId && playlistIds.contains(id)) {
                     label = m_playlistDao.getPlaylistName(id);
