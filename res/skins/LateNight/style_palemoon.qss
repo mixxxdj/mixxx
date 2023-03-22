@@ -1580,11 +1580,16 @@ WBeatSpinBox::down-button {
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
-  WPushButton#FxParameterButton[displayValue="0"],
   WTrackTableViewHeader,
   WTrackTableViewHeader::section {
     background-color: #171719;
   }
+  /* make Fx parameter buttons brighter so they stand out in 'fx focus' mode
+    (parameters row of focused effect is marked = dark bg, colored border) */
+  WPushButton#FxParameterButton[displayValue="0"] {
+    background-color: #2a2a2c;
+  }
+
   /* even buttons in 2nd level containers */
   #FxAssignButtons WPushButton[displayValue="0"],
   #VinylControls WPushButton[displayValue="0"],
