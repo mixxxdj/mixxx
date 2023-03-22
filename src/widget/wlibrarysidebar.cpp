@@ -395,9 +395,7 @@ QModelIndex WLibrarySidebar::selectedIndex() {
         return QModelIndex();
     }
     QModelIndex selIndex = selectedIndices.first();
-    VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-        return QModelIndex();
-    }
+    DEBUG_ASSERT(selIndex.isValid());
     return selIndex;
 }
 
