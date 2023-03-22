@@ -250,7 +250,7 @@ int PlaylistDAO::deletePlaylists(const QStringList& idStringList, PlaylistDAO::H
         return -1;
     }
 
-    emit deleted(-1);
+    emit deleted(kInvalidPlaylistId);
     return idStringList.length();
 }
 
