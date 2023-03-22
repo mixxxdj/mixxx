@@ -22,6 +22,7 @@ IF NOT DEFINED INSTALL_ROOT (
 )
 
 SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-8f8342a
+SET BUILDENV_BRANCH=2.4-rel
 
 IF "%~1"=="" (
     REM In case of manual start by double click no arguments are specified: Default to COMMAND_setup
@@ -51,7 +52,7 @@ EXIT /B 0
     )
 
     IF NOT EXIST "%BUILDENV_PATH%" (
-        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/2.4-rel/Windows/!BUILDENV_NAME!.zip
+        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/!BUILDENV_BRANCH!/Windows/!BUILDENV_NAME!.zip
         IF NOT EXIST "!BUILDENV_PATH!.zip" (
             ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
             REM TODO: The /DYNAMIC parameter is required because our server does not yet support HTTP range headers
