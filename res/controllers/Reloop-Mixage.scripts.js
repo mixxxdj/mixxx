@@ -42,11 +42,11 @@ Mixage.init = function(_id, _debugging) {
         engine.scratchDisable(1);
         engine.scratchDisable(2);
     }
-    // restore master effect states from user preferences
-    var isMasterFx1Enabled = engine.getValue("[EffectRack1_EffectUnit1]", "group_[Master]_enable");
-    Mixage.toggleLED(isMasterFx1Enabled ? 1 : 0, "[Channel1]", "master_on");
-    var isMasterFx2Enabled = engine.getValue("[EffectRack1_EffectUnit2]", "group_[Master]_enable");
-    Mixage.toggleLED(isMasterFx2Enabled ? 1 : 0, "[Channel2]", "master_on");
+    // restore deck sync master LEDs (function currently not working as of 2.3.3)
+    //var isDeck1SyncLeader = engine.getValue("[Channel1]", "sync_master");
+    //Mixage.toggleLED(isDeck1SyncLeader ? 1 : 0, "[Channel1]", "sync_master");
+    //var isDeck2SyncLeader = engine.getValue("[Channel2]", "sync_master");
+    //Mixage.toggleLED(isDeck2SyncLeader ? 1 : 0, "[Channel2]", "sync_master");
     // restore deck 1 effect states from user preferences
     Mixage.effectRackSelected[1][0] = engine.getValue("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable");
     Mixage.effectRackSelected[1][1] = engine.getValue("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable");
@@ -80,7 +80,7 @@ Mixage.ledMap = {
         "pfl": 0x0E,
         "loop_enabled": 0x06,
         "sync_enabled": 0x09,
-        "master_on": 0x07,
+        "sync_master": 0x07,
         "fx_on": 0x08,
         "scratch_active": 0x04,
         "scroll_active": 0x03,
@@ -93,7 +93,7 @@ Mixage.ledMap = {
         "pfl": 0x1C,
         "loop_enabled": 0x14,
         "sync_enabled": 0x17,
-        "master_on": 0x15,
+        "sync_master": 0x15,
         "fx_on": 0x16,
         "scratch_active": 0x12,
         "scroll_active": 0x11
@@ -302,19 +302,27 @@ Mixage.wheelTurn = function(channel, control, value, _status, _group) {
     }
 };
 
-// The MASTER button that toggles routing master through effects
-Mixage.handleEffectMasterOn = function(channel, control, value, _status, _group) {
-    // calculate effect unit number from MIDI control. 0x46 controls unit 1, 0x54 unit 2
-    var unitNr = control === 0x46 ? 1 : 2;
+// The MASTER button that toggles a deck as sync leader / master
+Mixage.handleDeckSyncMode = function(channel, control, value, _status, _group) {
+	// Function currently not working as of 2.3.3: https://manual.mixxx.org/2.4/gl/chapters/appendix/mixxx_controls.html#control-[ChannelN]-sync_master
+	// Disable until this is working
+	return;
+    /*// calculate effect unit number from MIDI control. 0x46 controls unit 1, 0x54 unit 2
+    var deckNr = control === 0x46 ? 1 : 2;
     // react only on first message / keydown
     if (value === 0x7F) {
         // check and toggle enablement
-        var controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
-        var keyString = "group_[Master]_enable";
-        var isEnabled = !engine.getValue(controlString, keyString);
-        engine.setValue(controlString, keyString, isEnabled);
-        Mixage.toggleLED(isEnabled ? 1 : 0, "[Channel" + unitNr + "]", "master_on");
-    }
+        var controlString = "[Channel" + deckNr + "]";
+        var keyString = "sync_master";
+        var isSyncLeader = !engine.getValue(controlString, keyString);
+        // if we want to make this deck sync leader, turn off sync leader on the other deck
+        if (isSyncLeader) {
+        	var otherDeckNr = deckNr === 1 ? 2 : 1;
+        	engine.setValue("[Channel" + otherDeckNr + "]", keyString, false);
+        }
+        engine.setValue(controlString, keyString, isSyncLeader);
+        Mixage.toggleLED(isSyncLeader ? 1 : 0, controlString, keyString);  
+    }*/
 };
 
 // The FX ON button that toggles routing channel 1/2 through effects

@@ -139,8 +139,8 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>Mixage.handleEffectMasterOn</key>
+        <group>[Channel1]</group>
+        <key>Mixage.handleDeckSyncMode</key>
         <status>0x90</status>
         <midino>0x46</midino>
         <options>
@@ -148,8 +148,8 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>Mixage.handleEffectMasterOn</key>
+        <group>[Channel2]</group>
+        <key>Mixage.handleDeckSyncMode</key>
         <status>0x90</status>
         <midino>0x54</midino>
         <options>
