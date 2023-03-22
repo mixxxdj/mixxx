@@ -303,10 +303,9 @@ Mixage.wheelTurn = function(channel, control, value, _status, _group) {
 };
 
 // The MASTER button that toggles a deck as sync leader / master
-Mixage.handleDeckSyncMode = function(channel, control, value, _status, _group) {
-	// Function currently not working as of 2.3.3: https://manual.mixxx.org/2.4/gl/chapters/appendix/mixxx_controls.html#control-[ChannelN]-sync_master
-	// Disable until this is working
-	return;
+Mixage.handleDeckSyncMode = function(_channel, _control, _value, _status, _group) {
+    // Function currently not working as of 2.3.3: https://manual.mixxx.org/2.4/gl/chapters/appendix/mixxx_controls.html#control-[ChannelN]-sync_master
+    // Disable until this is working
     /*// calculate effect unit number from MIDI control. 0x46 controls unit 1, 0x54 unit 2
     var deckNr = control === 0x46 ? 1 : 2;
     // react only on first message / keydown
