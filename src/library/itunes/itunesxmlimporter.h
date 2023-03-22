@@ -25,6 +25,9 @@ class ITunesXMLImporter : public ITunesImporter {
     QFile m_file;
     QXmlStreamReader m_xml;
     QString m_dbfile;
+    // The values behind these references are owned by the parent `ITunesFeature`,
+    // thus there is an implicit contract here that this `ITunesXMLImporter` cannot
+    // outlive the feature (which should not happen anyway, since importers are short-lived).
     const QSqlDatabase& m_database;
     ITunesPathMapping& m_pathMapping;
     const std::atomic<bool>& m_cancelImport;
