@@ -58,12 +58,12 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Delete a playlist
     void deletePlaylist(const int playlistId);
     // Delete a set of playlists. for now "type" is just for the logger
-    int deletePlaylists(const QStringList& idStringList,
+    bool deletePlaylists(const QStringList& idStringList,
             const HiddenType type = PLHT_NOT_HIDDEN);
     /// Delete Playlists with fewer entries then "minNumberOfTracks"
     /// Needs to be called inside a transaction.
-    /// @return number of deleted playlists, -1 on error
-    int deleteAllUnlockedPlaylistsWithFewerTracks(const PlaylistDAO::HiddenType type,
+    /// @return true on success, flase on error
+    bool deleteAllUnlockedPlaylistsWithFewerTracks(const PlaylistDAO::HiddenType type,
             int minNumberOfTracks);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);

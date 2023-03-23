@@ -227,9 +227,9 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
-int PlaylistDAO::deletePlaylists(const QStringList& idStringList, PlaylistDAO::HiddenType type) {
+bool PlaylistDAO::deletePlaylists(const QStringList& idStringList, PlaylistDAO::HiddenType type) {
     if (idStringList.isEmpty()) {
-        return 0;
+        return false;
     }
     QString idString = idStringList.join(",");
 
@@ -240,21 +240,21 @@ int PlaylistDAO::deletePlaylists(const QStringList& idStringList, PlaylistDAO::H
             QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
                     .arg(idString));
     if (!deleteTracks.execPrepared()) {
-        return -1;
+        return false;
     }
 
     // delete the playlists
     auto deletePlaylists = FwdSqlQuery(m_database,
             QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
     if (!deletePlaylists.execPrepared()) {
-        return -1;
+        return false;
     }
 
     emit deleted(kInvalidPlaylistId);
-    return idStringList.length();
+    return true;
 }
 
-int PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
+bool PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
         PlaylistDAO::HiddenType type, int minNumberOfTracks) {
     VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
         return 0; // nothing to do, probably unintended invocation
@@ -270,7 +270,7 @@ int PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
     query.bindValue(":length", minNumberOfTracks);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return -1;
+        return false;
     }
 
     QStringList idStringList;
