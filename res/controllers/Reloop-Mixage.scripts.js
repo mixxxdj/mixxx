@@ -137,32 +137,31 @@ Mixage.handlePlay = function(value, group, control) {
     Mixage.toggleLED(value, group, "load_indicator");
 };
 
-// Helper function to scroll the playlist
-Mixage.scrollLibrary = function(value) {
-    if (Mixage.autoMaximizeLibrary) {
-        Mixage.setLibraryMaximized(true);
-    }
-    //engine.setValue('[Library]', 'MoveVertical', value); // this does not work for me
-    engine.setValue("[Playlist]", "SelectTrackKnob", value); // for Mixxx < 2.1
-};
-
 // A button for the playlist was pressed
 Mixage.handleLibrary = function(channel, control, value, status, _group) {
     // "push2browse" button was moved somehow
-    if (control === 0x1F) { // "push2browse" button was pushed
-        if (status === 0x90 && value === 0x7F) {
-            if (Mixage.autoMaximizeLibrary) {
-                Mixage.setLibraryMaximized(true);
-            }
-            // stop the currently playing track. if it wasn't playing, start it
-            if (engine.getValue("[PreviewDeck1]", "play")) {
-                engine.setValue("[PreviewDeck1]", "stop", true);
+    if (control === 0x1F || control === 0x5E) { // "push2browse" button was pushed or turned
+        if (Mixage.autoMaximizeLibrary) {
+            Mixage.setLibraryMaximized(true);
+        }
+        if (status === 0x90 && value === 0x7F) { // "push2browse" button was pushed
+            if (control === 0x5E) { // was shift pressed?
+                engine.setValue("[Library]", "GoToItem", true);
             } else {
-                engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", true);
+                // stop the currently playing track. if it wasn't playing, start it
+                if (engine.getValue("[PreviewDeck1]", "play")) {
+                    engine.setValue("[PreviewDeck1]", "stop", true);
+                } else {
+                    engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", true);
+                }
             }
         } else if (status === 0xB0) { // "push2browse" button was turned
             var newValue = value - 64;
-            Mixage.scrollLibrary(newValue);
+            if (control === 0x1F) { // was shift pressed?
+                engine.setValue("[Playlist]", "SelectTrackKnob", newValue);
+            } else {
+                engine.setValue("[Playlist]", "SelectPlaylist", newValue);
+            }
         }
     } else if (control === 0x0D || control === 0x4C) { // load into deck 1
         if (value === 0x7F) {
@@ -320,7 +319,7 @@ Mixage.handleDeckSyncMode = function(_channel, _control, _value, _status, _group
         	engine.setValue("[Channel" + otherDeckNr + "]", keyString, false);
         }
         engine.setValue(controlString, keyString, isSyncLeader);
-        Mixage.toggleLED(isSyncLeader ? 1 : 0, controlString, keyString);  
+        Mixage.toggleLED(isSyncLeader ? 1 : 0, controlString, keyString);
     }*/
 };
 

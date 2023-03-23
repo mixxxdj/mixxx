@@ -573,8 +573,26 @@
       <control>
         <group>[Library]</group>
         <key>Mixage.handleLibrary</key>
+        <status>0x90</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
         <status>0xB0</status>
         <midino>0x1F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0xB0</status>
+        <midino>0x5E</midino>
         <options>
           <script-binding />
         </options>
