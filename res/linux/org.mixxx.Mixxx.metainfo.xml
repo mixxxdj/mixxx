@@ -98,6 +98,56 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.3.5" type="development" date="2023-03-26" timestamp="1679839779">
+      <description>
+ <ul>
+  <li>
+   Fix empty waveform overview after loading a track. This fixes a Mixxx 2.3.4 regression
+  since
+   #11162
+   .
+  Fixed by
+   #11333
+   #11359
+   #11344
+  </li>
+  <li>
+   Fullscreen: Fix a crash that occurs on Linux after enabling fullsceen and using menu
+  shortcuts e.g. Alt-F.
+   #11328
+   #11320
+  </li>
+  <li>
+   Fullscreen: Rebuild &amp; reconnect menu only on desktops with global menu
+   #11350
+  </li>
+  <li>
+   macOS: Request Microphone and line-in access permission.
+   #11367
+   #11365
+  </li>
+  <li>
+   JACK API: Allow to explicit select buffers of 2048 and 4096 frames/period. They are not
+  supported by the automatic buffer setting of the used PortAudio library.
+   #11366
+   #11341
+  </li>
+  <li>
+   Pioneer DDJ-400: Make Beat FX section more intuitive
+   #10912
+  </li>
+  <li>
+   Playlist export: Fix chained file extensions after changing the playlist type.
+   #11332
+   #11327
+  </li>
+  <li>
+   LateNight: brighter fx parameter buttons
+   #11397
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.3.4" type="stable" date="2023-03-03" timestamp="1677801600">
       <description>
  <ul>
