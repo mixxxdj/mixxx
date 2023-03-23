@@ -434,7 +434,6 @@ void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
     } else {
         qWarning() << "unlock all child playlists of" << m_lastRightClickedIndex.data().toString();
     }
-    // Ask for confirmation: "Delete all playlists in this group, including locked?"
     TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
     if (!item) {
         return;
@@ -459,8 +458,6 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
-    qWarning() << "slotDeleteAllChildPlaylists of" << m_lastRightClickedIndex.data().toString();
-    // Ask for confirmation: "Delete all playlists in this group, including locked?"
     TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
     if (!item) {
         return;
@@ -469,12 +466,16 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
     if (yearChildren.isEmpty()) {
         return;
     }
+    QString year = m_lastRightClickedIndex.data().toString();
 
     QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
             tr("Confirm Deletion"),
+            //: %1 is the year
+            //: <b> + </b> are used to make the text in between bold in the popup
+            //: <br> is a linebreak
             tr("Do you really want to delete all playlist in <b>%1</b>?<br><br>"
                "Note: this also includes locked playlists!")
-                    .arg(m_lastRightClickedIndex.data().toString()),
+                    .arg(year),
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
     if (btn == QMessageBox::No) {
@@ -483,9 +484,12 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
     // Double-check, this is a weighty decision
     btn = QMessageBox::warning(nullptr,
             tr("Confirm Deletion"),
+            //: %1 is the year
+            //: <b> + </b> are used to make the text in between bold in the popup
+            //: <br> is a linebreak
             tr("Deleting all playlist in <b>%1</b> including locked playlists.<br><br>"
                "<b>Are you sure?</b>")
-                    .arg(m_lastRightClickedIndex.data().toString()),
+                    .arg(year),
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
     if (btn == QMessageBox::No) {
@@ -500,6 +504,7 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
             ids.append(pChild->getData().toString());
         }
     }
+    qDebug() << "Setlog: deleting all playlists of" << year;
     m_playlistDao.deletePlaylists(ids);
 }
 
