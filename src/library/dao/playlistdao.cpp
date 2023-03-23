@@ -323,16 +323,17 @@ int PlaylistDAO::setPlaylistsLocked(const QSet<int>& playlistIds, const bool loc
         qInfo() << "Unlocking" << playlistIds.size() << "playlists";
     }
 
-    QStringList idStringList;
-    for (int id : qAsConst(playlistIds)) {
-        idStringList.append(QString::number(id));
+    QString idsString;
+    for (int id : playlistIds) {
+        idsString += QString::number(id) + ',';
     }
-    QString idString = idStringList.join(",");
+    // strip the last comma
+    idsString.chop(1);
 
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "UPDATE Playlists SET locked = :lock WHERE id IN (%1)")
-                          .arg(idString));
+                          .arg(idsString));
     // SQLite3 doesn't support boolean value. Using integer instead.
     int iLock = lock ? 1 : 0;
     query.bindValue(":lock", iLock);
