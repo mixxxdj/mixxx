@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-var
 var DJCMIX = {};
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
@@ -20,7 +21,7 @@ DJCMIX.bendScale = 1.0;
 // * Version 1 (Jan 2023)
 // * Based on Hercules DJControl Starlight mapping released with Mixxx v2.3.0
 // *  -Remapped LOOP and SAMPLER section according to DJControl MIX layout
-// *  -Added Master Volume and Headphone Volume 
+// *  -Added Master Volume and Headphone Volume
 // *  -Removed superfluous LED configuration (not present on DJControl MIX)
 // * Forum: https://mixxx.discourse.group/t/hercules-contrl-mix-mapping/26581/
 // * Wiki: https://mixxx.org/wiki/doku.php/
@@ -36,7 +37,8 @@ DJCMIX.init = function() {
     DJCMIX.scratchButtonState = true;
     DJCMIX.scratchAction = {
         1: DJCMIX.kScratchActionNone,
-        2: DJCMIX.kScratchActionNone};
+        2: DJCMIX.kScratchActionNone
+    };
 
     // Vinyl button LED On.
     midi.sendShortMsg(0x91, 0x03, 0x7F);
@@ -57,22 +59,22 @@ DJCMIX.init = function() {
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (The Vinyl button enables both deck).
-DJCMIX.vinylButton = function(channel, control, value, status, group) {
+DJCMIX.vinylButton = function(_channel, _control, value, _status, _group) {
     if (value) {
         if (DJCMIX.scratchButtonState) {
             DJCMIX.scratchButtonState = false;
-            midi.sendShortMsg(0x91,0x03,0x00);
+            midi.sendShortMsg(0x91, 0x03, 0x00);
 
         } else {
             DJCMIX.scratchButtonState = true;
-            midi.sendShortMsg(0x91,0x03,0x7F);
+            midi.sendShortMsg(0x91, 0x03, 0x7F);
         }
     }
 };
 
 DJCMIX._scratchEnable = function(deck) {
-    var alpha = 1.0/8;
-    var beta = alpha/32;
+    const alpha = 1.0/8;
+    const beta = alpha/32;
     engine.scratchEnable(deck, 248, 33 + 1/3, alpha, beta);
 };
 
@@ -81,11 +83,11 @@ DJCMIX._convertWheelRotation = function(value) {
     // (clockwise) or 0x7F (counter clockwise). 0x1 should map to 1, 0x7F
     // should map to -1 (IOW it's 7-bit signed).
     return value < 0x40 ? 1 : -1;
-}
+};
 
 // The touch action on the jog wheel's top surface
-DJCMIX.wheelTouch = function(channel, control, value, status, group) {
-    var deck = channel;
+DJCMIX.wheelTouch = function(channel, _control, value, _status, _group) {
+    const deck = channel;
     if (value > 0) {
         //  Touching the wheel.
         if (engine.getValue("[Channel" + deck + "]", "play") !== 1 || DJCMIX.scratchButtonState) {
@@ -102,8 +104,8 @@ DJCMIX.wheelTouch = function(channel, control, value, status, group) {
 };
 
 // The touch action on the jog wheel's top surface while holding shift
-DJCMIX.wheelTouchShift = function(channel, control, value, status, group) {
-    var deck = channel - 3;
+DJCMIX.wheelTouchShift = function(channel, _control, value, _status, _group) {
+    const deck = channel - 3;
     // We always enable scratching regardless of button state.
     if (value > 0) {
         DJCMIX._scratchEnable(deck);
@@ -117,14 +119,14 @@ DJCMIX.wheelTouchShift = function(channel, control, value, status, group) {
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
 DJCMIX._scratchWheelImpl = function(deck, value) {
-    var interval = DJCMIX._convertWheelRotation(value);
-    var scratchAction = DJCMIX.scratchAction[deck];
+    const interval = DJCMIX._convertWheelRotation(value);
+    const scratchAction = DJCMIX.scratchAction[deck];
 
-    if (scratchAction == DJCMIX.kScratchActionScratch) {
+    if (scratchAction === DJCMIX.kScratchActionScratch) {
         engine.scratchTick(deck, interval * DJCMIX.scratchScale);
-    } else if (scratchAction == DJCMIX.kScratchActionSeek) {
+    } else if (scratchAction === DJCMIX.kScratchActionSeek) {
         engine.scratchTick(deck,
-                           interval
+            interval
                            * DJCMIX.scratchScale
                            * DJCMIX.scratchShiftMultiplier);
     } else {
@@ -133,45 +135,45 @@ DJCMIX._scratchWheelImpl = function(deck, value) {
 };
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCMIX.scratchWheel = function(channel, control, value, status, group) {
-    var deck = channel;
+DJCMIX.scratchWheel = function(channel, _control, value, _status, _group) {
+    const deck = channel;
     DJCMIX._scratchWheelImpl(deck, value);
 };
 
 // Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
-DJCMIX.scratchWheelShift = function(channel, control, value, status, group) {
-    var deck = channel - 3;
+DJCMIX.scratchWheelShift = function(channel, _control, value, _status, _group) {
+    const deck = channel - 3;
     DJCMIX._scratchWheelImpl(deck, value);
 };
 
 DJCMIX._bendWheelImpl = function(deck, value) {
-    var interval = DJCMIX._convertWheelRotation(value);
-    engine.setValue('[Channel' + deck + ']', 'jog',
-                    interval * DJCMIX.bendScale);
+    const interval = DJCMIX._convertWheelRotation(value);
+    engine.setValue("[Channel" + deck + "]", "jog",
+        interval * DJCMIX.bendScale);
 };
 
 // Bending on the jog wheel (rotating using the edge)
-DJCMIX.bendWheel = function(channel, control, value, status, group) {
-    var deck = channel;
+DJCMIX.bendWheel = function(channel, _control, value, _status, _group) {
+    const deck = channel;
     DJCMIX._bendWheelImpl(deck, value);
 };
 
 // Cue master button
-DJCMIX.cueMaster = function(channel, control, value, status, group) {
+DJCMIX.cueMaster = function(_channel, _control, value, _status, _group) {
     // This button acts as a toggle. Ignore the release.
     if (value === 0) {
         return;
     }
 
-    var masterIsCued = engine.getValue('[Master]', 'headMix') > 0;
+    let masterIsCued = engine.getValue("[Master]", "headMix") > 0;
     // Toggle state.
     masterIsCued = !masterIsCued;
 
-    var headMixValue = masterIsCued ? 1 : -1;
-    engine.setValue('[Master]', 'headMix', headMixValue);
+    const headMixValue = masterIsCued ? 1 : -1;
+    engine.setValue("[Master]", "headMix", headMixValue);
 
     // Set LED (will be overwritten when [Shift] is released)
-    var cueMasterLedValue = masterIsCued ? 0x7F : 0x00;
+    const cueMasterLedValue = masterIsCued ? 0x7F : 0x00;
     midi.sendShortMsg(0x91, 0x0C, cueMasterLedValue);
 };
 
@@ -179,38 +181,38 @@ DJCMIX.cueMaster = function(channel, control, value, status, group) {
 // We need a special function for this because we want to turn on the LED (but
 // we *don't* want to turn on the LED when the user clicks the headSplit button
 // in the GUI).
-DJCMIX.cueMix = function(channel, control, value, status, group) {
+DJCMIX.cueMix = function(_channel, _control, value, _status, _group) {
     // This button acts as a toggle. Ignore the release.
     if (value === 0) {
         return;
     }
 
     // Toggle state.
-    script.toggleControl('[Master]', 'headSplit');
+    script.toggleControl("[Master]", "headSplit");
 
     // Set LED (will be overwritten when [Shift] is released)
-    var cueMixLedValue =
-        engine.getValue('[Master]', 'headSplit') ? 0x7F : 0x00;
+    const cueMixLedValue =
+        engine.getValue("[Master]", "headSplit") ? 0x7F : 0x00;
     midi.sendShortMsg(0x92, 0x0C, cueMixLedValue);
 };
 
-DJCMIX.shiftButton = function(channel, control, value, status, group) {
+DJCMIX.shiftButton = function(_channel, _control, value, _status, _group) {
     if (value >= 0x40) {
         // When Shift is held, light the LEDS to show the status of the alt
         // functions of the cue buttons.
-        var cueMasterLedValue =
-            engine.getValue('[Master]', 'headMix') > 0 ? 0x7F : 0x00;
+        const cueMasterLedValue =
+            engine.getValue("[Master]", "headMix") > 0 ? 0x7F : 0x00;
         midi.sendShortMsg(0x91, 0x0C, cueMasterLedValue);
-        var cueMixLedValue =
-            engine.getValue('[Master]', 'headSplit') ? 0x7F : 0x00;
+        const cueMixLedValue =
+            engine.getValue("[Master]", "headSplit") ? 0x7F : 0x00;
         midi.sendShortMsg(0x92, 0x0C, cueMixLedValue);
     } else {
         // When Shift is released, go back to the normal LED values.
-        var cueChan1LedValue =
-            engine.getValue('[Channel1]', 'pfl') ? 0x7F : 0x00;
+        const cueChan1LedValue =
+            engine.getValue("[Channel1]", "pfl") ? 0x7F : 0x00;
         midi.sendShortMsg(0x91, 0x0C, cueChan1LedValue);
-        var cueChan2LedValue =
-            engine.getValue('[Channel2]', 'pfl') ? 0x7F : 0x00;
+        const cueChan2LedValue =
+            engine.getValue("[Channel2]", "pfl") ? 0x7F : 0x00;
         midi.sendShortMsg(0x92, 0x0C, cueChan2LedValue);
     }
 };
