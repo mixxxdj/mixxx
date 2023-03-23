@@ -906,7 +906,7 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
         showFullScreen();
 #ifdef __LINUX__
         // Fix for "No menu bar with ubuntu unity in full screen mode" (issues
-        // #885890 and #1076789. Before touching anything here, please read
+        // #6072 and #6689. Before touching anything here, please read
         // those bugs.
         // Set this attribute instead of calling setNativeMenuBar(false), see
         // https://github.com/mixxxdj/mixxx/issues/11320

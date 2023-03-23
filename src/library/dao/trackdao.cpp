@@ -2152,7 +2152,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
     }
 
     // We quickly iterate through the results to prevent blocking the database
-    // for other operations. Bug #1399981.
+    // for other operations. Issue #7713.
     while (query.next()) {
         if (*pCancel) {
             return;

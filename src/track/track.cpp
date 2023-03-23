@@ -181,7 +181,7 @@ void Track::replaceMetadataFromSource(
                 m_record.getMetadata().getTrackInfo().getReplayGain();
 
         // Need to set BPM after sample rate since beat grid creation depends on
-        // knowing the sample rate. Bug #1020438.
+        // knowing the sample rate #6559.
         auto beatsAndBpmModified = false;
         if (importedBpm.isValid() &&
                 (!m_pBeats ||

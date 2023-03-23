@@ -384,7 +384,7 @@ class HIDPacket {
      * Can only pack bits and byte values, patches welcome.
      *
      * @todo Implement multi byte bit vector outputs
-     * @param {Uint8Array} data Data received as InputReport from the device
+     * @param {Uint8Array} data Data to be send as OutputReport to the device
      * @param {packetField} field Object that describes a field inside of a packet, which can often
      *     mapped to a Mixxx control.
      */
@@ -393,18 +393,16 @@ class HIDPacket {
             console.error(`HIDPacket.pack - Parsing packed value: invalid pack format ${field.pack}`);
             return;
         }
-        const bytes = this.packSizes[field.pack];
-        const signed = this.signedPackFormats.includes(field.pack);
         if (field.type === "bitvector") {
             const bitVector = /** @type {HIDBitVector} */ (field.value);
-            if (bytes > 1) {
+            if (this.packSizes[field.pack] > 1) {
                 console.error("HIDPacket.pack - Packing multibyte bit vectors not yet supported");
                 return;
             }
-            for (const bit_id in bitVector.bits) {
-                const bit = bitVector.bits[bit_id];
-                data[field.offset] = data[field.offset] | bit.value;
+            HIDController.fastForIn(bitVector.bits, (bit) => {
+                data[field.offset] |= bitVector.bits[bit].value;
             }
+            );
             return;
         }
 
@@ -415,17 +413,28 @@ class HIDPacket {
             return;
         }
 
-        for (let byte_index = 0; byte_index < bytes; byte_index++) {
-            const index = field.offset + byte_index;
-            if (signed) {
-                if (value >= 0) {
-                    data[index] = (value >> (byte_index * 8)) & 255;
-                } else {
-                    data[index] = 255 - ((-(value + 1) >> (byte_index * 8)) & 255);
-                }
-            } else {
-                data[index] = (value >> (byte_index * 8)) & 255;
-            }
+        const dataView = new DataView(data.buffer);
+        switch (field.pack) {
+        case "b":
+            dataView.setInt8(field.offset, value);
+            break;
+        case "B":
+            dataView.setUint8(field.offset, value);
+            break;
+        case "h":
+            dataView.setInt16(field.offset, value, true);
+            break;
+        case "H":
+            dataView.setUint16(field.offset, value, true);
+            break;
+        case "i":
+            dataView.setInt32(field.offset, value, true);
+            break;
+        case "I":
+            dataView.setUint32(field.offset, value, true);
+            break;
+        default:
+              // Impossible, because range checked at beginning of the function
         }
     }
     /**
@@ -444,30 +453,24 @@ class HIDPacket {
      * @returns {number} Value for the field in data, represented according the fields packing type
      */
     unpack(data, field) {
-
-        if (!(field.pack in this.packSizes)) {
+        const dataView = new DataView(data.buffer);
+        switch (field.pack) {
+        case "b":
+            return dataView.getInt8(field.offset);
+        case "B":
+            return dataView.getUint8(field.offset);
+        case "h":
+            return dataView.getInt16(field.offset, true);
+        case "H":
+            return dataView.getUint16(field.offset, true);
+        case "i":
+            return dataView.getInt32(field.offset, true);
+        case "I":
+            return dataView.getUint32(field.offset, true);
+        default:
             console.error(`HIDPacket.unpack - Parsing packed value: invalid pack format ${field.pack}`);
             return undefined;
         }
-        const bytes = this.packSizes[field.pack];
-        const signed = this.signedPackFormats.includes(field.pack);
-
-        let value = 0;
-        for (let field_byte = 0; field_byte < bytes; field_byte++) {
-            if (data[field.offset + field_byte] === 255 && field_byte === 4) {
-                value += 0;
-            } else {
-                value += data[field.offset + field_byte] * Math.pow(2, (field_byte * 8));
-            }
-        }
-        if (signed) {
-            const max_value = Math.pow(2, bytes * 8);
-            const split = max_value / 2 - 1;
-            if (value > split) {
-                value = value - max_value;
-            }
-        }
-        return value;
     }
     /**
      * Find HID packet group matching name.
@@ -599,8 +602,12 @@ class HIDPacket {
         }
         const bitVector = /** @type {HIDBitVector} */ (field.value);
         const bit_id = `${group}.${name}`;
-        for (const bit_name in bitVector.bits) {
-            const bit = bitVector.bits[bit_name];
+
+        // Fast loop implementation over bitvector.bits object
+        const bitVectorKeyArr = Object.keys(bitVector.bits);
+        let bitVectorKeyIdx = bitVectorKeyArr.length;
+        while (bitVectorKeyIdx--) {
+            const bit = bitVector.bits[bitVectorKeyArr[bitVectorKeyIdx]];
             if (bit.id === bit_id) {
                 return bit;
             }
@@ -782,7 +789,7 @@ class HIDPacket {
      *              - H       unsigned short    (Uint16 Little-Endian)
      *              - i       signed integer    (Int32  Little-Endian)
      *              - I       unsigned integer  (Uint32 Little-Endian)
-     * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
+     * @param {number} [bitmask=undefined] A bitwise mask of up to 32 bit. All bits set to'1' in this mask are
      *     considered.
      * @param {fieldChangeCallback} [callback=undefined] Callback function for the control
      */
@@ -959,7 +966,8 @@ class HIDPacket {
             return undefined;
         }
         const bitVector = /** @type {HIDBitVector} */ (field.value);
-        for (const bit_id in bitVector.bits) {
+
+        HIDController.fastForIn(bitVector.bits, (bit_id) => {
             const bit = bitVector.bits[bit_id];
             const new_value = (bit.bitmask & value) >> bit.bit_offset;
             if (bit.value !== undefined && bit.value !== new_value) {
@@ -967,6 +975,7 @@ class HIDPacket {
             }
             bit.value = new_value;
         }
+        );
         return bits;
     }
     /**
@@ -985,26 +994,37 @@ class HIDPacket {
          */
         const field_changes = {};
 
-        for (const group_name in this.groups) {
-            const group = this.groups[group_name];
-            for (const field_id in group) {
-                const field = group[field_id];
+        // Fast loop implementation over this.groups object
+        const groupKeyArr = Object.keys(this.groups);
+        let groupKeyIdx = groupKeyArr.length;
+        while (groupKeyIdx--) {
+            const group = this.groups[groupKeyArr[groupKeyIdx]];
+
+            // Fast loop implementation over group object
+            const fieldKeyArr = Object.keys(group);
+            let fieldKeyIdx = fieldKeyArr.length;
+            while (fieldKeyIdx--) {
+                const field = group[fieldKeyArr[fieldKeyIdx]];
+
                 if (field === undefined) {
                     continue;
                 }
 
                 const value = this.unpack(data, field);
                 if (value === undefined) {
-                    console.error(`HIDPacket.parse - Parsing packet field value for ${field_id}`);
+                    console.error(`HIDPacket.parse - Parsing packet field value for ${group}.${field}`);
                     return;
                 }
 
                 if (field.type === "bitvector") {
                     // Bitvector deltas are checked in parseBitVector
-                    const changed_bits = this.parseBitVector(field, value);
-                    for (const bit_name in changed_bits) {
-                        field_changes[bit_name] = changed_bits[bit_name];
+                    const changedBits = this.parseBitVector(field, value);
+
+
+                    HIDController.fastForIn(changedBits, (changedBit) => {
+                        field_changes[changedBit] = changedBits[changedBit];
                     }
+                    );
 
                 } else if (field.type === "control") {
                     if (field.value === value && field.mindelta !== undefined) {
@@ -1057,12 +1077,17 @@ class HIDPacket {
             }
         }
 
-        for (const group_name in this.groups) {
+        HIDController.fastForIn(this.groups, (group_name) => {
             const group = this.groups[group_name];
-            for (const field_name in group) {
-                this.pack(data, group[field_name]);
+
+            HIDController.fastForIn(group, (field_name) => {
+                const field = group[field_name];
+
+                this.pack(data, field);
             }
+            );
         }
+        );
 
         if (debug) {
             let packet_string = "";
@@ -1116,6 +1141,14 @@ class HIDController {
          * @type {Object.<string, HIDPacket>}
          */
         this.OutputPackets = {};
+
+        /**
+         * A map to determine the output Bit or bytewise field by group and name,
+         * across all OutputPackets
+         *
+         * @type {Map<string,bitObject|packetField>}
+         */
+        this.OutputFieldLookup = new Map();
 
         /**
          * Default input packet name: can be modified for controllers
@@ -1405,42 +1438,13 @@ class HIDController {
     /**
      * Find Output control matching give group and name
      *
-     * @todo The current implementation of this often called function is very slow and does not
-     * scale, due to several nested loops.
      * @param {string} m_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
      * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
      * @returns {bitObject|packetField} Bit or bytewise field - Returns undefined if output field
      *     can't be found.
      */
     getOutputField(m_group, m_name) {
-        for (const packet_name in this.OutputPackets) {
-            const packet = this.OutputPackets[packet_name];
-            for (const group_name in packet.groups) {
-                const group = packet.groups[group_name];
-                for (const field_name in group) {
-                    const field = group[field_name];
-                    if (field.type === "bitvector") {
-                        for (const bit_id in field.value.bits) {
-                            const bit = field.value.bits[bit_id];
-                            if (bit.mapped_group === m_group && bit.mapped_name === m_name) {
-                                return bit;
-                            }
-                            if (bit.group === m_group && bit.name === m_name) {
-                                return bit;
-                            }
-                        }
-                        continue;
-                    }
-                    if (field.mapped_group === m_group && field.mapped_name === m_name) {
-                        return field;
-                    }
-                    if (field.group === m_group && field.name === m_name) {
-                        return field;
-                    }
-                }
-            }
-        }
-        return undefined;
+        return this.OutputFieldLookup.get([m_group, m_name].toString());
     }
     /**
      * Find input packet matching given name.
@@ -1658,6 +1662,20 @@ class HIDController {
                     for (const bit_id in field.value.bits) {
                         const bit = field.value.bits[bit_id];
                         bit.packet = packet;
+                        // Fill lookup map
+                        if (bit.mapped_group && bit.mapped_name) {
+                            this.OutputFieldLookup.set([bit.mapped_group, bit.mapped_name].toString(), bit);
+                        }
+                        if (bit.group && bit.name) {
+                            this.OutputFieldLookup.set([bit.group, bit.name].toString(), bit);
+                        }
+                    }
+                } else {
+                    if (field.mapped_group && field.mapped_name) {
+                        this.OutputFieldLookup.set([field.mapped_group, field.mapped_name].toString(), field);
+                    }
+                    if (field.group && field.name) {
+                        this.OutputFieldLookup.set([field.group, field.name].toString(), field);
                     }
                 }
             }
@@ -1678,9 +1696,13 @@ class HIDController {
         if (this.InputPackets === undefined) {
             return;
         }
-        for (const name in this.InputPackets) {
+
+        // Fast loop implementation over this.InputPackets object
+        const InputPacketsKeyArr = Object.keys(this.InputPackets);
+        let InputPacketsIdx = InputPacketsKeyArr.length;
+        while (InputPacketsIdx--) {
             /** @type {HIDPacket} */
-            let packet = this.InputPackets[name];
+            let packet = this.InputPackets[InputPacketsKeyArr[InputPacketsIdx]];
 
             // When the device uses ReportIDs to enumerate the reports, hidapi
             // prepends the report ID to the data sent to Mixxx. If the device
@@ -1748,16 +1770,16 @@ class HIDController {
      * @param {Object.<string, packetField | bitObject>} delta
      */
     processIncomingPacket(packet, delta) {
-        /** @type {packetField} */
-        for (const name in delta) {
-            // @ts-ignore ignoredControlChanges should be defined in  the users mapping
+
+        HIDController.fastForIn(delta, (field_name) => {
+            // @ts-ignore ignoredControlChanges should be defined in the users mapping
             // see EKS-Otus.js for an example
             if (this.ignoredControlChanges !== undefined &&
-                // @ts-ignore
-                this.ignoredControlChanges.indexOf(name) !== -1) {
-                continue;
+                    // @ts-ignore
+                    this.ignoredControlChanges.indexOf(field_name) !== -1) {
+                return; // continue loop - by returning to fastForIn
             }
-            const field = delta[name];
+            const field = delta[field_name];
             if (field.type === "button") {
                 // Button/Boolean field
                 this.processButton(field);
@@ -1768,6 +1790,7 @@ class HIDController {
                 console.warn(`HIDController.processIncomingPacket - Unknown field ${field.name} type ${field.type}`);
             }
         }
+        );
     }
     /**
      * Get active group for this field
@@ -2297,6 +2320,23 @@ class HIDController {
         field.value = toggle_value << field.bit_offset;
         field.toggle = toggle_value << field.bit_offset;
         field.packet.send();
+    }
+    /**
+     * Fast loop implementation over object
+     *
+     * Don't use 'continue' and 'break' don't work as in normal loops,
+     * because body is a function
+     * 'return' statements in the body function behaves as 'continue' in normal loops
+     *
+     * @param {Object.<string, any>} object
+     * @param {function (string):void } body
+     */
+    static fastForIn(object, body) {
+        const objKeyArray = Object.keys(object);
+        let objKeyArrayIdx = objKeyArray.length;
+        while (objKeyArrayIdx--) {
+            body(objKeyArray[objKeyArrayIdx]);
+        }
     }
 }
 // Add class HIDController to the Global JavaScript object

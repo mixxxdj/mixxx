@@ -236,7 +236,7 @@ void BaseSqlTableModel::select() {
     }
 
     // Remove all the rows from the table after(!) the query has been
-    // executed successfully. See Bug #1090888.
+    // executed successfully. See issue #6782.
     // TODO(rryan) we could edit the table in place instead of clearing it?
     clearRows();
 
