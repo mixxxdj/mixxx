@@ -84,11 +84,11 @@ SetlogFeature::SetlogFeature(
             this,
             &SetlogFeature::slotUnlockAllChildPlaylists);
 
-    m_pDeleteAllChildPlaylists = new QAction(tr("Delete all child playlists"), this);
+    m_pDeleteAllChildPlaylists = new QAction(tr("Delete all unlocked child playlists"), this);
     connect(m_pDeleteAllChildPlaylists,
             &QAction::triggered,
             this,
-            &SetlogFeature::slotDeleteAllChildPlaylists);
+            &SetlogFeature::slotDeleteAllUnlockedChildPlaylists);
 
     // initialized in a new generic slot(get new history playlist purpose)
     slotGetNewPlaylist();
@@ -136,7 +136,7 @@ void SetlogFeature::slotDeletePlaylist() {
         return;
     } else if (playlistId == m_placeholderId) {
         // this is a YEAR node
-        slotDeleteAllChildPlaylists();
+        slotDeleteAllUnlockedChildPlaylists();
     } else {
         // regular setlog, call the base implementation
         BasePlaylistFeature::slotDeletePlaylist();
@@ -454,7 +454,7 @@ void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
     m_playlistDao.setPlaylistsLocked(ids, lock);
 }
 
-void SetlogFeature::slotDeleteAllChildPlaylists() {
+void SetlogFeature::slotDeleteAllUnlockedChildPlaylists() {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -473,8 +473,7 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
             //: %1 is the year
             //: <b> + </b> are used to make the text in between bold in the popup
             //: <br> is a linebreak
-            tr("Do you really want to delete all playlist in <b>%1</b>?<br><br>"
-               "Note: this also includes locked playlists!")
+            tr("Do you really want to delete all unlocked playlist in <b>%1</b>?<br><br>")
                     .arg(year),
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
@@ -487,7 +486,7 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
             //: %1 is the year
             //: <b> + </b> are used to make the text in between bold in the popup
             //: <br> is a linebreak
-            tr("Deleting all playlist in <b>%1</b> including locked playlists.<br><br>"
+            tr("Deleting all unlokced playlist in <b>%1</b>.<br><br>"
                "<b>Are you sure?</b>")
                     .arg(year),
             QMessageBox::Yes | QMessageBox::No,
@@ -504,8 +503,8 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
             ids.append(pChild->getData().toString());
         }
     }
-    qDebug() << "Setlog: deleting all playlists of" << year;
-    m_playlistDao.deletePlaylists(ids);
+    qDebug() << "History: deleting all unlocked playlists of" << year;
+    m_playlistDao.deleteUnlockedPlaylists(ids);
 }
 
 void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {

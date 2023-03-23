@@ -231,7 +231,7 @@ bool PlaylistDAO::deletePlaylists(const QStringList& idStringList) {
     if (idStringList.isEmpty()) {
         return false;
     }
-    QString idString = idStringList.join(",");
+    const QString idString = idStringList.join(",");
 
     qInfo() << "Deleting" << idStringList.size() << "playlists";
 
@@ -252,6 +252,29 @@ bool PlaylistDAO::deletePlaylists(const QStringList& idStringList) {
 
     emit deleted(kInvalidPlaylistId);
     return true;
+}
+
+bool PlaylistDAO::deleteUnlockedPlaylists(QStringList& idStringList) {
+    if (idStringList.isEmpty()) {
+        return false;
+    }
+
+    idStringList.removeDuplicates();
+    const QString idString = idStringList.join(",");
+    QSqlQuery query(m_database);
+    // select locked playlists
+    query.prepare(QStringLiteral(
+            "SELECT id FROM Playlists WHERE id IN (%1) AND locked = 1")
+                          .arg(idString));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    // remove locked playlists from list
+    while (query.next()) {
+        idStringList.removeOne(query.value(0).toString());
+    }
+    return deletePlaylists(idStringList);
 }
 
 bool PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
