@@ -227,13 +227,13 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
-bool PlaylistDAO::deletePlaylists(const QStringList& idStringList, PlaylistDAO::HiddenType type) {
+bool PlaylistDAO::deletePlaylists(const QStringList& idStringList) {
     if (idStringList.isEmpty()) {
         return false;
     }
     QString idString = idStringList.join(",");
 
-    qInfo() << "Deleting" << idStringList.size() << "playlists of type" << type;
+    qInfo() << "Deleting" << idStringList.size() << "playlists";
 
     // delete tracks assigned to these playlists
     auto deleteTracks = FwdSqlQuery(m_database,
@@ -280,7 +280,7 @@ bool PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
     qInfo() << "Prepared deletion of" << idStringList.size() << "playlists of type" << type
             << "that contain fewer than" << minNumberOfTracks << "tracks";
 
-    return deletePlaylists(idStringList, type);
+    return deletePlaylists(idStringList);
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {

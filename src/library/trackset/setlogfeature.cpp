@@ -500,7 +500,7 @@ void SetlogFeature::slotDeleteAllChildPlaylists() {
             ids.append(pChild->getData().toString());
         }
     }
-    m_playlistDao.deletePlaylists(ids, PlaylistDAO::PLHT_SET_LOG);
+    m_playlistDao.deletePlaylists(ids);
 }
 
 void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
