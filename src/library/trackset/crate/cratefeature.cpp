@@ -565,7 +565,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
         modelRows.push_back(newTreeItemForCrateSummary(crateSummary));
         if (selectedCrateId == crateSummary.getId()) {
             // save index for selection
-            selectedRow = modelRows.size() - 1;
+            selectedRow = static_cast<int>(modelRows.size()) - 1;
         }
     }
 
