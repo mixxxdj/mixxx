@@ -667,7 +667,7 @@ void SetlogFeature::activate() {
 }
 
 void SetlogFeature::activatePlaylist(int playlistId) {
-    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    // qDebug() << "SetlogFeature::activatePlaylist()" << playlistId;
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
