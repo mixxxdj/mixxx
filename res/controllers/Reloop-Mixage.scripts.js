@@ -1,21 +1,24 @@
 // Name: Reloop Mixage
-// Author: Bim Overbohm
+// Author: HorstBaerbel
 // Version: 1.0.4 needs Mixxx 2.1+
 
 var Mixage = {};
 
 // ----- User-configurable settings -----
-Mixage.scratchByWheelTouch = false; // Set to true to scratch by touching the wheel instead of having to press the disc button
-Mixage.autoMaximizeLibrary = false; // Set to true to automatically max- and minimize the library when the browse button is used
-Mixage.libraryHideTimeout = 4000; // Time in ms after which the library will automatically minimized
-Mixage.libraryReducedHideTimeout = 500; // Time in ms after which the library will be minimized after loading a song into a deck
+Mixage.scratchByWheelTouch = false; // Set to true to scratch by touching the jog wheel instead of having to toggle the disc button. Default is false
+Mixage.scratchTicksPerRevolution = 620; // Number of jog wheel ticks that make a full revolution when scratching. Reduce to "scratch more" of the track, increase to "scratch less". Default is 620 (measured)
+Mixage.jogWheelScrollSpeed = 1.0; // Scroll speed when the jog wheel is used to scroll through the track. The higher, the faster. Default is 1.0
+Mixage.autoMaximizeLibrary = false; // Set to true to automatically max- and minimize the library when the browse button is used. Default is false
+Mixage.libraryHideTimeout = 4000; // Time in ms after which the library will automatically minimized. Default is 4000
+Mixage.libraryReducedHideTimeout = 500; // Time in ms after which the library will be minimized after loading a song into a deck. Default is 500
 
 // ----- Internal variables (don't touch) -----
 Mixage.vuMeterConnection = [];
 Mixage.libraryHideTimer = 0;
 Mixage.libraryRemainingTime = 0;
-Mixage.beatMovePressed = false;
 // Note that the following lists have 3 entries, but we use only 2 decks / effect units. This saves us having to write "deckNr - 1" everywhere...
+Mixage.isBeatMovePressed = [false, false, false];
+Mixage.isDryWetPressed = [false, false, false];
 Mixage.scratchToggleLastState = [0, 0, 0]; // helper array to enable scratch toggling by disc button
 Mixage.isScratchActive = [false, false, false]; // true if scratching currently enabled for deck
 Mixage.scrollToggleLastState = [0, 0, 0]; // helper array to enable scroll toggling by loupe button
@@ -37,11 +40,6 @@ Mixage.init = function(_id, _debugging) {
     Mixage.vuMeterConnection[1] = engine.makeConnection("[Channel2]", "VuMeter", function(val) {
         midi.sendShortMsg(0x90, 30, val * 7);
     });
-    // initially disable scratching for both decks
-    if (!Mixage.scratchByWheelTouch) {
-        engine.scratchDisable(1);
-        engine.scratchDisable(2);
-    }
     // restore deck sync master LEDs (function currently not working as of 2.3.3)
     //var isDeck1SyncLeader = engine.getValue("[Channel1]", "sync_master");
     //Mixage.toggleLED(isDeck1SyncLeader ? 1 : 0, "[Channel1]", "sync_master");
@@ -274,30 +272,38 @@ Mixage.scrollToggle = function(channel, control, value, _status, _group) {
 Mixage.wheelTouch = function(channel, control, value, _status, _group) {
     // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
     var deckNr = control === 0x24 ? 1 : 2;
-    // check if scratching or scrolling should be enabled
-    if (Mixage.scratchByWheelTouch || Mixage.isScratchActive[deckNr] || Mixage.isScrollActive[deckNr]) {
+    // check if scratching should be enabled
+    if (Mixage.scratchByWheelTouch || Mixage.isScratchActive[deckNr]) {
         if (value === 0x7F) {
-            // turn on scratching or scrolling on this deck
-            var alpha = Mixage.isScrollActive[deckNr] ? 1.0 / 2.0 : 1.0 / 8.0;
+            // turn on scratching on this deck
+            var alpha = 1.0 / 8.0;
             var beta = alpha / 32.0;
-            var ticksPerRevolution = Mixage.isScrollActive[deckNr] ? 128 : 620;
-            engine.scratchEnable(deckNr, ticksPerRevolution, 33.0 + 1.0 / 3.0, alpha, beta);
+            engine.scratchEnable(deckNr, Mixage.scratchTicksPerRevolution, 33.0 + 1.0 / 3.0, alpha, beta);
         } else {
             engine.scratchDisable(deckNr);
         }
     }
 };
 
-// The wheel that actually controls the scratching / jogging / library browsing
+// The wheel that controls the scratching / jogging
 Mixage.wheelTurn = function(channel, control, value, _status, _group) {
     // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
     var deckNr = control === 0x24 ? 1 : 2;
-    // control centers on 0x40 (64), calculate difference to that value
-    var newValue = value - 64;
-    if (engine.isScratching(deckNr)) {
-        engine.scratchTick(deckNr, newValue); // scratch or scroll deck
-    } else {
-        engine.setValue("[Channel" + deckNr + "]", "jog", newValue); // pitch bend deck
+    // only enable wheel if functionality has been enabled
+    if (Mixage.scratchByWheelTouch || Mixage.isScratchActive[deckNr] || Mixage.isScrollActive[deckNr]) {
+        // control centers on 0x40 (64), calculate difference to that value
+        var newValue = value - 64;
+        if (Mixage.isScrollActive[deckNr]) { // scroll deck
+            var controlString = "[Channel" + deckNr + "]";
+            var keyString = "playposition";// + newValue > 0 ? "up_small" : "down_small";
+            var currentPosition = engine.getValue(controlString, keyString);
+            var speedFactor = 0.00005;
+            engine.setValue(controlString, keyString, currentPosition + speedFactor * newValue * Mixage.jogWheelScrollSpeed);
+        } else if (engine.isScratching(deckNr)) {
+            engine.scratchTick(deckNr, newValue); // scratch deck
+        } else {
+            engine.setValue("[Channel" + deckNr + "]", "jog", newValue); // pitch bend deck
+        }
     }
 };
 
@@ -369,42 +375,49 @@ Mixage.handleEffectChannelSelect = function(channel, control, value, _status, _g
     }
 };
 
+// The -DRY/WET+ rotary control is used as an extra "shift" key when pushed down
+Mixage.handleDryWetPressed = function(channel, control, value, _status, _group) {
+    // calculate effect unit number from MIDI control. 0x21 controls unit 1, 0x25 unit 2
+    var unitNr = control === 0x21 ? 1 : 2;
+    Mixage.isDryWetPressed[unitNr] = value === 0x7f;
+};
+
+// The -DRY/WET+ rotary control used for the effect dry/wet mix
 Mixage.handleEffectDryWet = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x21 controls unit 1, 0x25 unit 2
     var unitNr = control === 0x21 ? 1 : 2;
-    // Control centers on 0x40 (64), calculate difference to that value and multiply by 4
-    var diff = (value - 64) / 10.0;
-    // In either case, register the movement
+    // control centers on 0x40 (64), calculate difference to that value and scale down
+    var diff = (value - 64) / 16.0;
     var controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
-    var dryWetValue = engine.getValue(controlString, "mix");
-    engine.setValue(controlString, "mix", dryWetValue + diff);
+    var keyString = Mixage.isDryWetPressed[unitNr] ? "super1" : "mix";
+    var dryWetValue = engine.getValue(controlString, keyString);
+    engine.setValue(controlString, keyString, dryWetValue + diff);
 };
 
-// The PAN rotary control used here for the overall effect super control
-Mixage.handleEffectSuper = function(channel, control, value, _status, _group) {
-    // calculate effect unit number from MIDI control. 0x60 controls unit 1, 0x62 unit 2
-    var unitNr = control === 0x60 ? 1 : 2;
-    // Control centers on 0x40 (64), calculate difference to that value and multiply by 4
-    var diff = (value - 64) / 10.0;
-    // In either case, register the movement
-    var controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
-    var mixValue = engine.getValue(controlString, "super1");
-    engine.setValue(controlString, "super1", mixValue + diff);
+// The PAN rotary control used here for panning the master
+Mixage.handlePan = function(channel, control, value, _status, _group) {
+    // control centers on 0x40 (64), calculate difference to that value and scale down
+    var diff = (value - 64) / 16.0;
+    var controlString = "[Master]";
+    var keyString = "balance";
+    var mixValue = engine.getValue(controlString, keyString);
+    engine.setValue(controlString, keyString, mixValue + diff);
 };
 
 // The BEAT MOVE rotary control is used as an extra "shift" key when pushed down
 Mixage.handleBeatMovePressed = function(channel, control, value, _status, _group) {
-    Mixage.beatMovePressed = value === 0x7f;
+    // calculate effect unit number from MIDI control. 0x20 controls unit 1, 0x22 unit 2
+    var unitNr = control === 0x20 ? 1 : 2;
+    Mixage.isBeatMovePressed[unitNr] = value === 0x7f;
 };
 
 Mixage.handleBeatMoveLength = function(channel, control, value, _status, _group) {
     // calculate effect unit number from MIDI control. 0x20 controls unit 1, 0x22 unit 2
     var unitNr = control === 0x20 ? 1 : 2;
     var direction = unitNr === 1 ? 1 : -1;
-    // Control centers on 0x40 (64), calculate difference to that
+    // control centers on 0x40 (64), calculate difference to that
     var diff = (value - 64);
-    // In either case, register the movement
-    if (Mixage.beatMovePressed) {
+    if (Mixage.isBeatMovePressed[unitNr]) {
         var loopLength = engine.getParameter("[Channel" + unitNr + "]", "beatjump_size");
         loopLength = direction * diff > 0 ? 2 * loopLength : loopLength / 2;
         engine.setParameter("[Channel" + unitNr + "]", "beatjump_size", loopLength);
@@ -415,12 +428,11 @@ Mixage.handleBeatMoveLength = function(channel, control, value, _status, _group)
 };
 
 Mixage.handleBeatMove = function(channel, control, value, _status, _group) {
-    // calculate effect unit number from MIDI control. 0x5f controls unit 1, 0x61 unit 2
+    // calculate effect unit number from MIDI control. 0x5F controls unit 1, 0x61 unit 2
     var unitNr = control === 0x5f ? 1 : 2;
     var direction = unitNr === 1 ? 1 : -1;
-    // Control centers on 0x40 (64), calculate difference to that
+    // control centers on 0x40 (64), calculate difference to that
     var diff = (value - 64);
-    // In either case, register the movement
     var position = direction * diff > 0 ? "beatjump_forward" : "beatjump_backward";
     engine.setValue("[Channel" + unitNr + "]", position, true);
 };

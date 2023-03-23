@@ -2,7 +2,7 @@
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.1+">
   <info>
     <name>Reloop Mixage</name>
-    <author>Bim Overbohm</author>
+    <author>HorstBaerbel</author>
     <description>Mapping for the Reloop Mixage Interface Edition controller (https://www.reloop.com/reloop-mixage-ie). Should also work on the non-interface version.</description>
     <forums>https://mixxx.discourse.group/t/reloop-mixage-mapping/14779</forums>
     <wiki>https://github.com/mixxxdj/mixxx/wiki/Reloop%20Mixage</wiki>
@@ -212,7 +212,25 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>Mixage.handleEffectSuper</key>
+        <key>Mixage.handleDryWetPressed</key>
+        <status>0x90</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>Mixage.handleDryWetPressed</key>
+        <status>0x90</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handlePan</key>
         <status>0xB0</status>
         <midino>0x60</midino>
         <options>
@@ -220,8 +238,8 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>Mixage.handleEffectSuper</key>
+        <group>[Channel2]</group>
+        <key>Mixage.handlePan</key>
         <status>0xB0</status>
         <midino>0x62</midino>
         <options>
