@@ -675,13 +675,18 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
         return;
     }
 
-    // Create a new table model since the main one might have another crate
-    // selected which is not the crate that received the right-click.
-    QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
-    pCrateTableModel->selectCrate(crateId);
-    pCrateTableModel->select();
-    pCrateTableModel->addTracks(QModelIndex(), locations);
+    if (crateId == m_crateTableModel.selectedCrate()) {
+        // Add tracks directly to the model
+        m_crateTableModel.addTracks(QModelIndex(), locations);
+    } else {
+        // Create a temporary table model since the main one might have another
+        // crate selected which is not the crate that received the right-click.
+        QScopedPointer<CrateTableModel> pCrateTableModel(
+                new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+        pCrateTableModel->selectCrate(crateId);
+        pCrateTableModel->select();
+        pCrateTableModel->addTracks(QModelIndex(), locations);
+    }
 }
 
 void CrateFeature::slotCreateImportCrate() {
