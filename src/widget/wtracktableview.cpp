@@ -858,18 +858,18 @@ void WTrackTableView::resizeEvent(QResizeEvent* event) {
     }
 
     QModelIndex currIndex = currentIndex();
-    int rHeight = rowHeight(0);
+    int currRow = currIndex.row();
+    int rHeight = rowHeight(currRow);
 
-    if (!currIndex.isValid() || rHeight <= 0) {
+    if (currRow < 0 || rHeight == 0) { // true if currIndex is invalid
         QTableView::resizeEvent(event);
         return;
     }
 
-    int currRow = currIndex.row();
     // y-pos of the top edge, negative value means above viewport boundary
     int posInView = rowViewportPosition(currRow);
     // Check if the row is visible.
-    // Note: don't use viewport()->height() because that may already have changed (??)
+    // Note: don't use viewport()->height() because that may already have changed
     bool rowWasVisible = posInView > 0 && posInView - rHeight < oldHeight;
 
     QTableView::resizeEvent(event);
@@ -878,9 +878,6 @@ void WTrackTableView::resizeEvent(QResizeEvent* event) {
         return;
     }
 
-    // TODO(xxx) When resizing, the top row is static, at least on Linux.
-    // If that is true on other OS as well we could calculate the new relative
-    // position before resizing.
     // Check if the item is fully visible. If not, scroll to show it
     posInView = rowViewportPosition(currRow);
     if (posInView - rHeight < 0 || posInView + rHeight > newHeight) {
