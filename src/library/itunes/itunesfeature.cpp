@@ -310,8 +310,10 @@ TreeItem* ITunesFeature::importLibrary() {
 
 #ifdef __MACOS_ITUNES_LIBRARY__
     if (m_dbfile.isEmpty()) {
+        qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
         importer = std::make_unique<ITunesMacOSImporter>(this, m_database, m_cancelImport);
     } else {
+        qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
         importer = std::make_unique<ITunesXMLImporter>(
                 this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
     }
