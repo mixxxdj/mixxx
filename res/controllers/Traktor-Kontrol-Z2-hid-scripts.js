@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* Traktor Kontrol Z2 HID controller script v1.00                                */
-/* Last modification: January 2022                                                */
+/* Last modification: January 2023                                                */
 /* Author: Jörg Wartenberg (based on the Traktor S3 mapping by Owen Williams)    */
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
@@ -354,13 +354,9 @@ class DeckClass {
             // Shift mode not set, and shift button not pressed -> Adjust loop size
             const beatloopSize = engine.getValue(this.activeChannel, "beatloop_size");
             if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
-                if (beatloopSize >= (1 / 16)) {
-                    engine.setValue(this.activeChannel, "beatloop_size", beatloopSize / 2);
-                }
+                engine.setValue(this.activeChannel, "beatloop_size", beatloopSize / 2);
             } else {
-                if (beatloopSize < 256) {
-                    engine.setValue(this.activeChannel, "beatloop_size", beatloopSize * 2);
-                }
+                engine.setValue(this.activeChannel, "beatloop_size", beatloopSize * 2);
             }
         } else if (this.parent.shiftState === 0x01) {
             // Shift mode not set, but shift button is pressed ->  Move loop
@@ -765,8 +761,8 @@ class TraktorZ2Class {
 
         const featureRptF1 = new Uint8Array([0x20, 0x80]);
         controller.sendFeatureReport(0xF1, featureRptF1.buffer);
-        const featureRptF3 = new Uint8Array([0x55, 0x7F]);
-        controller.sendFeatureReport(0xF3, featureRptF3.buffer);
+        //const featureRptF3 = new Uint8Array([0x7F, 0x55]);
+        //controller.sendFeatureReport(0xF3, featureRptF3.buffer);
         // this.debugLights();
 
         this.registerOutputPackets();
@@ -781,20 +777,10 @@ class TraktorZ2Class {
         // This is done, because the common-hid-packet-parser only triggers
         // the callback functions in case of a delta to the previous data.
         for (let inputReportIdx = 0x01; inputReportIdx <= 0x02; ++inputReportIdx) {
-            const reportId = new Uint8Array([inputReportIdx]);
             const reportData = new Uint8Array(controller.getInputReport(inputReportIdx));
 
-            const report = new Uint8Array(reportId.byteLength + reportData.byteLength);
-            report.set(reportId);
-            report.set(reportData, reportId.byteLength);
-
-            const reportWithInvertedData = new Uint8Array(report);
-            for (let byteIdx = reportId.byteLength; byteIdx < report.byteLength; byteIdx++) {
-                reportWithInvertedData[byteIdx] = ~report[byteIdx];
-            }
-
-            this.incomingData(reportWithInvertedData, reportWithInvertedData.byteLength);
-            this.incomingData(report, report.byteLength);
+            this.incomingData(new Uint8Array([inputReportIdx, ...Uint8Array.from(reportData.map(x => ~x))]));
+            this.incomingData(new Uint8Array([inputReportIdx, ...Uint8Array.from(reportData)]));
         }
 
         const inputRpt01 = new Uint8Array(controller.getInputReport(0x01));
@@ -1590,11 +1576,10 @@ class TraktorZ2Class {
     }
 
     messageCallback(_packet, data) {
-        for (const name in data) {
-            if (Object.prototype.hasOwnProperty.call(data, name)) {
-                this.controller.processButton(data[name]);
-            }
+        HIDController.fastForIn(data, (field_name) => {
+            this.controller.processButton(data[field_name]);
         }
+        );
     }
 
     incomingData(data, length) {
@@ -1921,7 +1906,6 @@ class TraktorZ2Class {
     /**
      * @param group may be either[Channel1] or [Channel2]
      * @param {boolean} sendMessage if true, send HID package immediateley
-     * @param sendMessage
      */
     displayLoopCount(group, sendMessage) {
         let numberToDisplay;
@@ -2163,13 +2147,16 @@ class TraktorZ2Class {
             "-1": [["b", "e", "f"], ["a", "c", "d", "g"]],
         };
         // Switch LEDs On
-        for (const segmentOn of symbolArray[digit][0]) {
-            this.controller.setOutput(group, "segment_" + segmentOn, brightness, false);
+        HIDController.fastForIn(symbolArray[digit][0], (segment_name) => {
+            this.controller.setOutput(group, "segment_" + symbolArray[digit][0][segment_name], brightness, false);
         }
+        );
         // Switch LEDs Off
-        for (const segmentOff of symbolArray[digit][1]) {
-            this.controller.setOutput(group, "segment_" + segmentOff, kLedOff, false);
+
+        HIDController.fastForIn(symbolArray[digit][1], (segment_name) => {
+            this.controller.setOutput(group, "segment_" + symbolArray[digit][1][segment_name], kLedOff, false);
         }
+        );
     }
 
     registerOutputPackets() {
@@ -2431,8 +2418,8 @@ class TraktorZ2Class {
         this.controller.setOutput("[Master]", "!usblight", kLedBright, true);
 
         // Switch software mixing mode of and given LED control to mixer hardware
-        this.dataF1[0] = 0x00;
-        controller.sendFeatureReport(0xF1, this.dataF1);
+        const featureRptF1 = new Uint8Array([0x00, 0x00]);
+        controller.sendFeatureReport(0xF1, featureRptF1.buffer);
 
         console.log("TraktorZ2: Shutdown done!");
     }
