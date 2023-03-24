@@ -7,6 +7,8 @@
 #include "library/itunes/itunesimporter.h"
 #include "library/libraryfeature.h"
 
+/// An importer that reads the user's default iTunes/Music.app library
+/// using the native `iTunesLibrary` framework on macOS.
 class ITunesMacOSImporter : public ITunesImporter {
   public:
     ITunesMacOSImporter(LibraryFeature* parentFeature,
