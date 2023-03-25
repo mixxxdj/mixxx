@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "config.h"
+#include "controllers/controllermanager.h"
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
@@ -59,6 +60,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                 &MixxxMainWindow::initializationProgressUpdate);
         pCoreServices->initialize(pApp);
         mainWindow.initialize();
+        pCoreServices->getControllerManager()->setUpDevices();
 
         // If startup produced a fatal error, then don't even start the
         // Qt event loop.
@@ -154,7 +156,7 @@ int main(int argc, char * argv[]) {
 
     // Create the ErrorDialogHandler in the main thread, otherwise it will be
     // created in the thread of the first caller to instance(), which may not be
-    // the main thread. Bug #1748636.
+    // the main thread. Issue #9130.
     ErrorDialogHandler::instance();
 
 #ifdef __APPLE__

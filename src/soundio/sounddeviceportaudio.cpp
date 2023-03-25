@@ -889,7 +889,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #ifdef __SSE__
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
-        // https://bugs.launchpad.net/mixxx/+bug/1404401
+        // https://github.com/mixxxdj/mixxx/issues/7747
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
@@ -938,7 +938,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #ifdef __WINDOWS__
     // We need to refresh the denormals flags every callback since some
     // driver + API combinations will reset them (known: DirectSound + Realtec)
-    // Fixes Bug #1495047
+    // Fixes issue #8220
     // (Both calls are very fast)
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);

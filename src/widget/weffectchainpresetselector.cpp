@@ -21,7 +21,7 @@ WEffectChainPresetSelector::WEffectChainPresetSelector(
     // Prevent this widget from getting focused by Tab/Shift+Tab
     // to avoid interfering with using the library via keyboard.
     // Allow click focus though so the list can always be opened by mouse,
-    // see https://bugs.launchpad.net/mixxx/+bug/1902125
+    // see https://github.com/mixxxdj/mixxx/issues/10184
     setFocusPolicy(Qt::ClickFocus);
 }
 

@@ -10,7 +10,7 @@ DMG_FILE="${1}"
 
 echo "Signing $DMG_FILE"
 codesign --verbose=4 --options runtime \
-    --sign "${APPLE_CODESIGN_IDENTITY}" "$(dirname "$0")/entitlements.plist" "${DMG_FILE}"
+    --sign "${APPLE_CODESIGN_IDENTITY}" "$(dirname "$0")/Mixxx.entitlements" "${DMG_FILE}"
 
 echo "Notarizing $DMG_FILE"
 xcrun altool --notarize-app --primary-bundle-id "${APPLE_BUNDLE_ID}" --username "${APPLE_ID_USERNAME}" \

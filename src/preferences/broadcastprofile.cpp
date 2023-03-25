@@ -71,7 +71,7 @@ constexpr bool kDefaultEnableMetadata = false;
 constexpr bool kDefaultEnableReconnect = true;
 constexpr bool kDefaultLimitReconnects = true;
 constexpr int kDefaultMaximumRetries = 10;
-// No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
+// No tr() here, see https://github.com/mixxxdj/mixxx/issues/7848
 const QString kDefaultMetadataFormat("$artist - $title");
 constexpr bool kDefaultNoDelayFirstReconnect = true;
 constexpr bool kDefaultOggDynamicupdate = false;

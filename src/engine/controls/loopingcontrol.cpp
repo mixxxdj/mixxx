@@ -175,6 +175,9 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotBeatJump, Qt::DirectConnection);
     m_pCOBeatJumpSize = new ControlObject(ConfigKey(group, "beatjump_size"),
                                           true, false, false, 4.0);
+    m_pCOBeatJumpSize->connectValueChangeRequest(this,
+            &LoopingControl::slotBeatJumpSizeChangeRequest,
+            Qt::DirectConnection);
 
     m_pCOBeatJumpSizeHalve = new ControlPushButton(ConfigKey(group, "beatjump_size_halve"));
     connect(m_pCOBeatJumpSizeHalve,
@@ -340,7 +343,7 @@ void LoopingControl::slotLoopHalve(double pressed) {
         return;
     }
 
-    slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
+    m_pCOBeatLoopSize->set(m_pCOBeatLoopSize->get() / 2.0);
 }
 
 void LoopingControl::slotLoopDouble(double pressed) {
@@ -348,7 +351,7 @@ void LoopingControl::slotLoopDouble(double pressed) {
         return;
     }
 
-    slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
+    m_pCOBeatLoopSize->set(m_pCOBeatLoopSize->get() * 2.0);
 }
 
 void LoopingControl::process(const double dRate,
@@ -1132,7 +1135,7 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
     // Maintain the current start point if there is an active loop currently
     // looping. slotBeatLoop will update m_pActiveBeatLoop if applicable. Note,
     // this used to only maintain the current start point if a beatloop was
-    // enabled. See Bug #1159243.
+    // enabled. See Issue #6957.
     slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopingEnabled, true);
 }
 
@@ -1429,6 +1432,14 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
     // slotBeatLoop will call m_pCOBeatLoopSize->setAndConfirm if
     // new beatloop_size is valid
+
+    double maxBeatLoopSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatLoopSize = s_dBeatSizes[0];
+    if ((beats < minBeatLoopSize) || (beats > maxBeatLoopSize)) {
+        // Don't clamp the value here to not fall out of a measure
+        return;
+    }
+
     slotBeatLoop(beats, true, false);
 }
 
@@ -1495,6 +1506,19 @@ void LoopingControl::slotBeatJump(double beats) {
     }
 }
 
+void LoopingControl::slotBeatJumpSizeChangeRequest(double beats) {
+    // Use same limits as for beat loop size
+    double maxBeatJumpSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatJumpSize = s_dBeatSizes[0];
+
+    if ((beats < minBeatJumpSize) || (beats > maxBeatJumpSize)) {
+        // Don't clamp the value here to not fall out of a measure
+        return;
+    }
+
+    m_pCOBeatJumpSize->setAndConfirm(beats);
+}
+
 void LoopingControl::slotBeatJumpSizeHalve(double pressed) {
     if (pressed > 0) {
         m_pCOBeatJumpSize->set(m_pCOBeatJumpSize->get() / 2);
@@ -1543,7 +1567,7 @@ void LoopingControl::slotLoopMove(double beats) {
 
         // The track would stop as soon as the playhead crosses track end,
         // so we don't allow moving a loop beyond end.
-        // https://bugs.launchpad.net/mixxx/+bug/1799574
+        // https://github.com/mixxxdj/mixxx/issues/9478
         const auto trackEndPosition =
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         m_pTrackSamples->get());

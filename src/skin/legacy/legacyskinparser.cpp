@@ -727,7 +727,6 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
     ControlObject* pNextControl = controlFromConfigNode(node.toElement(), "NextControl");
-    ;
     ConfigKey nextConfigKey;
     if (pNextControl != nullptr) {
         nextConfigKey = pNextControl->getKey();
@@ -2115,7 +2114,7 @@ void LegacySkinParser::commonWidgetSetup(const QDomNode& node,
     // setupWidget since a BindProperty connection to the display parameter can
     // cause the widget to be polished (i.e. style computed) before it is
     // ready. The most common case is that the object name has not yet been set
-    // in setupWidget. See Bug #1285836.
+    // in setupWidget. See issue #7328.
     if (allowConnections) {
         setupConnections(node, pBaseWidget);
     }

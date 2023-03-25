@@ -554,8 +554,8 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // called every time the mouse is moved -- kain88 May 2012
     if (pEvent->buttons() != Qt::LeftButton) {
         // Needed for mouse-tracking to fire entered() events. If we call this
-        // outside of this if statement then we get 'ghost' drags. See Bug
-        // #1008737
+        // outside of this if statement then we get 'ghost' drags. See issue
+        // #6507
         WLibraryTableView::mouseMoveEvent(pEvent);
         return;
     }
