@@ -1,20 +1,4 @@
-/// Copyright (C) 2023 Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
-///
-/// This mapping is free software; you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation; either version 2 of the License, or
-/// (at your option) any later version. The full text of the GNU
-/// General Public License, version 2 can be found below. The licenses
-/// of software libraries distributed together with Mixxx can be found
-/// below as well.
-///
-/// In addition to the terms of the GNU General Public License, the following
-/// license terms apply:
-///
-/// By using this mapping, you confirm that you are not Bob Ham, you are in no
-/// way affiliated to Bob Ham, you are not downloading this code on behalf of
-/// Bob Ham or an associate of Bob Ham. To the best of your knowledge, information
-/// and belief this mapping will not make its way into the hands of Bob Ham.
+/// Created by Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
 
 const LedColors = {
     off: 0,
@@ -60,20 +44,19 @@ const LibraryColumns = {
     Rating: 19,
 };
 
+// This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
 const KeyboardColors = [
-    LedColors.red,
-    LedColors.orange,
-    LedColors.yellow,
-    LedColors.lime,
     LedColors.green,
-    LedColors.aqua,
-    LedColors.celeste,
-    LedColors.sky,
-    LedColors.blue,
-    LedColors.purple,
-    LedColors.fuscia,
-    LedColors.azalea,
-    LedColors.salmon,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
     LedColors.white,
 ];
 
@@ -97,9 +80,9 @@ const LibrarySortableColumns = [
     LibraryColumns.DatetimeAdded,
 ];
 
-const LOOP_WHEEL_MOVE_FACTOR = 50; // LOOP_WHEEL_MOVE_FACTOR
-const LOOP_ENCODER_MOVE_FACTOR = 500; // LOOP_ENCODER_MOVE_FACTOR
-const LOOP_ENCODER_SHIFTMOVE_FACTOR = 2500; // LOOP_ENCODER_SHIFTMOVE_FACTOR
+const LoopWheelMoveFactor = 50;
+const LoopEncoderMoveFactor = 500;
+const LoopEncoderShiftmoveFactor = 2500;
 
 const TempoFaderSoftTakeoverColorLow = LedColors.white;
 const TempoFaderSoftTakeoverColorHigh = LedColors.green;
@@ -107,6 +90,10 @@ const TempoFaderSoftTakeoverColorHigh = LedColors.green;
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
 const KeepLEDWithOneColorDimedWhenInactive = true;
+
+// Keep both deck select buttons backlit and do not fully turn off the inactive deck button.
+// 'true' will keep the unseclected deck dimmed, 'false' to fully turn it off. Default: true
+const KeepDeckSelectDimmed = true;
 
 // Define whether the keylock is mapped when doing "shift+master" (on press) or "shift+sync" (on release since long push copies the key)".
 // 'true' will use "sync+master", 'false' will use "shift+sync". Default: false
@@ -117,12 +104,20 @@ const UseKeylockOnMaster = false;
 const GridButtonBlinkOverBeat = false;
 
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
-// less responsive it gets in Mixxx. Default: 3
+// less responsive it gets in Mixxx. Default: 5
 const WheelSpeedSample = 3;
 
 // Make the sampler tab a beatlooproll tab instead
 // Default: false
-const UseBeatloopRoolInsteadOfSampler = false;
+const UseBeatloopRollInsteadOfSampler = true;
+
+// Predefined beatlooproll sizes. Note that if you use AddLoopHalveAndDoubleOnBeatloopRollTab, the first and
+// last size will be ignored
+const BeatLoopRolls = [1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8];
+
+// Make the two last button on the beatlooproll pad halve or double the loop size. This will take away the 1/16 and 8 loop size.
+// Default: true
+const AddLoopHalveAndDoubleOnBeatloopRollTab = true;
 
 // Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the sratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
@@ -157,8 +152,10 @@ const MaxWheelForce = 25000;  // Traktor seems to cap the max value at 60000, wh
 // button as a 5th effect chain preset selector.
 const QuickEffectPresetColors = [
     LedColors.red,
+    LedColors.green,
     LedColors.blue,
     LedColors.yellow,
+    LedColors.orange,
     LedColors.purple,
     LedColors.white,
 
@@ -173,13 +170,11 @@ const QuickEffectPresetColors = [
     LedColors.blue + 1,
 
     LedColors.carrot,
-    LedColors.orange,
     LedColors.honey,
     LedColors.yellow + 1,
 
     LedColors.lime,
     LedColors.aqua,
-    LedColors.green,
     LedColors.purple + 1,
 
     LedColors.magenta + 1,
@@ -195,15 +190,15 @@ const MotorWindUpMilliseconds = 1200;
 const MotorWindDownMilliseconds = 900;
 
 /*
- * HID packet parsing library
+ * HID report parsing library
  */
-class HIDInputPacket {
+class HIDInputReport {
     constructor(reportId) {
         this.reportId = reportId;
         this.fields = [];
     }
 
-    registerCallback(callback, byteOffset, bitOffset, bitLength, defaultOldData) {
+    registerCallback(callback, byteOffset, bitOffset = 0, bitLength = 1, defaultOldData = undefined) {
         if (typeof callback !== "function") {
             throw Error("callback must be a function");
         }
@@ -212,16 +207,11 @@ class HIDInputPacket {
             throw Error("byteOffset must be 0 or a positive integer");
         }
 
-        if (bitOffset === undefined) {
-            bitOffset = 0;
-        }
+
         if (typeof bitOffset !== "number" || bitOffset < 0 || !Number.isInteger(bitOffset)) {
             throw Error("bitOffset must be 0 or a positive integer");
         }
 
-        if (bitLength === undefined) {
-            bitLength = 1;
-        }
         if (typeof bitLength !== "number" || bitLength < 1 || !Number.isInteger(bitOffset) || bitLength > 32) {
             throw Error("bitLength must be an integer between 1 and 32");
         }
@@ -244,10 +234,9 @@ class HIDInputPacket {
         };
     }
 
-    handleInput(byteArray, bufferHasNoReportID) {
-        const offset = bufferHasNoReportID ? -1 : 0;
+    handleInput(byteArray) {
         const view = new DataView(byteArray);
-        if (!bufferHasNoReportID && view.getUint8(0) !== this.reportId) {
+        if (view.getUint8(0) !== this.reportId) {
             return;
         }
 
@@ -259,13 +248,13 @@ class HIDInputPacket {
             // The HID standard allows signed integers as well, but I am not aware
             // of any HID DJ controllers which use signed integers.
             if (numBytes === 1) {
-                data = view.getUint8(field.byteOffset + offset);
+                data = view.getUint8(field.byteOffset);
             } else if (numBytes === 2) {
-                data = view.getUint16(field.byteOffset + offset, true);
+                data = view.getUint16(field.byteOffset, true);
             } else if (numBytes === 3) {
-                data = view.getUint32(field.byteOffset + offset, true) >>> 8;
+                data = view.getUint32(field.byteOffset, true) >>> 8;
             } else if (numBytes === 4) {
-                data = view.getUint32(field.byteOffset + offset, true);
+                data = view.getUint32(field.byteOffset, true);
             } else {
                 throw Error("field bitLength must be between 1 and 32");
             }
@@ -282,7 +271,7 @@ class HIDInputPacket {
     }
 }
 
-class HIDOutputPacket {
+class HIDOutputReport {
     constructor(reportId, length) {
         this.reportId = reportId;
         this.data = Array(length).fill(0);
@@ -314,7 +303,7 @@ class Component {
         }
         this.shifted = false;
         if (this.input !== undefined && typeof this.input === "function"
-            && this.inPacket !== undefined && this.inPacket instanceof HIDInputPacket) {
+            && this.inReport !== undefined && this.inReport instanceof HIDInputReport) {
             this.inConnect();
         }
         this.outConnect();
@@ -323,13 +312,13 @@ class Component {
         if (this.inByte === undefined
             || this.inBit === undefined
             || this.inBitLength === undefined
-            || this.inPacket === undefined) {
+            || this.inReport === undefined) {
             return;
         }
         if (typeof callback === "function") {
             this.input = callback;
         }
-        this.inConnection = this.inPacket.registerCallback(this.input.bind(this), this.inByte, this.inBit, this.inBitLength, this.oldDataDefault);
+        this.inConnection = this.inReport.registerCallback(this.input.bind(this), this.inByte, this.inBit, this.inBitLength, this.oldDataDefault);
     }
     inDisconnect() {
         if (this.inConnection !== undefined) {
@@ -337,9 +326,9 @@ class Component {
         }
     }
     send(value) {
-        if (this.outPacket !== undefined && this.outByte !== undefined) {
-            this.outPacket.data[this.outByte] = value;
-            this.outPacket.send();
+        if (this.outReport !== undefined && this.outByte !== undefined) {
+            this.outReport.data[this.outByte] = value;
+            this.outReport.send();
         }
     }
     output(value) {
@@ -514,16 +503,16 @@ class Button extends Component {
         if (this.input === undefined) {
             this.input = this.defaultInput;
             if (typeof this.input === "function"
-                && this.inPacket !== undefined && this.inPacket instanceof HIDInputPacket) {
+                && this.inReport !== undefined && this.inReport instanceof HIDInputReport) {
                 this.inConnect();
             }
         }
 
-        if (this.longPressTimeOut === undefined) {
-            this.longPressTimeOut = 225; // milliseconds
+        if (this.longPressTimeOutMillis === undefined) {
+            this.longPressTimeOutMillis = 225;
         }
-        if (this.indicatorInterval === undefined) {
-            this.indicatorInterval = 350; // milliseconds
+        if (this.indicatorIntervalMillis === undefined) {
+            this.indicatorIntervalMillis = 350;
         }
         this.longPressTimer = 0;
         this.indicatorTimer = 0;
@@ -566,7 +555,7 @@ class Button extends Component {
     indicator(on) {
         if (on && this.indicatorTimer === 0) {
             this.outDisconnect();
-            this.indicatorTimer = engine.beginTimer(this.indicatorInterval, this.indicatorCallback.bind(this));
+            this.indicatorTimer = engine.beginTimer(this.indicatorIntervalMillis, this.indicatorCallback.bind(this));
         } else if (!on && this.indicatorTimer !== 0) {
             engine.stopTimer(this.indicatorTimer);
             this.indicatorTimer = 0;
@@ -580,7 +569,7 @@ class Button extends Component {
             this.isLongPress = false;
             if (typeof this.onShortPress === "function") { this.onShortPress(); }
             if (typeof this.onLongPress === "function" || typeof this.onLongRelease === "function") {
-                this.longPressTimer = engine.beginTimer(this.longPressTimeOut, () => {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeOutMillis, () => {
                     this.isLongPress = true;
                     this.longPressTimer = 0;
                     if (typeof this.onLongPress !== "function") { return; }
@@ -646,7 +635,7 @@ class PowerWindowButton extends Button {
 class PlayButton extends Button {
     constructor(options) {
         // Prevent accidental ejection/duplication accident
-        options.longPressTimeOut = 800;
+        options.longPressTimeOutMillis = 800;
         super(options);
         this.inKey = "play";
         this.outKey = "play_indicator";
@@ -678,7 +667,7 @@ class CueButton extends PushButton {
         this.inKey = "start_stop";
     }
     input(pressed) {
-        if (this.deck.moveMode === moveModes.keyboard) {
+        if (this.deck.moveMode === moveModes.keyboard && !this.deck.keyboardPlayMode) {
             this.deck.assignKeyboardPlayMode(this.group, this.inKey);
         } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.group, "play") && pressed) {
             engine.setValue(this.group, "cue_goto", pressed);
@@ -719,6 +708,9 @@ class Encoder extends Component {
     }
 }
 
+/*
+ * Represent a pad button that interact with a hotcue (set, activate or clear)
+ */
 class HotcueButton extends PushButton {
     constructor(options) {
         super(options);
@@ -743,7 +735,7 @@ class HotcueButton extends PushButton {
         if (value) {
             this.send(this.color + this.brightnessOn);
         } else {
-            this.send(0);
+            this.send(LedColors.off);
         }
     }
     outConnect() {
@@ -767,6 +759,9 @@ class HotcueButton extends PushButton {
     }
 }
 
+/*
+ * Represent a pad button that acts as a keyboard key. Depending the deck keyboard mode, it will either change the key, or play the cue with the button's key
+ */
 class KeyboardButton extends PushButton {
     constructor(options) {
         super(options);
@@ -793,12 +788,21 @@ class KeyboardButton extends PushButton {
             engine.setValue(this.group, "key", this.number + offset);
         }
         if (this.deck.keyboardPlayMode !== null) {
-            script.toggleControl(this.deck.keyboardPlayMode.group, this.deck.keyboardPlayMode.action, true);
+            if (this.deck.keyboardPlayMode.activeKey && pressed) {
+                engine.setValue(this.deck.keyboardPlayMode.group, "cue_goto", pressed);
+            } else if (!this.deck.keyboardPlayMode.activeKey || this.deck.keyboardPlayMode.activeKey === this) {
+                script.toggleControl(this.deck.keyboardPlayMode.group, this.deck.keyboardPlayMode.action, true);
+            }
+            if (!pressed && this.deck.keyboardPlayMode.activeKey === this) {
+                this.deck.keyboardPlayMode.activeKey = undefined;
+            } else if (pressed) {
+                this.deck.keyboardPlayMode.activeKey = this;
+            }
         }
     }
     output(value) {
         const offset = this.deck.keyboardOffset - (this.shifted ? 8 : 0);
-        const colorIdx = (this.number + offset) % KeyboardColors.length;
+        const colorIdx = (this.number - 1 + offset) % KeyboardColors.length;
         const color = KeyboardColors[colorIdx];
         if (this.number + offset < 1 || this.number + offset > 24) {
             this.send(0);
@@ -821,13 +825,31 @@ class KeyboardButton extends PushButton {
     }
 }
 
-const beatLoopRolls = [0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8];
+/*
+ * Represent a pad button that will trigger a pre-defined beatloop size as set in BeatLoopRolls.
+ */
 class BeatLoopRollButton extends TriggerButton {
     constructor(options) {
         if (options.number === undefined || !Number.isInteger(options.number) || options.number < 0 || options.number > 7) {
             throw Error("BeatLoopRollButton must have a number property of an integer between 0 and 7");
         }
-        options.key = "beatlooproll_"+beatLoopRolls[options.number]+"_activate";
+        if (options.number <= 5  || !AddLoopHalveAndDoubleOnBeatloopRollTab) {
+            options.key = "beatlooproll_"+BeatLoopRolls[AddLoopHalveAndDoubleOnBeatloopRollTab ? options.number + 1 : options.number]+"_activate";
+            options.onShortPress = function() {
+                this.beatloopSize = engine.getValue(this.group, "beatloop_size");
+                engine.setValue(this.group, this.inKey, true);
+            };
+            options.onShortRelease = function() {
+                engine.setValue(this.group, this.inKey, false);
+                if (this.beatloopSize) {
+                    engine.setValue(this.group, "beatloop_size", this.beatloopSize);
+                }
+            };
+        } else if (options.number === 6) {
+            options.key = "loop_halve";
+        } else {
+            options.key = "loop_double";
+        }
         super(options);
         if (this.deck === undefined) {
             throw Error("BeatLoopRollButton must have a deck attached to it");
@@ -836,10 +858,17 @@ class BeatLoopRollButton extends TriggerButton {
         this.outConnect();
     }
     output(value) {
-        this.send(LedColors.white + (value ? this.brightnessOn : this.brightnessOff));
+        if (this.number <= 5 || !AddLoopHalveAndDoubleOnBeatloopRollTab) {
+            this.send(LedColors.white + (value ? this.brightnessOn : this.brightnessOff));
+        } else {
+            this.send(this.color);
+        }
     }
 }
 
+/*
+ * Represent a pad button that interact with a sampler (load, play/pause, cue, eject)
+ */
 class SamplerButton extends Button {
     constructor(options) {
         super(options);
@@ -901,6 +930,9 @@ class SamplerButton extends Button {
     }
 }
 
+/*
+ * Represent a pad button that interact with a intro/extra special markers (set, activate, clear)
+ */
 class IntroOutroButton extends PushButton {
     constructor(options) {
         super(options);
@@ -959,12 +991,12 @@ class Pot extends Component {
 }
 
 class Mixer extends ComponentContainer {
-    constructor(inPackets, outPackets) {
+    constructor(inReports, outReports) {
         super();
 
-        this.outPacket = outPackets[128];
+        this.outReport = outReports[128];
 
-        this.mixerColumnDeck1 = new S4Mk3MixerColumn("[Channel1]", inPackets, outPackets[128],
+        this.mixerColumnDeck1 = new S4Mk3MixerColumn("[Channel1]", inReports, outReports[128],
             {
                 saveGain: {inByte: 12, inBit: 0, outByte: 80},
                 effectUnit1Assign: {inByte: 3, inBit: 3, outByte: 78},
@@ -980,7 +1012,7 @@ class Mixer extends ComponentContainer {
                 crossfaderSwitch: {inByte: 18, inBit: 4},
             }
         );
-        this.mixerColumnDeck2 = new S4Mk3MixerColumn("[Channel2]", inPackets, outPackets[128],
+        this.mixerColumnDeck2 = new S4Mk3MixerColumn("[Channel2]", inReports, outReports[128],
             {
                 saveGain: {inByte: 12, inBit: 1, outByte: 84},
                 effectUnit1Assign: {inByte: 3, inBit: 5, outByte: 82},
@@ -995,7 +1027,7 @@ class Mixer extends ComponentContainer {
                 crossfaderSwitch: {inByte: 18, inBit: 2},
             }
         );
-        this.mixerColumnDeck3 = new S4Mk3MixerColumn("[Channel3]", inPackets, outPackets[128],
+        this.mixerColumnDeck3 = new S4Mk3MixerColumn("[Channel3]", inReports, outReports[128],
             {
                 saveGain: {inByte: 3, inBit: 1, outByte: 88},
                 effectUnit1Assign: {inByte: 3, inBit: 0, outByte: 86},
@@ -1010,7 +1042,7 @@ class Mixer extends ComponentContainer {
                 crossfaderSwitch: {inByte: 18, inBit: 6},
             }
         );
-        this.mixerColumnDeck4 = new S4Mk3MixerColumn("[Channel4]", inPackets, outPackets[128],
+        this.mixerColumnDeck4 = new S4Mk3MixerColumn("[Channel4]", inReports, outReports[128],
             {
                 saveGain: {inByte: 12, inBit: 2, outByte: 92},
                 effectUnit1Assign: {inByte: 3, inBit: 7, outByte: 90},
@@ -1038,6 +1070,7 @@ class Mixer extends ComponentContainer {
             {inByte: 9, inBit: 7},
         ];
         this.fxSelects = [];
+        // FX SELECT buttons: Filter, 1, 2, 3, 4
         for (const i of [0, 1, 2, 3, 4]) {
             this.fxSelects[i] = new FXSelect(
                 Object.assign(fxSelectsInputs[i], {
@@ -1054,6 +1087,7 @@ class Mixer extends ComponentContainer {
             {inByte: 8, inBit: 4, outByte: 49},
         ];
         this.quickEffectButtons = [];
+        // FX SELECT buttons: 1, 2, 3, 4
         for (const i of [0, 1, 2, 3]) {
             this.quickEffectButtons[i] = new QuickEffectButton(
                 Object.assign(quickEffectInputs[i], {
@@ -1068,8 +1102,8 @@ class Mixer extends ComponentContainer {
             input: function(pressed) {
                 if (pressed) {
                     this.globalQuantizeOn = !this.globalQuantizeOn;
-                    for (let i = 1; i <= 4; i++) {
-                        engine.setValue("[Channel" + i + "]", "quantize", this.globalQuantizeOn);
+                    for (let deckIdx = 1; deckIdx <= 4; deckIdx++) {
+                        engine.setValue("[Channel" + deckIdx + "]", "quantize", this.globalQuantizeOn);
                     }
                     this.send(this.globalQuantizeOn ? 127 : 0);
                 }
@@ -1084,7 +1118,7 @@ class Mixer extends ComponentContainer {
             group: "[Master]",
             inKey: "crossfader",
             inByte: 1,
-            inPacket: inPackets[2],
+            inReport: inReports[2],
         });
         this.crossfaderCurveSwitch = new Component({
             inByte: 19,
@@ -1111,18 +1145,18 @@ class Mixer extends ComponentContainer {
         });
 
         for (const component of this) {
-            if (component.inPacket === undefined) {
-                component.inPacket = inPackets[1];
+            if (component.inReport === undefined) {
+                component.inReport = inReports[1];
             }
-            component.outPacket = this.outPacket;
+            component.outReport = this.outReport;
             component.inConnect();
             component.outConnect();
             component.outTrigger();
         }
 
         let lightQuantizeButton = true;
-        for (let i = 1; i <= 4; i++) {
-            if (!engine.getValue("[Channel" + i + "]", "quantize")) {
+        for (let deckIdx = 1; deckIdx <= 4; deckIdx++) {
+            if (!engine.getValue("[Channel" + deckIdx + "]", "quantize")) {
                 lightQuantizeButton = false;
             }
         }
@@ -1143,9 +1177,9 @@ class Mixer extends ComponentContainer {
 
     resetFxSelectorColors() {
         for (const selector of [1, 2, 3, 4, 5]) {
-            this.outPacket.data[49 + selector] = QuickEffectPresetColors[selector - 1] + Button.prototype.brightnessOn;
+            this.outReport.data[49 + selector] = QuickEffectPresetColors[selector - 1] + Button.prototype.brightnessOn;
         }
-        this.outPacket.send();
+        this.outReport.send();
     }
 }
 
@@ -1167,10 +1201,10 @@ class FXSelect extends Button {
                     if (selector > this.number) {
                         presetNumber--;
                     }
-                    this.outPacket.data[49 + selector] = QuickEffectPresetColors[presetNumber - 1] + this.brightnessOn;
+                    this.outReport.data[49 + selector] = QuickEffectPresetColors[presetNumber - 1] + this.brightnessOn;
                 }
             }
-            this.outPacket.send();
+            this.outReport.send();
         } else {
             this.mixer.secondPressedFxSelector = this.number;
         }
@@ -1316,7 +1350,7 @@ const wheelRelativeMax = 2 ** 16 - 1;
 const wheelAbsoluteMax = 2879;
 
 const wheelTimerMax = 2 ** 32 - 1;
-const wheelTimerTicksPerSecond = 100000000;
+const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns
 
 const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
 const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
@@ -1346,7 +1380,7 @@ const moveModes = {
     keyboard: 3,
 };
 
-// tracks state across input packets
+// tracks state across input reports
 let wheelTimer = null;
 // This is a global variable so the S4Mk3Deck Components have access
 // to it and it is guaranteed to be calculated before processing
@@ -1358,7 +1392,7 @@ let wheelTimerDelta = 0;
  */
 
 class S4Mk3EffectUnit extends ComponentContainer {
-    constructor(unitNumber, inPackets, outPacket, io) {
+    constructor(unitNumber, inReports, outReport, io) {
         super();
         this.group = "[EffectRack1_EffectUnit" + unitNumber + "]";
         this.unitNumber = unitNumber;
@@ -1367,17 +1401,17 @@ class S4Mk3EffectUnit extends ComponentContainer {
         this.mixKnob = new Pot({
             inKey: "mix",
             group: this.group,
-            inPacket: inPackets[2],
+            inReport: inReports[2],
             inByte: io.mixKnob.inByte,
         });
 
         this.mainButton = new PowerWindowButton({
             unit: this,
-            inPacket: inPackets[1],
+            inReport: inReports[1],
             inByte: io.mainButton.inByte,
             inBit: io.mainButton.inBit,
             outByte: io.mainButton.outByte,
-            outPacket: outPacket,
+            outReport: outReport,
             shift: function() {
                 this.group = this.unit.group;
                 this.outKey = "group_[Master]_enable";
@@ -1415,18 +1449,18 @@ class S4Mk3EffectUnit extends ComponentContainer {
             this.knobs[index] = new Pot({
                 inKey: "meta",
                 group: effectGroup,
-                inPacket: inPackets[2],
+                inReport: inReports[2],
                 inByte: io.knobs[index].inByte,
             });
             this.buttons[index] = new Button({
                 unit: this,
                 key: "enabled",
                 group: effectGroup,
-                inPacket: inPackets[1],
+                inReport: inReports[1],
                 inByte: io.buttons[index].inByte,
                 inBit: io.buttons[index].inBit,
                 outByte: io.buttons[index].outByte,
-                outPacket: outPacket,
+                outReport: outReport,
                 onShortPress: function() {
                     if (!this.shifted || this.unit.focusedEffect !== null) {
                         script.toggleControl(this.group, this.inKey);
@@ -1495,7 +1529,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
 }
 
 class S4Mk3Deck extends Deck {
-    constructor(decks, colors, effectUnit, inPackets, outPacket, io) {
+    constructor(decks, colors, effectUnit, inReports, outReport, io) {
         super(decks, colors);
 
         this.playButton = new PlayButton({
@@ -1755,6 +1789,10 @@ class S4Mk3Deck extends Deck {
             } : undefined,
             onShortPress: function() {
                 this.deck.libraryEncoder.gridButtonPressed = true;
+
+                if (this.shift) {
+                    engine.setValue(this.group, "bpm_tap", true);
+                }
             },
             onLongPress: function() {
                 this.deck.libraryEncoder.gridButtonPressed = true;
@@ -1779,6 +1817,10 @@ class S4Mk3Deck extends Deck {
             onShortRelease: function() {
                 this.deck.libraryEncoder.gridButtonPressed = false;
                 script.triggerControl(this.group, "beats_translate_curpos");
+
+                if (this.shift) {
+                    engine.setValue(this.group, "bpm_tap", false);
+                }
             },
         });
 
@@ -1787,10 +1829,10 @@ class S4Mk3Deck extends Deck {
             input: function(value) {
                 if (value) {
                     this.deck.switchDeck(Deck.groupForNumber(decks[0]));
-                    this.outPacket.data[io.deckButtonOutputByteOffset] = colors[0] + this.brightnessOn;
+                    this.outReport.data[io.deckButtonOutputByteOffset] = colors[0] + this.brightnessOn;
                     // turn off the other deck selection button's LED
-                    this.outPacket.data[io.deckButtonOutputByteOffset + 1] = 0;
-                    this.outPacket.send();
+                    this.outReport.data[io.deckButtonOutputByteOffset + 1] = KeepDeckSelectDimmed ? colors[1] + this.brightnessOff : 0;
+                    this.outReport.send();
                 }
             },
         });
@@ -1800,17 +1842,17 @@ class S4Mk3Deck extends Deck {
                 if (value) {
                     this.deck.switchDeck(Deck.groupForNumber(decks[1]));
                     // turn off the other deck selection button's LED
-                    this.outPacket.data[io.deckButtonOutputByteOffset] = 0;
-                    this.outPacket.data[io.deckButtonOutputByteOffset + 1] = colors[1] + this.brightnessOn;
-                    this.outPacket.send();
+                    this.outReport.data[io.deckButtonOutputByteOffset] = KeepDeckSelectDimmed ? colors[0] + this.brightnessOff : 0;
+                    this.outReport.data[io.deckButtonOutputByteOffset + 1] = colors[1] + this.brightnessOn;
+                    this.outReport.send();
                 }
             },
         });
 
         // set deck selection button LEDs
-        outPacket.data[io.deckButtonOutputByteOffset] = colors[0] + Button.prototype.brightnessOn;
-        outPacket.data[io.deckButtonOutputByteOffset + 1] = 0;
-        outPacket.send();
+        outReport.data[io.deckButtonOutputByteOffset] = colors[0] + Button.prototype.brightnessOn;
+        outReport.data[io.deckButtonOutputByteOffset + 1] = KeepDeckSelectDimmed ? colors[1] + Button.prototype.brightnessOff : 0;
+        outReport.send();
 
         this.shiftButton = new PushButton({
             deck: this,
@@ -1893,7 +1935,7 @@ class S4Mk3Deck extends Deck {
             deck: this,
             onChange: function(right) {
                 if (this.deck.wheelMode === wheelModes.loopIn || this.deck.wheelMode === wheelModes.loopOut) {
-                    const moveFactor = this.shifted ? LOOP_ENCODER_SHIFTMOVE_FACTOR : LOOP_ENCODER_MOVE_FACTOR;
+                    const moveFactor = this.shifted ? LoopEncoderShiftmoveFactor : LoopEncoderMoveFactor;
                     const valueIn = engine.getValue(this.group, "loop_start_position") + (right ? moveFactor : -moveFactor);
                     const valueOut = engine.getValue(this.group, "loop_end_position") + (right ? moveFactor : -moveFactor);
                     engine.setValue(this.group, "loop_start_position", valueIn);
@@ -2097,7 +2139,7 @@ class S4Mk3Deck extends Deck {
         ];
         const hotcuePage2 = Array(8).fill({});
         const hotcuePage3 = Array(8).fill({});
-        const samplerOrBeatloopRoolPage = Array(8).fill({});
+        const samplerOrBeatloopRollPage = Array(8).fill({});
         this.keyboard = Array(8).fill({});
         let i = 0;
         /* eslint no-unused-vars: "off" */
@@ -2105,8 +2147,8 @@ class S4Mk3Deck extends Deck {
             // start with hotcue 5; hotcues 1-4 are in defaultPadLayer
             hotcuePage2[i] = new HotcueButton({number: i + 1});
             hotcuePage3[i] = new HotcueButton({number: i + 13});
-            if (UseBeatloopRoolInsteadOfSampler) {
-                samplerOrBeatloopRoolPage[i] = new BeatLoopRollButton({
+            if (UseBeatloopRollInsteadOfSampler) {
+                samplerOrBeatloopRollPage[i] = new BeatLoopRollButton({
                     number: i,
                     deck: this,
                 });
@@ -2119,7 +2161,7 @@ class S4Mk3Deck extends Deck {
                 if (decks[0] > 1) {
                     samplerNumber += 4;
                 }
-                samplerOrBeatloopRoolPage[i] = new SamplerButton({
+                samplerOrBeatloopRollPage[i] = new SamplerButton({
                     number: samplerNumber,
                 });
                 if (SamplerCrossfaderAssign) {
@@ -2152,10 +2194,10 @@ class S4Mk3Deck extends Deck {
                 if (!(pad instanceof SamplerButton)) {
                     pad.group = deck.group;
                 }
-                if (pad.inPacket === undefined) {
-                    pad.inPacket = inPackets[1];
+                if (pad.inReport === undefined) {
+                    pad.inReport = inReports[1];
                 }
-                pad.outPacket = outPacket;
+                pad.outReport = outReport;
                 pad.inConnect();
                 pad.outConnect();
                 pad.outTrigger();
@@ -2206,7 +2248,7 @@ class S4Mk3Deck extends Deck {
             deck: this,
             onShortPress: function() {
                 if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage) {
-                    switchPadLayer(this.deck, samplerOrBeatloopRoolPage);
+                    switchPadLayer(this.deck, samplerOrBeatloopRollPage);
                     engine.setValue("[Samplers]", "show_samplers", true);
                     this.deck.currentPadLayer = this.deck.padLayers.samplerPage;
                 } else {
@@ -2238,7 +2280,7 @@ class S4Mk3Deck extends Deck {
                 }
             },
             onShortRelease: function() {
-                if (this.previousMoveMode !== null) {
+                if (this.previousMoveMode !== null && !this.deck.keyboardPlayMode) {
                     this.deck.moveMode = this.previousMoveMode;
                     this.previousMoveMode = null;
                 }
@@ -2252,7 +2294,7 @@ class S4Mk3Deck extends Deck {
                 this.deck.lightPadMode();
             },
             onLongRelease: function() {
-                if (this.previousMoveMode !== null) {
+                if (this.previousMoveMode !== null && !this.deck.keyboardPlayMode) {
                     this.deck.moveMode = this.previousMoveMode;
                     this.previousMoveMode = null;
                 }
@@ -2355,7 +2397,7 @@ class S4Mk3Deck extends Deck {
         // The relative and absolute position inputs have the same resolution but direction
         // cannot be determined reliably with the absolute position because it is easily
         // possible to spin the wheel fast enough that it spins more than half a revolution
-        // between input packets. So there is no need to process the absolution position
+        // between input reports. So there is no need to process the absolution position
         // at all; the relative position is sufficient.
         this.wheelRelative = new Component({
             oldValue: null,
@@ -2413,7 +2455,7 @@ class S4Mk3Deck extends Deck {
                     {
                         const loopStartPosition = engine.getValue(this.group, "loop_start_position");
                         const loopEndPosition = engine.getValue(this.group, "loop_end_position");
-                        const value = Math.min(loopStartPosition + (this.avgSpeed * LOOP_WHEEL_MOVE_FACTOR), loopEndPosition - LOOP_WHEEL_MOVE_FACTOR);
+                        const value = Math.min(loopStartPosition + (this.avgSpeed * LoopWheelMoveFactor), loopEndPosition - LoopWheelMoveFactor);
                         engine.setValue(
                             this.group,
                             "loop_start_position",
@@ -2424,7 +2466,7 @@ class S4Mk3Deck extends Deck {
                 case wheelModes.loopOut:
                     {
                         const loopEndPosition = engine.getValue(this.group, "loop_end_position");
-                        const value = loopEndPosition + (this.avgSpeed * LOOP_WHEEL_MOVE_FACTOR);
+                        const value = loopEndPosition + (this.avgSpeed * LoopWheelMoveFactor);
                         engine.setValue(
                             this.group,
                             "loop_end_position",
@@ -2475,10 +2517,10 @@ class S4Mk3Deck extends Deck {
                 const component = this[property];
                 if (component instanceof Component) {
                     Object.assign(component, io[property]);
-                    if (component.inPacket === undefined) {
-                        component.inPacket = inPackets[1];
+                    if (component.inReport === undefined) {
+                        component.inReport = inReports[1];
                     }
-                    component.outPacket = outPacket;
+                    component.outReport = outReport;
                     if (component.group === undefined) {
                         component.group = this.group;
                     }
@@ -2535,7 +2577,7 @@ class S4Mk3Deck extends Deck {
 }
 
 class S4Mk3MixerColumn extends ComponentContainer {
-    constructor(group, inPackets, outPacket, io) {
+    constructor(group, inReports, outReport, io) {
         super();
 
         this.group = group;
@@ -2602,11 +2644,11 @@ class S4Mk3MixerColumn extends ComponentContainer {
                 if (component instanceof Component) {
                     Object.assign(component, io[property]);
                     if (component instanceof Pot) {
-                        component.inPacket = inPackets[2];
+                        component.inReport = inReports[2];
                     } else {
-                        component.inPacket = inPackets[1];
+                        component.inReport = inReports[1];
                     }
-                    component.outPacket = outPacket;
+                    component.outReport = outReport;
 
                     if (component.group === undefined) {
                         component.group = this.group;
@@ -2621,40 +2663,25 @@ class S4Mk3MixerColumn extends ComponentContainer {
     }
 }
 
-const packetToBinaryString = (data) => {
-    let string = "";
-    for (const byte of data) {
-        if (byte === 0) {
-            // special case because Math.log(0) === Infinity
-            string = string + "0".repeat(8) + ",";
-        } else {
-            const numOfZeroes = 7 - Math.floor(Math.log(byte) / Math.log(2));
-            string = string + "0".repeat(numOfZeroes) + byte.toString(2) + ",";
-        }
-    }
-    // remove trailing comma
-    return string.slice(0, -1);
-};
-
 class S4MK3 {
     constructor() {
         if (engine.getValue("[Master]", "num_samplers") < 16) {
             engine.setValue("[Master]", "num_samplers", 16);
         }
 
-        this.inPackets = [];
-        this.inPackets[1] = new HIDInputPacket(1);
-        this.inPackets[2] = new HIDInputPacket(2);
-        this.inPackets[3] = new HIDInputPacket(3);
+        this.inReports = [];
+        this.inReports[1] = new HIDInputReport(1);
+        this.inReports[2] = new HIDInputReport(2);
+        this.inReports[3] = new HIDInputReport(3);
 
         // There are various of other HID report which doesn't seem to have any
         // immediate use but it is likely that some useful settings may be found
         // in them such as the wheel tension.
 
-        this.outPackets = [];
-        this.outPackets[128] = new HIDOutputPacket(128, 94);
+        this.outReports = [];
+        this.outReports[128] = new HIDOutputReport(128, 94);
 
-        this.effectUnit1 = new S4Mk3EffectUnit(1, this.inPackets, this.outPackets[128],
+        this.effectUnit1 = new S4Mk3EffectUnit(1, this.inReports, this.outReports[128],
             {
                 mixKnob: {inByte: 31},
                 mainButton: {inByte: 2, inBit: 6, outByte: 62},
@@ -2670,7 +2697,7 @@ class S4MK3 {
                 ],
             }
         );
-        this.effectUnit2 = new S4Mk3EffectUnit(2, this.inPackets, this.outPackets[128],
+        this.effectUnit2 = new S4Mk3EffectUnit(2, this.inReports, this.outReports[128],
             {
                 mixKnob: {inByte: 71},
                 mainButton: {inByte: 10, inBit: 4, outByte: 73},
@@ -2692,7 +2719,7 @@ class S4MK3 {
         // for both decks.
         this.leftDeck = new S4Mk3Deck(
             [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1,
-            this.inPackets, this.outPackets[128],
+            this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 5, inBit: 0, outByte: 55},
                 cueButton: {inByte: 5, inBit: 1, outByte: 8},
@@ -2734,16 +2761,16 @@ class S4MK3 {
                     {inByte: 4, inBit: 1, outByte: 6},
                     {inByte: 4, inBit: 0, outByte: 7},
                 ],
-                tempoFader: {inByte: 13, inBit: 0, inBitLength: 16, inPacket: this.inPackets[2]},
-                wheelRelative: {inByte: 12, inBit: 0, inBitLength: 16, inPacket: this.inPackets[3]},
-                wheelAbsolute: {inByte: 16, inBit: 0, inBitLength: 16, inPacket: this.inPackets[3]},
+                tempoFader: {inByte: 13, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                wheelRelative: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
+                wheelAbsolute: {inByte: 16, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 17, inBit: 4},
             }
         );
 
         this.rightDeck = new S4Mk3Deck(
             [2, 4], [DeckColors[1], DeckColors[3]], this.effectUnit2,
-            this.inPackets, this.outPackets[128],
+            this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 13, inBit: 0, outByte: 66},
                 cueButton: {inByte: 15, inBit: 5, outByte: 31},
@@ -2785,9 +2812,9 @@ class S4MK3 {
                     {inByte: 14, inBit: 1, outByte: 29},
                     {inByte: 14, inBit: 0, outByte: 30},
                 ],
-                tempoFader: {inByte: 11, inBit: 0, inBitLength: 16, inPacket: this.inPackets[2]},
-                wheelRelative: {inByte: 40, inBit: 0, inBitLength: 16, inPacket: this.inPackets[3]},
-                wheelAbsolute: {inByte: 44, inBit: 0, inBitLength: 16, inPacket: this.inPackets[3]},
+                tempoFader: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                wheelRelative: {inByte: 40, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
+                wheelAbsolute: {inByte: 44, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 17, inBit: 5},
             }
         );
@@ -2795,7 +2822,7 @@ class S4MK3 {
         // The interaction between the FX SELECT buttons and the QuickEffect enable buttons is rather complex.
         // It is easier to have this separate from the S4Mk3MixerColumn class and the FX SELECT buttons are not
         // really in the mixer columns.
-        this.mixer = new Mixer(this.inPackets, this.outPackets);
+        this.mixer = new Mixer(this.inReports, this.outReports);
 
         /* eslint no-unused-vars: "off" */
         const meterConnection = engine.makeConnection("[Master]", "guiTick50ms", function(_value) {
@@ -2822,7 +2849,7 @@ class S4MK3 {
                     deckMeters[columnBaseIndex + deckSegments + 1] = 127;
                 }
             }
-            // There are more bytes in the packet which seem like they should be for the main
+            // There are more bytes in the report which seem like they should be for the main
             // mix meters, but setting those bytes does not do anything, except for lighting
             // the clip lights on the main mix meters.
             controller.send(deckMeters, null, 129);
@@ -3000,12 +3027,12 @@ class S4MK3 {
         motorData[9] = velocityRight >> 8;
         controller.send(motorData, null, 49, true);
     }
-    incomingData(data, _, forceReportId) {
-        const reportId = forceReportId || data[0];
+    incomingData(data) {
+        const reportId = data[0];
         if (reportId === 1) {
-            this.inPackets[1].handleInput(data.buffer, !!forceReportId);
+            this.inReports[1].handleInput(data.buffer);
         } else if (reportId === 2) {
-            this.inPackets[2].handleInput(data.buffer, !!forceReportId);
+            this.inReports[2].handleInput(data.buffer);
             // The master volume, booth volume, headphone mix, and headphone volume knobs
             // control the controller's audio interface in hardware, so they are not mapped.
         } else if (reportId === 3) {
@@ -3030,21 +3057,24 @@ class S4MK3 {
         }
     }
     init() {
-        // sending these magic packets is required for the jog wheel LEDs to work
-        const wheelLEDinitPacket = Array(26).fill(0);
-        wheelLEDinitPacket[1] = 1;
-        wheelLEDinitPacket[2] = 3;
-        controller.send(wheelLEDinitPacket, null, 48, true);
-        wheelLEDinitPacket[0] = 1;
-        controller.send(wheelLEDinitPacket, null, 48);
+        // sending these magic reports is required for the jog wheel LEDs to work
+        const wheelLEDinitReport = Array(26).fill(0);
+        wheelLEDinitReport[1] = 1;
+        wheelLEDinitReport[2] = 3;
+        controller.send(wheelLEDinitReport, null, 48, true);
+        wheelLEDinitReport[0] = 1;
+        controller.send(wheelLEDinitReport, null, 48);
 
         // Init wheel timer data
         wheelTimer = null;
         wheelTimerDelta = 0;
 
         // get state of knobs and faders
-        this.incomingData(new Uint8Array(controller.getInputReport(1)), null, 1);
-        this.incomingData(new Uint8Array(controller.getInputReport(2)), null, 2);
+        // this.incomingData(new Uint8Array(controller.getInputReport(1)), null, 1);
+        // this.incomingData(new Uint8Array(controller.getInputReport(2)), null, 2);
+
+        this.incomingData(new Uint8Array([0x01, ...Uint8Array.from(new Uint8Array(controller.getInputReport(0x01)))]));
+        this.incomingData(new Uint8Array([0x02, ...Uint8Array.from(new Uint8Array(controller.getInputReport(0x02)))]));
     }
     shutdown() {
         // button LEDs
