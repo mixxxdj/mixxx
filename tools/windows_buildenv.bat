@@ -21,9 +21,15 @@ IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
 )
 
-SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-8f8342a
-SET BUILDENV_BRANCH=2.4-rel
-SET BUILDENV_SHA256=8dc9f310cde271e20e9dc21563aeb5fc7f618a316eae3dcb77f41cf18fc310f3
+IF DEFINED BUILDENV_RELEASE (
+    SET BUILDENV_BRANCH=2.4-rel
+    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-8f8342a
+    SET BUILDENV_SHA256=8dc9f310cde271e20e9dc21563aeb5fc7f618a316eae3dcb77f41cf18fc310f3
+) ELSE (
+    SET BUILDENV_BRANCH=2.4
+    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-c9ebc36
+    SET BUILDENV_SHA256=551ffdcdf8c552eddddb425f61c934da00208dcb240685ec7e27c3c26ed4953e
+)
 
 IF "%~1"=="" (
     REM In case of manual start by double click no arguments are specified: Default to COMMAND_setup

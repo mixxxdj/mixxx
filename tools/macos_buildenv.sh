@@ -19,9 +19,27 @@ realpath() {
 THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
-BUILDENV_NAME="mixxx-deps-2.4-x64-osx-min1012-8f8342a"
-BUILDENV_BRANCH="2.4-rel"
-BUILDENV_SHA256="6738f2fc5e4ef2156e363e84b1f8705db3d25350b44126d00e4c78285dfa82ef"
+if [ -n "${BUILDENV_ARM64}" ]; then
+    if [ -n "${BUILDENV_RELEASE}" ]; then
+        BUILDENV_BRANCH="2.4-rel"
+        BUILDENV_NAME="mixxx-deps-2.4-arm64-osx-min1100-8f8342a"
+        BUILDENV_SHA256="0c9a0639aa8ef61c2acb2fd85e5dd785bbfd8e7e6d3320762304bb35b713e230"
+    else
+        BUILDENV_BRANCH="2.4"
+        BUILDENV_NAME="mixxx-deps-2.4-arm64-osx-min1100-50ff351"
+        BUILDENV_SHA256="bc835488aacb3e6cf582e929acee42074af9be0758de04e910025b76e4665a00"
+    fi
+else
+    if [ -n "${BUILDENV_RELEASE}" ]; then
+        BUILDENV_BRANCH="2.4-rel"
+        BUILDENV_NAME="mixxx-deps-2.4-x64-osx-min1012-8f8342a"
+        BUILDENV_SHA256="6738f2fc5e4ef2156e363e84b1f8705db3d25350b44126d00e4c78285dfa82ef"
+    else
+        BUILDENV_BRANCH="2.4"
+        BUILDENV_NAME="mixxx-deps-2.4-x64-osx-min1012-50ff351"
+        BUILDENV_SHA256="8d42a9210b596a85d78c85a00fa81fdb7af6c9f2caa243e260ce279fd09afc5e"
+    fi
+fi
 
 MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
 

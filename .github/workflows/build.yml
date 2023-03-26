@@ -75,7 +75,7 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
             buildenv_basepath: /Users/runner/buildenv
-            buildenv_script: tools/macos_buildenv.sh
+            buildenv_script: tools/macos_release_buildenv.sh
             artifacts_name: macOS Intel DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
@@ -97,7 +97,7 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
             buildenv_basepath: /Users/runner/buildenv
-            buildenv_script: tools/macos_arm64-cross_buildenv.sh
+            buildenv_script: tools/macos_arm64-cross-release_buildenv.sh
             artifacts_name: macOS ARM DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
@@ -125,7 +125,7 @@ jobs:
             compiler_cache: sccache
             compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
             buildenv_basepath: C:\buildenv
-            buildenv_script: tools/windows_buildenv.bat
+            buildenv_script: tools/windows_release_buildenv.bat
             artifacts_name: Windows Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
