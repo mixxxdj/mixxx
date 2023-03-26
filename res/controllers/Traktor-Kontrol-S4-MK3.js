@@ -103,6 +103,10 @@ const UseKeylockOnMaster = false;
 // Default: false
 const GridButtonBlinkOverBeat = false;
 
+// Wheel led blinking if reaching the end of track warning (default 30 seconds, can be changed in the settings, under "Waveforms" > "End of track warning").
+// Default: true
+const WheelLedBlinkOnTrackEnd = true;
+
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
 // less responsive it gets in Mixxx. Default: 5
 const WheelSpeedSample = 3;
@@ -2502,9 +2506,14 @@ class S4Mk3Deck extends Deck {
 
                 const wheelOutput = Array(40).fill(0);
                 wheelOutput[0] = decks[0] - 1;
-                wheelOutput[1] = wheelLEDmodes.spot;
-                wheelOutput[2] = LEDposition & 0xff;
-                wheelOutput[3] = LEDposition >> 8;
+
+                if (engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd) {
+                    wheelOutput[1] = wheelLEDmodes.ringFlash;
+                } else {
+                    wheelOutput[1] = wheelLEDmodes.spot;
+                    wheelOutput[2] = LEDposition & 0xff;
+                    wheelOutput[3] = LEDposition >> 8;
+                }
                 wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
                 controller.send(wheelOutput, null, 50, true);
@@ -3070,9 +3079,6 @@ class S4MK3 {
         wheelTimerDelta = 0;
 
         // get state of knobs and faders
-        // this.incomingData(new Uint8Array(controller.getInputReport(1)), null, 1);
-        // this.incomingData(new Uint8Array(controller.getInputReport(2)), null, 2);
-
         this.incomingData(new Uint8Array([0x01, ...Uint8Array.from(new Uint8Array(controller.getInputReport(0x01)))]));
         this.incomingData(new Uint8Array([0x02, ...Uint8Array.from(new Uint8Array(controller.getInputReport(0x02)))]));
     }
