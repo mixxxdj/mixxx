@@ -371,21 +371,6 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     });
 
     // Performance Pads
-    // TODO: Figure out how to work with different pad modes
-    this.performancePad = [];
-
-    /* Old hotcue method
-    for (let i = 1; i <= 8; i++) {
-        this.performancePad[i] = new components.HotcueButton({
-            number: i,
-            midi: [0x90 + midiChannel, 0x0E + i],
-            colorMapper: Prime4ColorMapper,
-            off: Prime4.rgbCode.whiteDark,
-        });
-    };
-    */
-
-    // Performance Pads
     this.padGrid = new Prime4.PadSection(this, midiChannel - 4);
 
     // Tempo Fader
