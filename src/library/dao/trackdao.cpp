@@ -279,8 +279,8 @@ void TrackDAO::saveTrack(Track* pTrack) const {
         return;
     }
     qDebug() << "TrackDAO: Saving track"
-            << trackId
-            << pTrack->getFileInfo();
+             << trackId
+             << pTrack->getLocation();
     if (updateTrack(pTrack)) {
         // BaseTrackCache must be informed separately, because the
         // track has already been disconnected and TrackDAO does
@@ -534,13 +534,13 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     VERIFY_OR_DEBUG_ASSERT(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
         m_pQueryLibrarySelect || m_pQueryTrackLocationSelect) {
         qDebug() << "TrackDAO::addTracksAddTrack: needed SqlQuerys have not "
-                "been prepared. Skipping track"
-                << pTrack->getFileInfo();
+                    "been prepared. Skipping track"
+                 << pTrack->getLocation();
         return TrackId();
     }
 
     qDebug() << "TrackDAO: Adding track"
-            << pTrack->getFileInfo();
+             << pTrack->getLocation();
 
     TrackId trackId;
 
@@ -572,10 +572,10 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
 
         m_pQueryLibrarySelect->bindValue(":location", trackLocationId.toVariant());
         if (!m_pQueryLibrarySelect->exec()) {
-             LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
-                     << "Failed to query existing track: "
-                     << pTrack->getFileInfo();
-             return TrackId();
+            LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
+                    << "Failed to query existing track: "
+                    << pTrack->getLocation();
+            return TrackId();
         }
         if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
             QSqlRecord queryLibraryRecord = m_pQueryLibrarySelect->record();
@@ -601,7 +601,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             if (!m_pQueryLibraryUpdate->exec()) {
                 LOG_FAILED_QUERY(*m_pQueryLibraryUpdate)
                         << "Failed to unremove existing track: "
-                        << pTrack->getFileInfo();
+                        << pTrack->getLocation();
                 return TrackId();
             }
         }
@@ -716,8 +716,8 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
     const TrackId newTrackId = addTracksAddTrack(pTrack, unremove);
     if (!newTrackId.isValid()) {
         qWarning() << "TrackDAO::addTracksAddTrack:"
-                << "Failed to add track to database"
-                << pTrack->getFileInfo();
+                   << "Failed to add track to database"
+                   << pTrack->getLocation();
         // GlobalTrackCache will be unlocked implicitly
         return TrackPointer();
     }
@@ -1418,9 +1418,9 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
     DEBUG_ASSERT(trackId.isValid());
 
     qDebug() << "TrackDAO:"
-            << "Updating track in database"
-            << trackId
-            << pTrack->getFileInfo();
+             << "Updating track in database"
+             << trackId
+             << pTrack->getLocation();
 
     SqlTransaction transaction(m_database);
     // PerformanceTimer time;
