@@ -1091,6 +1091,26 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck A - Jog Wheel Surface Touch -->
+              <group></group>
+              <key>Prime4.leftDeck.jogWheel.inputTouch</key>
+              <description></description>
+              <status>0x94</status>
+              <midino>0x21</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Jog Wheel Surface Touch -->
+              <group></group>
+              <key>Prime4.leftDeck.jogWheel.inputTouch</key>
+              <description></description>
+              <status>0x84</status>
+              <midino>0x21</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck A - Parameter Left Button -->
               <group></group>
               <key></key>
@@ -1691,6 +1711,26 @@
               <description>Play/Stop</description>
               <status>0x95</status>
               <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Jog Wheel Surface Touch -->
+              <group></group>
+              <key>Prime4.rightDeck.jogWheel.inputTouch</key>
+              <description></description>
+              <status>0x95</status>
+              <midino>0x21</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Jog Wheel Surface Touch -->
+              <group></group>
+              <key>Prime4.rightDeck.jogWheel.inputTouch</key>
+              <description></description>
+              <status>0x85</status>
+              <midino>0x21</midino>
               <options>
                 <Script-Binding/>
               </options>

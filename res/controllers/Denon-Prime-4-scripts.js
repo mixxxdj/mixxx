@@ -284,25 +284,8 @@ Prime4.shutdown = function() {
 const mixerStrip = function(deckNumber, midiOffset) {
     components.Deck.call(this, deckNumber);
 
-    // FX Buttons - OLD
-    /*
-    this.fxBank1 = new components.Button({
-        midi: [0x90 + midiOffset, 0x01],
-        group: "[EffectRack1_EffectUnit1]",
-        key: "group_[Channel" + deckNumber + "]_enable",
-        type: components.Button.prototype.types.toggle,
-    });
-    this.fxBank2 = new components.Button({
-        midi: [0x90 + midiOffset, 0x02],
-        group: "[EffectRack1_EffectUnit2]",
-        key: "group_[Channel" + deckNumber + "]_enable",
-        type: components.Button.prototype.types.toggle,
-    });
-    */
-
-    // FX Buttons - NEW
+    // FX Buttons
     this.fxBankSelect = new components.ComponentContainer;
-    //var fxBankSelect = [];
     for (let u = 1; u <= 2; u++) {
         this.fxBankSelect[u] = new components.EffectAssignmentButton({
             midi: [0x90 + midiOffset, 0x00 + u],
@@ -419,17 +402,33 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     });
     */
 
+    /*
+     * The Denon Prime 4's jog wheels send a 14-bit MIDI message when they turn;
+     * similar to how the tempo faders send MIDI messages. I have no idea how to
+     * implement this using components (or even basic functions for that matter),
+     * so any help would be greatly appreciated.
+     */
+    // Jog Wheel
+    this.jogWheel = components.JogWheelBasic({
+        wheelResolution: 1000,
+        alpha: 1/8,
+        beta: 1/8/32,
+        rpm: 33 + 1/3,
+    });
+
     // Slip Mode Button
     this.slipButton = new components.Button({
         midi: [0x90 + midiChannel, 0x24],
         key: "slip_enabled",
         type: components.Button.prototype.types.toggle,
     });
+
     // Loop In Button
     this.loopInButton = new components.Button({
         midi: [0x90 + midiChannel, 0x25],
         key: "loop_in",
     });
+
     // Loop Out Button
     this.loopOutButton = new components.Button({
         midi: [0x90 + midiChannel, 0x26],
