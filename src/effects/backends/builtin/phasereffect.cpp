@@ -113,10 +113,6 @@ void PhaserEffect::loadEngineEffectParameters(
     m_pStereoParameter = parameters.value("stereo");
 }
 
-PhaserEffect::~PhaserEffect() {
-    //qDebug() << debugString() << "destroyed";
-}
-
 void PhaserEffect::processChannel(
         PhaserGroupState* pState,
         const CSAMPLE* pInput,

@@ -210,14 +210,17 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 
     SINT framesPerBuffer = m_configFramesPerBuffer;
-    if (m_deviceTypeId == paJACK) {
-        // PortAudio's JACK back end has its own buffering to split or merge the buffer
-        // received from JACK to the desired size.
-        // However, we use here paFramesPerBufferUnspecified to use the JACK buffer size
+    if (m_deviceTypeId == paJACK && framesPerBuffer <= 1024) {
+        // Up to a Jack buffer size of 1024 frames/period, PortAudio is able to
+        // follow the Jack buffer size dynamically.
+        // We make use of it by requesting paFramesPerBufferUnspecified
         // which offers the best response time without additional jitter due to two
         // successive callback without the expected pause.
         framesPerBuffer = paFramesPerBufferUnspecified;
         qDebug() << "Using JACK server's frames per period";
+        // in case of bigger buffers, the user need to select the same buffers
+        // size in Mixxx and Jack to avoid buffer underflow/overflow during broadcasting
+        // This fixes https://github.com/mixxxdj/mixxx/issues/11341
     } else {
         qDebug() << "framesPerBuffer:" << framesPerBuffer;
     }
@@ -889,7 +892,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #ifdef __SSE__
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
-        // https://bugs.launchpad.net/mixxx/+bug/1404401
+        // https://github.com/mixxxdj/mixxx/issues/7747
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
@@ -938,7 +941,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #ifdef __WINDOWS__
     // We need to refresh the denormals flags every callback since some
     // driver + API combinations will reset them (known: DirectSound + Realtec)
-    // Fixes Bug #1495047
+    // Fixes issue #8220
     // (Both calls are very fast)
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);

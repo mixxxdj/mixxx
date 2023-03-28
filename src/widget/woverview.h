@@ -78,6 +78,16 @@ class WOverview : public WWidget, public TrackDropTarget {
         return m_pWaveform;
     }
 
+    double getTrackSamples() const {
+        if (m_trackLoaded) {
+            return m_trackSamplesControl->get();
+        } else {
+            // Ignore the value, because the engine can still have the old track
+            // during loading
+            return 0.0;
+        }
+    }
+
     QImage m_waveformSourceImage;
     QImage m_waveformImageScaled;
 

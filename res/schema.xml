@@ -446,7 +446,7 @@ reapplying those migrations.
       Reset replay gain info for all FLAC files after fixing a decoding bug in version 2.1.0.
       <!-- The value of 'replaygain_peak' is not yet calculated by any Mixxx analyzer, -->
       <!-- so we should leave it untouched and don't need to reset it here!            -->
-      <!-- See also: https://bugs.launchpad.net/mixxx/+bug/1766042                     -->
+      <!-- See also: https://github.com/mixxxdj/mixxx/issues/9255                     -->
     </description>
     <sql>
       <!-- Reset replay gain to default value -->

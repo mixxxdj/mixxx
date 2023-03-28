@@ -278,7 +278,7 @@ class Track : public QObject {
     /// any metadata in file tags. Otherwise just the title (even if it is empty).
     QString getTitleInfo() const;
 
-    ConstWaveformPointer getWaveform() const;
+    const ConstWaveformPointer& getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
 
     ConstWaveformPointer getWaveformSummary() const;

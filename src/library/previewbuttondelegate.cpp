@@ -176,7 +176,7 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
     // Ignore signal if the edited cell index didn't change.
     // Receiving this signal for the same cell again could happen
     // if no other cell has been entered between those events.
-    // https://bugs.launchpad.net/mixxx/+bug/1929141
+    // https://github.com/mixxxdj/mixxx/issues/10418
     if (index == m_currentEditedCellIndex) {
         return;
     }

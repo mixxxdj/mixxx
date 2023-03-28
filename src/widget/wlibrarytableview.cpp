@@ -272,7 +272,7 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
         // current or first track which can then instantly be loaded to a deck.
         // This is especially helpful if the table has only one track, which can
         // not be selected with up/down buttons, either physical or emulated via
-        // [Library],MoveVertical controls. See lp:1808632
+        // [Library],MoveVertical controls. See #9548
         if (model()->rowCount() > 0) {
             if (selectionModel()->hasSelection()) {
                 DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());

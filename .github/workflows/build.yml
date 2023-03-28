@@ -36,11 +36,8 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: Arch Linux (Qt 6.3, gcc)
+          - name: Ubuntu 22.04 (Qt 6.2, gcc)
             os: ubuntu-22.04
-            # The Dockerfile for this container can be found at:
-            # https://github.com/Holzhaus/mixxx-ci-docker
-            container: holzhaus/mixxx-ci:20220612-qt6
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DQT6=ON
@@ -54,6 +51,12 @@ jobs:
             ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
+            cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/debian_buildenv_qt6.sh
+            artifacts_name: Ubuntu 22.04 Qt6 DEB
+            artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
           - name: macOS 11
             os: macos-11

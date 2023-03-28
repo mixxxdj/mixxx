@@ -167,23 +167,23 @@ void WaveformRenderMark::onResize() {
 void WaveformRenderMark::onSetTrack() {
     slotCuesUpdated();
 
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
+    if (!pTrackInfo) {
         return;
     }
-    connect(trackInfo.get(),
+    connect(pTrackInfo.get(),
             &Track::cuesUpdated,
             this,
             &WaveformRenderMark::slotCuesUpdated);
 }
 
 void WaveformRenderMark::slotCuesUpdated() {
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
+    if (!pTrackInfo) {
         return;
     }
 
-    QList<CuePointer> loadedCues = trackInfo->getCuePoints();
+    QList<CuePointer> loadedCues = pTrackInfo->getCuePoints();
     for (const CuePointer& pCue : loadedCues) {
         int hotCue = pCue->getHotCue();
         if (hotCue == Cue::kNoHotCue) {
