@@ -39,16 +39,16 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "green",
+    "cyan",
 
     // Deck 2
-    "blue",
+    "cyan",
 
     // Deck 3
-    "magenta",
+    "cyan",
 
     // Deck 4
-    "yellow",
+    "cyan",
 
 ];
 
@@ -284,7 +284,8 @@ Prime4.shutdown = function() {
 const mixerStrip = function(deckNumber, midiOffset) {
     components.Deck.call(this, deckNumber);
 
-    // FX Buttons
+    // FX Buttons - OLD
+    /*
     this.fxBank1 = new components.Button({
         midi: [0x90 + midiOffset, 0x01],
         group: "[EffectRack1_EffectUnit1]",
@@ -297,6 +298,18 @@ const mixerStrip = function(deckNumber, midiOffset) {
         key: "group_[Channel" + deckNumber + "]_enable",
         type: components.Button.prototype.types.toggle,
     });
+    */
+
+    // FX Buttons - NEW
+    this.fxBankSelect = new components.ComponentContainer;
+    //var fxBankSelect = [];
+    for (let u = 1; u <= 2; u++) {
+        this.fxBankSelect[u] = new components.EffectAssignmentButton({
+            midi: [0x90 + midiOffset, 0x00 + u],
+            effectUnit: u,
+            group: "[Channel" + deckNumber + "]",
+        });
+    }
 
     // PFL Button
     this.headphoneCue = new components.Button({

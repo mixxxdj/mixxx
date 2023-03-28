@@ -391,7 +391,7 @@
 
             <control> <!-- Deck 1 - FX1 Button -->
               <group></group>
-              <key>Prime4.mixerA.fxBank1.input</key>
+              <key>Prime4.mixerA.fxBankSelect[1].input</key>
               <description>MIDI Learned from 50 messages.</description>
               <status>0x90</status>
               <midino>0x01</midino>
@@ -401,7 +401,7 @@
             </control>
             <control> <!-- Deck 1 - FX2 Button -->
               <group></group>
-              <key>Prime4.mixerA.fxBank2.input</key>
+              <key>Prime4.mixerA.fxBankSelect[2].input</key>
               <description>MIDI Learned from 52 messages.</description>
               <status>0x90</status>
               <midino>0x02</midino>
@@ -411,7 +411,7 @@
             </control>
             <control> <!-- Deck 1 - FX1 Button -->
               <group></group>
-              <key>Prime4.mixerA.fxBank1.input</key>
+              <key>Prime4.mixerA.fxBankSelect[1].input</key>
               <description>MIDI Learned from 50 messages.</description>
               <status>0x80</status>
               <midino>0x01</midino>
@@ -421,7 +421,7 @@
             </control>
             <control> <!-- Deck 1 - FX2 Button -->
               <group></group>
-              <key>Prime4.mixerA.fxBank2.input</key>
+              <key>Prime4.mixerA.fxBankSelect[2].input</key>
               <description>MIDI Learned from 52 messages.</description>
               <status>0x80</status>
               <midino>0x02</midino>
@@ -512,7 +512,7 @@
 
             <control> <!-- Deck 2 - FX1 Button -->
               <group></group>
-              <key>Prime4.mixerB.fxBank1.input</key>
+              <key>Prime4.mixerB.fxBankSelect[1].input</key>
               <description>MIDI Learned from 50 messages.</description>
               <status>0x91</status>
               <midino>0x01</midino>
@@ -522,7 +522,7 @@
             </control>
             <control> <!-- Deck 2 - FX2 Button -->
               <group></group>
-              <key>Prime4.mixerB.fxBank2.input</key>
+              <key>Prime4.mixerB.fxBankSelect[2].input</key>
               <description>MIDI Learned from 52 messages.</description>
               <status>0x91</status>
               <midino>0x02</midino>
@@ -532,7 +532,7 @@
             </control>
             <control> <!-- Deck 2 - FX1 Button -->
               <group></group>
-              <key>Prime4.mixerB.fxBank1.input</key>
+              <key>Prime4.mixerB.fxBankSelect[1].input</key>
               <description>MIDI Learned from 50 messages.</description>
               <status>0x81</status>
               <midino>0x01</midino>
@@ -542,7 +542,7 @@
             </control>
             <control> <!-- Deck 2 - FX2 Button -->
               <group></group>
-              <key>Prime4.mixerB.fxBank2.input</key>
+              <key>Prime4.mixerB.fxBankSelect[2].input</key>
               <description>MIDI Learned from 52 messages.</description>
               <status>0x81</status>
               <midino>0x02</midino>
@@ -633,7 +633,7 @@
 
             <control> <!-- Deck 3 - FX1 Button -->
               <group></group>
-              <key>Prime4.mixerC.fxBank1.input</key>
+              <key>Prime4.mixerC.fxBankSelect[1].input</key>
               <description>MIDI Learned from 50 messages.</description>
               <status>0x92</status>
               <midino>0x01</midino>
@@ -643,7 +643,7 @@
             </control>
             <control> <!-- Deck 3 - FX2 Button -->
               <group></group>
-              <key>Prime4.mixerC.fxBank2.input</key>
+              <key>Prime4.mixerC.fxBankSelect[2].input</key>
               <description>MIDI Learned from 52 messages.</description>
               <status>0x92</status>
               <midino>0x02</midino>
@@ -653,7 +653,7 @@
             </control>
             <control> <!-- Deck 3 - FX1 Button -->
               <group></group>
-              <key>Prime4.mixerC.fxBank1.input</key>
+              <key>Prime4.mixerC.fxBankSelect[1].input</key>
               <description>MIDI Learned from 50 messages.</description>
               <status>0x82</status>
               <midino>0x01</midino>
@@ -663,7 +663,7 @@
             </control>
             <control> <!-- Deck 3 - FX2 Button -->
               <group></group>
-              <key>Prime4.mixerC.fxBank2.input</key>
+              <key>Prime4.mixerC.fxBankSelect[2].input</key>
               <description>MIDI Learned from 52 messages.</description>
               <status>0x82</status>
               <midino>0x02</midino>
@@ -754,7 +754,7 @@
 
             <control> <!-- Deck 4 - FX1 Button -->
               <group></group>
-              <key>Prime4.mixerD.fxBank1.input</key>
+              <key>Prime4.mixerD.fxBankSelect[1].input</key>
               <description>MIDI Learned from 50 messages.</description>
               <status>0x93</status>
               <midino>0x01</midino>
@@ -764,7 +764,7 @@
             </control>
             <control> <!-- Deck 4 - FX2 Button -->
               <group></group>
-              <key>Prime4.mixerD.fxBank2.input</key>
+              <key>Prime4.mixerD.fxBankSelect[2].input</key>
               <description>MIDI Learned from 52 messages.</description>
               <status>0x93</status>
               <midino>0x02</midino>
@@ -774,7 +774,7 @@
             </control>
             <control> <!-- Deck 4 - FX1 Button -->
               <group></group>
-              <key>Prime4.mixerD.fxBank1.input</key>
+              <key>Prime4.mixerD.fxBankSelect[1].input</key>
               <description>MIDI Learned from 50 messages.</description>
               <status>0x83</status>
               <midino>0x01</midino>
@@ -784,7 +784,7 @@
             </control>
             <control> <!-- Deck 4 - FX2 Button -->
               <group></group>
-              <key>Prime4.mixerD.fxBank2.input</key>
+              <key>Prime4.mixerD.fxBankSelect[2].input</key>
               <description>MIDI Learned from 52 messages.</description>
               <status>0x83</status>
               <midino>0x02</midino>
