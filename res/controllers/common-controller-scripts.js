@@ -342,6 +342,17 @@ script.crossfaderCurve = function(value, min, max) {
 };
 
 /* -------- ------------------------------------------------------
+     script.posMod
+   Purpose: Computes the euclidean modulo of m % n. The result is always
+            in the range [0, m[
+   Input:   dividend `a` and divisor `m` for modulo (a % m)
+   Output:  positive remainder
+   -------- ------------------------------------------------------ */
+script.posMod = function(a, m) {
+    return ((a % m) + m) % m;
+};
+
+/* -------- ------------------------------------------------------
      script.loopMove
    Purpose: Moves the current loop by the specified number of beats (default 1/2)
             in the specified direction (positive is forwards and is the default)
