@@ -51,6 +51,7 @@ ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
         : m_parentFeature(parentFeature),
           m_file(filePath),
           m_xml(&m_file),
+          m_dbfile(filePath),
           m_database(database),
           m_pathMapping(pathMapping),
           m_cancelImport(cancelImport) {
