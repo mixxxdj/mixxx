@@ -132,10 +132,10 @@ bool decodeFrameHeader(
                               << mad_stream_errorstr(pMadStream);
             return false;
         }
-        if ((MAD_ERROR_LOSTSYNC == pMadStream->error) && skipId3Tag) {
+        if ((pMadStream->error == MAD_ERROR_LOSTSYNC) && skipId3Tag) {
             long tagsize = id3_tag_query(pMadStream->this_frame,
                     pMadStream->bufend - pMadStream->this_frame);
-            if (0 < tagsize) {
+            if (tagsize > 0) {
                 // Skip ID3 tag data
                 mad_stream_skip(pMadStream, tagsize);
                 // Return immediately to suppress lost
