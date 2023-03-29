@@ -6,6 +6,7 @@
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QSet>
+#include <memory>
 
 #include "dialog/ui_dlgreplacecuecolordlg.h"
 #include "library/dao/trackdao.h"
@@ -35,7 +36,7 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
             mixxx::DbConnectionPoolPtr dbConnectionPool,
             TrackCollectionManager* pTrackCollectionManager,
             QWidget* pParent);
-    ~DlgReplaceCueColor();
+    ~DlgReplaceCueColor() override = default;
 
     void setColorPalette(const ColorPalette& palette);
 
@@ -66,6 +67,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     parented_ptr<WColorPickerAction> m_pCurrentColorPickerAction;
     mixxx::RgbColor::optional_t m_lastAutoSetNewColor;
     mixxx::RgbColor::optional_t m_lastAutoSetCurrentColor;
-    QStyle* m_pStyle;
+    std::unique_ptr<QStyle> m_pStyle;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(DlgReplaceCueColor::Conditions);

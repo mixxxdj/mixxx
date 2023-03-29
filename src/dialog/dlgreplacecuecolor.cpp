@@ -77,8 +77,8 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     // from the rest of the application (when not styled via QSS), but that's
     // better than having buttons without any colors (which would make the
     // color picker unusable).
-    pushButtonNewColor->setStyle(m_pStyle);
-    pushButtonCurrentColor->setStyle(m_pStyle);
+    pushButtonNewColor->setStyle(m_pStyle.get());
+    pushButtonCurrentColor->setStyle(m_pStyle.get());
 
     // Set up new color button
     ColorPaletteSettings colorPaletteSettings(pConfig);
@@ -171,9 +171,6 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             });
 
     slotUpdateWidgets();
-}
-
-DlgReplaceCueColor::~DlgReplaceCueColor() {
 }
 
 void DlgReplaceCueColor::setColorPalette(const ColorPalette& palette) {
