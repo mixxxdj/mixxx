@@ -37,7 +37,7 @@ class ITunesXMLImporter : public ITunesImporter {
     void parseTrack(QSqlQuery& query);
     std::unique_ptr<TreeItem> parsePlaylists();
     bool readNextStartElement();
-    void parsePlaylist(QSqlQuery& query_insert_to_playlists,
-            QSqlQuery& query_insert_to_playlist_tracks,
+    void parsePlaylist(QSqlQuery& queryInsertToPlaylists,
+            QSqlQuery& queryInsertToPlaylistTracks,
             TreeItem& root);
 };

@@ -184,8 +184,8 @@ void ITunesXMLImporter::guessMusicLibraryMountpoint() {
 }
 
 void ITunesXMLImporter::parseTracks() {
-    bool in_container_dictionary = false;
-    bool in_track_dictionary = false;
+    bool inContainerDictionary = false;
+    bool inTrackDictionary = false;
     QSqlQuery query(m_database);
     query.prepare(
             "INSERT INTO itunes_library (id, artist, title, album, "
@@ -207,12 +207,12 @@ void ITunesXMLImporter::parseTracks() {
 
         if (m_xml.isStartElement()) {
             if (m_xml.name() == kDict) {
-                if (!in_track_dictionary && !in_container_dictionary) {
-                    in_container_dictionary = true;
+                if (!inTrackDictionary && !inContainerDictionary) {
+                    inContainerDictionary = true;
                     continue;
-                } else if (in_container_dictionary && !in_track_dictionary) {
+                } else if (inContainerDictionary && !inTrackDictionary) {
                     // We are in a <dict> tag that holds track information
-                    in_track_dictionary = true;
+                    inTrackDictionary = true;
                     // Parse track here
                     parseTrack(query);
                 }
@@ -220,10 +220,10 @@ void ITunesXMLImporter::parseTracks() {
         }
 
         if (m_xml.isEndElement() && m_xml.name() == kDict) {
-            if (in_track_dictionary && in_container_dictionary) {
-                in_track_dictionary = false;
+            if (inTrackDictionary && inContainerDictionary) {
+                inTrackDictionary = false;
                 continue;
-            } else if (in_container_dictionary && !in_track_dictionary) {
+            } else if (inContainerDictionary && !inTrackDictionary) {
                 // Done parsing tracks.
                 break;
             }
@@ -237,7 +237,7 @@ void ITunesXMLImporter::parseTrack(QSqlQuery& query) {
     QString title;
     QString artist;
     QString album;
-    QString album_artist;
+    QString albumArtist;
     QString year;
     QString genre;
     QString grouping;
@@ -284,7 +284,7 @@ void ITunesXMLImporter::parseTrack(QSqlQuery& query) {
                     continue;
                 }
                 if (key == kAlbumArtist) {
-                    album_artist = content;
+                    albumArtist = content;
                     continue;
                 }
                 if (key == kGenre) {
@@ -358,7 +358,7 @@ void ITunesXMLImporter::parseTrack(QSqlQuery& query) {
     query.bindValue(":artist", artist);
     query.bindValue(":title", title);
     query.bindValue(":album", album);
-    query.bindValue(":album_artist", album_artist);
+    query.bindValue(":album_artist", albumArtist);
     query.bindValue(":genre", genre);
     query.bindValue(":grouping", grouping);
     query.bindValue(":year", year);
@@ -381,13 +381,13 @@ void ITunesXMLImporter::parseTrack(QSqlQuery& query) {
 std::unique_ptr<TreeItem> ITunesXMLImporter::parsePlaylists() {
     qDebug() << "Parse iTunes playlists";
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(m_parentFeature);
-    QSqlQuery query_insert_to_playlists(m_database);
-    query_insert_to_playlists.prepare(
+    QSqlQuery queryInsertToPlaylists(m_database);
+    queryInsertToPlaylists.prepare(
             "INSERT INTO itunes_playlists (id, name) "
             "VALUES (:id, :name)");
 
-    QSqlQuery query_insert_to_playlist_tracks(m_database);
-    query_insert_to_playlist_tracks.prepare(
+    QSqlQuery queryInsertToPlaylistTracks(m_database);
+    queryInsertToPlaylistTracks.prepare(
             "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
 
@@ -395,8 +395,8 @@ std::unique_ptr<TreeItem> ITunesXMLImporter::parsePlaylists() {
         m_xml.readNext();
         // We process and iterate the <dict> tags holding playlist summary information here
         if (m_xml.isStartElement() && m_xml.name() == kDict) {
-            parsePlaylist(query_insert_to_playlists,
-                    query_insert_to_playlist_tracks,
+            parsePlaylist(queryInsertToPlaylists,
+                    queryInsertToPlaylistTracks,
                     *pRootItem);
             continue;
         }
@@ -420,8 +420,8 @@ bool ITunesXMLImporter::readNextStartElement() {
     return false;
 }
 
-void ITunesXMLImporter::parsePlaylist(QSqlQuery& query_insert_to_playlists,
-        QSqlQuery& query_insert_to_playlist_tracks,
+void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
+        QSqlQuery& queryInsertToPlaylistTracks,
         TreeItem& root) {
     // qDebug() << "Parse Playlist";
 
@@ -470,27 +470,27 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& query_insert_to_playlists,
                     if (isSystemPlaylist) {
                         continue;
                     }
-                    query_insert_to_playlists.bindValue(":id", playlist_id);
-                    query_insert_to_playlists.bindValue(":name", playlistname);
+                    queryInsertToPlaylists.bindValue(":id", playlist_id);
+                    queryInsertToPlaylists.bindValue(":name", playlistname);
 
-                    bool success = query_insert_to_playlists.exec();
+                    bool success = queryInsertToPlaylists.exec();
                     if (!success) {
-                        if (query_insert_to_playlists.lastError()
+                        if (queryInsertToPlaylists.lastError()
                                         .nativeErrorCode() ==
                                 QString::number(SQLITE_CONSTRAINT)) {
                             // We assume a duplicate Playlist name
                             playlistname += QString(" #%1").arg(playlist_id);
-                            query_insert_to_playlists.bindValue(":name", playlistname);
+                            queryInsertToPlaylists.bindValue(":name", playlistname);
 
-                            bool success = query_insert_to_playlists.exec();
+                            bool success = queryInsertToPlaylists.exec();
                             if (!success) {
                                 // unexpected error
-                                LOG_FAILED_QUERY(query_insert_to_playlists);
+                                LOG_FAILED_QUERY(queryInsertToPlaylists);
                                 break;
                             }
                         } else {
                             // unexpected error
-                            LOG_FAILED_QUERY(query_insert_to_playlists);
+                            LOG_FAILED_QUERY(queryInsertToPlaylists);
                             return;
                         }
                     }
@@ -503,14 +503,14 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& query_insert_to_playlists,
                     readNextStartElement();
                     track_reference = m_xml.readElementText().toInt();
 
-                    query_insert_to_playlist_tracks.bindValue(":playlist_id", playlist_id);
-                    query_insert_to_playlist_tracks.bindValue(":track_id", track_reference);
-                    query_insert_to_playlist_tracks.bindValue(":position", playlist_position++);
+                    queryInsertToPlaylistTracks.bindValue(":playlist_id", playlist_id);
+                    queryInsertToPlaylistTracks.bindValue(":track_id", track_reference);
+                    queryInsertToPlaylistTracks.bindValue(":position", playlist_position++);
 
                     // Insert tracks if we are not in a pre-build playlist
-                    if (!isSystemPlaylist && !query_insert_to_playlist_tracks.exec()) {
+                    if (!isSystemPlaylist && !queryInsertToPlaylistTracks.exec()) {
                         qDebug() << "SQL Error in ITunesXMLImporter.cpp: line" << __LINE__ << " "
-                                 << query_insert_to_playlist_tracks.lastError();
+                                 << queryInsertToPlaylistTracks.lastError();
                         qDebug() << "trackid" << track_reference;
                         qDebug() << "playlistname; " << playlistname;
                         qDebug() << "-----------------";
