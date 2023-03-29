@@ -230,6 +230,12 @@ class ImporterImpl {
     }
 
     void importMediaItem(ITLibMediaItem* item, QSqlQuery& query) {
+        // Skip DRM-protected and non-downloaded tracks
+        bool isRemote = item.locationType == ITLibMediaItemLocationTypeRemote;
+        if (item.drmProtected || isRemote) {
+            return;
+        }
+
         query.bindValue(":id", dbIdFromPersistentId(item.persistentID));
         query.bindValue(":artist", qStringFrom(item.artist.name));
         query.bindValue(":title", qStringFrom(item.title));
