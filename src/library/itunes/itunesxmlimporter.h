@@ -13,7 +13,7 @@
 class ITunesXMLImporter : public ITunesImporter {
   public:
     ITunesXMLImporter(LibraryFeature* parentFeature,
-            const QString& filePath,
+            const QString& xmlFilePath,
             const QSqlDatabase& database,
             ITunesPathMapping& pathMapping,
             const std::atomic<bool>& cancelImport);
@@ -22,9 +22,9 @@ class ITunesXMLImporter : public ITunesImporter {
 
   private:
     LibraryFeature* m_parentFeature;
-    QFile m_file;
+    const QString m_xmlFilePath;
+    QFile m_xmlFile;
     QXmlStreamReader m_xml;
-    QString m_dbfile;
     // The values behind these references are owned by the parent `ITunesFeature`,
     // thus there is an implicit contract here that this `ITunesXMLImporter` cannot
     // outlive the feature (which should not happen anyway, since importers are short-lived).

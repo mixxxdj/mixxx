@@ -44,14 +44,14 @@ const QString kRemote = "Remote";
 } // anonymous namespace
 
 ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
-        const QString& filePath,
+        const QString& xmlFilePath,
         const QSqlDatabase& database,
         ITunesPathMapping& pathMapping,
         const std::atomic<bool>& cancelImport)
         : m_parentFeature(parentFeature),
-          m_file(filePath),
-          m_xml(&m_file),
-          m_dbfile(filePath),
+          m_xmlFilePath(xmlFilePath),
+          m_xmlFile(xmlFilePath),
+          m_xml(&m_xmlFile),
           m_database(database),
           m_pathMapping(pathMapping),
           m_cancelImport(cancelImport) {
@@ -63,7 +63,7 @@ ITunesImport ITunesXMLImporter::importLibrary() {
     ITunesImport iTunesImport;
     iTunesImport.isMusicFolderLocatedAfterTracks = false;
 
-    if (!m_file.open(QIODevice::ReadOnly)) {
+    if (!m_xmlFile.open(QIODevice::ReadOnly)) {
         qDebug() << "Could not open iTunes music collection";
         return iTunesImport;
     }
@@ -106,22 +106,22 @@ void ITunesXMLImporter::guessMusicLibraryMountpoint() {
     // iTunes/Album Artwork
     // iTunes/iTunes Media <- this is the "Music Folder"
     // iTunes/iTunes Music Library.xml <- this location we already knew
-    QString music_folder = QUrl(m_xml.readElementText()).toLocalFile();
+    QString musicFolder = QUrl(m_xml.readElementText()).toLocalFile();
 
-    QString music_folder_test = music_folder;
-    music_folder_test.replace(kiTunesLocalhostToken, "");
-    QDir music_folder_dir(music_folder_test);
+    QString musicFolderTest = musicFolder;
+    musicFolderTest.replace(kiTunesLocalhostToken, "");
+    QDir musicFolderDir(musicFolderTest);
 
     // The music folder exists, so a simple transformation
     // of replacing localhost token with nothing will work.
-    if (music_folder_dir.exists()) {
+    if (musicFolderDir.exists()) {
         // Leave defaults intact.
         return;
     }
 
     // The iTunes Music Library doesn't exist! This means we are likely loading
     // the library from a system that is different from the one that wrote the
-    // iTunes configuration. The configuration file path, m_dbfile is a readable
+    // iTunes configuration. The configuration file path, m_xmlFilePath is a readable
     // location that in most situation is "close" to the music library path so
     // since we can read that file we will try to infer the music library mount
     // point from it.
@@ -129,56 +129,56 @@ void ITunesXMLImporter::guessMusicLibraryMountpoint() {
     // Examples:
 
     // Windows with non-itunes-managed music:
-    // m_dbfile: c:/Users/LegacyII/Music/iTunes/iTunes Music Library.xml
+    // m_xmlFilePath: c:/Users/LegacyII/Music/iTunes/iTunes Music Library.xml
     // Music Folder: file://localhost/C:/Users/LegacyII/Music/
     // Transformation:  "//localhost/" -> ""
 
     // Mac OS X with iTunes-managed music:
-    // m_dbfile: /Users/rjryan/Music/iTunes/iTunes Music Library.xml
+    // m_xmlFilePath: /Users/rjryan/Music/iTunes/iTunes Music Library.xml
     // Music Folder: file://localhost/Users/rjryan/Music/iTunes/iTunes Media/
     // Transformation: "//localhost" -> ""
 
     // Linux reading an OS X partition mounted at /media/foo to an
     // iTunes-managed music folder:
-    // m_dbfile: /media/foo/Users/rjryan/Music/iTunes/iTunes Music Library.xml
+    // m_xmlFilePath: /media/foo/Users/rjryan/Music/iTunes/iTunes Music Library.xml
     // Music Folder: file://localhost/Users/rjryan/Music/iTunes/iTunes Media/
     // Transformation: "//localhost" -> "/media/foo"
 
     // Linux reading a Windows partition mounted at /media/foo to an
     // non-itunes-managed music folder:
-    // m_dbfile: /media/foo/Users/LegacyII/Music/iTunes/iTunes Music Library.xml
+    // m_xmlFilePath: /media/foo/Users/LegacyII/Music/iTunes/iTunes Music Library.xml
     // Music Folder: file://localhost/C:/Users/LegacyII/Music/
     // Transformation:  "//localhost/C:" -> "/media/foo"
 
     // Algorithm:
-    // 1. Find the largest common subsequence shared between m_dbfile and "Music
-    //    Folder"
+    // 1. Find the largest common subsequence shared between m_xmlFilePath and
+    //    "Music Folder"
     // 2. For all tracks, replace the left-side of of the LCS in "Music Folder"
-    //    with the left-side of the LCS in m_dbfile.
+    //    with the left-side of the LCS in m_xmlFilePath.
 
-    QString lcs = LCS(m_dbfile, music_folder);
+    QString lcs = LCS(m_xmlFilePath, musicFolder);
 
     if (lcs.size() <= 1) {
         qDebug() << "ERROR: Couldn't find a suitable transformation to load "
                     "iTunes data files. Leaving defaults intact.";
     }
 
-    int musicFolderLcsIndex = music_folder.indexOf(lcs);
+    int musicFolderLcsIndex = musicFolder.indexOf(lcs);
     if (musicFolderLcsIndex < 0) {
         qDebug() << "ERROR: Detected LCS" << lcs
-                 << "is not present in music_folder:" << music_folder;
+                 << "is not present in musicFolder:" << musicFolder;
         return;
     }
 
-    int dbfileLcsIndex = m_dbfile.indexOf(lcs);
+    int dbfileLcsIndex = m_xmlFilePath.indexOf(lcs);
     if (dbfileLcsIndex < 0) {
         qDebug() << "ERROR: Detected LCS" << lcs
-                 << "is not present in m_dbfile" << m_dbfile;
+                 << "is not present in m_xmlFilePath" << m_xmlFilePath;
         return;
     }
 
-    m_pathMapping.dbITunesRoot = music_folder.left(musicFolderLcsIndex);
-    m_pathMapping.mixxxITunesRoot = m_dbfile.left(dbfileLcsIndex);
+    m_pathMapping.dbITunesRoot = musicFolder.left(musicFolderLcsIndex);
+    m_pathMapping.mixxxITunesRoot = m_xmlFilePath.left(dbfileLcsIndex);
     qDebug() << "Detected translation rule for iTunes files:"
              << m_pathMapping.dbITunesRoot << "->" << m_pathMapping.mixxxITunesRoot;
 }
