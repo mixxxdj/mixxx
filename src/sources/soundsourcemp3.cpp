@@ -20,9 +20,10 @@ constexpr SINT kMaxBytesPerMp3Frame = 1441;
 // mp3 supports 9 different sample rates
 constexpr int kSampleRateCount = 9;
 
-// Possible labels in the Mp3 Info Frame
+// Possible tags in the Mp3 Info Frame
 // constexpr char kVbrTag0[] = "Xing";
 // constexpr char kVbrTag1[] = "Info";
+constexpr int kInfoTagStrLen = 4;
 
 int getIndexBySampleRate(audio::SampleRate sampleRate) {
     switch (sampleRate) {
@@ -311,12 +312,13 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
                 }
             }
 
-            QString mp3InfoLabel =
+            QString mp3InfoTag =
                     QString::fromLatin1(reinterpret_cast<const char*>(
-                            &m_madStream.this_frame[mp3InfoFrameOffset]));
+                                                &m_madStream.this_frame[mp3InfoFrameOffset]),
+                            kInfoTagStrLen);
             kLogger.debug()
                     << "Skipping MP3 Info Frame:"
-                    << mp3InfoLabel;
+                    << mp3InfoTag;
 
             mp3InfoTagSkipped = true;
             continue;
