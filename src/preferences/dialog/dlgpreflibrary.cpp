@@ -197,7 +197,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
             kHistoryTrackDuplicateDistanceDefault);
     spinbox_history_min_tracks_to_keep->setValue(1);
     checkBox_SyncTrackMetadata->setChecked(false);
-    checkBox_SeratoMetadataExport->setChecked(false);
+    checkBox_SeratoMetadataExport->setChecked(true);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -231,7 +231,7 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_SyncTrackMetadata->setChecked(
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
     checkBox_SeratoMetadataExport->setChecked(
-            m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
+            m_pConfig->getValue(kSyncSeratoMetadataConfigKey, true));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             kUseRelativePathOnExportConfigKey, false));
 
@@ -417,7 +417,7 @@ void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
                             "recommended. Are you sure you want to enable this "
                             "option?"),
                     QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
-            checkBox_SeratoMetadataExport->setChecked(false);
+            checkBox_SeratoMetadataExport->setChecked(true);
         }
     }
 }
