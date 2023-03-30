@@ -37,6 +37,10 @@ const QString ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 bool isMacOSImporterAvailable() {
 #ifdef __MACOS_ITUNES_LIBRARY__
     // The iTunesLibrary framework is only available on macOS 10.13+
+    // Note that this uses a Clang directive to check the macOS version at
+    // runtime, which is the suggested approach for conditionally accessing
+    // macOS frameworks from C++ depending on availability:
+    // https://stackoverflow.com/a/57825758
     if (__builtin_available(macOS 10.13, *)) {
         return true;
     }
