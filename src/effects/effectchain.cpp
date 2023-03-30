@@ -206,11 +206,17 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pChainPreset) {
         return;
     }
 
-    int effectSlotIndex = 0;
-    for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
-        EffectSlotPointer pEffectSlot = m_effectSlots.at(effectSlotIndex);
-        pEffectSlot->loadEffectFromPreset(pEffectPreset);
-        effectSlotIndex++;
+    const QList effectPresets = pChainPreset->effectPresets();
+
+    // TODO: use C++23 std::ranges::views::zip instead
+    // `EffectChain`s can create arbitrary amounts of effectslots and chain presets
+    // can contain an arbitrary number of effects. This ensures we only load
+    // as many effects as we have slots available.
+    const int validPresetSlotCount = std::min(effectPresets.count(), m_effectSlots.count());
+    for (int presetSlotIndex = 0;
+            presetSlotIndex < validPresetSlotCount;
+            presetSlotIndex++) {
+        m_effectSlots[presetSlotIndex]->loadEffectFromPreset(effectPresets[presetSlotIndex]);
     }
 
     setMixMode(pChainPreset->mixMode());
