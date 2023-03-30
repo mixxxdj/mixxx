@@ -27,62 +27,238 @@
             </control>
 
             <control> <!-- FX1 - Effect 1 Button -->
-	      <group>[EffectRack1_EffectUnit1_Effect1]</group>
-              <key>enabled</key>
+	      <group></group>
+          <key>Prime4.effectBank[0].enableButtons[1].input</key>
               <status>0x96</status>
               <midino>0x06</midino>
               <options>
-                <normal/>
+                <Script-Binding/>
               </options>
             </control>
             <control> <!-- FX1 - Effect 2 Button -->
-              <group>[EffectRack1_EffectUnit1_Effect2]</group>
-              <key>enabled</key>
-              <description>MIDI Learned from 12 messages.</description>
+              <group></group>
+          <key>Prime4.effectBank[0].enableButtons[2].input</key>
+              <description></description>
               <status>0x96</status>
               <midino>0x07</midino>
               <options>
-                <normal/>
+                <Script-Binding/>
               </options>
             </control>
             <control> <!-- FX1 - Effect 3 Button -->
-              <group>[EffectRack1_EffectUnit1_Effect3]</group>
-              <key>enabled</key>
-              <description>MIDI Learned from 14 messages.</description>
+              <group></group>
+          <key>Prime4.effectBank[0].enableButtons[3].input</key>
+              <description></description>
               <status>0x96</status>
               <midino>0x08</midino>
               <options>
-                <normal/>
+                <Script-Binding/>
               </options>
             </control>
-            <control> <!-- FX2 - Effect 1 Button -->
-              <group>[EffectRack1_EffectUnit2_Effect1]</group>
-              <key>enabled</key>
-              <description>MIDI Learned from 16 messages.</description>
+            <control> <!-- FX1 - Effect Focus Button -->
+              <group></group>
+              <key>Prime4.effectBank[0].effectFocusButton.input</key>
+              <description></description>
+              <status>0x96</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 1 Button -->
+	      <group></group>
+          <key>Prime4.effectBank[0].enableButtons[1].input</key>
+              <status>0x86</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Button -->
+              <group></group>
+          <key>Prime4.effectBank[0].enableButtons[2].input</key>
+              <description></description>
+              <status>0x86</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Button -->
+              <group></group>
+          <key>Prime4.effectBank[0].enableButtons[3].input</key>
+              <description></description>
+              <status>0x86</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect Focus Button -->
+              <group></group>
+              <key>Prime4.effectBank[0].effectFocusButton.input</key>
+              <description></description>
+              <status>0x86</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 1 Knob -->
+	      <group></group>
+              <key>Prime4.effectBank[0].knobs[1].input</key>
+              <status>0xB6</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Knob -->
+              <group></group>
+              <key>Prime4.effectBank[0].knobs[2].input</key>
+              <description></description>
+              <status>0xB6</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Knob -->
+              <group></group>
+              <key>Prime4.effectBank[0].knobs[3].input</key>
+              <description></description>
+              <status>0xB6</status>
+              <midino>0x03</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Dry/Wet Knob -->
+              <group></group>
+              <key>Prime4.effectBank[0].dryWetKnob.input</key>
+              <description></description>
+              <status>0xB6</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <control> <!-- FX1 - Effect 1 Button -->
+	      <group></group>
+          <key>Prime4.effectBank[1].enableButtons[1].input</key>
               <status>0x97</status>
               <midino>0x06</midino>
               <options>
-                <normal/>
+                <Script-Binding/>
               </options>
             </control>
-            <control> <!-- FX2 - Effect 2 Button -->
-              <group>[EffectRack1_EffectUnit2_Effect2]</group>
-              <key>enabled</key>
-              <description>MIDI Learned from 18 messages.</description>
+            <control> <!-- FX1 - Effect 2 Button -->
+              <group></group>
+          <key>Prime4.effectBank[1].enableButtons[2].input</key>
+              <description></description>
               <status>0x97</status>
               <midino>0x07</midino>
               <options>
-                <normal/>
+                <Script-Binding/>
               </options>
             </control>
-            <control> <!-- FX2 - Effect 3 Button -->
-              <group>[EffectRack1_EffectUnit2_Effect3]</group>
-              <key>enabled</key>
-              <description>MIDI Learned from 20 messages.</description>
+            <control> <!-- FX1 - Effect 3 Button -->
+              <group></group>
+          <key>Prime4.effectBank[1].enableButtons[3].input</key>
+              <description></description>
               <status>0x97</status>
               <midino>0x08</midino>
               <options>
-                <normal/>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect Focus Button -->
+              <group></group>
+              <key>Prime4.effectBank[1].effectFocusButton.input</key>
+              <description></description>
+              <status>0x97</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 1 Button -->
+	      <group></group>
+          <key>Prime4.effectBank[1].enableButtons[1].input</key>
+              <status>0x87</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Button -->
+              <group></group>
+          <key>Prime4.effectBank[1].enableButtons[2].input</key>
+              <description></description>
+              <status>0x87</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Button -->
+              <group></group>
+          <key>Prime4.effectBank[1].enableButtons[3].input</key>
+              <description></description>
+              <status>0x87</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect Focus Button -->
+              <group></group>
+              <key>Prime4.effectBank[1].effectFocusButton.input</key>
+              <description></description>
+              <status>0x87</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 1 Knob -->
+	      <group></group>
+              <key>Prime4.effectBank[1].knobs[1].input</key>
+              <status>0xB7</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Knob -->
+              <group></group>
+              <key>Prime4.effectBank[1].knobs[2].input</key>
+              <description></description>
+              <status>0xB7</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Knob -->
+              <group></group>
+              <key>Prime4.effectBank[1].knobs[3].input</key>
+              <description></description>
+              <status>0xB7</status>
+              <midino>0x03</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Dry/Wet Knob -->
+              <group></group>
+              <key>Prime4.effectBank[1].dryWetKnob.input</key>
+              <description></description>
+              <status>0xB7</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
               </options>
             </control>
 

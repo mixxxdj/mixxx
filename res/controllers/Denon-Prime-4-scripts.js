@@ -76,6 +76,7 @@ components.ComponentContainer.prototype.reconnectComponents = function(operation
 // 'Off' value sets lights to dim instead of off
 components.Button.prototype.off = 0x01;
 
+// Colour codes designed to avoid memorizing MIDI velocity values
 Prime4.rgbCode = {
     black: 0,
     blueDark: 1,
@@ -197,6 +198,49 @@ Prime4.init = function(_id, _debug) {
     Prime4.mixerB = new mixerStrip(2, 1);
     Prime4.mixerC = new mixerStrip(3, 2);
     Prime4.mixerD = new mixerStrip(4, 3);
+
+    // Initialize effect banks
+    Prime4.effectBank = [];
+    for (let i = 0; i <= 1; i++) {
+        Prime4.effectBank[i] = new components.EffectUnit([i + 1, i + 3]);
+        Prime4.effectBank[i].enableButtons[1].midi = [0x96 + i, 0x06];
+        Prime4.effectBank[i].enableButtons[2].midi = [0x96 + i, 0x07];
+        Prime4.effectBank[i].enableButtons[3].midi = [0x96 + i, 0x08];
+        Prime4.effectBank[i].knobs[1].midi = [0xB6 + i, 0x01];
+        Prime4.effectBank[i].knobs[1].input = function(channel, control, value, _status, _group) {
+            if (value >= 1 && value < 20) {
+                this.inSetParameter(this.inGetParameter() + (value / 100));
+            } else if (value <= 127 && value > 100) {
+                this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
+            }
+        };
+        Prime4.effectBank[i].knobs[2].midi = [0xB6 + i, 0x02];
+        Prime4.effectBank[i].knobs[2].input = function(channel, control, value, _status, _group) {
+            if (value >= 1 && value < 20) {
+                this.inSetParameter(this.inGetParameter() + (value / 100));
+            } else if (value <= 127 && value > 100) {
+                this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
+            }
+        };
+        Prime4.effectBank[i].knobs[3].midi = [0xB6 + i, 0x03];
+        Prime4.effectBank[i].knobs[3].input = function(channel, control, value, _status, _group) {
+            if (value >= 1 && value < 20) {
+                this.inSetParameter(this.inGetParameter() + (value / 100));
+            } else if (value <= 127 && value > 100) {
+                this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
+            }
+        };
+        Prime4.effectBank[i].dryWetKnob.midi = [0xB6 + i, 0x04];
+        Prime4.effectBank[i].dryWetKnob.input = function(channel, control, value, _status, _group) {
+            if (value >= 1 && value < 20) {
+                this.inSetParameter(this.inGetParameter() + (value / 100));
+            } else if (value <= 127 && value > 100) {
+                this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
+            }
+        };
+        Prime4.effectBank[i].effectFocusButton.midi = [0x96 + i, 0x0A];
+        Prime4.effectBank[i].init();
+    }
 
     // Load song to deck with library encoder button
     Prime4.encoderLoad = new components.Button({
@@ -494,10 +538,14 @@ Prime4.shiftState = function(channel, control, value) {
         midi.sendShortMsg(0x90 + channel, control, 0x02);
         Prime4.leftDeck.shift();
         Prime4.rightDeck.shift();
+        Prime4.effectBank[0].shift();
+        Prime4.effectBank[1].shift();
     } else {
         midi.sendShortMsg(0x90 + channel, control, 0x01);
         Prime4.leftDeck.unshift();
         Prime4.rightDeck.unshift();
+        Prime4.effectBank[0].unshift();
+        Prime4.effectBank[1].unshift();
     }
 };
 
