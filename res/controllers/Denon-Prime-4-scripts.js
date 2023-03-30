@@ -39,16 +39,16 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "cyan",
+    "green",
 
     // Deck 2
-    "cyan",
+    "blue",
 
     // Deck 3
     "cyan",
 
     // Deck 4
-    "cyan",
+    "magenta",
 
 ];
 
@@ -104,67 +104,67 @@ Prime4.rgbCode = {
 
 // Map RGB Hex values to MIDI values for Prime 4's colour palette
 const Prime4ColorMapper = new ColorMapper({
-    //  0x000055: 0x01, // dark blue
-    //  0x0000AA: 0x02, // dim blue
-    0x0000FF: 0x03, // blue
-    //  0x005500: 0x04, // dark green
-    //  0x005555: 0x05, // dark cyan
-    //  0x0055AA: 0x06,
-    //  0x0055FF: 0x07,
-    //  0x00AA00: 0x08, // dim green
-    //  0x00AA55: 0x09,
-    //  0x00AAAA: 0x0A, // dim cyan
-    //  0x00AAFF: 0x0B,
-    0x00FF00: 0x0C, // green
-    //  0x00FF55: 0x0D,
-    //  0x00FFAA: 0x0E,
-    0x00FFFF: 0x0F, // cyan
-    //  0x550000: 0x10, // dark red
-    //  0x550055: 0x11, // dark magenta
-    //  0x5500AA: 0x12,
-    //  0x5500FF: 0x13,
-    //  0x5555AA: 0x16,
-    //  0x5555FF: 0x17,
-    //  0x55AA00: 0x18,
-    //  0x55AA55: 0x19,
-    //  0x55AAAA: 0x1A,
-    //  0x55AAFF: 0x1B,
-    //  0x55FF00: 0x1C,
-    //  0x55FF55: 0x1D,
-    //  0x55FFAA: 0x1E,
-    //  0x55FFFF: 0x1F,
-    //  0xAA0000: 0x20, // dim red
-    //  0xAA0055: 0x21,
-    //  0xAA00AA: 0x22, // dim magenta
-    //  0xAA00FF: 0x23,
-    //  0xAA5500: 0x24,
-    //  0xAA5555: 0x25,
-    //  0xAA55AA: 0x26,
-    //  0xAA55FF: 0x27,
-    //  0xAAAA00: 0x28, // dim yellow
-    //  0xAAAA55: 0x29,
-    //  0xAAAAAA: 0x2A, // dim white/grey
-    //  0xAAAAFF: 0x2B,
-    //  0xAAFF00: 0x2C,
-    //  0xAAFF55: 0x2D,
-    //  0xAAFFAA: 0x2E,
-    //  0xAAFFFF: 0x2F,
-    0xFF0000: 0x30, // red
-    //  0xFF0055: 0x31,
-    //  0xFF00AA: 0x32,
-    0xFF00FF: 0x33, // purple
-    0xFF5500: 0x34, // orange
-    //  0xFF5555: 0x35,
-    //  0xFF55AA: 0x36,
-    //  0xFF55FF: 0x37,
-    //  0xFFAA00: 0x38,
-    //  0xFFAA55: 0x39,
-    0xFFAAAA: 0x3A, // pink
-    //  0xFFAAFF: 0x3B,
-    0xFFFF00: 0x3C, // yellow
-    //  0xFFFF55: 0x3D,
-    //  0xFFFFAA: 0x3E,
-    0xFFFFFF: 0x3F, // white
+    0x000020: 0x01, // dark blue
+    0x0000AA: 0x02, // dim blue
+    0x0000C0: 0x03, // blue
+    0x002000: 0x04, // dark green
+    0x002020: 0x05, // dark cyan
+    0x0020A0: 0x06,
+    0x0020C0: 0x07,
+    0x00A000: 0x08, // dim green
+    0x00A020: 0x09,
+    0x00A0A0: 0x0A, // dim cyan
+    0x00A0C0: 0x0B,
+    0x00C000: 0x0C, // green
+    0x00C020: 0x0D,
+    0x00C0A0: 0x0E,
+    0x00C0C0: 0x0F, // cyan
+    0x200000: 0x10, // dark red
+    0x200020: 0x11, // dark magenta
+    0x2000A0: 0x12,
+    0x2000C0: 0x13,
+    0x2020A0: 0x16,
+    0x2020C0: 0x17,
+    0x20A000: 0x18,
+    0x20A020: 0x19,
+    0x20A0A0: 0x1A,
+    0x20A0C0: 0x1B,
+    0x20C000: 0x1C,
+    0x20C020: 0x1D,
+    0x20C0A0: 0x1E,
+    0x20C0C0: 0x1F,
+    0xA00000: 0x20, // dim red
+    0xA00020: 0x21,
+    0xA000A0: 0x22, // dim magenta
+    0xA000C0: 0x23,
+    0xA02000: 0x24,
+    0xA02020: 0x25,
+    0xA020A0: 0x26,
+    0xA020C0: 0x27,
+    0xA0A000: 0x28, // dim yellow
+    0xA0A020: 0x29,
+    0xA0A0A0: 0x2A, // dim white/grey
+    0xA0A0C0: 0x2B,
+    0xA0C000: 0x2C,
+    0xA0C020: 0x2D,
+    0xA0C0A0: 0x2E,
+    0xA0C0C0: 0x2F,
+    0xC00000: 0x30, // red
+    0xC00020: 0x31,
+    0xC000A0: 0x32,
+    0xC000C0: 0x33, // purple
+    0xC02000: 0x34, // orange
+    0xC02020: 0x35,
+    0xC020A0: 0x36,
+    0xC020C0: 0x37,
+    0xC0A000: 0x38,
+    0xC0A020: 0x39,
+    0xC0A0A0: 0x3A, // pink
+    0xC0A0C0: 0x3B,
+    0xC0C000: 0x3C, // yellow
+    0xC0C020: 0x3D,
+    0xC0C0A0: 0x3E,
+    0xC0C0C0: 0x3F, // white
 });
 
 // Set active + inactive values for user-defined deck colours
@@ -268,8 +268,6 @@ Prime4.init = function(_id, _debug) {
     midi.sendShortMsg(0x9F, 0x1F, colDeckDark[3]);                    // Deck 4 Toggle
     midi.sendShortMsg(0x94, 0x21, colDeck[0]);                        // Left Jog Wheel
     midi.sendShortMsg(0x95, 0x21, colDeck[1]);                        // Right Jog Wheel
-    midi.sendShortMsg(0x94, 0x0B, Prime4.rgbCode.blue);             // Hot-Cue Button - Left Deck
-    midi.sendShortMsg(0x95, 0x0B, Prime4.rgbCode.blue);             // Hot-Cue Button - Right Deck
     midi.sendShortMsg(0x9F, 0x0B, 1);                                 // Headphone Split Button
     midi.sendShortMsg(0x94, 0x1C, 1);                                 // Left Shift Button
     midi.sendShortMsg(0x95, 0x1C, 1);                                 // Right Shift Button
@@ -444,8 +442,8 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         //       of each physical deck component to determine which deck it's manipulating in
         //       Mixxx. The deck load buttons, however, are both on MIDI channel 16, so I need
         //       a better way to determine this.
-        off: Prime4.rgbCode.greenDark,
-        on: Prime4.rgbCode.green,
+        off: Prime4.rgbCode.cyanDark,
+        on: Prime4.rgbCode.cyan,
     });
 
     // Change from Deck 3/4 to Deck 1/2
@@ -460,7 +458,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4]); // Jog Wheel LED
                 midi.sendShortMsg(0x9F, 0x18 + midiChannel, colDeck[midiChannel - 4]); // Active deck - bright LED
                 midi.sendShortMsg(0x9F, 0x1A + midiChannel, colDeckDark[midiChannel - 2]); // Inactive deck - dark LED
-                midi.sendShortMsg(0x9F, midiChannel - 3, colDeckDark[midiChannel - 4]); // Inactive deck - dark LED
+                //midi.sendShortMsg(0x9F, midiChannel - 3, colDeckDark[midiChannel - 4]); // Inactive deck - dark LED
             }
         }
     };
@@ -475,7 +473,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 2]); // Jog Wheel LED
                 midi.sendShortMsg(0x9F, 0x18 + midiChannel, colDeckDark[midiChannel - 4]); // Inactive deck - dark LED
                 midi.sendShortMsg(0x9F, 0x1A + midiChannel, colDeck[midiChannel - 2]); // Active deck - bright LED
-                midi.sendShortMsg(0x9F, midiChannel - 3, colDeckDark[midiChannel - 2]); // Inactive deck - dark LED
+                //midi.sendShortMsg(0x9F, midiChannel - 3, colDeckDark[midiChannel - 2]); // Inactive deck - dark LED
             }
         }
     };
@@ -520,7 +518,7 @@ Prime4.PadSection = function(deck, offset) {
     this.modes = new components.ComponentContainer({
         "hotcue": new Prime4.hotcueMode(deck, offset),
         "loop": new Prime4.loopMode(deck, offset),
-        // "autoloop": new Prime4.autoloopMode(deck, offset),
+        //TODO: "autoloop": new Prime4.autoloopMode(deck, offset),
         "roll": new Prime4.rollMode(deck, offset),
         "sampler": new Prime4.samplerMode(deck, offset),
     });
@@ -561,9 +559,9 @@ Prime4.PadSection = function(deck, offset) {
 
     // Start in Hotcue mode
     this.setPadMode(Prime4.padMode.HOTCUE);
-    midi.sendShortMsg(0x94 + offset, 0x0C, Prime4.rgbCode.redDark);
-    midi.sendShortMsg(0x94 + offset, 0x0D, Prime4.rgbCode.greenDark);
-    midi.sendShortMsg(0x94 + offset, 0x0E, Prime4.rgbCode.yellowDark);
+    midi.sendShortMsg(0x94 + offset, 0x0C, Prime4.rgbCode.whiteDark);
+    midi.sendShortMsg(0x94 + offset, 0x0D, Prime4.rgbCode.whiteDark);
+    midi.sendShortMsg(0x94 + offset, 0x0E, Prime4.rgbCode.whiteDark);
 };
 
 Prime4.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
@@ -613,7 +611,7 @@ Prime4.hotcueMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.HOTCUE;
     this.colourOn = Prime4.rgbCode.blue;
-    this.colourOff = Prime4.rgbCode.blueDark;
+    this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
         this.pads[i] = new components.HotcueButton({
@@ -634,7 +632,7 @@ Prime4.loopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.LOOP;
     this.colourOn = Prime4.rgbCode.red;
-    this.colourOff = Prime4.rgbCode.redDark;
+    this.colourOff = Prime4.rgbCode.whiteDark;
     this.PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x0E + n];
         this.number = n;
@@ -670,7 +668,7 @@ Prime4.rollMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.ROLL;
     this.colourOn = Prime4.rgbCode.green;
-    this.colourOff = Prime4.rgbCode.greenDark;
+    this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
     // NOTE: The Prime 4's standalone Roll mode includes triplet loop rolls, but
     //       Mixxx doesn't support those yet.
@@ -683,7 +681,7 @@ Prime4.rollMode = function(deck, offset) {
             outKey: "beatloop_" + loopSize + "_enabled",
             inKey: "beatlooproll_" + loopSize + "_activate",
             on: this.colourOn,
-            off: this.colourOff,
+            off: Prime4.rgbCode.greenDim,
             outConnect: false,
         });
     }
@@ -695,7 +693,7 @@ Prime4.samplerMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.SLICER;
     this.colourOn = Prime4.rgbCode.yellow;
-    this.colourOff = Prime4.rgbCode.yellowDark;
+    this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
         this.pads[i] = new components.SamplerButton({
@@ -703,7 +701,7 @@ Prime4.samplerMode = function(deck, offset) {
             midi: [0x94 + offset, 0x0E + i],
             colorMapper: Prime4ColorMapper,
             on: this.colourOn,
-            off: this.colourOff,
+            off: Prime4.rgbCode.yellowDark,
             outConnect: false,
         });
     }
