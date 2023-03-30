@@ -34,6 +34,16 @@ namespace {
 
 const QString ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
+bool isMacOSImporterAvailable() {
+#ifdef __MACOS_ITUNES_LIBRARY__
+    // The iTunesLibrary framework is only available on macOS 10.13+
+    if (__builtin_available(macOS 10.13, *)) {
+        return true;
+    }
+#endif
+    return false;
+}
+
 } // anonymous namespace
 
 ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
@@ -170,14 +180,11 @@ void ITunesFeature::activate(bool forceReload) {
         if (!dbSetting.isEmpty() && QFile::exists(dbSetting)) {
             m_dbfile = dbSetting;
         } else {
-#ifndef __MACOS_ITUNES_LIBRARY__
             // No Path in settings, try the default
-            // if not on macOS, where we use the ITunesMacOSImporter if m_dbfile is empty
             m_dbfile = getiTunesMusicPath();
-#endif
         }
 
-        if (!m_dbfile.isEmpty()) {
+        if (!m_dbfile.isEmpty() || !isMacOSImporterAvailable()) {
             mixxx::FileInfo fileInfo(m_dbfile);
             if (fileInfo.checkFileExists()) {
                 // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
@@ -273,6 +280,11 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
 
 QString ITunesFeature::getiTunesMusicPath() {
     QString musicFolder;
+    if (isMacOSImporterAvailable()) {
+        qDebug() << "Using empty iTunes music path (which we interpret as "
+                    "using ITunesMacOSImporter)";
+        return "";
+    }
 #if defined(__APPLE__)
     musicFolder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
                   + "/iTunes/iTunes Music Library.xml";
@@ -284,6 +296,18 @@ QString ITunesFeature::getiTunesMusicPath() {
 #endif
     qDebug() << "ITunesLibrary=[" << musicFolder << "]";
     return musicFolder;
+}
+
+std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
+#ifdef __MACOS_ITUNES_LIBRARY__
+    if (isMacOSImporterAvailable()) {
+        qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
+        return std::make_unique<ITunesMacOSImporter>(this, m_database, m_cancelImport);
+    }
+#endif
+    qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
+    return std::make_unique<ITunesXMLImporter>(
+            this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
 }
 
 // This method is executed in a separate thread
@@ -306,21 +330,7 @@ TreeItem* ITunesFeature::importLibrary() {
     m_pathMapping.dbITunesRoot = kiTunesLocalhostToken;
 
     ITunesImport iTunesImport;
-    std::unique_ptr<ITunesImporter> importer;
-
-#ifdef __MACOS_ITUNES_LIBRARY__
-    if (m_dbfile.isEmpty()) {
-        qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
-        importer = std::make_unique<ITunesMacOSImporter>(this, m_database, m_cancelImport);
-    } else {
-        qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
-        importer = std::make_unique<ITunesXMLImporter>(
-                this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
-    }
-#else
-    importer = std::make_unique<ITunesXMLImporter>(
-            this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
-#endif
+    std::unique_ptr<ITunesImporter> importer = makeImporter();
 
     iTunesImport = importer->importLibrary();
 

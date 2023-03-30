@@ -43,6 +43,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
             const QString& playlist) override;
     static QString getiTunesMusicPath();
+    std::unique_ptr<ITunesImporter> makeImporter();
     // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
     void guessMusicLibraryMountpoint(QXmlStreamReader& xml);
