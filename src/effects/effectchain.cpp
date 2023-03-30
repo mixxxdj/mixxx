@@ -200,23 +200,23 @@ const QString& EffectChain::presetName() const {
     return m_presetName;
 }
 
-void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
+void EffectChain::loadChainPreset(EffectChainPresetPointer pChainPreset) {
     slotControlClear(1);
-    VERIFY_OR_DEBUG_ASSERT(pPreset) {
+    VERIFY_OR_DEBUG_ASSERT(pChainPreset) {
         return;
     }
 
     int effectSlotIndex = 0;
-    for (const auto& pEffectPreset : pPreset->effectPresets()) {
+    for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
         EffectSlotPointer pEffectSlot = m_effectSlots.at(effectSlotIndex);
         pEffectSlot->loadEffectFromPreset(pEffectPreset);
         effectSlotIndex++;
     }
 
-    setMixMode(pPreset->mixMode());
-    m_pControlChainSuperParameter->setDefaultValue(pPreset->superKnob());
+    setMixMode(pChainPreset->mixMode());
+    m_pControlChainSuperParameter->setDefaultValue(pChainPreset->superKnob());
 
-    m_presetName = pPreset->name();
+    m_presetName = pChainPreset->name();
     emit chainPresetChanged(m_presetName);
 
     setControlLoadedPresetIndex(presetIndex());
