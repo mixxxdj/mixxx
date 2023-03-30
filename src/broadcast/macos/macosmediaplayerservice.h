@@ -24,7 +24,7 @@ class MacOSMediaPlayerService : public QObject {
     /// Sends the updated track info to the external 'now playing' center.
     void slotBroadcastCurrentTrack(TrackPointer pTrack); // TODO: override
     /// Notifies the external 'now playing' center that all tracks are paused.
-    void slotAllTracksPaused();                          // TODO: override
+    void slotAllTracksPaused(); // TODO: override
 
   private:
     QList<DeckAttributes*> m_deckAttributes;
