@@ -444,18 +444,43 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     });
     */
 
-    /*
-     * The Denon Prime 4's jog wheels send a 14-bit MIDI message when they turn;
-     * similar to how the tempo faders send MIDI messages. I have no idea how to
-     * implement this using components (or even basic functions for that matter),
-     * so any help would be greatly appreciated.
-     */
     // Jog Wheel
-    this.jogWheel = components.JogWheelBasic({
+    this.jogWheel = new components.JogWheelBasic({
+        deck: script.deckFromGroup(this.currentDeck),
         wheelResolution: 1000,
         alpha: 1/8,
         beta: 1/8/32,
         rpm: 33 + 1/3,
+        // Instead of relative movements between this and the last position,
+        // the controller reports the absolute position of the wheel with
+        // 14-bit precision. Because of that, we need to reconstruct the value
+        // and then transform it into the relative directions expected by Mixxx.
+        inputWheelMSB: function(_channel, _control, value, _status, _group) {
+            this.wheelMSB = value;
+        },
+        inputWheelLSB: function(channel, control, value, status, group) {
+            this.input(channel, control, (this.wheelMSB << 7) + value, status, group);
+        },
+        previousPosition: null,
+        wrappingValue: Math.pow(2, 14),
+        inValueScale: function(value) {
+            // The first value of the controller will probably be random
+            // and thus we just have to swallow it until we have the second value
+            // to find the difference
+            if (this.previousPosition === null) {
+                this.previousPosition = value;
+                return 0;
+            }
+            // This finds the shortest distance between the current value
+            // and the last one, and preserves the orientation
+            const delta = value - this.previousPosition;
+            let remainder = ((delta % this.wrappingValue) + this.wrappingValue) % this.wrappingValue;
+            if (remainder * 2 > this.wrappingValue) {
+                remainder -= this.wrappingValue;
+            }
+            this.previousPosition = value;
+            return remainder;
+        },
     });
 
     // Slip Mode Button

@@ -1287,6 +1287,26 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck A - Jog Wheel -->
+              <group></group>
+              <key>Prime4.leftDeck.jogWheel.inputWheelMSB</key>
+              <description></description>
+              <status>0xB4</status>
+              <midino>0x37</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Jog Wheel -->
+              <group></group>
+              <key>Prime4.leftDeck.jogWheel.inputWheelLSB</key>
+              <description></description>
+              <status>0xB4</status>
+              <midino>0x40</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck A - Parameter Left Button -->
               <group></group>
               <key></key>
@@ -1907,6 +1927,26 @@
               <description></description>
               <status>0x85</status>
               <midino>0x21</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Jog Wheel -->
+              <group></group>
+              <key>Prime4.rightDeck.jogWheel.inputWheelMSB</key>
+              <description></description>
+              <status>0xB5</status>
+              <midino>0x37</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Jog Wheel -->
+              <group></group>
+              <key>Prime4.rightDeck.jogWheel.inputWheelLSB</key>
+              <description></description>
+              <status>0xB5</status>
+              <midino>0x40</midino>
               <options>
                 <Script-Binding/>
               </options>
