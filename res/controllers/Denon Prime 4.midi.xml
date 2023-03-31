@@ -1322,7 +1322,7 @@
               <key>Prime4.leftDeck.jogWheel.inputWheelLSB</key>
               <description></description>
               <status>0xB4</status>
-              <midino>0x40</midino>
+              <midino>0x4D</midino>
               <options>
                 <Script-Binding/>
               </options>
@@ -1986,7 +1986,7 @@
               <key>Prime4.rightDeck.jogWheel.inputWheelLSB</key>
               <description></description>
               <status>0xB5</status>
-              <midino>0x40</midino>
+              <midino>0x4D</midino>
               <options>
                 <Script-Binding/>
               </options>
