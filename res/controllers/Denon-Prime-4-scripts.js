@@ -373,6 +373,18 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         key: "reverseroll",
     });
 
+    // Skip Backward
+    this.skipBackButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x04],
+        key: "back",
+    });
+
+    // Skip Forward
+    this.skipFwdButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x05],
+        key: "fwd",
+    });
+
     // Beatjump Backward
     this.bjumpBackButton = new components.Button({
         midi: [0x90 + midiChannel, 0x06],
@@ -418,7 +430,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         invert: true,
     });
 
-    // LED indicator when pitch fader is at centre. slightly buggy when switching decks.
+    // LED indicator when pitch fader is at centre.
     this.tempoFeedback = new components.Button({
         midi: [0x90 + midiChannel, 0x34],
         outKey: "rate",

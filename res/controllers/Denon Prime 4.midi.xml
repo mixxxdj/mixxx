@@ -1149,7 +1149,7 @@
 			</control>
             <control> <!-- Deck A - Track Skip Back Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.skipBackButton.input</key>
               <description>Previous Track</description>
               <status>0x94</status>
               <midino>0x04</midino>
@@ -1159,9 +1159,29 @@
             </control>
             <control> <!-- Deck A - Track Skip Forward Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.skipFwdButton.input</key>
               <description>Next Track</description>
               <status>0x94</status>
+              <midino>0x05</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Track Skip Back Button -->
+              <group></group>
+              <key>Prime4.leftDeck.skipBackButton.input</key>
+              <description>Previous Track</description>
+              <status>0x84</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Track Skip Forward Button -->
+              <group></group>
+              <key>Prime4.leftDeck.skipFwdButton.input</key>
+              <description>Next Track</description>
+              <status>0x84</status>
               <midino>0x05</midino>
               <options>
                 <Script-Binding/>
@@ -1803,7 +1823,7 @@
 			</control>
             <control> <!-- Deck B - Track Skip Back Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.skipBackButton.input</key>
               <description>Previous Track</description>
               <status>0x95</status>
               <midino>0x04</midino>
@@ -1813,9 +1833,29 @@
             </control>
             <control> <!-- Deck B - Track Skip Forward Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.skipFwdButton.input</key>
               <description>Next Track</description>
               <status>0x95</status>
+              <midino>0x05</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Track Skip Back Button -->
+              <group></group>
+              <key>Prime4.rightDeck.skipBackButton.input</key>
+              <description>Previous Track</description>
+              <status>0x85</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Track Skip Forward Button -->
+              <group></group>
+              <key>Prime4.rightDeck.skipFwdButton.input</key>
+              <description>Next Track</description>
+              <status>0x85</status>
               <midino>0x05</midino>
               <options>
                 <Script-Binding/>
