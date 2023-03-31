@@ -371,6 +371,12 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     this.censorButton = new components.Button({
         midi: [0x90 + midiChannel, 0x01],
         key: "reverseroll",
+        unshift: function() {
+            this.inKey = "reverseroll";
+        },
+        shift: function() {
+            this.inKey = "reverse";
+        },
     });
 
     // Skip Backward
