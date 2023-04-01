@@ -24,7 +24,7 @@ void HidIoGlobalOutputReportFifo::addReportDatasetToFifo(const quint8 reportId,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
     // First byte must always be the ReportID-Byte
-    QByteArray report(std::move(reportData));
+    QByteArray report(reportData);
     report.prepend(reportId); // In Qt6 this is a very fast operation without reallocation
 
     // Swap report to lockless FIFO queue
