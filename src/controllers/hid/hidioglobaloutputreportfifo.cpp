@@ -59,8 +59,6 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
         return false;
     }
 
-    auto fifoUsedEntries = m_fifoQueue.size();
-
     QByteArray dataToSend(std::move(*pFront));
     m_fifoQueue.pop();
 
@@ -84,9 +82,7 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
         qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                            << " " << result << "bytes (including ReportID of"
                            << static_cast<quint8>(dataToSend[0])
-                           << ") sent from non-skipping FIFO ("
-                           << fifoUsedEntries << "/" << kSizeOfFifoInReports
-                           << "used) - Needed: "
+                           << ") sent from non-skipping FIFO - Needed: "
                            << (mixxx::Time::elapsed() - startOfHidWrite)
                                       .formatMicrosWithUnit();
     }
