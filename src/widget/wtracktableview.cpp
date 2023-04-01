@@ -1060,7 +1060,7 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
 }
 
 bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column, bool scrollToTrack) {
-    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+    if (!trackId.isValid()) {
         return false;
     }
 
