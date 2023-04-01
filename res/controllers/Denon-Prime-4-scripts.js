@@ -187,6 +187,15 @@ components.Button.prototype.isPress = function(channel, control, value, status) 
     return (status & 0xF0) === 0x90;
 };
 
+Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _group) {
+    if (value >= 1 && value < 20) {
+        this.inSetParameter(this.inGetParameter() + (value / 100));
+    } else if (value <= 127 && value > 100) {
+        this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
+    }
+};
+
+
 Prime4.init = function(_id, _debug) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
@@ -203,41 +212,13 @@ Prime4.init = function(_id, _debug) {
     Prime4.effectBank = [];
     for (let i = 0; i <= 1; i++) {
         Prime4.effectBank[i] = new components.EffectUnit([i + 1, i + 3]);
-        Prime4.effectBank[i].enableButtons[1].midi = [0x96 + i, 0x06];
-        Prime4.effectBank[i].enableButtons[2].midi = [0x96 + i, 0x07];
-        Prime4.effectBank[i].enableButtons[3].midi = [0x96 + i, 0x08];
-        Prime4.effectBank[i].knobs[1].midi = [0xB6 + i, 0x01];
-        Prime4.effectBank[i].knobs[1].input = function(channel, control, value, _status, _group) {
-            if (value >= 1 && value < 20) {
-                this.inSetParameter(this.inGetParameter() + (value / 100));
-            } else if (value <= 127 && value > 100) {
-                this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
-            }
-        };
-        Prime4.effectBank[i].knobs[2].midi = [0xB6 + i, 0x02];
-        Prime4.effectBank[i].knobs[2].input = function(channel, control, value, _status, _group) {
-            if (value >= 1 && value < 20) {
-                this.inSetParameter(this.inGetParameter() + (value / 100));
-            } else if (value <= 127 && value > 100) {
-                this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
-            }
-        };
-        Prime4.effectBank[i].knobs[3].midi = [0xB6 + i, 0x03];
-        Prime4.effectBank[i].knobs[3].input = function(channel, control, value, _status, _group) {
-            if (value >= 1 && value < 20) {
-                this.inSetParameter(this.inGetParameter() + (value / 100));
-            } else if (value <= 127 && value > 100) {
-                this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
-            }
-        };
+        for (let j = 0; j < 3; j++) {
+            Prime4.effectBank[i].enableButtons[j + 1].midi = [0x96 + i, 0x06 + j];
+            Prime4.effectBank[i].knobs[j + 1].midi = [0xB6 + i, 0x01 + j];
+            Prime4.effectBank[i].knobs[j + 1].input = Prime4.EffectUnitEncoderInput;
+        }
         Prime4.effectBank[i].dryWetKnob.midi = [0xB6 + i, 0x04];
-        Prime4.effectBank[i].dryWetKnob.input = function(channel, control, value, _status, _group) {
-            if (value >= 1 && value < 20) {
-                this.inSetParameter(this.inGetParameter() + (value / 100));
-            } else if (value <= 127 && value > 100) {
-                this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
-            }
-        };
+        Prime4.effectBank[i].dryWetKnob.input = Prime4.EffectUnitEncoderInput;
         Prime4.effectBank[i].effectFocusButton.midi = [0x96 + i, 0x0A];
         Prime4.effectBank[i].init();
     }
