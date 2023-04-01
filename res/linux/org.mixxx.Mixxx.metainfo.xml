@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2023-03-16" timestamp="1678991453">
+    <release version="2.4.0" type="development" date="2023-03-19" timestamp="1679230090">
       <description>
  <p>
   Cover Art
@@ -1700,7 +1700,7 @@
   <li>
    Year search: Find also full date entries
    #11251
-   #11251
+   #11113
   </li>
   <li>
    Fix visual alignment of beats and waveform in case of decoding issues
