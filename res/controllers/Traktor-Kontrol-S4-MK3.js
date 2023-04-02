@@ -107,6 +107,10 @@ const GridButtonBlinkOverBeat = false;
 // Default: true
 const WheelLedBlinkOnTrackEnd = true;
 
+// When shifting either decks, the mixer will control microphones or auxiliary lines. If there is both a mic and an configure on the same channel, the mixer will control the auxiliary.
+// Default: true
+const MixerControlsMixAnxOnShift = true;
+
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
 // less responsive it gets in Mixxx. Default: 5
 const WheelSpeedSample = 3;
@@ -404,6 +408,7 @@ class ComponentContainer extends Component {
             }
             component.shifted = false;
         }
+        this.shifted = false;
     }
     shift() {
         for (const component of this) {
@@ -412,6 +417,7 @@ class ComponentContainer extends Component {
             }
             component.shifted = true;
         }
+        this.shifted = true;
     }
 }
 
@@ -964,6 +970,10 @@ class Pot extends Component {
         super(options);
         this.hardwarePosition = null;
         this.shiftedHardwarePosition = null;
+
+        if (this.input === undefined) {
+            this.input = this.defaultInput;
+        }
     }
     setGroupKey(group, key) {
         this.inKey = key;
@@ -975,7 +985,7 @@ class Pot extends Component {
         this.outKey = key;
         this.outConnect();
     }
-    input(value) {
+    defaultInput(value) {
         const receivingFirstValue = this.hardwarePosition === null;
         this.hardwarePosition = value / this.max;
         engine.setParameter(this.group, this.inKey, this.hardwarePosition);
@@ -998,7 +1008,7 @@ class Mixer extends ComponentContainer {
 
         this.outReport = outReports[128];
 
-        this.mixerColumnDeck1 = new S4Mk3MixerColumn("[Channel1]", inReports, outReports[128],
+        this.mixerColumnDeck1 = new S4Mk3MixerColumn(1, inReports, outReports[128],
             {
                 saveGain: {inByte: 12, inBit: 0, outByte: 80},
                 effectUnit1Assign: {inByte: 3, inBit: 3, outByte: 78},
@@ -1014,7 +1024,7 @@ class Mixer extends ComponentContainer {
                 crossfaderSwitch: {inByte: 18, inBit: 4},
             }
         );
-        this.mixerColumnDeck2 = new S4Mk3MixerColumn("[Channel2]", inReports, outReports[128],
+        this.mixerColumnDeck2 = new S4Mk3MixerColumn(2, inReports, outReports[128],
             {
                 saveGain: {inByte: 12, inBit: 1, outByte: 84},
                 effectUnit1Assign: {inByte: 3, inBit: 5, outByte: 82},
@@ -1029,7 +1039,7 @@ class Mixer extends ComponentContainer {
                 crossfaderSwitch: {inByte: 18, inBit: 2},
             }
         );
-        this.mixerColumnDeck3 = new S4Mk3MixerColumn("[Channel3]", inReports, outReports[128],
+        this.mixerColumnDeck3 = new S4Mk3MixerColumn(3, inReports, outReports[128],
             {
                 saveGain: {inByte: 3, inBit: 1, outByte: 88},
                 effectUnit1Assign: {inByte: 3, inBit: 0, outByte: 86},
@@ -1044,7 +1054,7 @@ class Mixer extends ComponentContainer {
                 crossfaderSwitch: {inByte: 18, inBit: 6},
             }
         );
-        this.mixerColumnDeck4 = new S4Mk3MixerColumn("[Channel4]", inReports, outReports[128],
+        this.mixerColumnDeck4 = new S4Mk3MixerColumn(4, inReports, outReports[128],
             {
                 saveGain: {inByte: 12, inBit: 2, outByte: 92},
                 effectUnit1Assign: {inByte: 3, inBit: 7, outByte: 90},
@@ -1531,7 +1541,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
 }
 
 class S4Mk3Deck extends Deck {
-    constructor(decks, colors, effectUnit, inReports, outReport, io) {
+    constructor(decks, colors, effectUnit, mixer, inReports, outReport, io) {
         super(decks, colors);
 
         this.playButton = new PlayButton({
@@ -1541,7 +1551,9 @@ class S4Mk3Deck extends Deck {
         this.cueButton = new CueButton({
             deck: this
         });
+
         this.effectUnit = effectUnit;
+        this.mixer = mixer;
 
         this.syncMasterButton = new Button({
             key: "sync_leader",
@@ -2584,32 +2596,44 @@ class S4Mk3Deck extends Deck {
 }
 
 class S4Mk3MixerColumn extends ComponentContainer {
-    constructor(group, inReports, outReport, io) {
+    constructor(idx, inReports, outReport, io) {
         super();
 
-        this.group = group;
+        this.idx = idx;
+        this.group = "[Channel" +  idx + "]";
 
         this.gain = new Pot({
             inKey: "pregain",
         });
         this.eqHigh = new Pot({
-            group: "[EqualizerRack1_" + group + "_Effect1]",
+            group: "[EqualizerRack1_" + this.group + "_Effect1]",
             inKey: "parameter3",
         });
         this.eqMid = new Pot({
-            group: "[EqualizerRack1_" + group + "_Effect1]",
+            group: "[EqualizerRack1_" + this.group + "_Effect1]",
             inKey: "parameter2",
         });
         this.eqLow = new Pot({
-            group: "[EqualizerRack1_" + group + "_Effect1]",
+            group: "[EqualizerRack1_" + this.group + "_Effect1]",
             inKey: "parameter1",
         });
         this.quickEffectKnob = new Pot({
-            group: "[QuickEffectRack1_" + group + "]",
+            group: "[QuickEffectRack1_" + this.group + "]",
             inKey: "super1",
         });
         this.volume = new Pot({
             inKey: "volume",
+            mixer: this,
+            input: MixerControlsMixAnxOnShift ? function(value) {
+                if (this.mixer.shifted) {
+                    const controlKey = (this.group === "[Microphone" +  this.mixer.idx + "]" || this.group === "[Microphone]") ? "talkover" : "master";
+                    const isPlaying = engine.getValue(this.group, controlKey);
+                    if ((value !== 0) !== isPlaying) {
+                        engine.setValue(this.group, controlKey, value !== 0);
+                    }
+                }
+                this.defaultInput(value);
+            } : undefined
         });
 
         this.pfl = new ToggleButton({
@@ -2665,6 +2689,55 @@ class S4Mk3MixerColumn extends ComponentContainer {
                     component.outConnect();
                     component.outTrigger();
                 }
+            }
+        }
+
+        if (MixerControlsMixAnxOnShift) {
+            this.shift = function() {
+                engine.setValue("[Microphone]", "show_microphone", true);
+                this.updateGroup(true);
+            };
+
+            this.unshift = function() {
+                engine.setValue("[Microphone]", "show_microphone", false);
+                this.updateGroup(false);
+            };
+        }
+    }
+
+    updateGroup(shifted) {
+        let alternativeInput = null;
+        if (engine.getValue("[Auxiliary" +  this.idx + "]", "input_configured")) {
+            alternativeInput = "[Auxiliary" +  this.idx + "]";
+        } else if (engine.getValue(this.idx !== 1 ? "[Microphone" +  this.idx + "]" : "[Microphone]", "input_configured")) {
+            alternativeInput = this.idx !== 1 ? "[Microphone" +  this.idx + "]" : "[Microphone]";
+        }
+
+        if (!alternativeInput) {
+            return;
+        }
+        this.group = shifted ? alternativeInput : "[Channel" +  this.idx + "]";
+        for (const property of ["gain", "volume", "pfl", "crossfaderSwitch"]) {
+            const component = this[property];
+            if (component instanceof Component) {
+                component.outDisconnect();
+                component.inDisconnect();
+                component.group = this.group;
+                component.inConnect();
+                component.outConnect();
+                component.outTrigger();
+            }
+        }
+        for (const property of ["effectUnit1Assign", "effectUnit2Assign"]) {
+            const component = this[property];
+            if (component instanceof Component) {
+                component.outDisconnect();
+                component.inDisconnect();
+                component.inKey = "group_" + this.group + "_enable";
+                component.outKey = "group_" + this.group + "_enable";
+                component.inConnect();
+                component.outConnect();
+                component.outTrigger();
             }
         }
     }
@@ -2723,11 +2796,16 @@ class S4MK3 {
             }
         );
 
+        // The interaction between the FX SELECT buttons and the QuickEffect enable buttons is rather complex.
+        // It is easier to have this separate from the S4Mk3MixerColumn dhe FX SELECT buttons are not
+        // really in the mixer columns.
+        this.mixer = new Mixer(this.inReports, this.outReports);
+
         // There is no consistent offset between the left and right deck,
         // so every single components' IO needs to be specified individually
         // for both decks.
         this.leftDeck = new S4Mk3Deck(
-            [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1,
+            [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1, this.mixer,
             this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 5, inBit: 0, outByte: 55},
@@ -2778,7 +2856,7 @@ class S4MK3 {
         );
 
         this.rightDeck = new S4Mk3Deck(
-            [2, 4], [DeckColors[1], DeckColors[3]], this.effectUnit2,
+            [2, 4], [DeckColors[1], DeckColors[3]], this.effectUnit2, this.mixer,
             this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 13, inBit: 0, outByte: 66},
@@ -2828,18 +2906,21 @@ class S4MK3 {
             }
         );
 
-        // The interaction between the FX SELECT buttons and the QuickEffect enable buttons is rather complex.
-        // It is easier to have this separate from the S4Mk3MixerColumn class and the FX SELECT buttons are not
-        // really in the mixer columns.
-        this.mixer = new Mixer(this.inReports, this.outReports);
-
+        const that = this;
         /* eslint no-unused-vars: "off" */
         const meterConnection = engine.makeConnection("[Master]", "guiTick50ms", function(_value) {
             const deckMeters = Array(78).fill(0);
             // Each column has 14 segments, but treat the top one specially for the clip indicator.
             const deckSegments = 13;
             for (let deckNum = 1; deckNum <= 4; deckNum++) {
-                const deckGroup = "[Channel" + deckNum + "]";
+                let deckGroup = "[Channel" + deckNum + "]";
+                if (that.leftDeck.shifted || that.rightDeck.shifted) {
+                    if (engine.getValue("[Auxiliary" +  deckNum + "]", "input_configured")) {
+                        deckGroup = "[Auxiliary" +  deckNum + "]";
+                    } else if (engine.getValue(deckNum !== 1 ? "[Microphone" +  deckNum + "]" : "[Microphone]", "input_configured")) {
+                        deckGroup = deckNum !== 1 ? "[Microphone" +  deckNum + "]" : "[Microphone]";
+                    }
+                }
                 const deckLevel = engine.getValue(deckGroup, "VuMeter");
                 const columnBaseIndex = (deckNum - 1) * (deckSegments + 2);
                 const scaledLevel = deckLevel * deckSegments;
