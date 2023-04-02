@@ -252,15 +252,14 @@ class HIDInputReport {
             // Little endianness is specified by the HID standard.
             // The HID standard allows signed integers as well, but I am not aware
             // of any HID DJ controllers which use signed integers.
-            // Note that `field.byteOffset` is an absolute offset from the report data, which includes the report ID on the first byte, however `reportData` omits the report ID, thus the "minus one" offset
             if (numBytes === 1) {
-                data = view.getUint8(field.byteOffset - 1);
+                data = view.getUint8(field.byteOffset);
             } else if (numBytes === 2) {
-                data = view.getUint16(field.byteOffset - 1, true);
+                data = view.getUint16(field.byteOffset, true);
             } else if (numBytes === 3) {
-                data = view.getUint32(field.byteOffset - 1, true) >>> 8;
+                data = view.getUint32(field.byteOffset, true) >>> 8;
             } else if (numBytes === 4) {
-                data = view.getUint32(field.byteOffset - 1, true);
+                data = view.getUint32(field.byteOffset, true);
             } else {
                 throw Error("field bitLength must be between 1 and 32");
             }
@@ -1010,63 +1009,63 @@ class Mixer extends ComponentContainer {
 
         this.mixerColumnDeck1 = new S4Mk3MixerColumn(1, inReports, outReports[128],
             {
-                saveGain: {inByte: 12, inBit: 0, outByte: 80},
-                effectUnit1Assign: {inByte: 3, inBit: 3, outByte: 78},
-                effectUnit2Assign: {inByte: 3, inBit: 4, outByte: 79},
-                gain: {inByte: 17},
-                eqHigh: {inByte: 45},
-                eqMid: {inByte: 47},
-                eqLow: {inByte: 49},
-                quickEffectKnob: {inByte: 65},
+                saveGain: {inByte: 11, inBit: 0, outByte: 80},
+                effectUnit1Assign: {inByte: 2, inBit: 3, outByte: 78},
+                effectUnit2Assign: {inByte: 2, inBit: 4, outByte: 79},
+                gain: {inByte: 16},
+                eqHigh: {inByte: 44},
+                eqMid: {inByte: 46},
+                eqLow: {inByte: 48},
+                quickEffectKnob: {inByte: 64},
                 quickEffectButton: {},
-                volume: {inByte: 3},
-                pfl: {inByte: 8, inBit: 3, outByte: 77},
-                crossfaderSwitch: {inByte: 18, inBit: 4},
+                volume: {inByte: 2},
+                pfl: {inByte: 7, inBit: 3, outByte: 77},
+                crossfaderSwitch: {inByte: 17, inBit: 4},
             }
         );
         this.mixerColumnDeck2 = new S4Mk3MixerColumn(2, inReports, outReports[128],
             {
-                saveGain: {inByte: 12, inBit: 1, outByte: 84},
-                effectUnit1Assign: {inByte: 3, inBit: 5, outByte: 82},
-                effectUnit2Assign: {inByte: 3, inBit: 6, outByte: 83},
-                gain: {inByte: 19},
-                eqHigh: {inByte: 51},
-                eqMid: {inByte: 53},
-                eqLow: {inByte: 55},
-                quickEffectKnob: {inByte: 67},
-                volume: {inByte: 5},
-                pfl: {inByte: 8, inBit: 6, outByte: 81},
-                crossfaderSwitch: {inByte: 18, inBit: 2},
+                saveGain: {inByte: 11, inBit: 1, outByte: 84},
+                effectUnit1Assign: {inByte: 2, inBit: 5, outByte: 82},
+                effectUnit2Assign: {inByte: 2, inBit: 6, outByte: 83},
+                gain: {inByte: 18},
+                eqHigh: {inByte: 50},
+                eqMid: {inByte: 52},
+                eqLow: {inByte: 54},
+                quickEffectKnob: {inByte: 66},
+                volume: {inByte: 4},
+                pfl: {inByte: 7, inBit: 6, outByte: 81},
+                crossfaderSwitch: {inByte: 17, inBit: 2},
             }
         );
         this.mixerColumnDeck3 = new S4Mk3MixerColumn(3, inReports, outReports[128],
             {
-                saveGain: {inByte: 3, inBit: 1, outByte: 88},
-                effectUnit1Assign: {inByte: 3, inBit: 0, outByte: 86},
-                effectUnit2Assign: {inByte: 3, inBit: 2, outByte: 87},
-                gain: {inByte: 15},
-                eqHigh: {inByte: 39},
-                eqMid: {inByte: 41},
-                eqLow: {inByte: 43},
-                quickEffectKnob: {inByte: 63},
-                volume: {inByte: 7},
-                pfl: {inByte: 8, inBit: 2, outByte: 85},
-                crossfaderSwitch: {inByte: 18, inBit: 6},
+                saveGain: {inByte: 2, inBit: 1, outByte: 88},
+                effectUnit1Assign: {inByte: 2, inBit: 0, outByte: 86},
+                effectUnit2Assign: {inByte: 2, inBit: 2, outByte: 87},
+                gain: {inByte: 14},
+                eqHigh: {inByte: 38},
+                eqMid: {inByte: 40},
+                eqLow: {inByte: 42},
+                quickEffectKnob: {inByte: 62},
+                volume: {inByte: 6},
+                pfl: {inByte: 7, inBit: 2, outByte: 85},
+                crossfaderSwitch: {inByte: 17, inBit: 6},
             }
         );
         this.mixerColumnDeck4 = new S4Mk3MixerColumn(4, inReports, outReports[128],
             {
-                saveGain: {inByte: 12, inBit: 2, outByte: 92},
-                effectUnit1Assign: {inByte: 3, inBit: 7, outByte: 90},
-                effectUnit2Assign: {inByte: 12, inBit: 7, outByte: 91},
-                gain: {inByte: 21},
-                eqHigh: {inByte: 57},
-                eqMid: {inByte: 59},
-                eqLow: {inByte: 61},
-                quickEffectKnob: {inByte: 69},
-                volume: {inByte: 9},
-                pfl: {inByte: 8, inBit: 7, outByte: 89},
-                crossfaderSwitch: {inByte: 18, inBit: 0},
+                saveGain: {inByte: 11, inBit: 2, outByte: 92},
+                effectUnit1Assign: {inByte: 2, inBit: 7, outByte: 90},
+                effectUnit2Assign: {inByte: 11, inBit: 7, outByte: 91},
+                gain: {inByte: 20},
+                eqHigh: {inByte: 56},
+                eqMid: {inByte: 58},
+                eqLow: {inByte: 60},
+                quickEffectKnob: {inByte: 68},
+                volume: {inByte: 8},
+                pfl: {inByte: 7, inBit: 7, outByte: 89},
+                crossfaderSwitch: {inByte: 17, inBit: 0},
             }
         );
 
@@ -1075,11 +1074,11 @@ class Mixer extends ComponentContainer {
         this.comboSelected = false;
 
         const fxSelectsInputs = [
-            {inByte: 9, inBit: 5},
-            {inByte: 9, inBit: 1},
-            {inByte: 9, inBit: 6},
-            {inByte: 9, inBit: 0},
-            {inByte: 9, inBit: 7},
+            {inByte: 8, inBit: 5},
+            {inByte: 8, inBit: 1},
+            {inByte: 8, inBit: 6},
+            {inByte: 8, inBit: 0},
+            {inByte: 8, inBit: 7},
         ];
         this.fxSelects = [];
         // FX SELECT buttons: Filter, 1, 2, 3, 4
@@ -1093,10 +1092,10 @@ class Mixer extends ComponentContainer {
         }
 
         const quickEffectInputs = [
-            {inByte: 8, inBit: 0, outByte: 46},
-            {inByte: 8, inBit: 5, outByte: 47},
-            {inByte: 8, inBit: 1, outByte: 48},
-            {inByte: 8, inBit: 4, outByte: 49},
+            {inByte: 7, inBit: 0, outByte: 46},
+            {inByte: 7, inBit: 5, outByte: 47},
+            {inByte: 7, inBit: 1, outByte: 48},
+            {inByte: 7, inBit: 4, outByte: 49},
         ];
         this.quickEffectButtons = [];
         // FX SELECT buttons: 1, 2, 3, 4
@@ -1121,7 +1120,7 @@ class Mixer extends ComponentContainer {
                 }
             },
             globalQuantizeOn: false,
-            inByte: 12,
+            inByte: 11,
             inBit: 6,
             outByte: 93,
         });
@@ -1129,11 +1128,11 @@ class Mixer extends ComponentContainer {
         this.crossfader = new Pot({
             group: "[Master]",
             inKey: "crossfader",
-            inByte: 1,
+            inByte: 0,
             inReport: inReports[2],
         });
         this.crossfaderCurveSwitch = new Component({
-            inByte: 19,
+            inByte: 18,
             inBit: 0,
             inBitLength: 2,
             input: function(value) {
@@ -2765,33 +2764,33 @@ class S4MK3 {
 
         this.effectUnit1 = new S4Mk3EffectUnit(1, this.inReports, this.outReports[128],
             {
-                mixKnob: {inByte: 31},
-                mainButton: {inByte: 2, inBit: 6, outByte: 62},
+                mixKnob: {inByte: 30},
+                mainButton: {inByte: 1, inBit: 6, outByte: 62},
                 knobs: [
-                    {inByte: 33},
-                    {inByte: 35},
-                    {inByte: 37},
+                    {inByte: 32},
+                    {inByte: 34},
+                    {inByte: 36},
                 ],
                 buttons: [
-                    {inByte: 2, inBit: 7, outByte: 63},
-                    {inByte: 2, inBit: 3, outByte: 64},
-                    {inByte: 2, inBit: 2, outByte: 65},
+                    {inByte: 1, inBit: 7, outByte: 63},
+                    {inByte: 1, inBit: 3, outByte: 64},
+                    {inByte: 1, inBit: 2, outByte: 65},
                 ],
             }
         );
         this.effectUnit2 = new S4Mk3EffectUnit(2, this.inReports, this.outReports[128],
             {
-                mixKnob: {inByte: 71},
-                mainButton: {inByte: 10, inBit: 4, outByte: 73},
+                mixKnob: {inByte: 70},
+                mainButton: {inByte: 9, inBit: 4, outByte: 73},
                 knobs: [
-                    {inByte: 73},
-                    {inByte: 75},
-                    {inByte: 77},
+                    {inByte: 72},
+                    {inByte: 74},
+                    {inByte: 76},
                 ],
                 buttons: [
-                    {inByte: 10, inBit: 5, outByte: 74},
-                    {inByte: 10, inBit: 6, outByte: 75},
-                    {inByte: 10, inBit: 7, outByte: 76},
+                    {inByte: 9, inBit: 5, outByte: 74},
+                    {inByte: 9, inBit: 6, outByte: 75},
+                    {inByte: 9, inBit: 7, outByte: 76},
                 ],
             }
         );
@@ -2808,50 +2807,50 @@ class S4MK3 {
             [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1, this.mixer,
             this.inReports, this.outReports[128],
             {
-                playButton: {inByte: 5, inBit: 0, outByte: 55},
-                cueButton: {inByte: 5, inBit: 1, outByte: 8},
-                syncButton: {inByte: 6, inBit: 7, outByte: 14},
-                syncMasterButton: {inByte: 1, inBit: 0, outByte: 15},
-                hotcuePadModeButton: {inByte: 5, inBit: 2, outByte: 9},
-                recordPadModeButton: {inByte: 5, inBit: 3, outByte: 56},
-                samplesPadModeButton: {inByte: 5, inBit: 4, outByte: 57},
-                mutePadModeButton: {inByte: 5, inBit: 5, outByte: 58},
-                stemsPadModeButton: {inByte: 6, inBit: 0, outByte: 10},
-                deckButtonLeft: {inByte: 6, inBit: 2},
-                deckButtonRight: {inByte: 6, inBit: 3},
+                playButton: {inByte: 4, inBit: 0, outByte: 55},
+                cueButton: {inByte: 4, inBit: 1, outByte: 8},
+                syncButton: {inByte: 5, inBit: 7, outByte: 14},
+                syncMasterButton: {inByte: 0, inBit: 0, outByte: 15},
+                hotcuePadModeButton: {inByte: 4, inBit: 2, outByte: 9},
+                recordPadModeButton: {inByte: 4, inBit: 3, outByte: 56},
+                samplesPadModeButton: {inByte: 4, inBit: 4, outByte: 57},
+                mutePadModeButton: {inByte: 4, inBit: 5, outByte: 58},
+                stemsPadModeButton: {inByte: 5, inBit: 0, outByte: 10},
+                deckButtonLeft: {inByte: 5, inBit: 2},
+                deckButtonRight: {inByte: 5, inBit: 3},
                 deckButtonOutputByteOffset: 12,
                 tempoFaderLED: {outByte: 11},
-                shiftButton: {inByte: 6, inBit: 1, outByte: 59},
-                leftEncoder: {inByte: 20, inBit: 0},
-                leftEncoderPress: {inByte: 7, inBit: 2},
-                rightEncoder: {inByte: 20, inBit: 4},
-                rightEncoderPress: {inByte: 7, inBit: 5},
-                libraryEncoder: {inByte: 21, inBit: 0},
-                libraryEncoderPress: {inByte: 1, inBit: 1},
-                turntableButton: {inByte: 6, inBit: 5, outByte: 17},
-                jogButton: {inByte: 6, inBit: 4, outByte: 16},
-                gridButton: {inByte: 6, inBit: 6, outByte: 18},
-                reverseButton: {inByte: 2, inBit: 4, outByte: 60},
-                fluxButton: {inByte: 2, inBit: 5, outByte: 61},
-                libraryPlayButton: {inByte: 1, inBit: 5, outByte: 22},
-                libraryStarButton: {inByte: 1, inBit: 4, outByte: 21},
-                libraryPlaylistButton: {inByte: 2, inBit: 1, outByte: 20},
-                libraryViewButton: {inByte: 2, inBit: 0, outByte: 19},
+                shiftButton: {inByte: 5, inBit: 1, outByte: 59},
+                leftEncoder: {inByte: 19, inBit: 0},
+                leftEncoderPress: {inByte: 6, inBit: 2},
+                rightEncoder: {inByte: 19, inBit: 4},
+                rightEncoderPress: {inByte: 6, inBit: 5},
+                libraryEncoder: {inByte: 20, inBit: 0},
+                libraryEncoderPress: {inByte: 0, inBit: 1},
+                turntableButton: {inByte: 5, inBit: 5, outByte: 17},
+                jogButton: {inByte: 5, inBit: 4, outByte: 16},
+                gridButton: {inByte: 5, inBit: 6, outByte: 18},
+                reverseButton: {inByte: 1, inBit: 4, outByte: 60},
+                fluxButton: {inByte: 1, inBit: 5, outByte: 61},
+                libraryPlayButton: {inByte: 0, inBit: 5, outByte: 22},
+                libraryStarButton: {inByte: 0, inBit: 4, outByte: 21},
+                libraryPlaylistButton: {inByte: 1, inBit: 1, outByte: 20},
+                libraryViewButton: {inByte: 1, inBit: 0, outByte: 19},
                 pads: [
-                    {inByte: 4, inBit: 5, outByte: 0},
-                    {inByte: 4, inBit: 4, outByte: 1},
-                    {inByte: 4, inBit: 7, outByte: 2},
-                    {inByte: 4, inBit: 6, outByte: 3},
+                    {inByte: 3, inBit: 5, outByte: 0},
+                    {inByte: 3, inBit: 4, outByte: 1},
+                    {inByte: 3, inBit: 7, outByte: 2},
+                    {inByte: 3, inBit: 6, outByte: 3},
 
-                    {inByte: 4, inBit: 3, outByte: 4},
-                    {inByte: 4, inBit: 2, outByte: 5},
-                    {inByte: 4, inBit: 1, outByte: 6},
-                    {inByte: 4, inBit: 0, outByte: 7},
+                    {inByte: 3, inBit: 3, outByte: 4},
+                    {inByte: 3, inBit: 2, outByte: 5},
+                    {inByte: 3, inBit: 1, outByte: 6},
+                    {inByte: 3, inBit: 0, outByte: 7},
                 ],
-                tempoFader: {inByte: 13, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
-                wheelRelative: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
-                wheelAbsolute: {inByte: 16, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
-                wheelTouch: {inByte: 17, inBit: 4},
+                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                wheelRelative: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
+                wheelAbsolute: {inByte: 15, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
+                wheelTouch: {inByte: 16, inBit: 4},
             }
         );
 
@@ -2859,50 +2858,50 @@ class S4MK3 {
             [2, 4], [DeckColors[1], DeckColors[3]], this.effectUnit2, this.mixer,
             this.inReports, this.outReports[128],
             {
-                playButton: {inByte: 13, inBit: 0, outByte: 66},
-                cueButton: {inByte: 15, inBit: 5, outByte: 31},
-                syncButton: {inByte: 15, inBit: 4, outByte: 37},
-                syncMasterButton: {inByte: 11, inBit: 0, outByte: 38},
-                hotcuePadModeButton: {inByte: 13, inBit: 2, outByte: 32},
-                recordPadModeButton: {inByte: 13, inBit: 3, outByte: 67},
-                samplesPadModeButton: {inByte: 13, inBit: 4, outByte: 68},
-                mutePadModeButton: {inByte: 13, inBit: 5, outByte: 69},
-                stemsPadModeButton: {inByte: 13, inBit: 1, outByte: 33},
-                deckButtonLeft: {inByte: 15, inBit: 2},
-                deckButtonRight: {inByte: 15, inBit: 3},
+                playButton: {inByte: 12, inBit: 0, outByte: 66},
+                cueButton: {inByte: 14, inBit: 5, outByte: 31},
+                syncButton: {inByte: 14, inBit: 4, outByte: 37},
+                syncMasterButton: {inByte: 10, inBit: 0, outByte: 38},
+                hotcuePadModeButton: {inByte: 12, inBit: 2, outByte: 32},
+                recordPadModeButton: {inByte: 12, inBit: 3, outByte: 67},
+                samplesPadModeButton: {inByte: 12, inBit: 4, outByte: 68},
+                mutePadModeButton: {inByte: 12, inBit: 5, outByte: 69},
+                stemsPadModeButton: {inByte: 12, inBit: 1, outByte: 33},
+                deckButtonLeft: {inByte: 14, inBit: 2},
+                deckButtonRight: {inByte: 14, inBit: 3},
                 deckButtonOutputByteOffset: 35,
                 tempoFaderLED: {outByte: 34},
-                shiftButton: {inByte: 15, inBit: 1, outByte: 70},
-                leftEncoder: {inByte: 21, inBit: 4},
-                leftEncoderPress: {inByte: 16, inBit: 5},
-                rightEncoder: {inByte: 22, inBit: 0},
-                rightEncoderPress: {inByte: 16, inBit: 2},
-                libraryEncoder: {inByte: 22, inBit: 4},
-                libraryEncoderPress: {inByte: 11, inBit: 1},
-                turntableButton: {inByte: 15, inBit: 6, outByte: 40},
-                jogButton: {inByte: 15, inBit: 0, outByte: 39},
-                gridButton: {inByte: 15, inBit: 7, outByte: 41},
-                reverseButton: {inByte: 11, inBit: 4, outByte: 71},
-                fluxButton: {inByte: 11, inBit: 5, outByte: 72},
-                libraryPlayButton: {inByte: 10, inBit: 2, outByte: 45},
-                libraryStarButton: {inByte: 10, inBit: 1, outByte: 44},
-                libraryPlaylistButton: {inByte: 10, inBit: 3, outByte: 43},
-                libraryViewButton: {inByte: 10, inBit: 0, outByte: 42},
+                shiftButton: {inByte: 14, inBit: 1, outByte: 70},
+                leftEncoder: {inByte: 20, inBit: 4},
+                leftEncoderPress: {inByte: 15, inBit: 5},
+                rightEncoder: {inByte: 21, inBit: 0},
+                rightEncoderPress: {inByte: 15, inBit: 2},
+                libraryEncoder: {inByte: 21, inBit: 4},
+                libraryEncoderPress: {inByte: 10, inBit: 1},
+                turntableButton: {inByte: 14, inBit: 6, outByte: 40},
+                jogButton: {inByte: 14, inBit: 0, outByte: 39},
+                gridButton: {inByte: 14, inBit: 7, outByte: 41},
+                reverseButton: {inByte: 10, inBit: 4, outByte: 71},
+                fluxButton: {inByte: 10, inBit: 5, outByte: 72},
+                libraryPlayButton: {inByte: 9, inBit: 2, outByte: 45},
+                libraryStarButton: {inByte: 9, inBit: 1, outByte: 44},
+                libraryPlaylistButton: {inByte: 9, inBit: 3, outByte: 43},
+                libraryViewButton: {inByte: 9, inBit: 0, outByte: 42},
                 pads: [
-                    {inByte: 14, inBit: 5, outByte: 23},
-                    {inByte: 14, inBit: 4, outByte: 24},
-                    {inByte: 14, inBit: 7, outByte: 25},
-                    {inByte: 14, inBit: 6, outByte: 26},
+                    {inByte: 13, inBit: 5, outByte: 23},
+                    {inByte: 13, inBit: 4, outByte: 24},
+                    {inByte: 13, inBit: 7, outByte: 25},
+                    {inByte: 13, inBit: 6, outByte: 26},
 
-                    {inByte: 14, inBit: 3, outByte: 27},
-                    {inByte: 14, inBit: 2, outByte: 28},
-                    {inByte: 14, inBit: 1, outByte: 29},
-                    {inByte: 14, inBit: 0, outByte: 30},
+                    {inByte: 13, inBit: 3, outByte: 27},
+                    {inByte: 13, inBit: 2, outByte: 28},
+                    {inByte: 13, inBit: 1, outByte: 29},
+                    {inByte: 13, inBit: 0, outByte: 30},
                 ],
-                tempoFader: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
-                wheelRelative: {inByte: 40, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
-                wheelAbsolute: {inByte: 44, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
-                wheelTouch: {inByte: 17, inBit: 5},
+                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                wheelRelative: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
+                wheelAbsolute: {inByte: 43, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
+                wheelTouch: {inByte: 16, inBit: 5},
             }
         );
 
