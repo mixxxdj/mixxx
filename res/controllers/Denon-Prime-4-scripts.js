@@ -39,7 +39,7 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "green",
+    "red",
 
     // Deck 2
     "blue",
@@ -203,6 +203,31 @@ Prime4.init = function(_id, _debug) {
     // Initialise all three physical sections of the unit
     Prime4.leftDeck = new Prime4.Deck([1, 3], 4);
     Prime4.rightDeck = new Prime4.Deck([2, 4], 5);
+
+    /*
+    // These are explicitly not part of `this` or `Prime4` so they don't get iterated over.
+    var decks = [
+        new Prime4.Deck(1, 4),
+        new Prime4.Deck(2, 5),
+        new Prime4.Deck(3, 4),
+        new Prime4.Deck(4, 5),
+    ];
+
+    // Bind the sections
+    Prime4.leftDeck = decks[0];
+    Prime4.rightDeck = decks[1];
+
+    Prime4.assignmentButtons = new components.ComponentContainer();
+    for (let i = 0; i < decks.length; i++) {
+        Prime4.assignmentButtons[i] = new Prime4.DeckAssignButton({
+            midi: [0x9F, 0x1C + i],
+            deckIndex: i,
+            toDeck: decks[i],
+            assignmentButtons: this.assignmentButtons,
+        });
+    }
+    */
+
     Prime4.mixerA = new mixerStrip(1, 0);
     Prime4.mixerB = new mixerStrip(2, 1);
     Prime4.mixerC = new mixerStrip(3, 2);
@@ -458,7 +483,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             this.wheelMSB = value;
         },
         inputWheelLSB: function(channel, control, value, status, group) {
-            this.input(channel, control, (this.wheelMSB << 7) + value, status, group);
+            this.inputWheel(channel, control, (this.wheelMSB << 7) + value, status, group);
         },
         previousPosition: null,
         wrappingValue: Math.pow(2, 14),
