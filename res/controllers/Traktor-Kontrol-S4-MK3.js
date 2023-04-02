@@ -238,11 +238,8 @@ class HIDInputReport {
         };
     }
 
-    handleInput(byteArray) {
-        const view = new DataView(byteArray);
-        if (view.getUint8(0) !== this.reportId) {
-            return;
-        }
+    handleInput(reportData) {
+        const view = new DataView(reportData);
 
         for (const field of this.fields) {
             const numBytes = Math.ceil(field.bitLength / 8);
@@ -251,14 +248,15 @@ class HIDInputReport {
             // Little endianness is specified by the HID standard.
             // The HID standard allows signed integers as well, but I am not aware
             // of any HID DJ controllers which use signed integers.
+            // Note that `field.byteOffset` is an absolute offset from the report data, which includes the report ID on the first byte, however `reportData` omits the report ID, thus the "minus one" offset
             if (numBytes === 1) {
-                data = view.getUint8(field.byteOffset);
+                data = view.getUint8(field.byteOffset - 1);
             } else if (numBytes === 2) {
-                data = view.getUint16(field.byteOffset, true);
+                data = view.getUint16(field.byteOffset - 1, true);
             } else if (numBytes === 3) {
-                data = view.getUint32(field.byteOffset, true) >>> 8;
+                data = view.getUint32(field.byteOffset - 1, true) >>> 8;
             } else if (numBytes === 4) {
-                data = view.getUint32(field.byteOffset, true);
+                data = view.getUint32(field.byteOffset - 1, true);
             } else {
                 throw Error("field bitLength must be between 1 and 32");
             }
@@ -2680,6 +2678,8 @@ class S4MK3 {
 
         this.inReports = [];
         this.inReports[1] = new HIDInputReport(1);
+        // The master volume, booth volume, headphone mix, and headphone volume knobs
+        // control the controller's audio interface in hardware, so they are not mapped.
         this.inReports[2] = new HIDInputReport(2);
         this.inReports[3] = new HIDInputReport(3);
 
@@ -3038,12 +3038,8 @@ class S4MK3 {
     }
     incomingData(data) {
         const reportId = data[0];
-        if (reportId === 1) {
-            this.inReports[1].handleInput(data.buffer);
-        } else if (reportId === 2) {
-            this.inReports[2].handleInput(data.buffer);
-            // The master volume, booth volume, headphone mix, and headphone volume knobs
-            // control the controller's audio interface in hardware, so they are not mapped.
+        if (reportId in this.inReports && reportId !== 3) {
+            this.inReports[reportId].handleInput(data.buffer.slice(1));
         } else if (reportId === 3) {
             // The 32 bit unsigned ints at bytes 8 and 36 always have exactly the same value,
             // so only process one of them. This must be processed before the wheel positions.
@@ -3079,8 +3075,9 @@ class S4MK3 {
         wheelTimerDelta = 0;
 
         // get state of knobs and faders
-        this.incomingData(new Uint8Array([0x01, ...Uint8Array.from(new Uint8Array(controller.getInputReport(0x01)))]));
-        this.incomingData(new Uint8Array([0x02, ...Uint8Array.from(new Uint8Array(controller.getInputReport(0x02)))]));
+        for (const repordId of [0x01, 0x02]) {
+            this.inReports[repordId].handleInput(controller.getInputReport(repordId));
+        }
     }
     shutdown() {
         // button LEDs
