@@ -26,6 +26,15 @@
   [#11327](https://github.com/mixxxdj/mixxx/issues/11327)
 * LateNight: brighter fx parameter buttons
   [#11397](https://github.com/mixxxdj/mixxx/pull/11397)
+* Fix drift in analyzis data after exporting metadata to MP3 files with ID3v1.1 tags
+  [#11168](https://github.com/mixxxdj/mixxx/pull/11168)
+  [#11159](https://github.com/mixxxdj/mixxx/issues/11159)
+* Fix broadcasting using Opus encoding
+  [#11349](https://github.com/mixxxdj/mixxx/pull/11349)
+  [#10666](https://github.com/mixxxdj/mixxx/issues/10666)
+* Tango: Remove VU peak indicators from stacked layout. This fixes a visual regression in Mixxx 2.3.4.
+  [#11430](https://github.com/mixxxdj/mixxx/pull/11430)
+  [#11362](https://github.com/mixxxdj/mixxx/issues/11362)
 
 ## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (2023-03-03)
 

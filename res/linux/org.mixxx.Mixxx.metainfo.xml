@@ -98,14 +98,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.5" type="development" date="2023-03-26" timestamp="1679839779">
+    <release version="2.3.5" type="development" date="2023-04-03" timestamp="1680480478">
       <description>
  <ul>
   <li>
-   Fix empty waveform overview after loading a track. This fixes a Mixxx 2.3.4 regression
-  since
-   #11162
-   .
+   Fix empty waveform overview after loading a track (Mixxx 2.3.4 regression)
   Fixed by
    #11333
    #11359
@@ -137,13 +134,28 @@
    #10912
   </li>
   <li>
-   Playlist export: Fix chained file extensions after changing the playlist type.
+   Playlist export: Adopt new extension after changing the playlist type
    #11332
    #11327
   </li>
   <li>
    LateNight: brighter fx parameter buttons
    #11397
+  </li>
+  <li>
+   Fix drift in analyzis data after exporting metadata to MP3 files with ID3v1.1 tags
+   #11168
+   #11159
+  </li>
+  <li>
+   Fix broadcasting using Opus encoding
+   #11349
+   #10666
+  </li>
+  <li>
+   Tango: Remove VU peak indicators from stacked layout. This fixes a visual regression in Mixxx 2.3.4.
+   #11430
+   #11362
   </li>
  </ul>
 </description>
