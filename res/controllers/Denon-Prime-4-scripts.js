@@ -39,7 +39,7 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "red",
+    "green",
 
     // Deck 2
     "blue",
@@ -51,6 +51,11 @@ const deckColors = [
     "magenta",
 
 ];
+
+// How sensitive should the jog wheel be when nudging (while playing) or navigating
+// (while paused) a track? (NOTE: 0.2 is a good value to start with. The larger the
+// number, the more sensitive the wheel will be.)
+const wheelSensitivity = 0.5;
 
 /**************************************************
  *                                                *
@@ -185,6 +190,39 @@ const colDeckDark = [
 // Register '0x9n' as a button press and 'ox8n' as a button release
 components.Button.prototype.isPress = function(channel, control, value, status) {
     return (status & 0xF0) === 0x90;
+};
+
+Prime4.DeckAssignButton = function(options) {
+
+    components.Button.call(this, options);
+
+    if (!Number.isInteger(this.deckIndex)) {
+        throw `invalid deckIndex: ${this.deckIndex}`;
+    }
+    if (!(this.toDeck instanceof Prime4.Deck)) {
+        throw "invalid toDeck";
+    }
+
+    const deckSide = (this.deckIndex % 2) === 0 ? "leftDeck" : "rightDeck";
+    if (!(Prime4[deckSide] instanceof Prime4.Deck)) {
+        throw "invalid deckIndex or structure; We expect Prime4.leftDeck and Prime4.rightDeck to be valid decks representing the physical left and right decks";
+    }
+    const isActive = function() {
+        return Prime4[deckSide] === this.toDeck;
+    };
+
+    this.trigger = function() {
+        this.output(isActive());
+    };
+    this.input = function(channel, control, value, status, _group) {
+        if (!this.isPress(channel, control, value, status) || isActive()) {
+            return;
+        }
+        Prime4[deckSide].forEachComponent(c => { c.disconnect(); });
+        Prime4[deckSide] = this.decks[this.deckIndex];
+        this.assignmentButtons.forEachComponent(btn => btn.trigger());
+        Prime4[deckSide].forEachComponent(c => { c.connect(); c.trigger(); });
+    };
 };
 
 Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _group) {
@@ -487,7 +525,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         },
         previousPosition: null,
         wrappingValue: Math.pow(2, 14),
-        inValueScale: function(value) {
+        relativeFromAbsolute: function(value) {
             // The first value of the controller will probably be random
             // and thus we just have to swallow it until we have the second value
             // to find the difference
@@ -504,6 +542,18 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             }
             this.previousPosition = value;
             return remainder;
+        },
+        jogScale: function(val) {
+            // wheelSensitivity is user-configurable, see top of file.
+            return val * wheelSensitivity;
+        },
+        inputWheel: function(channel, control, value, _status, _group) {
+            value = this.relativeFromAbsolute(value);
+            if (engine.isScratching(this.deck)) {
+                engine.scratchTick(this.deck, value);
+            } else {
+                this.inSetValue(this.jogScale(value));
+            }
         },
     });
 

@@ -1112,7 +1112,7 @@
 			  </options>
 			</control>
 			<control> <!-- Deck 1 Button -->
-				<key>Prime4.leftDeck.deckToggleButtonA</key>
+				<key>Prime4.assignmentButtons[0].input</key>
 				<description></description>
 				<status>0x9F</status>
 				<midino>0x1C</midino>
@@ -1121,7 +1121,7 @@
 				</options>
 			</control>
 			<control>
-				<key>Prime4.leftDeck.deckToggleButtonA</key>
+				<key>Prime4.assignmentButtons[0].input</key>
 				<description></description>
 				<status>0x8F</status>
 				<midino>0x1C</midino>
@@ -1130,7 +1130,7 @@
 				</options>
 			</control>
 			<control> <!-- Deck 3 Button -->
-				<key>Prime4.leftDeck.deckToggleButtonB</key>
+				<key>Prime4.assignmentButtons[2].input</key>
 				<description></description>
 				<status>0x9F</status>
 				<midino>0x1E</midino>
@@ -1139,7 +1139,7 @@
 				</options>
 			</control>
 			<control>
-				<key>Prime4.leftDeck.deckToggleButtonB</key>
+				<key>Prime4.assignmentButtons[2].input</key>
 				<description></description>
 				<status>0x8F</status>
 				<midino>0x1E</midino>
