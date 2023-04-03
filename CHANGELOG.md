@@ -2,8 +2,7 @@
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (unreleased)
 
-* Fix empty waveform overview after loading a track. This fixes a Mixxx 2.3.4 regression
-  since [#11162](https://github.com/mixxxdj/mixxx/pull/11162).
+* Fix empty waveform overview after loading a track (Mixxx 2.3.4 regression)
   Fixed by [#11333](https://github.com/mixxxdj/mixxx/pull/11333)
   [#11359](https://github.com/mixxxdj/mixxx/pull/11359)
   [#11344](https://github.com/mixxxdj/mixxx/issues/11344)
@@ -22,7 +21,7 @@
   [#11341](https://github.com/mixxxdj/mixxx/issues/11341)
 * Pioneer DDJ-400: Make Beat FX section more intuitive
   [#10912](https://github.com/mixxxdj/mixxx/pull/10912)
-* Playlist export: Fix chained file extensions after changing the playlist type.
+* Playlist export: Adopt new extension after changing the playlist type
   [#11332](https://github.com/mixxxdj/mixxx/pull/11332)
   [#11327](https://github.com/mixxxdj/mixxx/issues/11327)
 * LateNight: brighter fx parameter buttons
