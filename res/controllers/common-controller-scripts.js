@@ -16,6 +16,38 @@
        Control:off
        Deck:off
  */
+/* exported LibraryColumns */
+/*eslint no-var:off */
+
+// ----------------- Mapping constants ---------------------
+
+// Library column value, which can be used to interact with the CO for "[Library] sort_column"
+var LibraryColumns = {
+    Artist: 1,
+    Title: 2,
+    Album: 3,
+    Albumartist: 4,
+    Year: 5,
+    Genre: 6,
+    Composer: 7,
+    Grouping: 8,
+    Tracknumber: 9,
+    Filetype: 10,
+    NativeLocation: 11,
+    Comment: 12,
+    Duration: 13,
+    Bitrate: 14,
+    BPM: 15,
+    ReplayGain: 16,
+    DatetimeAdded: 17,
+    TimesPlayed: 18,
+    Rating: 19,
+    Key: 20,
+    Preview: 21,
+    Coverart: 22,
+    TrackColor: 30,
+    LastPlayed: 31,
+};
 
 // ----------------- Prototype enhancements ---------------------
 

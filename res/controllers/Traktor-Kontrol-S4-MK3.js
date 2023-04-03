@@ -1,4 +1,5 @@
 /// Created by Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
+/* global LibraryColumns*/
 
 const LedColors = {
     off: 0,
@@ -21,28 +22,6 @@ const LedColors = {
     white: 68,
 };
 
-// A full list can be found here: https://manual.mixxx.org/2.4/en/chapters/appendix/mixxx_controls.html#control-[Library]-sort_column
-const LibraryColumns = {
-    Artist: 1,
-    Title: 2,
-    Album: 3,
-    Albumartist: 4,
-    Year: 5,
-    Genre: 6,
-    Composer: 7,
-    Grouping: 8,
-    Tracknumber: 9,
-    Filetype: 10,
-    NativeLocation: 11,
-    Comment: 12,
-    Duration: 13,
-    Bitrate: 14,
-    BPM: 15,
-    ReplayGain: 16,
-    DatetimeAdded: 17,
-    TimesPlayed: 18,
-    Rating: 19,
-};
 
 // This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
 const KeyboardColors = [
@@ -149,7 +128,7 @@ const TurnTableSpeedSample = 20;
 const TightnessFactor = 0.5;
 
 // Define how much force can the motor use. This defines how much the wheel will "fight" you when you block it in TT mode
-// This will also im
+// This will also affect how quick the wheel starts spinning when enabling motor mode, or starting a deck with motor mode on
 const MaxWheelForce = 25000;  // Traktor seems to cap the max value at 60000, which just sounds insane
 
 
@@ -211,16 +190,13 @@ class HIDInputReport {
             throw Error("callback must be a function");
         }
 
-        if (byteOffset === undefined || typeof byteOffset !== "number" || !Number.isInteger(byteOffset)) {
+        if (!Number.isInteger(byteOffset)) {
             throw Error("byteOffset must be 0 or a positive integer");
         }
-
-
-        if (typeof bitOffset !== "number" || bitOffset < 0 || !Number.isInteger(bitOffset)) {
+        if (!Number.isInteger(bitOffset) || bitOffset < 0) {
             throw Error("bitOffset must be 0 or a positive integer");
         }
-
-        if (typeof bitLength !== "number" || bitLength < 1 || !Number.isInteger(bitOffset) || bitLength > 32) {
+        if (!Number.isInteger(bitOffset) || bitLength < 1 || bitLength > 32) {
             throw Error("bitLength must be an integer between 1 and 32");
         }
 
@@ -279,10 +255,10 @@ class HIDInputReport {
 class HIDOutputReport {
     constructor(reportId, length) {
         this.reportId = reportId;
-        this.data = Array(length).fill(0);
+        this.data = new Uint8Array(length).fill(0);
     }
     send() {
-        controller.send(this.data, null, this.reportId);
+        controller.sendOutputReport(this.reportId, this.data.buffer);
     }
 }
 
@@ -303,12 +279,11 @@ class Component {
             this.inKey = this.key;
             this.outKey = this.key;
         }
-        if (this.unshift !== undefined && typeof this.unshift === "function") {
+        if (typeof this.unshift === "function") {
             this.unshift();
         }
         this.shifted = false;
-        if (this.input !== undefined && typeof this.input === "function"
-            && this.inReport !== undefined && this.inReport instanceof HIDInputReport) {
+        if (typeof this.input === "function" && this.inReport instanceof HIDInputReport) {
             this.inConnect();
         }
         this.outConnect();
@@ -346,7 +321,7 @@ class Component {
             if (connection) {
                 this.outConnections[0] = connection;
             } else {
-                console.warn("Unable to connect '" + this.group + "." + this.outKey + "' to the controller output. The control appears to be unavailable.");
+                console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
             }
         }
     }
@@ -385,24 +360,24 @@ class ComponentContainer extends Component {
     }
     reconnectComponents(callback) {
         for (const component of this) {
-            if (component.outDisconnect !== undefined && typeof component.outDisconnect === "function") {
+            if (typeof component.outDisconnect === "function") {
                 component.outDisconnect();
             }
-            if (callback !== undefined && typeof callback === "function") {
+            if (typeof callback === "function") {
                 callback.call(this, component);
             }
-            if (component.outConnect !== undefined && typeof component.outConnect === "function") {
+            if (typeof component.outConnect === "function") {
                 component.outConnect();
             }
             component.outTrigger();
-            if (component.unshift !== undefined && typeof component.unshift === "function") {
+            if (typeof component.unshift === "function") {
                 component.unshift();
             }
         }
     }
     unshift() {
         for (const component of this) {
-            if (component.unshift !== undefined && typeof component.unshift === "function") {
+            if (typeof component.unshift === "function") {
                 component.unshift();
             }
             component.shifted = false;
@@ -411,7 +386,7 @@ class ComponentContainer extends Component {
     }
     shift() {
         for (const component of this) {
-            if (component.shift !== undefined && typeof component.shift === "function") {
+            if (typeof component.shift === "function") {
                 component.shift();
             }
             component.shifted = true;
@@ -487,9 +462,9 @@ class Deck extends ComponentContainer {
                 || component.group.search(script.channelRegEx) !== -1) {
                 component.group = newGroup;
             } else if (component.group.search(script.eqRegEx) !== -1) {
-                component.group = "[EqualizerRack1_" + newGroup + "_Effect1]";
+                component.group = `[EqualizerRack1_${newGroup}_Effect1]`;
             } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-                component.group = "[QuickEffectRack1_" + newGroup + "]";
+                component.group = `[QuickEffectRack1_${newGroup}]`;
             }
 
             component.color = this.groupsToColors[newGroup];
@@ -497,7 +472,7 @@ class Deck extends ComponentContainer {
         this.secondDeckModes = currentModes;
     }
     static groupForNumber(deckNumber) {
-        return "[Channel" + deckNumber + "]";
+        return `[Channel${deckNumber}]`;
     }
 }
 
@@ -724,15 +699,15 @@ class HotcueButton extends PushButton {
         if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1 || this.number > 32) {
             throw Error("HotcueButton must have a number property of an integer between 1 and 32");
         }
-        this.outKey = "hotcue_" + this.number + "_enabled";
-        this.colorKey = "hotcue_" + this.number + "_color";
+        this.outKey = `hotcue_${this.number}_enabled`;
+        this.colorKey = `hotcue_${this.number}_color`;
         this.outConnect();
     }
     unshift() {
-        this.inKey = "hotcue_" + this.number + "_activate";
+        this.inKey = `hotcue_${this.number}_activate`;
     }
     shift() {
-        this.inKey = "hotcue_" + this.number + "_clear";
+        this.inKey = `hotcue_${this.number}_clear`;
     }
     input(pressed) {
         engine.setValue(this.group, "scratch2_enable", false);
@@ -751,7 +726,7 @@ class HotcueButton extends PushButton {
             if (connection0) {
                 this.outConnections[0] = connection0;
             } else {
-                console.warn("Unable to connect '" + this.group + "." + this.outKey + "' to the controller output. The control appears to be unavailable.");
+                console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
             }
             const connection1 = engine.makeConnection(this.group, this.colorKey, (colorCode) => {
                 this.color = this.colorMap.getValueForNearestColor(colorCode);
@@ -760,7 +735,7 @@ class HotcueButton extends PushButton {
             if (connection1) {
                 this.outConnections[1] = connection1;
             } else {
-                console.warn("Unable to connect '" + this.group + "." + this.colorKey + "' to the controller output. The control appears to be unavailable.");
+                console.warn(`Unable to connect ${this.group}.${this.colorKey}' to the controller output. The control appears to be unavailable.`);
             }
         }
     }
@@ -826,7 +801,7 @@ class KeyboardButton extends PushButton {
             if (connection) {
                 this.outConnections[0] = connection;
             } else {
-                console.warn("Unable to connect '" + this.group + ".key' to the controller output. The control appears to be unavailable.");
+                console.warn(`Unable to connect ${this.group}.key' to the controller output. The control appears to be unavailable.`);
             }
         }
     }
@@ -882,7 +857,7 @@ class SamplerButton extends Button {
         if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1 || this.number > 64) {
             throw Error("SamplerButton must have a number property of an integer between 1 and 64");
         }
-        this.group = "[Sampler" + this.number + "]";
+        this.group = "[Sampler${this.number}]";
         this.outConnect();
     }
     onShortPress() {
@@ -925,13 +900,13 @@ class SamplerButton extends Button {
             if (connection0) {
                 this.outConnections[0] = connection0;
             } else {
-                console.warn("Unable to connect '" + this.group + ".play' to the controller output. The control appears to be unavailable.");
+                console.warn(`Unable to connect ${this.group}.play' to the controller output. The control appears to be unavailable.`);
             }
             const connection1 = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
             if (connection1) {
                 this.outConnections[1] = connection1;
             } else {
-                console.warn("Unable to connect '" + this.group + ".track_loaded' to the controller output. The control appears to be unavailable.");
+                console.warn(`Unable to connect ${this.group}.track_loaded' to the controller output. The control appears to be unavailable.`);
             }
         }
     }
@@ -946,14 +921,14 @@ class IntroOutroButton extends PushButton {
         if (this.cueBaseName === undefined || typeof this.cueBaseName !== "string") {
             throw Error("must specify cueBaseName as intro_start, intro_end, outro_start, or outro_end");
         }
-        this.outKey = this.cueBaseName + "_enabled";
+        this.outKey = `${this.cueBaseName}_enabled`;
         this.outConnect();
     }
     unshift() {
-        this.inKey = this.cueBaseName + "_activate";
+        this.inKey = `${this.cueBaseName}_activate`;
     }
     shift() {
-        this.inKey = this.cueBaseName + "_clear";
+        this.inKey = `${this.cueBaseName}_clear`;
     }
     output(value) {
         if (value) {
@@ -1114,7 +1089,7 @@ class Mixer extends ComponentContainer {
                 if (pressed) {
                     this.globalQuantizeOn = !this.globalQuantizeOn;
                     for (let deckIdx = 1; deckIdx <= 4; deckIdx++) {
-                        engine.setValue("[Channel" + deckIdx + "]", "quantize", this.globalQuantizeOn);
+                        engine.setValue(`[Channel${deckIdx}]`, "quantize", this.globalQuantizeOn);
                     }
                     this.send(this.globalQuantizeOn ? 127 : 0);
                 }
@@ -1167,7 +1142,7 @@ class Mixer extends ComponentContainer {
 
         let lightQuantizeButton = true;
         for (let deckIdx = 1; deckIdx <= 4; deckIdx++) {
-            if (!engine.getValue("[Channel" + deckIdx + "]", "quantize")) {
+            if (!engine.getValue(`[Channel${deckIdx}]`, "quantize")) {
                 lightQuantizeButton = false;
             }
         }
@@ -1237,7 +1212,7 @@ class FXSelect extends Button {
         if (this.mixer.firstPressedFxSelector !== null) {
             for (const deck of [1, 2, 3, 4]) {
                 const presetNumber = this.mixer.calculatePresetNumber();
-                engine.setValue("[QuickEffectRack1_[Channel" + deck + "]]", "loaded_chain_preset", presetNumber + 1);
+                engine.setValue(`[QuickEffectRack1_[Channel${deck}]]`, "loaded_chain_preset", presetNumber + 1);
             }
         }
         if (this.mixer.firstPressedFxSelector === this.number) {
@@ -1262,7 +1237,7 @@ class QuickEffectButton extends Button {
         if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1) {
             throw Error("number attribute must be an integer >= 1");
         }
-        this.group = "[QuickEffectRack1_[Channel" + this.number + "]]";
+        this.group = `[QuickEffectRack1_[Channel${this.number}]]`;
         this.outConnect();
     }
     onShortPress() {
@@ -1301,13 +1276,13 @@ class QuickEffectButton extends Button {
             if (connection0) {
                 this.outConnections[0] = connection0;
             } else {
-                console.warn("Unable to connect '" + this.group + ".loaded_chain_preset' to the controller output. The control appears to be unavailable.");
+                console.warn(`Unable to connect ${this.group}.loaded_chain_preset' to the controller output. The control appears to be unavailable.`);
             }
             const connection1 = engine.makeConnection(this.group, "enabled", this.output.bind(this));
             if (connection1) {
                 this.outConnections[1] = connection1;
             } else {
-                console.warn("Unable to connect '" + this.group + ".enabled' to the controller output. The control appears to be unavailable.");
+                console.warn(`Unable to connect ${this.group}.enabled' to the controller output. The control appears to be unavailable.`);
             }
         }
     }
@@ -1405,7 +1380,7 @@ let wheelTimerDelta = 0;
 class S4Mk3EffectUnit extends ComponentContainer {
     constructor(unitNumber, inReports, outReport, io) {
         super();
-        this.group = "[EffectRack1_EffectUnit" + unitNumber + "]";
+        this.group = `[EffectRack1_EffectUnit${unitNumber}]`;
         this.unitNumber = unitNumber;
         this.focusedEffect = null;
 
@@ -1438,7 +1413,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
             input: function(pressed) {
                 if (!this.shifted) {
                     for (const index of [0, 1, 2]) {
-                        const effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + (index + 1) + "]";
+                        const effectGroup = `[EffectRack1_EffectUnit${unitNumber}_Effect${index + 1}]`;
                         engine.setValue(effectGroup, "enabled", pressed);
                     }
                     this.output(pressed);
@@ -1456,7 +1431,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
         this.knobs = [];
         this.buttons = [];
         for (const index of [0, 1, 2]) {
-            const effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + (index + 1) + "]";
+            const effectGroup = `[EffectRack1_EffectUnit${unitNumber}_Effect${index + 1}]`;
             this.knobs[index] = new Pot({
                 inKey: "meta",
                 group: effectGroup,
@@ -1511,9 +1486,9 @@ class S4Mk3EffectUnit extends ComponentContainer {
         engine.setValue(this.group, "show_parameters", this.focusedEffect !== null);
 
 
-        const effectGroup = "[EffectRack1_EffectUnit" + this.unitNumber + "_Effect" + (this.focusedEffect + 1) + "]";
+        const effectGroup = `[EffectRack1_EffectUnit${this.unitNumber}_Effect${this.focusedEffect + 1}]`;
         for (const index of [0, 1, 2]) {
-            const unfocusGroup = "[EffectRack1_EffectUnit" + this.unitNumber + "_Effect" + (index + 1) + "]";
+            const unfocusGroup = `[EffectRack1_EffectUnit${this.unitNumber}_Effect${index + 1}]`;
             this.buttons[index].outDisconnect();
             this.buttons[index].group = this.focusedEffect === null ? unfocusGroup : effectGroup;
             this.buttons[index].inKey = this.focusedEffect === null ? "enabled" : "button_parameter" + (index + 1);
@@ -1655,10 +1630,10 @@ class S4Mk3Deck extends Deck {
             loopModeOff: function(skipRestore) {
                 if (this.previousWheelMode !== null) {
                     this.indicator(false);
-                    const wheelOutput = Array(40).fill(0);
+                    const wheelOutput = new Uint8Array(40).fill(0);
                     wheelOutput[0] = decks[0] - 1;
                     const that = this;
-                    controller.send(wheelOutput, null, 50, true);
+                    controller.sendOutputReport(50, wheelOutput.buffer, true);
                     if (!skipRestore) {
                         that.deck.wheelMode = that.previousWheelMode;
                     }
@@ -1693,12 +1668,12 @@ class S4Mk3Deck extends Deck {
                             this.loopModeConnection = engine.makeConnection(this.group, this.outKey, this.onLoopChange.bind(this));
                         }
 
-                        const wheelOutput = Array(40).fill(0);
+                        const wheelOutput = new Uint8Array(40).fill(0);
                         wheelOutput[0] = decks[0] - 1;
                         wheelOutput[1] = wheelLEDmodes.ringFlash;
                         wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                        controller.send(wheelOutput, null, 50, true);
+                        controller.sendOutputReport(50, wheelOutput.buffer, true);
 
                         this.indicator(true);
                     } else if (this.previousWheelMode !== null) {
@@ -1727,7 +1702,7 @@ class S4Mk3Deck extends Deck {
                     if (connection) {
                         this.outConnections[0] = connection;
                     } else {
-                        console.warn("Unable to connect '" + this.group + "." + this.outKey + "' to the controller output. The control appears to be unavailable.");
+                        console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
                     }
                 }
             },
@@ -1741,10 +1716,10 @@ class S4Mk3Deck extends Deck {
             loopModeOff: function(skipRestore) {
                 if (this.previousWheelMode !== null) {
                     this.indicator(false);
-                    const wheelOutput = Array(40).fill(0);
+                    const wheelOutput = new Uint8Array(40).fill(0);
                     wheelOutput[0] = decks[0] - 1;
                     const that = this;
-                    controller.send(wheelOutput, null, 50, true);
+                    controller.sendOutputReport(wheelOutput.buffer, null, 50, true);
                     if (!skipRestore) {
                         that.deck.wheelMode = that.previousWheelMode;
                     }
@@ -1777,12 +1752,12 @@ class S4Mk3Deck extends Deck {
                             this.loopModeConnection = engine.makeConnection(this.group, this.outKey, this.onLoopChange.bind(this));
                         }
 
-                        const wheelOutput = Array(40).fill(0);
+                        const wheelOutput = new Uint8Array(40).fill(0);
                         wheelOutput[0] = decks[0] - 1;
                         wheelOutput[1] = wheelLEDmodes.ringFlash;
                         wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                        controller.send(wheelOutput, null, 50, true);
+                        controller.sendOutputReport(50, wheelOutput.buffer, true);
 
                         this.indicator(true);
                     } else if (this.previousWheelMode !== null) {
@@ -1983,7 +1958,7 @@ class S4Mk3Deck extends Deck {
             currentSortedColumnIdx: -1,
             onChange: function(right) {
                 if (this.libraryViewButtonPressed) {
-                    this.currentSortedColumnIdx = (this.currentSortedColumnIdx + (right ? 1 : -1)) % LibrarySortableColumns.length;
+                    this.currentSortedColumnIdx = (LibrarySortableColumns.length + this.currentSortedColumnIdx + (right ? 1 : -1)) % LibrarySortableColumns.length;
                     engine.setValue("[Library]", "sort_column", LibrarySortableColumns[this.currentSortedColumnIdx]);
                 } else if (this.starButtonPressed) {
                     if (this.shifted) {
@@ -2075,7 +2050,7 @@ class S4Mk3Deck extends Deck {
                 if (connection) {
                     this.outConnections[0] = connection;
                 } else {
-                    console.warn("Unable to connect '" + this.group + ".focused_widget' to the controller output. The control appears to be unavailable.");
+                    console.warn(`Unable to connect ${this.group}.focused_widget' to the controller output. The control appears to be unavailable.`);
                 }
             },
             onShortRelease: function() {
@@ -2179,7 +2154,7 @@ class S4Mk3Deck extends Deck {
                 });
                 if (SamplerCrossfaderAssign) {
                     engine.setValue(
-                        "[Sampler" + samplerNumber + "]",
+                        `[Sampler${samplerNumber}]`,
                         "orientation",
                         (decks[0] === 1) ? 0 : 2
                     );
@@ -2513,7 +2488,7 @@ class S4Mk3Deck extends Deck {
                 const fractionalRevolution = revolutions - Math.floor(revolutions);
                 const LEDposition = fractionalRevolution * wheelAbsoluteMax;
 
-                const wheelOutput = Array(40).fill(0);
+                const wheelOutput = new Uint8Array(40).fill(0);
                 wheelOutput[0] = decks[0] - 1;
 
                 if (engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd) {
@@ -2525,7 +2500,7 @@ class S4Mk3Deck extends Deck {
                 }
                 wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                controller.send(wheelOutput, null, 50, true);
+                controller.sendOutputReport(50, wheelOutput.buffer, true);
 
             }
         });
@@ -2551,7 +2526,7 @@ class S4Mk3Deck extends Deck {
                     component.inConnect();
                     component.outConnect();
                     component.outTrigger();
-                    if (this.unshift !== undefined && typeof this.unshift === "function") {
+                    if (typeof this.unshift === "function") {
                         this.unshift();
                     }
                 }
@@ -2599,25 +2574,25 @@ class S4Mk3MixerColumn extends ComponentContainer {
         super();
 
         this.idx = idx;
-        this.group = "[Channel" +  idx + "]";
+        this.group = `[Channel${idx}]`;
 
         this.gain = new Pot({
             inKey: "pregain",
         });
         this.eqHigh = new Pot({
-            group: "[EqualizerRack1_" + this.group + "_Effect1]",
+            group: `[EqualizerRack1_${this.group}_Effect1]`,
             inKey: "parameter3",
         });
         this.eqMid = new Pot({
-            group: "[EqualizerRack1_" + this.group + "_Effect1]",
+            group: `[EqualizerRack1_${this.group}_Effect1]`,
             inKey: "parameter2",
         });
         this.eqLow = new Pot({
-            group: "[EqualizerRack1_" + this.group + "_Effect1]",
+            group: `[EqualizerRack1_${this.group}_Effect1]`,
             inKey: "parameter1",
         });
         this.quickEffectKnob = new Pot({
-            group: "[QuickEffectRack1_" + this.group + "]",
+            group: `[QuickEffectRack1_${this.group}]`,
             inKey: "super1",
         });
         this.volume = new Pot({
@@ -2625,7 +2600,7 @@ class S4Mk3MixerColumn extends ComponentContainer {
             mixer: this,
             input: MixerControlsMixAnxOnShift ? function(value) {
                 if (this.mixer.shifted) {
-                    const controlKey = (this.group === "[Microphone" +  this.mixer.idx + "]" || this.group === "[Microphone]") ? "talkover" : "master";
+                    const controlKey = (this.group === `[Microphone" +  this.mixer.${idx}]` || this.group === "[Microphone]") ? "talkover" : "master";
                     const isPlaying = engine.getValue(this.group, controlKey);
                     if ((value !== 0) !== isPlaying) {
                         engine.setValue(this.group, controlKey, value !== 0);
@@ -2642,12 +2617,12 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
         this.effectUnit1Assign = new PowerWindowButton({
             group: "[EffectRack1_EffectUnit1]",
-            key: "group_" + this.group + "_enable",
+            key: `group_${this.group}_enable`,
         });
 
         this.effectUnit2Assign = new PowerWindowButton({
             group: "[EffectRack1_EffectUnit2]",
-            key: "group_" + this.group + "_enable",
+            key: `group_${this.group}_enable`,
         });
 
         // FIXME: Why is output not working for these?
@@ -2706,16 +2681,16 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
     updateGroup(shifted) {
         let alternativeInput = null;
-        if (engine.getValue("[Auxiliary" +  this.idx + "]", "input_configured")) {
-            alternativeInput = "[Auxiliary" +  this.idx + "]";
-        } else if (engine.getValue(this.idx !== 1 ? "[Microphone" +  this.idx + "]" : "[Microphone]", "input_configured")) {
-            alternativeInput = this.idx !== 1 ? "[Microphone" +  this.idx + "]" : "[Microphone]";
+        if (engine.getValue(`[Auxiliary${this.idx}]`, "input_configured")) {
+            alternativeInput = `[Auxiliary${this.idx}]`;
+        } else if (engine.getValue(this.idx !== 1 ? `[Microphone${this.idx}]` : "[Microphone]", "input_configured")) {
+            alternativeInput = this.idx !== 1 ? `[Microphone${this.idx}]` : "[Microphone]";
         }
 
         if (!alternativeInput) {
             return;
         }
-        this.group = shifted ? alternativeInput : "[Channel" +  this.idx + "]";
+        this.group = shifted ? alternativeInput : `[Channel${this.idx}]`;
         for (const property of ["gain", "volume", "pfl", "crossfaderSwitch"]) {
             const component = this[property];
             if (component instanceof Component) {
@@ -2732,8 +2707,8 @@ class S4Mk3MixerColumn extends ComponentContainer {
             if (component instanceof Component) {
                 component.outDisconnect();
                 component.inDisconnect();
-                component.inKey = "group_" + this.group + "_enable";
-                component.outKey = "group_" + this.group + "_enable";
+                component.inKey = `group_${this.group}_enable`;
+                component.outKey = `group_${this.group}_enable`;
                 component.inConnect();
                 component.outConnect();
                 component.outTrigger();
@@ -2908,16 +2883,16 @@ class S4MK3 {
         const that = this;
         /* eslint no-unused-vars: "off" */
         const meterConnection = engine.makeConnection("[Master]", "guiTick50ms", function(_value) {
-            const deckMeters = Array(78).fill(0);
+            const deckMeters = new Uint8Array(78).fill(0);
             // Each column has 14 segments, but treat the top one specially for the clip indicator.
             const deckSegments = 13;
             for (let deckNum = 1; deckNum <= 4; deckNum++) {
-                let deckGroup = "[Channel" + deckNum + "]";
+                let deckGroup = `[Channel${deckNum}]`;
                 if (that.leftDeck.shifted || that.rightDeck.shifted) {
-                    if (engine.getValue("[Auxiliary" +  deckNum + "]", "input_configured")) {
-                        deckGroup = "[Auxiliary" +  deckNum + "]";
-                    } else if (engine.getValue(deckNum !== 1 ? "[Microphone" +  deckNum + "]" : "[Microphone]", "input_configured")) {
-                        deckGroup = deckNum !== 1 ? "[Microphone" +  deckNum + "]" : "[Microphone]";
+                    if (engine.getValue(`[Auxiliary${deckNum}]`, "input_configured")) {
+                        deckGroup = `[Auxiliary${deckNum}]`;
+                    } else if (engine.getValue(deckNum !== 1 ? `[Microphone${deckNum}]` : "[Microphone]", "input_configured")) {
+                        deckGroup = deckNum !== 1 ? `[Microphone${deckNum}]` : "[Microphone]";
                     }
                 }
                 const deckLevel = engine.getValue(deckGroup, "VuMeter");
@@ -2941,7 +2916,7 @@ class S4MK3 {
             // There are more bytes in the report which seem like they should be for the main
             // mix meters, but setting those bytes does not do anything, except for lighting
             // the clip lights on the main mix meters.
-            controller.send(deckMeters, null, 129);
+            controller.sendOutputReport(129, deckMeters.buffer);
         });
         if (UseMotors) {
             engine.beginTimer(20, this.motorCallback.bind(this));
@@ -2961,11 +2936,11 @@ class S4MK3 {
 
     }
     motorCallback() {
-        const motorData = [
+        const motorData = new Uint8Array([
             1, 0x20, 1, 0, 0,
             1, 0x20, 1, 0, 0,
 
-        ];
+        ]);
         const maxVelocity = 10;
 
         let velocityLeft = 0;
@@ -3114,7 +3089,7 @@ class S4MK3 {
 
         motorData[8] = velocityRight & 0xff;
         motorData[9] = velocityRight >> 8;
-        controller.send(motorData, null, 49, true);
+        controller.sendOutputReport(49, motorData.buffer, true);
     }
     incomingData(data) {
         const reportId = data[0];
@@ -3138,17 +3113,17 @@ class S4MK3 {
             this.leftDeck.wheelRelative.input(view.getUint16(12, true));
             this.rightDeck.wheelRelative.input(view.getUint16(40, true));
         } else {
-            console.warn("Unsupported HID repord with ID "+ reportId + ". Contains: "+data);
+            console.warn(`Unsupported HID repord with ID ${reportId}. Contains: ${data}`);
         }
     }
     init() {
         // sending these magic reports is required for the jog wheel LEDs to work
-        const wheelLEDinitReport = Array(26).fill(0);
+        const wheelLEDinitReport = new Uint8Array(26).fill(0);
         wheelLEDinitReport[1] = 1;
         wheelLEDinitReport[2] = 3;
-        controller.send(wheelLEDinitReport, null, 48, true);
+        controller.sendOutputReport(48, wheelLEDinitReport.buffer, true);
         wheelLEDinitReport[0] = 1;
-        controller.send(wheelLEDinitReport, null, 48);
+        controller.sendOutputReport(48, wheelLEDinitReport.buffer);
 
         // Init wheel timer data
         wheelTimer = null;
@@ -3161,17 +3136,17 @@ class S4MK3 {
     }
     shutdown() {
         // button LEDs
-        controller.send(new Array(94).fill(0), null, 128);
+        controller.sendOutputReport(128, new Uint8Array(94).fill(0).buffer);
 
         // meter LEDs
-        controller.send(new Array(78).fill(0), null, 129);
+        controller.sendOutputReport(129, new Uint8Array(78).fill(0).buffer);
 
-        const wheelOutput = Array(40).fill(0);
+        const wheelOutput = new Uint8Array(40).fill(0);
         // left wheel LEDs
-        controller.send(wheelOutput, null, 50, true);
+        controller.sendOutputReport(50, wheelOutput.buffer, true);
         // right wheel LEDs
         wheelOutput[0] = 1;
-        controller.send(wheelOutput, null, 50, true);
+        controller.sendOutputReport(50, wheelOutput.buffer, true);
     }
 }
 
