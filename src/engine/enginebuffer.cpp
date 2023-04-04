@@ -799,6 +799,17 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         return;
     }
     const KeylockEngine engine = static_cast<KeylockEngine>(dIndex);
+
+    if (m_sampleRate == mixxx::audio::SampleRate(96000)) {
+        // Stop playback
+        stopPlayback();
+
+        // Safely switch the key lock engine
+        switchKeylockEngineSafely(engine);
+
+        // Resume playback
+        resumePlayback();
+    } else {
     switch (engine) {
     case KeylockEngine::SoundTouch:
         m_pScaleKeylock = m_pScaleST;
