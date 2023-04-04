@@ -152,6 +152,9 @@ void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, i
             QString("QPushButton { background-color: %1; }").arg(mixxx::RgbColor::toQString(color)));
     pButton->setToolTip(mixxx::RgbColor::toQString(color));
     pButton->setCheckable(true);
+    // Without this the button might shrink when setting the checkmark icon,
+    // both here or via external stylesheets.
+    pButton->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_colorButtons.append(pButton);
 
     connect(pButton,
@@ -174,6 +177,7 @@ void WColorPicker::addNoColorButton(QGridLayout* pLayout, int row, int column) {
         pButton->setProperty("noColor", true);
         pButton->setToolTip(tr("No color"));
         pButton->setCheckable(true);
+        pButton->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
         connect(pButton,
                 &QPushButton::clicked,
                 this,
