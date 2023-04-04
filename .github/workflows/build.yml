@@ -15,28 +15,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 18.04 (gcc)
-            os: ubuntu-18.04
-            cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DBULK=ON
-              -DFAAD=ON
-              -DFFMPEG=OFF
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
-            compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
-            cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 18.04 DEB
-            artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-bionic
-            qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
             cmake_args: >-
