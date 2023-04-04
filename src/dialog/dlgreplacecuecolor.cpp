@@ -132,7 +132,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             colorPaletteSettings.getHotcueColorPalette(),
             this);
     m_pCurrentColorPickerAction->setObjectName("HotcueColorPickerAction");
-    m_pNewColorPickerAction->setSelectedColor(
+    m_pCurrentColorPickerAction->setSelectedColor(
             mixxx::PredefinedColorPalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
             &WColorPickerAction::colorPicked,
