@@ -231,6 +231,9 @@ void WColorPicker::setColorButtonChecked(mixxx::RgbColor::optional_t color, bool
     }
 
     pButton->setChecked(checked);
+    if (m_options.testFlag(Option::NoExtStyleSheet)) {
+        pButton->setIcon(QIcon(checked ? ":/images/ic_checkmark.svg" : ""));
+    }
     // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
     pButton->style()->unpolish(pButton);
     pButton->style()->polish(pButton);
