@@ -38,6 +38,7 @@ ControlDoublePrivate::ControlDoublePrivate()
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
           // default CO is read only
           m_confirmRequired(true) {
+    m_value.setValue(0.0);
 }
 
 ControlDoublePrivate::ControlDoublePrivate(
@@ -239,7 +240,8 @@ QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::takeAllInstanc
 
 //static
 QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
-    // Implicitly shared classes can safely be copied across threads
+    MMutexLocker locker(&s_qCOHashMutex);
+    // lock thread-unsafe copy constructors of QHash
     return s_qCOAliasHash;
 }
 

@@ -77,18 +77,16 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     listAppendOrReplaceAt(&headerLabels, COLUMN_FILE_CREATION_TIME, tr("File Created"));
     listAppendOrReplaceAt(&headerLabels, COLUMN_REPLAYGAIN, tr("ReplayGain"));
 
-    addSearchColumn(COLUMN_FILENAME);
-    addSearchColumn(COLUMN_ARTIST);
-    addSearchColumn(COLUMN_ALBUM);
-    addSearchColumn(COLUMN_TITLE);
-    addSearchColumn(COLUMN_GENRE);
-    addSearchColumn(COLUMN_COMPOSER);
-    addSearchColumn(COLUMN_KEY);
-    addSearchColumn(COLUMN_COMMENT);
-    addSearchColumn(COLUMN_ALBUMARTIST);
-    addSearchColumn(COLUMN_GROUPING);
-    addSearchColumn(COLUMN_FILE_MODIFIED_TIME);
-    addSearchColumn(COLUMN_FILE_CREATION_TIME);
+    m_searchColumns = {
+            COLUMN_FILENAME,
+            COLUMN_ARTIST,
+            COLUMN_ALBUM,
+            COLUMN_TITLE,
+            COLUMN_GENRE,
+            COLUMN_COMPOSER,
+            COLUMN_COMMENT,
+            COLUMN_ALBUMARTIST,
+            COLUMN_GROUPING};
 
     setDefaultSort(COLUMN_FILENAME, Qt::AscendingOrder);
 
@@ -205,10 +203,6 @@ const QList<int>& BrowseTableModel::searchColumns() const {
     return m_searchColumns;
 }
 
-void BrowseTableModel::addSearchColumn(int index) {
-    m_searchColumns.push_back(index);
-}
-
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
     if (path.info().hasLocation() && path.info().isDir()) {
         m_currentDirectory = path.info().location();
@@ -283,6 +277,7 @@ CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
         return CoverInfo();
     }
 }
+
 const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
@@ -378,7 +373,8 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
 }
 
 QString BrowseTableModel::modelKey(bool noSearch) const {
-    // Browse feature does currently not support searching.
+    // Searching is handled by the proxy model, so if there is an active search
+    // modelkey is composed there, too.
     Q_UNUSED(noSearch);
     return QStringLiteral("browse:") + m_currentDirectory;
 }

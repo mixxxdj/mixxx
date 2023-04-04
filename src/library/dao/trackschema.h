@@ -46,6 +46,7 @@ const QString LIBRARYTABLE_COVERART_LOCATION = QStringLiteral("coverart_location
 const QString LIBRARYTABLE_COVERART_COLOR = QStringLiteral("coverart_color");
 const QString LIBRARYTABLE_COVERART_DIGEST = QStringLiteral("coverart_digest");
 const QString LIBRARYTABLE_COVERART_HASH = QStringLiteral("coverart_hash");
+const QString LIBRARYTABLE_CRATE = QStringLiteral("crate");
 
 const QString TRACKLOCATIONSTABLE_ID = QStringLiteral("id");
 const QString TRACKLOCATIONSTABLE_LOCATION = QStringLiteral("location");

@@ -96,9 +96,6 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
             engineParameters.sampleRate(), kStartupHiFreq / 2, kQKillShelve);
 }
 
-ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
-}
-
 void ThreeBandBiquadEQEffectGroupState::setFilters(
         int sampleRate, double lowFreqCorner, double highFreqCorner) {
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
@@ -132,9 +129,6 @@ void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
     m_pKillLow = parameters.value("killLow");
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
-}
-
-ThreeBandBiquadEQEffect::~ThreeBandBiquadEQEffect() {
 }
 
 void ThreeBandBiquadEQEffect::processChannel(

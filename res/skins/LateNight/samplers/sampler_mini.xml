@@ -30,14 +30,6 @@
               <ConfigKey><Variable name="Group"/>,play</ConfigKey>
             </Connection>
           </PushButton>
-          <PushButton>
-            <ObjectName>PlayIndicator</ObjectName>
-            <Size>34f,34f</Size>
-            <NumberStates>2</NumberStates>
-            <Connection>
-              <ConfigKey><Variable name="Group"/>,play_indicator</ConfigKey>
-            </Connection>
-          </PushButton>
         </Children>
       </WidgetGroup>
 
@@ -73,7 +65,7 @@
                 <ObjectName>SamplerBpmMini</ObjectName>
                 <Size>45f,18f</Size>
                 <Group><Variable name="Group"/></Group>
-                <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
                 <Alignment>left</Alignment>
                 <Connection>
                   <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>

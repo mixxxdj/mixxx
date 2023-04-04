@@ -49,7 +49,7 @@ void VSyncThread::run() {
             emit vsyncSwap(); // swaps the new waveform to front
             m_semaVsyncSlot.acquire();
 
-            m_timer.restart();
+            m_sinceLastSwap = m_timer.restart();
             m_waitToSwapMicros = 1000;
             usleep(1000);
         } else { // if (m_vSyncMode == ST_TIMER) {
@@ -75,7 +75,8 @@ void VSyncThread::run() {
             m_semaVsyncSlot.acquire();
 
             // <- Assume we are VSynced here ->
-            int lastSwapTime = static_cast<int>(m_timer.restart().toIntegerMicros());
+            m_sinceLastSwap = m_timer.restart();
+            int lastSwapTime = static_cast<int>(m_sinceLastSwap.toIntegerMicros());
             if (remainingForSwap < 0) {
                 // Our swapping call was already delayed
                 // The real swap might happens on the following VSync, depending on driver settings
@@ -161,4 +162,8 @@ void VSyncThread::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {
             pList->append(pair);
         }
     }
+}
+
+mixxx::Duration VSyncThread::sinceLastSwap() const {
+    return m_sinceLastSwap;
 }

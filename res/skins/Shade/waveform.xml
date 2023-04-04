@@ -12,6 +12,7 @@
     <BeatColor>#FFFFFF</BeatColor>
     <PlayPosColor>#00FF00</PlayPosColor>
     <EndOfTrackColor>#EA0000</EndOfTrackColor>
+    <PassthroughLabelColor><Variable name="PassthroughLabelColorWaveform"/></PassthroughLabelColor>
     <AxesColor>#00FF00</AxesColor>
     <Align></Align>
     <DefaultMark>

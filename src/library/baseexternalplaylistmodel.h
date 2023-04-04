@@ -37,4 +37,5 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     QString m_playlistTracksTable;
     QSharedPointer<BaseTrackCache> m_trackSource;
     int m_currentPlaylistId;
+    QHash<int, QString> m_searchTexts;
 };

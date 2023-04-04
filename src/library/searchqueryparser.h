@@ -10,13 +10,14 @@
 
 class SearchQueryParser {
   public:
-    explicit SearchQueryParser(TrackCollection* pTrackCollection);
+    explicit SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns);
 
     virtual ~SearchQueryParser();
 
+    void setSearchColumns(QStringList searchColumns);
+
     std::unique_ptr<QueryNode> parseQuery(
             const QString& query,
-            const QStringList& searchColumns,
             const QString& extraFilter) const;
 
     /// splits the query into a list of terms
@@ -26,17 +27,17 @@ class SearchQueryParser {
 
   private:
     void parseTokens(QStringList tokens,
-                     QStringList searchColumns,
                      AndNode* pQuery) const;
 
     QString getTextArgument(QString argument,
                             QStringList* tokens) const;
 
     TrackCollection* m_pTrackCollection;
+    QStringList m_queryColumns;
+    bool m_searchCrates;
     QStringList m_textFilters;
     QStringList m_numericFilters;
     QStringList m_specialFilters;
-    QStringList m_ignoredColumns;
     QStringList m_allFilters;
     QHash<QString, QStringList> m_fieldToSqlColumns;
 

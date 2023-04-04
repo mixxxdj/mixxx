@@ -59,9 +59,11 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
     virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
     void slotCreatePlaylist();
+    void renameItem(const QModelIndex& index) override;
+    void deleteItem(const QModelIndex& index) override;
 
   protected slots:
-    void slotDeletePlaylist();
+    virtual void slotDeletePlaylist();
     void slotDuplicatePlaylist();
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
@@ -85,6 +87,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void updateChildModel(int selected_id);
     virtual void clearChildModel();
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
+
+    /// borrows pChild which must not be null, TODO: use gsl::not_null
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 

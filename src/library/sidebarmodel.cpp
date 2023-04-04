@@ -349,6 +349,44 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
     }
 }
 
+void SidebarModel::renameItem(const QModelIndex& index) {
+    stopPressedUntilClickedTimer();
+    m_pressedIndex = index;
+    if (!index.isValid()) {
+        return;
+    }
+
+    if (index.internalPointer() == this) {
+        // can't rename root features
+        return;
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (pTreeItem) {
+            LibraryFeature* pFeature = pTreeItem->feature();
+            pFeature->renameItem(index);
+        }
+    }
+}
+
+void SidebarModel::deleteItem(const QModelIndex& index) {
+    stopPressedUntilClickedTimer();
+    m_pressedIndex = index;
+    if (!index.isValid()) {
+        return;
+    }
+
+    if (index.internalPointer() == this) {
+        // can't delete root features
+        return;
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (pTreeItem) {
+            LibraryFeature* pFeature = pTreeItem->feature();
+            pFeature->deleteItem(index);
+        }
+    }
+}
+
 bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     bool result = false;

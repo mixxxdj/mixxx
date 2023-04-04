@@ -12,7 +12,7 @@
 // - inactivityTimeout: The timeout after which the widget's render timer is
 //   deactivated.
 //
-// This class was created in response to Launchpad Bug #1793015. With Qt 4, we
+// This class was created in response to issue #9437. With Qt 4, we
 // would simply call QWidget::update in response to input events that required
 // re-rendering widgets, relying on Qt to batch them together and deliver them
 // at a reasonable frequency. On macOS, the behavior of QWidget::update in Qt 5

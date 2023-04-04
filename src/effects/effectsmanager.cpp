@@ -32,12 +32,13 @@ EffectsManager::EffectsManager(
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());
 
-    QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
-            TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
-                    kEffectMessagePipeFifoSize, kEffectMessagePipeFifoSize);
+    auto [pRequestPipe, pResponsePipe] = TwoWayMessagePipe<EffectsRequest*,
+            EffectsResponse>::makeTwoWayMessagePipe(kEffectMessagePipeFifoSize,
+            kEffectMessagePipeFifoSize);
+
     m_pMessenger = EffectsMessengerPointer(new EffectsMessenger(
-            requestPipes.first, requestPipes.second));
-    m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
+            std::move(pRequestPipe)));
+    m_pEngineEffectsManager = std::make_unique<EngineEffectsManager>(std::move(pResponsePipe));
 
     m_pEffectPresetManager = EffectPresetManagerPointer(
             new EffectPresetManager(pConfig, m_pBackendManager));
@@ -127,34 +128,34 @@ EffectChainPointer EffectsManager::getStandardEffectChain(int unitNumber) const 
     return m_standardEffectChains.at(unitNumber);
 }
 
-void EffectsManager::addDeck(const QString& deckGroupName) {
-    addEqualizerEffectChain(deckGroupName);
-    addQuickEffectChain(deckGroupName);
+void EffectsManager::addDeck(const ChannelHandleAndGroup& deckHandleGroup) {
+    addEqualizerEffectChain(deckHandleGroup);
+    addQuickEffectChain(deckHandleGroup);
 }
 
-void EffectsManager::addEqualizerEffectChain(const QString& deckGroupName) {
+void EffectsManager::addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {
     VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChains.contains(
-            EqualizerEffectChain::formatEffectChainGroup(deckGroupName))) {
+            EqualizerEffectChain::formatEffectChainGroup(deckHandleGroup.name()))) {
         return;
     }
 
     auto pChainSlot = EqualizerEffectChainPointer(
-            new EqualizerEffectChain(deckGroupName, this, m_pMessenger));
+            new EqualizerEffectChain(deckHandleGroup, this, m_pMessenger));
 
-    m_equalizerEffectChains.insert(deckGroupName, pChainSlot);
+    m_equalizerEffectChains.insert(deckHandleGroup.name(), pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
-void EffectsManager::addQuickEffectChain(const QString& deckGroupName) {
+void EffectsManager::addQuickEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {
     VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChains.contains(
-            QuickEffectChain::formatEffectChainGroup(deckGroupName))) {
+            QuickEffectChain::formatEffectChainGroup(deckHandleGroup.name()))) {
         return;
     }
 
     auto pChainSlot = QuickEffectChainPointer(
-            new QuickEffectChain(deckGroupName, this, m_pMessenger));
+            new QuickEffectChain(deckHandleGroup, this, m_pMessenger));
 
-    m_quickEffectChains.insert(deckGroupName, pChainSlot);
+    m_quickEffectChains.insert(deckHandleGroup.name(), pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
@@ -177,6 +178,8 @@ void EffectsManager::readEffectsXml() {
     }
     file.close();
 
+    // Note: QuickEffect chains are created only for existing main decks
+    // thus only for those the configured presets are requested
     QStringList deckStrings;
     for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
         deckStrings << it.key();

@@ -229,7 +229,13 @@ WSearchLineEdit {
 #VuMeterBoxMasterSingle,
 #LatencyMeterBox {
   background-color: #040404;
-}
+  }
+  #LatencyMeterBox[highlight="0"] {
+    border: 1px solid #040404;
+  }
+  #LatencyMeterBox[highlight="1"] {
+    border: 1px solid yellow;
+  }
 
 #WaveformsContainer {
   border-bottom: 1px solid #0c0c0c;
@@ -246,16 +252,14 @@ WSearchLineEdit {
 
 #SearchLineBox {
   padding-right: 2px;
-  border-right: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
 }
 
 #LibExpandBox {
   border-right: 0px;
-  border-left: 0px;
-  border-radius: 0px;
-  padding: 0px 2px 2px 4px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  padding: 0px 2px 2px 0px;
+  margin-left: 4px;
 }
 
 #SidebarBox {
@@ -698,6 +702,10 @@ WBeatSpinBox::down-button,
 
 
 /************** Mixer ***************************************************/
+
+#CrossfaderContainer[highlight="1"] {
+  border:  1px solid #b2421c;
+}
 
 #MixerDecks {
   padding: 2px 5px 2px 5px;
@@ -1376,11 +1384,6 @@ QPushButton#pushButtonRecording:checked {
   color: #444443;
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  color: #b24c12;
-}
-
 #SkinSettingsButton,
 #SkinSettingsNumToggle,
 #SkinSettingsText,
@@ -1576,11 +1579,16 @@ WBeatSpinBox::down-button {
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
-  WPushButton#FxParameterButton[displayValue="0"],
   WTrackTableViewHeader,
   WTrackTableViewHeader::section {
     background-color: #171719;
   }
+  /* make Fx parameter buttons brighter so they stand out in 'fx focus' mode
+    (parameters row of focused effect is marked = dark bg, colored border) */
+  WPushButton#FxParameterButton[displayValue="0"] {
+    background-color: #2a2a2c;
+  }
+
   /* even buttons in 2nd level containers */
   #FxAssignButtons WPushButton[displayValue="0"],
   #VinylControls WPushButton[displayValue="0"],
@@ -2849,7 +2857,7 @@ WLibrarySidebar {
 WLibrarySidebar::branch:closed:has-children:!has-siblings:!selected,
 WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
 /* Suppresses that selected sidebar items branch indicator shows wrong color when
-    out of focus ; lp:880588 */
+    out of focus ; #6040 */
   border-image: none;
   image: url(skin:/palemoon/style/library_branch_closed.svg);
   }

@@ -14,7 +14,6 @@ WTrackProperty,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
-WOverview #PassthroughLabel,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -54,14 +53,12 @@ WPushButton#BroadcastButton,
 WPushButton#SkinSettingsToggle,
 #LibraryFeatureControls QPushButton,
 /* Passthrough label on overview waveform */
-WOverview #PassthroughLabel,
 WPushButton#EQKillButton,
 WLabel#LatencyLabel,
 WLabel#SamplerTitleMini,
 /* SKin settings & Library */
 WPushButton#SkinSettingsNumToggle[value="1"],
-QLabel#labelRecFilename,
-WOverview #PassthroughLabel {
+QLabel#labelRecFilename {
   font-family: "Open Sans";
   font-weight: bold;
 }
@@ -194,6 +191,7 @@ WSearchLineEdit::item:selected,
 #LatencyLabel {
   font-size: 10px;
   text-align: center;
+  qproperty-alignment: AlignCenter;
 }
 
 WPushButton,
@@ -287,13 +285,6 @@ WRecordingDuration {
 #SamplerBpmMini {
   text-align: right;
 }
-
-#KnobLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  qproperty-alignment: 'AlignLeft | AlignVCenter';
-}
-
 
 WTrackTableViewHeader::item {
   /* Don't set a font size to pick up the system font size. */
@@ -501,8 +492,7 @@ WSpinny { /*
   qproperty-layoutSpacing: 2;
 }
 #VuMeterBox,
-#VuMeterBoxMaster,
-#LatencyMeterBox {
+#VuMeterBoxMaster {
   /* (black) groove around Vu widgets */
   padding: 1px;
 }

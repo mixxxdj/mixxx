@@ -35,6 +35,8 @@ struct FlangerGroupState : public EffectState {
         SampleUtil::clear(delayLeft, kBufferLenth);
         SampleUtil::clear(delayRight, kBufferLenth);
     }
+    ~FlangerGroupState() override = default;
+
     CSAMPLE delayLeft[kBufferLenth];
     CSAMPLE delayRight[kBufferLenth];
     unsigned int delayPos;
@@ -49,7 +51,7 @@ struct FlangerGroupState : public EffectState {
 class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
   public:
     FlangerEffect() = default;
-    virtual ~FlangerEffect();
+    ~FlangerEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

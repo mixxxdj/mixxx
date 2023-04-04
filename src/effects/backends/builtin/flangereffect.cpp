@@ -50,7 +50,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     width->setDescription(QObject::tr(
             "Delay amplitude of the LFO (low frequency oscillator)"));
     width->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    width->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    width->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     width->setRange(0.0, kMaxLfoWidthMs / 2, kMaxLfoWidthMs);
 
     EffectManifestParameterPointer manual = pManifest->addParameter();
@@ -61,7 +61,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
             "Delay offset of the LFO (low frequency oscillator).\n"
             "With width at zero, this allows for manually sweeping over the entire delay range."));
     manual->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    manual->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    manual->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     manual->setRange(kMinDelayMs, kCenterDelayMs, kMaxDelayMs);
 
     EffectManifestParameterPointer regen = pManifest->addParameter();
@@ -106,10 +106,6 @@ void FlangerEffect::loadEngineEffectParameters(
     m_pRegenParameter = parameters.value("regen");
     m_pMixParameter = parameters.value("mix");
     m_pTripletParameter = parameters.value("triplet");
-}
-
-FlangerEffect::~FlangerEffect() {
-    //qDebug() << debugString() << "destroyed";
 }
 
 void FlangerEffect::processChannel(

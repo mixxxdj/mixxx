@@ -218,7 +218,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     // Mixxx immediately. This behavior is documented in the manpage of
     // mmap(). It has already appeared due to hardware errors and is
     // described in the following bug report:
-    // https://bugs.launchpad.net/mixxx/+bug/1452005
+    // https://github.com/mixxxdj/mixxx/issues/8011
 
     // Transfer it to the mad stream-buffer:
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
@@ -392,7 +392,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     // Calculate average bitrate values
     DEBUG_ASSERT(m_seekFrameList.size() > 0); // see above
-    m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
+    m_avgSeekFrameCount = frameLength() / static_cast<SINT>(m_seekFrameList.size());
     if (cntBitrateFrames > 0) {
         const unsigned long avgBitrate = sumBitrateFrames / cntBitrateFrames;
         initBitrateOnce(avgBitrate / 1000); // bps -> kbps

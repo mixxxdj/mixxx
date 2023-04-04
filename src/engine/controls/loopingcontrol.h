@@ -41,7 +41,7 @@ class LoopingControl : public EngineControl {
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
-    void hintReader(HintVector* pHintList) override;
+    void hintReader(gsl::not_null<HintVector*> pHintList) override;
     mixxx::audio::FramePos getSyncPositionInsideLoop(
             mixxx::audio::FramePos requestedPlayPosition,
             mixxx::audio::FramePos syncedPlayPosition);
@@ -87,6 +87,7 @@ class LoopingControl : public EngineControl {
 
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
+    void slotBeatJumpSizeChangeRequest(double beats);
     void slotBeatJumpSizeHalve(double pressed);
     void slotBeatJumpSizeDouble(double pressed);
     void slotBeatJumpForward(double pressed);
@@ -98,6 +99,7 @@ class LoopingControl : public EngineControl {
     void slotLoopScale(double scaleFactor);
     void slotLoopDouble(double pressed);
     void slotLoopHalve(double pressed);
+    void slotLoopRemove();
 
   private slots:
     void slotLoopEnabledValueChangeRequest(double enabled);
@@ -120,7 +122,7 @@ class LoopingControl : public EngineControl {
     void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
     void updateBeatLoopingControls();
-    bool currentLoopMatchesBeatloopSize();
+    bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const;
 
     // Given loop in and out points, determine if this is a beatloop of a particular
     // size.
@@ -154,6 +156,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopScale;
     ControlPushButton* m_pLoopHalveButton;
     ControlPushButton* m_pLoopDoubleButton;
+    ControlPushButton* m_pLoopRemoveButton;
     ControlObject* m_pSlipEnabled;
     RateControl* m_pRateControl;
     ControlObject* m_pPlayButton;

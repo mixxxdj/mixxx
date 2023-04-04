@@ -93,9 +93,6 @@ void LoudnessContourEffect::loadEngineEffectParameters(
     m_pUseGain = parameters.value("useGain");
 }
 
-LoudnessContourEffect::~LoudnessContourEffect() {
-}
-
 void LoudnessContourEffect::processChannel(
         LoudnessContourEffectGroupState* pState,
         const CSAMPLE* pInput,

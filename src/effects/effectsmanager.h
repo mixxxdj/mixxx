@@ -26,7 +26,7 @@ class EffectsManager {
     virtual ~EffectsManager();
 
     void setup();
-    void addDeck(const QString& deckGroupName);
+    void addDeck(const ChannelHandleAndGroup& deckHandleGroup);
 
     EffectChainPointer getEffectChain(const QString& group) const;
     EqualizerEffectChainPointer getEqualizerEffectChain(
@@ -37,7 +37,9 @@ class EffectsManager {
     EffectChainPointer getOutputEffectChain() const;
 
     EngineEffectsManager* getEngineEffectsManager() const {
-        return m_pEngineEffectsManager;
+        // Must only be called from Engine classes which have a shorter
+        // lifetime than this EffectsManager. See CoreServices::finalize()
+        return m_pEngineEffectsManager.get();
     }
 
     const ChannelHandle getMasterHandle() const {
@@ -75,8 +77,8 @@ class EffectsManager {
     void addStandardEffectChains();
     void addOutputEffectChain();
 
-    void addEqualizerEffectChain(const QString& deckGroupName);
-    void addQuickEffectChain(const QString& deckGroupName);
+    void addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup);
+    void addQuickEffectChain(const ChannelHandleAndGroup& deckHandleGroup);
 
     void readEffectsXml();
     void saveEffectsXml();
@@ -88,13 +90,14 @@ class EffectsManager {
 
     QList<StandardEffectChainPointer> m_standardEffectChains;
     OutputEffectChainPointer m_outputEffectChain;
+    // These two store <deck group, effect chain pointer>
     QHash<QString, EqualizerEffectChainPointer> m_equalizerEffectChains;
     QHash<QString, QuickEffectChainPointer> m_quickEffectChains;
 
     EffectsBackendManagerPointer m_pBackendManager;
     std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
 
-    EngineEffectsManager* m_pEngineEffectsManager;
+    std::unique_ptr<EngineEffectsManager> m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;
     VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectPresetManagerPointer m_pEffectPresetManager;

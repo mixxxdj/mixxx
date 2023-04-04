@@ -152,6 +152,10 @@ Library::Library(
             &CrateFeature::analyzeTracks,
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
+    connect(this,
+            &Library::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
     // Suspend a batch analysis while an ad-hoc analysis of
     // loaded tracks is in progress and resume it afterwards.
@@ -352,6 +356,14 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::rightClicked,
             m_pSidebarModel,
             &SidebarModel::rightClicked);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::renameItem,
+            m_pSidebarModel,
+            &SidebarModel::renameItem);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::deleteItem,
+            m_pSidebarModel,
+            &SidebarModel::deleteItem);
 
     connect(pSidebarWidget,
             &WLibrarySidebar::setLibraryFocus,
@@ -677,6 +689,9 @@ std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
 #endif
 
 bool Library::isTrackIdInCurrentLibraryView(const TrackId& trackId) {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return false;
+    }
     if (m_pLibraryWidget) {
         return m_pLibraryWidget->isTrackInCurrentView(trackId);
     } else {

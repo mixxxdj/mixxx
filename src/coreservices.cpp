@@ -23,6 +23,9 @@
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
 #include "preferences/settingsmanager.h"
+#ifdef __MODPLUG__
+#include "preferences/dialog/dlgprefmodplug.h"
+#endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
@@ -71,7 +74,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
 }
 
 // hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
-// https://bugs.launchpad.net/mixxx/+bug/1805559
+// https://github.com/mixxxdj/mixxx/issues/9533
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
@@ -313,6 +316,13 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pVCManager->init();
 #endif
 
+#ifdef __MODPLUG__
+    // Restore the configuration for the modplug library before trying to load a module.
+    DlgPrefModplug modplugPrefs{nullptr, pConfig};
+    modplugPrefs.loadSettings();
+    modplugPrefs.applySettings();
+#endif
+
     // Inhibit Screensaver
     m_pScreensaverManager = std::make_shared<ScreensaverManager>(pConfig);
     connect(&PlayerInfo::instance(),
@@ -370,10 +380,6 @@ void CoreServices::initialize(QApplication* pApp) {
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = std::make_shared<ControllerManager>(pConfig);
 
-    // Wait until all other ControlObjects are set up before initializing
-    // controllers
-    m_pControllerManager->setUpDevices();
-
     // Scan the library for new files and directories
     bool rescan = pConfig->getValue<bool>(
             library::prefs::kRescanOnStartupConfigKey);
@@ -413,13 +419,13 @@ void CoreServices::initialize(QApplication* pApp) {
             supportedFileSuffixes.join(","));
 
     // Scan the library directory. Do this after the skinloader has
-    // loaded a skin, see Bug #1047435
+    // loaded a skin, see issue #6625
     if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
         m_pTrackCollectionManager->startLibraryScan();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
-    // https://bugs.launchpad.net/mixxx/+bug/1758189
+    // https://github.com/mixxxdj/mixxx/issues/9188
     m_pPlayerManager->loadSamplers();
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
@@ -444,6 +450,8 @@ void CoreServices::initialize(QApplication* pApp) {
             {ConfigKey("[EffectRack1]", "show"), true, true},
             {ConfigKey("[Skin]", "show_4effectunits"), true, false},
             {ConfigKey("[Master]", "show_mixer"), true, true},
+            {ConfigKey("[Skin]", "show_spinnies"), true, true},
+            {ConfigKey("[Skin]", "show_coverart"), true, true},
     };
     m_uiControls.reserve(uiControls.size());
     for (const auto& row : uiControls) {

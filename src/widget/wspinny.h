@@ -135,6 +135,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     bool m_bGhostPlayback;
 
     BaseTrackPlayer* m_pPlayer;
-    DlgCoverArtFullSize* m_pDlgCoverArt;
     WCoverArtMenu* m_pCoverMenu;
+    DlgCoverArtFullSize* m_pDlgCoverArt;
 };

@@ -16,10 +16,11 @@ bool namedControlComparator(const NamedControl& l1, const NamedControl& l2) {
 } // namespace
 
 DlgControllerLearning::DlgControllerLearning(QWidget* parent,
-        Controller* controller)
+        Controller* controller,
+        ControlPickerMenu* pControlPickerMenu)
         : QDialog(parent),
           m_pController(controller),
-          m_controlPickerMenu(this),
+          m_pControlPickerMenu(pControlPickerMenu),
           m_messagesLearned(false) {
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
 
@@ -64,7 +65,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
 
-    connect(&m_controlPickerMenu,
+    connect(m_pControlPickerMenu,
             &ControlPickerMenu::controlPicked,
             this,
             &DlgControllerLearning::controlPicked);
@@ -149,11 +150,10 @@ void DlgControllerLearning::populateComboBox() {
     comboBoxChosenControl->clear();
     comboBoxChosenControl->addItem("", QVariant::fromValue(ConfigKey()));
     QList<NamedControl> sorted_controls;
-    foreach(ConfigKey key, m_controlPickerMenu.controlsAvailable())
-    {
+    foreach (ConfigKey key, m_pControlPickerMenu->controlsAvailable()) {
         sorted_controls.push_back(
-                NamedControl(m_controlPickerMenu.controlTitleForConfigKey(key),
-                             key));
+                NamedControl(m_pControlPickerMenu->controlTitleForConfigKey(key),
+                        key));
     }
     std::sort(sorted_controls.begin(), sorted_controls.end(),
           namedControlComparator);
@@ -281,7 +281,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
 
     // NOTE(rryan): We intend to use MidiKey(status, control) here rather than
     // setting fields individually since we will use the MidiKey with an input
-    // mapping. See Bug #1532297
+    // mapping. See Issue #8432
     MidiKey key(status, control);
 
     // Ignore all standard MIDI System Real-Time Messages because they
@@ -451,7 +451,7 @@ DlgControllerLearning::~DlgControllerLearning() {
 }
 
 void DlgControllerLearning::showControlMenu() {
-    m_controlPickerMenu.exec(pushButtonChooseControl->mapToGlobal(QPoint(0,0)));
+    m_pControlPickerMenu->exec(pushButtonChooseControl->mapToGlobal(QPoint(0, 0)));
 }
 
 void DlgControllerLearning::loadControl(const ConfigKey& key,
@@ -482,8 +482,8 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
 }
 
 void DlgControllerLearning::controlPicked(const ConfigKey& control) {
-    QString title = m_controlPickerMenu.controlTitleForConfigKey(control);
-    QString description = m_controlPickerMenu.descriptionForConfigKey(control);
+    QString title = m_pControlPickerMenu->controlTitleForConfigKey(control);
+    QString description = m_pControlPickerMenu->descriptionForConfigKey(control);
     loadControl(control, title, description);
 }
 
@@ -493,7 +493,7 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
     }
 
     ConfigKey key = pControl->getKey();
-    if (!m_controlPickerMenu.controlExists(key)) {
+    if (!m_pControlPickerMenu->controlExists(key)) {
         qWarning() << "Mixxx UI element clicked for which there is no "
                       "learnable control " << key.group << " " << key.item;
         QMessageBox::warning(

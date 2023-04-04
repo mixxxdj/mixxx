@@ -247,7 +247,8 @@ bool importCoverImageFromTag(
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
         const TagLib::Ogg::XiphComment& tag,
-        FileType fileType) {
+        FileType fileType,
+        bool resetMissingTagMetadata) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
@@ -270,28 +271,30 @@ void importTrackMetadataFromTag(
     // handling. It prefers "DESCRIPTION" for reading, but adds a "COMMENT"
     // field upon writing when no "DESCRIPTION" field exists.
     QString comment;
-    if (!readCommentField(tag, "COMMENT", &comment) || comment.isEmpty()) {
-        // Fallback to the the original "DESCRIPTION" field only if the
-        // "COMMENT" field is either missing or empty
-        readCommentField(tag, "DESCRIPTION", &comment);
+    if ((readCommentField(tag, "COMMENT", &comment) && !comment.isEmpty()) ||
+            // Fallback to the the original "DESCRIPTION" field only if the
+            // "COMMENT" field is either missing or empty
+            (readCommentField(tag, "DESCRIPTION", &comment) && !comment.isEmpty()) ||
+            resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setComment(comment);
     }
-    pTrackMetadata->refTrackInfo().setComment(comment);
 
     QString albumArtist;
     if (readCommentField(tag, "ALBUMARTIST", &albumArtist) ||      // recommended field
             readCommentField(tag, "ALBUM_ARTIST", &albumArtist) || // alternative field (with underscore character)
             readCommentField(tag, "ALBUM ARTIST", &albumArtist) || // alternative field (with space character)
-            readCommentField(tag, "ENSEMBLE", &albumArtist)) {     // alternative field
+            readCommentField(tag, "ENSEMBLE", &albumArtist) ||     // alternative field
+            resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setArtist(albumArtist);
     }
 
     QString composer;
-    if (readCommentField(tag, "COMPOSER", &composer)) {
+    if (readCommentField(tag, "COMPOSER", &composer) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setComposer(composer);
     }
 
     QString grouping;
-    if (readCommentField(tag, "GROUPING", &grouping)) {
+    if (readCommentField(tag, "GROUPING", &grouping) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setGrouping(grouping);
     }
 
@@ -310,6 +313,9 @@ void importTrackMetadataFromTag(
         }
         pTrackMetadata->refTrackInfo().setTrackNumber(trackNumber);
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setTrackNumber(QString{});
+        pTrackMetadata->refTrackInfo().setTrackTotal(QString{});
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -328,6 +334,9 @@ void importTrackMetadataFromTag(
         }
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setDiscNumber(QString{});
+        pTrackMetadata->refTrackInfo().setDiscTotal(QString{});
     }
 #endif // __EXTRA_METADATA__
 
@@ -335,17 +344,17 @@ void importTrackMetadataFromTag(
     // be followed by a space character and arbitrary text.
     // http://age.hobba.nl/audio/mirroredpages/ogg-tagging.html
     QString date;
-    if (readCommentField(tag, "DATE", &date)) {
+    if (readCommentField(tag, "DATE", &date) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setYear(date);
     }
 
     // MusicBrainz recommends "BPM": https://picard.musicbrainz.org/docs/mappings
     // Mixxx (<= 2.0) favored "TEMPO": https://www.mixxx.org/wiki/doku.php/library_metadata_rewrite_using_taglib
     QString bpm;
-    if (!readCommentField(tag, "BPM", &bpm) || !parseBpm(pTrackMetadata, bpm)) {
-        if (readCommentField(tag, "TEMPO", &bpm)) {
-            parseBpm(pTrackMetadata, bpm);
-        }
+    if (readCommentField(tag, "BPM", &bpm) ||
+            readCommentField(tag, "TEMPO", &bpm) ||
+            resetMissingTagMetadata) {
+        parseBpm(pTrackMetadata, bpm, resetMissingTagMetadata);
     }
 
     // Reading key code information
@@ -356,105 +365,111 @@ void importTrackMetadataFromTag(
     // or a "KEY" vorbis comment.
     QString key;
     if (readCommentField(tag, "INITIALKEY", &key) || // recommended field
-            readCommentField(tag, "KEY", &key)) {    // alternative field
+            readCommentField(tag, "KEY", &key) ||    // alternative field
+            resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setKey(key);
     }
 
     // Only read track gain (not album gain)
     QString trackGain;
-    if (readCommentField(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain)) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (readCommentField(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain) || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak;
-    if (readCommentField(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (readCommentField(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak) || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
     QString albumGain;
-    if (readCommentField(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
-        parseAlbumGain(pTrackMetadata, albumGain);
+    if (readCommentField(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain) || resetMissingTagMetadata) {
+        parseAlbumGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak;
-    if (readCommentField(tag, "REPLAYGAIN_ALBUM_PEAK", &albumPeak)) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (readCommentField(tag, "REPLAYGAIN_ALBUM_PEAK", &albumPeak) || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId;
-    if (readCommentField(tag, "MUSICBRAINZ_ARTISTID", &trackArtistId)) {
+    if (readCommentField(tag, "MUSICBRAINZ_ARTISTID", &trackArtistId) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QString trackRecordingId;
-    if (readCommentField(tag, "MUSICBRAINZ_TRACKID", &trackRecordingId)) {
+    if (readCommentField(tag, "MUSICBRAINZ_TRACKID", &trackRecordingId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
     QString trackReleaseId;
-    if (readCommentField(tag, "MUSICBRAINZ_RELEASETRACKID", &trackReleaseId)) {
+    if (readCommentField(tag, "MUSICBRAINZ_RELEASETRACKID", &trackReleaseId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
     QString trackWorkId;
-    if (readCommentField(tag, "MUSICBRAINZ_WORKID", &trackWorkId)) {
+    if (readCommentField(tag, "MUSICBRAINZ_WORKID", &trackWorkId) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(QUuid(trackWorkId));
     }
     QString albumArtistId;
-    if (readCommentField(tag, "MUSICBRAINZ_ALBUMARTISTID", &albumArtistId)) {
+    if (readCommentField(tag, "MUSICBRAINZ_ALBUMARTISTID", &albumArtistId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
     }
     QString albumReleaseId;
-    if (readCommentField(tag, "MUSICBRAINZ_ALBUMID", &albumReleaseId)) {
+    if (readCommentField(tag, "MUSICBRAINZ_ALBUMID", &albumReleaseId) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
     QString albumReleaseGroupId;
-    if (readCommentField(tag, "MUSICBRAINZ_RELEASEGROUPID", &albumReleaseGroupId)) {
+    if (readCommentField(
+                tag, "MUSICBRAINZ_RELEASEGROUPID", &albumReleaseGroupId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 
     QString conductor;
-    if (readCommentField(tag, "CONDUCTOR", &conductor)) {
+    if (readCommentField(tag, "CONDUCTOR", &conductor) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setConductor(conductor);
     }
     QString isrc;
-    if (readCommentField(tag, "ISRC", &isrc)) {
+    if (readCommentField(tag, "ISRC", &isrc) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setISRC(isrc);
     }
     QString language;
-    if (readCommentField(tag, "LANGUAGE", &language)) {
+    if (readCommentField(tag, "LANGUAGE", &language) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLanguage(language);
     }
     QString lyricist;
-    if (readCommentField(tag, "LYRICIST", &lyricist)) {
+    if (readCommentField(tag, "LYRICIST", &lyricist) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLyricist(lyricist);
     }
     QString mood;
-    if (readCommentField(tag, "MOOD", &mood)) {
+    if (readCommentField(tag, "MOOD", &mood) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMood(mood);
     }
     QString copyright;
-    if (readCommentField(tag, "COPYRIGHT", &copyright)) {
+    if (readCommentField(tag, "COPYRIGHT", &copyright) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setCopyright(copyright);
     }
     QString license;
-    if (readCommentField(tag, "LICENSE", &license)) {
+    if (readCommentField(tag, "LICENSE", &license) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setLicense(license);
     }
     QString recordLabel;
-    if (readCommentField(tag, "LABEL", &recordLabel)) {
+    if (readCommentField(tag, "LABEL", &recordLabel) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setRecordLabel(recordLabel);
     }
     QString remixer;
-    if (readCommentField(tag, "REMIXER", &remixer)) {
+    if (readCommentField(tag, "REMIXER", &remixer) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setRemixer(remixer);
     }
     QString subtitle;
-    if (readCommentField(tag, "SUBTITLE", &subtitle)) {
+    if (readCommentField(tag, "SUBTITLE", &subtitle) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setSubtitle(subtitle);
     }
     QString encoder;
-    if (readCommentField(tag, "ENCODEDBY", &encoder)) {
+    if (readCommentField(tag, "ENCODEDBY", &encoder) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoder(encoder);
     }
     QString encoderSettings;
-    if (readCommentField(tag, "ENCODERSETTINGS", &encoderSettings)) {
+    if (readCommentField(tag, "ENCODERSETTINGS", &encoderSettings) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(encoderSettings);
     }
 #endif // __EXTRA_METADATA__

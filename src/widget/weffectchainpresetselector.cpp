@@ -1,7 +1,6 @@
 #include "widget/weffectchainpresetselector.h"
 
 #include <QAbstractItemView>
-#include <QApplication>
 #include <QPaintEvent>
 #include <QStyleOption>
 #include <QStylePainter>
@@ -9,6 +8,7 @@
 
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectsmanager.h"
+#include "library/library_decl.h"
 #include "widget/effectwidgetutils.h"
 
 WEffectChainPresetSelector::WEffectChainPresetSelector(
@@ -21,7 +21,7 @@ WEffectChainPresetSelector::WEffectChainPresetSelector(
     // Prevent this widget from getting focused by Tab/Shift+Tab
     // to avoid interfering with using the library via keyboard.
     // Allow click focus though so the list can always be opened by mouse,
-    // see https://bugs.launchpad.net/mixxx/+bug/1902125
+    // see https://github.com/mixxxdj/mixxx/issues/10184
     setFocusPolicy(Qt::ClickFocus);
 }
 
@@ -36,7 +36,7 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
     }
 
     auto chainPresetListUpdateSignal = &EffectChainPresetManager::effectChainPresetListUpdated;
-    auto pQuickEffectChain = dynamic_cast<QuickEffectChain*>(m_pChain.data());
+    auto pQuickEffectChain = qobject_cast<QuickEffectChain*>(m_pChain.data());
     if (pQuickEffectChain) {
         chainPresetListUpdateSignal = &EffectChainPresetManager::quickEffectChainPresetListUpdated;
         m_bQuickEffectChain = true;
@@ -84,21 +84,18 @@ void WEffectChainPresetSelector::populate() {
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
-    Q_UNUSED(index);
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
-    setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
-    // After selecting an effect send Shift+Tab to move focus to the next
-    // keyboard-focusable widget (tracks table in official skins) in order
+    // After selecting an effect move focus to the tracks table in order
     // to immediately allow keyboard shortcuts again.
-    QKeyEvent backwardFocusKeyEvent =
-            QKeyEvent{QEvent::KeyPress, Qt::Key_Backtab, Qt::NoModifier};
-    QApplication::sendEvent(this, &backwardFocusKeyEvent);
+    // TODO(ronso0) switch to previously focused (library?) widget instead
+    ControlObject::set(ConfigKey("[Library]", "focused_widget"),
+            static_cast<double>(FocusWidget::TracksTable));
 }
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
     setCurrentIndex(findData(name));
-    setBaseTooltip(name);
+    setBaseTooltip(itemData(currentIndex(), Qt::ToolTipRole).toString());
 }
 
 bool WEffectChainPresetSelector::event(QEvent* pEvent) {

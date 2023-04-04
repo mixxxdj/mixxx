@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -61,12 +61,15 @@ find_library(DjInterop_LIBRARY
 )
 mark_as_advanced(DjInterop_LIBRARY)
 
+if(DEFINED PC_DjInterop_VERSION AND NOT PC_DjInterop_VERSION STREQUAL "")
+  set(DjInterop_VERSION "${PC_DjInterop_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   DjInterop
-  DEFAULT_MSG
-  DjInterop_LIBRARY
-  DjInterop_INCLUDE_DIR
+  REQUIRED_VARS DjInterop_LIBRARY DjInterop_INCLUDE_DIR
+  VERSION_VAR DjInterop_VERSION
 )
 
 if(DjInterop_FOUND)

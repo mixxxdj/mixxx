@@ -54,6 +54,9 @@ class WaveformSignalColors {
     inline const QColor& getPassthroughOverlayColor() const {
         return m_passthroughOverlayColor;
     }
+    inline const QColor& getPassthroughLabelColor() const {
+        return m_passthroughLabelColor;
+    }
     inline const QColor& getBgColor() const {
         return m_bgColor;
     }
@@ -82,6 +85,7 @@ class WaveformSignalColors {
     QColor m_playPosColor;
     QColor m_playedOverlayColor;
     QColor m_passthroughOverlayColor;
+    QColor m_passthroughLabelColor;
     QColor m_bgColor;
     int m_dimBrightThreshold;
 };

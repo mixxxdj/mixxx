@@ -64,6 +64,10 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
 
         double startPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(startSample);
         double endPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(endSample);
+        // The painter would extend the rectangle to the entire width while
+        // span is < 1 AND span != 0.25 * [1;3], i.e. works with span = [.25; 0.75] px
+        // TODO(xxx) Figure what's wrong with QPainter / the renderer
+        const double span = std::max(endPosition - startPosition, 1.0);
 
         //range not in the current display
         if (startPosition > m_waveformRenderer->getLength() || endPosition < 0) {
@@ -78,9 +82,9 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         // this shouldn't involve *any* scaling it should be fast even in software mode
         QRectF rect;
         if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-            rect.setRect(startPosition, 0, endPosition - startPosition, m_waveformRenderer->getHeight());
+            rect.setRect(startPosition, 0, span, m_waveformRenderer->getHeight());
         } else {
-            rect.setRect(0, startPosition, m_waveformRenderer->getWidth(), endPosition - startPosition);
+            rect.setRect(0, startPosition, m_waveformRenderer->getWidth(), span);
         }
         painter->drawImage(rect, *selectedImage, rect);
     }

@@ -11,6 +11,7 @@
 #include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
@@ -39,11 +40,17 @@ class WaveformWidgetRenderer {
     const QString& getGroup() const {
         return m_group;
     }
-    const TrackPointer getTrackInfo() const {
+
+    const TrackPointer& getTrackInfo() const {
         return m_pTrack;
     }
+
+    ConstWaveformPointer getWaveform() const;
+
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
+
+    CuePointer getCuePointerFromIndex(int cueIndex) const;
 
     double getFirstDisplayedPosition() const {
         return m_firstDisplayedPosition;
@@ -81,9 +88,6 @@ class WaveformWidgetRenderer {
         return m_trackPixelCount * (position - m_firstDisplayedPosition);
     }
 
-    double getPlayPos() const {
-        return m_playPos;
-    }
     int getPlayPosVSample() const {
         return m_playPosVSample;
     }
@@ -153,6 +157,8 @@ class WaveformWidgetRenderer {
         m_playMarkerPosition = newPos;
     }
 
+    void setPassThroughEnabled(bool enabled);
+
   protected:
     const QString m_group;
     TrackPointer m_pTrack;
@@ -163,6 +169,7 @@ class WaveformWidgetRenderer {
     int m_width;
     float m_devicePixelRatio;
     WaveformSignalColors m_colors;
+    QColor m_passthroughLabelColor;
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
@@ -171,18 +178,15 @@ class WaveformWidgetRenderer {
     double m_zoomFactor;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
-    double m_audioVisualRatio;
 
     int m_alphaBeatGrid;
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
-    double m_playPos;
     int m_playPosVSample;
     int m_totalVSamples;
     ControlProxy* m_pRateRatioCO;
-    double m_rateRatio;
     ControlProxy* m_pGainControlObject;
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
@@ -210,4 +214,8 @@ private:
             QPointF p1,
             QPointF p2,
             QPointF p3);
+    void drawPassthroughLabel(QPainter* painter);
+
+    bool m_passthroughEnabled;
+    double m_playPos;
 };

@@ -3,6 +3,7 @@
 #include <QVector>
 #include <QtDebug>
 
+#include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #if defined __KEYFINDER__
 #include "analyzer/plugins/analyzerkeyfinder.h"
@@ -41,9 +42,9 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-bool AnalyzerKey::initialize(TrackPointer tio,
+bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
+        SINT totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -86,7 +87,7 @@ bool AnalyzerKey::initialize(TrackPointer tio,
     m_iCurrentSample = 0;
 
     // if we can't load a stored track reanalyze it
-    bool bShouldAnalyze = shouldAnalyze(tio);
+    bool bShouldAnalyze = shouldAnalyze(tio.getTrack());
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
@@ -150,7 +151,7 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-bool AnalyzerKey::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT iLen) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }

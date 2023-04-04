@@ -45,7 +45,7 @@ void LibraryTableModel::setTableModel() {
     tableColumns << LIBRARYTABLE_COVERART;
     setTable(tableName,
             LIBRARYTABLE_ID,
-            tableColumns,
+            std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
@@ -97,5 +97,6 @@ TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
             Capability::LoadToPreviewDeck |
             Capability::Hide |
             Capability::ResetPlayed |
-            Capability::RemoveFromDisk;
+            Capability::RemoveFromDisk |
+            Capability::Analyze;
 }

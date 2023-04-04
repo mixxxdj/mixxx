@@ -679,7 +679,7 @@ HerculesMP3e2.wheelOnOff = function() {
 HerculesMP3e2.jogWheel = function(midino, control, value, status, group) {
     var deck = (group == "[Channel1]") ? deckA : deckB;
 
-    // This function is called everytime the jog is moved
+    // This function is called every time the jog is moved
     if (value == 0x01) {
         if (superButtonHold == 2) {
             if ((deck == 1) || (deck == 3)) {
@@ -732,7 +732,7 @@ HerculesMP3e2.jogWheel = function(midino, control, value, status, group) {
 // drive master tempo led connected to sync_mode
 HerculesMP3e2.syncmode = function(value, group, control) {
     // Following code was used for sync_leader control.
-    // Deactivated for now due to https://bugs.launchpad.net/mixxx/+bug/1456801
+    // Deactivated for now due to https://github.com/mixxxdj/mixxx/issues/8039
     // currently (2015-05-20) explicit master mode is not supported.
     // Switched to sync_enabled (binary) control
 

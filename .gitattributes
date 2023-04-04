@@ -23,3 +23,9 @@
 
 # Treat serato test data as binary
 *.octet-stream binary
+
+# shell scripts will always have LF line endings on checkout.
+*.sh text eol=lf
+
+# Windows batch scripts will always have CRLF line endings.
+*.bat text eol=crlf

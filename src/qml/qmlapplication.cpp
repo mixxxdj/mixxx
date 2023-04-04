@@ -3,6 +3,7 @@
 #include <QtQml/qqmlextensionplugin.h>
 
 #include "control/controlsortfiltermodel.h"
+#include "controllers/controllermanager.h"
 #include "moc_qmlapplication.cpp"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlconfigproxy.h"
@@ -46,10 +47,11 @@ QmlApplication::QmlApplication(
           m_pAppEngine(nullptr),
           m_fileWatcher({m_mainFilePath}) {
     m_pCoreServices->initialize(app);
-    SoundDeviceError result = m_pCoreServices->getSoundManager()->setupDevices();
-    if (result != SOUNDDEVICE_ERROR_OK) {
-        qCritical() << "Error setting up sound devices" << result;
-        exit(result);
+    SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
+    if (result != SoundDeviceStatus::Ok) {
+        const int reInt = static_cast<int>(result);
+        qCritical() << "Error setting up sound devices:" << reInt;
+        exit(reInt);
     }
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
@@ -85,6 +87,8 @@ QmlApplication::QmlApplication(
     QmlLibraryProxy::s_pInstance = new QmlLibraryProxy(pCoreServices->getLibrary(), this);
 
     loadQml(m_mainFilePath);
+
+    pCoreServices->getControllerManager()->setUpDevices();
 
     connect(&m_fileWatcher,
             &QFileSystemWatcher::fileChanged,

@@ -116,7 +116,6 @@ AutoDJProcessor::AutoDJProcessor(
         int iAutoDJPlaylistId)
         : QObject(pParent),
           m_pConfig(pConfig),
-          m_pPlayerManager(pPlayerManager),
           m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
@@ -1133,9 +1132,9 @@ double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
         return 0.0;
     }
 
-    CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pFromTrackAudibleSound) {
-        const mixxx::audio::FramePos firstSound = pFromTrackAudibleSound->getPosition();
+    CuePointer pFromTrackN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
+    if (pFromTrackN60dBSound) {
+        const mixxx::audio::FramePos firstSound = pFromTrackN60dBSound->getPosition();
         if (firstSound.isValid()) {
             return framePositionToSeconds(firstSound, pDeck);
         }
@@ -1149,9 +1148,9 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
         return 0.0;
     }
 
-    CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pFromTrackAudibleSound) {
-        Cue::StartAndEndPositions pos = pFromTrackAudibleSound->getStartAndEndPosition();
+    CuePointer pFromTrackN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
+    if (pFromTrackN60dBSound) {
+        Cue::StartAndEndPositions pos = pFromTrackN60dBSound->getStartAndEndPosition();
         if (pos.endPosition > mixxx::audio::kStartFramePos &&
                 (pos.endPosition - pos.startPosition) > 0) {
             return framePositionToSeconds(pos.endPosition, pDeck);

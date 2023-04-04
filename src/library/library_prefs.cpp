@@ -48,11 +48,26 @@ const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SearchDebouncingTimeoutMillis")};
 
+const ConfigKey mixxx::library::prefs::kEnableSearchCompletionsConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("EnableSearchCompletions")};
+
+const ConfigKey mixxx::library::prefs::kEnableSearchHistoryShortcutsConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("EnableSearchHistoryShortcuts")};
+
 // The "Export" suffix in the key is kept for backward compatibility
 const ConfigKey mixxx::library::prefs::kSyncTrackMetadataConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SyncTrackMetadataExport")};
+
+const ConfigKey mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("ResetMissingTagMetadataOnImport")};
 
 // The naming is unchanged for backward compatibility
 const ConfigKey mixxx::library::prefs::kSyncSeratoMetadataConfigKey =
@@ -64,3 +79,8 @@ const ConfigKey mixxx::library::prefs::kUseRelativePathOnExportConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("UseRelativePathOnExport")};
+
+const ConfigKey mixxx::library::prefs::kCoverArtFetcherQualityConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("CoverArtFetcherQuality")};

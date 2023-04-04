@@ -46,6 +46,8 @@ class CrateFeature : public BaseTrackSetFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
+    void deleteItem(const QModelIndex& index) override;
+    void renameItem(const QModelIndex& index) override;
 
 #ifdef __ENGINEPRIME__
   signals:

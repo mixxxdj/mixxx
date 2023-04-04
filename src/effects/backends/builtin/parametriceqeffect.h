@@ -24,6 +24,7 @@
 class ParametricEQEffectGroupState final : public EffectState {
   public:
     ParametricEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
+    ~ParametricEQEffectGroupState() override = default;
 
     void setFilters(int sampleRate);
 
@@ -42,7 +43,7 @@ class ParametricEQEffectGroupState final : public EffectState {
 class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupState> {
   public:
     ParametricEQEffect() = default;
-    virtual ~ParametricEQEffect();
+    ~ParametricEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

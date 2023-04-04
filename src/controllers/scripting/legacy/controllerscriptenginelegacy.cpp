@@ -167,11 +167,17 @@ bool ControllerScriptEngineLegacy::initialize() {
 }
 
 void ControllerScriptEngineLegacy::shutdown() {
-    callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
+    // There is no js engine if the mapping was not loaded from a file but by
+    // creating a new, empty mapping LegacyMidiControllerMapping with the wizard
+    if (m_pJSEngine) {
+        callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
+    }
     m_scriptWrappedFunctionCache.clear();
     m_incomingDataFunctions.clear();
     m_scriptFunctionPrefixes.clear();
-    ControllerScriptEngineBase::shutdown();
+    if (m_pJSEngine) {
+        ControllerScriptEngineBase::shutdown();
+    }
 }
 
 bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {

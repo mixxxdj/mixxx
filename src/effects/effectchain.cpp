@@ -82,7 +82,7 @@ EffectChain::EffectChain(const QString& group,
     connect(m_pControlChainSuperParameter.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotControlChainSuperParameter(value, false); });
+            [=, this](double value) { slotControlChainSuperParameter(value, false); });
     m_pControlChainSuperParameter->set(0.0);
     m_pControlChainSuperParameter->setDefaultValue(0.0);
 
@@ -200,23 +200,29 @@ const QString& EffectChain::presetName() const {
     return m_presetName;
 }
 
-void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
+void EffectChain::loadChainPreset(EffectChainPresetPointer pChainPreset) {
     slotControlClear(1);
-    VERIFY_OR_DEBUG_ASSERT(pPreset) {
+    VERIFY_OR_DEBUG_ASSERT(pChainPreset) {
         return;
     }
 
-    int effectSlotIndex = 0;
-    for (const auto& pEffectPreset : pPreset->effectPresets()) {
-        EffectSlotPointer pEffectSlot = m_effectSlots.at(effectSlotIndex);
-        pEffectSlot->loadEffectFromPreset(pEffectPreset);
-        effectSlotIndex++;
+    const QList effectPresets = pChainPreset->effectPresets();
+
+    // TODO: use C++23 std::ranges::views::zip instead
+    // `EffectChain`s can create arbitrary amounts of effectslots and chain presets
+    // can contain an arbitrary number of effects. This ensures we only load
+    // as many effects as we have slots available.
+    const int validPresetSlotCount = std::min(effectPresets.count(), m_effectSlots.count());
+    for (int presetSlotIndex = 0;
+            presetSlotIndex < validPresetSlotCount;
+            presetSlotIndex++) {
+        m_effectSlots[presetSlotIndex]->loadEffectFromPreset(effectPresets[presetSlotIndex]);
     }
 
-    setMixMode(pPreset->mixMode());
-    m_pControlChainSuperParameter->setDefaultValue(pPreset->superKnob());
+    setMixMode(pChainPreset->mixMode());
+    m_pControlChainSuperParameter->setDefaultValue(pChainPreset->superKnob());
 
-    m_presetName = pPreset->name();
+    m_presetName = pChainPreset->name();
     emit chainPresetChanged(m_presetName);
 
     setControlLoadedPresetIndex(presetIndex());
@@ -356,13 +362,13 @@ void EffectChain::setControlLoadedPresetIndex(uint index) {
 
 void EffectChain::slotControlNextChainPreset(double value) {
     if (value > 0) {
-        loadChainPreset(presetAtIndex(presetIndex() + 1));
+        slotControlChainPresetSelector(1);
     }
 }
 
 void EffectChain::slotControlPrevChainPreset(double value) {
     if (value > 0) {
-        loadChainPreset(presetAtIndex(presetIndex() - 1));
+        slotControlChainPresetSelector(-1);
     }
 }
 
@@ -396,24 +402,12 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup
     request->pTargetChain = m_pEngineEffectChain;
     request->EnableInputChannelForChain.channelHandle = handleGroup.handle();
 
-    // Allocate EffectStates here in the main thread to avoid allocating
-    // memory in the realtime audio callback thread. Pointers to the
-    // EffectStates are passed to the EffectRequest and the EffectProcessorImpls
-    // store the pointers. The containers of EffectState* pointers get deleted
-    // by ~EffectsRequest, but the EffectStates are managed by EffectProcessorImpl.
+    // Initialize EffectStates for the input channel here in the main thread to
+    // avoid allocating memory in the realtime audio callback thread.
 
-    // The EffectStates for one EngineEffectChain must be sent all together in
-    // the same message using an EffectStatesMapArray. If they were separated
-    // into a message for each effect, there would be a chance that the
-    // EngineEffectChain could get activated in one cycle of the audio callback
-    // thread but the EffectStates for an EngineEffect would not be received by
-    // EngineEffectsManager until the next audio callback cycle.
-
-    auto* pEffectStatesMapArray = new EffectStatesMapArray;
     for (int i = 0; i < m_effectSlots.size(); ++i) {
-        m_effectSlots[i]->fillEffectStatesMap(&(*pEffectStatesMapArray)[i]);
+        m_effectSlots[i]->initalizeInputChannel(handleGroup.handle());
     }
-    request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 
     m_pMessenger->writeRequest(request);
 

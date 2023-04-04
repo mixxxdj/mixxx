@@ -4,6 +4,7 @@
 #include <QSortFilterProxyModel>
 
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "preferences/usersettings.h"
@@ -74,6 +75,9 @@ class WTrackTableView : public WLibraryTableView {
     bool slotRestoreCurrentViewState() {
         return restoreCurrentViewState();
     };
+    void slotrestoreCurrentIndex() {
+        restoreCurrentIndex();
+    }
     void slotSelectTrack(const TrackId&);
 
   private slots:

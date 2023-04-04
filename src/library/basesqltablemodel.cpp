@@ -143,8 +143,8 @@ void BaseSqlTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::LastPlayedAt)] =
-            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
+            TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
+            fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -236,7 +236,7 @@ void BaseSqlTableModel::select() {
     }
 
     // Remove all the rows from the table after(!) the query has been
-    // executed successfully. See Bug #1090888.
+    // executed successfully. See issue #6782.
     // TODO(rryan) we could edit the table in place instead of clearing it?
     clearRows();
 
@@ -341,16 +341,16 @@ void BaseSqlTableModel::select() {
              << m_rowInfo.size();
 }
 
-void BaseSqlTableModel::setTable(const QString& tableName,
-        const QString& idColumn,
-        const QStringList& tableColumns,
+void BaseSqlTableModel::setTable(QString tableName,
+        QString idColumn,
+        QStringList tableColumns,
         QSharedPointer<BaseTrackCache> trackSource) {
     if (sDebug) {
         qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
     }
-    m_tableName = tableName;
-    m_idColumn = idColumn;
-    m_tableColumns = tableColumns;
+    m_tableName = std::move(tableName);
+    m_idColumn = std::move(idColumn);
+    m_tableColumns = std::move(tableColumns);
 
     if (m_trackSource) {
         disconnect(m_trackSource.data(),
@@ -363,7 +363,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
         // It's important that this not be a direct connection, or else the UI
         // might try to update while a cache operation is in progress, and that
         // will hit the cache again and cause dangerous reentry cycles
-        // See https://bugs.launchpad.net/mixxx/+bug/1365708
+        // See https://github.com/mixxxdj/mixxx/issues/7569
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.

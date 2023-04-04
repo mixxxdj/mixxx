@@ -75,9 +75,6 @@ void AutoPanEffect::loadEngineEffectParameters(
     m_pWidthParameter = parameters.value("width");
 }
 
-AutoPanEffect::~AutoPanEffect() {
-}
-
 void AutoPanEffect::processChannel(
         AutoPanGroupState* pGroupState,
         const CSAMPLE* pInput,
@@ -168,7 +165,8 @@ void AutoPanEffect::processChannel(
         pGroupState->frac.setWithRampingApplied(static_cast<float>((sinusoid + 1.0f) / 2.0f));
 
         // apply the delay
-        pGroupState->delay->process(&pInput[i],
+        pGroupState->pDelay->process(
+                &pInput[i],
                 &pOutput[i],
                 -0.005 *
                         math_clamp(
