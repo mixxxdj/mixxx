@@ -5,6 +5,8 @@
 #include "library/recording/dlgrecording.h"
 #include "library/treeitem.h"
 #include "moc_recordingfeature.cpp"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "recording/recordingmanager.h"
 #include "track/track.h"
 #include "widget/wlibrary.h"
@@ -17,8 +19,9 @@ const QString kViewName = QStringLiteral("Recording");
 
 RecordingFeature::RecordingFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary, pConfig, QStringLiteral("recordings")),
+        : LibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("recordings")),
           m_pRecordingManager(pRecordingManager),
           m_pSidebarModel(new FolderTreeModel(this)) {
 }
@@ -35,10 +38,11 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                   KeyboardEventFilter *keyboard) {
     //The view will be deleted by LibraryWidget
     DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
-                                                    m_pConfig,
-                                                    m_pLibrary,
-                                                    m_pRecordingManager,
-                                                    keyboard);
+            m_pConfig,
+            m_pKbdConfig,
+            m_pLibrary,
+            m_pRecordingManager,
+            keyboard);
 
     pRecordingView->installEventFilter(keyboard);
     pLibraryWidget->registerView(kViewName, pRecordingView);

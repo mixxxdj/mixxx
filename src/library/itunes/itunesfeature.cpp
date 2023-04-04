@@ -17,6 +17,8 @@
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_itunesfeature.cpp"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
 #include "widget/wlibrarysidebar.h"
@@ -61,8 +63,11 @@ QString localhost_token() {
 
 } // anonymous namespace
 
-ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("itunes")),
+ITunesFeature::ITunesFeature(Library* pLibrary,
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig)
+        : BaseExternalLibraryFeature(
+                  pLibrary, pConfig, pKbdConfig, QStringLiteral("itunes")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     QString tableName = "itunes_library";

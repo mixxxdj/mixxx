@@ -6,6 +6,8 @@
 #include <QSet>
 #include <QWidget>
 
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "skin/skin.h"
 #include "util/parented_ptr.h"
@@ -19,7 +21,7 @@ namespace skin {
 class SkinLoader : public QObject {
     Q_OBJECT
   public:
-    SkinLoader(UserSettingsPointer pConfig);
+    SkinLoader(UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
     virtual ~SkinLoader();
 
     QWidget* loadConfiguredSkin(QWidget* pParent,
@@ -42,6 +44,7 @@ class SkinLoader : public QObject {
     SkinPointer skinFromDirectory(const QDir& dir) const;
 
     UserSettingsPointer m_pConfig;
+    const KeyboardConfigPointer m_pKbdConfig;
 
     bool m_spinnyCoverControlsCreated;
     void setupSpinnyCoverControls();

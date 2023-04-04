@@ -9,6 +9,8 @@
 #include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/trackanalysisscheduler.h"
 #include "library/library_decl.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
 #endif
@@ -52,6 +54,7 @@ class Library: public QObject {
   public:
     Library(QObject* parent,
             UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
             TrackCollectionManager* pTrackCollectionManager,
             PlayerManager* pPlayerManager,
@@ -150,6 +153,7 @@ class Library: public QObject {
 
   private:
     const UserSettingsPointer m_pConfig;
+    const KeyboardConfigPointer m_pKbdConfig;
 
     // The Mixxx database connection pool
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;

@@ -1,6 +1,9 @@
 #include "library/mixxxlibraryfeature.h"
 
 #include <QtDebug>
+
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #ifdef __ENGINEPRIME__
 #include <QMenu>
 #endif
@@ -26,10 +29,10 @@
 #include "widget/wlibrarysidebar.h"
 #endif
 
-
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig)
+        : LibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("tracks")),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
@@ -134,16 +137,14 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
 void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                      KeyboardEventFilter* pKeyboard) {
-    m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
-                                  pKeyboard);
+    m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pKbdConfig, m_pLibrary, pKeyboard);
     pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
     connect(m_pHiddenView,
             &DlgHidden::trackSelected,
             this,
             &MixxxLibraryFeature::trackSelected);
 
-    m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
-                                    pKeyboard);
+    m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pKbdConfig, m_pLibrary, pKeyboard);
     pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
     connect(m_pMissingView,
             &DlgMissing::trackSelected,

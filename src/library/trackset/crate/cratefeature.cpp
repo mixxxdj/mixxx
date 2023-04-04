@@ -20,6 +20,8 @@
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/treeitem.h"
 #include "moc_cratefeature.cpp"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/defs.h"
@@ -48,8 +50,9 @@ const ConfigKey kConfigKeyLastImportExportCrateDirectoryKey(
 using namespace mixxx::library::prefs;
 
 CrateFeature::CrateFeature(Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : BaseTrackSetFeature(pLibrary, pConfig, "CRATEHOME", QStringLiteral("crates")),
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig)
+        : BaseTrackSetFeature(pLibrary, pConfig, pKbdConfig, "CRATEHOME", QStringLiteral("crates")),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_crateTableModel(this, pLibrary->trackCollectionManager()) {

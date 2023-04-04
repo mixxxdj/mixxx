@@ -6,6 +6,8 @@
 #include <QSet>
 #include <QString>
 
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "proto/skin.pb.h"
 #include "skin/legacy/skinparser.h"
@@ -29,8 +31,9 @@ class WWidgetGroup;
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
-    LegacySkinParser(UserSettingsPointer pConfig);
+    LegacySkinParser(UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
     LegacySkinParser(UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
             QSet<ControlObject*>* pSkinCreatedControls,
             KeyboardEventFilter* pKeyboard,
             PlayerManager* pPlayerManager,
@@ -150,6 +153,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     void parseChildren(const QDomElement& node, WWidgetGroup* pGroup);
 
     UserSettingsPointer m_pConfig;
+    const KeyboardConfigPointer m_pKbdConfig;
     QSet<ControlObject*>* m_pSkinCreatedControls;
     KeyboardEventFilter* m_pKeyboard;
     PlayerManager* m_pPlayerManager;

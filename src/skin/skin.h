@@ -9,6 +9,8 @@
 #include <QWidget>
 #include <memory>
 
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 
 class ControlObject;
@@ -41,9 +43,12 @@ class Skin {
 
     virtual bool fitsScreenSize(const QScreen& screen) const = 0;
 
-    virtual LaunchImage* loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig) const = 0;
+    virtual LaunchImage* loadLaunchImage(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig) const = 0;
     virtual QWidget* loadSkin(QWidget* pParent,
             UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
             QSet<ControlObject*>* pSkinCreatedControls,
             mixxx::CoreServices* pCoreServices) const = 0;
 };

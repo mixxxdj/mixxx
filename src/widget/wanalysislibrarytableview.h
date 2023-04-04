@@ -2,6 +2,8 @@
 
 #include <QWidget>
 
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "widget/wtracktableview.h"
 
@@ -11,6 +13,7 @@ class WAnalysisLibraryTableView : public WTrackTableView {
     WAnalysisLibraryTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
             Library* pLibrary,
             double trackTableBackgroundColorOpacity);
 

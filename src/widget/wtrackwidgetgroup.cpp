@@ -6,6 +6,8 @@
 
 #include "control/controlobject.h"
 #include "moc_wtrackwidgetgroup.cpp"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
@@ -33,6 +35,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
 
 WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
         UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         const QString& group)
         : WWidgetGroup(pParent),
@@ -40,7 +43,7 @@ WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
           m_pConfig(pConfig),
           m_trackColorAlpha(kDefaultTrackColorAlpha),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
+                  this, pConfig, pKbdConfig, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 

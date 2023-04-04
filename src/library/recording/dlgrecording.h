@@ -7,6 +7,8 @@
 #include "library/proxytrackmodel.h"
 #include "library/recording/ui_dlgrecording.h"
 #include "library/trackcollection.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "recording/recordingmanager.h"
 #include "track/track_decl.h"
@@ -17,9 +19,12 @@ class WTrackTableView;
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgRecording(WLibrary *parent, UserSettingsPointer pConfig,
-                 Library* pLibrary,
-                 RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
+    DlgRecording(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            Library* pLibrary,
+            RecordingManager* pRecManager,
+            KeyboardEventFilter* pKeyboard);
     ~DlgRecording() override;
 
     void onSearch(const QString& text) override;

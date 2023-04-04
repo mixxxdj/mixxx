@@ -8,6 +8,8 @@
 #include "library/analysislibrarytablemodel.h"
 #include "library/libraryview.h"
 #include "library/ui_dlganalysis.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 
 class AnalysisLibraryTableModel;
@@ -18,9 +20,10 @@ class WLibrary;
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgAnalysis(WLibrary *parent,
-               UserSettingsPointer pConfig,
-               Library* pLibrary);
+    DlgAnalysis(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            Library* pLibrary);
     ~DlgAnalysis() override = default;
 
     void onSearch(const QString& text) override;

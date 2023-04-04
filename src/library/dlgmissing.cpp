@@ -3,6 +3,8 @@
 #include "library/missingtablemodel.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgmissing.cpp"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -10,6 +12,7 @@
 DlgMissing::DlgMissing(
         WLibrary* parent,
         UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig,
         Library* pLibrary,
         KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
@@ -18,6 +21,7 @@ DlgMissing::DlgMissing(
                   new WTrackTableView(
                           this,
                           pConfig,
+                          pKbdConfig,
                           pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)) {

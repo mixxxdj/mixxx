@@ -7,6 +7,8 @@
 #include "control/pollingcontrolproxy.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "util/duration.h"
 #include "util/parented_ptr.h"
@@ -25,6 +27,7 @@ class WTrackTableView : public WLibraryTableView {
     WTrackTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
             Library* pLibrary,
             double backgroundColorOpacity,
             bool sorting);
@@ -117,6 +120,7 @@ class WTrackTableView : public WLibraryTableView {
     void hideOrRemoveSelectedTracks();
 
     const UserSettingsPointer m_pConfig;
+    const KeyboardConfigPointer m_pKbdConfig;
     Library* const m_pLibrary;
 
     // Context menu container

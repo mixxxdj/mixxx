@@ -15,6 +15,8 @@
 #include "library/dao/trackdao.h"
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -28,7 +30,8 @@ class MixxxLibraryFeature final : public LibraryFeature {
     Q_OBJECT
   public:
     MixxxLibraryFeature(Library* pLibrary,
-                        UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig);
     ~MixxxLibraryFeature() override = default;
 
     QVariant title() override;

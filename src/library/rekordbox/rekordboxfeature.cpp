@@ -19,6 +19,8 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_rekordboxfeature.cpp"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
@@ -1336,8 +1338,9 @@ bool RekordboxPlaylistModel::isColumnInternal(int column) {
 
 RekordboxFeature::RekordboxFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rekordbox")),
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig, pKbdConfig, QStringLiteral("rekordbox")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
     QString tableName = kRekordboxLibraryTable;
     QString idColumn = LIBRARYTABLE_ID;

@@ -21,12 +21,14 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/serato/seratoplaylistmodel.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/parented_ptr.h"
 
 class SeratoFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    SeratoFeature(Library* pLibrary, UserSettingsPointer pConfig);
+    SeratoFeature(Library* pLibrary, UserSettingsPointer pConfig, KeyboardConfigPointer pKbdConfig);
     ~SeratoFeature() override;
 
     QVariant title() override;

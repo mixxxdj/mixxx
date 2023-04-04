@@ -9,6 +9,8 @@
 #include <QVariant>
 
 #include "library/trackset/baseplaylistfeature.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 
 class TrackCollection;
@@ -21,7 +23,8 @@ class PlaylistFeature : public BasePlaylistFeature {
   public:
     PlaylistFeature(
             Library* pLibrary,
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig);
     ~PlaylistFeature() override = default;
 
     QVariant title() override;

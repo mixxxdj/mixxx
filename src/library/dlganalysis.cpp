@@ -8,6 +8,8 @@
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlganalysis.cpp"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "util/assert.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "widget/wlibrary.h"
@@ -15,8 +17,9 @@
 #include "widget/wwidget.h"
 
 DlgAnalysis::DlgAnalysis(WLibrary* parent,
-                       UserSettingsPointer pConfig,
-                       Library* pLibrary)
+        UserSettingsPointer pConfig,
+        KeyboardConfigPointer pKbdConfig,
+        Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
           m_bAnalysisActive(false) {
@@ -27,6 +30,7 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
     m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(
             this,
             pConfig,
+            pKbdConfig,
             pLibrary,
             parent->getTrackTableBackgroundColorOpacity());
     connect(m_pAnalysisLibraryTableView,

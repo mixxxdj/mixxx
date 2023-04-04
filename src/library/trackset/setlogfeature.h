@@ -5,6 +5,8 @@
 #include <QSqlTableModel>
 
 #include "library/trackset/baseplaylistfeature.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 
 class Library;
@@ -14,7 +16,8 @@ class SetlogFeature : public BasePlaylistFeature {
 
   public:
     SetlogFeature(Library* pLibrary,
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig);
     virtual ~SetlogFeature();
 
     QVariant title() override;

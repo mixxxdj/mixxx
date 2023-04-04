@@ -6,6 +6,8 @@
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "library/ui_dlgmissing.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 
 class WLibrary;
@@ -16,9 +18,11 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     Q_OBJECT
 
   public:
-    DlgMissing(WLibrary* parent, UserSettingsPointer pConfig,
-               Library* pLibrary,
-               KeyboardEventFilter* pKeyboard);
+    DlgMissing(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            Library* pLibrary,
+            KeyboardEventFilter* pKeyboard);
     ~DlgMissing() override;
 
     void onShow() override;

@@ -15,6 +15,8 @@
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "track/track_decl.h"
 
 class KeyboardEventFilter;
@@ -30,6 +32,7 @@ class LibraryFeature : public QObject {
     LibraryFeature(
             Library* pLibrary,
             UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
             const QString& iconName);
     ~LibraryFeature() override = default;
 
@@ -98,6 +101,7 @@ class LibraryFeature : public QObject {
     Library* const m_pLibrary;
 
     const UserSettingsPointer m_pConfig;
+    const KeyboardConfigPointer m_pKbdConfig;
 
   public slots:
     // called when you single click on the root item

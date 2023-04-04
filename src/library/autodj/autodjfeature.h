@@ -14,6 +14,8 @@
 #include "library/libraryfeature.h"
 #include "library/trackset/crate/crate.h"
 #include "library/treeitemmodel.h"
+#include "preferences/configobject.h"
+#include "preferences/keyboardconfig.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -29,8 +31,9 @@ class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AutoDJFeature(Library* pLibrary,
-                  UserSettingsPointer pConfig,
-                  PlayerManagerInterface* pPlayerManager);
+            UserSettingsPointer pConfig,
+            KeyboardConfigPointer pKbdConfig,
+            PlayerManagerInterface* pPlayerManager);
     virtual ~AutoDJFeature();
 
     QVariant title() override;
