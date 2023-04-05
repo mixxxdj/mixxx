@@ -16,38 +16,7 @@
        Control:off
        Deck:off
  */
-/* exported LibraryColumns */
 /*eslint no-var:off */
-
-// ----------------- Mapping constants ---------------------
-
-// Library column value, which can be used to interact with the CO for "[Library] sort_column"
-var LibraryColumns = {
-    Artist: 1,
-    Title: 2,
-    Album: 3,
-    Albumartist: 4,
-    Year: 5,
-    Genre: 6,
-    Composer: 7,
-    Grouping: 8,
-    Tracknumber: 9,
-    Filetype: 10,
-    NativeLocation: 11,
-    Comment: 12,
-    Duration: 13,
-    Bitrate: 14,
-    BPM: 15,
-    ReplayGain: 16,
-    DatetimeAdded: 17,
-    TimesPlayed: 18,
-    Rating: 19,
-    Key: 20,
-    Preview: 21,
-    Coverart: 22,
-    TrackColor: 30,
-    LastPlayed: 31,
-};
 
 // ----------------- Prototype enhancements ---------------------
 
@@ -158,6 +127,36 @@ var colorCodeToObject = function(colorCode) {
 
 var script = function() {
 };
+
+// ----------------- Mapping constants ---------------------
+
+// Library column value, which can be used to interact with the CO for "[Library] sort_column"
+script.LIBRARY_COLUMNS = Object.freeze({
+    ARTIST: 1,
+    TITLE: 2,
+    ALBUM: 3,
+    ALBUM_ARTIST: 4,
+    YEAR: 5,
+    GENRE: 6,
+    COMPOSER: 7,
+    GROUPING: 8,
+    TRACK_NUMBER: 9,
+    FILETYPE: 10,
+    NATIVE_LOCATION: 11,
+    COMMENT: 12,
+    DURATION: 13,
+    BITRATE: 14,
+    BPM: 15,
+    REPLAY_GAIN: 16,
+    DATETIME_ADDED: 17,
+    TIMES_PLAYED: 18,
+    RATING: 19,
+    KEY: 20,
+    PREVIEW: 21,
+    COVERART: 22,
+    TRACK_COLOR: 30,
+    LAST_PLAYED: 31,
+});
 
 // DEPRECATED -- use script.midiDebug() instead
 script.debug = function(channel, control, value, status, group) {

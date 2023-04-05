@@ -52,11 +52,11 @@ const DeckColors = [
 ];
 
 const LibrarySortableColumns = [
-    LibraryColumns.Artist,
-    LibraryColumns.Title,
-    LibraryColumns.BPM,
-    LibraryColumns.Key,
-    LibraryColumns.DatetimeAdded,
+    script.LIBRARY_COLUMNS.ARTIST,
+    script.LIBRARY_COLUMNS.TITLE,
+    script.LIBRARY_COLUMNS.BPM,
+    script.LIBRARY_COLUMNS.KEY,
+    script.LIBRARY_COLUMNS.DATETIME_ADDED,
 ];
 
 const LoopWheelMoveFactor = 50;
@@ -279,11 +279,11 @@ class Component {
             this.inKey = this.key;
             this.outKey = this.key;
         }
-        if (typeof this.unshift === "function") {
+        if (typeof this.unshift === "function" && this.unshift.length) {
             this.unshift();
         }
         this.shifted = false;
-        if (typeof this.input === "function" && this.inReport instanceof HIDInputReport) {
+        if (typeof this.input === "function" && this.inReport instanceof HIDInputReport && this.inReport.length === 0) {
             this.inConnect();
         }
         this.outConnect();
@@ -360,24 +360,24 @@ class ComponentContainer extends Component {
     }
     reconnectComponents(callback) {
         for (const component of this) {
-            if (typeof component.outDisconnect === "function") {
+            if (typeof component.outDisconnect === "function" && component.outDisconnect.length === 0) {
                 component.outDisconnect();
             }
-            if (typeof callback === "function") {
+            if (typeof callback === "function" && callback.length === 0) {
                 callback.call(this, component);
             }
-            if (typeof component.outConnect === "function") {
+            if (typeof component.outConnect === "function" && component.outConnect.length === 0) {
                 component.outConnect();
             }
             component.outTrigger();
-            if (typeof component.unshift === "function") {
+            if (typeof component.unshift === "function" && component.unshift.length === 0) {
                 component.unshift();
             }
         }
     }
     unshift() {
         for (const component of this) {
-            if (typeof component.unshift === "function") {
+            if (typeof component.unshift === "function" && component.unshift.length === 0) {
                 component.unshift();
             }
             component.shifted = false;
@@ -386,7 +386,7 @@ class ComponentContainer extends Component {
     }
     shift() {
         for (const component of this) {
-            if (typeof component.shift === "function") {
+            if (typeof component.shift === "function" && component.shift.length === 0) {
                 component.shift();
             }
             component.shifted = true;
@@ -485,7 +485,8 @@ class Button extends Component {
         if (this.input === undefined) {
             this.input = this.defaultInput;
             if (typeof this.input === "function"
-                && this.inReport !== undefined && this.inReport instanceof HIDInputReport) {
+                && this.inReport instanceof HIDInputReport
+                && this.input.length === 0) {
                 this.inConnect();
             }
         }
@@ -549,8 +550,8 @@ class Button extends Component {
     defaultInput(pressed) {
         if (pressed) {
             this.isLongPress = false;
-            if (typeof this.onShortPress === "function") { this.onShortPress(); }
-            if (typeof this.onLongPress === "function" || typeof this.onLongRelease === "function") {
+            if (typeof this.onShortPress === "function" && this.onShortPress.length === 0) { this.onShortPress(); }
+            if ((typeof this.onLongPress === "function" && this.onLongPress.length === 0) || (typeof this.onLongRelease === "function" && this.onLongRelease.length === 0)) {
                 this.longPressTimer = engine.beginTimer(this.longPressTimeOutMillis, () => {
                     this.isLongPress = true;
                     this.longPressTimer = 0;
@@ -559,13 +560,13 @@ class Button extends Component {
                 }, true);
             }
         } else if (this.isLongPress) {
-            if (typeof this.onLongRelease === "function") { this.onLongRelease(); }
+            if (typeof this.onLongRelease === "function" && this.onLongRelease.length === 0) { this.onLongRelease(); }
         } else {
             if (this.longPressTimer !== 0) {
                 engine.stopTimer(this.longPressTimer);
                 this.longPressTimer = 0;
             }
-            if (typeof this.onShortRelease === "function") { this.onShortRelease(); }
+            if (typeof this.onShortRelease === "function" && this.onShortRelease.length === 0) { this.onShortRelease(); }
         }
     }
 }
@@ -818,13 +819,16 @@ class BeatLoopRollButton extends TriggerButton {
         if (options.number <= 5  || !AddLoopHalveAndDoubleOnBeatloopRollTab) {
             options.key = "beatlooproll_"+BeatLoopRolls[AddLoopHalveAndDoubleOnBeatloopRollTab ? options.number + 1 : options.number]+"_activate";
             options.onShortPress = function() {
-                this.beatloopSize = engine.getValue(this.group, "beatloop_size");
+                if (!this.deck.beatloopSize) {
+                    this.deck.beatloopSize = engine.getValue(this.group, "beatloop_size");
+                }
                 engine.setValue(this.group, this.inKey, true);
             };
             options.onShortRelease = function() {
                 engine.setValue(this.group, this.inKey, false);
-                if (this.beatloopSize) {
-                    engine.setValue(this.group, "beatloop_size", this.beatloopSize);
+                if (this.deck.beatloopSize) {
+                    engine.setValue(this.group, "beatloop_size", this.deck.beatloopSize);
+                    this.deck.beatloopSize = undefined;
                 }
             };
         } else if (options.number === 6) {
@@ -1990,7 +1994,7 @@ class S4Mk3Deck extends Deck {
         });
         this.libraryEncoderPress = new Button({
             libraryViewButtonPressed: false,
-            onShortPress: function(pressed) {
+            onShortPress: function() {
                 if (this.libraryViewButtonPressed) {
                     script.toggleControl("[Library]", "sort_order");
                 } else {
@@ -2526,7 +2530,7 @@ class S4Mk3Deck extends Deck {
                     component.inConnect();
                     component.outConnect();
                     component.outTrigger();
-                    if (typeof this.unshift === "function") {
+                    if (typeof this.unshift === "function" && this.unshift.length === 0) {
                         this.unshift();
                     }
                 }
