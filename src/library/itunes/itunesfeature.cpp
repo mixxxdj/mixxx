@@ -32,7 +32,7 @@
 
 namespace {
 
-const QString ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
+const QString kItdbPathKey = "mixxx.itunesfeature.itdbpath";
 
 bool isMacOSImporterAvailable() {
 #ifdef __MACOS_ITUNES_LIBRARY__
@@ -179,7 +179,7 @@ void ITunesFeature::activate(bool forceReload) {
         emit showTrackModel(m_pITunesTrackModel);
 
         SettingsDAO settings(m_pTrackCollection->database());
-        QString dbSetting(settings.getValue(ITDB_PATH_KEY));
+        QString dbSetting(settings.getValue(kItdbPathKey));
         // if a path exists in the database, use it
         if (!dbSetting.isEmpty() && QFile::exists(dbSetting)) {
             m_dbfile = dbSetting;
@@ -210,7 +210,7 @@ void ITunesFeature::activate(bool forceReload) {
                 // that we can access the folder on future runs. We need to canonicalize
                 // the path so we first wrap the directory string with a QDir.
                 Sandbox::createSecurityToken(&fileInfo);
-                settings.setValue(ITDB_PATH_KEY, m_dbfile);
+                settings.setValue(kItdbPathKey, m_dbfile);
             }
         }
         m_isActivated =  true;
@@ -264,7 +264,7 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
     QAction *chosen(menu.exec(globalPos));
     if (chosen == &useDefault) {
         SettingsDAO settings(m_database);
-        settings.setValue(ITDB_PATH_KEY, QString());
+        settings.setValue(kItdbPathKey, QString());
         activate(true); // clears tables before parsing
     } else if (chosen == &chooseNew) {
         SettingsDAO settings(m_database);
@@ -281,7 +281,7 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
         // the path so we first wrap the directory string with a QDir.
         Sandbox::createSecurityToken(&dbFileInfo);
 
-        settings.setValue(ITDB_PATH_KEY, dbfile);
+        settings.setValue(kItdbPathKey, dbfile);
         activate(true); // clears tables before parsing
     }
 }
