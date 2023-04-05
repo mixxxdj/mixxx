@@ -188,7 +188,7 @@ void ITunesFeature::activate(bool forceReload) {
             m_dbfile = getiTunesMusicPath();
         }
 
-        if (!m_dbfile.isEmpty() || !isMacOSImporterAvailable()) {
+        if (!isMacOSImporterUsed()) {
             mixxx::FileInfo fileInfo(m_dbfile);
             if (fileInfo.checkFileExists()) {
                 // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
@@ -250,6 +250,10 @@ QString ITunesFeature::showOpenDialog() {
             "iTunes XML (*.xml)");
 }
 
+bool ITunesFeature::isMacOSImporterUsed() {
+    return isMacOSImporterAvailable() && m_dbfile.isEmpty();
+}
+
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
     QMenu menu(m_pSidebarWidget);
@@ -304,7 +308,7 @@ QString ITunesFeature::getiTunesMusicPath() {
 
 std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
 #ifdef __MACOS_ITUNES_LIBRARY__
-    if (isMacOSImporterAvailable()) {
+    if (isMacOSImporterUsed()) {
         qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
         return std::make_unique<ITunesMacOSImporter>(this, m_database, m_cancelImport);
     }
