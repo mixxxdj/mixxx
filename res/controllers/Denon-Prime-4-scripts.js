@@ -214,7 +214,9 @@ Prime4.DeckAssignButton = function(options) {
     this.trigger = function() {
         this.output(isActive());
     };
+
     this.input = function(channel, control, value, status, _group) {
+        console.log(Object.keys(this));
         if (!this.isPress(channel, control, value, status) || isActive()) {
             return;
         }
@@ -224,6 +226,8 @@ Prime4.DeckAssignButton = function(options) {
         Prime4[deckSide].forEachComponent(c => { c.connect(); c.trigger(); });
     };
 };
+
+Prime4.DeckAssignButton.prototype = Object.create(components.Button.prototype);
 
 Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _group) {
     if (value >= 1 && value < 20) {
@@ -239,12 +243,12 @@ Prime4.init = function(_id, _debug) {
     midi.sendShortMsg(0x90, 0x75, 0x00);
 
     // Initialise all three physical sections of the unit
+    /*
     Prime4.leftDeck = new Prime4.Deck([1, 3], 4);
     Prime4.rightDeck = new Prime4.Deck([2, 4], 5);
+    */
 
-    /*
-    // These are explicitly not part of `this` or `Prime4` so they don't get iterated over.
-    var decks = [
+    const decks = [
         new Prime4.Deck(1, 4),
         new Prime4.Deck(2, 5),
         new Prime4.Deck(3, 4),
@@ -262,9 +266,9 @@ Prime4.init = function(_id, _debug) {
             deckIndex: i,
             toDeck: decks[i],
             assignmentButtons: this.assignmentButtons,
+            decks: decks,
         });
     }
-    */
 
     Prime4.mixerA = new mixerStrip(1, 0);
     Prime4.mixerB = new mixerStrip(2, 1);
