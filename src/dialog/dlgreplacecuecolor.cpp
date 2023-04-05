@@ -90,9 +90,11 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     }
     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(firstColor));
 
-    // Add menu for new color button
+    // Add menu for 'New color' button
     m_pNewColorPickerAction = make_parented<WColorPickerAction>(
-            WColorPicker::Option::AllowCustomColor,
+            WColorPicker::Option::AllowCustomColor |
+                    // TODO(xxx) remove this once the preferences are themed via QSS
+                    WColorPicker::Option::NoExtStyleSheet,
             colorPaletteSettings.getHotcueColorPalette(),
             this);
     m_pNewColorPickerAction->setObjectName("HotcueColorPickerAction");
@@ -110,7 +112,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     m_pNewColorMenu->addAction(m_pNewColorPickerAction);
     pushButtonNewColor->setMenu(m_pNewColorMenu);
 
-    // Set up current color button
+    // Set up 'Current color' button
     setButtonColor(pushButtonCurrentColor,
             mixxx::RgbColor::toQColor(
                     mixxx::PredefinedColorPalettes::kDefaultCueColor));
@@ -122,13 +124,15 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
 
-    // Add menu for current color button
+    // Add menu for 'Current color' button
     m_pCurrentColorPickerAction = make_parented<WColorPickerAction>(
-            WColorPicker::Option::AllowCustomColor,
+            WColorPicker::Option::AllowCustomColor |
+                    // TODO(xxx) remove this once the preferences are themed via QSS
+                    WColorPicker::Option::NoExtStyleSheet,
             colorPaletteSettings.getHotcueColorPalette(),
             this);
     m_pCurrentColorPickerAction->setObjectName("HotcueColorPickerAction");
-    m_pNewColorPickerAction->setSelectedColor(
+    m_pCurrentColorPickerAction->setSelectedColor(
             mixxx::PredefinedColorPalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
             &WColorPickerAction::colorPicked,
