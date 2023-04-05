@@ -42,7 +42,7 @@ const deckColors = [
     "green",
 
     // Deck 2
-    "blue",
+    "yellow",
 
     // Deck 3
     "cyan",
@@ -224,7 +224,14 @@ Prime4.DeckAssignButton = function(options) {
         Prime4[deckSide] = this.decks[this.deckIndex];
         this.assignmentButtons.forEachComponent(btn => btn.trigger());
         Prime4[deckSide].forEachComponent(c => { c.connect(); c.trigger(); });
+
+        // Jog Wheel LED
+        midi.sendShortMsg(0x94 + (this.deckIndex % 2), 0x21, colDeck[this.deckIndex]);
+
+        // Deck Toggle Button LED
+        midi.sendShortMsg(0x9F, 0x1C + this.deckIndex, colDeck[this.deckIndex]);
     };
+
 };
 
 Prime4.DeckAssignButton.prototype = Object.create(components.Button.prototype);
@@ -237,16 +244,9 @@ Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _gr
     }
 };
 
-
 Prime4.init = function(_id, _debug) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
-
-    // Initialise all three physical sections of the unit
-    /*
-    Prime4.leftDeck = new Prime4.Deck([1, 3], 4);
-    Prime4.rightDeck = new Prime4.Deck([2, 4], 5);
-    */
 
     const decks = [
         new Prime4.Deck(1, 4),
@@ -356,8 +356,8 @@ Prime4.init = function(_id, _debug) {
     // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
     midi.sendShortMsg(0x9F, 0x1C, colDeck[0]);                        // Deck 1 Toggle
     midi.sendShortMsg(0x9F, 0x1D, colDeck[1]);                        // Deck 2 Toggle
-    midi.sendShortMsg(0x9F, 0x1E, colDeckDark[2]);                    // Deck 3 Toggle
-    midi.sendShortMsg(0x9F, 0x1F, colDeckDark[3]);                    // Deck 4 Toggle
+    midi.sendShortMsg(0x9F, 0x1E, 1);                    // Deck 3 Toggle
+    midi.sendShortMsg(0x9F, 0x1F, 1);                    // Deck 4 Toggle
     midi.sendShortMsg(0x94, 0x21, colDeck[0]);                        // Left Jog Wheel
     midi.sendShortMsg(0x95, 0x21, colDeck[1]);                        // Right Jog Wheel
     midi.sendShortMsg(0x9F, 0x0B, 1);                                 // Headphone Split Button
@@ -580,6 +580,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         key: "loop_out",
     });
 
+    // Load Buttons
     this.deckLoad = new components.Button({
         midi: [0x9F, midiChannel - 3],
         key: "LoadSelectedTrack",
@@ -589,41 +590,9 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         //       of each physical deck component to determine which deck it's manipulating in
         //       Mixxx. The deck load buttons, however, are both on MIDI channel 16, so I need
         //       a better way to determine this.
-        off: Prime4.rgbCode.cyanDark,
-        on: Prime4.rgbCode.cyan,
+        off: Prime4.rgbCode.whiteDark,
+        on: Prime4.rgbCode.white,
     });
-
-    // Change from Deck 3/4 to Deck 1/2
-    this.deckToggleButtonA = function(value) {
-        if (value > 0) {
-            // Each physical deck has its own MIDI channel, which channelCheck converts to the appropriate deck
-            const channelCheck = midiChannel - 1;
-            if (this.currentDeck === "[Channel" + channelCheck + "]") {
-                this.toggle();
-
-                // Update Jog Wheel and Toggle Button LEDs to reflect active deck
-                midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4]); // Jog Wheel LED
-                midi.sendShortMsg(0x9F, 0x18 + midiChannel, colDeck[midiChannel - 4]); // Active deck - bright LED
-                midi.sendShortMsg(0x9F, 0x1A + midiChannel, colDeckDark[midiChannel - 2]); // Inactive deck - dark LED
-                //midi.sendShortMsg(0x9F, midiChannel - 3, colDeckDark[midiChannel - 4]); // Inactive deck - dark LED
-            }
-        }
-    };
-    // Change from Deck 1/2 to Deck 3/4
-    this.deckToggleButtonB = function(value) {
-        if (value > 0) {
-            const channelCheck = midiChannel - 3;
-            if (this.currentDeck === "[Channel" + channelCheck + "]") {
-                this.toggle();
-
-                // Update Jog Wheel and Toggle Button LEDs to reflect active deck
-                midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 2]); // Jog Wheel LED
-                midi.sendShortMsg(0x9F, 0x18 + midiChannel, colDeckDark[midiChannel - 4]); // Inactive deck - dark LED
-                midi.sendShortMsg(0x9F, 0x1A + midiChannel, colDeck[midiChannel - 2]); // Active deck - bright LED
-                //midi.sendShortMsg(0x9F, midiChannel - 3, colDeckDark[midiChannel - 2]); // Inactive deck - dark LED
-            }
-        }
-    };
 
     this.reconnectComponents(function(c) {
         if (c.group === undefined) {
