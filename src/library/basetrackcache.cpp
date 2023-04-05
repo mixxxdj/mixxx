@@ -193,7 +193,7 @@ bool BaseTrackCache::updateTrackInIndex(
         return false;
     }
     if (sDebug) {
-        qDebug() << "updateTrackInIndex:" << pTrack->getFileInfo();
+        qDebug() << "updateTrackInIndex:" << pTrack->getLocation();
     }
 
     int numColumns = columnCount();
