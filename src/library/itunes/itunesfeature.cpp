@@ -314,8 +314,7 @@ std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
     }
 #endif
     qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
-    return std::make_unique<ITunesXMLImporter>(
-            this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
+    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_database, m_cancelImport);
 }
 
 // This method is executed in a separate thread
@@ -329,35 +328,8 @@ TreeItem* ITunesFeature::importLibrary() {
 
     ScopedTransaction transaction(m_database);
 
-    // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
-    // file://localhost/ from the URL. When we load the user's iTunes XML
-    // configuration we may replace this with something based on the detected
-    // location of the user's iTunes path but the defaults are necessary in case
-    // their iTunes XML does not include the "Music Folder" key.
-    m_pathMapping.mixxxITunesRoot = "";
-    m_pathMapping.dbITunesRoot = kiTunesLocalhostToken;
-
-    ITunesImport iTunesImport;
     std::unique_ptr<ITunesImporter> importer = makeImporter();
-
-    iTunesImport = importer->importLibrary();
-
-    if (iTunesImport.isMusicFolderLocatedAfterTracks) {
-        qDebug() << "Updating iTunes real path from "
-                 << m_pathMapping.dbITunesRoot << " to "
-                 << m_pathMapping.mixxxITunesRoot;
-        // In some iTunes files "Music Folder" XML node is located at the end of file. So, we need to
-        QSqlQuery query(m_database);
-        query.prepare("UPDATE itunes_library SET location = replace( location, :itunes_path, :mixxx_path )");
-        query.bindValue(":itunes_path",
-                m_pathMapping.dbITunesRoot.replace(kiTunesLocalhostToken, ""));
-        query.bindValue(":mixxx_path", m_pathMapping.mixxxITunesRoot);
-        bool success = query.exec();
-
-        if (!success) {
-            LOG_FAILED_QUERY(query);
-        }
-    }
+    ITunesImport iTunesImport = importer->importLibrary();
 
     // Even if an error occurred, commit the transaction. The file may have been
     // half-parsed.
