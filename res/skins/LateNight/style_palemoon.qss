@@ -2676,10 +2676,10 @@ WSearchLineEdit {
       height: 9px;
     }
     #WaveformSplitter::handle:pressed,
-    #SidebarCoverSplitter::handle:pressed
+    #SidebarCoverSplitter::handle:pressed {
     /* doesn't catch hover state:
     #HorizontalSplitter::handle:hover,
-    #HorizontalSplitter::handle[hover="true"] */ {
+    #HorizontalSplitter::handle[hover="true"] */
       image: url(skin:/palemoon/style/splitter_handle_horizontal_pressed.svg);
     }
 
@@ -2697,9 +2697,8 @@ WSearchLineEdit {
     /* 'height' works although it's actually the width of the handle */
     height: 6px;
   }
-  #LibrarySplitter::handle:pressed,
-  #LibrarySplitter::handle:hover {
-    image: url(skin:/palemoon/style/splitter_handle_vertical_pressed.png);
+  #LibrarySplitter::handle:pressed {
+    image: url(skin:/palemoon/style/splitter_handle_vertical_pressed.svg);
   }
 /************ splitters ***********************/
 
