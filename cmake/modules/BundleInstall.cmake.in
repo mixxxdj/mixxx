@@ -9,7 +9,7 @@ include(BundleUtilities)
 
 #fixup_bundle tries to copy system libraries without this. Wtf?
 function(gp_resolved_file_type_override file type)
-  if(file MATCHES "^(/usr/lib)")
+  if(file MATCHES "^(/usr/lib)" OR file MATCHES "^(/Library/Frameworks)")
     set(type "system" PARENT_SCOPE)
   endif()
 endfunction()

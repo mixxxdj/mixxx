@@ -48,6 +48,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
 
     static QString m_databaseFile;

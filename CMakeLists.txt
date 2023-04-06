@@ -750,6 +750,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
@@ -1156,6 +1157,23 @@ target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src
 if(UNIX AND NOT APPLE)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
+endif()
+
+if(APPLE)
+  # Enable Automatic Reference Counting (ARC) when compiling Objective-C(++).
+  # This frees us from having to worry about memory management when interfacing
+  # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
+  # will automatically insert retain/release calls on Objective-C objects.
+  target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
+
+  option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
+  if(MACOS_ITUNES_LIBRARY)
+    target_sources(mixxx-lib PRIVATE
+      src/library/itunes/itunesmacosimporter.mm
+    )
+    target_link_libraries(mixxx-lib PRIVATE "-weak_framework iTunesLibrary")
+    target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
+  endif()
 endif()
 
 # QML Debugging
@@ -1943,10 +1961,11 @@ endif()
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
-  set(LIBDJINTEROP_VERSION 0.16.0)
+  set(LIBDJINTEROP_VERSION 0.16.1)
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
-  find_package(DjInterop ${LIBDJINTEROP_VERSION})
+  # Note: Version 0.17.0 is not yet compatible
+  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
     message(STATUS "Using existing system installation of libdjinterop")
@@ -1977,7 +1996,7 @@ if(ENGINEPRIME)
     # the configuration.
     ExternalProject_Add(libdjinterop
       URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
-      URL_HASH SHA256=c998831fe4d3cc80c5c031491204244c9ed0c61575dd529260304b95d79db588
+      URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}

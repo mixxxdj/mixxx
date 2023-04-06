@@ -6,8 +6,11 @@
 #include <QStringListModel>
 #include <QtConcurrentRun>
 #include <QtSql>
+#include <atomic>
 
 #include "library/baseexternallibraryfeature.h"
+#include "library/itunes/itunesimporter.h"
+#include "library/itunes/itunespathmapping.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
@@ -40,6 +43,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
             const QString& playlist) override;
     static QString getiTunesMusicPath();
+    std::unique_ptr<ITunesImporter> makeImporter();
     // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
     void guessMusicLibraryMountpoint(QXmlStreamReader& xml);
@@ -51,22 +55,31 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void clearTable(const QString& table_name);
     bool readNextStartElement(QXmlStreamReader& xml);
 
+    /// Presents an 'open file' dialog for selecting an iTunes library XML and
+    /// returns the file path.
+    QString showOpenDialog();
+
     BaseExternalTrackModel* m_pITunesTrackModel;
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;
     parented_ptr<TreeItemModel> m_pSidebarModel;
     QStringList m_playlists;
     // a new DB connection for the worker thread
     QSqlDatabase m_database;
-    bool m_cancelImport;
+    std::atomic<bool> m_cancelImport;
     bool m_isActivated;
+
+    /// The path to the iTunes library XML file. If this is empty and the
+    /// user is running macOS, we will use the `ITunesMacOSImporter` that
+    /// uses the native `iTunesLibrary` framework to import the user's
+    /// library. In all other cases, the `ITunesXMLImporter` will be used
+    /// to parse the given file.
     QString m_dbfile;
 
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
 
-    QString m_dbItunesRoot;
-    QString m_mixxxItunesRoot;
+    ITunesPathMapping m_pathMapping;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
