@@ -193,7 +193,6 @@ components.Button.prototype.isPress = function(channel, control, value, status) 
 };
 
 Prime4.DeckAssignButton = function(options) {
-
     components.Button.call(this, options);
 
     if (!Number.isInteger(this.deckIndex)) {
@@ -221,7 +220,7 @@ Prime4.DeckAssignButton = function(options) {
             return;
         }
         Prime4[deckSide].forEachComponent(c => { c.disconnect(); });
-        Prime4[deckSide] = this.decks[this.deckIndex];
+        Prime4[deckSide] = this.toDeck;
         this.assignmentButtons.forEachComponent(btn => btn.trigger());
         Prime4[deckSide].forEachComponent(c => { c.connect(); c.trigger(); });
 
@@ -266,7 +265,6 @@ Prime4.init = function(_id, _debug) {
             deckIndex: i,
             toDeck: decks[i],
             assignmentButtons: this.assignmentButtons,
-            decks: decks,
         });
     }
 
@@ -354,6 +352,7 @@ Prime4.init = function(_id, _debug) {
     });
 
     // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
+    /*
     midi.sendShortMsg(0x9F, 0x1C, colDeck[0]);                        // Deck 1 Toggle
     midi.sendShortMsg(0x9F, 0x1D, colDeck[1]);                        // Deck 2 Toggle
     midi.sendShortMsg(0x9F, 0x1E, 1);                    // Deck 3 Toggle
@@ -363,6 +362,7 @@ Prime4.init = function(_id, _debug) {
     midi.sendShortMsg(0x9F, 0x0B, 1);                                 // Headphone Split Button
     midi.sendShortMsg(0x94, 0x1C, 1);                                 // Left Shift Button
     midi.sendShortMsg(0x95, 0x1C, 1);                                 // Right Shift Button
+    */
 };
 
 Prime4.shutdown = function() {
@@ -560,6 +560,16 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             }
         },
     });
+
+    /*
+    // Jog Wheel LED
+    this.jogWheelLed = new components.Component({
+        midi: [0x90 + midiChannel, 0x21],
+        trigger: function() {
+            midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4])
+        },
+    });
+    */
 
     // Slip Mode Button
     this.slipButton = new components.Button({
