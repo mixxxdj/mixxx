@@ -1,9 +1,32 @@
 
+/** ScriptConnectionJSProxy */
+
+declare class ScriptConnection {
+    /**
+     * Disconnect the script connection,
+     * established by {@link engine.makeConnection} or {@link engine.makeUnbufferedConnection}
+     *
+     * @return Returns true if the connection is successful disconnected
+     */
+    disconnect(): boolean;
+
+    /**
+     * Triggers the execution of the callback function of the script connection,
+     * established by {@link engine.makeConnection} or {@link engine.makeUnbufferedConnection}
+     * with the actual value of a control.
+     *
+     * Note: To execute all callback functions connected to a ControlObject at once, use {@link engine.trigger} instead
+    */
+    trigger(): void;
+}
+
+
 /** ControllerScriptInterfaceLegacy */
 
 declare namespace engine {
     /**
      * Gets the control value
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control (within it's range according Mixxx Controls manual page)
@@ -12,6 +35,7 @@ declare namespace engine {
 
     /**
      * Sets a control value
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set (within it's range according Mixxx Controls manual page)
@@ -20,6 +44,7 @@ declare namespace engine {
 
     /**
      * Gets the control value normalized to a range of 0..1
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control normalized to range of 0..1
@@ -28,6 +53,7 @@ declare namespace engine {
 
     /**
      * Sets the control value specified with normalized range of 0..1
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set, normalized to a range of 0..1
@@ -37,6 +63,7 @@ declare namespace engine {
     /**
      * Normalizes a specified value using the range of the given control,
      * to the range of 0..1
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @param value Value with the controls range according Mixxx Controls manual page
@@ -46,6 +73,7 @@ declare namespace engine {
 
     /**
      * Resets the control to its default value
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
@@ -53,6 +81,7 @@ declare namespace engine {
 
     /**
      * Returns the default value of a control
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @returns Default value with the controls range according Mixxx Controls manual page
@@ -61,45 +90,66 @@ declare namespace engine {
 
     /**
      * Returns the default value of a control, normalized to a range of 0..1
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @returns Default value of the specified control normalized to range of 0..1
      */
     function getDefaultParameter(group: string, name: string): number;
 
+    type CoCallback = (value: number, group: string, name: string) => void
+
     /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
+     *
      * @details This connection has a FIFO buffer - all value change events are processed in serial order.
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
-     * @param  callback JS function, which will be called everytime, the value of the connected control changes.
+     * @param callback JS function, which will be called everytime, the value of the connected control changes.
+     * @return Returns script connection object on success, otherwise 'undefined''
      */
-    function makeConnection(group: string, name: string, callback: (value: number, group: string, name: string)=>any): any;
+    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection |undefined;
 
     /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
+     *
      * @details This connection is unbuffered - when value change events occur faster, than the mapping can process them,
      *          only the last value set for the control is processed.
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "VuMeter"
      * @param callback JS function, which will be called everytime, the value of the connected control changes.
+     * @return Returns script connection object on success, otherwise 'undefined''
      */
-    function  makeUnbufferedConnection(group: string, name: string, callback: (value: number, group: string, name: string)=>any): any;
+    function makeUnbufferedConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
 
-    /** @deprecated Use makeConnection instead */
-    function  connectControl(group: string, name: string, passedCallback: (value: number, group: string, name: string)=>any, disconnect?:boolean): any;
+    /** This function is a legacy version of makeConnection with several alternate
+     * ways of invoking it. The callback function can be passed either as a string of
+     * JavaScript code that evaluates to a function or an actual JavaScript function.
+     *
+     * @param group Group of the control e.g. "[Channel1]"
+     * @param name Name of the control e.g. "VuMeter"
+     * @param callback JS function, which will be called everytime, the value of the connected control changes.
+     * @param disconnect If "true", all connections to the ControlObject are removed. [default = false]
+     * @return Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.
+     *
+     * @deprecated Use {@link makeConnection} instead
+     */
+    function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
 
 
     /**
-     * Triggers the execution of the connected callback functions, with the actual value of a control
+     * Triggers the execution of all connected callback functions, with the actual value of a control.
+     * Note: To trigger a single connection, us {@link ScriptConnection.trigger} instead
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
     function trigger(group: string, name: string): void;
 
-    /** @deprecated Use console.log instead */
+    /** @deprecated Use {@link console.log} instead */
     function log(message: string): void;
 
     /**
      * Starts a timer that will call the specified script function
+     *
      * @param interval Time in milliseconds until the function is executed.
      *                 Intervals below 20ms are not allowed.
      * @param scriptCode Function to be executed,
@@ -114,6 +164,7 @@ declare namespace engine {
 
     /**
      * Stops the specified timer
+     *
      * @param timerId ID of the timer
      */
     function stopTimer(timerId: number): void;
@@ -122,6 +173,7 @@ declare namespace engine {
      * Jogwheel function to be called when scratching starts (usually when the wheel is touched)
      * This function contains an parametrizeable alpha-beta filter, which influences the
      * responsiveness and looseness of the imaginary slip mat
+     *
      * @param deck The deck number to use, e.g: 1
      * @param intervalsPerRev The resolution of the MIDI control (in intervals per revolution, typically 128.)
      * @param rpm The speed of the imaginary record at 0% pitch (in revolutions per minute (RPM) typically 33+1/3, adjust for comfort)
@@ -133,6 +185,7 @@ declare namespace engine {
 
     /**
      * Function to be called each time the jogwheel is moved during scratching
+     *
      * @param deck The deck number to use, e.g: 1
      * @param interval The movement value (typically 1 for one "tick" forwards, -1 for one "tick" backwards)
      */
@@ -167,6 +220,7 @@ declare namespace engine {
      * Inhibits a suden value change from the hardware control.
      * Should be called when receiving input for the knob/fader,
      * that switches its behavior (e.g. Shift-Button pressed)
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "pregain"
      */
@@ -175,6 +229,7 @@ declare namespace engine {
     /**
      * To achieve a brake effect of the playback speed
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
+     *
      * @param deck The deck number to use, e.g: 1
      * @param activate Set true to activate, or false to disable
      * @param factor Defines how quickly the deck should come to a stop.
@@ -189,6 +244,7 @@ declare namespace engine {
     /**
      * To achieve a spinback effect of the playback speed
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
+     *
      * @param deck The deck number to use, e.g: 1
      * @param activate Set true to activate, or false to disable
      * @param factor Defines how quickly the deck should come to normal playback rate.
@@ -203,6 +259,7 @@ declare namespace engine {
     /**
      * To achieve a forward acceleration effect from standstill to normal speed.
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
+     *
      * @param deck The deck number to use, e.g: 1
      * @param activate Set true to activate, or false to disable
      * @param factor Defines how quickly the deck should come to normal playback rate.
