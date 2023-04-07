@@ -45,7 +45,7 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
-        exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
+        exclude: \.(c|cc|cxx|cpp|d.ts|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
       - id: no-commit-to-branch
         # protect main and any branch that has a semver-like name
         args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']
@@ -62,13 +62,13 @@ repos:
             --ignore-regex,
             "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))",
           ]
-        exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl|svg))$
+        exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|(?!d.ts)|ts|wxl|svg))$
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.25.0
     hooks:
       - id: eslint
         args: [--fix, --report-unused-disable-directives]
-        files: \.m?js$
+        files: \.m?[jt]s$
         types: [file]
         stages:
           - commit
@@ -76,6 +76,8 @@ repos:
         additional_dependencies:
           - eslint@^v8.6.0
           - eslint-plugin-jsdoc@^v37.5.0
+          - "@typescript-eslint/eslint-plugin"
+          - "@typescript-eslint/parser"
   - repo: local
     hooks:
       - id: clang-format

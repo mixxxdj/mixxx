@@ -6,7 +6,7 @@ declare class ScriptConnection {
      * Disconnect the script connection,
      * established by {@link engine.makeConnection} or {@link engine.makeUnbufferedConnection}
      *
-     * @return Returns true if the connection is successful disconnected
+     * @returns Returns true if the connection is successful disconnected
      */
     disconnect(): boolean;
 
@@ -16,7 +16,7 @@ declare class ScriptConnection {
      * with the actual value of a control.
      *
      * Note: To execute all callback functions connected to a ControlObject at once, use {@link engine.trigger} instead
-    */
+     */
     trigger(): void;
 }
 
@@ -99,28 +99,31 @@ declare namespace engine {
 
     type CoCallback = (value: number, group: string, name: string) => void
 
-    /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
+    /**
+     * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
      *
      * @details This connection has a FIFO buffer - all value change events are processed in serial order.
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @param callback JS function, which will be called everytime, the value of the connected control changes.
-     * @return Returns script connection object on success, otherwise 'undefined''
+     * @returns Returns script connection object on success, otherwise 'undefined''
      */
     function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection |undefined;
 
-    /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
+    /**
+     * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
      *
      * @details This connection is unbuffered - when value change events occur faster, than the mapping can process them,
      *          only the last value set for the control is processed.
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "VuMeter"
      * @param callback JS function, which will be called everytime, the value of the connected control changes.
-     * @return Returns script connection object on success, otherwise 'undefined''
+     * @returns Returns script connection object on success, otherwise 'undefined''
      */
     function makeUnbufferedConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
 
-    /** This function is a legacy version of makeConnection with several alternate
+    /**
+     * This function is a legacy version of makeConnection with several alternate
      * ways of invoking it. The callback function can be passed either as a string of
      * JavaScript code that evaluates to a function or an actual JavaScript function.
      *
@@ -128,8 +131,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "VuMeter"
      * @param callback JS function, which will be called everytime, the value of the connected control changes.
      * @param disconnect If "true", all connections to the ControlObject are removed. [default = false]
-     * @return Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.
-     *
+     * @returns Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.
      * @deprecated Use {@link makeConnection} instead
      */
     function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
@@ -193,6 +195,7 @@ declare namespace engine {
 
     /**
      * Jogwheel function to be called when scratching ends (usually when the wheel is released)
+     *
      * @param deck The deck number to use, e.g: 1
      * @param ramp  Set true to ramp the deck speed up. Set false to jump to normal play speed instantly [default = true]
      */
@@ -200,6 +203,7 @@ declare namespace engine {
 
     /**
      * Returns true if scratching is enabled
+     *
      * @param deck The deck number to use, e.g: 1
      * @returns True if scratching is enabled
      */
@@ -210,6 +214,7 @@ declare namespace engine {
      * when on-screen control and hardware control divert.
      * With soft-takeover you need to turn a hardware knob, until it reaches
      * the position of the on-screen knob - than it takes over control.
+     *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "pregain"
      * @param enable Set true to enable soft-takeover for the specified control
