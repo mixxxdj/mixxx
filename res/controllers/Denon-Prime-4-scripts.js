@@ -268,6 +268,7 @@ Prime4.init = function(_id, _debug) {
             off: colDeckDark[i],
             on: colDeck[i],
         });
+        Prime4.assignmentButtons[i].trigger();
     }
 
     Prime4.mixerA = new mixerStrip(1, 0);
@@ -416,6 +417,7 @@ mixerStrip.prototype = new components.Deck();
 // All components contained on each deck
 Prime4.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
+    const theDeck = this;
 
     // Censor Button
     this.censorButton = new components.Button({
@@ -504,13 +506,17 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         type: components.Button.prototype.types.toggle,
     });
 
-    /*
     this.vinylButton = new components.Button({
         midi: [0x90 + midiChannel, 0x23],
-        //TODO: Jog Wheel Functionality First
         type: components.Button.prototype.types.toggle,
+        input: function(channel, control, value, status, _group) {
+            if (!this.isPress(channel, control, value, status)) {
+                return;
+            }
+            theDeck.jogWheel.vinylMode = !theDeck.jogWheel.vinylMode;
+            this.output(theDeck.jogWheel.vinylMode);
+        },
     });
-    */
 
     // Jog Wheel
     this.jogWheel = new components.JogWheelBasic({
