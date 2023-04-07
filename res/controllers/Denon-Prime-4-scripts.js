@@ -225,10 +225,10 @@ Prime4.DeckAssignButton = function(options) {
         Prime4[deckSide].forEachComponent(c => { c.connect(); c.trigger(); });
 
         // Jog Wheel LED
-        midi.sendShortMsg(0x94 + (this.deckIndex % 2), 0x21, colDeck[this.deckIndex]);
+        //midi.sendShortMsg(0x94 + (this.deckIndex % 2), 0x21, colDeck[this.deckIndex]);
 
         // Deck Toggle Button LED
-        midi.sendShortMsg(0x9F, 0x1C + this.deckIndex, colDeck[this.deckIndex]);
+        //midi.sendShortMsg(0x9F, 0x1C + this.deckIndex, colDeck[this.deckIndex]);
     };
 
 };
@@ -265,6 +265,8 @@ Prime4.init = function(_id, _debug) {
             deckIndex: i,
             toDeck: decks[i],
             assignmentButtons: this.assignmentButtons,
+            off: colDeckDark[i],
+            on: colDeck[i],
         });
     }
 
