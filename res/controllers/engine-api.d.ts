@@ -106,7 +106,7 @@ declare namespace engine {
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
-     * @param callback JS function, which will be called everytime, the value of the connected control changes.
+     * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @returns Returns script connection object on success, otherwise 'undefined''
      */
     function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection |undefined;
@@ -119,7 +119,7 @@ declare namespace engine {
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "VuMeter"
-     * @param callback JS function, which will be called everytime, the value of the connected control changes.
+     * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @returns Returns script connection object on success, otherwise 'undefined''
      */
     function makeUnbufferedConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
@@ -131,7 +131,7 @@ declare namespace engine {
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "VuMeter"
-     * @param callback JS function, which will be called everytime, the value of the connected control changes.
+     * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @param disconnect If "true", all connections to the ControlObject are removed. [default = false]
      * @returns Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.
      * @deprecated Use {@link makeConnection} instead
@@ -244,7 +244,7 @@ declare namespace engine {
      * @param factor Defines how quickly the deck should come to a stop.
      *               Start with a value of 1 and increase to increase the acceleration.
      *               Be aware that brake called with low factors (about 0.5 and lower),
-     *               would keep the deck running altough the resulting very low sounds are not audible anymore. [default = 1.0]
+     *               would keep the deck running although the resulting very low sounds are not audible anymore. [default = 1.0]
      * @param rate The initial speed of the deck when enabled. "1" (default) means 10x speed in forward.
      *             Negative values like "-1" also work, though then it's spinning reverse obviously. [default = 1.0]
      */
@@ -259,7 +259,7 @@ declare namespace engine {
      * @param factor Defines how quickly the deck should come to normal playback rate.
      *               Start with a value of 1 and increase to increase the acceleration.
      *               Be aware that spinback called with low factors (about 0.5 and lower),
-     *               would keep the deck running altough the resulting very low sounds are not audible anymore. [default = 1.8]
+     *               would keep the deck running although the resulting very low sounds are not audible anymore. [default = 1.8]
      * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x speed in reverse.
      *             Positive values like "10" also work, though then it's spinning forward obviously. [default = -10.0]
      */

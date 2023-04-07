@@ -12,7 +12,7 @@ declare namespace console {
      * Prints debugging information to the console, when
      * QT_LOGGING_RULES="js.debug=true;" or
      * Mixxx is started with --controller-debug
-     * This fuction is identical to console.debug
+     * This function is identical to console.debug
      *
      * @param data Message to print
      *    - Either a list of objects whose string representations get concatenated into the message string

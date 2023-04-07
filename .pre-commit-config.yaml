@@ -62,7 +62,7 @@ repos:
             --ignore-regex,
             "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))",
           ]
-        exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|(?!d.ts)|ts|wxl|svg))$
+        exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|(!d.)ts|wxl|svg))$
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.25.0
     hooks:
