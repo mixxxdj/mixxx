@@ -494,9 +494,9 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
 
                 if (key == "Playlist Items") {
                     isPlaylistItemsStarted = true;
+                    continue;
                 }
-                // When processing playlist entries, playlist name and id have
-                // already been processed and persisted
+
                 if (key == kTrackId) {
                     readNextStartElement();
                     track_reference = m_xml.readElementText().toInt();
@@ -505,7 +505,7 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
                     queryInsertToPlaylistTracks.bindValue(":track_id", track_reference);
                     queryInsertToPlaylistTracks.bindValue(":position", playlist_position++);
 
-                    // Insert tracks if we are not in a pre-build playlist
+                    // Insert tracks if we are not in a pre-built playlist
                     if (!isSystemPlaylist && !queryInsertToPlaylistTracks.exec()) {
                         qDebug() << "SQL Error in ITunesXMLImporter.cpp: line" << __LINE__ << " "
                                  << queryInsertToPlaylistTracks.lastError();
