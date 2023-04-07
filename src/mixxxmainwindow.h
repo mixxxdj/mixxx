@@ -163,6 +163,7 @@ class WFullScreenHint : public QWidget {
 
   protected:
     void closeEvent(QCloseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
   private:
     QCheckBox* m_pRemindCheckBox;

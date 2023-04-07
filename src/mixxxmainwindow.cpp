@@ -1412,6 +1412,15 @@ void WFullScreenHint::popup() {
     m_pOkayBtn->setFocus();
 }
 
+void WFullScreenHint::keyPressEvent(QKeyEvent* event) {
+    // Return/Enter should always close the popup
+    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+        close();
+        return;
+    }
+    return QWidget::keyPressEvent(event);
+}
+
 void WFullScreenHint::closeEvent(QCloseEvent* event) {
     int remind = m_pRemindCheckBox->isChecked() ? 0 : 1;
     m_pConfig->set(ConfigKey("[Config]", "hide_fullscreen_hint"), ConfigValue(remind));
