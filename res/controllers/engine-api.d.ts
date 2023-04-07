@@ -8,7 +8,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control (within it's range according Mixxx Controls manual page)
      */
-    function getValue(group:string, name:string):number;
+    function getValue(group: string, name: string): number;
 
     /**
      * Sets a control value
@@ -16,7 +16,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set (within it's range according Mixxx Controls manual page)
      */
-    function setValue(group:string, name:string, newValue: number):void;
+    function setValue(group: string, name: string, newValue: number): void;
 
     /**
      * Gets the control value normalized to a range of 0..1
@@ -24,7 +24,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control normalized to range of 0..1
      */
-    function getParameter(group:string, name:string):number;
+    function getParameter(group: string, name: string): number;
 
     /**
      * Sets the control value specified with normalized range of 0..1
@@ -32,7 +32,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set, normalized to a range of 0..1
      */
-    function setParameter(group:string, name:string, newValue:number):void;
+    function setParameter(group: string, name: string, newValue: number): void;
 
     /**
      * Normalizes a specified value using the range of the given control,
@@ -42,14 +42,14 @@ declare namespace engine {
      * @param value Value with the controls range according Mixxx Controls manual page
      * @returns Value normalized to range of 0..1
      */
-    function getParameterForValue(group:string, name:string, value:number):number;
+    function getParameterForValue(group: string, name: string, value: number): number;
 
     /**
      * Resets the control to its default value
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
-    function reset(group:string, name:string):void;
+    function reset(group: string, name: string): void;
 
     /**
      * Returns the default value of a control
@@ -57,7 +57,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Default value with the controls range according Mixxx Controls manual page
      */
-    function getDefaultValue(group:string, name:string):number;
+    function getDefaultValue(group: string, name: string): number;
 
     /**
      * Returns the default value of a control, normalized to a range of 0..1
@@ -65,7 +65,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Default value of the specified control normalized to range of 0..1
      */
-    function getDefaultParameter(group:string, name:string):number;
+    function getDefaultParameter(group: string, name: string): number;
 
     /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
      * @details This connection has a FIFO buffer - all value change events are processed in serial order.
@@ -73,7 +73,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @param  callback JS function, which will be called everytime, the value of the connected control changes.
      */
-    function makeConnection(group:string, name:string, callback:(value:number, group:string, name:string)=>any):any;
+    function makeConnection(group: string, name: string, callback: (value: number, group: string, name: string)=>any): any;
 
     /** Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
      * @details This connection is unbuffered - when value change events occur faster, than the mapping can process them,
@@ -82,10 +82,10 @@ declare namespace engine {
      * @param name Name of the control e.g. "VuMeter"
      * @param callback JS function, which will be called everytime, the value of the connected control changes.
      */
-    function  makeUnbufferedConnection(group:string, name:string, callback:(value:number, group:string, name:string)=>any):any;
+    function  makeUnbufferedConnection(group: string, name: string, callback: (value: number, group: string, name: string)=>any): any;
 
     /** @deprecated Use makeConnection instead */
-    function  connectControl(group:string, name:string, passedCallback:(value:number, group:string, name:string)=>any, disconnect:boolean = false):any;
+    function  connectControl(group: string, name: string, passedCallback: (value: number, group: string, name: string)=>any, disconnect?:boolean): any;
 
 
     /**
@@ -93,10 +93,10 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
-    function trigger(group:string, name:string):void;
+    function trigger(group: string, name: string): void;
 
     /** @deprecated Use console.log instead */
-    function log(message:string):void;
+    function log(message: string): void;
 
     /**
      * Starts a timer that will call the specified script function
@@ -110,13 +110,13 @@ declare namespace engine {
      * @returns timerId which is needed to stop a timer.
      *          In case of an error, 0 is returned.
      */
-    function beginTimer(interval:number, scriptCode:()=>any, oneShot?:boolean):number;
+    function beginTimer(interval: number, scriptCode: ()=>any, oneShot?: boolean): number;
 
     /**
      * Stops the specified timer
      * @param timerId ID of the timer
      */
-    function stopTimer(timerId:number):void;
+    function stopTimer(timerId: number): void;
 
     /**
      * Jogwheel function to be called when scratching starts (usually when the wheel is touched)
@@ -129,28 +129,28 @@ declare namespace engine {
      * @param beta The beta coefficient of the filter (start with alpha/32 and tune from there)
      * @param ramp Set true to ramp the deck speed down. Set false to stop instantly [default = true]
      */
-    function scratchEnable(deck:number, intervalsPerRev:number, rpm:number, alpha:number, beta:number, ramp?:boolean):void;
+    function scratchEnable(deck: number, intervalsPerRev: number, rpm: number, alpha: number, beta: number, ramp?: boolean): void;
 
     /**
      * Function to be called each time the jogwheel is moved during scratching
      * @param deck The deck number to use, e.g: 1
      * @param interval The movement value (typically 1 for one "tick" forwards, -1 for one "tick" backwards)
      */
-    function scratchTick(deck:number, interval:number):void;
+    function scratchTick(deck: number, interval: number): void;
 
     /**
      * Jogwheel function to be called when scratching ends (usually when the wheel is released)
      * @param deck The deck number to use, e.g: 1
      * @param ramp  Set true to ramp the deck speed up. Set false to jump to normal play speed instantly [default = true]
      */
-    function scratchDisable(deck:number, ramp?:boolean):void;
+    function scratchDisable(deck: number, ramp?: boolean): void;
 
     /**
      * Returns true if scratching is enabled
      * @param deck The deck number to use, e.g: 1
      * @returns True if scratching is enabled
      */
-    function isScratching(deck:number):boolean;
+    function isScratching(deck: number): boolean;
 
     /**
      * If enabled, soft-takeover prevents sudden wide parameter changes,
@@ -161,7 +161,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "pregain"
      * @param enable Set true to enable soft-takeover for the specified control
      */
-    function softTakeover(group:string, name:string, enable:boolean):void;
+    function softTakeover(group: string, name: string, enable: boolean): void;
 
     /**
      * Inhibits a suden value change from the hardware control.
@@ -170,7 +170,7 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "pregain"
      */
-    function softTakeoverIgnoreNextValue(group:string, name:string):void;
+    function softTakeoverIgnoreNextValue(group: string, name: string): void;
 
     /**
      * To achieve a brake effect of the playback speed
@@ -184,7 +184,7 @@ declare namespace engine {
      * @param rate The initial speed of the deck when enabled. "1" (default) means 10x speed in forward.
      *             Negative values like "-1" also work, though then it's spinning reverse obviously. [default = 1.0]
      */
-    function brake(deck:number, activate:boolean, factor?:number, rate?:number):void;
+    function brake(deck: number, activate: boolean, factor?: number, rate?: number): void;
 
     /**
      * To achieve a spinback effect of the playback speed
@@ -198,7 +198,7 @@ declare namespace engine {
      * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x speed in reverse.
      *             Positive values like "10" also work, though then it's spinning forward obviously. [default = -10.0]
      */
-    function spinback(deck:number, activate:boolean, factor?:number, rate?:number):void;
+    function spinback(deck: number, activate: boolean, factor?: number, rate?: number): void;
 
     /**
      * To achieve a forward acceleration effect from standstill to normal speed.
@@ -209,5 +209,5 @@ declare namespace engine {
      *               Start with a value of 1 and increase to increase the acceleration.
      *               SoftStart with low factors would take a while until sound is audible. [default = 1.0]
      */
-    function softStart(deck:number, activate:boolean, factor?:number):void;
+    function softStart(deck: number, activate: boolean, factor?: number): void;
 }
