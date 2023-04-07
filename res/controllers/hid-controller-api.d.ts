@@ -19,7 +19,7 @@ declare namespace controller {
 
     /** Sends an OutputReport to HID device
      *  @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
-     *  @param dataArray Data to send as byte array (Javascript type Uint8Array)
+     *  @param dataArray Data to send as byte array
      *  @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending [default = false]
      */
     function sendOutputReport(reportID: number, dataArray: ArrayBuffer, resendUnchangedReport?: boolean): void;
