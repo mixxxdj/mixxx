@@ -87,8 +87,9 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                     }
                 } else if (key == "Tracks") {
                     parseTracks();
-                    iTunesImport.playlistRoot = parsePlaylists();
                     isTracksParsed = true;
+                } else if (key == "Playlists") {
+                    iTunesImport.playlistRoot = parsePlaylists();
                 }
             }
         }
@@ -493,37 +494,6 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
 
                 if (key == "Playlist Items") {
                     isPlaylistItemsStarted = true;
-
-                    // if the playlist is prebuild don't hit the database
-                    if (isSystemPlaylist) {
-                        continue;
-                    }
-                    queryInsertToPlaylists.bindValue(":id", playlist_id);
-                    queryInsertToPlaylists.bindValue(":name", playlistname);
-
-                    bool success = queryInsertToPlaylists.exec();
-                    if (!success) {
-                        if (queryInsertToPlaylists.lastError()
-                                        .nativeErrorCode() ==
-                                QString::number(SQLITE_CONSTRAINT)) {
-                            // We assume a duplicate Playlist name
-                            playlistname += QString(" #%1").arg(playlist_id);
-                            queryInsertToPlaylists.bindValue(":name", playlistname);
-
-                            bool success = queryInsertToPlaylists.exec();
-                            if (!success) {
-                                // unexpected error
-                                LOG_FAILED_QUERY(queryInsertToPlaylists);
-                                break;
-                            }
-                        } else {
-                            // unexpected error
-                            LOG_FAILED_QUERY(queryInsertToPlaylists);
-                            return;
-                        }
-                    }
-                    // append the playlist to the child model
-                    root.appendChild(playlistname);
                 }
                 // When processing playlist entries, playlist name and id have
                 // already been processed and persisted
@@ -556,5 +526,34 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
                 break;
             }
         }
+    }
+
+    if (!isSystemPlaylist) {
+        queryInsertToPlaylists.bindValue(":id", playlist_id);
+        queryInsertToPlaylists.bindValue(":name", playlistname);
+
+        bool success = queryInsertToPlaylists.exec();
+        if (!success) {
+            if (queryInsertToPlaylists.lastError()
+                            .nativeErrorCode() ==
+                    QString::number(SQLITE_CONSTRAINT)) {
+                // We assume a duplicate Playlist name
+                playlistname += QString(" #%1").arg(playlist_id);
+                queryInsertToPlaylists.bindValue(":name", playlistname);
+
+                bool success = queryInsertToPlaylists.exec();
+                if (!success) {
+                    // unexpected error
+                    LOG_FAILED_QUERY(queryInsertToPlaylists);
+                    return;
+                }
+            } else {
+                // unexpected error
+                LOG_FAILED_QUERY(queryInsertToPlaylists);
+                return;
+            }
+        }
+        // append the playlist to the child model
+        root.appendChild(playlistname);
     }
 }
