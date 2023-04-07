@@ -1,10 +1,11 @@
 
-/** Mixxx installs the QJSEngine::ConsoleExtension for the use in controller mapping scripts.
+/**
+     Mixxx installs the QJSEngine::ConsoleExtension for the use in controller mapping scripts.
     See also:
       https://doc.qt.io/qt-5/qtquick-debugging.html#console-api
       https://developer.mozilla.org/en-US/docs/Web/API/console
       https://console.spec.whatwg.org/
-*/
+ */
 
 declare namespace console {
     /**
@@ -16,7 +17,7 @@ declare namespace console {
      * @param data Message to print
      *    - Either a list of objects whose string representations get concatenated into the message string
      *    - Or a string containing zero or more substitution strings followed by a list of objects to replace them
-    */
+     */
     function log(...data: any[]): void;
 
     /**
@@ -28,7 +29,7 @@ declare namespace console {
      * @param data Message to print
      *    - Either a list of objects whose string representations get concatenated into the message string
      *    - Or a string containing zero or more substitution strings followed by a list of objects to replace them
-    */
+     */
     function debug(...data: any[]): void;
 
     /**
@@ -39,7 +40,7 @@ declare namespace console {
      * @param data Message to print
      *    - Either a list of objects whose string representations get concatenated into the message string
      *    - Or a string containing zero or more substitution strings followed by a list of objects to replace them
-    */
+     */
     function info(...data: any[]): void;
 
     /**
@@ -50,7 +51,7 @@ declare namespace console {
      * @param data Message to print
      *    - Either a list of objects whose string representations get concatenated into the message string
      *    - Or a string containing zero or more substitution strings followed by a list of objects to replace them
-    */
+     */
     function warn(...data: any[]): void;
 
     /**
@@ -61,7 +62,7 @@ declare namespace console {
      * @param data Message to print
      *    - Either a list of objects whose string representations get concatenated into the message string
      *    - Or a string containing zero or more substitution strings followed by a list of objects to replace them
-    */
+     */
     function error(...data: any[]): void;
 
     /**
@@ -72,7 +73,7 @@ declare namespace console {
      * @param data Message to print
      *    - Either a list of objects whose string representations get concatenated into the message string
      *    - Or a string containing zero or more substitution strings followed by a list of objects to replace them
-    */
+     */
     function assert(condition: boolean, ...data: any[]): void;
 
     /**
@@ -113,15 +114,15 @@ declare namespace console {
 
     /**
      *  Turns on the JavaScript profiler.
-     *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      *
+     *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      */
      function profile(label?: string): void;
 
     /**
      *  Turns off the JavaScript profiler.
-     *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      *
+     *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      */
     function profileEnd(label?: string): void;
 
