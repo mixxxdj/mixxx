@@ -151,6 +151,8 @@ declare namespace engine {
     /** @deprecated Use {@link console.log} instead */
     function log(message: string): void;
 
+    type TimerID = number;
+
     /**
      * Starts a timer that will call the specified script function
      *
@@ -164,14 +166,14 @@ declare namespace engine {
      * @returns timerId which is needed to stop a timer.
      *          In case of an error, 0 is returned.
      */
-    function beginTimer(interval: number, scriptCode: ()=>any, oneShot?: boolean): number;
+    function beginTimer(interval: number, scriptCode: () => any, oneShot?: boolean): TimerID;
 
     /**
      * Stops the specified timer
      *
      * @param timerId ID of the timer
      */
-    function stopTimer(timerId: number): void;
+    function stopTimer(timerId: TimerID): void;
 
     /**
      * Jogwheel function to be called when scratching starts (usually when the wheel is touched)
