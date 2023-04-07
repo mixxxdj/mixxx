@@ -569,15 +569,14 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         },
     });
 
-    /*
     // Jog Wheel LED
     this.jogWheelLed = new components.Component({
         midi: [0x90 + midiChannel, 0x21],
         trigger: function() {
-            midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4])
+            midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4]);
+            //print("Jog Wheel LED Triggered");
         },
     });
-    */
 
     // Slip Mode Button
     this.slipButton = new components.Button({
