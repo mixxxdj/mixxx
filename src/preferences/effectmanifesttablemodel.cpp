@@ -28,7 +28,7 @@ void EffectManifestTableModel::setList(const QList<EffectManifestPointer>& newLi
 
 int EffectManifestTableModel::rowCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-    return m_manifests.count();
+    return m_manifests.size();
 }
 
 int EffectManifestTableModel::columnCount(const QModelIndex& parent) const {
@@ -146,7 +146,7 @@ Qt::DropActions EffectManifestTableModel::supportedDropActions() const {
 }
 
 bool EffectManifestTableModel::removeRows(int row, int count, const QModelIndex& parent) {
-    VERIFY_OR_DEBUG_ASSERT(row < m_manifests.count() && row + count <= m_manifests.count()) {
+    VERIFY_OR_DEBUG_ASSERT(row < m_manifests.size() && row + count <= m_manifests.size()) {
         // If this is violated, Mixxx will crash with a qt_assert()
         // https://github.com/mixxxdj/mixxx/issues/11454
         return false;
