@@ -146,11 +146,11 @@ Qt::DropActions EffectManifestTableModel::supportedDropActions() const {
 }
 
 bool EffectManifestTableModel::removeRows(int row, int count, const QModelIndex& parent) {
-    if (!count) {
+    if (count == 0) {
         // nothing to do
         return true;
     }
-    VERIFY_OR_DEBUG_ASSERT(count > 0 && row < m_manifests.size() &&
+    VERIFY_OR_DEBUG_ASSERT(count > 0 && row >= 0 &&
             row + count <= m_manifests.size()) {
         // If this is violated, Mixxx will crash with a qt_assert()
         // https://github.com/mixxxdj/mixxx/issues/11454
