@@ -358,7 +358,7 @@
         <status>0x90</status>
         <midino>0x2B</midino>
         <group>[Library]</group>
-        <key>MoveFocusForward</key>
+        <key>AutoDjAddBottom</key>
         <options>
           <Script-Binding/>
         </options>
@@ -367,7 +367,7 @@
         <status>0x90</status>
         <midino>0x2C</midino>
         <group>[Library]</group>
-        <key>MoveFocusBackward</key>
+        <key>MoveFocus</key>
         <options>
           <Script-Binding/>
         </options>
