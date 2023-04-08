@@ -214,6 +214,17 @@ Prime4.DeckAssignButton = function(options) {
         this.output(isActive());
     };
 
+    /*
+    // COMMENT OUT SO pre-commit WON'T FREAK OUT
+    this.outScaleValue = function(value) {
+        print(value);
+        print(deckSide);
+        const scaledVal = components.Button.prototype.outValueScale.call(this, value);
+        print(scaledVal);
+        return scaledVal;
+    };
+    */
+
     this.input = function(channel, control, value, status, _group) {
         console.log(Object.keys(this));
         if (!this.isPress(channel, control, value, status) || isActive()) {
@@ -514,6 +525,9 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 return;
             }
             theDeck.jogWheel.vinylMode = !theDeck.jogWheel.vinylMode;
+            this.output(theDeck.jogWheel.vinylMode);
+        },
+        trigger: function() {
             this.output(theDeck.jogWheel.vinylMode);
         },
     });
