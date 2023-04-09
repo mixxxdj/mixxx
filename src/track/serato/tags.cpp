@@ -331,14 +331,12 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
         }
     }
 
-    // Apply loop index offset and create list
+    // Recreate a common, sorted list of Serato adjusted CueInfos
     QList<CueInfo> cueInfoList = cueMap.values();
-    auto it = loopMap.constBegin();
-    while (it != loopMap.constEnd()) {
-        CueInfo cueInfo(it.value());
+    for (auto&& cueInfo : loopMap) {
+        // Remove offset of loop cues that they are starting with index 0
         cueInfo.setHotCueIndex(*cueInfo.getHotCueIndex() - loopIndexOffset);
         cueInfoList.append(cueInfo);
-        it++;
     }
 
     m_seratoMarkers.setCues(cueInfoList);
