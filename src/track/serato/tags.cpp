@@ -299,6 +299,11 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
             cueMap.insert(hotcueIndex, newCueInfo);
             break;
         case CueType::Loop:
+            if (!newCueInfo.getEndPositionMillis()) {
+                qWarning() << "Loop Cue" << hotcueIndex << "has no end position";
+                DEBUG_ASSERT(false);
+                continue;
+            }
             loopMap.insert(hotcueIndex, newCueInfo);
             break;
         default:
