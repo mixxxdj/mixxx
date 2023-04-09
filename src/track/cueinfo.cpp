@@ -4,6 +4,33 @@
 
 namespace mixxx {
 
+namespace {
+
+inline void assertEndPosition(
+        CueType type,
+        std::optional<double> endPositionMillis) {
+    switch (type) {
+    case CueType::HotCue:
+    case CueType::MainCue:
+        DEBUG_ASSERT(!endPositionMillis);
+        break;
+    case CueType::Loop:
+    case CueType::Jump:
+    case CueType::AudibleSound:
+        DEBUG_ASSERT(endPositionMillis);
+        break;
+    case CueType::Intro:
+    case CueType::Outro:
+    case CueType::Invalid:
+        break;
+    case CueType::Beat: // unused
+    default:
+        DEBUG_ASSERT(!"Unknown Loop Type");
+    }
+}
+
+} // namespace
+
 CueInfo::CueInfo()
         : m_type(CueType::Invalid),
           m_startPositionMillis(std::nullopt),
@@ -28,6 +55,7 @@ CueInfo::CueInfo(
           m_label(label),
           m_color(color),
           m_flags(flags) {
+    assertEndPosition(type, endPositionMillis);
 }
 
 CueType CueInfo::getType() const {
@@ -48,6 +76,7 @@ std::optional<double> CueInfo::getStartPositionMillis() const {
 
 void CueInfo::setEndPositionMillis(std::optional<double> positionMillis) {
     m_endPositionMillis = positionMillis;
+    assertEndPosition(m_type, m_endPositionMillis);
 }
 
 std::optional<double> CueInfo::getEndPositionMillis() const {
