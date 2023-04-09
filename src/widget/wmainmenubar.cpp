@@ -84,7 +84,7 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
 void WMainMenuBar::initialize() {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"), this);
-    connectMenuToSlotShowMenuBar(pFileMenu);
+    maybeConnectMenuToSlotShowMenuBar(pFileMenu);
 
     QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
@@ -133,7 +133,7 @@ void WMainMenuBar::initialize() {
 
     // LIBRARY MENU
     QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
-    connectMenuToSlotShowMenuBar(pLibraryMenu);
+    maybeConnectMenuToSlotShowMenuBar(pLibraryMenu);
 
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
@@ -199,7 +199,7 @@ void WMainMenuBar::initialize() {
     QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"), this);
 #else
     QMenu* pViewMenu = new QMenu(tr("&View"), this);
-    connectMenuToSlotShowMenuBar(pViewMenu);
+    maybeConnectMenuToSlotShowMenuBar(pViewMenu);
 #endif
 
     // Skin Settings Menu
@@ -340,7 +340,7 @@ void WMainMenuBar::initialize() {
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"), this);
-    connectMenuToSlotShowMenuBar(pOptionsMenu);
+    maybeConnectMenuToSlotShowMenuBar(pOptionsMenu);
 
 #ifdef __VINYLCONTROL__
     QMenu* pVinylControlMenu = new QMenu(tr("&Vinyl Control"), this);
@@ -460,7 +460,7 @@ void WMainMenuBar::initialize() {
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
         QMenu* pDeveloperMenu = new QMenu(tr("&Developer"), this);
-        connectMenuToSlotShowMenuBar(pDeveloperMenu);
+        maybeConnectMenuToSlotShowMenuBar(pDeveloperMenu);
 
         QString reloadSkinTitle = tr("&Reload Skin");
         QString reloadSkinText = tr("Reload the skin");
@@ -562,7 +562,7 @@ void WMainMenuBar::initialize() {
 
     // HELP MENU
     QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
-    connectMenuToSlotShowMenuBar(pHelpMenu);
+    maybeConnectMenuToSlotShowMenuBar(pHelpMenu);
 
     QString externalLinkSuffix;
 #ifndef __APPLE__
@@ -698,7 +698,7 @@ void WMainMenuBar::onDeveloperToolsHidden() {
 void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
 #ifndef __APPLE__
     if (fullscreen) {
-        hideMenuBar();
+        hideMenuBar(true);
     }
 #endif
     emit internalFullScreenStateChange(fullscreen);
@@ -723,7 +723,10 @@ bool WMainMenuBar::event(QEvent* pEvent) {
     return QMenuBar::event(pEvent);
 }
 
-void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
+void WMainMenuBar::maybeConnectMenuToSlotShowMenuBar(const QMenu* pMenu) {
+#ifdef __APPLE__
+    return;
+#endif
     // If a menu hotkey like Alt+F(ile) is pressed while the menubar is hidden,
     // show the menubar.
     // Note: showMenuBar() results in a resizeEvent() which calls
@@ -740,7 +743,7 @@ void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
                     if (activeAction()) {
                         pAct = activeAction();
                     }
-                    showMenuBar();
+                    showMenuBar(false); // TODO get isFullScreen()
                     if (pAct) {
                         setActiveAction(pAct);
                     }
@@ -748,19 +751,20 @@ void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
             });
 }
 
-void WMainMenuBar::slotToggleMenuBar() {
+#ifndef __APPLE__
+void WMainMenuBar::slotToggleMenuBar(bool fullscreen) {
     if (isNativeMenuBar()) {
         return;
     }
 
     if (height() > 0) {
-        hideMenuBar();
+        hideMenuBar(fullscreen);
     } else {
-        showMenuBar();
+        showMenuBar(fullscreen);
     }
 }
 
-void WMainMenuBar::showMenuBar() {
+void WMainMenuBar::showMenuBar(bool fullscreen) {
     if (isNativeMenuBar()) {
         return;
     }
@@ -768,13 +772,14 @@ void WMainMenuBar::showMenuBar() {
     setMinimumHeight(sizeHint().height());
 }
 
-void WMainMenuBar::hideMenuBar() {
+void WMainMenuBar::hideMenuBar(bool fullscreen) {
     if (isNativeMenuBar()) {
         return;
     }
     // don't use setHidden(bool) because hotkeys wouldn't work anymore
     setFixedHeight(0);
 }
+#endif
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
     VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_vinylControlEnabledActions.size()) {

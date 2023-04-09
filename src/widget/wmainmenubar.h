@@ -51,7 +51,9 @@ class WMainMenuBar : public QMenuBar {
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
     void onKeywheelChange(int state);
-    void slotToggleMenuBar();
+#ifndef __APPLE__
+    void slotToggleMenuBar(bool fullscreen);
+#endif
 
   signals:
     void createCrate();
@@ -93,9 +95,11 @@ class WMainMenuBar : public QMenuBar {
     void initialize();
     /// this ensures the menubar is shown when a menu hotkey is pressed
     /// while the menubar is hidden
-    void connectMenuToSlotShowMenuBar(const QMenu* pMenu);
-    void showMenuBar();
-    void hideMenuBar();
+    void maybeConnectMenuToSlotShowMenuBar(const QMenu* pMenu);
+#ifndef __APPLE__
+    void showMenuBar(bool fullscreen);
+    void hideMenuBar(bool fullscreen);
+#endif
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     bool event(QEvent* pEvent) override;

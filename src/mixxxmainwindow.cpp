@@ -884,10 +884,13 @@ void MixxxMainWindow::connectMenuBar() {
 
 #ifndef __APPLE__
     if (m_pCoreServices->getKeyboardEventFilter()) {
-        connect(m_pCoreServices->getKeyboardEventFilter().get(),
+        connect(
+                m_pCoreServices->getKeyboardEventFilter().get(),
                 &KeyboardEventFilter::altPressedWithoutKeys,
-                m_pMenuBar,
-                &WMainMenuBar::slotToggleMenuBar,
+                this,
+                [this]() {
+                    m_pMenuBar->slotToggleMenuBar(isFullScreen());
+                },
                 Qt::UniqueConnection);
     }
 #endif
