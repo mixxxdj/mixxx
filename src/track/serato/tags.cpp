@@ -306,7 +306,6 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
             cueInfoSeratoAdjusted.setEndPositionMillis(
                     *cueInfo.getEndPositionMillis() - timingOffsetMillis);
         }
-        cueInfoSeratoAdjusted.setFlags(cueInfo.flags());
 
         switch (cueInfo.getType()) {
         case CueType::HotCue:
