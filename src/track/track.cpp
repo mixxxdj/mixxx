@@ -141,7 +141,10 @@ void Track::importMetadata(
     // is updated together with the metadata.
     auto pSeratoBeatsImporter = importedMetadata.getTrackInfo().getSeratoTags().importBeats();
     const bool seratoBpmLocked = importedMetadata.getTrackInfo().getSeratoTags().isBpmLocked();
-    auto pSeratoCuesImporter = importedMetadata.getTrackInfo().getSeratoTags().importCueInfos();
+    std::unique_ptr<mixxx::CueInfoImporter> pSeratoCuesImporter =
+            importedMetadata.getTrackInfo()
+                    .getSeratoTags()
+                    .createCueInfoImporter();
 
     {
         // enter locking scope
@@ -1044,7 +1047,7 @@ bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
 }
 
 Track::ImportStatus Track::importCueInfos(
-        mixxx::CueInfoImporterPointer pCueInfoImporter) {
+        std::unique_ptr<mixxx::CueInfoImporter> pCueInfoImporter) {
     QMutexLocker lock(&m_qMutex);
     VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter && !pCueInfoImporter->isEmpty()) {
         // Just return the current import status without clearing any
@@ -1096,6 +1099,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
         disconnect(pCue.get(), nullptr, this, nullptr);
         pCue->setTrackId(TrackId());
     }
+
     m_cuePoints = cuePoints;
     // connect new cue points
     for (const auto& pCue : qAsConst(m_cuePoints)) {
@@ -1162,7 +1166,7 @@ bool Track::importPendingCueInfosWhileLocked() {
         }
     }
 
-    const auto cueInfos =
+    const QList<mixxx::CueInfo> cueInfos =
             m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
                     getLocation(), m_record.getStreamInfoFromSource()->getSignalInfo());
     for (const auto& cueInfo : cueInfos) {

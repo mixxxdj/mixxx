@@ -35,6 +35,4 @@ class CueInfoImporter {
     const QList<CueInfo> m_cueInfos;
 };
 
-typedef std::shared_ptr<CueInfoImporter> CueInfoImporterPointer;
-
 } // namespace mixxx

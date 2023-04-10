@@ -177,12 +177,12 @@ BeatsImporterPointer SeratoTags::importBeats() const {
             m_seratoBeatGrid.terminalMarker());
 }
 
-CueInfoImporterPointer SeratoTags::importCueInfos() const {
+std::unique_ptr<CueInfoImporter> SeratoTags::createCueInfoImporter() const {
     auto cueInfos = getCueInfos();
     if (cueInfos.isEmpty()) {
         return nullptr;
     }
-    return std::make_shared<SeratoCueInfoImporter>(std::move(cueInfos));
+    return std::make_unique<SeratoCueInfoImporter>(std::move(cueInfos));
 }
 
 QList<CueInfo> SeratoTags::getCueInfos() const {
