@@ -4,7 +4,7 @@ This document describes the QOpenGL based WGLWidget that replace the legacy QGLW
 
 ## WGLWidget
 
-`WGLWidget` is the replacement for `QGLWidget`, which, depending on the CMake option `QOPENGL` and preprocessor define `MIXX_USE_QOPEN` is either one of:
+`WGLWidget` is the replacement for `QGLWidget`, which, depending on the CMake option `QOPENGL` and preprocessor define `MIXXX_USE_QOPENGL` is either one of:
 
 - a thin wrapper for, and derived directly from, `QGLWidget`. This is offered as a fallback / alternative in case the new QOpenGL classes don't work.
 
