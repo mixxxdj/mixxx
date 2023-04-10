@@ -11,7 +11,7 @@ namespace mixxx {
 class CueInfoImporter {
   public:
     CueInfoImporter() = default;
-    explicit CueInfoImporter(const QList<CueInfo>& cueInfos);
+    explicit CueInfoImporter(QList<CueInfo> cueInfos);
     virtual ~CueInfoImporter() = default;
 
     /// Returns true if the importer has any cue(s) of the given cueType.

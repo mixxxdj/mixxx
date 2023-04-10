@@ -2,8 +2,8 @@
 
 namespace mixxx {
 
-CueInfoImporter::CueInfoImporter(const QList<CueInfo>& cueInfos)
-        : m_cueInfos(cueInfos) {
+CueInfoImporter::CueInfoImporter(QList<CueInfo> cueInfos)
+        : m_cueInfos(std::move(cueInfos)) {
 }
 
 bool CueInfoImporter::hasCueOfType(CueType cueType) const {
