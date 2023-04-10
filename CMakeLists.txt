@@ -1197,11 +1197,13 @@ else()
       src/waveform/renderers/qopengl/waveformrendererfiltered.cpp
       src/waveform/renderers/qopengl/waveformrendererpreroll.cpp
       src/waveform/renderers/qopengl/waveformrendererrgb.cpp
+      src/waveform/renderers/qopengl/waveformrendererlrrgb.cpp
       src/waveform/renderers/qopengl/waveformrenderersignalbase.cpp
       src/waveform/renderers/qopengl/waveformrendermark.cpp
       src/waveform/renderers/qopengl/waveformrendermarkrange.cpp
       src/waveform/widgets/qopengl/waveformwidget.cpp
       src/waveform/widgets/qopengl/rgbwaveformwidget.cpp
+      src/waveform/widgets/qopengl/lrrgbwaveformwidget.cpp
       src/waveform/widgets/qopengl/filteredwaveformwidget.cpp
     )
   else()

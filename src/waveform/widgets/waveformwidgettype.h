@@ -24,7 +24,8 @@ class WaveformWidgetType {
         GLSLRGBStackedWaveform, // 16 RGB Stacked
 #ifdef MIXXX_USE_QOPENGL
         QOpenGLRGBWaveform,      // 17 RGB (QOpenGL)
-        QOpenGLFilteredWaveform, // 18 Filtered (QOpenGL)
+        QOpenGLLRRGBWaveform,    // 18 RGB (QOpenGL)
+        QOpenGLFilteredWaveform, // 19 Filtered (QOpenGL)
 #endif
         Count_WaveformwidgetType //    Also used as invalid value
     };
