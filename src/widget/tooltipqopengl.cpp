@@ -5,6 +5,7 @@
 #include <QStyle>
 #include <QTimer>
 #include <QToolTip>
+#include <memory>
 
 ToolTipQOpenGL::ToolTipQOpenGL()
         : m_timer(new QTimer()) {
