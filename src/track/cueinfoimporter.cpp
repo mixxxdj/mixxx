@@ -24,14 +24,6 @@ double CueInfoImporter::guessTimingOffsetMillis(
     return 0;
 };
 
-void CueInfoImporter::append(const CueInfo& cueInfo) {
-    m_cueInfos.append(cueInfo);
-}
-
-void CueInfoImporter::append(const QList<CueInfo>& cueInfos) {
-    m_cueInfos.append(cueInfos);
-}
-
 int CueInfoImporter::size() const {
     return m_cueInfos.size();
 }
@@ -45,11 +37,10 @@ QList<CueInfo> CueInfoImporter::importCueInfosAndApplyTimingOffset(
         const audio::SignalInfo& signalInfo) {
     // Consume the collected cue points during the import
     QList<CueInfo> cueInfos = m_cueInfos;
-    m_cueInfos.clear();
 
     // Do not calculate offset if we don't have any cues to import
     if (cueInfos.isEmpty()) {
-        return {};
+        return cueInfos;
     }
 
     double timingOffsetMillis = guessTimingOffsetMillis(filePath, signalInfo);

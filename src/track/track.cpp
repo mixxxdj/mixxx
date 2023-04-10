@@ -1174,7 +1174,6 @@ bool Track::importPendingCueInfosWhileLocked() {
         pCue->setTrackId(trackId);
         cuePoints.append(pCue);
     }
-    DEBUG_ASSERT(m_pCueInfoImporterPending->isEmpty());
     m_pCueInfoImporterPending.reset();
     return setCuePointsWhileLocked(cuePoints);
 }

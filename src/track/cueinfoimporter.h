@@ -24,9 +24,6 @@ class CueInfoImporter {
             const QString& filePath,
             const audio::SignalInfo& signalInfo) const;
 
-    void append(const CueInfo& cueInfo);
-    void append(const QList<CueInfo>& cueInfos);
-
     int size() const;
     bool isEmpty() const;
 
@@ -35,7 +32,7 @@ class CueInfoImporter {
             const audio::SignalInfo& signalInfo);
 
   private:
-    QList<CueInfo> m_cueInfos;
+    const QList<CueInfo> m_cueInfos;
 };
 
 typedef std::shared_ptr<CueInfoImporter> CueInfoImporterPointer;

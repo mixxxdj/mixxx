@@ -197,21 +197,6 @@ bool CueDAO::saveCue(Cue* cue) const {
     return true;
 }
 
-bool CueDAO::deleteCue(Cue* cue) const {
-    //qDebug() << "CueDAO::deleteCue" << QThread::currentThread() << m_database.connectionName();
-    if (!cue->getId().isValid()) {
-        return false;
-    }
-    QSqlQuery query(m_database);
-    query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE id=:id"));
-    query.bindValue(":id", cue->getId().toVariant());
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return false;
-    }
-    return true;
-}
-
 void CueDAO::saveTrackCues(
         TrackId trackId,
         const QList<CuePointer>& cueList) const {
