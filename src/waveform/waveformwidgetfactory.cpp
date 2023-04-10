@@ -413,13 +413,11 @@ void WaveformWidgetFactory::addVuMeter(WVuMeterGL* pVuMeter) {
     connect(this,
             &WaveformWidgetFactory::renderVuMeters,
             pVuMeter,
-            &WVuMeterGL::render,
-            Qt::DirectConnection);
+            &WVuMeterGL::render);
     connect(this,
             &WaveformWidgetFactory::swapVuMeters,
             pVuMeter,
-            &WVuMeterGL::swap,
-            Qt::DirectConnection);
+            &WVuMeterGL::swap);
 }
 
 void WaveformWidgetFactory::slotSkinLoaded() {

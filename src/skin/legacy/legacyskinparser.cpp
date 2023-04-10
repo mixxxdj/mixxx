@@ -1309,13 +1309,11 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
             pSpinny,
-            &WSpinny::render,
-            Qt::DirectConnection);
+            &WSpinny::render);
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::swapSpinnies,
             pSpinny,
-            &WSpinny::swap,
-            Qt::DirectConnection);
+            &WSpinny::swap);
     connect(pSpinny,
             &WSpinny::trackDropped,
             m_pPlayerManager,
