@@ -52,4 +52,5 @@ class WGLWidget : public QWidget {
 
   protected:
     QPaintDevice* paintDevice();
+    void clearPaintDevice();
 };

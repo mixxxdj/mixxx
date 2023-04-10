@@ -17,7 +17,11 @@ class WGLWidget : public QGLWidget {
 
     void makeCurrentIfNeeded();
 
+  protected:
     QPaintDevice* paintDevice() {
         return this;
+    }
+    void clearPaintDevice() {
+        // Not needed, here for using the same API as wglwidgetqopengl.h
     }
 };

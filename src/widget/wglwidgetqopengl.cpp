@@ -18,8 +18,14 @@ WGLWidget::~WGLWidget() {
 
 QPaintDevice* WGLWidget::paintDevice() {
     makeCurrentIfNeeded();
-    m_pOpenGLWindow->clear();
     return m_pOpenGLWindow;
+}
+
+void WGLWidget::clearPaintDevice() {
+    // glClear the color buffer bit, to avoid
+    // green or cyan background on specific
+    // hardware
+    m_pOpenGLWindow->clear();
 }
 
 void WGLWidget::showEvent(QShowEvent* event) {

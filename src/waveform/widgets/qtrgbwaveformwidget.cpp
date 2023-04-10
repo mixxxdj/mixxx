@@ -50,6 +50,7 @@ mixxx::Duration QtRGBWaveformWidget::render() {
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
     QPainter painter(paintDevice());
+    clearPaintDevice();
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();
