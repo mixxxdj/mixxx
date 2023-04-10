@@ -17,9 +17,6 @@ class QGLShader;
 class QGLShaderProgram;
 #endif
 
-QT_FORWARD_DECLARE_CLASS(GL_FBO_CLASS)
-QT_FORWARD_DECLARE_CLASS(GL_SHADER_PROGRAM_CLASS)
-
 class GLSLWaveformRendererSignal : public QObject,
                                    public GLWaveformRendererSignal {
 #ifdef MIXXX_USE_QOPENGL
