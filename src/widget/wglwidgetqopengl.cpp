@@ -40,12 +40,6 @@ void WGLWidget::resizeEvent(QResizeEvent* event) {
 }
 
 void WGLWidget::handleEventFromWindow(QEvent* e) {
-    if (e->type() == QEvent::MouseMove) {
-        ToolTipQOpenGL::singleton().start(this, dynamic_cast<QMouseEvent*>(e)->globalPos());
-    }
-    if (e->type() == QEvent::Leave) {
-        ToolTipQOpenGL::singleton().stop(this);
-    }
     event(e);
 }
 

@@ -2,6 +2,7 @@
 
 #include <QResizeEvent>
 
+#include "widget/tooltipqopengl.h"
 #include "widget/wglwidget.h"
 
 OpenGLWindow::OpenGLWindow(WGLWidget* widget)
@@ -48,6 +49,15 @@ bool OpenGLWindow::event(QEvent* ev) {
 
     if (m_pWidget) {
         const auto t = ev->type();
+
+        if (ev->type() == QEvent::MouseMove) {
+            ToolTipQOpenGL::singleton().start(
+                    m_pWidget, dynamic_cast<QMouseEvent*>(ev)->globalPos());
+        }
+        if (ev->type() == QEvent::Leave) {
+            ToolTipQOpenGL::singleton().stop(m_pWidget);
+        }
+
         // Forward the following events to the WGLWidget
         if (t == QEvent::MouseButtonDblClick || t == QEvent::MouseButtonPress ||
                 t == QEvent::MouseButtonRelease || t == QEvent::MouseMove ||
