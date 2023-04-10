@@ -400,7 +400,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     updateSpinBpmFromBeats();
     m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
     bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(!m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
+    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
     spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
     bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
 
