@@ -207,7 +207,22 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         if (!index) {
             continue;
         }
-
+        if (cueInfo.getType() == mixxx::CueType::Loop &&
+                (!cueInfo.getEndPositionMillis() ||
+                        *cueInfo.getEndPositionMillis() == 0)) {
+            // These entries are likely added via issue #11283
+            qWarning() << "Discard loop cue" << index << "found in markers2 with length of 0";
+            continue;
+        }
+        if (cueInfo.getType() == mixxx::CueType::HotCue &&
+                (!cueInfo.getStartPositionMillis() ||
+                        *cueInfo.getStartPositionMillis() == 0) &&
+                (!cueInfo.getColor() ||
+                        *cueInfo.getColor() == mixxx::RgbColor(0))) {
+            // These entries are likely added via issue #11283
+            qWarning() << "Discard black hot cue" << index << "found in markers2 at position 0";
+            continue;
+        }
         CueInfo newCueInfo(cueInfo);
         newCueInfo.setHotCueIndex(index);
         cueMap.insert(*index, newCueInfo);
@@ -235,6 +250,22 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     for (const CueInfo& cueInfo : cuesMarkers) {
         std::optional<int> index = findIndexForCueInfo(cueInfo);
         if (!index) {
+            continue;
+        }
+        if (cueInfo.getType() == mixxx::CueType::Loop &&
+                (!cueInfo.getEndPositionMillis() ||
+                        *cueInfo.getEndPositionMillis() == 0)) {
+            // These entries are likely added via issue #11283
+            qWarning() << "Discard loop cue" << index << "found in markers with length of 0";
+            continue;
+        }
+        if (cueInfo.getType() == mixxx::CueType::HotCue &&
+                (!cueInfo.getStartPositionMillis() ||
+                        *cueInfo.getStartPositionMillis() == 0) &&
+                (!cueInfo.getColor() ||
+                        *cueInfo.getColor() == mixxx::RgbColor(0))) {
+            // These entries are likely added via issue #11283
+            qWarning() << "Discard black hot cue" << index << "found in markers at position 0";
             continue;
         }
 
