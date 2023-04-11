@@ -62,28 +62,15 @@ void WaveformRendererRGB::addRectangle(
         float r,
         float g,
         float b) {
-    m_lineValues.push_back(x1);
-    m_lineValues.push_back(y1);
-
-    m_lineValues.push_back(x2);
-    m_lineValues.push_back(y1);
-
-    m_lineValues.push_back(x1);
-    m_lineValues.push_back(y2);
-
-    m_lineValues.push_back(x1);
-    m_lineValues.push_back(y2);
-
-    m_lineValues.push_back(x2);
-    m_lineValues.push_back(y2);
-
-    m_lineValues.push_back(x2);
-    m_lineValues.push_back(y1);
+    m_vertices.push_back({x1, y1});
+    m_vertices.push_back({x2, y1});
+    m_vertices.push_back({x1, y2});
+    m_vertices.push_back({x1, y2});
+    m_vertices.push_back({x2, y2});
+    m_vertices.push_back({x2, y1});
 
     for (int i = 0; i < 6; i++) {
-        m_colorValues.push_back(r);
-        m_colorValues.push_back(g);
-        m_colorValues.push_back(b);
+        m_colors.push_back({r, g, b});
     }
 }
 
@@ -144,16 +131,14 @@ void WaveformRendererRGB::renderGL() {
     // Effective visual index of x
     double xVisualSampleIndex = firstVisualIndex;
 
-    const int numValuesPerLine = 12;  // 2 values per vertex, 3 vertices per triangle, 2 triangles
-    const int numValuesPerColor = 18; // 3 values per color, 3 per triangle, 2 triangles
+    const int numVerticesPerLine = 6; // 2 triangles
 
-    const int linesReserved = numValuesPerLine * (length + 1);
-    const int colorsReserved = numValuesPerColor * (length + 1);
+    const int reserved = numVerticesPerLine * (length + 1);
 
-    m_lineValues.clear();
-    m_lineValues.reserve(linesReserved);
-    m_colorValues.clear();
-    m_colorValues.reserve(colorsReserved);
+    m_vertices.clear();
+    m_vertices.reserve(reserved);
+    m_colors.clear();
+    m_colors.reserve(reserved);
 
     addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
@@ -257,8 +242,8 @@ void WaveformRendererRGB::renderGL() {
         xVisualSampleIndex += gain;
     }
 
-    DEBUG_ASSERT(linesReserved == m_lineValues.size());
-    DEBUG_ASSERT(colorsReserved == m_colorValues.size());
+    DEBUG_ASSERT(reserved == m_vertices.size());
+    DEBUG_ASSERT(reserved == m_colors.size());
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0.0,
@@ -270,20 +255,24 @@ void WaveformRendererRGB::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth() * devicePixelRatio, 0.f);
     }
 
-    m_shaderProgram.bind();
+    const int matrixLocation = m_shaderProgram.uniformLocation("matrix");
+    const int positionLocation = m_shaderProgram.attributeLocation("position");
+    const int colorLocation = m_shaderProgram.attributeLocation("color");
 
-    int matrixLocation = m_shaderProgram.uniformLocation("matrix");
-    int positionLocation = m_shaderProgram.attributeLocation("position");
-    int colorLocation = m_shaderProgram.attributeLocation("color");
+    m_shaderProgram.bind();
+    m_shaderProgram.enableAttributeArray(positionLocation);
+    m_shaderProgram.enableAttributeArray(colorLocation);
 
     m_shaderProgram.setUniformValue(matrixLocation, matrix);
 
-    m_shaderProgram.enableAttributeArray(positionLocation);
     m_shaderProgram.setAttributeArray(
-            positionLocation, GL_FLOAT, m_lineValues.constData(), 2);
-    m_shaderProgram.enableAttributeArray(colorLocation);
+            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
     m_shaderProgram.setAttributeArray(
-            colorLocation, GL_FLOAT, m_colorValues.constData(), 3);
+            colorLocation, GL_FLOAT, m_colors.constData(), 3);
 
-    glDrawArrays(GL_TRIANGLES, 0, m_lineValues.size() / 2);
+    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
+
+    m_shaderProgram.disableAttributeArray(positionLocation);
+    m_shaderProgram.disableAttributeArray(colorLocation);
+    m_shaderProgram.release();
 }

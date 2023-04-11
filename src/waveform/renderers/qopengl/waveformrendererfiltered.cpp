@@ -51,25 +51,14 @@ void WaveformRendererFiltered::addRectangleToGroup(
         float x2,
         float y2,
         int group) {
-    auto& lines = m_lineValuesForGroup[group];
+    auto& lines = m_verticesForGroup[group];
 
-    lines.push_back(x1);
-    lines.push_back(y1);
-
-    lines.push_back(x2);
-    lines.push_back(y1);
-
-    lines.push_back(x1);
-    lines.push_back(y2);
-
-    lines.push_back(x1);
-    lines.push_back(y2);
-
-    lines.push_back(x2);
-    lines.push_back(y2);
-
-    lines.push_back(x2);
-    lines.push_back(y1);
+    lines.push_back({x1, y1});
+    lines.push_back({x2, y1});
+    lines.push_back({x1, y2});
+    lines.push_back({x1, y2});
+    lines.push_back({x2, y2});
+    lines.push_back({x2, y1});
 }
 
 void WaveformRendererFiltered::renderGL() {
@@ -124,20 +113,20 @@ void WaveformRendererFiltered::renderGL() {
     // Effective visual index of x
     double xVisualSampleIndex = firstVisualIndex;
 
-    const int numValuesPerLine = 12; // 2 values per vertex, 3 vertices per triangle, 2 triangles
+    const int numVerticesPerLine = 6; // 2 triangles
 
     int reserved[4];
     // low, mid, high
     for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
-        m_lineValuesForGroup[bandIndex].clear();
-        reserved[bandIndex] = numValuesPerLine * length;
-        m_lineValuesForGroup[bandIndex].reserve(reserved[bandIndex]);
+        m_verticesForGroup[bandIndex].clear();
+        reserved[bandIndex] = numVerticesPerLine * length;
+        m_verticesForGroup[bandIndex].reserve(reserved[bandIndex]);
     }
 
     // the horizontal line
-    reserved[3] = numValuesPerLine;
-    m_lineValuesForGroup[3].clear();
-    m_lineValuesForGroup[3].reserve(reserved[3]);
+    reserved[3] = numVerticesPerLine;
+    m_verticesForGroup[3].clear();
+    m_verticesForGroup[3].reserve(reserved[3]);
 
     addRectangleToGroup(
             0.f,
@@ -218,14 +207,14 @@ void WaveformRendererFiltered::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth() * devicePixelRatio, 0.f);
     }
 
-    m_shaderProgram.bind();
-
     const int matrixLocation = m_shaderProgram.uniformLocation("matrix");
     const int colorLocation = m_shaderProgram.uniformLocation("color");
     const int positionLocation = m_shaderProgram.attributeLocation("position");
 
-    m_shaderProgram.setUniformValue(matrixLocation, matrix);
+    m_shaderProgram.bind();
     m_shaderProgram.enableAttributeArray(positionLocation);
+
+    m_shaderProgram.setUniformValue(matrixLocation, matrix);
 
     QColor colors[4];
     colors[0].setRgbF(static_cast<float>(m_rgbLowColor_r),
@@ -242,11 +231,14 @@ void WaveformRendererFiltered::renderGL() {
     // 3 bands + 1 extra for the horizontal line
 
     for (int i = 0; i < 4; i++) {
-        DEBUG_ASSERT(reserved[i] == m_lineValuesForGroup[i].size());
+        DEBUG_ASSERT(reserved[i] == m_verticesForGroup[i].size());
         m_shaderProgram.setUniformValue(colorLocation, colors[i]);
         m_shaderProgram.setAttributeArray(
-                positionLocation, GL_FLOAT, m_lineValuesForGroup[i].constData(), 2);
+                positionLocation, GL_FLOAT, m_verticesForGroup[i].constData(), 2);
 
-        glDrawArrays(GL_TRIANGLES, 0, m_lineValuesForGroup[i].size() / 2);
+        glDrawArrays(GL_TRIANGLES, 0, m_verticesForGroup[i].size());
     }
+
+    m_shaderProgram.disableAttributeArray(positionLocation);
+    m_shaderProgram.release();
 }

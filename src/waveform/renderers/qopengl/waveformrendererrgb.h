@@ -18,8 +18,8 @@ class qopengl::WaveformRendererRGB : public qopengl::WaveformRendererSignalBase 
     void renderGL() override;
 
   private:
-    QVector<float> m_lineValues;
-    QVector<float> m_colorValues;
+    QVector<QVector2D> m_vertices;
+    QVector<QVector3D> m_colors;
 
     void addRectangle(float x1, float y1, float x2, float y2, float r, float g, float b);
 

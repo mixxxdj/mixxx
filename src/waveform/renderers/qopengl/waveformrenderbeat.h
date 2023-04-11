@@ -23,7 +23,7 @@ class qopengl::WaveformRenderBeat : public qopengl::WaveformShaderRenderer {
 
   private:
     QColor m_beatColor;
-    QVector<float> m_beatLineVertices;
+    QVector<QVector2D> m_vertices;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };

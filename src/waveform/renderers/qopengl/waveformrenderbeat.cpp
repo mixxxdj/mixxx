@@ -83,8 +83,7 @@ void WaveformRenderBeat::renderGL() {
 
     const float rendererBreadth = m_waveformRenderer->getBreadth();
 
-    const int numVerticesPerLine = 12; // 2 vertices per point, 2 points per
-                                       // line, 3 per triangle (2 triangles)
+    const int numVerticesPerLine = 6; // 2 triangles
     const int numBeatsInRange = trackBeats->numBeatsInRange(startPosition, endPosition);
 
     // In corner cases numBeatsInRange returns -1, while the for loop below
@@ -96,8 +95,8 @@ void WaveformRenderBeat::renderGL() {
     }
 
     const int reserved = numBeatsInRange * numVerticesPerLine;
-    m_beatLineVertices.clear();
-    m_beatLineVertices.reserve(reserved);
+    m_vertices.clear();
+    m_vertices.reserve(reserved);
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -113,27 +112,22 @@ void WaveformRenderBeat::renderGL() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        m_beatLineVertices.push_back(x1);
-        m_beatLineVertices.push_back(0.f);
-        m_beatLineVertices.push_back(x2);
-        m_beatLineVertices.push_back(0.f);
-        m_beatLineVertices.push_back(x1);
-        m_beatLineVertices.push_back(rendererBreadth);
-        m_beatLineVertices.push_back(x1);
-        m_beatLineVertices.push_back(rendererBreadth);
-        m_beatLineVertices.push_back(x2);
-        m_beatLineVertices.push_back(rendererBreadth);
-        m_beatLineVertices.push_back(x2);
-        m_beatLineVertices.push_back(0.f);
+        m_vertices.push_back({x1, 0.f});
+        m_vertices.push_back({x2, 0.f});
+        m_vertices.push_back({x1, rendererBreadth});
+        m_vertices.push_back({x1, rendererBreadth});
+        m_vertices.push_back({x2, rendererBreadth});
+        m_vertices.push_back({x2, 0.f});
     }
 
-    DEBUG_ASSERT(reserved == m_beatLineVertices.size());
+    DEBUG_ASSERT(reserved == m_vertices.size());
+
+    const int vertexLocation = m_shaderProgram.attributeLocation("position");
+    const int matrixLocation = m_shaderProgram.uniformLocation("matrix");
+    const int colorLocation = m_shaderProgram.uniformLocation("color");
 
     m_shaderProgram.bind();
-
-    int vertexLocation = m_shaderProgram.attributeLocation("position");
-    int matrixLocation = m_shaderProgram.uniformLocation("matrix");
-    int colorLocation = m_shaderProgram.uniformLocation("color");
+    m_shaderProgram.enableAttributeArray(vertexLocation);
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
@@ -142,14 +136,13 @@ void WaveformRenderBeat::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
     }
 
-    m_shaderProgram.enableAttributeArray(vertexLocation);
     m_shaderProgram.setAttributeArray(
-            vertexLocation, GL_FLOAT, m_beatLineVertices.constData(), 2);
+            vertexLocation, GL_FLOAT, m_vertices.constData(), 2);
 
     m_shaderProgram.setUniformValue(matrixLocation, matrix);
     m_shaderProgram.setUniformValue(colorLocation, m_beatColor);
 
-    glDrawArrays(GL_TRIANGLES, 0, m_beatLineVertices.size() / 2);
+    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
     m_shaderProgram.disableAttributeArray(vertexLocation);
     m_shaderProgram.release();

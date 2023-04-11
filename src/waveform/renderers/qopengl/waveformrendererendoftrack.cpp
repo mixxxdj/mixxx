@@ -81,18 +81,18 @@ void main()
 }
 
 void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
-    m_shaderProgram.bind();
+    const int colorLocation = m_shaderProgram.uniformLocation("color");
+    const int positionLocation = m_shaderProgram.attributeLocation("position");
+    const int gradientLocation = m_shaderProgram.attributeLocation("gradient");
 
-    int colorLocation = m_shaderProgram.uniformLocation("color");
-    int positionLocation = m_shaderProgram.attributeLocation("position");
-    int gradientLocation = m_shaderProgram.attributeLocation("gradient");
+    m_shaderProgram.bind();
+    m_shaderProgram.enableAttributeArray(positionLocation);
+    m_shaderProgram.enableAttributeArray(gradientLocation);
 
     m_shaderProgram.setUniformValue(colorLocation, color);
 
-    m_shaderProgram.enableAttributeArray(positionLocation);
     m_shaderProgram.setAttributeArray(
             positionLocation, GL_FLOAT, positionArray, 2);
-    m_shaderProgram.enableAttributeArray(gradientLocation);
     m_shaderProgram.setAttributeArray(gradientLocation,
             GL_FLOAT,
             m_waveformRenderer->getOrientation() == Qt::Vertical
@@ -101,6 +101,10 @@ void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
             1);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    m_shaderProgram.disableAttributeArray(positionLocation);
+    m_shaderProgram.disableAttributeArray(gradientLocation);
+    m_shaderProgram.release();
 }
 
 void WaveformRendererEndOfTrack::renderGL() {

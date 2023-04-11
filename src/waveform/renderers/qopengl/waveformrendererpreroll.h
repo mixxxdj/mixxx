@@ -23,7 +23,7 @@ class qopengl::WaveformRendererPreroll : public qopengl::WaveformShaderRenderer 
 
   private:
     QColor m_color;
-    QVector<float> m_vertices;
+    QVector<QVector2D> m_vertices;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererPreroll);
 };

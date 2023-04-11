@@ -60,92 +60,92 @@ void WaveformRendererPreroll::renderGL() {
     const bool preRollVisible = firstDisplayedPosition < 0;
     const bool postRollVisible = lastDisplayedPosition > 1;
 
-    if (preRollVisible || postRollVisible) {
-        const double playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
-        const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
-        const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
+    if (!(preRollVisible || postRollVisible)) {
+        return;
+    }
 
-        const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
-        const int totalVSamples = m_waveformRenderer->getTotalVSample();
+    const double playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
+    const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
+    const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
 
-        const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0f;
-        const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0f;
+    const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
+    const int totalVSamples = m_waveformRenderer->getTotalVSample();
 
-        const double polyPixelWidth = 40.0 / vSamplesPerPixel;
+    const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0f;
+    const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0f;
 
-        const int maxNumTriangles =
-                static_cast<int>(
-                        static_cast<double>(m_waveformRenderer->getLength()) /
-                        polyPixelWidth) +
-                1;
-        const int numValuesPerTriangle = 6;
-        // for most pessimistic case, where we fill the entire display with triangles
-        m_vertices.reserve(maxNumTriangles * numValuesPerTriangle);
+    const double polyPixelWidth = 40.0 / vSamplesPerPixel;
 
-        if (preRollVisible) {
-            // VSample position of the right-most triangle's tip
-            const double triangleTipVSamplePosition =
-                    numberOfVSamples * playMarkerPosition -
-                    currentVSamplePosition;
-            // In pixels
-            double x = triangleTipVSamplePosition / vSamplesPerPixel;
-            const double limit =
-                    static_cast<double>(m_waveformRenderer->getLength()) +
-                    polyPixelWidth;
-            if (x >= limit) {
-                // Don't draw invisible triangles beyond the right side of the display
-                x -= std::floor((x - limit) / polyPixelWidth) * polyPixelWidth;
-            }
+    const int maxNumTriangles =
+            static_cast<int>(
+                    static_cast<double>(m_waveformRenderer->getLength()) /
+                    polyPixelWidth) +
+            2;
+    const int numVerticesPerTriangle = 3;
+    const int reserved = maxNumTriangles * numVerticesPerTriangle;
+    // for most pessimistic case, where we fill the entire display with triangles
+    m_vertices.reserve(reserved);
 
-            while (x >= 0) {
-                const float x1 = static_cast<float>(x);
-                const float x2 = static_cast<float>(x - polyPixelWidth);
-                m_vertices.push_back(x1);
-                m_vertices.push_back(halfBreadth);
-                m_vertices.push_back(x2);
-                m_vertices.push_back(halfBreadth - halfPolyBreadth);
-                m_vertices.push_back(x2);
-                m_vertices.push_back(halfBreadth + halfPolyBreadth);
-
-                x -= polyPixelWidth;
-            }
+    if (preRollVisible) {
+        // VSample position of the right-most triangle's tip
+        const double triangleTipVSamplePosition =
+                numberOfVSamples * playMarkerPosition -
+                currentVSamplePosition;
+        // In pixels
+        double x = triangleTipVSamplePosition / vSamplesPerPixel;
+        const double limit =
+                static_cast<double>(m_waveformRenderer->getLength()) +
+                polyPixelWidth;
+        if (x >= limit) {
+            // Don't draw invisible triangles beyond the right side of the display
+            x -= std::floor((x - limit) / polyPixelWidth) * polyPixelWidth;
         }
 
-        if (postRollVisible) {
-            const int remainingVSamples = totalVSamples - currentVSamplePosition;
-            // Sample position of the left-most triangle's tip
-            const double triangleTipVSamplePosition =
-                    playMarkerPosition * numberOfVSamples +
-                    remainingVSamples;
-            // In pixels
-            double x = triangleTipVSamplePosition / vSamplesPerPixel;
-            const double limit = -polyPixelWidth;
-            if (x <= limit) {
-                // Don't draw invisible triangles before the left side of the display
-                x += std::floor((limit - x) / polyPixelWidth) * polyPixelWidth;
-            }
+        while (x >= 0) {
+            const float x1 = static_cast<float>(x);
+            const float x2 = static_cast<float>(x - polyPixelWidth);
+            m_vertices.push_back({x1, halfBreadth});
+            m_vertices.push_back({x2, halfBreadth - halfPolyBreadth});
+            m_vertices.push_back({x2, halfBreadth + halfPolyBreadth});
 
-            const double end = static_cast<double>(m_waveformRenderer->getLength());
-            while (x < end) {
-                const float x1 = static_cast<float>(x);
-                const float x2 = static_cast<float>(x + polyPixelWidth);
-                m_vertices.push_back(x1);
-                m_vertices.push_back(halfBreadth);
-                m_vertices.push_back(x2);
-                m_vertices.push_back(halfBreadth - halfPolyBreadth);
-                m_vertices.push_back(x2);
-                m_vertices.push_back(halfBreadth + halfPolyBreadth);
-
-                x += polyPixelWidth;
-            }
+            x -= polyPixelWidth;
         }
     }
 
-    m_shaderProgram.bind();
+    if (postRollVisible) {
+        const int remainingVSamples = totalVSamples - currentVSamplePosition;
+        // Sample position of the left-most triangle's tip
+        const double triangleTipVSamplePosition =
+                playMarkerPosition * numberOfVSamples +
+                remainingVSamples;
+        // In pixels
+        double x = triangleTipVSamplePosition / vSamplesPerPixel;
+        const double limit = -polyPixelWidth;
+        if (x <= limit) {
+            // Don't draw invisible triangles before the left side of the display
+            x += std::floor((limit - x) / polyPixelWidth) * polyPixelWidth;
+        }
+
+        const double end = static_cast<double>(m_waveformRenderer->getLength());
+        while (x < end) {
+            const float x1 = static_cast<float>(x);
+            const float x2 = static_cast<float>(x + polyPixelWidth);
+            m_vertices.push_back({x1, halfBreadth});
+            m_vertices.push_back({x2, halfBreadth - halfPolyBreadth});
+            m_vertices.push_back({x2, halfBreadth + halfPolyBreadth});
+
+            x += polyPixelWidth;
+        }
+    }
+
+    DEBUG_ASSERT(m_vertices.size() <= reserved);
 
     const int vertexLocation = m_shaderProgram.attributeLocation("position");
     const int matrixLocation = m_shaderProgram.uniformLocation("matrix");
     const int colorLocation = m_shaderProgram.uniformLocation("color");
+
+    m_shaderProgram.bind();
+    m_shaderProgram.enableAttributeArray(vertexLocation);
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
@@ -154,14 +154,13 @@ void WaveformRendererPreroll::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
     }
 
-    m_shaderProgram.enableAttributeArray(vertexLocation);
     m_shaderProgram.setAttributeArray(
             vertexLocation, GL_FLOAT, m_vertices.constData(), 2);
 
     m_shaderProgram.setUniformValue(matrixLocation, matrix);
     m_shaderProgram.setUniformValue(colorLocation, m_color);
 
-    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size() / 2);
+    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
     m_shaderProgram.disableAttributeArray(vertexLocation);
     m_shaderProgram.release();
