@@ -68,7 +68,7 @@ uniform vec4 color;
 varying float vgradient;
 void main()
 {
-    gl_FragColor = vec4(color.x, color.y, color.z, color.w * (0.5 + 0.33 * max(0.,vgradient)));
+    gl_FragColor = vec4(color.xyz, color.w * (0.5 + 0.33 * max(0.,vgradient)));
 }
 )--");
 
