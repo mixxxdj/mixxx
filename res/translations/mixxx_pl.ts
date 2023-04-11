@@ -2199,7 +2199,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="137"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="138"/>
         <source>Adjust %1</source>
-        <translation>Dostosuj</translation>
+        <translation>Dostosuj %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="25"/>

@@ -21,7 +21,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="76"/>
         <source>Crates</source>
-        <translation>Ceste</translation>
+        <translation>Contenitore</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="100"/>
@@ -2214,7 +2214,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="39"/>
         <source>Controller</source>
-        <translation type="unfinished"/>
+        <translation>Controller</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="46"/>
@@ -2285,7 +2285,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Decrease Speed (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>Diminuisci Velocità (Preciso)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="290"/>
@@ -2501,22 +2501,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="535"/>
         <source>Go To Loop In</source>
-        <translation type="unfinished"/>
+        <translation>Vai all&apos;Inizio del Loop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="535"/>
         <source>Go to Loop In button</source>
-        <translation type="unfinished"/>
+        <translation>Tasto Vai all&apos;Inizio del Loop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Go To Loop Out</source>
-        <translation type="unfinished"/>
+        <translation>Vai alla Fine del Loop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Go to Loop Out button</source>
-        <translation type="unfinished"/>
+        <translation>Bottone Vai alla Fine del Loop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
@@ -3688,7 +3688,7 @@ suono.</translation>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="278"/>
         <source>Auto DJ requires two decks assigned to opposite sides of the crossfader.</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ richiede due deck assegnati ai lati opposti del crossfader.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="286"/>
@@ -6646,17 +6646,17 @@ Il loudness finale è approssimativo e presume che pregain e master livello mast
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="614"/>
         <source>auto (&lt;= 1024 frames/period)</source>
-        <translation type="unfinished"/>
+        <translation>automatico (&lt;= 1024 fotogrammi/periodo)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="617"/>
         <source>2048 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>2048 fotogrammi/periodo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="620"/>
         <source>4096 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>4096 fotogrammi/periodo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="814"/>
@@ -8558,7 +8558,7 @@ Vuoi selezionare un dispositivo di input?</translation>
     <message>
         <location filename="../../src/test/mock_networkaccessmanager.cpp" line="109"/>
         <source>Operation canceled</source>
-        <translation type="unfinished"/>
+        <translation>Operazione cancellata</translation>
     </message>
 </context>
 <context>
@@ -10165,7 +10165,7 @@ Completamente a destra: fine del periodo</translation>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
-        <translation type="unfinished"/>
+        <translation>C&apos;è meno di un 1GiB di spazio libero nella cartella di registrazione</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
@@ -14296,7 +14296,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/network/webtask.cpp" line="220"/>
         <source>The Network request has not been started</source>
-        <translation type="unfinished"/>
+        <translation>La richiesta di rete non è stata avviata</translation>
     </message>
 </context>
 </TS>
