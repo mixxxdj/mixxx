@@ -10,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/painterscope.h"
+#include "waveform/renderers/qopengl/calculatematrix.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -67,12 +68,7 @@ void qopengl::WaveformRenderMarkRange::renderGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
-    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
-        matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
-    }
+    const QMatrix4x4 matrix = calculateMatrix(m_waveformRenderer, false);
 
     int positionLocation = m_shader.attributeLocation("position");
 

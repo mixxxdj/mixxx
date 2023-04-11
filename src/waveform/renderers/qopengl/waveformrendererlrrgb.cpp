@@ -2,6 +2,7 @@
 
 #include "track/track.h"
 #include "util/math.h"
+#include "waveform/renderers/qopengl/calculatematrix.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
@@ -200,15 +201,7 @@ void WaveformRendererLRRGB::renderGL() {
     DEBUG_ASSERT(linesReserved == m_vertices.size());
     DEBUG_ASSERT(colorsReserved == m_colors.size());
 
-    QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0.0,
-            0.0,
-            m_waveformRenderer->getWidth() * devicePixelRatio,
-            m_waveformRenderer->getHeight() * devicePixelRatio));
-    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
-        matrix.translate(0.f, -m_waveformRenderer->getWidth() * devicePixelRatio, 0.f);
-    }
+    const QMatrix4x4 matrix = calculateMatrix(m_waveformRenderer, true);
 
     const int matrixLocation = m_shader.uniformLocation("matrix");
     const int positionLocation = m_shader.attributeLocation("position");

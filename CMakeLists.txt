@@ -1188,6 +1188,7 @@ else()
       src/waveform/renderers/qopengl/shaders/shader.cpp
       src/waveform/renderers/qopengl/shaders/textureshader.cpp
       src/waveform/renderers/qopengl/shaders/unicolorshader.cpp
+      src/waveform/renderers/qopengl/calculatematrix.cpp
       src/waveform/renderers/qopengl/waveformrenderbackground.cpp
       src/waveform/renderers/qopengl/waveformrenderbeat.cpp
       src/waveform/renderers/qopengl/waveformrenderer.cpp

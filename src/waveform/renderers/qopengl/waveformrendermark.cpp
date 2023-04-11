@@ -9,6 +9,7 @@
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/painterscope.h"
+#include "waveform/renderers/qopengl/calculatematrix.h"
 #include "waveform/renderers/qopengl/moc_waveformrendermark.cpp"
 #include "waveform/waveform.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
@@ -59,12 +60,7 @@ void qopengl::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
     const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
 
-    QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
-    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
-        matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
-    }
+    const QMatrix4x4 matrix = calculateMatrix(m_waveformRenderer, false);
 
     m_textureShader.bind();
 

@@ -5,6 +5,7 @@
 #include "control/controlobject.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
+#include "waveform/renderers/qopengl/calculatematrix.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -107,12 +108,7 @@ void WaveformRenderBeat::renderGL() {
     m_shader.bind();
     m_shader.enableAttributeArray(vertexLocation);
 
-    QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
-    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
-        matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
-    }
+    const QMatrix4x4 matrix = calculateMatrix(m_waveformRenderer, false);
 
     m_shader.setAttributeArray(
             vertexLocation, GL_FLOAT, m_vertices.constData(), 2);

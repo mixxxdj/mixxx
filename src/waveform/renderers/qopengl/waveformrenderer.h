@@ -11,7 +11,8 @@ namespace qopengl {
 class WaveformRenderer;
 } // namespace qopengl
 
-class qopengl::WaveformRenderer : public WaveformRendererAbstract, public IWaveformRenderer {
+class qopengl::WaveformRenderer : public WaveformRendererAbstract,
+                                  public qopengl::IWaveformRenderer {
   public:
     explicit WaveformRenderer(WaveformWidgetRenderer* widget);
     ~WaveformRenderer();
