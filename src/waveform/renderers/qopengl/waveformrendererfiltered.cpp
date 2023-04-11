@@ -178,23 +178,16 @@ void WaveformRendererFiltered::renderGL() {
         float max[3][2]{};
 
         for (int i = visualIndexStart; i < visualIndexStop; i += 2) {
-            const WaveformData& waveformData = data[i];
-            const WaveformData& waveformDataNext = data[i + 1];
+            for (int chn = 0; chn < 2; chn++) {
+                const WaveformData& waveformData = data[i + chn];
+                const float filteredLow = static_cast<float>(waveformData.filtered.low);
+                const float filteredMid = static_cast<float>(waveformData.filtered.mid);
+                const float filteredHigh = static_cast<float>(waveformData.filtered.high);
 
-            const float filteredLow = static_cast<float>(waveformData.filtered.low);
-            const float filteredMid = static_cast<float>(waveformData.filtered.mid);
-            const float filteredHigh = static_cast<float>(waveformData.filtered.high);
-
-            const float nextFilteredLow = static_cast<float>(waveformDataNext.filtered.low);
-            const float nextFilteredMid = static_cast<float>(waveformDataNext.filtered.mid);
-            const float nextFilteredHigh = static_cast<float>(waveformDataNext.filtered.high);
-
-            max[0][0] = math_max(max[0][0], filteredLow);
-            max[0][1] = math_max(max[0][1], nextFilteredLow);
-            max[1][0] = math_max(max[1][0], filteredMid);
-            max[1][1] = math_max(max[1][1], nextFilteredMid);
-            max[2][0] = math_max(max[2][0], filteredHigh);
-            max[2][1] = math_max(max[2][1], nextFilteredHigh);
+                max[0][chn] = math_max(max[0][chn], filteredLow);
+                max[1][chn] = math_max(max[1][chn], filteredMid);
+                max[2][chn] = math_max(max[2][chn], filteredHigh);
+            }
         }
 
         const float fpos = static_cast<float>(pos);

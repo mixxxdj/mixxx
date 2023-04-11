@@ -191,54 +191,46 @@ void WaveformRendererRGB::renderGL() {
         visualIndexStart = std::max(visualIndexStart, 0);
         visualIndexStop = std::min(visualIndexStop, dataSize);
 
-        float maxLow = 0;
-        float maxMid = 0;
-        float maxHigh = 0;
+        const float fpos = static_cast<float>(pos);
 
-        float maxAll = 0.;
-        float maxAllNext = 0.;
+        // combined left+right
+        float maxLow{};
+        float maxMid{};
+        float maxHigh{};
+        // per channel
+        float maxAll[2]{};
 
-        for (int i = visualIndexStart; i < visualIndexStop; i += 2) {
-            const WaveformData& waveformData = data[i];
-            const WaveformData& waveformDataNext = data[i + 1];
+        for (int chn = 0; chn < 2; chn++) {
+            // data is interleaved left / right
+            for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+                const WaveformData& waveformData = data[i];
 
-            const float filteredLow = static_cast<float>(waveformData.filtered.low);
-            const float filteredMid = static_cast<float>(waveformData.filtered.mid);
-            const float filteredHigh = static_cast<float>(waveformData.filtered.high);
+                const float filteredLow = static_cast<float>(waveformData.filtered.low);
+                const float filteredMid = static_cast<float>(waveformData.filtered.mid);
+                const float filteredHigh = static_cast<float>(waveformData.filtered.high);
 
-            const float nextFilteredLow = static_cast<float>(waveformDataNext.filtered.low);
-            const float nextFilteredMid = static_cast<float>(waveformDataNext.filtered.mid);
-            const float nextFilteredHigh = static_cast<float>(waveformDataNext.filtered.high);
+                maxLow = math_max(maxLow, filteredLow);
+                maxMid = math_max(maxMid, filteredMid);
+                maxHigh = math_max(maxHigh, filteredHigh);
 
-            maxLow = math_max3(maxLow, filteredLow, nextFilteredLow);
-            maxMid = math_max3(maxMid, filteredMid, nextFilteredMid);
-            maxHigh = math_max3(maxHigh, filteredHigh, nextFilteredHigh);
-
-            const float all = math_pow2(filteredLow) * lowGain +
-                    math_pow2(filteredMid) * midGain +
-                    math_pow2(filteredHigh) * highGain;
-            maxAll = math_max(maxAll, all);
-
-            const float allNext = math_pow2(nextFilteredLow) * lowGain +
-                    math_pow2(nextFilteredMid) * midGain +
-                    math_pow2(nextFilteredHigh) * highGain;
-            maxAllNext = math_max(maxAllNext, allNext);
+                const float all = math_pow2(filteredLow) * lowGain +
+                        math_pow2(filteredMid) * midGain +
+                        math_pow2(filteredHigh) * highGain;
+                maxAll[chn] = math_max(maxAll[chn], all);
+            }
         }
 
         maxLow *= lowGain;
         maxMid *= midGain;
         maxHigh *= highGain;
 
-        float red = maxLow * low_r + maxMid * mid_r +
-                maxHigh * high_r;
-        float green = maxLow * low_g + maxMid * mid_g +
-                maxHigh * high_g;
-        float blue = maxLow * low_b + maxMid * mid_b +
-                maxHigh * high_b;
-
-        // Normalize red, green, blue, using the maximum of the three
+        float red = maxLow * low_r + maxMid * mid_r + maxHigh * high_r;
+        float green = maxLow * low_g + maxMid * mid_g + maxHigh * high_g;
+        float blue = maxLow * low_b + maxMid * mid_b + maxHigh * high_b;
 
         const float max = math_max3(red, green, blue);
+
+        // Normalize red, green, blue, using the maximum of the three
 
         if (max == 0.f) {
             // avoid division by 0
@@ -252,13 +244,12 @@ void WaveformRendererRGB::renderGL() {
             blue *= normFactor;
         }
 
-        const float fpos = static_cast<float>(pos);
-
         // lines are thin rectangles
+        // maxAll[0] is for left channel, maxAll[1] is for right channel
         addRectangle(fpos - 0.5f,
-                halfBreadth - heightFactor * std::sqrt(maxAll),
+                halfBreadth - heightFactor * std::sqrt(maxAll[0]),
                 fpos + 0.5f,
-                halfBreadth + heightFactor * std::sqrt(maxAllNext),
+                halfBreadth + heightFactor * std::sqrt(maxAll[1]),
                 red,
                 green,
                 blue);

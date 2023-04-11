@@ -129,7 +129,8 @@ void WaveformRendererLRRGB::renderGL() {
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
 
-    const float heightFactor = allGain * halfBreadth / std::sqrt(3.f * 256.f * 256.f);
+    const float heightFactorAbs = allGain * halfBreadth / std::sqrt(3.f * 256.f * 256.f);
+    const float heightFactor[2] = {-heightFactorAbs, heightFactorAbs};
 
     const float low_r = static_cast<float>(m_rgbLowColor_r);
     const float mid_r = static_cast<float>(m_rgbMidColor_r);
@@ -191,114 +192,67 @@ void WaveformRendererLRRGB::renderGL() {
         visualIndexStart = std::max(visualIndexStart, 0);
         visualIndexStop = std::min(visualIndexStop, dataSize);
 
-        float maxLow = 0;
-        float maxMid = 0;
-        float maxHigh = 0;
-        float maxLowNext = 0;
-        float maxMidNext = 0;
-        float maxHighNext = 0;
-
-        float maxAll = 0.;
-        float maxAllNext = 0.;
-
-        for (int i = visualIndexStart; i < visualIndexStop; i += 2) {
-            const WaveformData& waveformData = data[i];
-            const WaveformData& waveformDataNext = data[i + 1];
-
-            const float filteredLow = static_cast<float>(waveformData.filtered.low);
-            const float filteredMid = static_cast<float>(waveformData.filtered.mid);
-            const float filteredHigh = static_cast<float>(waveformData.filtered.high);
-
-            const float nextFilteredLow = static_cast<float>(waveformDataNext.filtered.low);
-            const float nextFilteredMid = static_cast<float>(waveformDataNext.filtered.mid);
-            const float nextFilteredHigh = static_cast<float>(waveformDataNext.filtered.high);
-
-            maxLow = math_max(maxLow, filteredLow);
-            maxMid = math_max(maxMid, filteredMid);
-            maxHigh = math_max(maxHigh, filteredHigh);
-
-            maxLowNext = math_max(maxLowNext, nextFilteredLow);
-            maxMidNext = math_max(maxMidNext, nextFilteredMid);
-            maxHighNext = math_max(maxHighNext, nextFilteredHigh);
-
-            const float all = math_pow2(filteredLow) * lowGain +
-                    math_pow2(filteredMid) * midGain +
-                    math_pow2(filteredHigh) * highGain;
-            maxAll = math_max(maxAll, all);
-
-            const float allNext = math_pow2(nextFilteredLow) * lowGain +
-                    math_pow2(nextFilteredMid) * midGain +
-                    math_pow2(nextFilteredHigh) * highGain;
-            maxAllNext = math_max(maxAllNext, allNext);
-        }
-
-        maxLow *= lowGain;
-        maxMid *= midGain;
-        maxHigh *= highGain;
-        maxLowNext *= lowGain;
-        maxMidNext *= midGain;
-        maxHighNext *= highGain;
-
-        float red = maxLow * low_r + maxMid * mid_r +
-                maxHigh * high_r;
-        float green = maxLow * low_g + maxMid * mid_g +
-                maxHigh * high_g;
-        float blue = maxLow * low_b + maxMid * mid_b +
-                maxHigh * high_b;
-        float redNext = maxLowNext * low_r + maxMidNext * mid_r +
-                maxHighNext * high_r;
-        float greenNext = maxLowNext * low_g + maxMidNext * mid_g +
-                maxHighNext * high_g;
-        float blueNext = maxLowNext * low_b + maxMidNext * mid_b +
-                maxHighNext * high_b;
-
-        // Normalize red, green, blue, using the maximum of the three
-
-        const float max = math_max3(red, green, blue);
-        const float maxNext = math_max3(redNext, greenNext, blueNext);
-
-        if (max == 0.f) {
-            // avoid division by 0
-            red = 0.f;
-            green = 0.f;
-            blue = 0.f;
-        } else {
-            const float normFactor = 1.f / max;
-            red *= normFactor;
-            green *= normFactor;
-            blue *= normFactor;
-        }
-
-        if (maxNext == 0.f) {
-            // avoid division by 0
-            redNext = 0.f;
-            greenNext = 0.f;
-            blueNext = 0.f;
-        } else {
-            const float normFactor = 1.f / max;
-            redNext *= normFactor;
-            greenNext *= normFactor;
-            blueNext *= normFactor;
-        }
-
         const float fpos = static_cast<float>(pos);
 
-        // lines are thin rectangles
-        addRectangle(fpos - 0.5f,
-                halfBreadth,
-                fpos + 0.5f,
-                halfBreadth - heightFactor * std::sqrt(maxAll),
-                red,
-                green,
-                blue);
-        // lines are thin rectangles
-        addRectangle(fpos - 0.5f,
-                halfBreadth,
-                fpos + 0.5f,
-                halfBreadth + heightFactor * std::sqrt(maxAllNext),
-                redNext,
-                greenNext,
-                blueNext);
+        for (int chn = 0; chn < 2; chn++) {
+            float maxLow{};
+            float maxMid{};
+            float maxHigh{};
+            float maxAll{};
+
+            // data is interleaved left / right
+            for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+                const WaveformData& waveformData = data[i];
+
+                const float filteredLow = static_cast<float>(waveformData.filtered.low);
+                const float filteredMid = static_cast<float>(waveformData.filtered.mid);
+                const float filteredHigh = static_cast<float>(waveformData.filtered.high);
+
+                maxLow = math_max(maxLow, filteredLow);
+                maxMid = math_max(maxMid, filteredMid);
+                maxHigh = math_max(maxHigh, filteredHigh);
+
+                const float all = math_pow2(filteredLow) * lowGain +
+                        math_pow2(filteredMid) * midGain +
+                        math_pow2(filteredHigh) * highGain;
+                maxAll = math_max(maxAll, all);
+            }
+
+            maxLow *= lowGain;
+            maxMid *= midGain;
+            maxHigh *= highGain;
+
+            float red = maxLow * low_r + maxMid * mid_r + maxHigh * high_r;
+            float green = maxLow * low_g + maxMid * mid_g + maxHigh * high_g;
+            float blue = maxLow * low_b + maxMid * mid_b + maxHigh * high_b;
+
+            const float max = math_max3(red, green, blue);
+
+            // Normalize red, green, blue, using the maximum of the three
+
+            if (max == 0.f) {
+                // avoid division by 0
+                red = 0.f;
+                green = 0.f;
+                blue = 0.f;
+            } else {
+                const float normFactor = 1.f / max;
+                red *= normFactor;
+                green *= normFactor;
+                blue *= normFactor;
+            }
+
+            // lines are thin rectangles
+            // note: heightFactor is the same for left and right,
+            // but negative for left (chn 0) and positive for right (chn 1)
+            addRectangle(fpos - 0.5f,
+                    halfBreadth,
+                    fpos + 0.5f,
+                    halfBreadth + heightFactor[chn] * std::sqrt(maxAll),
+                    red,
+                    green,
+                    blue);
+        }
 
         xVisualSampleIndex += gain;
     }
