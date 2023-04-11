@@ -123,7 +123,8 @@
                 undefined !== this.outKey &&
                 undefined !== this.output &&
                 typeof this.output === "function") {
-                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+		// MOD 1
+                //this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         },
         disconnect: function() {
