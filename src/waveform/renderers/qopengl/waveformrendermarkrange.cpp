@@ -15,31 +15,14 @@
 #include "widget/wwidget.h"
 
 qopengl::WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget)
-        : WaveformShaderRenderer(waveformWidget) {
+        : WaveformRenderer(waveformWidget) {
 }
 
 qopengl::WaveformRenderMarkRange::~WaveformRenderMarkRange() {
 }
 
 void qopengl::WaveformRenderMarkRange::initializeGL() {
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-void main()
-{
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform vec4 color;
-void main()
-{
-    gl_FragColor = color;
-}
-)--");
-
-    initShaders(vertexShaderCode, fragmentShaderCode);
+    m_shader.init();
 }
 
 void qopengl::WaveformRenderMarkRange::fillRect(
@@ -51,13 +34,12 @@ void qopengl::WaveformRenderMarkRange::fillRect(
 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
 
-    int colorLocation = m_shaderProgram.uniformLocation("color");
-    int positionLocation = m_shaderProgram.attributeLocation("position");
+    int colorLocation = m_shader.uniformLocation("color");
+    int positionLocation = m_shader.attributeLocation("position");
 
-    m_shaderProgram.setUniformValue(colorLocation, color);
+    m_shader.setUniformValue(colorLocation, color);
 
-    m_shaderProgram.enableAttributeArray(positionLocation);
-    m_shaderProgram.setAttributeArray(
+    m_shader.setAttributeArray(
             positionLocation, GL_FLOAT, posarray, 2);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -92,10 +74,13 @@ void qopengl::WaveformRenderMarkRange::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
     }
 
-    m_shaderProgram.bind();
+    int positionLocation = m_shader.attributeLocation("position");
 
-    int matrixLocation = m_shaderProgram.uniformLocation("matrix");
-    m_shaderProgram.setUniformValue(matrixLocation, matrix);
+    m_shader.bind();
+    m_shader.enableAttributeArray(positionLocation);
+
+    int matrixLocation = m_shader.uniformLocation("matrix");
+    m_shader.setUniformValue(matrixLocation, matrix);
 
     for (auto&& markRange : m_markRanges) {
         // If the mark range is not active we should not draw it.
@@ -133,4 +118,6 @@ void qopengl::WaveformRenderMarkRange::renderGL() {
 
         fillRect(QRectF(startPosition, 0, span, m_waveformRenderer->getBreadth()), color);
     }
+    m_shader.disableAttributeArray(positionLocation);
+    m_shader.release();
 }

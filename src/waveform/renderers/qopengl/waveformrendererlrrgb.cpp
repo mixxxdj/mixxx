@@ -1,7 +1,5 @@
 #include "waveform/renderers/qopengl/waveformrendererlrrgb.h"
 
-#include <iostream>
-
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
@@ -31,27 +29,7 @@ void WaveformRendererLRRGB::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererLRRGB::initializeGL() {
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-attribute vec3 color;
-varying vec3 vcolor;
-void main()
-{
-    vcolor = color;
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-varying vec3 vcolor;
-void main()
-{
-    gl_FragColor = vec4(vcolor,1.0);
-}
-)--");
-
-    initShaders(vertexShaderCode, fragmentShaderCode);
+    m_shader.init();
 }
 
 void WaveformRendererLRRGB::addRectangle(
@@ -256,24 +234,24 @@ void WaveformRendererLRRGB::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth() * devicePixelRatio, 0.f);
     }
 
-    const int matrixLocation = m_shaderProgram.uniformLocation("matrix");
-    const int positionLocation = m_shaderProgram.attributeLocation("position");
-    const int colorLocation = m_shaderProgram.attributeLocation("color");
+    const int matrixLocation = m_shader.uniformLocation("matrix");
+    const int positionLocation = m_shader.attributeLocation("position");
+    const int colorLocation = m_shader.attributeLocation("color");
 
-    m_shaderProgram.bind();
-    m_shaderProgram.enableAttributeArray(positionLocation);
-    m_shaderProgram.enableAttributeArray(colorLocation);
+    m_shader.bind();
+    m_shader.enableAttributeArray(positionLocation);
+    m_shader.enableAttributeArray(colorLocation);
 
-    m_shaderProgram.setUniformValue(matrixLocation, matrix);
+    m_shader.setUniformValue(matrixLocation, matrix);
 
-    m_shaderProgram.setAttributeArray(
+    m_shader.setAttributeArray(
             positionLocation, GL_FLOAT, m_vertices.constData(), 2);
-    m_shaderProgram.setAttributeArray(
+    m_shader.setAttributeArray(
             colorLocation, GL_FLOAT, m_colors.constData(), 3);
 
     glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
-    m_shaderProgram.disableAttributeArray(positionLocation);
-    m_shaderProgram.disableAttributeArray(colorLocation);
-    m_shaderProgram.release();
+    m_shader.disableAttributeArray(positionLocation);
+    m_shader.disableAttributeArray(colorLocation);
+    m_shader.release();
 }

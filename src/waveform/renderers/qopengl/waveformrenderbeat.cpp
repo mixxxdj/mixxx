@@ -12,36 +12,19 @@
 using namespace qopengl;
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget)
-        : WaveformShaderRenderer(waveformWidget) {
+        : WaveformRenderer(waveformWidget) {
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
 }
 
 void WaveformRenderBeat::initializeGL() {
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-void main()
-{
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform vec4 color;
-void main()
-{
-    gl_FragColor = color;
-}
-)--");
-
-    initShaders(vertexShaderCode, fragmentShaderCode);
+    m_shader.init();
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
-    m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
+    m_color.setNamedColor(context.selectString(node, "BeatColor"));
+    m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 
 void WaveformRenderBeat::renderGL() {
@@ -64,7 +47,7 @@ void WaveformRenderBeat::renderGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_beatColor.setAlphaF(alpha / 100.0);
+    m_color.setAlphaF(alpha / 100.0);
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
@@ -122,12 +105,12 @@ void WaveformRenderBeat::renderGL() {
 
     DEBUG_ASSERT(reserved == m_vertices.size());
 
-    const int vertexLocation = m_shaderProgram.attributeLocation("position");
-    const int matrixLocation = m_shaderProgram.uniformLocation("matrix");
-    const int colorLocation = m_shaderProgram.uniformLocation("color");
+    const int vertexLocation = m_shader.attributeLocation("position");
+    const int matrixLocation = m_shader.uniformLocation("matrix");
+    const int colorLocation = m_shader.uniformLocation("color");
 
-    m_shaderProgram.bind();
-    m_shaderProgram.enableAttributeArray(vertexLocation);
+    m_shader.bind();
+    m_shader.enableAttributeArray(vertexLocation);
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
@@ -136,14 +119,14 @@ void WaveformRenderBeat::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
     }
 
-    m_shaderProgram.setAttributeArray(
+    m_shader.setAttributeArray(
             vertexLocation, GL_FLOAT, m_vertices.constData(), 2);
 
-    m_shaderProgram.setUniformValue(matrixLocation, matrix);
-    m_shaderProgram.setUniformValue(colorLocation, m_beatColor);
+    m_shader.setUniformValue(matrixLocation, matrix);
+    m_shader.setUniformValue(colorLocation, m_color);
 
     glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
-    m_shaderProgram.disableAttributeArray(vertexLocation);
-    m_shaderProgram.release();
+    m_shader.disableAttributeArray(vertexLocation);
+    m_shader.release();
 }

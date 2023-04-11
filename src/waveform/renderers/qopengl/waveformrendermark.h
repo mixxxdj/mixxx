@@ -2,9 +2,10 @@
 
 #include <QColor>
 #include <QObject>
-#include <QOpenGLShaderProgram>
 
 #include "util/class.h"
+#include "waveform/renderers/qopengl/shaders/rangeshader.h"
+#include "waveform/renderers/qopengl/shaders/textureshader.h"
 #include "waveform/renderers/qopengl/waveformrenderer.h"
 #include "waveform/renderers/waveformmarkset.h"
 
@@ -41,9 +42,6 @@ class qopengl::WaveformRenderMark : public QObject, public qopengl::WaveformRend
   private:
     void checkCuesUpdated();
 
-    void initGradientShader();
-    void initTextureShader();
-
     void generateMarkImage(WaveformMarkPointer pMark);
     void generatePlayPosMarkTexture();
 
@@ -54,8 +52,8 @@ class qopengl::WaveformRenderMark : public QObject, public qopengl::WaveformRend
             QPointF p3);
 
     WaveformMarkSet m_marks;
-    QOpenGLShaderProgram m_gradientShaderProgram;
-    QOpenGLShaderProgram m_textureShaderProgram;
+    RangeShader m_rangeShader;
+    TextureShader m_textureShader;
     std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
     bool m_bCuesUpdates{};
 

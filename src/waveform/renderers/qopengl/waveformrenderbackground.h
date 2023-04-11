@@ -16,6 +16,7 @@ class qopengl::WaveformRenderBackground : public qopengl::WaveformRenderer {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void renderGL() override;
+
   private:
     QColor m_backgroundColor;
 

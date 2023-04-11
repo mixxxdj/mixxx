@@ -6,7 +6,8 @@
 
 #include "util/class.h"
 #include "util/performancetimer.h"
-#include "waveform/renderers/qopengl/waveformshaderrenderer.h"
+#include "waveform/renderers/qopengl/shaders/endoftrackshader.h"
+#include "waveform/renderers/qopengl/waveformrenderer.h"
 
 class ControlObject;
 class ControlProxy;
@@ -17,7 +18,7 @@ namespace qopengl {
 class WaveformRendererEndOfTrack;
 }
 
-class qopengl::WaveformRendererEndOfTrack : public qopengl::WaveformShaderRenderer {
+class qopengl::WaveformRendererEndOfTrack : public qopengl::WaveformRenderer {
   public:
     explicit WaveformRendererEndOfTrack(
             WaveformWidgetRenderer* waveformWidget);
@@ -33,6 +34,7 @@ class qopengl::WaveformRendererEndOfTrack : public qopengl::WaveformShaderRender
   private:
     void fillWithGradient(QColor color);
 
+    EndOfTrackShader m_shader;
     std::unique_ptr<ControlProxy> m_pEndOfTrackControl;
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 

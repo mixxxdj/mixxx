@@ -1,7 +1,6 @@
 #pragma once
 
 #include "waveform/renderers/qopengl/iwaveformrenderer.h"
-#include "waveform/renderers/qopengl/shaderloader.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
 class WaveformWidgetRenderer;
@@ -11,8 +10,7 @@ class WaveformRendererSignalBase;
 } // namespace qopengl
 
 class qopengl::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
-                                            public qopengl::IWaveformRenderer,
-                                            public qopengl::ShaderLoader {
+                                            public qopengl::IWaveformRenderer {
   public:
     explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget);
     ~WaveformRendererSignalBase() override = default;

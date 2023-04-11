@@ -11,7 +11,7 @@
 using namespace qopengl;
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidget)
-        : WaveformShaderRenderer(waveformWidget) {
+        : WaveformRenderer(waveformWidget) {
 }
 
 WaveformRendererPreroll::~WaveformRendererPreroll() {
@@ -24,24 +24,7 @@ void WaveformRendererPreroll::setup(
 }
 
 void WaveformRendererPreroll::initializeGL() {
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-void main()
-{
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform vec4 color;
-void main()
-{
-    gl_FragColor = color;
-}
-)--");
-
-    initShaders(vertexShaderCode, fragmentShaderCode);
+    m_shader.init();
 }
 
 void WaveformRendererPreroll::renderGL() {
@@ -140,12 +123,12 @@ void WaveformRendererPreroll::renderGL() {
 
     DEBUG_ASSERT(m_vertices.size() <= reserved);
 
-    const int vertexLocation = m_shaderProgram.attributeLocation("position");
-    const int matrixLocation = m_shaderProgram.uniformLocation("matrix");
-    const int colorLocation = m_shaderProgram.uniformLocation("color");
+    const int vertexLocation = m_shader.attributeLocation("position");
+    const int matrixLocation = m_shader.uniformLocation("matrix");
+    const int colorLocation = m_shader.uniformLocation("color");
 
-    m_shaderProgram.bind();
-    m_shaderProgram.enableAttributeArray(vertexLocation);
+    m_shader.bind();
+    m_shader.enableAttributeArray(vertexLocation);
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
@@ -154,14 +137,14 @@ void WaveformRendererPreroll::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
     }
 
-    m_shaderProgram.setAttributeArray(
+    m_shader.setAttributeArray(
             vertexLocation, GL_FLOAT, m_vertices.constData(), 2);
 
-    m_shaderProgram.setUniformValue(matrixLocation, matrix);
-    m_shaderProgram.setUniformValue(colorLocation, m_color);
+    m_shader.setUniformValue(matrixLocation, matrix);
+    m_shader.setUniformValue(colorLocation, m_color);
 
     glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
-    m_shaderProgram.disableAttributeArray(vertexLocation);
-    m_shaderProgram.release();
+    m_shader.disableAttributeArray(vertexLocation);
+    m_shader.release();
 }

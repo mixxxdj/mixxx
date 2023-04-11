@@ -1,4 +1,5 @@
 #include "waveform/renderers/qopengl/waveformrenderbackground.h"
+
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 using namespace qopengl;

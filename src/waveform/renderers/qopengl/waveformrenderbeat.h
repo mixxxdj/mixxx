@@ -3,7 +3,8 @@
 #include <QColor>
 
 #include "util/class.h"
-#include "waveform/renderers/qopengl/waveformshaderrenderer.h"
+#include "waveform/renderers/qopengl/shaders/unicolorshader.h"
+#include "waveform/renderers/qopengl/waveformrenderer.h"
 
 class QDomNode;
 class SkinContext;
@@ -12,7 +13,7 @@ namespace qopengl {
 class WaveformRenderBeat;
 }
 
-class qopengl::WaveformRenderBeat : public qopengl::WaveformShaderRenderer {
+class qopengl::WaveformRenderBeat : public qopengl::WaveformRenderer {
   public:
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget);
     ~WaveformRenderBeat() override;
@@ -22,7 +23,8 @@ class qopengl::WaveformRenderBeat : public qopengl::WaveformShaderRenderer {
     void initializeGL() override;
 
   private:
-    QColor m_beatColor;
+    UnicolorShader m_shader;
+    QColor m_color;
     QVector<QVector2D> m_vertices;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);

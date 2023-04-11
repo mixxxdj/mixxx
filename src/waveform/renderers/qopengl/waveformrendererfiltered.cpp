@@ -25,24 +25,7 @@ void WaveformRendererFiltered::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererFiltered::initializeGL() {
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-void main()
-{
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform vec4 color;
-void main()
-{
-    gl_FragColor = color;
-}
-)--");
-
-    initShaders(vertexShaderCode, fragmentShaderCode);
+    m_shader.init();
 }
 
 void WaveformRendererFiltered::addRectangleToGroup(
@@ -207,14 +190,14 @@ void WaveformRendererFiltered::renderGL() {
         matrix.translate(0.f, -m_waveformRenderer->getWidth() * devicePixelRatio, 0.f);
     }
 
-    const int matrixLocation = m_shaderProgram.uniformLocation("matrix");
-    const int colorLocation = m_shaderProgram.uniformLocation("color");
-    const int positionLocation = m_shaderProgram.attributeLocation("position");
+    const int matrixLocation = m_shader.uniformLocation("matrix");
+    const int colorLocation = m_shader.uniformLocation("color");
+    const int positionLocation = m_shader.attributeLocation("position");
 
-    m_shaderProgram.bind();
-    m_shaderProgram.enableAttributeArray(positionLocation);
+    m_shader.bind();
+    m_shader.enableAttributeArray(positionLocation);
 
-    m_shaderProgram.setUniformValue(matrixLocation, matrix);
+    m_shader.setUniformValue(matrixLocation, matrix);
 
     QColor colors[4];
     colors[0].setRgbF(static_cast<float>(m_rgbLowColor_r),
@@ -232,13 +215,13 @@ void WaveformRendererFiltered::renderGL() {
 
     for (int i = 0; i < 4; i++) {
         DEBUG_ASSERT(reserved[i] == m_verticesForGroup[i].size());
-        m_shaderProgram.setUniformValue(colorLocation, colors[i]);
-        m_shaderProgram.setAttributeArray(
+        m_shader.setUniformValue(colorLocation, colors[i]);
+        m_shader.setAttributeArray(
                 positionLocation, GL_FLOAT, m_verticesForGroup[i].constData(), 2);
 
         glDrawArrays(GL_TRIANGLES, 0, m_verticesForGroup[i].size());
     }
 
-    m_shaderProgram.disableAttributeArray(positionLocation);
-    m_shaderProgram.release();
+    m_shader.disableAttributeArray(positionLocation);
+    m_shader.release();
 }

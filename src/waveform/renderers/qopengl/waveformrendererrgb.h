@@ -1,5 +1,6 @@
 #pragma once
 
+#include "waveform/renderers/qopengl/shaders/colorshader.h"
 #include "waveform/renderers/qopengl/waveformrenderersignalbase.h"
 
 namespace qopengl {
@@ -18,6 +19,7 @@ class qopengl::WaveformRendererRGB : public qopengl::WaveformRendererSignalBase 
     void renderGL() override;
 
   private:
+    ColorShader m_shader;
     QVector<QVector2D> m_vertices;
     QVector<QVector3D> m_colors;
 

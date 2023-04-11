@@ -35,92 +35,13 @@ void qopengl::WaveformRenderMark::setup(const QDomNode& node, const SkinContext&
 }
 
 void qopengl::WaveformRenderMark::initializeGL() {
-    initGradientShader();
-    initTextureShader();
+    m_rangeShader.init();
+    m_textureShader.init();
+
     for (const auto& pMark : m_marks) {
         generateMarkImage(pMark);
     }
     generatePlayPosMarkTexture();
-}
-
-void qopengl::WaveformRenderMark::initGradientShader() {
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-attribute vec3 gradient;
-varying vec3 vGradient;
-void main()
-{
-    vGradient = gradient;
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform vec4 color;
-varying vec3 vGradient;
-void main()
-{
-    gl_FragColor = vec4(color.x, color.y, color.z, color.w * max(0.0, abs((vGradient.x + vGradient.y) * 4.0 - 2.0) - 1.0));
-}
-)--");
-
-    if (!m_gradientShaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderCode)) {
-        return;
-    }
-
-    if (!m_gradientShaderProgram.addShaderFromSourceCode(
-                QOpenGLShader::Fragment, fragmentShaderCode)) {
-        return;
-    }
-
-    if (!m_gradientShaderProgram.link()) {
-        return;
-    }
-
-    if (!m_gradientShaderProgram.bind()) {
-        return;
-    }
-}
-
-void qopengl::WaveformRenderMark::initTextureShader() {
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-attribute vec3 texcoor;
-varying vec3 vTexcoor;
-void main()
-{
-    vTexcoor = texcoor;
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform sampler2D sampler;
-varying vec3 vTexcoor;
-void main()
-{
-    gl_FragColor = texture2D(sampler, vec2(vTexcoor.x, vTexcoor.y));
-}
-)--");
-
-    if (!m_textureShaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderCode)) {
-        return;
-    }
-
-    if (!m_textureShaderProgram.addShaderFromSourceCode(
-                QOpenGLShader::Fragment, fragmentShaderCode)) {
-        return;
-    }
-
-    if (!m_textureShaderProgram.link()) {
-        return;
-    }
-
-    if (!m_textureShaderProgram.bind()) {
-        return;
-    }
 }
 
 void qopengl::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* texture) {
@@ -145,27 +66,33 @@ void qopengl::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* 
         matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
     }
 
-    m_textureShaderProgram.bind();
+    m_textureShader.bind();
 
-    int matrixLocation = m_textureShaderProgram.uniformLocation("matrix");
-    int samplerLocation = m_textureShaderProgram.uniformLocation("sampler");
-    int positionLocation = m_textureShaderProgram.attributeLocation("position");
-    int texcoordLocation = m_textureShaderProgram.attributeLocation("texcoor");
+    int matrixLocation = m_textureShader.uniformLocation("matrix");
+    int samplerLocation = m_textureShader.uniformLocation("sampler");
+    int positionLocation = m_textureShader.attributeLocation("position");
+    int texcoordLocation = m_textureShader.attributeLocation("texcoor");
 
-    m_textureShaderProgram.setUniformValue(matrixLocation, matrix);
+    m_textureShader.setUniformValue(matrixLocation, matrix);
 
-    m_textureShaderProgram.enableAttributeArray(positionLocation);
-    m_textureShaderProgram.setAttributeArray(
+    m_textureShader.enableAttributeArray(positionLocation);
+    m_textureShader.setAttributeArray(
             positionLocation, GL_FLOAT, posarray, 2);
-    m_textureShaderProgram.enableAttributeArray(texcoordLocation);
-    m_textureShaderProgram.setAttributeArray(
+    m_textureShader.enableAttributeArray(texcoordLocation);
+    m_textureShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray, 2);
 
-    m_textureShaderProgram.setUniformValue(samplerLocation, 0);
+    m_textureShader.setUniformValue(samplerLocation, 0);
 
     texture->bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    texture->release();
+
+    m_textureShader.disableAttributeArray(positionLocation);
+    m_textureShader.disableAttributeArray(texcoordLocation);
+    m_textureShader.release();
 }
 
 void qopengl::WaveformRenderMark::fillRectWithGradient(
@@ -190,24 +117,28 @@ void qopengl::WaveformRenderMark::fillRectWithGradient(
         matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
     }
 
-    m_gradientShaderProgram.bind();
+    m_rangeShader.bind();
 
-    int matrixLocation = m_gradientShaderProgram.uniformLocation("matrix");
-    int colorLocation = m_gradientShaderProgram.uniformLocation("color");
-    int positionLocation = m_gradientShaderProgram.attributeLocation("position");
-    int gradientLocation = m_gradientShaderProgram.attributeLocation("gradient");
+    int matrixLocation = m_rangeShader.uniformLocation("matrix");
+    int colorLocation = m_rangeShader.uniformLocation("color");
+    int positionLocation = m_rangeShader.attributeLocation("position");
+    int gradientLocation = m_rangeShader.attributeLocation("gradient");
 
-    m_gradientShaderProgram.setUniformValue(matrixLocation, matrix);
-    m_gradientShaderProgram.setUniformValue(colorLocation, color);
+    m_rangeShader.setUniformValue(matrixLocation, matrix);
+    m_rangeShader.setUniformValue(colorLocation, color);
 
-    m_gradientShaderProgram.enableAttributeArray(positionLocation);
-    m_gradientShaderProgram.setAttributeArray(
+    m_rangeShader.enableAttributeArray(positionLocation);
+    m_rangeShader.setAttributeArray(
             positionLocation, GL_FLOAT, posarray, 2);
-    m_gradientShaderProgram.enableAttributeArray(gradientLocation);
-    m_gradientShaderProgram.setAttributeArray(
+    m_rangeShader.enableAttributeArray(gradientLocation);
+    m_rangeShader.setAttributeArray(
             gradientLocation, GL_FLOAT, grdarray, 2);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    m_rangeShader.disableAttributeArray(positionLocation);
+    m_rangeShader.disableAttributeArray(gradientLocation);
+    m_rangeShader.release();
 }
 
 void qopengl::WaveformRenderMark::renderGL() {

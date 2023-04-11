@@ -26,7 +26,7 @@ using namespace qopengl;
 
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         WaveformWidgetRenderer* waveformWidget)
-        : WaveformShaderRenderer(waveformWidget),
+        : WaveformRenderer(waveformWidget),
           m_pEndOfTrackControl(nullptr),
           m_pTimeRemainingControl(nullptr) {
 }
@@ -55,45 +55,23 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
 }
 
 void WaveformRendererEndOfTrack::initializeGL() {
-    QString vertexShaderCode = QStringLiteral(R"--(
-attribute vec4 position;
-attribute float gradient;
-varying float vgradient;
-void main()
-{
-    vgradient = gradient;
-    gl_Position = position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform vec4 color;
-varying float vgradient;
-void main()
-{
-    const float baseTransparency = 0.5;
-    const float additionalTransparency = 0.33;
-    gl_FragColor = vec4(color.xyz, color.w * (baseTransparency + additionalTransparency * max(0.,vgradient)));
-}
-)--");
-
-    initShaders(vertexShaderCode, fragmentShaderCode);
+    m_shader.init();
 }
 
 void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
-    const int colorLocation = m_shaderProgram.uniformLocation("color");
-    const int positionLocation = m_shaderProgram.attributeLocation("position");
-    const int gradientLocation = m_shaderProgram.attributeLocation("gradient");
+    const int colorLocation = m_shader.uniformLocation("color");
+    const int positionLocation = m_shader.attributeLocation("position");
+    const int gradientLocation = m_shader.attributeLocation("gradient");
 
-    m_shaderProgram.bind();
-    m_shaderProgram.enableAttributeArray(positionLocation);
-    m_shaderProgram.enableAttributeArray(gradientLocation);
+    m_shader.bind();
+    m_shader.enableAttributeArray(positionLocation);
+    m_shader.enableAttributeArray(gradientLocation);
 
-    m_shaderProgram.setUniformValue(colorLocation, color);
+    m_shader.setUniformValue(colorLocation, color);
 
-    m_shaderProgram.setAttributeArray(
+    m_shader.setAttributeArray(
             positionLocation, GL_FLOAT, positionArray, 2);
-    m_shaderProgram.setAttributeArray(gradientLocation,
+    m_shader.setAttributeArray(gradientLocation,
             GL_FLOAT,
             m_waveformRenderer->getOrientation() == Qt::Vertical
                     ? verticalGradientArray
@@ -102,9 +80,9 @@ void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    m_shaderProgram.disableAttributeArray(positionLocation);
-    m_shaderProgram.disableAttributeArray(gradientLocation);
-    m_shaderProgram.release();
+    m_shader.disableAttributeArray(positionLocation);
+    m_shader.disableAttributeArray(gradientLocation);
+    m_shader.release();
 }
 
 void WaveformRendererEndOfTrack::renderGL() {
