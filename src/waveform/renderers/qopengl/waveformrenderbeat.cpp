@@ -85,10 +85,17 @@ void WaveformRenderBeat::renderGL() {
 
     const int numVerticesPerLine = 12; // 2 vertices per point, 2 points per
                                        // line, 3 per triangle (2 triangles)
-    const int reserved =
-            trackBeats->numBeatsInRange(startPosition, endPosition) *
-            numVerticesPerLine;
+    const int numBeatsInRange = trackBeats->numBeatsInRange(startPosition, endPosition);
 
+    // In corner cases numBeatsInRange returns -1, while the for loop below
+    // iterates 1 time, resulting in a mismatch between reserved and drawn
+    // lines. This probably should be fixed in beats.h/cpp but for now just
+    // return.
+    if (numBeatsInRange <= 0) {
+        return;
+    }
+
+    const int reserved = numBeatsInRange * numVerticesPerLine;
     m_beatLineVertices.clear();
     m_beatLineVertices.reserve(reserved);
 
@@ -143,4 +150,7 @@ void WaveformRenderBeat::renderGL() {
     m_shaderProgram.setUniformValue(colorLocation, m_beatColor);
 
     glDrawArrays(GL_TRIANGLES, 0, m_beatLineVertices.size() / 2);
+
+    m_shaderProgram.disableAttributeArray(vertexLocation);
+    m_shaderProgram.release();
 }
