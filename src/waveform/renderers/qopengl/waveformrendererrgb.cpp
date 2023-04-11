@@ -54,7 +54,7 @@ void main()
     initShaders(vertexShaderCode, fragmentShaderCode);
 }
 
-inline void WaveformRendererRGB::addRectangle(
+void WaveformRendererRGB::addRectangle(
         float x1,
         float y1,
         float x2,

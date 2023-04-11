@@ -45,7 +45,7 @@ void main()
     initShaders(vertexShaderCode, fragmentShaderCode);
 }
 
-inline void WaveformRendererFiltered::addRectangle(
+void WaveformRendererFiltered::addRectangle(
         QVector<float>& lines,
         float x1,
         float y1,
