@@ -1,8 +1,8 @@
-#include "waveform/renderers/qopengl/shaders/rangeshader.h"
+#include "waveform/renderers/qopengl/shaders/gradientshader.h"
 
 using namespace qopengl;
 
-void RangeShader::init() {
+void GradientShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform mat4 matrix;
 attribute vec4 position;

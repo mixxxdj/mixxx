@@ -1,6 +1,7 @@
 #pragma once
 
 #include "waveform/renderers/qopengl/shaders/unicolorshader.h"
+#include "waveform/renderers/qopengl/vertexdata.h"
 #include "waveform/renderers/qopengl/waveformrenderersignalbase.h"
 
 namespace qopengl {
@@ -20,9 +21,7 @@ class qopengl::WaveformRendererFiltered : public qopengl::WaveformRendererSignal
 
   private:
     UnicolorShader m_shader;
-    QVector<QVector2D> m_verticesForGroup[4];
-
-    void addRectangleToGroup(float x1, float y1, float x2, float y2, int group);
+    VertexData m_verticesForGroup[4];
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererFiltered);
 };

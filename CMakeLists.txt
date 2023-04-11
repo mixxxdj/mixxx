@@ -1184,7 +1184,7 @@ else()
     target_sources(mixxx-lib PRIVATE
       src/waveform/renderers/qopengl/shaders/colorshader.cpp
       src/waveform/renderers/qopengl/shaders/endoftrackshader.cpp
-      src/waveform/renderers/qopengl/shaders/rangeshader.cpp
+      src/waveform/renderers/qopengl/shaders/gradientshader.cpp
       src/waveform/renderers/qopengl/shaders/shader.cpp
       src/waveform/renderers/qopengl/shaders/textureshader.cpp
       src/waveform/renderers/qopengl/shaders/unicolorshader.cpp

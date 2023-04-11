@@ -95,12 +95,7 @@ void WaveformRenderBeat::renderGL() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        m_vertices.push_back({x1, 0.f});
-        m_vertices.push_back({x2, 0.f});
-        m_vertices.push_back({x1, rendererBreadth});
-        m_vertices.push_back({x1, rendererBreadth});
-        m_vertices.push_back({x2, rendererBreadth});
-        m_vertices.push_back({x2, 0.f});
+        m_vertices.addRectangle(x1, 0.f, x2, rendererBreadth);
     }
 
     DEBUG_ASSERT(reserved == m_vertices.size());

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "waveform/renderers/qopengl/colordata.h"
 #include "waveform/renderers/qopengl/shaders/colorshader.h"
+#include "waveform/renderers/qopengl/vertexdata.h"
 #include "waveform/renderers/qopengl/waveformrenderersignalbase.h"
 
 namespace qopengl {
@@ -20,10 +22,8 @@ class qopengl::WaveformRendererRGB : public qopengl::WaveformRendererSignalBase 
 
   private:
     ColorShader m_shader;
-    QVector<QVector2D> m_vertices;
-    QVector<QVector3D> m_colors;
-
-    void addRectangle(float x1, float y1, float x2, float y2, float r, float g, float b);
+    VertexData m_vertices;
+    ColorData m_colors;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererRGB);
 };

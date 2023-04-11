@@ -87,9 +87,9 @@ void WaveformRendererPreroll::renderGL() {
         while (x >= 0) {
             const float x1 = static_cast<float>(x);
             const float x2 = static_cast<float>(x - polyPixelWidth);
-            m_vertices.push_back({x1, halfBreadth});
-            m_vertices.push_back({x2, halfBreadth - halfPolyBreadth});
-            m_vertices.push_back({x2, halfBreadth + halfPolyBreadth});
+            m_vertices.addTriangle({x1, halfBreadth},
+                    {x2, halfBreadth - halfPolyBreadth},
+                    {x2, halfBreadth + halfPolyBreadth});
 
             x -= polyPixelWidth;
         }
@@ -113,10 +113,9 @@ void WaveformRendererPreroll::renderGL() {
         while (x < end) {
             const float x1 = static_cast<float>(x);
             const float x2 = static_cast<float>(x + polyPixelWidth);
-            m_vertices.push_back({x1, halfBreadth});
-            m_vertices.push_back({x2, halfBreadth - halfPolyBreadth});
-            m_vertices.push_back({x2, halfBreadth + halfPolyBreadth});
-
+            m_vertices.addTriangle({x1, halfBreadth},
+                    {x2, halfBreadth - halfPolyBreadth},
+                    {x2, halfBreadth + halfPolyBreadth});
             x += polyPixelWidth;
         }
     }

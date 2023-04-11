@@ -32,26 +32,6 @@ void WaveformRendererRGB::initializeGL() {
     m_shader.init();
 }
 
-void WaveformRendererRGB::addRectangle(
-        float x1,
-        float y1,
-        float x2,
-        float y2,
-        float r,
-        float g,
-        float b) {
-    m_vertices.push_back({x1, y1});
-    m_vertices.push_back({x2, y1});
-    m_vertices.push_back({x1, y2});
-    m_vertices.push_back({x1, y2});
-    m_vertices.push_back({x2, y2});
-    m_vertices.push_back({x2, y1});
-
-    for (int i = 0; i < 6; i++) {
-        m_colors.push_back({r, g, b});
-    }
-}
-
 void WaveformRendererRGB::renderGL() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
@@ -118,13 +98,11 @@ void WaveformRendererRGB::renderGL() {
     m_colors.clear();
     m_colors.reserve(reserved);
 
-    addRectangle(0.f,
+    m_vertices.addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
-            halfBreadth + 0.5f * devicePixelRatio,
-            1.f,
-            1.f,
-            1.f);
+            halfBreadth + 0.5f * devicePixelRatio);
+    m_colors.addForRectangle(1.f, 1.f, 1.f);
 
     for (int pos = 0; pos < length; ++pos) {
         // Our current pixel (x) corresponds to a number of visual samples
@@ -209,13 +187,11 @@ void WaveformRendererRGB::renderGL() {
 
         // lines are thin rectangles
         // maxAll[0] is for left channel, maxAll[1] is for right channel
-        addRectangle(fpos - 0.5f,
+        m_vertices.addRectangle(fpos - 0.5f,
                 halfBreadth - heightFactor * std::sqrt(maxAll[0]),
                 fpos + 0.5f,
-                halfBreadth + heightFactor * std::sqrt(maxAll[1]),
-                red,
-                green,
-                blue);
+                halfBreadth + heightFactor * std::sqrt(maxAll[1]));
+        m_colors.addForRectangle(red, green, blue);
 
         xVisualSampleIndex += gain;
     }

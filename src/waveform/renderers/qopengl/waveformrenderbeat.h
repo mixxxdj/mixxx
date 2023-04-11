@@ -4,6 +4,7 @@
 
 #include "util/class.h"
 #include "waveform/renderers/qopengl/shaders/unicolorshader.h"
+#include "waveform/renderers/qopengl/vertexdata.h"
 #include "waveform/renderers/qopengl/waveformrenderer.h"
 
 class QDomNode;
@@ -25,7 +26,7 @@ class qopengl::WaveformRenderBeat : public qopengl::WaveformRenderer {
   private:
     UnicolorShader m_shader;
     QColor m_color;
-    QVector<QVector2D> m_vertices;
+    VertexData m_vertices;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };

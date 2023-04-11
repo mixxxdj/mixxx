@@ -1,10 +1,10 @@
 #include "waveform/renderers/qopengl/shaders/shader.h"
 
 namespace qopengl {
-class RangeShader;
+class GradientShader;
 }
 
-class qopengl::RangeShader : public qopengl::Shader {
+class qopengl::GradientShader : public qopengl::Shader {
   public:
     void init();
 };

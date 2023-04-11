@@ -28,22 +28,6 @@ void WaveformRendererFiltered::initializeGL() {
     m_shader.init();
 }
 
-void WaveformRendererFiltered::addRectangleToGroup(
-        float x1,
-        float y1,
-        float x2,
-        float y2,
-        int group) {
-    auto& lines = m_verticesForGroup[group];
-
-    lines.push_back({x1, y1});
-    lines.push_back({x2, y1});
-    lines.push_back({x1, y2});
-    lines.push_back({x1, y2});
-    lines.push_back({x2, y2});
-    lines.push_back({x2, y1});
-}
-
 void WaveformRendererFiltered::renderGL() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
@@ -111,12 +95,11 @@ void WaveformRendererFiltered::renderGL() {
     m_verticesForGroup[3].clear();
     m_verticesForGroup[3].reserve(reserved[3]);
 
-    addRectangleToGroup(
+    m_verticesForGroup[3].addRectangle(
             0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
-            halfBreadth + 0.5f * devicePixelRatio,
-            3);
+            halfBreadth + 0.5f * devicePixelRatio);
 
     for (int pos = 0; pos < length; ++pos) {
         // Our current pixel (x) corresponds to a number of visual samples
@@ -169,12 +152,11 @@ void WaveformRendererFiltered::renderGL() {
             max[bandIndex][1] *= bandGain[bandIndex];
 
             // lines are thin rectangles
-            addRectangleToGroup(
+            m_verticesForGroup[bandIndex].addRectangle(
                     fpos - 0.5f,
                     halfBreadth - heightFactor * max[bandIndex][0],
                     fpos + 0.5f,
-                    halfBreadth + heightFactor * max[bandIndex][1],
-                    bandIndex);
+                    halfBreadth + heightFactor * max[bandIndex][1]);
         }
 
         xVisualSampleIndex += gain;
