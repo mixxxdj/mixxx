@@ -16,6 +16,9 @@
 namespace {
 
 constexpr int kBlinkingPeriodMillis = 1000;
+constexpr float positionArray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
+constexpr float verticalGradientArray[] = {1.f, 1.f, -1.f, -1.f};
+constexpr float horizontalGradientArray[] = {-1.f, 1.f, -1.f, 1.f};
 
 } // anonymous namespace
 
@@ -68,7 +71,9 @@ uniform vec4 color;
 varying float vgradient;
 void main()
 {
-    gl_FragColor = vec4(color.xyz, color.w * (0.5 + 0.33 * max(0.,vgradient)));
+    const baseTransparency = 0.5;
+    const additionalTransparency = 0.33;
+    gl_FragColor = vec4(color.xyz, color.w * (baseTransparency + additionalTransparency * max(0.,vgradient)));
 }
 )--");
 
@@ -76,10 +81,6 @@ void main()
 }
 
 void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
-    const float positionArray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
-    const float verticalGradientArray[] = {1.f, 1.f, -1.f, -1.f};
-    const float horizontalGradientArray[] = {-1.f, 1.f, -1.f, 1.f};
-
     m_shaderProgram.bind();
 
     int colorLocation = m_shaderProgram.uniformLocation("color");
