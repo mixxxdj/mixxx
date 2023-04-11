@@ -18,9 +18,9 @@ class qopengl::WaveformRendererFiltered : public qopengl::WaveformRendererSignal
     void renderGL() override;
 
   private:
-    QVector<float> m_lineValues[4];
+    QVector<float> m_lineValuesForGroup[4];
 
-    void addRectangle(QVector<float>& lines, float x1, float y1, float x2, float y2);
+    void addRectangleToGroup(float x1, float y1, float x2, float y2, int group);
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererFiltered);
 };

@@ -45,12 +45,14 @@ void main()
     initShaders(vertexShaderCode, fragmentShaderCode);
 }
 
-void WaveformRendererFiltered::addRectangle(
-        QVector<float>& lines,
+void WaveformRendererFiltered::addRectangleToGroup(
         float x1,
         float y1,
         float x2,
-        float y2) {
+        float y2,
+        int group) {
+    auto& lines = m_lineValuesForGroup[group];
+
     lines.push_back(x1);
     lines.push_back(y1);
 
@@ -127,21 +129,22 @@ void WaveformRendererFiltered::renderGL() {
     int reserved[4];
     // low, mid, high
     for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
-        m_lineValues[bandIndex].clear();
+        m_lineValuesForGroup[bandIndex].clear();
         reserved[bandIndex] = numValuesPerLine * length;
-        m_lineValues[bandIndex].reserve(reserved[bandIndex]);
+        m_lineValuesForGroup[bandIndex].reserve(reserved[bandIndex]);
     }
 
     // the horizontal line
     reserved[3] = numValuesPerLine;
-    m_lineValues[3].clear();
-    m_lineValues[3].reserve(reserved[3]);
+    m_lineValuesForGroup[3].clear();
+    m_lineValuesForGroup[3].reserve(reserved[3]);
 
-    addRectangle(m_lineValues[3],
+    addRectangleToGroup(
             0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
-            halfBreadth + 0.5f * devicePixelRatio);
+            halfBreadth + 0.5f * devicePixelRatio,
+            3);
 
     for (int pos = 0; pos < length; ++pos) {
         // Our current pixel (x) corresponds to a number of visual samples
@@ -201,11 +204,12 @@ void WaveformRendererFiltered::renderGL() {
             max[bandIndex][1] *= bandGain[bandIndex];
 
             // lines are thin rectangles
-            addRectangle(m_lineValues[bandIndex],
+            addRectangleToGroup(
                     fpos - 0.5f,
                     halfBreadth - heightFactor * max[bandIndex][0],
                     fpos + 0.5f,
-                    halfBreadth + heightFactor * max[bandIndex][1]);
+                    halfBreadth + heightFactor * max[bandIndex][1],
+                    bandIndex);
         }
 
         xVisualSampleIndex += gain;
@@ -245,11 +249,11 @@ void WaveformRendererFiltered::renderGL() {
     // 3 bands + 1 extra for the horizontal line
 
     for (int i = 0; i < 4; i++) {
-        DEBUG_ASSERT(reserved[i] == m_lineValues[i].size());
+        DEBUG_ASSERT(reserved[i] == m_lineValuesForGroup[i].size());
         m_shaderProgram.setUniformValue(colorLocation, colors[i]);
         m_shaderProgram.setAttributeArray(
-                positionLocation, GL_FLOAT, m_lineValues[i].constData(), 2);
+                positionLocation, GL_FLOAT, m_lineValuesForGroup[i].constData(), 2);
 
-        glDrawArrays(GL_TRIANGLES, 0, m_lineValues[i].size() / 2);
+        glDrawArrays(GL_TRIANGLES, 0, m_lineValuesForGroup[i].size() / 2);
     }
 }
