@@ -71,8 +71,8 @@ uniform vec4 color;
 varying float vgradient;
 void main()
 {
-    const baseTransparency = 0.5;
-    const additionalTransparency = 0.33;
+    const float baseTransparency = 0.5;
+    const float additionalTransparency = 0.33;
     gl_FragColor = vec4(color.xyz, color.w * (baseTransparency + additionalTransparency * max(0.,vgradient)));
 }
 )--");
