@@ -111,10 +111,10 @@ void WaveformRendererLRRGB::renderGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
 
-    // Not multiplying with devicePixelRatio will also work, and on retina
-    // displays 2 pixels will be used to represent each block of samples. This
-    // is also what is done for the beat grid and the markers. const int n =
-    // static_cast<int>(static_cast<float>(m_waveformRenderer->getLength()));
+    // Not multiplying with devicePixelRatio will also work. In that case, on
+    // High-DPI-Display the lines will be devicePixelRatio pixels wide (which is
+    // also what is used for the beat grid and the markers), or in other words
+    // each block of samples is represented by devicePixelRatio pixels (width).
 
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
