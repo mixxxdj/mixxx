@@ -1,5 +1,9 @@
 #include "widget/wmainmenubar.h"
 
+#ifndef __APPLE__
+#include <QApplication>
+#include <QWindow>
+#endif
 #include <QUrl>
 
 #include "config.h"
@@ -678,6 +682,32 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+
+#ifndef __APPLE__
+    // Watch focus changes to hide the menubar as soon as all menus are closed,
+    // e.g. when an action was triggered or when all menus are closed by pressing
+    // Escape or clicking anywhere else
+    connect(qApp,
+            &QApplication::focusWindowChanged,
+            this,
+            [this]() {
+                if (!isNativeMenuBar() && height() > 0 && !activeAction()) {
+                    hideMenuBar();
+                }
+            });
+    // ... and when the focus widget changes (main window or dialogs)
+    connect(qApp,
+            // This would work, too, but unfortunately this is also emitted on
+            // leaveEvent of WStarRating in the library.
+            // &QApplication::focusObjectChanged,
+            &QApplication::focusChanged,
+            this,
+            [this]() {
+                if (!isNativeMenuBar() && height() > 0 && !activeAction()) {
+                    hideMenuBar();
+                }
+            });
+#endif
 }
 
 void WMainMenuBar::onKeywheelChange(int state) {
