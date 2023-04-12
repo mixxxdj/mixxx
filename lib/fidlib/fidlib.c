@@ -2334,13 +2334,16 @@ fid_parse(double rate, char **pp, FidFilter **ffp) {
         return msg;     \
    }
 #define INCBUF {                                    \
-      tmp= (char*)realloc(rv, (rvend - rv) * 2);    \
+      size_t new_size= (rvend - rv) * 2;            \
+      size_t rvp_offset= rvp - rv;                  \
+      size_t curr_offset= (char*)curr - rv;         \
+      tmp= (char*)realloc(rv, new_size);            \
       if (!tmp) {                                   \
          error("Out of memory");                    \
       }                                             \
-      rvend= (rvend - rv) * 2 + tmp;                \
-      rvp= (rvp - rv) + tmp;                        \
-      curr= (FidFilter*)(((char*)curr) - rv + tmp); \
+      rvend= tmp + new_size;                        \
+      rvp= tmp + rvp_offset;                        \
+      curr= (FidFilter*)(tmp + curr_offset);        \
       rv= tmp;                                      \
    }
 
@@ -2359,19 +2362,22 @@ fid_parse(double rate, char **pp, FidFilter **ffp) {
          case ';':
          case ')':
          case ']':
-         case '}':
+         case '}': {
             // End of filter, return it
-            tmp= (char*)realloc(rv, (rvp-rv) + xtra);
+            size_t rvp_offset= rvp - rv;
+            size_t new_size= rvp_offset + xtra;
+            tmp= (char*)realloc(rv, new_size);
             if (!tmp) {
                error("Out of memory");
             }
-            curr= (FidFilter*)((rvp-rv) + tmp);
+            curr= (FidFilter*)(tmp + rvp_offset);
             curr->typ= 0;
             curr->cbm= 0;
             curr->len= 0;
             *pp= buf[0] ? (p-1) : p;
             *ffp= (FidFilter*)tmp;
             return 0;
+         }
          case '/':
             if (typ > 0) ERR(rew, strdupf("Filter syntax error; unexpected '/'"));
             typ= 'I';
