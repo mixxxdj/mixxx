@@ -240,10 +240,10 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnectionInternal(
         // The test setups do not run all of Mixxx, so ControlObjects not
         // existing during tests is okay.
         if (!m_pScriptEngineLegacy->isTesting()) {
-            m_pScriptEngineLegacy->throwJSError(
-                    "script tried to connect to "
-                    "ControlObject (" +
-                    group + ", " + name + ") which is non-existent.");
+            logOrThrowError(
+                    QStringLiteral("script tried to connect to ControlObject "
+                                   "(%1, %2) which is non-existent.")
+                            .arg(group, name));
         }
         return QJSValue();
     }
@@ -429,6 +429,14 @@ void ControllerScriptInterfaceLegacy::trigger(const QString& group, const QStrin
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->emitValueChanged();
+    }
+}
+
+void ControllerScriptInterfaceLegacy::logOrThrowError(const QString& errorMessage) const {
+    if (m_pScriptEngineLegacy->isPedantic()) {
+        m_pScriptEngineLegacy->throwJSError(errorMessage);
+    } else {
+        qCWarning(m_logger) << errorMessage;
     }
 }
 

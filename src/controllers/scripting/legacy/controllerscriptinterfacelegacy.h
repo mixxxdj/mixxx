@@ -82,6 +82,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
             bool skipSuperseded = false);
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
+    void logOrThrowError(const QString& errorMessage) const;
 
     SoftTakeoverCtrl m_st;
 
