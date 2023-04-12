@@ -248,8 +248,6 @@
 #include <math.h>
 #include "fidlib.h"
 
-extern FidFilter *mkfilter(char *, ...);
-
 //
 //	Target-specific fixes
 //
@@ -2330,10 +2328,21 @@ fid_parse(double rate, char **pp, FidFilter **ffp) {
    double val;
    char dmy;
 
-#define ERR(ptr, msg) { *pp= ptr; *ffp= 0; return msg; }
-#define INCBUF { tmp= (char*)realloc(rv, (rvend-rv) * 2); if (!tmp) error("Out of memory"); \
- rvend= (rvend-rv) * 2 + tmp; rvp= (rvp-rv) + tmp; \
- curr= (FidFilter*)(((char*)curr) - rv + tmp); rv= tmp; }
+#define ERR(ptr, msg) { \
+        *pp= ptr;       \
+        *ffp= 0;        \
+        return msg;     \
+   }
+#define INCBUF {                                    \
+      tmp= (char*)realloc(rv, (rvend - rv) * 2);    \
+      if (!tmp) {                                   \
+         error("Out of memory");                    \
+      }                                             \
+      rvend= (rvend - rv) * 2 + tmp;                \
+      rvp= (rvp - rv) + tmp;                        \
+      curr= (FidFilter*)(((char*)curr) - rv + tmp); \
+      rv= tmp;                                      \
+   }
 
    while (1) {
       rew= p;
