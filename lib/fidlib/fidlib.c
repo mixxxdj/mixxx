@@ -2347,85 +2347,91 @@ fid_parse(double rate, char **pp, FidFilter **ffp) {
    while (1) {
       rew= p;
       if (!grabWord(&p, buf, sizeof(buf))) {
-	 if (*p) ERR(p, strdupf("Filter element unexpectedly long -- syntax error?"));
-	 buf[0]= 0;
+         if (*p) ERR(p, strdupf("Filter element unexpectedly long -- syntax error?"));
+         buf[0]= 0;
       }
-      if (!buf[0] || !buf[1]) switch (buf[0]) {
-       default:
-	  break;
-       case 0:
-       case ',':
-       case ';':
-       case ')':
-       case ']':
-       case '}':
-	  // End of filter, return it
-	  tmp= (char*)realloc(rv, (rvp-rv) + xtra);
-	  if (!tmp) error("Out of memory");
-	  curr= (FidFilter*)((rvp-rv) + tmp);
-	  curr->typ= 0; curr->cbm= 0; curr->len= 0;
-	  *pp= buf[0] ? (p-1) : p;
-	  *ffp= (FidFilter*)tmp;
-	  return 0;
-       case '/':
-	  if (typ > 0) ERR(rew, strdupf("Filter syntax error; unexpected '/'"));
-	  typ= 'I';
-	  continue;
-       case 'x':
-	  if (typ > 0) ERR(rew, strdupf("Filter syntax error; unexpected 'x'"));
-	  typ= 'F';
-	  continue;
+      if (!buf[0] || !buf[1]) {
+         switch (buf[0]) {
+         default:
+            break;
+         case 0:
+         case ',':
+         case ';':
+         case ')':
+         case ']':
+         case '}':
+            // End of filter, return it
+            tmp= (char*)realloc(rv, (rvp-rv) + xtra);
+            if (!tmp) {
+               error("Out of memory");
+            }
+            curr= (FidFilter*)((rvp-rv) + tmp);
+            curr->typ= 0;
+            curr->cbm= 0;
+            curr->len= 0;
+            *pp= buf[0] ? (p-1) : p;
+            *ffp= (FidFilter*)tmp;
+            return 0;
+         case '/':
+            if (typ > 0) ERR(rew, strdupf("Filter syntax error; unexpected '/'"));
+            typ= 'I';
+            continue;
+         case 'x':
+             if (typ > 0) ERR(rew, strdupf("Filter syntax error; unexpected 'x'"));
+             typ= 'F';
+             continue;
+         }
       }
 
-      if (typ < 0) typ= 'F';		// Assume 'x' if missing
+      if (typ < 0) typ= 'F';                // Assume 'x' if missing
       if (!typ) ERR(p, strdupf("Expecting a 'x' or '/' before this"));
 
       if (1 != sscanf(buf, "%lf %c", &val, &dmy)) {
-	 // Must be a predefined filter
-	 FidFilter *ff;
-	 FidFilter *ff1;
-	 Spec sp;
-	 double f0, f1;
-	 char *err;
-	 int len;
+         // Must be a predefined filter
+         FidFilter *ff;
+         FidFilter *ff1;
+         Spec sp;
+         double f0, f1;
+         char *err;
+         int len;
 
-	 if (typ != 'F') ERR(rew, strdupf("Predefined filters cannot be used with '/'"));
+         if (typ != 'F') ERR(rew, strdupf("Predefined filters cannot be used with '/'"));
 
-	 // Parse the filter-spec
-	 memset(&sp, 0, sizeof(sp));
-	 sp.spec= buf;
-	 sp.in_f0= sp.in_f1= -1;
-	 if ((err= parse_spec(&sp))) ERR(rew, err);
-	 f0= sp.f0;
-	 f1= sp.f1;
+         // Parse the filter-spec
+         memset(&sp, 0, sizeof(sp));
+         sp.spec= buf;
+         sp.in_f0= sp.in_f1= -1;
+         if ((err= parse_spec(&sp))) ERR(rew, err);
+         f0= sp.f0;
+         f1= sp.f1;
 
-	 // Adjust frequencies to range 0-0.5, and check them
-	 f0 /= rate;
-	 if (f0 > 0.5) ERR(rew, strdupf("Frequency of %gHz out of range with "
-					"sampling rate of %gHz", f0*rate, rate));
-	 f1 /= rate;
-	 if (f1 > 0.5) ERR(rew, strdupf("Frequency of %gHz out of range with "
-					"sampling rate of %gHz", f1*rate, rate));
+         // Adjust frequencies to range 0-0.5, and check them
+         f0 /= rate;
+         if (f0 > 0.5) ERR(rew, strdupf("Frequency of %gHz out of range with "
+                                        "sampling rate of %gHz", f0*rate, rate));
+         f1 /= rate;
+         if (f1 > 0.5) ERR(rew, strdupf("Frequency of %gHz out of range with "
+                                        "sampling rate of %gHz", f1*rate, rate));
 
-	 // Okay we now have a successful spec-match to filter[sp.fi], and sp.n_arg
-	 // args are now in sp.argarr[]
+         // Okay we now have a successful spec-match to filter[sp.fi], and sp.n_arg
+         // args are now in sp.argarr[]
 
-	 // Generate the filter
-	 if (!sp.adj)
-	    ff= filter[sp.fi].rout(rate, f0, f1, sp.order, sp.n_arg, sp.argarr);
-	 else if (strstr(filter[sp.fi].fmt, "#R"))
-	    ff= auto_adjust_dual(&sp, rate, f0, f1);
-	 else
-	    ff= auto_adjust_single(&sp, rate, f0);
+         // Generate the filter
+         if (!sp.adj)
+            ff= filter[sp.fi].rout(rate, f0, f1, sp.order, sp.n_arg, sp.argarr);
+         else if (strstr(filter[sp.fi].fmt, "#R"))
+            ff= auto_adjust_dual(&sp, rate, f0, f1);
+         else
+            ff= auto_adjust_single(&sp, rate, f0);
 
-	 // Append it to our FidFilter to return
-	 for (ff1= ff; ff1->typ; ff1= FFNEXT(ff1)) ;
-	 len= ((char*)ff1-(char*)ff);
-	 while (rvp + len + xtra >= rvend) INCBUF;
-	 memcpy(rvp, ff, len); rvp += len;
-	 free(ff);
-	 typ= 0;
-	 continue;
+         // Append it to our FidFilter to return
+         for (ff1= ff; ff1->typ; ff1= FFNEXT(ff1)) ;
+         len= ((char*)ff1-(char*)ff);
+         while (rvp + len + xtra >= rvend) INCBUF;
+         memcpy(rvp, ff, len); rvp += len;
+         free(ff);
+         typ= 0;
+         continue;
       }
 
       // Must be a list of coefficients
@@ -2440,19 +2446,19 @@ fid_parse(double rate, char **pp, FidFilter **ffp) {
 
       // See how many more coefficients we can pick up
       while (1) {
-	 rew= p;
-	 if (!grabWord(&p, buf, sizeof(buf))) {
-	    if (*p) ERR(p, strdupf("Filter element unexpectedly long -- syntax error?"));
-	    buf[0]= 0;
-	 }
-	 if (1 != sscanf(buf, "%lf %c", &val, &dmy)) {
-	    p= rew;
-	    break;
-	 }
-	 while (rvp + sizeof(double) >= rvend) INCBUF;
-	 curr->len++;
-	 *(double*)rvp= val;
-	 rvp += sizeof(double);
+         rew= p;
+         if (!grabWord(&p, buf, sizeof(buf))) {
+            if (*p) ERR(p, strdupf("Filter element unexpectedly long -- syntax error?"));
+            buf[0]= 0;
+         }
+         if (1 != sscanf(buf, "%lf %c", &val, &dmy)) {
+            p= rew;
+            break;
+         }
+         while (rvp + sizeof(double) >= rvend) INCBUF;
+         curr->len++;
+         *(double*)rvp= val;
+         rvp += sizeof(double);
       }
       typ= 0;
       continue;
