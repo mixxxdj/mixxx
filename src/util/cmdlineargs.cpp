@@ -20,6 +20,7 @@
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_controllerDebug(false),
+          m_controllerPedantic(false),
           m_developer(false),
           m_safeMode(false),
           m_useVuMeterGL(true),
@@ -193,6 +194,17 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(controllerDebug);
     parser.addOption(controllerDebugDeprecated);
 
+    const QCommandLineOption controllerPedantic(
+            QStringLiteral("controller-pedantic"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "The controller mapping will issue more "
+                                      "aggressive warnings and errors when "
+                                      "detecting misuse of controller APIs. "
+                                      "New Controller Mappings should be "
+                                      "developed with this option enabled!")
+                            : QString());
+    parser.addOption(controllerPedantic);
+
     const QCommandLineOption developer(QStringLiteral("developer"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Enables developer-mode. Includes extra log info, stats on "
@@ -332,6 +344,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
 
     m_useVuMeterGL = !(parser.isSet(disableVuMeterGL) || parser.isSet(disableVuMeterGLDeprecated));
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerPedantic = parser.isSet(controllerPedantic);
     m_developer = parser.isSet(developer);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);
