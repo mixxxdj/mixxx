@@ -216,7 +216,7 @@ Prime4.DeckAssignButton = function(options) {
 
     /*
     // COMMENT OUT SO pre-commit WON'T FREAK OUT
-    this.outScaleValue = function(value) {
+    this.outValueScale = function(value) {
         print(value);
         print(deckSide);
         const scaledVal = components.Button.prototype.outValueScale.call(this, value);
