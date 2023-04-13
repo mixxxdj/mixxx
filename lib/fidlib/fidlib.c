@@ -696,7 +696,7 @@ stack_filter(int order, int n_head, int n_val, ...) {
    order--;
 
    // Check length
-   len= ((char*)p)-((char*)q);
+   len= (int)(((char*)p)-((char*)q));
    if (len != (int)FFCSIZE(n_head-1, n_val))
       error("Internal error; bad call to stack_filter(); length mismatch (%d,%d)",
 	    len, FFCSIZE(n_head-1, n_val));
@@ -1565,7 +1565,7 @@ fid_design(const char *spec, double rate, double freq0, double freq1, int f_adj,
    // Generate a long description if required
    if (descp) {
       char *fmt= filter[sp.fi].txt;
-      int max= strlen(fmt) + 60 + sp.n_arg * 20;
+      int max= (int)strlen(fmt) + 60 + sp.n_arg * 20;
       char *desc= (char*)Alloc(max);
       char *p= desc;
       char ch;
@@ -2095,7 +2095,7 @@ parse_spec(Spec *sp) {
          return strdupf("Internal error -- maximum arguments exceeded");
 
       // Set the minlen to the whole string if unset
-      if (sp->minlen < 0) sp->minlen= p-sp->spec;
+      if (sp->minlen < 0) sp->minlen= (int)(p-sp->spec);
 
       // Save values, return
       sp->fi= a;
