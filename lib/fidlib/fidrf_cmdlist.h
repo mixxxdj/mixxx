@@ -239,7 +239,7 @@ fid_run_new(FidFilter *filt, double (**funcpp)(void *,double)) {
       int n_iir = 0;
       int cnt;
       double *iir, *fir;
-      double adj;
+      double adj = 1.0;
       if (filt->typ == 'F' && filt->len == 1) {
          gain *= filt->val[0];
          filt= FFNEXT(filt);
