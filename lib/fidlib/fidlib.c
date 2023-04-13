@@ -236,6 +236,10 @@
 #endif
 #endif
 
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS  // let me use standard functions
+#endif
+
 //
 //	Includes
 //
