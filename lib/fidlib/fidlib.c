@@ -1781,7 +1781,7 @@ expand_spec(char *buf, char *bufend, char *str) {
 
 double
 fid_design_coef(double *coef, int n_coef, const char *spec, double rate,
-		double freq0, double freq1, int adj) {
+                double freq0, double freq1, int adj) {
    FidFilter *filt= fid_design(spec, rate, freq0, freq1, adj, 0);
    FidFilter *ff= filt;
    int a, len;
@@ -1794,13 +1794,13 @@ fid_design_coef(double *coef, int n_coef, const char *spec, double rate,
 
    while (ff->typ) {
       if (ff->typ == 'F' && ff->len == 1) {
-	 gain *= ff->val[0];
-	 ff= FFNEXT(ff);
-	 continue;
+         gain *= ff->val[0];
+         ff= FFNEXT(ff);
+         continue;
       }
 
       if (ff->typ != 'I' && ff->typ != 'F')
-	 error("fid_design_coef can't handle FidFilter type: %c", ff->typ);
+         error("fid_design_coef can't handle FidFilter type: %c", ff->typ);
 
       // Initialise to safe defaults
       iir= fir= &const_one;
@@ -1809,43 +1809,43 @@ fid_design_coef(double *coef, int n_coef, const char *spec, double rate,
 
       // See if we have an IIR filter
       if (ff->typ == 'I') {
-	 iir= ff->val;
-	 n_iir= ff->len;
-	 iir_cbm= ff->cbm;
-	 iir_adj= 1.0 / ff->val[0];
-	 ff= FFNEXT(ff);
-	 gain *= iir_adj;
+         iir= ff->val;
+         n_iir= ff->len;
+         iir_cbm= ff->cbm;
+         iir_adj= 1.0 / ff->val[0];
+         ff= FFNEXT(ff);
+         gain *= iir_adj;
       }
 
       // See if we have an FIR filter
       if (ff->typ == 'F') {
-	 fir= ff->val;
-	 n_fir= ff->len;
-	 fir_cbm= ff->cbm;
-	 ff= FFNEXT(ff);
+         fir= ff->val;
+         n_fir= ff->len;
+         fir_cbm= ff->cbm;
+         ff= FFNEXT(ff);
       }
 
       // Dump out all non-const coefficients in reverse order
       len= n_fir > n_iir ? n_fir : n_iir;
       for (a= len-1; a>=0; a--) {
-	 // Output IIR if present and non-const
-	 if (a < n_iir && a>0 &&
-	     !(iir_cbm & (1<<(a<15?a:15)))) {
-	    if (cnt++ < n_coef) *coef++= iir_adj * iir[a];
-	 }
+         // Output IIR if present and non-const
+         if (a < n_iir && a>0 &&
+             !(iir_cbm & (1<<(a<15?a:15)))) {
+            if (cnt++ < n_coef) *coef++= iir_adj * iir[a];
+         }
 
-	 // Output FIR if present and non-const
-	 if (a < n_fir &&
-	     !(fir_cbm & (1<<(a<15?a:15)))) {
-	    if (cnt++ < n_coef) *coef++= fir[a];
-	 }
+         // Output FIR if present and non-const
+         if (a < n_fir &&
+             !(fir_cbm & (1<<(a<15?a:15)))) {
+            if (cnt++ < n_coef) *coef++= fir[a];
+         }
       }
    }
 
    if (cnt != n_coef)
       error("fid_design_coef called with the wrong number of coefficients.\n"
-	    "  Given %d, expecting %d: (\"%s\",%g,%g,%g,%d)",
-	    n_coef, cnt, spec, rate, freq0, freq1, adj);
+            "  Given %d, expecting %d: (\"%s\",%g,%g,%g,%d)",
+            n_coef, cnt, spec, rate, freq0, freq1, adj);
 
    free(filt);
    return gain;
@@ -2001,89 +2001,89 @@ parse_spec(Spec *sp) {
       if (!fmt) return strdupf("Spec-string \"%s\" matches no known format", sp->spec);
 
       while (*p && (ch= *fmt++)) {
-	 if (ch != '#') {
-	    if (ch == *p++) continue;
-	    p= 0; break;
-	 }
+         if (ch != '#') {
+            if (ch == *p++) continue;
+            p= 0; break;
+         }
 
-	 if (isalpha(*p)) { p= 0; break; }
+         if (isalpha(*p)) { p= 0; break; }
 
-	 // Handling a format character
-	 switch (ch= *fmt++) {
-	  default:
-	     return strdupf("Internal error: Unknown format #%c in format: %s",
-			    fmt[-1], filter[a].fmt);
-	  case 'o':
-	  case 'O':
-	     sp->order= (int)strtol(p, &q, 10);
-	     if (p == q) {
-		if (ch == 'O') goto bad;
-		sp->order= 1;
-	     }
-	     if (sp->order <= 0)
-		return strdupf("Bad order %d in spec-string \"%s\"", sp->order, sp->spec);
-	     p= q; break;
-	  case 'V':
-	     sp->n_arg++;
-	     *arg++= strtod(p, &q);
-	     if (p == q) goto bad;
-	     p= q; break;
-	  case 'F':
-	     sp->minlen= p-1-sp->spec;
-	     sp->n_freq= 1;
-	     sp->adj= (p[0] == '=');
-	     if (sp->adj) p++;
-	     sp->f0= strtod(p, &q);
-	     sp->f1= 0;
-	     if (p == q) goto bad;
-	     p= q; break;
-	  case 'R':
-	     sp->minlen= p-1-sp->spec;
-	     sp->n_freq= 2;
-	     sp->adj= (p[0] == '=');
-	     if (sp->adj) p++;
-	     sp->f0= strtod(p, &q);
-	     if (p == q) goto bad;
-	     p= q;
-	     if (*p++ != '-') goto bad;
-	     sp->f1= strtod(p, &q);
-	     if (p == q) goto bad;
-	     if (sp->f0 > sp->f1)
-		return strdupf("Backwards frequency range in spec-string \"%s\"", sp->spec);
-	     p= q; break;
-	 }
+         // Handling a format character
+         switch (ch= *fmt++) {
+          default:
+             return strdupf("Internal error: Unknown format #%c in format: %s",
+                            fmt[-1], filter[a].fmt);
+          case 'o':
+          case 'O':
+             sp->order= (int)strtol(p, &q, 10);
+             if (p == q) {
+                if (ch == 'O') goto bad;
+                sp->order= 1;
+             }
+             if (sp->order <= 0)
+                return strdupf("Bad order %d in spec-string \"%s\"", sp->order, sp->spec);
+             p= q; break;
+          case 'V':
+             sp->n_arg++;
+             *arg++= strtod(p, &q);
+             if (p == q) goto bad;
+             p= q; break;
+          case 'F':
+             sp->minlen= p-1-sp->spec;
+             sp->n_freq= 1;
+             sp->adj= (p[0] == '=');
+             if (sp->adj) p++;
+             sp->f0= strtod(p, &q);
+             sp->f1= 0;
+             if (p == q) goto bad;
+             p= q; break;
+          case 'R':
+             sp->minlen= p-1-sp->spec;
+             sp->n_freq= 2;
+             sp->adj= (p[0] == '=');
+             if (sp->adj) p++;
+             sp->f0= strtod(p, &q);
+             if (p == q) goto bad;
+             p= q;
+             if (*p++ != '-') goto bad;
+             sp->f1= strtod(p, &q);
+             if (p == q) goto bad;
+             if (sp->f0 > sp->f1)
+                return strdupf("Backwards frequency range in spec-string \"%s\"", sp->spec);
+             p= q; break;
+         }
       }
 
       if (p == 0) continue;
 
       if (fmt[0] == '/' && fmt[1] == '#' && fmt[2] == 'F') {
-	 sp->minlen= p-sp->spec;
-	 sp->n_freq= 1;
-	 if (sp->in_f0 < 0.0)
-	    return strdupf("Frequency omitted from filter-spec, and no default provided");
-	 sp->f0= sp->in_f0;
-	 sp->f1= 0;
-	 sp->adj= sp->in_adj;
-	 fmt += 3;
+         sp->minlen= p-sp->spec;
+         sp->n_freq= 1;
+         if (sp->in_f0 < 0.0)
+            return strdupf("Frequency omitted from filter-spec, and no default provided");
+         sp->f0= sp->in_f0;
+         sp->f1= 0;
+         sp->adj= sp->in_adj;
+         fmt += 3;
       } else if (fmt[0] == '/' && fmt[1] == '#' && fmt[2] == 'R') {
-	 sp->minlen= p-sp->spec;
-	 sp->n_freq= 2;
-	 if (sp->in_f0 < 0.0 || sp->in_f1 < 0.0)
-	    return strdupf("Frequency omitted from filter-spec, and no default provided");
-	 sp->f0= sp->in_f0;
-	 sp->f1= sp->in_f1;
-	 sp->adj= sp->in_adj;
-	 fmt += 3;
+         sp->minlen= p-sp->spec;
+         sp->n_freq= 2;
+         if (sp->in_f0 < 0.0 || sp->in_f1 < 0.0)
+            return strdupf("Frequency omitted from filter-spec, and no default provided");
+         sp->f0= sp->in_f0;
+         sp->f1= sp->in_f1;
+         sp->adj= sp->in_adj;
+         fmt += 3;
       }
 
       // Check for trailing unmatched format characters
       if (*fmt) {
       bad:
-	 return strdupf("Bad match of spec-string \"%s\" to format \"%s\"",
-			sp->spec, filter[a].fmt);
+         return strdupf("Bad match of spec-string \"%s\" to format \"%s\"",
+                        sp->spec, filter[a].fmt);
       }
       if (sp->n_arg > MAXARG)
-	 return strdupf("Internal error -- maximum arguments exceeded");
+         return strdupf("Internal error -- maximum arguments exceeded");
 
       // Set the minlen to the whole string if unset
       if (sp->minlen < 0) sp->minlen= p-sp->spec;
@@ -2174,11 +2174,11 @@ fid_cv_array(double *arr) {
 
       typ= (int)(*dp++);
       if (typ != 'F' && typ != 'I')
-	 error("Bad type in array passed to fid_cv_array: %g", dp[-1]);
+         error("Bad type in array passed to fid_cv_array: %g", dp[-1]);
 
       len= (int)(*dp++);
       if (len < 1)
-	 error("Bad length in array passed to fid_cv_array: %g", dp[-1]);
+         error("Bad length in array passed to fid_cv_array: %g", dp[-1]);
 
       n_head++;
       n_val += len;
@@ -2226,7 +2226,7 @@ fid_cat(int freeme, ...) {
    va_start(ap, freeme);
    while ((ff0= va_arg(ap, FidFilter*))) {
       for (ff= ff0; ff->typ; ff= FFNEXT(ff))
-	 ;
+         ;
       len += ((char*)ff) - ((char*)ff0);
    }
    va_end(ap);
@@ -2237,7 +2237,7 @@ fid_cat(int freeme, ...) {
    va_start(ap, freeme);
    while ((ff0= va_arg(ap, FidFilter*))) {
       for (ff= ff0; ff->typ; ff= FFNEXT(ff))
-	 ;
+         ;
       cnt= ((char*)ff) - ((char*)ff0);
       memcpy(dst, ff0, cnt);
       dst += cnt;
