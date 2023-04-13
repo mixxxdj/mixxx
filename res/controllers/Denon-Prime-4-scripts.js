@@ -265,6 +265,9 @@ Prime4.init = function(_id, _debug) {
         new Prime4.Deck(4, 5),
     ];
 
+    // Disconnect all decks at first so they don't fight with each other
+    decks.forEach(deck => deck.forEachComponent(comp => comp.disconnect()));
+
     // Bind the sections
     Prime4.leftDeck = decks[0];
     Prime4.rightDeck = decks[1];
@@ -364,6 +367,9 @@ Prime4.init = function(_id, _debug) {
     Prime4.sweepNoise = new components.Button({
         midi: [0x9F, 0x0F],
     });
+
+    Prime4.leftDeck.reconnectComponents();
+    Prime4.rightDeck.reconnectComponents();
 
     // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
     /*
