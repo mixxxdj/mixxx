@@ -2169,7 +2169,7 @@ fid_cv_array(double *arr) {
    int n_val= 0;
 
    // Scan through for sizes
-   for (dp= arr; *dp; ) {
+   for (dp= arr; *dp != 0.0; ) {
       int len, typ;
 
       typ= (int)(*dp++);
@@ -2188,7 +2188,7 @@ fid_cv_array(double *arr) {
    rv= ff= (FidFilter*)Alloc(FFCSIZE(n_head, n_val));
 
    // Scan through to fill in FidFilter
-   for (dp= arr; *dp; ) {
+   for (dp= arr; *dp != 0.0; ) {
       int len, typ;
       typ= (int)(*dp++);
       len= (int)(*dp++);
