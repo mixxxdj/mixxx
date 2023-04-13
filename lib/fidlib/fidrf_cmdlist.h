@@ -350,8 +350,8 @@ fid_run_new(FidFilter *filt, double (**funcpp)(void *,double)) {
    *cp++= 0;
 
    // Sanity checks
-   coef_cnt= dp-coef_tmp;
-   cmd_cnt= cp-cmd_tmp;
+   coef_cnt= (int)(dp-coef_tmp);
+   cmd_cnt= (int)(cp-cmd_tmp);
    if (coef_cnt > coef_max ||
        cmd_cnt > cmd_max) 
       error("fid_run_new internal error; arrays exceeded");

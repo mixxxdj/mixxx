@@ -2034,7 +2034,7 @@ parse_spec(Spec *sp) {
              if (p == q) goto bad;
              p= q; break;
           case 'F':
-             sp->minlen= p-1-sp->spec;
+             sp->minlen= (int)(p-1-sp->spec);
              sp->n_freq= 1;
              sp->adj= (p[0] == '=');
              if (sp->adj) p++;
@@ -2043,7 +2043,7 @@ parse_spec(Spec *sp) {
              if (p == q) goto bad;
              p= q; break;
           case 'R':
-             sp->minlen= p-1-sp->spec;
+             sp->minlen= (int)(p-1-sp->spec);
              sp->n_freq= 2;
              sp->adj= (p[0] == '=');
              if (sp->adj) p++;
@@ -2062,7 +2062,7 @@ parse_spec(Spec *sp) {
       if (p == 0) continue;
 
       if (fmt[0] == '/' && fmt[1] == '#' && fmt[2] == 'F') {
-         sp->minlen= p-sp->spec;
+         sp->minlen= (int)(p-sp->spec);
          sp->n_freq= 1;
          if (sp->in_f0 < 0.0)
             return strdupf("Frequency omitted from filter-spec, and no default provided");
@@ -2071,7 +2071,7 @@ parse_spec(Spec *sp) {
          sp->adj= sp->in_adj;
          fmt += 3;
       } else if (fmt[0] == '/' && fmt[1] == '#' && fmt[2] == 'R') {
-         sp->minlen= p-sp->spec;
+         sp->minlen= (int)(p-sp->spec);
          sp->n_freq= 2;
          if (sp->in_f0 < 0.0 || sp->in_f1 < 0.0)
             return strdupf("Frequency omitted from filter-spec, and no default provided");
@@ -2133,7 +2133,7 @@ fid_rewrite_spec(const char *spec, double freq0, double freq1, int adj,
        case 2: sprintf(buf, "/%s%.15g-%.15g", sp.adj ? "=" : "", sp.f0, sp.f1); break;
        default: buf[0]= 0;
       }
-      len= strlen(buf);
+      len= (int)strlen(buf);
       rv= (char*)Alloc(sp.minlen + len + 1);
       memcpy(rv, spec, sp.minlen);
       strcpy(rv+sp.minlen, buf);
@@ -2232,7 +2232,7 @@ fid_cat(int freeme, ...) {
    while ((ff0= va_arg(ap, FidFilter*))) {
       for (ff= ff0; ff->typ; ff= FFNEXT(ff))
          ;
-      len += ((char*)ff) - ((char*)ff0);
+      len += (int)(((char*)ff) - ((char*)ff0));
    }
    va_end(ap);
 
@@ -2243,7 +2243,7 @@ fid_cat(int freeme, ...) {
    while ((ff0= va_arg(ap, FidFilter*))) {
       for (ff= ff0; ff->typ; ff= FFNEXT(ff))
          ;
-      cnt= ((char*)ff) - ((char*)ff0);
+      cnt= (int)(((char*)ff) - ((char*)ff0));
       memcpy(dst, ff0, cnt);
       dst += cnt;
       if (freeme) free(ff0);
@@ -2294,7 +2294,7 @@ grabWord(char **pp, char *buf, int buflen) {
 	     (*q != ',' && *q != ';' && *q != ')' && *q != ']' && *q != '}'))
 	 q++;
    }
-   len= q-p;
+   len= (int)(q-p);
    if (len >= buflen) return 0;
 
    memcpy(buf, p, len);
@@ -2437,7 +2437,7 @@ fid_parse(double rate, char **pp, FidFilter **ffp) {
 
          // Append it to our FidFilter to return
          for (ff1= ff; ff1->typ; ff1= FFNEXT(ff1)) ;
-         len= ((char*)ff1-(char*)ff);
+         len= (int)((char*)ff1-(char*)ff);
          while (rvp + len + xtra >= rvend) INCBUF;
          memcpy(rvp, ff, len); rvp += len;
          free(ff);
