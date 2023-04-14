@@ -1119,11 +1119,17 @@ double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
         return 0.0;
     }
 
+    double endSamplePosition = pDeck->trackSamples();
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
     if (pFromTrackAudibleSound) {
         double firstSound = pFromTrackAudibleSound->getPosition();
         if (firstSound > 0.0) {
-            return samplePositionToSeconds(firstSound, pDeck);
+            if (firstSound <= endSamplePosition) {
+                return samplePositionToSeconds(firstSound, pDeck);
+            } else {
+                qWarning() << "Audible Sound Cue starts after track end using:"
+                           << pTrack->getLocation();
+            }
         }
     }
     return 0.0;
