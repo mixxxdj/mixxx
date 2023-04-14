@@ -1271,12 +1271,11 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 
     double introLength = 0;
-    const double introEndSample = pToDeck->introEndPosition();
-    if (introEndSample != Cue::kNoPosition) {
-        const double introEnd = samplePositionToSeconds(introEndSample, pToDeck);
-        if (introStart < introEnd) {
-            introLength = introEnd - introStart;
-        }
+
+    // This returns introStart in case the user has not yet set an intro end
+    const double introEnd = getIntroEndSecond(pToDeck);
+    if (introStart < introEnd) {
+        introLength = introEnd - introStart;
     }
 
     if constexpr (sDebug) {
