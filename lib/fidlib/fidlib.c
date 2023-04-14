@@ -282,7 +282,7 @@
 
 
 #ifdef _MSC_VER
- #define strdup _strdup // redirect to _strdup, strdup is deprecated qith MSC [warning C4996]
+#define strdup _strdup // redirect to _strdup, strdup is deprecated with MSVC [warning C4996]
 #endif
 
 //
