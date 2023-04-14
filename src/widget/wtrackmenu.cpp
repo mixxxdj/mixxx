@@ -1432,6 +1432,10 @@ class ResetWaveformTrackPointerOperation : public mixxx::TrackPointerOperation {
         m_analysisDao.deleteAnalysesForTrack(pTrack->getId());
         pTrack->setWaveform(WaveformPointer());
         pTrack->setWaveformSummary(WaveformPointer());
+        // We Remove the invisible AudibleSound cue here as well, because the
+        // same reasons that apply for reanalyze of the waveforms applies also
+        // for the AudibleSound cue.
+        pTrack->removeCuesOfType(mixxx::CueType::AudibleSound);
     }
 
     AnalysisDao& m_analysisDao;
