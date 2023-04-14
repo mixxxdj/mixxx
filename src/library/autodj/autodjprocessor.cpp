@@ -1135,14 +1135,20 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
         return 0.0;
     }
 
-    CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pFromTrackAudibleSound && pFromTrackAudibleSound->getLength() > 0) {
-        double lastSound = pFromTrackAudibleSound->getEndPosition();
+    double endSamplePosition = pDeck->trackSamples();
+    CuePointer pCueAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
+    if (pCueAudibleSound && pCueAudibleSound->getLength() > 0) {
+        double lastSound = pCueAudibleSound->getEndPosition();
         if (lastSound > 0) {
-            return samplePositionToSeconds(lastSound, pDeck);
+            if (lastSound <= endSamplePosition) {
+                return samplePositionToSeconds(lastSound, pDeck);
+            } else {
+                qWarning() << "Audible Sound Cue ends after track end using:"
+                           << pTrack->getLocation();
+            }
         }
     }
-    return getEndSecond(pDeck);
+    return samplePositionToSeconds(endSamplePosition, pDeck);
 }
 
 double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
