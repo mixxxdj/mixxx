@@ -206,7 +206,10 @@ Prime4.DeckAssignButton = function(options) {
     if (!(Prime4[deckSide] instanceof Prime4.Deck)) {
         throw "invalid deckIndex or structure; We expect Prime4.leftDeck and Prime4.rightDeck to be valid decks representing the physical left and right decks";
     }
-    const isActive = function() {
+    const isActive = () => {
+        console.log(this.deckIndex, deckSide);
+        console.log(Prime4[deckSide], Prime4[deckSide].currentDeck);
+        console.log(this.toDeck, this.toDeck.currentDeck);
         return Prime4[deckSide] === this.toDeck;
     };
 
