@@ -1074,16 +1074,18 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
 }
 
 double AutoDJProcessor::getIntroStartSecond(DeckAttributes* pDeck) {
+    double endSamplePosition = pDeck->trackSamples();
     double introStartSample = pDeck->introStartPosition();
-    if (introStartSample == Cue::kNoPosition) {
+    if (introStartSample == Cue::kNoPosition || introStartSample > endSamplePosition) {
         return getFirstSoundSecond(pDeck);
     }
     return samplePositionToSeconds(introStartSample, pDeck);
 }
 
 double AutoDJProcessor::getIntroEndSecond(DeckAttributes* pDeck) {
+    double endSamplePosition = pDeck->trackSamples();
     double introEndSample = pDeck->introEndPosition();
-    if (introEndSample == Cue::kNoPosition) {
+    if (introEndSample == Cue::kNoPosition || introEndSample > endSamplePosition) {
         // Assume a zero length intro if introEnd is not set.
         // The introStart is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
@@ -1094,8 +1096,9 @@ double AutoDJProcessor::getIntroEndSecond(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
+    double endSamplePosition = pDeck->trackSamples();
     double outroStartSample = pDeck->outroStartPosition();
-    if (outroStartSample == Cue::kNoPosition) {
+    if (outroStartSample == Cue::kNoPosition || outroStartSample > endSamplePosition) {
         // Assume a zero length outro if outroStart is not set.
         // The outroEnd is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
@@ -1106,8 +1109,9 @@ double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
+    double endSamplePosition = pDeck->trackSamples();
     double outroEndSample = pDeck->outroEndPosition();
-    if (outroEndSample == Cue::kNoPosition) {
+    if (outroEndSample == Cue::kNoPosition || outroEndSample > endSamplePosition) {
         return getLastSoundSecond(pDeck);
     }
     return samplePositionToSeconds(outroEndSample, pDeck);;
