@@ -60,10 +60,11 @@ void WaveformRendererFiltered::renderGL() {
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
     // Represents the # of waveform data points per horizontal pixel.
-    const double gain = (lastVisualIndex - firstVisualIndex) / static_cast<double>(length);
+    const double visualIncrementPerPixel =
+            (lastVisualIndex - firstVisualIndex) / static_cast<double>(length);
 
     // Per-band gain from the EQ knobs.
-    float channelGain(1.0),
+    float allGain{1.0};
     float bandGain[3] = {1.0, 1.0, 1.0};
     getGains(&allGain, &bandGain[0], &bandGain[1], &bandGain[2]);
 
@@ -102,7 +103,7 @@ void WaveformRendererFiltered::renderGL() {
         // all the data points on either side of xVisualSampleIndex within a
         // window of 'maxSamplingRange' visual samples to measure the maximum
         // data point contained by this pixel.
-        double maxSamplingRange = gain / 2.0;
+        double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
         // Since xVisualSampleIndex is in visual-samples (e.g. R,L,R,L) we want
         // to check +/- maxSamplingRange frames, not samples. To do this, divide
@@ -154,7 +155,7 @@ void WaveformRendererFiltered::renderGL() {
                     halfBreadth + heightFactor * max[bandIndex][1]);
         }
 
-        xVisualSampleIndex += gain;
+        xVisualSampleIndex += visualIncrementPerPixel;
     }
 
     const QMatrix4x4 matrix = calculateMatrix(m_waveformRenderer, true);
