@@ -52,6 +52,10 @@ const deckColors = [
 
 ];
 
+// Would you like the TRACK SKIP ([|<<] and [>>|] buttons) to jump to the start and
+// end of the track, or seek through it? (Choose "seek" or "skip")
+const skipButtonBehaviour = "skip";
+
 // How sensitive should the jog wheel be when nudging (while playing) or navigating
 // (while paused) a track? (NOTE: 0.2 is a good value to start with. The larger the
 // number, the more sensitive the wheel will be.)
@@ -65,6 +69,14 @@ const wheelSensitivity = 0.5;
  *       UNLESS YOU KNOW WHAT YOU'RE DOING.       *
  *                                                *
  **************************************************/
+
+// Convert user-preference for `skipButtonBehaviour` into appropriate keys for components
+let trackSkipMode = [];
+if (skipButtonBehaviour === "skip") {
+    trackSkipMode = ["start", "end"];
+} else if (skipButtonBehaviour === "seek") {
+    trackSkipMode = ["back", "fwd"];
+}
 
 // Component re-jigging for pad mode purposes
 components.ComponentContainer.prototype.reconnectComponents = function(operation, recursive) {
@@ -454,13 +466,13 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Skip Backward
     this.skipBackButton = new components.Button({
         midi: [0x90 + midiChannel, 0x04],
-        key: "back",
+        key: trackSkipMode[0],
     });
 
     // Skip Forward
     this.skipFwdButton = new components.Button({
         midi: [0x90 + midiChannel, 0x05],
-        key: "fwd",
+        key: trackSkipMode[1],
     });
 
     // Beatjump Backward
@@ -597,7 +609,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         midi: [0x90 + midiChannel, 0x21],
         trigger: function() {
             midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4]);
-            //print("Jog Wheel LED Triggered");
+            console.log("Jog Wheel LED Triggered");
         },
     });
 
