@@ -414,13 +414,23 @@
               </options>
             </control>
             <control> <!-- Headphone Split Button -->
-              <group>[Master]</group>
-              <key>headSplit</key>
+              <group></group>
+              <key>Prime4.split.input</key>
               <description>MIDI Learned from 28 messages.</description>
               <status>0x9F</status>
               <midino>0x0B</midino>
               <options>
-                <normal/>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Headphone Split Button -->
+              <group></group>
+              <key>Prime4.split.input</key>
+              <description>MIDI Learned from 28 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
               </options>
             </control>
             <control> <!-- Crossfader -->
