@@ -5,7 +5,7 @@
 #include "control/controlobject.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
-#include "waveform/renderers/qopengl/calculatematrix.h"
+#include "waveform/renderers/qopengl/matrixforwidgetgeometry.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -108,7 +108,7 @@ void WaveformRenderBeat::renderGL() {
     m_shader.bind();
     m_shader.enableAttributeArray(vertexLocation);
 
-    const QMatrix4x4 matrix = calculateMatrix(m_waveformRenderer, false);
+    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
     m_shader.setAttributeArray(
             vertexLocation, GL_FLOAT, m_vertices.constData(), 2);

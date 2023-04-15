@@ -6,7 +6,6 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
-#include "util/widgetrendertimer.h"
 #include "widget/wdisplay.h"
 #include "widget/knobeventhandler.h"
 
@@ -29,9 +28,6 @@ class WKnob : public WDisplay {
     void inputActivity();
 
   private:
-#ifdef USE_WIDGET_RENDER_TIMER
-    WidgetRenderTimer m_renderTimer;
-#endif
     KnobEventHandler<WKnob> m_handler;
     friend class KnobEventHandler<WKnob>;
 };

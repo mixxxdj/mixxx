@@ -1,8 +1,8 @@
-#include "waveform/renderers/qopengl/calculatematrix.h"
+#include "waveform/renderers/qopengl/matrixforwidgetgeometry.h"
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
-QMatrix4x4 calculateMatrix(WaveformWidgetRenderer* const waveformRenderer,
+QMatrix4x4 matrixForWidgetGeometry(WaveformWidgetRenderer* const waveformRenderer,
         bool applyDevicePixelRatio) {
     const float ratio = applyDevicePixelRatio ? waveformRenderer->getDevicePixelRatio() : 1.f;
     QMatrix4x4 matrix;

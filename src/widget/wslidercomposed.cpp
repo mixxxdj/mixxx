@@ -29,18 +29,7 @@ WSliderComposed::WSliderComposed(QWidget* parent)
           m_barBgColor(nullptr),
           m_barPenCap(Qt::FlatCap),
           m_pSlider(nullptr),
-          m_pHandle(nullptr)
-#ifdef USE_WIDGET_RENDER_TIMER
-          ,
-          m_renderTimer(mixxx::Duration::fromMillis(20),
-                  mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer,
-            &WidgetRenderTimer::update,
-            this,
-            QOverload<>::of(&QWidget::update));
-#else
-                  {
-#endif
+          m_pHandle(nullptr) {
 }
 
 WSliderComposed::~WSliderComposed() {

@@ -2,7 +2,7 @@
 
 #include "track/track.h"
 #include "util/math.h"
-#include "waveform/renderers/qopengl/calculatematrix.h"
+#include "waveform/renderers/qopengl/matrixforwidgetgeometry.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
@@ -158,7 +158,7 @@ void WaveformRendererFiltered::renderGL() {
         xVisualSampleIndex += visualIncrementPerPixel;
     }
 
-    const QMatrix4x4 matrix = calculateMatrix(m_waveformRenderer, true);
+    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
     const int matrixLocation = m_shader.uniformLocation("matrix");
     const int colorLocation = m_shader.uniformLocation("color");

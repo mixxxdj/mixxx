@@ -10,7 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/painterscope.h"
-#include "waveform/renderers/qopengl/calculatematrix.h"
+#include "waveform/renderers/qopengl/matrixforwidgetgeometry.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -68,7 +68,7 @@ void qopengl::WaveformRenderMarkRange::renderGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const QMatrix4x4 matrix = calculateMatrix(m_waveformRenderer, false);
+    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
     int positionLocation = m_shader.attributeLocation("position");
 
