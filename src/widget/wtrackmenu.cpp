@@ -4,6 +4,7 @@
 #include <QInputDialog>
 #include <QModelIndex>
 
+#include "analyzer/analyzersilence.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartutils.h"
@@ -240,16 +241,16 @@ void WTrackMenu::createActions() {
         connect(m_pClearRatingAction, &QAction::triggered, this, &WTrackMenu::slotClearRating);
 
         m_pClearMainCueAction = new QAction(tr("Cue Point"), m_pClearMetadataMenu);
-        connect(m_pClearMainCueAction, &QAction::triggered, this, &WTrackMenu::slotClearMainCue);
+        connect(m_pClearMainCueAction, &QAction::triggered, this, &WTrackMenu::slotResetMainCue);
 
         m_pClearHotCuesAction = new QAction(tr("Hotcues"), m_pClearMetadataMenu);
         connect(m_pClearHotCuesAction, &QAction::triggered, this, &WTrackMenu::slotClearHotCues);
 
         m_pClearIntroCueAction = new QAction(tr("Intro"), m_pClearMetadataMenu);
-        connect(m_pClearIntroCueAction, &QAction::triggered, this, &WTrackMenu::slotClearIntroCue);
+        connect(m_pClearIntroCueAction, &QAction::triggered, this, &WTrackMenu::slotResetIntroCue);
 
         m_pClearOutroCueAction = new QAction(tr("Outro"), m_pClearMetadataMenu);
-        connect(m_pClearOutroCueAction, &QAction::triggered, this, &WTrackMenu::slotClearOutroCue);
+        connect(m_pClearOutroCueAction, &QAction::triggered, this, &WTrackMenu::slotResetOutroCue);
 
         m_pClearLoopAction = new QAction(tr("Loop"), m_pClearMetadataMenu);
         connect(m_pClearLoopAction, &QAction::triggered, this, &WTrackMenu::slotClearLoop);
@@ -1322,33 +1323,96 @@ class RemoveCuesOfTypeTrackPointerOperation : public mixxx::TrackPointerOperatio
     const mixxx::CueType m_cueType;
 };
 
+class ResetMainCueTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ResetMainCueTrackPointerOperation(UserSettingsPointer pConfig)
+            : m_pConfig(pConfig) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->removeCuesOfType(mixxx::CueType::MainCue);
+        CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
+        if (pAudibleSound) {
+            double firstSound = pAudibleSound->getPosition();
+            if (firstSound != Cue::kNoPosition) {
+                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.get());
+            }
+        }
+    }
+
+    UserSettingsPointer m_pConfig;
+};
+
+class ResetIntroTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ResetIntroTrackPointerOperation(UserSettingsPointer pConfig)
+            : m_pConfig(pConfig) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->removeCuesOfType(mixxx::CueType::Intro);
+        CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
+        if (pAudibleSound) {
+            double firstSound = pAudibleSound->getPosition();
+            if (firstSound != Cue::kNoPosition) {
+                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.get());
+            }
+        }
+    }
+
+    UserSettingsPointer m_pConfig;
+};
+
+class ResetOutroTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ResetOutroTrackPointerOperation() {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->removeCuesOfType(mixxx::CueType::Outro);
+        CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
+        if (pAudibleSound) {
+            double lastSound = pAudibleSound->getEndPosition();
+            if (lastSound != Cue::kNoPosition) {
+                AnalyzerSilence::setupOutroCue(pTrack.get(), lastSound);
+            }
+        }
+    }
+};
+
 } // anonymous namespace
 
-void WTrackMenu::slotClearMainCue() {
+void WTrackMenu::slotResetMainCue() {
     const auto progressLabelText =
             tr("Removing main cue from %n track(s)", "", getTrackCount());
     const auto trackOperator =
-            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::MainCue);
+            ResetMainCueTrackPointerOperation(m_pConfig);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
 }
 
-void WTrackMenu::slotClearOutroCue() {
+void WTrackMenu::slotResetOutroCue() {
     const auto progressLabelText =
             tr("Removing outro cue from %n track(s)", "", getTrackCount());
     const auto trackOperator =
-            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::Outro);
+            ResetOutroTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
 }
 
-void WTrackMenu::slotClearIntroCue() {
+void WTrackMenu::slotResetIntroCue() {
     const auto progressLabelText =
             tr("Removing intro cue from %n track(s)", "", getTrackCount());
     const auto trackOperator =
-            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::Intro);
+            ResetIntroTrackPointerOperation(m_pConfig);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
@@ -1474,14 +1538,14 @@ class ClearAllPerformanceMetadataTrackPointerOperation : public mixxx::TrackPoin
         m_resetBeats.apply(pTrack);
         m_resetPlayCounter.apply(pTrack);
         m_removeMainCue.apply(pTrack);
-        m_removeIntroCue.apply(pTrack);
-        m_removeOutroCue.apply(pTrack);
         m_removeHotCues.apply(pTrack);
         m_removeLoopCues.apply(pTrack);
         m_resetKeys.apply(pTrack);
         m_resetReplayGain.apply(pTrack);
         m_resetWaveform.apply(pTrack);
         m_resetRating.apply(pTrack);
+        m_removeIntroCue.apply(pTrack);
+        m_removeOutroCue.apply(pTrack);
     }
 
     const ResetBeatsTrackPointerOperation m_resetBeats;
