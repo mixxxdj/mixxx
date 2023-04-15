@@ -63,13 +63,9 @@ void WaveformRendererFiltered::renderGL() {
     const double gain = (lastVisualIndex - firstVisualIndex) / static_cast<double>(length);
 
     // Per-band gain from the EQ knobs.
-    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
-
-    float bandGain[3];
-    bandGain[0] = lowGain;
-    bandGain[1] = midGain;
-    bandGain[2] = highGain;
+    float channelGain(1.0),
+    float bandGain[3] = {1.0, 1.0, 1.0};
+    getGains(&allGain, &bandGain[0], &bandGain[1], &bandGain[2]);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
