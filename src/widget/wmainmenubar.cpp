@@ -809,8 +809,10 @@ void WMainMenuBar::hideMenuBar() {
     if (isNativeMenuBar()) {
         return;
     }
-    // don't use setHidden(true) because Alt hotkeys wouldn't work anymore
-    setFixedHeight(0);
+    if (m_pConfig->getValue<bool>(ConfigKey("[Config]", "hide_menubar"), false)) {
+        // don't use setHidden(true) because Alt hotkeys wouldn't work anymore
+        setFixedHeight(0);
+    }
 }
 #endif
 
