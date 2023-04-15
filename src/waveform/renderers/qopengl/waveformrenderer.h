@@ -17,15 +17,13 @@ class qopengl::WaveformRenderer : public WaveformRendererAbstract,
     explicit WaveformRenderer(WaveformWidgetRenderer* widget);
     ~WaveformRenderer();
 
-    void draw(QPainter* painter, QPaintEvent* event) override final {
-        // Pure virtual from WaveformRendererAbstract.
-        // Renderers that use QPainter functionality implement
-        // this. But as all classes derived from
-        // qopengl::WaveformRenderer will only use openGL
-        // functions (combining QPainter and QOpenGLWindow
-        // has bad performance), we leave this empty. Should
-        // never be called.
-    }
+    // Pure virtual from WaveformRendererAbstract.
+    // Renderers that use QPainter functionality implement this.
+    // But as all classes derived from qopengl::WaveformRenderer
+    // will only use openGL functions (combining QPainter and
+    // QOpenGLWindow has bad performance), we leave this empty.
+    // Should never be called.
+    void draw(QPainter* painter, QPaintEvent* event) override final;
 
     IWaveformRenderer* qopenglWaveformRenderer() override final {
         // This class is indirectly derived from
