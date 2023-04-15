@@ -106,7 +106,10 @@ void WaveformRendererLRRGB::renderGL() {
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
             halfBreadth + 0.5f * devicePixelRatio);
-    m_colors.addForRectangle(1.f, 1.f, 1.f);
+    m_colors.addForRectangle(
+            static_cast<float>(m_axesColor_r),
+            static_cast<float>(m_axesColor_g),
+            static_cast<float>(m_axesColor_b));
 
     for (int pos = 0; pos < length; ++pos) {
         // Our current pixel (x) corresponds to a number of visual samples

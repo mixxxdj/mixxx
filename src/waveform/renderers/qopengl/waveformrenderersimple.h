@@ -6,13 +6,13 @@
 #include "waveform/renderers/qopengl/waveformrenderersignalbase.h"
 
 namespace qopengl {
-class WaveformRendererFiltered;
+class WaveformRendererSimple;
 }
 
-class qopengl::WaveformRendererFiltered final : public qopengl::WaveformRendererSignalBase {
+class qopengl::WaveformRendererSimple final : public qopengl::WaveformRendererSignalBase {
   public:
-    explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRendererFiltered() override;
+    explicit WaveformRendererSimple(WaveformWidgetRenderer* waveformWidget);
+    ~WaveformRendererSimple() override;
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;
@@ -22,7 +22,7 @@ class qopengl::WaveformRendererFiltered final : public qopengl::WaveformRenderer
 
   private:
     UnicolorShader m_shader;
-    VertexData m_vertices[4];
+    VertexData m_vertices[2];
 
-    DISALLOW_COPY_AND_ASSIGN(WaveformRendererFiltered);
+    DISALLOW_COPY_AND_ASSIGN(WaveformRendererSimple);
 };

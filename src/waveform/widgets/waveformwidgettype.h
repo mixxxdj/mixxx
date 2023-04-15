@@ -26,6 +26,7 @@ class WaveformWidgetType {
         QOpenGLRGBWaveform,      // 17 RGB (QOpenGL)
         QOpenGLLRRGBWaveform,    // 18 RGB (QOpenGL)
         QOpenGLFilteredWaveform, // 19 Filtered (QOpenGL)
+        QOpenGLSimpleWaveform,   // 20 Simple (QOpenGL)
 #endif
         Count_WaveformwidgetType //    Also used as invalid value
     };

@@ -1182,13 +1182,13 @@ else()
   )
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/qopengl/calculatematrix.cpp
       src/waveform/renderers/qopengl/shaders/colorshader.cpp
       src/waveform/renderers/qopengl/shaders/endoftrackshader.cpp
       src/waveform/renderers/qopengl/shaders/gradientshader.cpp
       src/waveform/renderers/qopengl/shaders/shader.cpp
       src/waveform/renderers/qopengl/shaders/textureshader.cpp
       src/waveform/renderers/qopengl/shaders/unicolorshader.cpp
-      src/waveform/renderers/qopengl/calculatematrix.cpp
       src/waveform/renderers/qopengl/waveformrenderbackground.cpp
       src/waveform/renderers/qopengl/waveformrenderbeat.cpp
       src/waveform/renderers/qopengl/waveformrenderer.cpp
@@ -1198,11 +1198,13 @@ else()
       src/waveform/renderers/qopengl/waveformrendererpreroll.cpp
       src/waveform/renderers/qopengl/waveformrendererrgb.cpp
       src/waveform/renderers/qopengl/waveformrenderersignalbase.cpp
+      src/waveform/renderers/qopengl/waveformrenderersimple.cpp
       src/waveform/renderers/qopengl/waveformrendermark.cpp
       src/waveform/renderers/qopengl/waveformrendermarkrange.cpp
       src/waveform/widgets/qopengl/filteredwaveformwidget.cpp
       src/waveform/widgets/qopengl/lrrgbwaveformwidget.cpp
       src/waveform/widgets/qopengl/rgbwaveformwidget.cpp
+      src/waveform/widgets/qopengl/simplewaveformwidget.cpp
       src/waveform/widgets/qopengl/waveformwidget.cpp
       src/widget/openglwindow.cpp
       src/widget/qopengl/wspinny.cpp

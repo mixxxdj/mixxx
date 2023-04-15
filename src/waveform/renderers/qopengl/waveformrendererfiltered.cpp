@@ -81,17 +81,17 @@ void WaveformRendererFiltered::renderGL() {
     int reserved[4];
     // low, mid, high
     for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
-        m_verticesForGroup[bandIndex].clear();
+        m_vertices[bandIndex].clear();
         reserved[bandIndex] = numVerticesPerLine * length;
-        m_verticesForGroup[bandIndex].reserve(reserved[bandIndex]);
+        m_vertices[bandIndex].reserve(reserved[bandIndex]);
     }
 
     // the horizontal line
     reserved[3] = numVerticesPerLine;
-    m_verticesForGroup[3].clear();
-    m_verticesForGroup[3].reserve(reserved[3]);
+    m_vertices[3].clear();
+    m_vertices[3].reserve(reserved[3]);
 
-    m_verticesForGroup[3].addRectangle(
+    m_vertices[3].addRectangle(
             0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
@@ -148,7 +148,7 @@ void WaveformRendererFiltered::renderGL() {
             max[bandIndex][1] *= bandGain[bandIndex];
 
             // lines are thin rectangles
-            m_verticesForGroup[bandIndex].addRectangle(
+            m_vertices[bandIndex].addRectangle(
                     fpos - 0.5f,
                     halfBreadth - heightFactor * max[bandIndex][0],
                     fpos + 0.5f,
@@ -179,17 +179,20 @@ void WaveformRendererFiltered::renderGL() {
     colors[2].setRgbF(static_cast<float>(m_rgbHighColor_r),
             static_cast<float>(m_rgbHighColor_g),
             static_cast<float>(m_rgbHighColor_b));
-    colors[3].setRgbF(1.f, 1.f, 1.f);
+    colors[4].setRgbF(static_cast<float>(m_axesColor_r),
+            static_cast<float>(m_axesColor_g),
+            static_cast<float>(m_axesColor_b),
+            static_cast<float>(m_axesColor_a));
 
     // 3 bands + 1 extra for the horizontal line
 
     for (int i = 0; i < 4; i++) {
-        DEBUG_ASSERT(reserved[i] == m_verticesForGroup[i].size());
+        DEBUG_ASSERT(reserved[i] == m_vertices[i].size());
         m_shader.setUniformValue(colorLocation, colors[i]);
         m_shader.setAttributeArray(
-                positionLocation, GL_FLOAT, m_verticesForGroup[i].constData(), 2);
+                positionLocation, GL_FLOAT, m_vertices[i].constData(), 2);
 
-        glDrawArrays(GL_TRIANGLES, 0, m_verticesForGroup[i].size());
+        glDrawArrays(GL_TRIANGLES, 0, m_vertices[i].size());
     }
 
     m_shader.disableAttributeArray(positionLocation);
