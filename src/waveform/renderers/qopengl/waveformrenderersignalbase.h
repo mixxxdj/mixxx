@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/class.h"
 #include "waveform/renderers/qopengl/iwaveformrenderer.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
@@ -7,7 +8,7 @@ class WaveformWidgetRenderer;
 
 namespace qopengl {
 class WaveformRendererSignalBase;
-} // namespace qopengl
+}
 
 class qopengl::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
                                             public qopengl::IWaveformRenderer {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QOpenGLFunctions>
-
 #include "waveform/renderers/qopengl/iwaveformrenderer.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
@@ -9,7 +7,7 @@ class WaveformWidgetRenderer;
 
 namespace qopengl {
 class WaveformRenderer;
-} // namespace qopengl
+}
 
 class qopengl::WaveformRenderer : public WaveformRendererAbstract,
                                   public qopengl::IWaveformRenderer {

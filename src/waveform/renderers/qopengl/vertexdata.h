@@ -7,7 +7,9 @@ namespace qopengl {
 class VertexData;
 }
 
-class qopengl::VertexData : public QVector<QVector2D> {
+class qopengl::VertexData {
+    QVector<QVector2D> mData;
+
   public:
     void addRectangle(
             float x1,
@@ -18,8 +20,20 @@ class qopengl::VertexData : public QVector<QVector2D> {
         addTriangle({x1, y2}, {x2, y2}, {x2, y1});
     }
     void addTriangle(const QVector2D& a, const QVector2D& b, const QVector2D& c) {
-        push_back(a);
-        push_back(b);
-        push_back(c);
+        mData.push_back(a);
+        mData.push_back(b);
+        mData.push_back(c);
+    }
+    void clear() {
+        mData.clear();
+    }
+    void reserve(int size) {
+        mData.reserve(size);
+    }
+    int size() const {
+        return mData.size();
+    }
+    const QVector2D* constData() const {
+        return mData.constData();
     }
 };

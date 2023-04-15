@@ -3,7 +3,7 @@
 #include <QColor>
 #include <vector>
 
-#include "preferences/usersettings.h"
+#include "util/class.h"
 #include "waveform/renderers/qopengl/shaders/unicolorshader.h"
 #include "waveform/renderers/qopengl/waveformrenderer.h"
 #include "waveform/renderers/waveformmarkrange.h"
@@ -15,7 +15,7 @@ namespace qopengl {
 class WaveformRenderMarkRange;
 }
 
-class qopengl::WaveformRenderMarkRange : public qopengl::WaveformRenderer {
+class qopengl::WaveformRenderMarkRange final : public qopengl::WaveformRenderer {
   public:
     explicit WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget);
     ~WaveformRenderMarkRange() override;

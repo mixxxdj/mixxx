@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QColor>
-#include <QTime>
 #include <memory>
 
 #include "util/class.h"
@@ -18,7 +17,7 @@ namespace qopengl {
 class WaveformRendererEndOfTrack;
 }
 
-class qopengl::WaveformRendererEndOfTrack : public qopengl::WaveformRenderer {
+class qopengl::WaveformRendererEndOfTrack final : public qopengl::WaveformRenderer {
   public:
     explicit WaveformRendererEndOfTrack(
             WaveformWidgetRenderer* waveformWidget);

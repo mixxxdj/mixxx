@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/class.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
 
 class WaveformWidgetFactory;
@@ -8,7 +9,7 @@ namespace qopengl {
 class FilteredWaveformWidget;
 }
 
-class qopengl::FilteredWaveformWidget : public qopengl::WaveformWidget {
+class qopengl::FilteredWaveformWidget final : public qopengl::WaveformWidget {
     Q_OBJECT
   public:
     ~FilteredWaveformWidget() override;
@@ -40,4 +41,6 @@ class qopengl::FilteredWaveformWidget : public qopengl::WaveformWidget {
   private:
     FilteredWaveformWidget(const QString& group, QWidget* parent);
     friend class ::WaveformWidgetFactory;
+
+    DISALLOW_COPY_AND_ASSIGN(FilteredWaveformWidget);
 };

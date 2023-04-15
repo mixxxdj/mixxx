@@ -14,7 +14,7 @@ namespace qopengl {
 class WaveformRenderBeat;
 }
 
-class qopengl::WaveformRenderBeat : public qopengl::WaveformRenderer {
+class qopengl::WaveformRenderBeat final : public qopengl::WaveformRenderer {
   public:
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget);
     ~WaveformRenderBeat() override;

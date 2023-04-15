@@ -14,7 +14,7 @@ namespace qopengl {
 class WaveformRendererPreroll;
 }
 
-class qopengl::WaveformRendererPreroll : public qopengl::WaveformRenderer {
+class qopengl::WaveformRendererPreroll final : public qopengl::WaveformRenderer {
   public:
     explicit WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer);
     ~WaveformRendererPreroll() override;

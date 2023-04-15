@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/class.h"
 #include "waveform/renderers/qopengl/colordata.h"
 #include "waveform/renderers/qopengl/shaders/colorshader.h"
 #include "waveform/renderers/qopengl/vertexdata.h"
@@ -9,7 +10,7 @@ namespace qopengl {
 class WaveformRendererRGB;
 }
 
-class qopengl::WaveformRendererRGB : public qopengl::WaveformRendererSignalBase {
+class qopengl::WaveformRendererRGB final : public qopengl::WaveformRendererSignalBase {
   public:
     explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget);
     ~WaveformRendererRGB() override;

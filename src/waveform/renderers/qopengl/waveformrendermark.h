@@ -17,7 +17,7 @@ namespace qopengl {
 class WaveformRenderMark;
 }
 
-class qopengl::WaveformRenderMark : public QObject, public qopengl::WaveformRenderer {
+class qopengl::WaveformRenderMark final : public QObject, public qopengl::WaveformRenderer {
     Q_OBJECT
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget);
