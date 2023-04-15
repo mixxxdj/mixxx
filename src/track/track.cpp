@@ -909,7 +909,7 @@ void Track::removeCue(const CuePointer& pCue) {
     disconnect(pCue.get(), nullptr, this, nullptr);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
-        m_record.setCuePoint(CuePosition());
+        m_record.setCuePoint(Cue::kNoPosition);
     }
     pCue->setTrackId(TrackId());
     markDirtyAndUnlock(&lock);
@@ -927,11 +927,11 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             disconnect(pCue.get(), nullptr, this, nullptr);
             pCue->setTrackId(TrackId());
             it.remove();
+            if (type == mixxx::CueType::MainCue) {
+                m_record.setCuePoint(Cue::kNoPosition);
+            }
             dirty = true;
         }
-    }
-    if (compareAndSet(m_record.ptrCuePoint(), CuePosition())) {
-        dirty = true;
     }
     if (dirty) {
         markDirtyAndUnlock(&lock);
