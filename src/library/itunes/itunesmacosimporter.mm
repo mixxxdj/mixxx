@@ -271,7 +271,6 @@ ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
     ITunesImport iTunesImport;
-    iTunesImport.isMusicFolderLocatedAfterTracks = false;
 
     NSError* error = nil;
     ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0"

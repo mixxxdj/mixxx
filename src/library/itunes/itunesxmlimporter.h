@@ -15,7 +15,6 @@ class ITunesXMLImporter : public ITunesImporter {
     ITunesXMLImporter(LibraryFeature* parentFeature,
             const QString& xmlFilePath,
             const QSqlDatabase& database,
-            ITunesPathMapping& pathMapping,
             const std::atomic<bool>& cancelImport);
 
     ITunesImport importLibrary() override;
@@ -29,8 +28,9 @@ class ITunesXMLImporter : public ITunesImporter {
     // thus there is an implicit contract here that this `ITunesXMLImporter` cannot
     // outlive the feature (which should not happen anyway, since importers are short-lived).
     const QSqlDatabase& m_database;
-    ITunesPathMapping& m_pathMapping;
     const std::atomic<bool>& m_cancelImport;
+
+    ITunesPathMapping m_pathMapping;
 
     void parseTracks();
     void guessMusicLibraryMountpoint();

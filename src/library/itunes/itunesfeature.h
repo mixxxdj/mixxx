@@ -10,7 +10,6 @@
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/itunes/itunesimporter.h"
-#include "library/itunes/itunespathmapping.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
@@ -59,6 +58,8 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     /// returns the file path.
     QString showOpenDialog();
 
+    bool isMacOSImporterUsed();
+
     BaseExternalTrackModel* m_pITunesTrackModel;
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;
     parented_ptr<TreeItemModel> m_pSidebarModel;
@@ -78,8 +79,6 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
-
-    ITunesPathMapping m_pathMapping;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
