@@ -8,12 +8,12 @@
 #include "library/dao/analysisdao.h"
 #include "track/track.h"
 
-#define BIGBUF_SIZE (1024 * 1024) //Megabyte
-#define CANARY_SIZE (1024 * 4)
-#define MAGIC_FLOAT 1234.567890f
-#define CANARY_FLOAT 0.0f
-
 namespace {
+
+constexpr std::size_t kBigBufSize = 1024 * 1024; // Megabyte
+constexpr std::size_t kCanarySize = 1024 * 4;
+constexpr float kMagicFloat = 1234.567890f;
+constexpr float kCanaryFloat = 0.0f;
 
 class AnalyzerWaveformTest : public MixxxTest {
   protected:
@@ -33,15 +33,15 @@ class AnalyzerWaveformTest : public MixxxTest {
         // Memory layout for m_canaryBigBuf looks like
         //   [ canary | big buf | canary ]
 
-        m_canaryBigBuf = new CSAMPLE[BIGBUF_SIZE + 2 * CANARY_SIZE];
-        for (int i = 0; i < CANARY_SIZE; i++) {
-            m_canaryBigBuf[i] = CANARY_FLOAT;
+        m_canaryBigBuf = new CSAMPLE[kBigBufSize + 2 * kCanarySize];
+        for (std::size_t i = 0; i < kCanarySize; i++) {
+            m_canaryBigBuf[i] = kCanaryFloat;
         }
-        for (int i = CANARY_SIZE; i < CANARY_SIZE + BIGBUF_SIZE; i++) {
-            m_canaryBigBuf[i] = MAGIC_FLOAT;
+        for (std::size_t i = kCanarySize; i < kCanarySize + kBigBufSize; i++) {
+            m_canaryBigBuf[i] = kMagicFloat;
         }
-        for (int i = CANARY_SIZE + BIGBUF_SIZE; i < 2 * CANARY_SIZE + BIGBUF_SIZE; i++) {
-            m_canaryBigBuf[i] = CANARY_FLOAT;
+        for (std::size_t i = kCanarySize + kBigBufSize; i < 2 * kCanarySize + kBigBufSize; i++) {
+            m_canaryBigBuf[i] = kCanaryFloat;
         }
     }
 
@@ -57,19 +57,19 @@ class AnalyzerWaveformTest : public MixxxTest {
 
 // Basic test to make sure we don't alter the input buffer and don't step out of bounds.
 TEST_F(AnalyzerWaveformTest, canary) {
-    m_aw.initialize(m_pTrack, m_pTrack->getSampleRate(), BIGBUF_SIZE);
-    m_aw.processSamples(&m_canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
+    m_aw.initialize(m_pTrack, m_pTrack->getSampleRate(), kBigBufSize);
+    m_aw.processSamples(&m_canaryBigBuf[kCanarySize], kBigBufSize);
     m_aw.storeResults(m_pTrack);
     m_aw.cleanup();
-    int i = 0;
-    for (; i < CANARY_SIZE; i++) {
-        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], CANARY_FLOAT);
+    std::size_t i = 0;
+    for (; i < kCanarySize; i++) {
+        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], kCanaryFloat);
     }
-    for (; i < CANARY_SIZE + BIGBUF_SIZE; i++) {
-        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], MAGIC_FLOAT);
+    for (; i < kCanarySize + kBigBufSize; i++) {
+        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], kMagicFloat);
     }
-    for (; i < 2 * CANARY_SIZE + BIGBUF_SIZE; i++) {
-        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], CANARY_FLOAT);
+    for (; i < 2 * kCanarySize + kBigBufSize; i++) {
+        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], kCanaryFloat);
     }
 }
 
