@@ -805,7 +805,12 @@ void DlgPrefSound::checkLatencyCompensation() {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
             latencyCompensationSpinBox->setEnabled(true);
-            QString warningIcon("<html><img src=':/images/preferences/ic_preferences_warning.png' width='20' height='20'></html> ");
+            QString warningIcon(
+                    "<html>"
+                    "<img "
+                    "src=':/images/preferences/ic_preferences_warning.svg' "
+                    "width='20' height='20'>"
+                    "</html> ");
             QString lineBreak("<br/>");
             // TODO(Be): Make the "User Manual" text link to the manual.
             if (m_pLatencyCompensation->get() == 0.0) {
