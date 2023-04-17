@@ -64,6 +64,9 @@ TEST_F(MathUtilTest, Denormal) {
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_OFF);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_OFF);
 
+    // Note: The volatile keyword makes sure that the division is executed on the target
+    // and not by the pre-processor. In case of clang >= 15 the pre-processor flushes to
+    // zero with -ffast-math enabled.
     volatile float fDenormal = std::numeric_limits<float>::min();
     fDenormal /= 2.0f;
     EXPECT_NE(0.0f, fDenormal);
