@@ -685,18 +685,47 @@ Prime4.PadSection = function(deck, offset) {
     components.ComponentContainer.call(this);
 
     // Create component containers for each pad mode
-    this.modes = new components.ComponentContainer({
+    const modes = new components.ComponentContainer({
         "hotcue": new Prime4.hotcueMode(deck, offset),
         "loop": new Prime4.loopMode(deck, offset),
         //TODO: "autoloop": new Prime4.autoloopMode(deck, offset),
         "roll": new Prime4.rollMode(deck, offset),
         "sampler": new Prime4.samplerMode(deck, offset),
     });
+
+    const controlToPadMode = control => {
+        let mode;
+        switch (control) {
+        case Prime4.padMode.HOTCUE:
+            mode = modes.hotcue;
+            break;
+        case Prime4.padMode.LOOP:
+            mode = modes.loop;
+            /*
+            // TODO: Implement autoloop mode
+            if (Prime4.PadSection.currentMode === modes.loop) {
+                mode = modes.autoloop;
+            } else {
+                mode = modes.loop;
+            }
+            */
+            break;
+        case Prime4.padMode.ROLL:
+            mode = modes.roll;
+            break;
+        case Prime4.padMode.SLICER:
+            mode = modes.sampler;
+            break;
+        }
+
+        return mode;
+    };
+
     this.offset = offset;
 
     // Function for switching between pad modes
     this.setPadMode = function(control) {
-        const newMode = this.controlToPadMode(control);
+        const newMode = controlToPadMode(control);
 
         // Exit early if requested mode is already active or unavailable
         if (newMode === this.currentMode || newMode === undefined) {
@@ -735,30 +764,6 @@ Prime4.PadSection = function(deck, offset) {
 };
 
 Prime4.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
-
-Prime4.PadSection.prototype.controlToPadMode = function(control) {
-    let mode;
-    switch (control) {
-    case Prime4.padMode.HOTCUE:
-        mode = this.modes.hotcue;
-        break;
-    case Prime4.padMode.LOOP:
-        if (this.currentMode === this.modes.loop) {
-            mode = this.modes.autoloop;
-        } else {
-            mode = this.modes.loop;
-        }
-        break;
-    case Prime4.padMode.ROLL:
-        mode = this.modes.roll;
-        break;
-    case Prime4.padMode.SLICER:
-        mode = this.modes.sampler;
-        break;
-    }
-
-    return mode;
-};
 
 // Assign mode select buttons in XML file
 Prime4.PadSection.prototype.padModeButtonPressed = function(channel, control, value, _status, _group) {
