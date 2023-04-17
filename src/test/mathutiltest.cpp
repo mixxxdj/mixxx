@@ -64,19 +64,23 @@ TEST_F(MathUtilTest, Denormal) {
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_OFF);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_OFF);
 
-    volatile float fDenormal = std::numeric_limits<float>::min() / 2.0f;
+    volatile float fDenormal = std::numeric_limits<float>::min();
+    fDenormal /= 2.0f;
     EXPECT_NE(0.0f, fDenormal);
 
-    volatile double dDenormal = std::numeric_limits<double>::min() / 2.0;
+    volatile double dDenormal = std::numeric_limits<double>::min();
+    dDenormal /= 2.0;
     EXPECT_NE(0.0, dDenormal);
 
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 
-    fDenormal = std::numeric_limits<float>::min() / 2.0f;
+    fDenormal = std::numeric_limits<float>::min();
+    fDenormal /= 2.0f;
     EXPECT_EQ(0.0f, fDenormal);
 
-    dDenormal = std::numeric_limits<double>::min() / 2.0;
+    dDenormal = std::numeric_limits<double>::min();
+    dDenormal /= 2.0;
     EXPECT_EQ(0.0, dDenormal);
 
 #endif
