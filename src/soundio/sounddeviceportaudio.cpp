@@ -935,7 +935,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #if defined(__aarch64__)
         // Flush-to-zero on aarch64 is controlled by the Floating-point Control Register
         // Load the register into our variable.
-        int savedFPCR;
+        int64_t savedFPCR;
         asm volatile("mrs %[savedFPCR], FPCR"
                      : [ savedFPCR ] "=r"(savedFPCR));
 
