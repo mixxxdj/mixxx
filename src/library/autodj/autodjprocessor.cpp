@@ -1131,8 +1131,9 @@ double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
             if (firstSound <= endSamplePosition) {
                 return samplePositionToSeconds(firstSound, pDeck);
             } else {
-                qWarning() << "Audible Sound Cue starts after track end using:"
-                           << pTrack->getLocation();
+                qWarning() << "Audible Sound Cue starts after track end in:"
+                           << pTrack->getLocation()
+                           << "Using the first sample instead.";
             }
         }
     }
@@ -1153,8 +1154,9 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
             if (lastSound <= endSamplePosition) {
                 return samplePositionToSeconds(lastSound, pDeck);
             } else {
-                qWarning() << "Audible Sound Cue ends after track end using:"
-                           << pTrack->getLocation();
+                qWarning() << "Audible Sound Cue ends after track end in:"
+                           << pTrack->getLocation()
+                           << "Using the last sample instead.";
             }
         }
     }
