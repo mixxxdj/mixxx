@@ -306,6 +306,13 @@ void MixxxMainWindow::initialize() {
             this,
             &MixxxMainWindow::rebootMixxxView,
             Qt::DirectConnection);
+#ifndef __APPLE__
+    connect(m_pPrefDlg,
+            &DlgPreferences::menuBarAutoHideChanged,
+            this,
+            &MixxxMainWindow::slotUpdateMenuBarAltKeyConnection,
+            Qt::DirectConnection);
+#endif
 
     // Connect signals to the menubar. Should be done before emit skinLoaded.
     connectMenuBar();
@@ -549,6 +556,7 @@ void MixxxMainWindow::alwaysHideMenuBarDlg() {
             "Click <b>%1</b> to agree.<br><br>"
             "Click <b>%2</b> to disable that, for example if you don't use Mixxx "
             "with a keyboard.<br><br>"
+            "You can change this setting any time in Preferences -> Interface."
             "<br>") // line break for some extra margin to the checkbox
                            .arg(hideBtnLabel, showBtnLabel);
 

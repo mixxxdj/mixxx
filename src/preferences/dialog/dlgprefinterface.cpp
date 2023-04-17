@@ -34,6 +34,11 @@ const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 const QString kLocaleKey = QStringLiteral("Locale");
 const QString kTooltipsKey = QStringLiteral("Tooltips");
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+const QString kHideMenuBarKey = QStringLiteral("hide_menubar");
+
+// TODO move these to a common *_defs.h file, some are also used by e.g. MixxxMainWindow
+const bool kStartInFullscreenDefault = false;
+const bool kHideMenuBarDefault = true;
 
 } // namespace
 
@@ -298,6 +303,9 @@ void DlgPrefInterface::slotUpdate() {
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
             ConfigKey(kConfigGroup, kStartInFullscreenKey), false));
 
+    checkBoxHideMenuBar->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kHideMenuBarKey), kHideMenuBarDefault));
+
     loadTooltipPreferenceFromConfig();
 
     int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
@@ -320,6 +328,10 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Don't start in full screen.
     checkBoxStartFullScreen->setChecked(false);
+
+    // Always show the menu bar
+    checkBoxHideMenuBar->setChecked(kHideMenuBarDefault);
+    // Also show the menu bar hint again  on next start.
 
     // Inhibit the screensaver
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
@@ -432,6 +444,10 @@ void DlgPrefInterface::slotApply() {
 
     m_pConfig->set(ConfigKey(kConfigGroup, kStartInFullscreenKey),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
+
+    m_pConfig->set(ConfigKey(kConfigGroup, kHideMenuBarKey),
+            ConfigValue(checkBoxHideMenuBar->isChecked()));
+    emit menuBarAutoHideChanged();
 
     m_pConfig->set(ConfigKey(kControlsGroup, kTooltipsKey),
             ConfigValue(static_cast<int>(m_tooltipMode)));
