@@ -1074,16 +1074,18 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
 }
 
 double AutoDJProcessor::getIntroStartSecond(DeckAttributes* pDeck) {
+    double endSamplePosition = pDeck->trackSamples();
     double introStartSample = pDeck->introStartPosition();
-    if (introStartSample == Cue::kNoPosition) {
+    if (introStartSample == Cue::kNoPosition || introStartSample > endSamplePosition) {
         return getFirstSoundSecond(pDeck);
     }
     return samplePositionToSeconds(introStartSample, pDeck);
 }
 
 double AutoDJProcessor::getIntroEndSecond(DeckAttributes* pDeck) {
+    double endSamplePosition = pDeck->trackSamples();
     double introEndSample = pDeck->introEndPosition();
-    if (introEndSample == Cue::kNoPosition) {
+    if (introEndSample == Cue::kNoPosition || introEndSample > endSamplePosition) {
         // Assume a zero length intro if introEnd is not set.
         // The introStart is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
@@ -1094,8 +1096,9 @@ double AutoDJProcessor::getIntroEndSecond(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
+    double endSamplePosition = pDeck->trackSamples();
     double outroStartSample = pDeck->outroStartPosition();
-    if (outroStartSample == Cue::kNoPosition) {
+    if (outroStartSample == Cue::kNoPosition || outroStartSample > endSamplePosition) {
         // Assume a zero length outro if outroStart is not set.
         // The outroEnd is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
@@ -1106,8 +1109,9 @@ double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
+    double endSamplePosition = pDeck->trackSamples();
     double outroEndSample = pDeck->outroEndPosition();
-    if (outroEndSample == Cue::kNoPosition) {
+    if (outroEndSample == Cue::kNoPosition || outroEndSample > endSamplePosition) {
         return getLastSoundSecond(pDeck);
     }
     return samplePositionToSeconds(outroEndSample, pDeck);;
@@ -1119,11 +1123,17 @@ double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
         return 0.0;
     }
 
+    double endSamplePosition = pDeck->trackSamples();
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
     if (pFromTrackAudibleSound) {
         double firstSound = pFromTrackAudibleSound->getPosition();
         if (firstSound > 0.0) {
-            return samplePositionToSeconds(firstSound, pDeck);
+            if (firstSound <= endSamplePosition) {
+                return samplePositionToSeconds(firstSound, pDeck);
+            } else {
+                qWarning() << "Audible Sound Cue starts after track end using:"
+                           << pTrack->getLocation();
+            }
         }
     }
     return 0.0;
@@ -1135,14 +1145,20 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
         return 0.0;
     }
 
-    CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pFromTrackAudibleSound && pFromTrackAudibleSound->getLength() > 0) {
-        double lastSound = pFromTrackAudibleSound->getEndPosition();
+    double endSamplePosition = pDeck->trackSamples();
+    CuePointer pCueAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
+    if (pCueAudibleSound && pCueAudibleSound->getLength() > 0) {
+        double lastSound = pCueAudibleSound->getEndPosition();
         if (lastSound > 0) {
-            return samplePositionToSeconds(lastSound, pDeck);
+            if (lastSound <= endSamplePosition) {
+                return samplePositionToSeconds(lastSound, pDeck);
+            } else {
+                qWarning() << "Audible Sound Cue ends after track end using:"
+                           << pTrack->getLocation();
+            }
         }
     }
-    return getEndSecond(pDeck);
+    return samplePositionToSeconds(endSamplePosition, pDeck);
 }
 
 double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
@@ -1255,12 +1271,11 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 
     double introLength = 0;
-    const double introEndSample = pToDeck->introEndPosition();
-    if (introEndSample != Cue::kNoPosition) {
-        const double introEnd = samplePositionToSeconds(introEndSample, pToDeck);
-        if (introStart < introEnd) {
-            introLength = introEnd - introStart;
-        }
+
+    // This returns introStart in case the user has not yet set an intro end
+    const double introEnd = getIntroEndSecond(pToDeck);
+    if (introStart < introEnd) {
+        introLength = introEnd - introStart;
     }
 
     if constexpr (sDebug) {
