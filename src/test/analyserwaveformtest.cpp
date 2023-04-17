@@ -18,55 +18,58 @@ namespace {
 class AnalyzerWaveformTest : public MixxxTest {
   protected:
     AnalyzerWaveformTest()
-            : aw(config(), QSqlDatabase()),
-              canaryBigBuf(nullptr) {
+            : m_aw(config(), QSqlDatabase()),
+              m_canaryBigBuf(nullptr) {
     }
 
     void SetUp() override {
-        tio = Track::newTemporary();
-        tio->setAudioProperties(
+        m_pTrack = Track::newTemporary();
+        m_pTrack->setAudioProperties(
                 mixxx::audio::ChannelCount(2),
                 mixxx::audio::SampleRate(44100),
                 mixxx::audio::Bitrate(),
                 mixxx::Duration::fromMillis(1000));
 
-        //Memory layout for canaryBigBuf looks like
-        //  [ canary | big buf | canary ]
+        // Memory layout for m_canaryBigBuf looks like
+        //   [ canary | big buf | canary ]
 
-        canaryBigBuf = new CSAMPLE[BIGBUF_SIZE + 2 * CANARY_SIZE];
-        for (int i = 0; i < CANARY_SIZE; i++)
-            canaryBigBuf[i] = CANARY_FLOAT;
-        for (int i = CANARY_SIZE; i < CANARY_SIZE + BIGBUF_SIZE; i++)
-            canaryBigBuf[i] = MAGIC_FLOAT;
-        for (int i = CANARY_SIZE + BIGBUF_SIZE; i < 2 * CANARY_SIZE + BIGBUF_SIZE; i++)
-            canaryBigBuf[i] = CANARY_FLOAT;
+        m_canaryBigBuf = new CSAMPLE[BIGBUF_SIZE + 2 * CANARY_SIZE];
+        for (int i = 0; i < CANARY_SIZE; i++) {
+            m_canaryBigBuf[i] = CANARY_FLOAT;
+        }
+        for (int i = CANARY_SIZE; i < CANARY_SIZE + BIGBUF_SIZE; i++) {
+            m_canaryBigBuf[i] = MAGIC_FLOAT;
+        }
+        for (int i = CANARY_SIZE + BIGBUF_SIZE; i < 2 * CANARY_SIZE + BIGBUF_SIZE; i++) {
+            m_canaryBigBuf[i] = CANARY_FLOAT;
+        }
     }
 
     void TearDown() override {
-        delete[] canaryBigBuf;
+        delete[] m_canaryBigBuf;
     }
 
   protected:
-    AnalyzerWaveform aw;
-    TrackPointer tio;
-    CSAMPLE* canaryBigBuf;
+    AnalyzerWaveform m_aw;
+    TrackPointer m_pTrack;
+    CSAMPLE* m_canaryBigBuf;
 };
 
 // Basic test to make sure we don't alter the input buffer and don't step out of bounds.
 TEST_F(AnalyzerWaveformTest, canary) {
-    aw.initialize(tio, tio->getSampleRate(), BIGBUF_SIZE);
-    aw.processSamples(&canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
-    aw.storeResults(tio);
-    aw.cleanup();
+    m_aw.initialize(m_pTrack, m_pTrack->getSampleRate(), BIGBUF_SIZE);
+    m_aw.processSamples(&m_canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
+    m_aw.storeResults(m_pTrack);
+    m_aw.cleanup();
     int i = 0;
     for (; i < CANARY_SIZE; i++) {
-        EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
+        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], CANARY_FLOAT);
     }
     for (; i < CANARY_SIZE + BIGBUF_SIZE; i++) {
-        EXPECT_FLOAT_EQ(canaryBigBuf[i], MAGIC_FLOAT);
+        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], MAGIC_FLOAT);
     }
     for (; i < 2 * CANARY_SIZE + BIGBUF_SIZE; i++) {
-        EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
+        EXPECT_FLOAT_EQ(m_canaryBigBuf[i], CANARY_FLOAT);
     }
 }
 
