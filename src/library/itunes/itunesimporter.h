@@ -6,7 +6,6 @@
 
 struct ITunesImport {
     std::unique_ptr<TreeItem> playlistRoot;
-    bool isMusicFolderLocatedAfterTracks;
 };
 
 class ITunesImporter {

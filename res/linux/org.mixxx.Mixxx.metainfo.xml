@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2023-03-19" timestamp="1679230090">
+    <release version="2.5.0" type="development" date="2023-04-03" timestamp="1680480478">
       <description>
 </description>
     </release>
-    <release version="2.4.0" type="development" date="2023-03-19" timestamp="1679230090">
+    <release version="2.4.0" type="development" date="2023-04-03" timestamp="1680480478">
       <description>
  <p>
   Cover Art
@@ -1529,6 +1529,68 @@
    #4903
    #8818
    #4907
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.3.5" type="development" date="2023-04-03" timestamp="1680480478">
+      <description>
+ <ul>
+  <li>
+   Fix empty waveform overview after loading a track (Mixxx 2.3.4 regression)
+  Fixed by
+   #11333
+   #11359
+   #11344
+  </li>
+  <li>
+   Fullscreen: Fix a crash that occurs on Linux after enabling fullsceen and using menu
+  shortcuts e.g. Alt-F.
+   #11328
+   #11320
+  </li>
+  <li>
+   Fullscreen: Rebuild &amp; reconnect menu only on desktops with global menu
+   #11350
+  </li>
+  <li>
+   macOS: Request Microphone and line-in access permission.
+   #11367
+   #11365
+  </li>
+  <li>
+   JACK API: Allow to explicit select buffers of 2048 and 4096 frames/period. They are not
+  supported by the automatic buffer setting of the used PortAudio library.
+   #11366
+   #11341
+  </li>
+  <li>
+   Pioneer DDJ-400: Make Beat FX section more intuitive
+   #10912
+  </li>
+  <li>
+   Playlist export: Adopt new extension after changing the playlist type
+   #11332
+   #11327
+  </li>
+  <li>
+   LateNight: brighter fx parameter buttons
+   #11397
+  </li>
+  <li>
+   Fix drift in analyzis data after exporting metadata to MP3 files with ID3v1.1 tags
+   #11168
+   #11159
+  </li>
+  <li>
+   Fix broadcasting using Opus encoding
+   #11349
+   #10666
+  </li>
+  <li>
+   Tango: Remove VU peak indicators from stacked layout. This fixes a visual regression in Mixxx 2.3.4.
+   #11430
+   #11362
   </li>
  </ul>
 </description>

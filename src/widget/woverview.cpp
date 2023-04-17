@@ -237,6 +237,16 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     setFocusPolicy(Qt::NoFocus);
 }
 
+void WOverview::initWithTrack(TrackPointer pTrack) {
+    Init();
+    if (pTrack) {
+        // if a track already loaded (after skin change)
+        slotLoadingTrack(pTrack, TrackPointer());
+        slotTrackLoaded(pTrack);
+        slotWaveformSummaryUpdated();
+    }
+}
+
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
