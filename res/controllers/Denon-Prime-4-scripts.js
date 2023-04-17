@@ -382,8 +382,8 @@ Prime4.init = function(_id, _debug) {
         type: components.Button.prototype.types.toggle,
     });
 
-    Prime4.leftDeck.reconnectComponents();
-    Prime4.rightDeck.reconnectComponents();
+    //Prime4.leftDeck.reconnectComponents();
+    //Prime4.rightDeck.reconnectComponents();
 
     // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
     /*
@@ -393,9 +393,9 @@ Prime4.init = function(_id, _debug) {
     midi.sendShortMsg(0x9F, 0x1F, 1);                    // Deck 4 Toggle
     midi.sendShortMsg(0x94, 0x21, colDeck[0]);                        // Left Jog Wheel
     midi.sendShortMsg(0x95, 0x21, colDeck[1]);                        // Right Jog Wheel
+    */
     midi.sendShortMsg(0x94, 0x1C, 1);                                 // Left Shift Button
     midi.sendShortMsg(0x95, 0x1C, 1);                                 // Right Shift Button
-    */
 };
 
 Prime4.shutdown = function() {
@@ -407,7 +407,7 @@ Prime4.shutdown = function() {
 const mixerStrip = function(deckNumber, midiOffset) {
     components.Deck.call(this, deckNumber);
 
-    // FX Buttons
+    // FX Assign Buttons
     this.fxBankSelect = new components.ComponentContainer;
     for (let u = 1; u <= 2; u++) {
         this.fxBankSelect[u] = new components.EffectAssignmentButton({
@@ -605,9 +605,9 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Jog Wheel LED
     this.jogWheelLed = new components.Component({
         midi: [0x90 + midiChannel, 0x21],
+        on: colDeck[deckNumbers - 1],
         trigger: function() {
-            midi.sendShortMsg(0x90 + midiChannel, 0x21, colDeck[midiChannel - 4]);
-            console.log("Jog Wheel LED Triggered");
+            this.send(this.on);
         },
     });
 
