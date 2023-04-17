@@ -1123,11 +1123,11 @@ double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
         return 0.0;
     }
 
-    double endSamplePosition = pDeck->trackSamples();
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
     if (pFromTrackAudibleSound) {
         double firstSound = pFromTrackAudibleSound->getPosition();
         if (firstSound > 0.0) {
+            double endSamplePosition = pDeck->trackSamples();
             if (firstSound <= endSamplePosition) {
                 return samplePositionToSeconds(firstSound, pDeck);
             } else {
