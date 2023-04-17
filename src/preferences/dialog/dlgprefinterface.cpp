@@ -301,7 +301,7 @@ void DlgPrefInterface::slotUpdate() {
     spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kStartInFullscreenKey), false));
+            ConfigKey(kConfigGroup, kStartInFullscreenKey), kStartInFullscreenDefault));
 
     checkBoxHideMenuBar->setChecked(m_pConfig->getValue(
             ConfigKey(kConfigGroup, kHideMenuBarKey), kHideMenuBarDefault));
@@ -327,11 +327,12 @@ void DlgPrefInterface::slotResetToDefaults() {
     spinBoxScaleFactor->setValue(100);
 
     // Don't start in full screen.
-    checkBoxStartFullScreen->setChecked(false);
+    checkBoxStartFullScreen->setChecked(kStartInFullscreenDefault);
 
     // Always show the menu bar
     checkBoxHideMenuBar->setChecked(kHideMenuBarDefault);
-    // Also show the menu bar hint again  on next start.
+    // Also show the menu bar hint again on next start?
+    // Use bool member to set [Config],show_menubar_hint to 1 in slotApply()
 
     // Inhibit the screensaver
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
