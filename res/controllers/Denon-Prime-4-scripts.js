@@ -272,7 +272,7 @@ Prime4.init = function(_id, _debug) {
     ];
 
     // Disconnect all decks at first so they don't fight with each other
-    decks.forEach(deck => deck.forEachComponent(comp => comp.disconnect()));
+    decks.forEach(deck => deck.forEachComponent(comp => { console.log(`disconnecting "${comp.group}, ${comp.inKey}"`); comp.disconnect(); }));
 
     // Bind the sections
     Prime4.leftDeck = decks[0];
