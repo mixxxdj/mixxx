@@ -6,7 +6,7 @@ namespace mixxx {
 
 namespace {
 
-inline void assertEndPosition(
+void assertEndPosition(
         CueType type,
         std::optional<double> endPositionMillis) {
     switch (type) {
