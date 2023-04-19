@@ -205,6 +205,11 @@ DlgAutoDJ::DlgAutoDJ(
             &DlgAutoDJ::transitionTimeChanged);
 
     connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::autoDJError,
+            this,
+            &DlgAutoDJ::autoDJError);
+
+    connect(m_pAutoDJProcessor,
             &AutoDJProcessor::autoDJStateChanged,
             this,
             &DlgAutoDJ::autoDJStateChanged);
@@ -270,7 +275,12 @@ void DlgAutoDJ::fadeNowButton(bool) {
 }
 
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
-    AutoDJProcessor::AutoDJError error = m_pAutoDJProcessor->toggleAutoDJ(enable);
+    m_pAutoDJProcessor->toggleAutoDJ(enable);
+}
+
+// TODO If there's a way to migrate the translations move this
+// to AutoDJProcessor in order to keep this class minimal
+void DlgAutoDJ::autoDJError(AutoDJProcessor::AutoDJError error) {
     switch (error) {
     case AutoDJProcessor::ADJ_NOT_TWO_DECKS:
         QMessageBox::warning(nullptr,
