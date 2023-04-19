@@ -227,6 +227,7 @@ void AutoDJProcessor::fadeNow() {
     if (!pLeftDeck || !pRightDeck) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
         return;
     }
 
@@ -259,6 +260,7 @@ void AutoDJProcessor::fadeNow() {
         // Deck is empty or track too short, disable AutoDJ
         // This happens only if the user has changed deck orientation to such deck.
         toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
         return;
     }
 
@@ -333,6 +335,7 @@ void AutoDJProcessor::fadeNow() {
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     if (m_eState == ADJ_DISABLED) {
+        emit autoDJError(ADJ_IS_INACTIVE);
         return ADJ_IS_INACTIVE;
     }
     // Load the next song from the queue.
@@ -341,6 +344,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     if (!pLeftDeck || !pRightDeck) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
         return ADJ_NOT_TWO_DECKS;
     }
 
@@ -625,6 +629,7 @@ void AutoDJProcessor::crossfaderChanged(double value) {
                     }
                     pToDeck->play();
                 } else {
+                    // Track in toDeck was ejected manually, stop.
                     toggleAutoDJ(false);
                     return;
                 }
@@ -1518,6 +1523,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
             }
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
+            emit autoDJError(ADJ_NOT_TWO_DECKS);
             return;
         }
         pDeck->startPos = kKeepPosition;
@@ -1626,6 +1632,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
         if (!pLeftDeck || !pRightDeck) {
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
+            emit autoDJError(ADJ_NOT_TWO_DECKS);
             return;
         }
         if (pLeftDeck->isPlaying()) {
@@ -1654,6 +1661,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     if (!pLeftDeck || !pRightDeck) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
         return;
     }
 
