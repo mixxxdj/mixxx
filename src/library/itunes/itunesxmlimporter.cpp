@@ -415,12 +415,12 @@ bool ITunesXMLImporter::readNextStartElement() {
 void ITunesXMLImporter::parsePlaylist() {
     // qDebug() << "Parse Playlist";
 
-    QString playlistname;
-    int playlist_id = -1;
-    QString playlist_persistentId;
-    QString playlist_parentPersistentId;
-    int playlist_position = -1;
-    int track_reference = -1;
+    QString name;
+    int id = -1;
+    QString persistentId;
+    QString parentPersistentId;
+    int trackPosition = -1;
+    int trackReference = -1;
     // indicates that we haven't found the <
     bool isSystemPlaylist = false;
     bool isPlaylistItemsStarted = false;
@@ -438,24 +438,24 @@ void ITunesXMLImporter::parsePlaylist() {
                 // Afterwars the playlist entries occur
                 if (key == "Name") {
                     readNextStartElement();
-                    playlistname = m_xml.readElementText();
+                    name = m_xml.readElementText();
                     continue;
                 }
                 // When parsing the ID, the playlistname has already been found
                 if (key == "Playlist ID") {
                     readNextStartElement();
-                    playlist_id = m_xml.readElementText().toInt();
-                    playlist_position = 1;
+                    id = m_xml.readElementText().toInt();
+                    trackPosition = 1;
                     continue;
                 }
                 if (key == "Playlist Persistent ID") {
                     readNextStartElement();
-                    playlist_persistentId = m_xml.readElementText();
+                    persistentId = m_xml.readElementText();
                     continue;
                 }
                 if (key == "Parent Persistent ID") {
                     readNextStartElement();
-                    playlist_parentPersistentId = m_xml.readElementText();
+                    parentPersistentId = m_xml.readElementText();
                 }
                 // Hide playlists that are system playlists
                 if (key == "Master" || key == "Movies" || key == "TV Shows" ||
@@ -473,8 +473,8 @@ void ITunesXMLImporter::parsePlaylist() {
                     }
 
                     ITunesPlaylist playlist = {};
-                    playlist.id = playlist_id;
-                    playlist.name = playlistname;
+                    playlist.id = id;
+                    playlist.name = name;
                     if (!m_backend.importPlaylist(playlist)) {
                         // unexpected error
                         break;
@@ -484,13 +484,13 @@ void ITunesXMLImporter::parsePlaylist() {
                 // already been processed and persisted
                 if (key == kTrackId) {
                     readNextStartElement();
-                    track_reference = m_xml.readElementText().toInt();
+                    trackReference = m_xml.readElementText().toInt();
 
                     // Insert tracks if we are not in a pre-built playlist
                     if (!isSystemPlaylist) {
-                        m_backend.importPlaylistTrack(playlist_id,
-                                track_reference,
-                                playlist_position++);
+                        m_backend.importPlaylistTrack(id,
+                                trackReference,
+                                trackPosition++);
                     }
                 }
             }
@@ -508,16 +508,16 @@ void ITunesXMLImporter::parsePlaylist() {
     }
 
     if (!isSystemPlaylist) {
-        m_playlistIdByPersistentId[playlist_persistentId] = playlist_id;
+        m_playlistIdByPersistentId[persistentId] = id;
 
-        int playlist_parentId = kRootITunesPlaylistId;
-        if (!playlist_parentPersistentId.isNull()) {
-            auto found = m_playlistIdByPersistentId.find(playlist_parentPersistentId);
+        int parentId = kRootITunesPlaylistId;
+        if (!parentPersistentId.isNull()) {
+            auto found = m_playlistIdByPersistentId.find(parentPersistentId);
             if (found != m_playlistIdByPersistentId.end()) {
-                playlist_parentId = found.value();
+                parentId = found.value();
             }
         }
 
-        m_backend.importPlaylistRelation(playlist_parentId, playlist_id);
+        m_backend.importPlaylistRelation(parentId, id);
     }
 }
