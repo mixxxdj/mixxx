@@ -1,0 +1,61 @@
+#pragma once
+
+#include <QHash>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QString>
+#include <map>
+
+#include "library/treeitem.h"
+
+struct ITunesTrack {
+    int id;
+    QString artist;
+    QString title;
+    QString album;
+    QString albumArtist;
+    QString genre;
+    QString grouping;
+    int year;
+    int duration;
+    QString location;
+    int rating;
+    QString comment;
+    int trackNumber;
+    int bpm;
+    int bitrate;
+};
+
+struct ITunesPlaylist {
+    int id;
+    QString name;
+};
+
+/// A wrapper around the iTunes database tables. Keeps track of the
+/// playlist tree, deals with duplicate disambiguation and can export
+/// the tree afterwards.
+class ITunesImportBackend {
+  public:
+    ITunesImportBackend(const QSqlDatabase& database);
+
+    bool importTrack(ITunesTrack track);
+
+    bool importPlaylist(ITunesPlaylist playlist);
+
+    void importPlaylistRelation(int parentId, int childId);
+
+    bool importPlaylistTrack(int playlistId, int trackId, int position);
+
+    void appendPlaylistTree(TreeItem& item, int playlistId = -1);
+
+  private:
+    QHash<QString, int> m_playlistDuplicatesByName;
+    QHash<int, QString> m_playlistNameById;
+    std::multimap<int, int> m_playlistIdsByParentId;
+
+    QSqlQuery m_insertTrackQuery;
+    QSqlQuery m_insertPlaylistQuery;
+    QSqlQuery m_insertPlaylistTrackQuery;
+
+    QString uniquifyPlaylistName(QString name);
+};
