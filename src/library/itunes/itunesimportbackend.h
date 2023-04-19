@@ -6,6 +6,7 @@
 #include <QString>
 #include <map>
 
+#include "library/itunes/itunespathmapping.h"
 #include "library/treeitem.h"
 
 const int kRootITunesPlaylistId = -1;
@@ -41,12 +42,10 @@ class ITunesImportBackend {
     ITunesImportBackend(const QSqlDatabase& database);
 
     bool importTrack(ITunesTrack track);
-
     bool importPlaylist(ITunesPlaylist playlist);
-
-    void importPlaylistRelation(int parentId, int childId);
-
+    bool importPlaylistRelation(int parentId, int childId);
     bool importPlaylistTrack(int playlistId, int trackId, int position);
+    bool applyPathMapping(ITunesPathMapping pathMapping);
 
     void appendPlaylistTree(TreeItem& item, int playlistId = kRootITunesPlaylistId);
 
@@ -58,6 +57,7 @@ class ITunesImportBackend {
     QSqlQuery m_insertTrackQuery;
     QSqlQuery m_insertPlaylistQuery;
     QSqlQuery m_insertPlaylistTrackQuery;
+    QSqlQuery m_applyPathMappingQuery;
 
     QString uniquifyPlaylistName(QString name);
 };

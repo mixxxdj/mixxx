@@ -145,7 +145,9 @@ class ImporterImpl {
             return;
         }
 
-        m_backend.importPlaylistRelation(parentId, playlistId);
+        if (!m_backend.importPlaylistRelation(parentId, playlistId)) {
+            return;
+        }
 
         int i = 0;
         for (ITLibMediaItem* item in itPlaylist.items) {

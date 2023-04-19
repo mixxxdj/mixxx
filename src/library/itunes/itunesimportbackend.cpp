@@ -2,12 +2,14 @@
 
 #include <QSqlQuery>
 
+#include "library/itunes/ituneslocalhosttoken.h"
 #include "library/queryutil.h"
 
 ITunesImportBackend::ITunesImportBackend(const QSqlDatabase& database)
         : m_insertTrackQuery(database),
           m_insertPlaylistQuery(database),
-          m_insertPlaylistTrackQuery(database) {
+          m_insertPlaylistTrackQuery(database),
+          m_applyPathMappingQuery(database) {
     m_insertTrackQuery.prepare(
             "INSERT INTO itunes_library (id, artist, title, album, "
             "album_artist, genre, grouping, year, duration, "
@@ -21,6 +23,10 @@ ITunesImportBackend::ITunesImportBackend(const QSqlDatabase& database)
     m_insertPlaylistTrackQuery.prepare(
             "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, "
             "position) VALUES (:playlist_id, :track_id, :position)");
+
+    m_applyPathMappingQuery.prepare(
+            "UPDATE itunes_library SET location = replace( location, "
+            ":itunes_path, :mixxx_path )");
 }
 
 bool ITunesImportBackend::importTrack(ITunesTrack track) {
@@ -68,8 +74,9 @@ bool ITunesImportBackend::importPlaylist(ITunesPlaylist playlist) {
     return true;
 }
 
-void ITunesImportBackend::importPlaylistRelation(int parentId, int childId) {
+bool ITunesImportBackend::importPlaylistRelation(int parentId, int childId) {
     m_playlistIdsByParentId.insert({parentId, childId});
+    return true;
 }
 
 bool ITunesImportBackend::importPlaylistTrack(int playlistId, int trackId, int position) {
@@ -78,6 +85,21 @@ bool ITunesImportBackend::importPlaylistTrack(int playlistId, int trackId, int p
     query.bindValue(":playlist_id", playlistId);
     query.bindValue(":track_id", trackId);
     query.bindValue(":position", position);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    return true;
+}
+
+bool ITunesImportBackend::applyPathMapping(ITunesPathMapping pathMapping) {
+    QSqlQuery& query = m_insertPlaylistTrackQuery;
+
+    query.bindValue(":itunes_path",
+            pathMapping.dbITunesRoot.replace(kiTunesLocalhostToken, ""));
+    query.bindValue(":mixxx_path", pathMapping.mixxxITunesRoot);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
