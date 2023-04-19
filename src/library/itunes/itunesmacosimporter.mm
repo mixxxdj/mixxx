@@ -136,7 +136,7 @@ class ImporterImpl {
         int playlistId = dbIdFromPersistentId(itPlaylist.persistentID);
         int parentId = itPlaylist.parentID
                 ? dbIdFromPersistentId(itPlaylist.parentID)
-                : -1;
+                : kRootITunesPlaylistId;
 
         ITunesPlaylist playlist = {};
         playlist.id = playlistId;

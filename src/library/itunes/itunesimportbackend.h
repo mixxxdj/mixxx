@@ -8,6 +8,8 @@
 
 #include "library/treeitem.h"
 
+const int kRootITunesPlaylistId = -1;
+
 struct ITunesTrack {
     int id;
     QString artist;
@@ -46,7 +48,7 @@ class ITunesImportBackend {
 
     bool importPlaylistTrack(int playlistId, int trackId, int position);
 
-    void appendPlaylistTree(TreeItem& item, int playlistId = -1);
+    void appendPlaylistTree(TreeItem& item, int playlistId = kRootITunesPlaylistId);
 
   private:
     QHash<QString, int> m_playlistDuplicatesByName;
