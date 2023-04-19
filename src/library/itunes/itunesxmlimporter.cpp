@@ -417,6 +417,8 @@ void ITunesXMLImporter::parsePlaylist() {
 
     QString playlistname;
     int playlist_id = -1;
+    QString playlist_persistentId;
+    QString playlist_parentPersistentId;
     int playlist_position = -1;
     int track_reference = -1;
     // indicates that we haven't found the <
@@ -445,6 +447,15 @@ void ITunesXMLImporter::parsePlaylist() {
                     playlist_id = m_xml.readElementText().toInt();
                     playlist_position = 1;
                     continue;
+                }
+                if (key == "Playlist Persistent ID") {
+                    readNextStartElement();
+                    playlist_persistentId = m_xml.readElementText();
+                    continue;
+                }
+                if (key == "Parent Persistent ID") {
+                    readNextStartElement();
+                    playlist_parentPersistentId = m_xml.readElementText();
                 }
                 // Hide playlists that are system playlists
                 if (key == "Master" || key == "Movies" || key == "TV Shows" ||
@@ -495,4 +506,16 @@ void ITunesXMLImporter::parsePlaylist() {
             }
         }
     }
+
+    m_playlistIdByPersistentId[playlist_persistentId] = playlist_id;
+
+    int playlist_parentId = kRootITunesPlaylistId;
+    if (!playlist_parentPersistentId.isNull()) {
+        auto found = m_playlistIdByPersistentId.find(playlist_parentPersistentId);
+        if (found != m_playlistIdByPersistentId.end()) {
+            playlist_parentId = found.value();
+        }
+    }
+
+    m_backend.importPlaylistRelation(playlist_parentId, playlist_id);
 }

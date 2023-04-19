@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QHash>
 #include <QSqlDatabase>
 #include <QXmlStreamReader>
 #include <atomic>
@@ -33,6 +34,7 @@ class ITunesXMLImporter : public ITunesImporter {
     const std::atomic<bool>& m_cancelImport;
 
     ITunesPathMapping m_pathMapping;
+    QHash<QString, int> m_playlistIdByPersistentId;
 
     void parseTracks();
     void guessMusicLibraryMountpoint();
