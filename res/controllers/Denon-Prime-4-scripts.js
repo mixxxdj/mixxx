@@ -42,7 +42,7 @@ const deckColors = [
     "green",
 
     // Deck 2
-    "yellow",
+    "blue",
 
     // Deck 3
     "cyan",
@@ -682,6 +682,7 @@ Prime4.padMode = {
 };
 
 Prime4.PadSection = function(deck, offset) {
+    const theContainer = this;
     components.ComponentContainer.call(this);
 
     // Create component containers for each pad mode
@@ -692,6 +693,8 @@ Prime4.PadSection = function(deck, offset) {
         "roll": new Prime4.rollMode(deck, offset),
         "sampler": new Prime4.samplerMode(deck, offset),
     });
+
+    modes.forEachComponent(c => c.disconnect());
 
     const controlToPadMode = control => {
         let mode;
@@ -723,6 +726,14 @@ Prime4.PadSection = function(deck, offset) {
 
     this.offset = offset;
 
+    this.padModeSelectLeds = components.Component({
+        trigger: function() {
+            modes.forEach(mode => {
+                midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
+            });
+        },
+    });
+
     // Function for switching between pad modes
     this.setPadMode = function(control) {
         const newMode = controlToPadMode(control);
@@ -734,17 +745,12 @@ Prime4.PadSection = function(deck, offset) {
 
         // Disable LED of current mode button
         if (this.currentMode) {
-            midi.sendShortMsg(0x94 + this.offset, this.currentMode.ledControl, this.currentMode.colourOff);
-
             // Disconnect pads from current mode
             this.currentMode.forEachComponent(function(component) {
                 component.disconnect();
                 component.outConnect = false;
             });
         }
-
-        // Enable LED of new mode to switch to
-        midi.sendShortMsg(0x94 + this.offset, newMode.ledControl, newMode.colourOn);
 
         // Connect pads to new mode
         newMode.forEachComponent(function(component) {
@@ -754,13 +760,13 @@ Prime4.PadSection = function(deck, offset) {
         });
 
         this.currentMode = newMode;
+
+        theContainer.padModeSelectLeds.trigger();
     };
 
     // Start in Hotcue mode
     this.setPadMode(Prime4.padMode.HOTCUE);
-    midi.sendShortMsg(0x94 + offset, 0x0C, Prime4.rgbCode.whiteDark);
-    midi.sendShortMsg(0x94 + offset, 0x0D, Prime4.rgbCode.whiteDark);
-    midi.sendShortMsg(0x94 + offset, 0x0E, Prime4.rgbCode.whiteDark);
+
 };
 
 Prime4.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
@@ -808,14 +814,14 @@ Prime4.loopMode = function(deck, offset) {
     this.ledControl = Prime4.padMode.LOOP;
     this.colourOn = Prime4.rgbCode.red;
     this.colourOff = Prime4.rgbCode.whiteDark;
-    this.PerformancePad = function(n) {
+    const PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x0E + n];
         this.number = n;
         this.outKey = "hotcue_" + this.number + "_enabled";
         this.colorKey = "hotcue_" + this.number + "_color";
         components.Button.call(this);
     };
-    this.PerformancePad.prototype = new components.Button({
+    PerformancePad.prototype = new components.Button({
         group: deck.currentDeck,
         on: this.colourOn,
         off: this.colourOff,
@@ -833,7 +839,7 @@ Prime4.loopMode = function(deck, offset) {
     });
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
-        this.pads[i] = new this.PerformancePad(i);
+        this.pads[i] = new PerformancePad(i);
     }
 };
 Prime4.loopMode.prototype = Object.create(components.ComponentContainer.prototype);
