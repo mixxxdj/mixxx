@@ -39,22 +39,15 @@ bool ITunesImportBackend::importTrack(ITunesTrack track) {
     query.bindValue(":album_artist", track.albumArtist);
     query.bindValue(":genre", track.genre);
     query.bindValue(":grouping", track.grouping);
+    query.bindValue(":year", track.year > 0 ? QVariant(track.year) : QVariant());
     query.bindValue(":duration", track.duration);
     query.bindValue(":location", track.location);
     query.bindValue(":rating", track.rating);
     query.bindValue(":comment", track.comment);
-    if (track.year > 0) {
-        query.bindValue(":year", track.year);
-    }
-    if (track.trackNumber > 0) {
-        query.bindValue(":tracknumber", track.trackNumber);
-    }
-    if (track.bpm > 0) {
-        query.bindValue(":bpm", track.bpm);
-    }
-    if (track.bitrate > 0) {
-        query.bindValue(":bitrate", track.bitrate);
-    }
+    query.bindValue(":tracknumber",
+            track.trackNumber > 0 ? QVariant(track.trackNumber) : QVariant());
+    query.bindValue(":bpm", track.bpm);
+    query.bindValue(":bitrate", track.bitrate);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
