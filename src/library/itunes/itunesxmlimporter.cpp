@@ -467,7 +467,7 @@ void ITunesXMLImporter::parsePlaylist() {
                 if (key == "Playlist Items") {
                     isPlaylistItemsStarted = true;
 
-                    // if the playlist is prebuild don't hit the database
+                    // if the playlist is prebuilt don't hit the database
                     if (isSystemPlaylist) {
                         continue;
                     }
@@ -507,15 +507,17 @@ void ITunesXMLImporter::parsePlaylist() {
         }
     }
 
-    m_playlistIdByPersistentId[playlist_persistentId] = playlist_id;
+    if (!isSystemPlaylist) {
+        m_playlistIdByPersistentId[playlist_persistentId] = playlist_id;
 
-    int playlist_parentId = kRootITunesPlaylistId;
-    if (!playlist_parentPersistentId.isNull()) {
-        auto found = m_playlistIdByPersistentId.find(playlist_parentPersistentId);
-        if (found != m_playlistIdByPersistentId.end()) {
-            playlist_parentId = found.value();
+        int playlist_parentId = kRootITunesPlaylistId;
+        if (!playlist_parentPersistentId.isNull()) {
+            auto found = m_playlistIdByPersistentId.find(playlist_parentPersistentId);
+            if (found != m_playlistIdByPersistentId.end()) {
+                playlist_parentId = found.value();
+            }
         }
-    }
 
-    m_backend.importPlaylistRelation(playlist_parentId, playlist_id);
+        m_backend.importPlaylistRelation(playlist_parentId, playlist_id);
+    }
 }
