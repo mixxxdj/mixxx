@@ -726,7 +726,7 @@ Prime4.PadSection = function(deck, offset) {
 
     this.offset = offset;
 
-    this.padModeSelectLeds = new components.Component({
+    this.padModeSelectLeds = components.Component({
         trigger: function() {
             modes.forEach(mode => {
                 midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
@@ -761,7 +761,7 @@ Prime4.PadSection = function(deck, offset) {
 
         this.currentMode = newMode;
 
-        theContainer.padModeSelectLeds.trigger();
+        this.padModeSelectLeds.trigger();
     };
 
     // Start in Hotcue mode
