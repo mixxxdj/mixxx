@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 
 #include "library/itunes/ituneslocalhosttoken.h"
+#include "library/itunes/itunespathmapping.h"
 #include "library/queryutil.h"
 
 ITunesImportBackend::ITunesImportBackend(const QSqlDatabase& database)
@@ -29,7 +30,7 @@ ITunesImportBackend::ITunesImportBackend(const QSqlDatabase& database)
             ":itunes_path, :mixxx_path )");
 }
 
-bool ITunesImportBackend::importTrack(ITunesTrack track) {
+bool ITunesImportBackend::importTrack(const ITunesTrack& track) {
     QSqlQuery& query = m_insertTrackQuery;
 
     query.bindValue(":id", track.id);
@@ -57,20 +58,19 @@ bool ITunesImportBackend::importTrack(ITunesTrack track) {
     return true;
 }
 
-bool ITunesImportBackend::importPlaylist(ITunesPlaylist playlist) {
-    playlist.name = uniquifyPlaylistName(playlist.name);
-
+bool ITunesImportBackend::importPlaylist(const ITunesPlaylist& playlist) {
+    QString uniqueName = uniquifyPlaylistName(playlist.name);
     QSqlQuery& query = m_insertPlaylistQuery;
 
     query.bindValue(":id", playlist.id);
-    query.bindValue(":name", playlist.name);
+    query.bindValue(":name", uniqueName);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return false;
     }
 
-    m_playlistNameById[playlist.id] = playlist.name;
+    m_playlistNameById[playlist.id] = uniqueName;
 
     return true;
 }
@@ -95,11 +95,11 @@ bool ITunesImportBackend::importPlaylistTrack(int playlistId, int trackId, int p
     return true;
 }
 
-bool ITunesImportBackend::applyPathMapping(ITunesPathMapping pathMapping) {
+bool ITunesImportBackend::applyPathMapping(const ITunesPathMapping& pathMapping) {
     QSqlQuery& query = m_insertPlaylistTrackQuery;
 
     query.bindValue(":itunes_path",
-            pathMapping.dbITunesRoot.replace(kiTunesLocalhostToken, ""));
+            QString(pathMapping.dbITunesRoot).replace(kiTunesLocalhostToken, ""));
     query.bindValue(":mixxx_path", pathMapping.mixxxITunesRoot);
 
     if (!query.exec()) {

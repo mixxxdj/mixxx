@@ -41,11 +41,11 @@ class ITunesImportBackend {
   public:
     ITunesImportBackend(const QSqlDatabase& database);
 
-    bool importTrack(ITunesTrack track);
-    bool importPlaylist(ITunesPlaylist playlist);
+    bool importTrack(const ITunesTrack& track);
+    bool importPlaylist(const ITunesPlaylist& playlist);
     bool importPlaylistRelation(int parentId, int childId);
     bool importPlaylistTrack(int playlistId, int trackId, int position);
-    bool applyPathMapping(ITunesPathMapping pathMapping);
+    bool applyPathMapping(const ITunesPathMapping& pathMapping);
 
     void appendPlaylistTree(TreeItem& item, int playlistId = kRootITunesPlaylistId);
 
