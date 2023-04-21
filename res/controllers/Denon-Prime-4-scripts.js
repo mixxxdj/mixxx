@@ -728,11 +728,11 @@ Prime4.PadSection = function(deck, offset) {
 
     this.padModeSelectLeds = new components.Component({
         trigger: function() {
-            modes.forEach(mode => {
+            modes.forEachComponent(mode => {
                 midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
             });
         },
-    });
+    }, false);
 
     // Function for switching between pad modes
     this.setPadMode = function(control) {
