@@ -1,4 +1,4 @@
-#include "library/itunes/itunesimportbackend.h"
+#include "library/itunes/itunesdao.h"
 
 #include <QSqlQuery>
 
@@ -6,7 +6,7 @@
 #include "library/itunes/itunespathmapping.h"
 #include "library/queryutil.h"
 
-ITunesImportBackend::ITunesImportBackend(const QSqlDatabase& database)
+ITunesDAO::ITunesDAO(const QSqlDatabase& database)
         : m_insertTrackQuery(database),
           m_insertPlaylistQuery(database),
           m_insertPlaylistTrackQuery(database),
@@ -30,7 +30,7 @@ ITunesImportBackend::ITunesImportBackend(const QSqlDatabase& database)
             ":itunes_path, :mixxx_path )");
 }
 
-bool ITunesImportBackend::importTrack(const ITunesTrack& track) {
+bool ITunesDAO::importTrack(const ITunesTrack& track) {
     QSqlQuery& query = m_insertTrackQuery;
 
     query.bindValue(":id", track.id);
@@ -58,7 +58,7 @@ bool ITunesImportBackend::importTrack(const ITunesTrack& track) {
     return true;
 }
 
-bool ITunesImportBackend::importPlaylist(const ITunesPlaylist& playlist) {
+bool ITunesDAO::importPlaylist(const ITunesPlaylist& playlist) {
     QString uniqueName = uniquifyPlaylistName(playlist.name);
     QSqlQuery& query = m_insertPlaylistQuery;
 
@@ -75,12 +75,12 @@ bool ITunesImportBackend::importPlaylist(const ITunesPlaylist& playlist) {
     return true;
 }
 
-bool ITunesImportBackend::importPlaylistRelation(int parentId, int childId) {
+bool ITunesDAO::importPlaylistRelation(int parentId, int childId) {
     m_playlistIdsByParentId.insert({parentId, childId});
     return true;
 }
 
-bool ITunesImportBackend::importPlaylistTrack(int playlistId, int trackId, int position) {
+bool ITunesDAO::importPlaylistTrack(int playlistId, int trackId, int position) {
     QSqlQuery& query = m_insertPlaylistTrackQuery;
 
     query.bindValue(":playlist_id", playlistId);
@@ -95,7 +95,7 @@ bool ITunesImportBackend::importPlaylistTrack(int playlistId, int trackId, int p
     return true;
 }
 
-bool ITunesImportBackend::applyPathMapping(const ITunesPathMapping& pathMapping) {
+bool ITunesDAO::applyPathMapping(const ITunesPathMapping& pathMapping) {
     QSqlQuery& query = m_insertPlaylistTrackQuery;
 
     query.bindValue(":itunes_path",
@@ -110,7 +110,7 @@ bool ITunesImportBackend::applyPathMapping(const ITunesPathMapping& pathMapping)
     return true;
 }
 
-void ITunesImportBackend::appendPlaylistTree(TreeItem& item, int playlistId) {
+void ITunesDAO::appendPlaylistTree(TreeItem& item, int playlistId) {
     auto childsRange = m_playlistIdsByParentId.equal_range(playlistId);
     std::for_each(childsRange.first,
             childsRange.second,
@@ -122,7 +122,7 @@ void ITunesImportBackend::appendPlaylistTree(TreeItem& item, int playlistId) {
             });
 }
 
-QString ITunesImportBackend::uniquifyPlaylistName(QString name) {
+QString ITunesDAO::uniquifyPlaylistName(QString name) {
     // iTunes permits users to have multiple playlists with the same name,
     // our data model (both the database schema and the tree items) however
     // require unique names since they identify the playlist via this name.

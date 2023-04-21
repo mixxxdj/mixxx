@@ -6,7 +6,7 @@
 #include <memory>
 #include <utility>
 
-#include "library/itunes/itunesimportbackend.h"
+#include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
 #include "library/queryutil.h"

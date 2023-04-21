@@ -37,9 +37,9 @@ struct ITunesPlaylist {
 /// A wrapper around the iTunes database tables. Keeps track of the
 /// playlist tree, deals with duplicate disambiguation and can export
 /// the tree afterwards.
-class ITunesImportBackend {
+class ITunesDAO {
   public:
-    ITunesImportBackend(const QSqlDatabase& database);
+    ITunesDAO(const QSqlDatabase& database);
 
     bool importTrack(const ITunesTrack& track);
     bool importPlaylist(const ITunesPlaylist& playlist);

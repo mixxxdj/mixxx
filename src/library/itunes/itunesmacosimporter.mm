@@ -1,7 +1,7 @@
 #include "library/itunes/itunesmacosimporter.h"
 
 #import <iTunesLibrary/iTunesLibrary.h>
-#include "library/itunes/itunesimportbackend.h"
+#include "library/itunes/itunesdao.h"
 
 #include <QHash>
 #include <QSqlDatabase>
@@ -71,7 +71,7 @@ class ImporterImpl {
     const std::atomic<bool>& m_cancelImport;
 
     QHash<unsigned long long, int> m_dbIdByPersistentId;
-    ITunesImportBackend m_backend;
+    ITunesDAO m_backend;
 
     int dbIdFromPersistentId(NSNumber* boxedPersistentId) {
         // Map a persistent ID as used by iTunes to an (incrementing) database

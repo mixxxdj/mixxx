@@ -6,7 +6,7 @@
 #include <atomic>
 #include <memory>
 
-#include "library/itunes/itunesimportbackend.h"
+#include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/itunespathmapping.h"
 #include "library/libraryfeature.h"
@@ -30,7 +30,7 @@ class ITunesXMLImporter : public ITunesImporter {
     // (note that the backend internally contains a database reference),
     // thus there is an implicit contract here that this `ITunesXMLImporter` cannot
     // outlive the feature (which should not happen anyway, since importers are short-lived).
-    ITunesImportBackend m_backend;
+    ITunesDAO m_backend;
     const std::atomic<bool>& m_cancelImport;
 
     ITunesPathMapping m_pathMapping;
