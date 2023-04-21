@@ -5,6 +5,7 @@
 #include <QUrl>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
@@ -87,8 +88,9 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                     }
                 } else if (key == "Tracks") {
                     parseTracks();
-                    iTunesImport.playlistRoot = parsePlaylists();
                     isTracksParsed = true;
+                } else if (key == "Playlists") {
+                    iTunesImport.playlistRoot = parsePlaylists();
                 }
             }
         }
@@ -452,11 +454,13 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
 
     QString playlistname;
     int playlist_id = -1;
-    int playlist_position = -1;
-    int track_reference = -1;
+    int trackReference = -1;
     // indicates that we haven't found the <
     bool isSystemPlaylist = false;
     bool isPlaylistItemsStarted = false;
+
+    // We store the list of track ids in memory to be independent of the <dict> key order.
+    std::vector<int> trackReferences;
 
     // We process and iterate the <dict> tags holding playlist summary information here
     while (!m_xml.atEnd() && !m_cancelImport.load()) {
@@ -478,68 +482,27 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
                 if (key == "Playlist ID") {
                     readNextStartElement();
                     playlist_id = m_xml.readElementText().toInt();
-                    playlist_position = 1;
                     continue;
                 }
                 // Hide playlists that are system playlists
                 if (key == "Master" || key == "Movies" || key == "TV Shows" ||
                         key == "Music" || key == "Books" || key == "Purchased") {
-                    isSystemPlaylist = true;
+                    readNextStartElement();
+                    if (m_xml.name() == QString("true")) {
+                        isSystemPlaylist = true;
+                    }
                     continue;
                 }
 
                 if (key == "Playlist Items") {
                     isPlaylistItemsStarted = true;
-
-                    // if the playlist is prebuild don't hit the database
-                    if (isSystemPlaylist) {
-                        continue;
-                    }
-                    queryInsertToPlaylists.bindValue(":id", playlist_id);
-                    queryInsertToPlaylists.bindValue(":name", playlistname);
-
-                    bool success = queryInsertToPlaylists.exec();
-                    if (!success) {
-                        if (queryInsertToPlaylists.lastError()
-                                        .nativeErrorCode() ==
-                                QString::number(SQLITE_CONSTRAINT)) {
-                            // We assume a duplicate Playlist name
-                            playlistname += QString(" #%1").arg(playlist_id);
-                            queryInsertToPlaylists.bindValue(":name", playlistname);
-
-                            bool success = queryInsertToPlaylists.exec();
-                            if (!success) {
-                                // unexpected error
-                                LOG_FAILED_QUERY(queryInsertToPlaylists);
-                                break;
-                            }
-                        } else {
-                            // unexpected error
-                            LOG_FAILED_QUERY(queryInsertToPlaylists);
-                            return;
-                        }
-                    }
-                    // append the playlist to the child model
-                    root.appendChild(playlistname);
+                    continue;
                 }
-                // When processing playlist entries, playlist name and id have
-                // already been processed and persisted
+
                 if (key == kTrackId) {
                     readNextStartElement();
-                    track_reference = m_xml.readElementText().toInt();
-
-                    queryInsertToPlaylistTracks.bindValue(":playlist_id", playlist_id);
-                    queryInsertToPlaylistTracks.bindValue(":track_id", track_reference);
-                    queryInsertToPlaylistTracks.bindValue(":position", playlist_position++);
-
-                    // Insert tracks if we are not in a pre-build playlist
-                    if (!isSystemPlaylist && !queryInsertToPlaylistTracks.exec()) {
-                        qDebug() << "SQL Error in ITunesXMLImporter.cpp: line" << __LINE__ << " "
-                                 << queryInsertToPlaylistTracks.lastError();
-                        qDebug() << "trackid" << track_reference;
-                        qDebug() << "playlistname; " << playlistname;
-                        qDebug() << "-----------------";
-                    }
+                    trackReference = m_xml.readElementText().toInt();
+                    trackReferences.push_back(trackReference);
                 }
             }
         }
@@ -553,5 +516,48 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
                 break;
             }
         }
+    }
+
+    if (!isSystemPlaylist) {
+        queryInsertToPlaylists.bindValue(":id", playlist_id);
+        queryInsertToPlaylists.bindValue(":name", playlistname);
+
+        bool success = queryInsertToPlaylists.exec();
+        if (!success) {
+            if (queryInsertToPlaylists.lastError()
+                            .nativeErrorCode() ==
+                    QString::number(SQLITE_CONSTRAINT)) {
+                // We assume a duplicate Playlist name
+                playlistname += QString(" #%1").arg(playlist_id);
+                queryInsertToPlaylists.bindValue(":name", playlistname);
+
+                bool success = queryInsertToPlaylists.exec();
+                if (!success) {
+                    // unexpected error
+                    LOG_FAILED_QUERY(queryInsertToPlaylists);
+                    return;
+                }
+            } else {
+                // unexpected error
+                LOG_FAILED_QUERY(queryInsertToPlaylists);
+                return;
+            }
+        }
+
+        // Perform the deferred track insertions.
+        int playlistPosition = 1;
+        for (int trackReference : trackReferences) {
+            queryInsertToPlaylistTracks.bindValue(":playlist_id", playlist_id);
+            queryInsertToPlaylistTracks.bindValue(":track_id", trackReference);
+            queryInsertToPlaylistTracks.bindValue(":position", playlistPosition++);
+
+            if (!queryInsertToPlaylistTracks.exec()) {
+                LOG_FAILED_QUERY(queryInsertToPlaylistTracks);
+                return;
+            }
+        }
+
+        // append the playlist to the child model
+        root.appendChild(playlistname);
     }
 }
