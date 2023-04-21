@@ -6,6 +6,7 @@
 #include <QString>
 #include <map>
 
+#include "library/dao/dao.h"
 #include "library/itunes/itunespathmapping.h"
 #include "library/treeitem.h"
 
@@ -37,9 +38,11 @@ struct ITunesPlaylist {
 /// A wrapper around the iTunes database tables. Keeps track of the
 /// playlist tree, deals with duplicate disambiguation and can export
 /// the tree afterwards.
-class ITunesDAO {
+class ITunesDAO : public DAO {
   public:
-    ITunesDAO(const QSqlDatabase& database);
+    ~ITunesDAO() override = default;
+
+    void initialize(const QSqlDatabase& database) override;
 
     bool importTrack(const ITunesTrack& track);
     bool importPlaylist(const ITunesPlaylist& playlist);

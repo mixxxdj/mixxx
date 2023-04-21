@@ -51,8 +51,9 @@ ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
           m_xmlFilePath(xmlFilePath),
           m_xmlFile(xmlFilePath),
           m_xml(&m_xmlFile),
-          m_backend(database),
           m_cancelImport(cancelImport) {
+    m_backend.initialize(database);
+
     // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
     // file://localhost/ from the URL. When we load the user's iTunes XML
     // configuration we may replace this with something based on the detected

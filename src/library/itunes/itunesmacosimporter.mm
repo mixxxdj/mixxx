@@ -31,7 +31,8 @@ class ImporterImpl {
   public:
     ImporterImpl(
             const QSqlDatabase& database, const std::atomic<bool>& cancelImport)
-            : m_cancelImport(cancelImport), m_backend(database) {
+            : m_cancelImport(cancelImport) {
+        m_backend.initialize(database);
     }
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {

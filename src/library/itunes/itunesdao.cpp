@@ -6,11 +6,12 @@
 #include "library/itunes/itunespathmapping.h"
 #include "library/queryutil.h"
 
-ITunesDAO::ITunesDAO(const QSqlDatabase& database)
-        : m_insertTrackQuery(database),
-          m_insertPlaylistQuery(database),
-          m_insertPlaylistTrackQuery(database),
-          m_applyPathMappingQuery(database) {
+void ITunesDAO::initialize(const QSqlDatabase& database) {
+    m_insertTrackQuery = QSqlQuery(database);
+    m_insertPlaylistQuery = QSqlQuery(database);
+    m_insertPlaylistTrackQuery = QSqlQuery(database);
+    m_applyPathMappingQuery = QSqlQuery(database);
+
     m_insertTrackQuery.prepare(
             "INSERT INTO itunes_library (id, artist, title, album, "
             "album_artist, genre, grouping, year, duration, "
