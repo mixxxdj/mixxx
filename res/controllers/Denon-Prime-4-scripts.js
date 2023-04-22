@@ -16,7 +16,7 @@ var Prime4 = {};
  *  - Plug in the Prime 4 to your computer using the provided USB cable
  *  - Confirm that your device is connected (This might take a few seconds)
  *  - Start Mixxx
- *  - Press Ctrl + P to access the Preferences window
+ *  - Open the Preferences window
  *  - Click "Controllers" to expand the list of USB devices Mixxx is detecting
  *  - Click "PRIME 4 Control Surface MIDI" from the list
  *  - In the "Load Mapping" dropdown list, select "Denon Prime 4 - Mixxx Mapping"
@@ -729,7 +729,14 @@ Prime4.PadSection = function(deck, offset) {
     this.padModeSelectLeds = new components.Component({
         trigger: function() {
             modes.forEachComponent(mode => {
+                /*
+                if (!(mode instanceof components.ComponentContainer)) {
+                    //throw "padmode is not a container as expected";
+                    console.log("padmode is not a container as expected");
+                }
+                */
                 midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
+                console.log(mode, mode.ledControl, mode.colourOn, mode.colourOff);
             });
         },
     }, false);
@@ -813,7 +820,7 @@ Prime4.loopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.LOOP;
     this.colourOn = Prime4.rgbCode.red;
-    this.colourOff = Prime4.rgbCode.whiteDark;
+    this.colourOff = Prime4.rgbCode.magentaDark;
     const PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x0E + n];
         this.number = n;
