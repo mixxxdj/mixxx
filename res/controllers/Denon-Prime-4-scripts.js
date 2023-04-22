@@ -422,8 +422,18 @@ const mixerStrip = function(deckNumber, midiOffset) {
         midi: [0xB0 + midiOffset, 0x0A],
         group: "[Channel" + deckNumber + "]",
         outKey: "VuMeter",
-        output: function(_channel, _control, _value, _status, _group) {
-            this.send(0x7f);
+        output: function(value, group) {
+            if (engine.getValue(group, "PeakIndicator") === 1) {
+                value = 0x7f;
+            } else {
+                const meter = Math.round(value * 127);
+                value = (meter - ((meter - 1) % 13));
+                if (value === 1) {
+                    value = 0;
+                }
+            }
+            console.log(value);
+            this.send(value);
         },
     });
 
