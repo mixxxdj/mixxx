@@ -3,12 +3,13 @@
 #import <iTunesLibrary/iTunesLibrary.h>
 
 #include <QHash>
-#include <QMultiHash>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
 #include <QVariant>
+#include <algorithm>
 #include <atomic>
+#include <map>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -81,14 +82,15 @@ class ImporterImpl {
     }
 
     void appendPlaylistTree(TreeItem& item, int playlistId = -1) {
-        for (auto it = m_playlistChildsByDbId.find(playlistId);
-                it != m_playlistChildsByDbId.end() && it.key() == playlistId;
-                ++it) {
-            int childId = it.value();
-            QString childName = m_playlistNameByDbId[childId];
-            TreeItem* child = item.appendChild(childName);
-            appendPlaylistTree(*child, childId);
-        }
+        auto childsRange = m_playlistDbIdsByParentDbId.equal_range(playlistId);
+        std::for_each(childsRange.first,
+                childsRange.second,
+                [this, &item](auto childEntry) {
+                    int childId = childEntry.second;
+                    QString childName = m_playlistNameByDbId[childId];
+                    TreeItem* child = item.appendChild(childName);
+                    appendPlaylistTree(*child, childId);
+                });
     }
 
   private:
@@ -98,7 +100,7 @@ class ImporterImpl {
     QHash<unsigned long long, int> m_dbIdByPersistentId;
     QHash<QString, int> m_playlistDuplicatesByName;
     QHash<int, QString> m_playlistNameByDbId;
-    QMultiHash<int, int> m_playlistChildsByDbId;
+    std::multimap<int, int> m_playlistDbIdsByParentDbId;
 
     int dbIdFromPersistentId(NSNumber* boxedPersistentId) {
         // Map a persistent ID as used by iTunes to an (incrementing) database
@@ -207,7 +209,7 @@ class ImporterImpl {
         }
 
         m_playlistNameByDbId.insert(playlistId, playlistName);
-        m_playlistChildsByDbId.insert(parentId, playlistId);
+        m_playlistDbIdsByParentDbId.insert({parentId, playlistId});
 
         int i = 0;
         for (ITLibMediaItem* item in playlist.items) {
@@ -271,7 +273,6 @@ ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
     ITunesImport iTunesImport;
-    iTunesImport.isMusicFolderLocatedAfterTracks = false;
 
     NSError* error = nil;
     ITLibrary* library = [[ITLibrary alloc] initWithAPIVersion:@"1.0"

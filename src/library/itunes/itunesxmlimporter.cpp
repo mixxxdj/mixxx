@@ -46,22 +46,27 @@ const QString kRemote = "Remote";
 ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
         const QString& xmlFilePath,
         const QSqlDatabase& database,
-        ITunesPathMapping& pathMapping,
         const std::atomic<bool>& cancelImport)
         : m_parentFeature(parentFeature),
           m_xmlFilePath(xmlFilePath),
           m_xmlFile(xmlFilePath),
           m_xml(&m_xmlFile),
           m_database(database),
-          m_pathMapping(pathMapping),
           m_cancelImport(cancelImport) {
+    // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
+    // file://localhost/ from the URL. When we load the user's iTunes XML
+    // configuration we may replace this with something based on the detected
+    // location of the user's iTunes path but the defaults are necessary in case
+    // their iTunes XML does not include the "Music Folder" key.
+    m_pathMapping.mixxxITunesRoot = "";
+    m_pathMapping.dbITunesRoot = kiTunesLocalhostToken;
 }
 
 ITunesImport ITunesXMLImporter::importLibrary() {
     bool isTracksParsed = false;
 
     ITunesImport iTunesImport;
-    iTunesImport.isMusicFolderLocatedAfterTracks = false;
+    bool isMusicFolderLocatedAfterTracks = false;
 
     if (!m_xmlFile.open(QIODevice::ReadOnly)) {
         qDebug() << "Could not open iTunes music collection";
@@ -75,7 +80,7 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                 QString key = m_xml.readElementText();
                 if (key == "Music Folder") {
                     if (isTracksParsed) {
-                        iTunesImport.isMusicFolderLocatedAfterTracks = true;
+                        isMusicFolderLocatedAfterTracks = true;
                     }
                     if (readNextStartElement()) {
                         guessMusicLibraryMountpoint();
@@ -95,6 +100,26 @@ ITunesImport ITunesXMLImporter::importLibrary() {
         qDebug() << "line:" << m_xml.lineNumber()
                  << "column:" << m_xml.columnNumber()
                  << "error:" << m_xml.errorString();
+    }
+
+    if (isMusicFolderLocatedAfterTracks) {
+        qDebug() << "Updating iTunes real path from "
+                 << m_pathMapping.dbITunesRoot << " to "
+                 << m_pathMapping.mixxxITunesRoot;
+        // In some iTunes files "Music Folder" XML node is located at the end of
+        // file. So, we need to
+        QSqlQuery query(m_database);
+        query.prepare(
+                "UPDATE itunes_library SET location = replace( location, "
+                ":itunes_path, :mixxx_path )");
+        query.bindValue(":itunes_path",
+                m_pathMapping.dbITunesRoot.replace(kiTunesLocalhostToken, ""));
+        query.bindValue(":mixxx_path", m_pathMapping.mixxxITunesRoot);
+        bool success = query.exec();
+
+        if (!success) {
+            LOG_FAILED_QUERY(query);
+        }
     }
 
     return iTunesImport;

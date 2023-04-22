@@ -32,7 +32,7 @@
 
 namespace {
 
-const QString ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
+const QString kItdbPathKey = "mixxx.itunesfeature.itdbpath";
 
 bool isMacOSImporterAvailable() {
 #ifdef __MACOS_ITUNES_LIBRARY__
@@ -179,7 +179,7 @@ void ITunesFeature::activate(bool forceReload) {
         emit showTrackModel(m_pITunesTrackModel);
 
         SettingsDAO settings(m_pTrackCollection->database());
-        QString dbSetting(settings.getValue(ITDB_PATH_KEY));
+        QString dbSetting(settings.getValue(kItdbPathKey));
         // if a path exists in the database, use it
         if (!dbSetting.isEmpty() && QFile::exists(dbSetting)) {
             m_dbfile = dbSetting;
@@ -188,7 +188,7 @@ void ITunesFeature::activate(bool forceReload) {
             m_dbfile = getiTunesMusicPath();
         }
 
-        if (!m_dbfile.isEmpty() || !isMacOSImporterAvailable()) {
+        if (!isMacOSImporterUsed()) {
             mixxx::FileInfo fileInfo(m_dbfile);
             if (fileInfo.checkFileExists()) {
                 // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
@@ -210,7 +210,7 @@ void ITunesFeature::activate(bool forceReload) {
                 // that we can access the folder on future runs. We need to canonicalize
                 // the path so we first wrap the directory string with a QDir.
                 Sandbox::createSecurityToken(&fileInfo);
-                settings.setValue(ITDB_PATH_KEY, m_dbfile);
+                settings.setValue(kItdbPathKey, m_dbfile);
             }
         }
         m_isActivated =  true;
@@ -250,6 +250,10 @@ QString ITunesFeature::showOpenDialog() {
             "iTunes XML (*.xml)");
 }
 
+bool ITunesFeature::isMacOSImporterUsed() {
+    return isMacOSImporterAvailable() && m_dbfile.isEmpty();
+}
+
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
     QMenu menu(m_pSidebarWidget);
@@ -260,7 +264,7 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
     QAction *chosen(menu.exec(globalPos));
     if (chosen == &useDefault) {
         SettingsDAO settings(m_database);
-        settings.setValue(ITDB_PATH_KEY, QString());
+        settings.setValue(kItdbPathKey, QString());
         activate(true); // clears tables before parsing
     } else if (chosen == &chooseNew) {
         SettingsDAO settings(m_database);
@@ -277,7 +281,7 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
         // the path so we first wrap the directory string with a QDir.
         Sandbox::createSecurityToken(&dbFileInfo);
 
-        settings.setValue(ITDB_PATH_KEY, dbfile);
+        settings.setValue(kItdbPathKey, dbfile);
         activate(true); // clears tables before parsing
     }
 }
@@ -304,14 +308,13 @@ QString ITunesFeature::getiTunesMusicPath() {
 
 std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
 #ifdef __MACOS_ITUNES_LIBRARY__
-    if (isMacOSImporterAvailable()) {
+    if (isMacOSImporterUsed()) {
         qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
         return std::make_unique<ITunesMacOSImporter>(this, m_database, m_cancelImport);
     }
 #endif
     qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
-    return std::make_unique<ITunesXMLImporter>(
-            this, m_dbfile, m_database, m_pathMapping, m_cancelImport);
+    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_database, m_cancelImport);
 }
 
 // This method is executed in a separate thread
@@ -325,35 +328,8 @@ TreeItem* ITunesFeature::importLibrary() {
 
     ScopedTransaction transaction(m_database);
 
-    // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
-    // file://localhost/ from the URL. When we load the user's iTunes XML
-    // configuration we may replace this with something based on the detected
-    // location of the user's iTunes path but the defaults are necessary in case
-    // their iTunes XML does not include the "Music Folder" key.
-    m_pathMapping.mixxxITunesRoot = "";
-    m_pathMapping.dbITunesRoot = kiTunesLocalhostToken;
-
-    ITunesImport iTunesImport;
     std::unique_ptr<ITunesImporter> importer = makeImporter();
-
-    iTunesImport = importer->importLibrary();
-
-    if (iTunesImport.isMusicFolderLocatedAfterTracks) {
-        qDebug() << "Updating iTunes real path from "
-                 << m_pathMapping.dbITunesRoot << " to "
-                 << m_pathMapping.mixxxITunesRoot;
-        // In some iTunes files "Music Folder" XML node is located at the end of file. So, we need to
-        QSqlQuery query(m_database);
-        query.prepare("UPDATE itunes_library SET location = replace( location, :itunes_path, :mixxx_path )");
-        query.bindValue(":itunes_path",
-                m_pathMapping.dbITunesRoot.replace(kiTunesLocalhostToken, ""));
-        query.bindValue(":mixxx_path", m_pathMapping.mixxxITunesRoot);
-        bool success = query.exec();
-
-        if (!success) {
-            LOG_FAILED_QUERY(query);
-        }
-    }
+    ITunesImport iTunesImport = importer->importLibrary();
 
     // Even if an error occurred, commit the transaction. The file may have been
     // half-parsed.
