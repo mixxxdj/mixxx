@@ -382,8 +382,8 @@ Prime4.init = function(_id, _debug) {
         type: components.Button.prototype.types.toggle,
     });
 
-    //Prime4.leftDeck.reconnectComponents();
-    //Prime4.rightDeck.reconnectComponents();
+    Prime4.leftDeck.reconnectComponents();
+    Prime4.rightDeck.reconnectComponents();
 
     // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
     /*
@@ -416,6 +416,16 @@ const mixerStrip = function(deckNumber, midiOffset) {
             group: "[Channel" + deckNumber + "]",
         });
     }
+
+    // VU Meters
+    this.vuMeter = new components.Component({
+        midi: [0xB0 + midiOffset, 0x0A],
+        group: "[Channel" + deckNumber + "]",
+        outKey: "VuMeter",
+        output: function(_channel, _control, _value, _status, _group) {
+            this.send(0x7f);
+        },
+    });
 
     // PFL Button
     this.headphoneCue = new components.Button({
