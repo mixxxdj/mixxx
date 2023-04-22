@@ -223,10 +223,6 @@ TraktorS2MK3.registerInputPackets = function() {
     for (let i = 1; i <= 16; ++i) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
-
-    // Dirty hack to set initial values in the packet parser
-    const data = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    TraktorS2MK3.incomingData(data);
 };
 
 TraktorS2MK3.registerInputJog = function(message, group, name, offset, bitmask, callback) {
