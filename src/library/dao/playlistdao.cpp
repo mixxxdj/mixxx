@@ -280,7 +280,7 @@ bool PlaylistDAO::deleteUnlockedPlaylists(QStringList&& idStringList) {
 bool PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
         PlaylistDAO::HiddenType type, int minNumberOfTracks) {
     VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
-        return 0; // nothing to do, probably unintended invocation
+        return false; // nothing to do, probably unintended invocation
     }
 
     QSqlQuery query(m_database);
