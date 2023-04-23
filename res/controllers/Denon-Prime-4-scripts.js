@@ -748,16 +748,20 @@ Prime4.PadSection = function(deck, offset) {
 
     this.padModeSelectLeds = new components.Component({
         trigger: function() {
+            /*
             modes.forEachComponent(mode => {
-                /*
                 if (!(mode instanceof components.ComponentContainer)) {
                     //throw "padmode is not a container as expected";
                     console.log("padmode is not a container as expected");
                 }
-                */
-                midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
+                //midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
                 console.log(mode, mode.ledControl, mode.colourOn, mode.colourOff);
             });
+            */
+            for (const mode of Object.values(modes)) {
+                console.log(mode, mode.ledControl, mode.colourOn, mode.colourOff);
+                midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
+            }
         },
     }, false);
 
