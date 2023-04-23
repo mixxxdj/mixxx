@@ -254,7 +254,7 @@ bool PlaylistDAO::deletePlaylists(const QStringList& idStringList) {
     return true;
 }
 
-bool PlaylistDAO::deleteUnlockedPlaylists(QStringList& idStringList) {
+bool PlaylistDAO::deleteUnlockedPlaylists(QStringList&& idStringList) {
     if (idStringList.isEmpty()) {
         return false;
     }

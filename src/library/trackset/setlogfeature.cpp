@@ -504,7 +504,7 @@ void SetlogFeature::slotDeleteAllUnlockedChildPlaylists() {
         }
     }
     qDebug() << "History: deleting all unlocked playlists of" << year;
-    m_playlistDao.deleteUnlockedPlaylists(ids);
+    m_playlistDao.deleteUnlockedPlaylists(std::move(ids));
 }
 
 void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
