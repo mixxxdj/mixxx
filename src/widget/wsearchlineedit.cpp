@@ -311,13 +311,13 @@ QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!currentText().isNull());
         QString text = currentText();
-        QLineEdit* pEdit = lineEdit();
         QCompleter* pCompleter = completer();
-        if (pCompleter && pEdit && pEdit->hasSelectedText()) {
+        if (pCompleter && hasSelectedText()) {
             if (text.startsWith(pCompleter->completionPrefix()) &&
-                    pCompleter->completionPrefix().size() == pEdit->cursorPosition()) {
-                // Search for the entered text until the user has confirmed the
-                // completion by -> or enter
+                    pCompleter->completionPrefix().size() == lineEdit()->cursorPosition()) {
+                // Search for the entered text until the user has accepted the
+                // completion by pressing Enter or changed/deselected the selected
+                // completion text with Right or Left key
                 return pCompleter->completionPrefix();
             }
         }
@@ -387,17 +387,22 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         }
         break;
     case Qt::Key_Left:
-    case Qt::Key_Right:
+    case Qt::Key_Right: {
+        // Both keys may change or clear the selection (suggested completion).
+        const bool hadSelectedTextBeforeKeyPressed = hasSelectedText();
         QComboBox::keyPressEvent(keyEvent);
-        slotTriggerSearch();
+        if (hadSelectedTextBeforeKeyPressed && !hasSelectedText()) {
+            // Selection is removed, search the full text now.
+            triggerSearchDebounced();
+        }
         return;
+    }
     case Qt::Key_Enter:
     case Qt::Key_Return: {
         if (slotClearSearchIfClearButtonHasFocus()) {
             return;
         }
-        QLineEdit* pEdit = lineEdit();
-        if (pEdit && pEdit->hasSelectedText()) {
+        if (hasSelectedText()) {
             QComboBox::keyPressEvent(keyEvent);
             slotTriggerSearch();
             return;
@@ -515,6 +520,12 @@ void WSearchLineEdit::slotRestoreSearch(const QString& text) {
     // we save the current search before we switch to a new text
     slotSaveSearch();
     enableSearch(text);
+}
+
+void WSearchLineEdit::triggerSearchDebounced() {
+    DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
+    DEBUG_ASSERT(s_debouncingTimeoutMillis >= kMinDebouncingTimeoutMillis);
+    m_debouncingTimer.start(s_debouncingTimeoutMillis);
 }
 
 void WSearchLineEdit::slotTriggerSearch() {
@@ -768,21 +779,13 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
             << text;
 #endif // ENABLE_TRACE_LOG
     m_queryEmitted = false;
-    m_debouncingTimer.stop();
     if (!isEnabled()) {
+        m_debouncingTimer.stop();
         setTextBlockSignals(kDisabledText);
         return;
     }
     updateClearAndDropdownButton(text);
-    DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
-    if (s_debouncingTimeoutMillis > 0) {
-        m_debouncingTimer.start(s_debouncingTimeoutMillis);
-    } else {
-        // Don't (re-)activate the timer if the timeout is invalid.
-        // Disabling the timer permanently by setting the timeout
-        // to an invalid value is an expected and valid use case.
-        DEBUG_ASSERT(!m_debouncingTimer.isActive());
-    }
+    triggerSearchDebounced();
     m_saveTimer.start(kSaveTimeoutMillis);
 }
 
@@ -797,10 +800,12 @@ void WSearchLineEdit::slotSetShortcutFocus() {
 // Use the same font as the library table and the sidebar
 void WSearchLineEdit::slotSetFont(const QFont& font) {
     setFont(font);
-    if (lineEdit()) {
-        lineEdit()->setFont(font);
-        // Decreasing the font doesn't trigger a resizeEvent,
-        // so we immediately refresh the controls manually.
-        updateClearAndDropdownButton(getSearchText());
-    }
+    lineEdit()->setFont(font);
+    // Decreasing the font doesn't trigger a resizeEvent,
+    // so we immediately refresh the controls manually.
+    updateClearAndDropdownButton(getSearchText());
+}
+
+bool WSearchLineEdit::hasSelectedText() const {
+    return lineEdit()->hasSelectedText();
 }

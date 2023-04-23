@@ -129,8 +129,12 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     }
     // Store search text
     QString currSearch = currentSearch();
-    if (m_iPlaylistId != kInvalidPlaylistId && !currSearch.trimmed().isEmpty()) {
-        m_searchTexts.insert(m_iPlaylistId, currSearch);
+    if (m_iPlaylistId != kInvalidPlaylistId) {
+        if (!currSearch.trimmed().isEmpty()) {
+            m_searchTexts.insert(m_iPlaylistId, currSearch);
+        } else {
+            m_searchTexts.remove(m_iPlaylistId);
+        }
     }
 
     m_iPlaylistId = playlistId;

@@ -323,7 +323,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.")
             << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
-    QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
+    QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
     add("rate_perm_up_rate_perm_up_small")
             << tr("Raise Pitch")
             << QString("%1: %2").arg(leftClick, tr("Sets the pitch higher."))

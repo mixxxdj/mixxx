@@ -193,7 +193,7 @@ bool BaseTrackCache::updateTrackInIndex(
         return false;
     }
     if (sDebug) {
-        qDebug() << "updateTrackInIndex:" << pTrack->getFileInfo();
+        qDebug() << "updateTrackInIndex:" << pTrack->getLocation();
     }
 
     int numColumns = columnCount();
@@ -209,7 +209,7 @@ bool BaseTrackCache::updateTrackInIndex(
             getTrackValueForColumn(pTrack, i, record[i]);
         }
         if (m_bIsCaching) {
-            replaceRecentTrack(std::move(trackId), std::move(pTrack));
+            replaceRecentTrack(std::move(trackId), pTrack);
         }
     } else {
         if (m_bIsCaching) {

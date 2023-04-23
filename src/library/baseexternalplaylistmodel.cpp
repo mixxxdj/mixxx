@@ -113,8 +113,12 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
 
     // Store search text
     QString currSearch = currentSearch();
-    if (m_currentPlaylistId != kInvalidPlaylistId && !currSearch.trimmed().isEmpty()) {
-        m_searchTexts.insert(m_currentPlaylistId, currSearch);
+    if (m_currentPlaylistId != kInvalidPlaylistId) {
+        if (!currSearch.trimmed().isEmpty()) {
+            m_searchTexts.insert(m_currentPlaylistId, currSearch);
+        } else {
+            m_searchTexts.remove(m_currentPlaylistId);
+        }
     }
 
     const auto playlistIdNumber =
