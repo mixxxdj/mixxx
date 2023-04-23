@@ -822,7 +822,7 @@ Prime4.PadSection.prototype.performancePad = function(channel, control, value, s
 Prime4.hotcueMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.HOTCUE;
-    this.colourOn = Prime4.rgbCode.blue;
+    this.colourOn = Prime4.rgbCode.white;
     this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
@@ -843,8 +843,8 @@ Prime4.hotcueMode.prototype = Object.create(components.ComponentContainer.protot
 Prime4.loopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.LOOP;
-    this.colourOn = Prime4.rgbCode.red;
-    this.colourOff = Prime4.rgbCode.magentaDark;
+    this.colourOn = Prime4.rgbCode.magenta;
+    this.colourOff = Prime4.rgbCode.whiteDark;
     const PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x0E + n];
         this.number = n;
@@ -855,7 +855,7 @@ Prime4.loopMode = function(deck, offset) {
     PerformancePad.prototype = new components.Button({
         group: deck.currentDeck,
         on: this.colourOn,
-        off: this.colourOff,
+        off: Prime4.rgbCode.magentaDark,
         colorMapper: Prime4ColorMapper,
         outConnect: false,
         unshift: function() {
