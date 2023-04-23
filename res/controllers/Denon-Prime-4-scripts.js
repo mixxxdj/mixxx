@@ -219,9 +219,6 @@ Prime4.DeckAssignButton = function(options) {
         throw "invalid deckIndex or structure; We expect Prime4.leftDeck and Prime4.rightDeck to be valid decks representing the physical left and right decks";
     }
     const isActive = () => {
-        console.log(this.deckIndex, deckSide);
-        console.log(Prime4[deckSide], Prime4[deckSide].currentDeck);
-        console.log(this.toDeck, this.toDeck.currentDeck);
         return Prime4[deckSide] === this.toDeck;
     };
 
@@ -229,16 +226,7 @@ Prime4.DeckAssignButton = function(options) {
         this.output(isActive());
     };
 
-    this.outValueScale = function(value) {
-        console.log(value);
-        console.log(deckSide);
-        const scaledVal = components.Button.prototype.outValueScale.call(this, value);
-        console.log(scaledVal);
-        return scaledVal;
-    };
-
     this.input = function(channel, control, value, status, _group) {
-        console.log(Object.keys(this));
         if (!this.isPress(channel, control, value, status) || isActive()) {
             return;
         }
@@ -258,6 +246,10 @@ Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _gr
     } else if (value <= 127 && value > 100) {
         this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
     }
+    /*
+    const signedValue = value > (0x80 / 2) ? value - 128 : value;
+    this.inSetParameter(this.inGetParameter() + value / 100);
+    */
 };
 
 Prime4.init = function(_id, _debug) {
@@ -385,17 +377,9 @@ Prime4.init = function(_id, _debug) {
     Prime4.leftDeck.reconnectComponents();
     Prime4.rightDeck.reconnectComponents();
 
-    // Initial LED values to set (Hopefully these will automatically initialize, but for now they won't.)
-    /*
-    midi.sendShortMsg(0x9F, 0x1C, colDeck[0]);                        // Deck 1 Toggle
-    midi.sendShortMsg(0x9F, 0x1D, colDeck[1]);                        // Deck 2 Toggle
-    midi.sendShortMsg(0x9F, 0x1E, 1);                    // Deck 3 Toggle
-    midi.sendShortMsg(0x9F, 0x1F, 1);                    // Deck 4 Toggle
-    midi.sendShortMsg(0x94, 0x21, colDeck[0]);                        // Left Jog Wheel
-    midi.sendShortMsg(0x95, 0x21, colDeck[1]);                        // Right Jog Wheel
-    */
-    midi.sendShortMsg(0x94, 0x1C, 1);                                 // Left Shift Button
-    midi.sendShortMsg(0x95, 0x1C, 1);                                 // Right Shift Button
+    // LED Initialization
+    midi.sendShortMsg(0x94, 0x1C, 1); // Left Shift Button
+    midi.sendShortMsg(0x95, 0x1C, 1); // Right Shift Button
 };
 
 Prime4.shutdown = function() {
@@ -539,7 +523,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     });
 
     // LED indicator when pitch fader is at centre.
-    this.tempoFeedback = new components.Button({
+    this.tempoFeedback = new components.Component({
         midi: [0x90 + midiChannel, 0x34],
         outKey: "rate",
         on: 0x02,
@@ -564,7 +548,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 return;
             }
             theDeck.jogWheel.vinylMode = !theDeck.jogWheel.vinylMode;
-            this.output(theDeck.jogWheel.vinylMode);
+            this.trigger();
         },
         trigger: function() {
             this.output(theDeck.jogWheel.vinylMode);
@@ -602,6 +586,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             // and the last one, and preserves the orientation
             const delta = value - this.previousPosition;
             let remainder = ((delta % this.wrappingValue) + this.wrappingValue) % this.wrappingValue;
+            //let remainder = script.posMod(delta, this.wrappingValue);
             if (remainder * 2 > this.wrappingValue) {
                 remainder -= this.wrappingValue;
             }
@@ -654,14 +639,8 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     this.deckLoad = new components.Button({
         midi: [0x9F, midiChannel - 3],
         key: "LoadSelectedTrack",
-
-        // TODO: Make load buttons reflect colour of currently active deck.
-        //       This is harder than expected due to the fact that I rely on the MIDI channel
-        //       of each physical deck component to determine which deck it's manipulating in
-        //       Mixxx. The deck load buttons, however, are both on MIDI channel 16, so I need
-        //       a better way to determine this.
-        off: Prime4.rgbCode.whiteDark,
-        on: Prime4.rgbCode.white,
+        off: colDeckDark[deckNumbers - 1],
+        on: colDeck[deckNumbers - 1],
     });
 
     this.reconnectComponents(function(c) {
@@ -748,18 +727,7 @@ Prime4.PadSection = function(deck, offset) {
 
     this.padModeSelectLeds = new components.Component({
         trigger: function() {
-            /*
-            modes.forEachComponent(mode => {
-                if (!(mode instanceof components.ComponentContainer)) {
-                    //throw "padmode is not a container as expected";
-                    console.log("padmode is not a container as expected");
-                }
-                //midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
-                console.log(mode, mode.ledControl, mode.colourOn, mode.colourOff);
-            });
-            */
             for (const mode of Object.values(modes)) {
-                console.log(mode, mode.ledControl, mode.colourOn, mode.colourOff);
                 midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
             }
         },
@@ -790,6 +758,13 @@ Prime4.PadSection = function(deck, offset) {
             component.trigger();
         });
 
+        // Assign mode select buttons in XML file
+        this.padModeButtonPressed = function(channel, control, value, _status, _group) {
+            if (value) {
+                this.setPadMode(control);
+            }
+        };
+
         this.currentMode = newMode;
 
         theContainer.padModeSelectLeds.trigger();
@@ -801,13 +776,6 @@ Prime4.PadSection = function(deck, offset) {
 };
 
 Prime4.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
-
-// Assign mode select buttons in XML file
-Prime4.PadSection.prototype.padModeButtonPressed = function(channel, control, value, _status, _group) {
-    if (value) {
-        this.setPadMode(control);
-    }
-};
 
 // Worry about parameter buttons later
 //Prime4.PadSection.prototype.paramButtonPressed = function(channel, control, value, status, group) {};
