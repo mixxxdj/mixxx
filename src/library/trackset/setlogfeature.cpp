@@ -473,35 +473,37 @@ void SetlogFeature::slotDeleteAllUnlockedChildPlaylists() {
             //: %1 is the year
             //: <b> + </b> are used to make the text in between bold in the popup
             //: <br> is a linebreak
-            tr("Do you really want to delete all unlocked playlist in <b>%1</b>?<br><br>")
+            tr("Do you really want to delete all unlocked playlist from <b>%1</b>?<br><br>")
                     .arg(year),
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
-    if (btn == QMessageBox::No) {
-        return;
-    }
-    // Double-check, this is a weighty decision
-    btn = QMessageBox::warning(nullptr,
-            tr("Confirm Deletion"),
-            //: %1 is the year
-            //: <b> + </b> are used to make the text in between bold in the popup
-            //: <br> is a linebreak
-            tr("Deleting all unlokced playlist in <b>%1</b>.<br><br>"
-               "<b>Are you sure?</b>")
-                    .arg(year),
-            QMessageBox::Yes | QMessageBox::No,
-            QMessageBox::No);
-    if (btn == QMessageBox::No) {
+    if (btn != QMessageBox::Yes) {
         return;
     }
 
     QStringList ids;
+    int count = 0;
     for (const auto& pChild : yearChildren) {
         bool ok = false;
         int childId = pChild->getData().toInt(&ok);
         if (ok && childId != kInvalidPlaylistId) {
             ids.append(pChild->getData().toString());
+            count++;
         }
+    }
+    // Double-check, this is a weighty decision
+    btn = QMessageBox::warning(nullptr,
+            tr("Confirm Deletion"),
+            //: %1 is the number of playlists to be deleted
+            //: %2 is the year
+            //: <b> + </b> are used to make the text in between bold in the popup
+            //: <br> is a linebreak
+            tr("Deleting %1 playlists from <b>%2</b>.<br><br>")
+                    .arg(QString::number(count), year),
+            QMessageBox::Ok | QMessageBox::Cancel,
+            QMessageBox::Cancel);
+    if (btn != QMessageBox::Ok) {
+        return;
     }
     qDebug() << "History: deleting all unlocked playlists of" << year;
     m_playlistDao.deleteUnlockedPlaylists(std::move(ids));
