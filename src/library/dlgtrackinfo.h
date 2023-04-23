@@ -70,7 +70,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
     void slotColorButtonClicked();
-    void slotColorPicked(const mixxx::RgbColor::optional_t& color);
 
     void slotCoverFound(
             const QObject* pRequestor,
@@ -86,6 +85,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void loadPrevTrack();
     void loadTrackInternal(const TrackPointer& pTrack);
     void reloadTrackBeats(const Track& track);
+    void trackColorDialogSetColor(const mixxx::RgbColor::optional_t& color);
     void saveTrack();
     void clear();
     void init();

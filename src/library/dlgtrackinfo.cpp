@@ -264,7 +264,10 @@ void DlgTrackInfo::init() {
     connect(m_pColorPicker.get(),
             &WColorPickerAction::colorPicked,
             this,
-            &DlgTrackInfo::slotColorPicked);
+            [this](const mixxx::RgbColor::optional_t& newColor) {
+                trackColorDialogSetColor(newColor);
+                m_trackRecord.setColor(newColor);
+            });
 }
 
 void DlgTrackInfo::slotApply() {
@@ -332,7 +335,7 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
             track.getLocation());
 
     // paint the color selector and check the respective color picker button
-    slotColorPicked(track.getColor());
+    trackColorDialogSetColor(track.getColor());
 
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
 
@@ -524,11 +527,9 @@ void DlgTrackInfo::slotColorButtonClicked() {
     btnColorPicker->showMenu();
 }
 
-void DlgTrackInfo::slotColorPicked(const mixxx::RgbColor::optional_t& newColor) {
+void DlgTrackInfo::trackColorDialogSetColor(const mixxx::RgbColor::optional_t& newColor) {
     m_pColorPicker->setSelectedColor(newColor);
     btnColorPicker->menu()->close();
-
-    m_trackRecord.setColor(newColor);
 
     if (newColor) {
         btnColorPicker->setText("");
@@ -545,7 +546,6 @@ void DlgTrackInfo::slotColorPicked(const mixxx::RgbColor::optional_t& newColor) 
         btnColorPicker->setText(tr("(no color)"));
         // clear custom stylesheet, i.e. restore Fusion style,
         btnColorPicker->setStyleSheet("");
-        ;
     }
 }
 
