@@ -285,9 +285,6 @@ void DlgTrackInfo::slotCancel() {
     reject();
 }
 
-void DlgTrackInfo::trackUpdated() {
-}
-
 void DlgTrackInfo::slotNextButton() {
     loadNextTrack();
 }
