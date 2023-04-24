@@ -27,10 +27,10 @@ class ITunesXMLImporter : public ITunesImporter {
     QFile m_xmlFile;
     QXmlStreamReader m_xml;
     // The values behind the references are owned by the parent `ITunesFeature`
-    // (note that the backend internally contains a database reference),
+    // (note that the DAO internally contains a database reference),
     // thus there is an implicit contract here that this `ITunesXMLImporter` cannot
     // outlive the feature (which should not happen anyway, since importers are short-lived).
-    ITunesDAO m_backend;
+    ITunesDAO m_dao;
     const std::atomic<bool>& m_cancelImport;
 
     ITunesPathMapping m_pathMapping;

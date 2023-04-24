@@ -32,7 +32,7 @@ class ImporterImpl {
     ImporterImpl(
             const QSqlDatabase& database, const std::atomic<bool>& cancelImport)
             : m_cancelImport(cancelImport) {
-        m_backend.initialize(database);
+        m_dao.initialize(database);
     }
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
@@ -65,14 +65,14 @@ class ImporterImpl {
     }
 
     void appendPlaylistTree(TreeItem& item) {
-        m_backend.appendPlaylistTree(item);
+        m_dao.appendPlaylistTree(item);
     }
 
   private:
     const std::atomic<bool>& m_cancelImport;
 
     QHash<unsigned long long, int> m_dbIdByPersistentId;
-    ITunesDAO m_backend;
+    ITunesDAO m_dao;
 
     int dbIdFromPersistentId(NSNumber* boxedPersistentId) {
         // Map a persistent ID as used by iTunes to an (incrementing) database
@@ -142,11 +142,11 @@ class ImporterImpl {
         ITunesPlaylist playlist = {};
         playlist.id = playlistId;
         playlist.name = qStringFrom(itPlaylist.name);
-        if (!m_backend.importPlaylist(playlist)) {
+        if (!m_dao.importPlaylist(playlist)) {
             return;
         }
 
-        if (!m_backend.importPlaylistRelation(parentId, playlistId)) {
+        if (!m_dao.importPlaylistRelation(parentId, playlistId)) {
             return;
         }
 
@@ -157,7 +157,7 @@ class ImporterImpl {
             }
 
             int trackId = dbIdFromPersistentId(item.persistentID);
-            if (!m_backend.importPlaylistTrack(playlistId, trackId, i)) {
+            if (!m_dao.importPlaylistTrack(playlistId, trackId, i)) {
                 return;
             }
 
@@ -189,7 +189,7 @@ class ImporterImpl {
         track.bpm = static_cast<int>(item.beatsPerMinute);
         track.bitrate = static_cast<int>(item.bitrate);
 
-        if (!m_backend.importTrack(track)) {
+        if (!m_dao.importTrack(track)) {
             return;
         }
     }
