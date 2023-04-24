@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
+#include <gsl/pointers>
 #include <map>
 
 #include "library/dao/dao.h"
@@ -50,7 +51,8 @@ class ITunesDAO : public DAO {
     virtual bool importPlaylistTrack(int playlistId, int trackId, int position);
     virtual bool applyPathMapping(const ITunesPathMapping& pathMapping);
 
-    virtual void appendPlaylistTree(TreeItem& item, int playlistId = kRootITunesPlaylistId);
+    virtual void appendPlaylistTree(gsl::not_null<TreeItem*> item,
+            int playlistId = kRootITunesPlaylistId);
 
   private:
     QHash<QString, int> m_playlistDuplicatesByName;

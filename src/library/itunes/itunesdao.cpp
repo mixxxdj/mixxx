@@ -1,6 +1,7 @@
 #include "library/itunes/itunesdao.h"
 
 #include <QSqlQuery>
+#include <gsl/pointers>
 
 #include "library/itunes/ituneslocalhosttoken.h"
 #include "library/itunes/itunespathmapping.h"
@@ -111,15 +112,15 @@ bool ITunesDAO::applyPathMapping(const ITunesPathMapping& pathMapping) {
     return true;
 }
 
-void ITunesDAO::appendPlaylistTree(TreeItem& item, int playlistId) {
+void ITunesDAO::appendPlaylistTree(gsl::not_null<TreeItem*> item, int playlistId) {
     auto childsRange = m_playlistIdsByParentId.equal_range(playlistId);
     std::for_each(childsRange.first,
             childsRange.second,
             [this, &item](auto childEntry) {
                 int childId = childEntry.second;
                 QString childName = m_playlistNameById[childId];
-                TreeItem* child = item.appendChild(childName);
-                appendPlaylistTree(*child, childId);
+                TreeItem* child = item->appendChild(childName);
+                appendPlaylistTree(child, childId);
             });
 }
 

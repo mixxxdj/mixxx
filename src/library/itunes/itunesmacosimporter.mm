@@ -1,6 +1,7 @@
 #include "library/itunes/itunesmacosimporter.h"
 
 #import <iTunesLibrary/iTunesLibrary.h>
+#include <gsl/pointers>
 #include "library/itunes/itunesdao.h"
 
 #include <QHash>
@@ -62,7 +63,7 @@ class ImporterImpl {
         }
     }
 
-    void appendPlaylistTree(TreeItem& item) {
+    void appendPlaylistTree(gsl::not_null<TreeItem*> item) {
         m_dao.appendPlaylistTree(item);
     }
 
@@ -216,7 +217,7 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
 
         impl.importPlaylists(library.allPlaylists);
         impl.importMediaItems(library.allMediaItems);
-        impl.appendPlaylistTree(*rootItem);
+        impl.appendPlaylistTree(rootItem.get());
 
         iTunesImport.playlistRoot = std::move(rootItem);
     } else if (error) {
