@@ -44,13 +44,13 @@ class ITunesDAO : public DAO {
 
     void initialize(const QSqlDatabase& database) override;
 
-    bool importTrack(const ITunesTrack& track);
-    bool importPlaylist(const ITunesPlaylist& playlist);
-    bool importPlaylistRelation(int parentId, int childId);
-    bool importPlaylistTrack(int playlistId, int trackId, int position);
-    bool applyPathMapping(const ITunesPathMapping& pathMapping);
+    virtual bool importTrack(const ITunesTrack& track);
+    virtual bool importPlaylist(const ITunesPlaylist& playlist);
+    virtual bool importPlaylistRelation(int parentId, int childId);
+    virtual bool importPlaylistTrack(int playlistId, int trackId, int position);
+    virtual bool applyPathMapping(const ITunesPathMapping& pathMapping);
 
-    void appendPlaylistTree(TreeItem& item, int playlistId = kRootITunesPlaylistId);
+    virtual void appendPlaylistTree(TreeItem& item, int playlistId = kRootITunesPlaylistId);
 
   private:
     QHash<QString, int> m_playlistDuplicatesByName;
