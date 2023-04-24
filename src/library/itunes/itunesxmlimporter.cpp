@@ -484,7 +484,10 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
                 // Hide playlists that are system playlists
                 if (key == "Master" || key == "Movies" || key == "TV Shows" ||
                         key == "Music" || key == "Books" || key == "Purchased") {
-                    isSystemPlaylist = true;
+                    readNextStartElement();
+                    if (m_xml.name() == QString("true")) {
+                        isSystemPlaylist = true;
+                    }
                     continue;
                 }
 
