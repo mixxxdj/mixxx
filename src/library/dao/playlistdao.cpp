@@ -832,7 +832,6 @@ int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hid
         return kInvalidPlaylistId;
     }
 
-    // Get the id of the highest playlist
     if (query.next()) {
         return query.value(query.record().indexOf("id")).toInt();
     }
@@ -852,7 +851,6 @@ int PlaylistDAO::getNextPlaylist(const int currentPlaylistId, HiddenType hidden)
         return kInvalidPlaylistId;
     }
 
-    // Get the id of the lowest playlist
     if (query.next()) {
         return query.value(query.record().indexOf("id")).toInt();
     }
