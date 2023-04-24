@@ -535,7 +535,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Performance Pads
     this.padGrid = new Prime4.PadSection(this, midiChannel - 4);
 
-    // Pitch Bend Buttons
+    // Pfitch Bend Buttons
     //const rateRanges = [0.04, 0.06, 0.08, 0.1, 0.16, 0.24, 0.5, 0.9];
     this.pitchBendUp = new components.Button({
         midi: [0x90 + midiChannel, 0x1E],
@@ -818,6 +818,7 @@ Prime4.PadSection = function(deck, offset) {
             break;
         case Prime4.padMode.LOOP:
             mode = modes.loop;
+            break;
             /*
             // TODO: Implement autoloop mode
             if (Prime4.PadSection.currentMode === modes.loop) {
@@ -826,7 +827,6 @@ Prime4.PadSection = function(deck, offset) {
                 mode = modes.loop;
             }
             */
-            break;
         case Prime4.padMode.ROLL:
             mode = modes.roll;
             break;
@@ -842,8 +842,16 @@ Prime4.PadSection = function(deck, offset) {
 
     this.padModeSelectLeds = new components.Component({
         trigger: function() {
+            // This isn't very DRY code because I need to set the 'off' LEDs BEFORE the 'on' LEDs.
+            // Otherwise, the pads that have a secondary mode look like they're 'off' when that
+            // secondary mode is activated.
             for (const mode of Object.values(modes)) {
-                midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
+                midi.sendShortMsg(0x94 + offset, mode.ledControl, mode.colourOff);
+            }
+            for (const mode of Object.values(modes)) {
+                if (theContainer.currentMode === mode) {
+                    midi.sendShortMsg(0x94 + offset, mode.ledControl, mode.colourOn);
+                }
             }
         },
     }, false);
@@ -881,6 +889,7 @@ Prime4.PadSection = function(deck, offset) {
         };
 
         this.currentMode = newMode;
+        console.log(this.currentMode);
 
         theContainer.padModeSelectLeds.trigger();
     };
@@ -905,7 +914,7 @@ Prime4.PadSection.prototype.performancePad = function(channel, control, value, s
 Prime4.hotcueMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.HOTCUE;
-    this.colourOn = Prime4.rgbCode.white;
+    this.colourOn = Prime4.rgbCode.blue;
     this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
@@ -926,7 +935,7 @@ Prime4.hotcueMode.prototype = Object.create(components.ComponentContainer.protot
 Prime4.loopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.LOOP;
-    this.colourOn = Prime4.rgbCode.magenta;
+    this.colourOn = Prime4.rgbCode.green;
     this.colourOff = Prime4.rgbCode.whiteDark;
     const PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x0E + n];
@@ -938,7 +947,7 @@ Prime4.loopMode = function(deck, offset) {
     PerformancePad.prototype = new components.Button({
         group: deck.currentDeck,
         on: this.colourOn,
-        off: Prime4.rgbCode.magentaDark,
+        off: Prime4.rgbCode.whiteDark,
         colorMapper: Prime4ColorMapper,
         outConnect: false,
         unshift: function() {
@@ -962,7 +971,7 @@ Prime4.loopMode.prototype = Object.create(components.ComponentContainer.prototyp
 Prime4.rollMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.ROLL;
-    this.colourOn = Prime4.rgbCode.green;
+    this.colourOn = Prime4.rgbCode.blue;
     this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
     // NOTE: The Prime 4's standalone Roll mode includes triplet loop rolls, but
@@ -975,8 +984,8 @@ Prime4.rollMode = function(deck, offset) {
             group: deck.currentDeck,
             outKey: "beatloop_" + loopSize + "_enabled",
             inKey: "beatlooproll_" + loopSize + "_activate",
-            on: this.colourOn,
-            off: Prime4.rgbCode.greenDim,
+            on: Prime4.rgbCode.white,
+            off: this.colourOn,
             outConnect: false,
         });
     }
@@ -987,7 +996,7 @@ Prime4.rollMode.prototype = Object.create(components.ComponentContainer.prototyp
 Prime4.samplerMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.SLICER;
-    this.colourOn = Prime4.rgbCode.yellow;
+    this.colourOn = Prime4.rgbCode.green;
     this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
@@ -996,7 +1005,7 @@ Prime4.samplerMode = function(deck, offset) {
             midi: [0x94 + offset, 0x0E + i],
             colorMapper: Prime4ColorMapper,
             on: this.colourOn,
-            off: Prime4.rgbCode.yellowDark,
+            off: Prime4.rgbCode.greenDark,
             outConnect: false,
         });
     }
