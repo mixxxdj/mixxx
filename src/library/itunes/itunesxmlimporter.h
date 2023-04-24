@@ -17,7 +17,7 @@ class ITunesXMLImporter : public ITunesImporter {
     ITunesXMLImporter(LibraryFeature* parentFeature,
             const QString& xmlFilePath,
             const std::atomic<bool>& cancelImport,
-            ITunesDAO& dao);
+            std::unique_ptr<ITunesDAO> dao);
 
     ITunesImport importLibrary() override;
 
@@ -26,12 +26,11 @@ class ITunesXMLImporter : public ITunesImporter {
     const QString m_xmlFilePath;
     QFile m_xmlFile;
     QXmlStreamReader m_xml;
-    const std::atomic<bool>& m_cancelImport;
     // The values behind the references are owned by the parent `ITunesFeature`
-    // (note that the DAO internally contains a database reference),
     // thus there is an implicit contract here that this `ITunesXMLImporter` cannot
     // outlive the feature (which should not happen anyway, since importers are short-lived).
-    ITunesDAO& m_dao;
+    const std::atomic<bool>& m_cancelImport;
+    std::unique_ptr<ITunesDAO> m_dao;
 
     ITunesPathMapping m_pathMapping;
     QHash<QString, int> m_playlistIdByPersistentId;

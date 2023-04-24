@@ -200,10 +200,10 @@ class ImporterImpl {
 
 ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
         const std::atomic<bool>& cancelImport,
-        ITunesDAO& dao)
+        std::unique_ptr<ITunesDAO> dao)
         : m_parentFeature(parentFeature),
           m_cancelImport(cancelImport),
-          m_dao(dao) {
+          m_dao(std::move(dao)) {
 }
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
@@ -215,7 +215,7 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
 
     if (library) {
         std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
-        ImporterImpl impl(m_cancelImport, m_dao);
+        ImporterImpl impl(m_cancelImport, *m_dao);
 
         impl.importPlaylists(library.allPlaylists);
         impl.importMediaItems(library.allMediaItems);

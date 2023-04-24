@@ -46,13 +46,13 @@ const QString kRemote = "Remote";
 ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
         const QString& xmlFilePath,
         const std::atomic<bool>& cancelImport,
-        ITunesDAO& dao)
+        std::unique_ptr<ITunesDAO> dao)
         : m_parentFeature(parentFeature),
           m_xmlFilePath(xmlFilePath),
           m_xmlFile(xmlFilePath),
           m_xml(&m_xmlFile),
           m_cancelImport(cancelImport),
-          m_dao(dao) {
+          m_dao(std::move(dao)) {
     // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
     // file://localhost/ from the URL. When we load the user's iTunes XML
     // configuration we may replace this with something based on the detected
@@ -90,7 +90,7 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                     parsePlaylists();
 
                     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(m_parentFeature);
-                    m_dao.appendPlaylistTree(pRootItem.get());
+                    m_dao->appendPlaylistTree(pRootItem.get());
 
                     iTunesImport.playlistRoot = std::move(pRootItem);
                     isTracksParsed = true;
@@ -113,7 +113,7 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                  << m_pathMapping.mixxxITunesRoot;
         // In some iTunes files "Music Folder" XML node is located at the end of
         // file. So, we need to
-        m_dao.applyPathMapping(m_pathMapping);
+        m_dao->applyPathMapping(m_pathMapping);
     }
 
     return iTunesImport;
@@ -379,7 +379,7 @@ void ITunesXMLImporter::parseTrack() {
             .bitrate = bitrate,
     };
 
-    if (!m_dao.importTrack(track)) {
+    if (!m_dao->importTrack(track)) {
         return;
     }
 }
@@ -476,7 +476,7 @@ void ITunesXMLImporter::parsePlaylist() {
                     ITunesPlaylist playlist = {};
                     playlist.id = id;
                     playlist.name = name;
-                    if (!m_dao.importPlaylist(playlist)) {
+                    if (!m_dao->importPlaylist(playlist)) {
                         // unexpected error
                         break;
                     }
@@ -489,7 +489,7 @@ void ITunesXMLImporter::parsePlaylist() {
 
                     // Insert tracks if we are not in a pre-built playlist
                     if (!isSystemPlaylist) {
-                        m_dao.importPlaylistTrack(id,
+                        m_dao->importPlaylistTrack(id,
                                 trackReference,
                                 trackPosition++);
                     }
@@ -519,6 +519,6 @@ void ITunesXMLImporter::parsePlaylist() {
             }
         }
 
-        m_dao.importPlaylistRelation(parentId, id);
+        m_dao->importPlaylistRelation(parentId, id);
     }
 }
