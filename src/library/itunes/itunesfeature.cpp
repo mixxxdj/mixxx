@@ -15,6 +15,7 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
+#include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
 #include "library/itunes/itunesxmlimporter.h"
@@ -306,15 +307,15 @@ QString ITunesFeature::getiTunesMusicPath() {
     return musicFolder;
 }
 
-std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
+std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter(ITunesDAO& dao) {
 #ifdef __MACOS_ITUNES_LIBRARY__
     if (isMacOSImporterUsed()) {
         qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
-        return std::make_unique<ITunesMacOSImporter>(this, m_database, m_cancelImport);
+        return std::make_unique<ITunesMacOSImporter>(this, m_cancelImport, dao);
     }
 #endif
     qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
-    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_database, m_cancelImport);
+    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_cancelImport, dao);
 }
 
 // This method is executed in a separate thread
@@ -328,7 +329,10 @@ TreeItem* ITunesFeature::importLibrary() {
 
     ScopedTransaction transaction(m_database);
 
-    std::unique_ptr<ITunesImporter> importer = makeImporter();
+    ITunesDAO dao;
+    dao.initialize(m_database);
+
+    std::unique_ptr<ITunesImporter> importer = makeImporter(dao);
     ITunesImport iTunesImport = importer->importLibrary();
 
     // Even if an error occurred, commit the transaction. The file may have been

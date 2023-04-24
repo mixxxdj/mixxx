@@ -29,10 +29,8 @@ QString qStringFrom(NSString* nsString) {
 
 class ImporterImpl {
   public:
-    ImporterImpl(
-            const QSqlDatabase& database, const std::atomic<bool>& cancelImport)
-            : m_cancelImport(cancelImport) {
-        m_dao.initialize(database);
+    ImporterImpl(const std::atomic<bool>& cancelImport, ITunesDAO& dao)
+            : m_cancelImport(cancelImport), m_dao(dao) {
     }
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
@@ -72,7 +70,7 @@ class ImporterImpl {
     const std::atomic<bool>& m_cancelImport;
 
     QHash<unsigned long long, int> m_dbIdByPersistentId;
-    ITunesDAO m_dao;
+    ITunesDAO& m_dao;
 
     int dbIdFromPersistentId(NSNumber* boxedPersistentId) {
         // Map a persistent ID as used by iTunes to an (incrementing) database
@@ -198,11 +196,11 @@ class ImporterImpl {
 } // anonymous namespace
 
 ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
-        const QSqlDatabase& database,
-        const std::atomic<bool>& cancelImport)
+        const std::atomic<bool>& cancelImport,
+        ITunesDAO& dao)
         : m_parentFeature(parentFeature),
-          m_database(database),
-          m_cancelImport(cancelImport) {
+          m_cancelImport(cancelImport),
+          m_dao(dao) {
 }
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
@@ -214,7 +212,7 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
 
     if (library) {
         std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
-        ImporterImpl impl(m_database, m_cancelImport);
+        ImporterImpl impl(m_cancelImport, m_dao);
 
         impl.importPlaylists(library.allPlaylists);
         impl.importMediaItems(library.allMediaItems);

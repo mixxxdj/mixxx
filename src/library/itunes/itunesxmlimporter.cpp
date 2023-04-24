@@ -45,15 +45,14 @@ const QString kRemote = "Remote";
 
 ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
         const QString& xmlFilePath,
-        const QSqlDatabase& database,
-        const std::atomic<bool>& cancelImport)
+        const std::atomic<bool>& cancelImport,
+        ITunesDAO& dao)
         : m_parentFeature(parentFeature),
           m_xmlFilePath(xmlFilePath),
           m_xmlFile(xmlFilePath),
           m_xml(&m_xmlFile),
-          m_cancelImport(cancelImport) {
-    m_dao.initialize(database);
-
+          m_cancelImport(cancelImport),
+          m_dao(dao) {
     // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
     // file://localhost/ from the URL. When we load the user's iTunes XML
     // configuration we may replace this with something based on the detected

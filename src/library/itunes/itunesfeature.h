@@ -9,6 +9,7 @@
 #include <atomic>
 
 #include "library/baseexternallibraryfeature.h"
+#include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
@@ -42,7 +43,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
             const QString& playlist) override;
     static QString getiTunesMusicPath();
-    std::unique_ptr<ITunesImporter> makeImporter();
+    std::unique_ptr<ITunesImporter> makeImporter(ITunesDAO& dao);
     // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
     void guessMusicLibraryMountpoint(QXmlStreamReader& xml);
