@@ -361,22 +361,23 @@ void ITunesXMLImporter::parseTrack() {
 
     // If we reach the end of <dict>
     // Save parsed track to database
-    ITunesTrack track = {};
-    track.id = id;
-    track.artist = artist;
-    track.title = title;
-    track.album = album;
-    track.albumArtist = albumArtist;
-    track.genre = genre;
-    track.grouping = grouping;
-    track.year = year.toInt();
-    track.duration = playtime;
-    track.location = location;
-    track.rating = rating;
-    track.comment = comment;
-    track.trackNumber = tracknumber.toInt();
-    track.bpm = bpm;
-    track.bitrate = bitrate;
+    ITunesTrack track = {
+            .id = id,
+            .artist = artist,
+            .title = title,
+            .album = album,
+            .albumArtist = albumArtist,
+            .genre = genre,
+            .grouping = grouping,
+            .year = year.toInt(),
+            .duration = playtime,
+            .location = location,
+            .rating = rating,
+            .comment = comment,
+            .trackNumber = tracknumber.toInt(),
+            .bpm = bpm,
+            .bitrate = bitrate,
+    };
 
     if (!m_dao.importTrack(track)) {
         return;

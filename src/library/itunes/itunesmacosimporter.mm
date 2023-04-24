@@ -138,9 +138,10 @@ class ImporterImpl {
                 ? dbIdFromPersistentId(itPlaylist.parentID)
                 : kRootITunesPlaylistId;
 
-        ITunesPlaylist playlist = {};
-        playlist.id = playlistId;
-        playlist.name = qStringFrom(itPlaylist.name);
+        ITunesPlaylist playlist = {
+                .id = playlistId,
+                .name = qStringFrom(itPlaylist.name),
+        };
         if (!m_dao.importPlaylist(playlist)) {
             return;
         }
@@ -171,22 +172,23 @@ class ImporterImpl {
             return;
         }
 
-        ITunesTrack track = {};
-        track.id = dbIdFromPersistentId(item.persistentID);
-        track.artist = qStringFrom(item.artist.name);
-        track.title = qStringFrom(item.title);
-        track.album = qStringFrom(item.album.title);
-        track.albumArtist = qStringFrom(item.album.albumArtist);
-        track.genre = qStringFrom(item.genre);
-        track.grouping = qStringFrom(item.grouping);
-        track.year = static_cast<int>(item.year);
-        track.duration = static_cast<int>(item.totalTime / 1000);
-        track.location = qStringFrom([item.location path]);
-        track.rating = static_cast<int>(item.rating / 20);
-        track.comment = qStringFrom(item.comments);
-        track.trackNumber = static_cast<int>(item.trackNumber);
-        track.bpm = static_cast<int>(item.beatsPerMinute);
-        track.bitrate = static_cast<int>(item.bitrate);
+        ITunesTrack track = {
+                .id = dbIdFromPersistentId(item.persistentID),
+                .artist = qStringFrom(item.artist.name),
+                .title = qStringFrom(item.title),
+                .album = qStringFrom(item.album.title),
+                .albumArtist = qStringFrom(item.album.albumArtist),
+                .genre = qStringFrom(item.genre),
+                .grouping = qStringFrom(item.grouping),
+                .year = static_cast<int>(item.year),
+                .duration = static_cast<int>(item.totalTime / 1000),
+                .location = qStringFrom([item.location path]),
+                .rating = static_cast<int>(item.rating / 20),
+                .comment = qStringFrom(item.comments),
+                .trackNumber = static_cast<int>(item.trackNumber),
+                .bpm = static_cast<int>(item.beatsPerMinute),
+                .bitrate = static_cast<int>(item.bitrate),
+        };
 
         if (!m_dao.importTrack(track)) {
             return;
