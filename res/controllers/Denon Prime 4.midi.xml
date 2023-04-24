@@ -1433,7 +1433,7 @@
 			</control>
             <control> <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.pitchBendDown.input</key>
               <description>Pitch Bend Down / Pitch Bend Range Down</description>
               <status>0x94</status>
               <midino>0x1D</midino>
@@ -1443,9 +1443,29 @@
             </control>
             <control> <!-- Deck A - Pitch Bend Up Button / Pitch Range Increase Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.pitchBendUp.input</key>
               <description>Pitch Bend Up / Pitch Bend Range Up</description>
               <status>0x94</status>
+              <midino>0x1E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
+              <group></group>
+              <key>Prime4.leftDeck.pitchBendDown.input</key>
+              <description>Pitch Bend Down / Pitch Bend Range Down</description>
+              <status>0x84</status>
+              <midino>0x1D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Pitch Bend Up Button / Pitch Range Increase Button -->
+              <group></group>
+              <key>Prime4.leftDeck.pitchBendUp.input</key>
+              <description>Pitch Bend Up / Pitch Bend Range Up</description>
+              <status>0x84</status>
               <midino>0x1E</midino>
               <options>
                 <Script-Binding/>
@@ -2097,7 +2117,7 @@
 			</control>
             <control> <!-- Deck B - Pitch Bend Down Button / Pitch Range Decrease Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.pitchBendDown.input</key>
               <description>Pitch Bend Down / Pitch Bend Range Down</description>
               <status>0x95</status>
               <midino>0x1D</midino>
@@ -2107,9 +2127,29 @@
             </control>
             <control> <!-- Deck B - Pitch Bend Up Button / Pitch Range Increase Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.pitchBendUp.input</key>
               <description>Pitch Bend Up / Pitch Bend Range Up</description>
               <status>0x95</status>
+              <midino>0x1E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Pitch Bend Down Button / Pitch Range Decrease Button -->
+              <group></group>
+              <key>Prime4.rightDeck.pitchBendDown.input</key>
+              <description>Pitch Bend Down / Pitch Bend Range Down</description>
+              <status>0x85</status>
+              <midino>0x1D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Pitch Bend Up Button / Pitch Range Increase Button -->
+              <group></group>
+              <key>Prime4.rightDeck.pitchBendUp.input</key>
+              <description>Pitch Bend Up / Pitch Bend Range Up</description>
+              <status>0x85</status>
               <midino>0x1E</midino>
               <options>
                 <Script-Binding/>

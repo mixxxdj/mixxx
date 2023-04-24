@@ -409,6 +409,14 @@ const mixerStrip = function(deckNumber, midiOffset) {
         });
     }
 
+    //TODO: Gain Knob
+
+    //TODO: High EQ Knob
+
+    //TODO: Mid EQ Knob
+
+    //TODO: Low EQ Knob
+
     // VU Meters
     this.vuMeter = new components.Component({
         midi: [0xB0 + midiOffset, 0x0A],
@@ -429,6 +437,8 @@ const mixerStrip = function(deckNumber, midiOffset) {
         },
     });
 
+    //TODO: QuickEffect Knob
+
     // PFL Button
     this.headphoneCue = new components.Button({
         midi: [0x90 + midiOffset, 0x0D],
@@ -437,6 +447,8 @@ const mixerStrip = function(deckNumber, midiOffset) {
         off: colDeckDark[midiOffset],
         type: components.Button.prototype.types.toggle,
     });
+
+    //TODO: Volume Fader
 
     // Crossfader Assign Switch
     this.xFaderSwitch = new components.Button({
@@ -464,7 +476,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Censor Button
     this.censorButton = new components.Button({
         midi: [0x90 + midiChannel, 0x01],
-        key: "reverseroll",
+        outKey: "reverse",
         unshift: function() {
             this.inKey = "reverseroll";
         },
@@ -523,11 +535,53 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Performance Pads
     this.padGrid = new Prime4.PadSection(this, midiChannel - 4);
 
+    // Pitch Bend Buttons
+    //const rateRanges = [0.04, 0.06, 0.08, 0.1, 0.16, 0.24, 0.5, 0.9];
+    this.pitchBendUp = new components.Button({
+        midi: [0x90 + midiChannel, 0x1E],
+        key: "rate_temp_up",
+        unshift: function() {
+            this.inKey = "rate_temp_up";
+            this.type = components.Button.prototype.types.push;
+        },
+        /*
+        shift: function() {
+            this.inKey = "rateRange";
+            this.type = components.Button.prototype.types.toggle;
+        },
+        */
+    });
+    this.pitchBendDown = new components.Button({
+        midi: [0x90 + midiChannel, 0x1D],
+        key: "rate_temp_down",
+        unshift: function() {
+            this.inKey = "rate_temp_down";
+            this.type = components.Button.prototype.types.push;
+        },
+        /*
+        shift: function() {
+            this.inKey = "rateRange";
+            this.type = components.Button.prototype.types.toggle;
+        },
+        */
+    });
+
     // Tempo Fader
     this.tempoFader = new components.Pot({
         midi: [0xB0 + midiChannel, 0x1F],
         inKey: "rate",
         invert: true,
+    });
+
+    // LED indicator when pitch fader is at centre.
+    this.tempoFeedback = new components.Component({
+        midi: [0x90 + midiChannel, 0x34],
+        outKey: "rate",
+        on: 0x02,
+        off: 0x00,
+        outValueScale: function(value) {
+            return value === 0 ? this.on : this.off;
+        },
     });
 
     /*
@@ -545,17 +599,6 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     };
 
     var sliderPosAccessors = makeSliderPosAccessors();
-
-    // LED indicator when pitch fader is at centre.
-    this.tempoFeedback = new components.Component({
-        midi: [0x90 + midiChannel, 0x34],
-        outKey: "rate",
-        on: 0x02,
-        off: 0x00,
-        outValueScale: function(value) {
-            return value === 0 ? this.on : this.off;
-        },
-    });
 
     var takeoverLEDValues = {
         OFF: 0,
@@ -611,6 +654,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         type: components.Button.prototype.types.toggle,
     });
 
+    // Vinyl Mode Button
     this.vinylButton = new components.Button({
         midi: [0x90 + midiChannel, 0x23],
         type: components.Button.prototype.types.toggle,
