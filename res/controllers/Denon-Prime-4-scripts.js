@@ -120,6 +120,14 @@ Prime4.rgbCode = {
     white: 63,
 };
 
+/*
+// Used in Swiftb0y's NS6II mapping for tempo fader LEDs
+Prime4.physicalSliderPositions = {
+    left: 0,
+    right: 0,
+};
+*/
+
 // Map RGB Hex values to MIDI values for Prime 4's colour palette
 const Prime4ColorMapper = new ColorMapper({
     0x000020: 0x01, // dark blue
@@ -522,6 +530,22 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         invert: true,
     });
 
+    /*
+    // Used in Swiftb0y's NS6II mapping for tempo fader LEDs
+    var makeSliderPosAccessors = function() {
+        var lr = midiChannel % 2 === 0 ? "left" : "right";
+        return {
+            setter: function(pos) {
+                Prime4.physicalSliderPositions[lr] = pos;
+            },
+            getter: function() {
+                return Prime4.physicalSliderPositions[lr];
+            }
+        };
+    };
+
+    var sliderPosAccessors = makeSliderPosAccessors();
+
     // LED indicator when pitch fader is at centre.
     this.tempoFeedback = new components.Component({
         midi: [0x90 + midiChannel, 0x34],
@@ -532,6 +556,53 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             return value === 0 ? this.on : this.off;
         },
     });
+
+    var takeoverLEDValues = {
+        OFF: 0,
+        DIMM: 1,
+        FULL: 2,
+    };
+    var takeoverLEDControls = {
+        up: 0x35,
+        center: 0x34,
+        down: 0x33,
+    };
+
+    this.takeoverLeds = new components.Component({
+        midi: [0x90 + midiChannel, takeoverLEDControls.center],
+        outKey: "rate",
+        off: 0,
+        output: function(softwareSliderPosition) {
+            // rate slider centered?
+            this.send(softwareSliderPosition === 0 ? takeoverLEDValues.FULL : takeoverLEDValues.OFF);
+
+            var distance2Brightness = function(distance) {
+                // src/controllers/softtakeover.cpp
+                // SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
+                var takeoverThreshold = 3 / 128;
+                if (distance > takeoverThreshold && distance < 0.10) {
+                    return takeoverLEDValues.DIMM;
+                } else if (distance >= 0.10) {
+                    return takeoverLEDValues.FULL;
+                } else {
+                    return takeoverLEDValues.OFF;
+                }
+            };
+
+            var normalizedPhysicalSliderPosition = sliderPosAccessors.getter()*2 - 1;
+            var distance = Math.abs(normalizedPhysicalSliderPosition - softwareSliderPosition);
+            var directionLedBrightness = distance2Brightness(distance);
+
+            if (normalizedPhysicalSliderPosition > softwareSliderPosition) {
+                midi.sendShortMsg(this.midi[0], takeoverLEDControls.up, takeoverLEDValues.OFF);
+                midi.sendShortMsg(this.midi[0], takeoverLEDControls.down, directionLedBrightness);
+            } else {
+                midi.sendShortMsg(this.midi[0], takeoverLEDControls.down, takeoverLEDValues.OFF);
+                midi.sendShortMsg(this.midi[0], takeoverLEDControls.up, directionLedBrightness);
+            }
+        },
+    });
+    */
 
     // Keylock Button
     this.keylockButton = new components.Button({
