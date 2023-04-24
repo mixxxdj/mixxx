@@ -1,5 +1,6 @@
 #include "library/itunes/itunesdao.h"
 
+#include <QObject>
 #include <QSqlQuery>
 #include <gsl/pointers>
 
@@ -139,7 +140,7 @@ QString ITunesDAO::uniquifyPlaylistName(QString name) {
 
     // Avoid empty playlist names
     if (name.isEmpty()) {
-        name = "(empty)";
+        name = QObject::tr("(empty)");
     }
 
     auto existing = m_playlistDuplicatesByName.find(name);
