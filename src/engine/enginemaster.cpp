@@ -99,7 +99,7 @@ EngineMaster::EngineMaster(
     m_pBoothGain = new ControlAudioTaperPot(ConfigKey(group, "booth_gain"), -14, 14, 0.5);
 
     // Legacy: the master "gain" control used to be named "volume" in Mixxx
-    // 1.11.0 and earlier. See Bug #1306253.
+    // 1.11.0 and earlier. See issue #7413.
     ControlDoublePrivate::insertAlias(ConfigKey(group, "volume"),
                                       ConfigKey(group, "gain"));
 
@@ -117,7 +117,7 @@ EngineMaster::EngineMaster(
     m_pHeadGain = new ControlAudioTaperPot(ConfigKey(group, "headGain"), -14, 14, 0.5);
 
     // Legacy: the headphone "headGain" control used to be named "headVolume" in
-    // Mixxx 1.11.0 and earlier. See Bug #1306253.
+    // Mixxx 1.11.0 and earlier. See issue #7413.
     ControlDoublePrivate::insertAlias(ConfigKey(group, "headVolume"),
                                       ConfigKey(group, "headGain"));
 

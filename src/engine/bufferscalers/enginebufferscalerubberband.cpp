@@ -103,7 +103,11 @@ void EngineBufferScaleRubberBand::onSampleRateChanged() {
             RubberBandStretcher::OptionProcessRealTime;
 #if RUBBERBANDV3
     if (m_useEngineFiner) {
-        rubberbandOptions |= RubberBandStretcher::OptionEngineFiner;
+        rubberbandOptions |=
+                RubberBandStretcher::OptionEngineFiner |
+                // Process Channels Together. otherwise the result is not
+                // mono-compatible. See #11361
+                RubberBandStretcher::OptionChannelsTogether;
     }
 #endif
 

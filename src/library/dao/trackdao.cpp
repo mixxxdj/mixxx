@@ -316,8 +316,8 @@ bool TrackDAO::saveTrack(Track* pTrack) const {
     const TrackId trackId = pTrack->getId();
     DEBUG_ASSERT(trackId.isValid());
     qDebug() << "TrackDAO: Saving track"
-            << trackId
-            << pTrack->getFileInfo();
+             << trackId
+             << pTrack->getLocation();
     if (!updateTrack(*pTrack)) {
         return false;
     }
@@ -696,13 +696,13 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
                 m_pQueryLibrarySelect || m_pQueryTrackLocationSelect)) {
         qDebug() << "TrackDAO::addTracksAddTrack: needed SqlQuerys have not "
                     "been prepared. Skipping track"
-                 << fileAccess.info();
+                 << fileAccess.info().location();
         DEBUG_ASSERT("Failed query");
         return TrackId();
     }
 
     qDebug() << "TrackDAO: Adding track"
-             << fileAccess.info();
+             << fileAccess.info().location();
 
     TrackId trackId;
 
@@ -736,7 +736,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         if (!m_pQueryLibrarySelect->exec()) {
             LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
                     << "Failed to query existing track: "
-                    << fileAccess.info();
+                    << fileAccess.info().location();
             return TrackId();
         }
         if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
@@ -763,7 +763,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             if (!m_pQueryLibraryUpdate->exec()) {
                 LOG_FAILED_QUERY(*m_pQueryLibraryUpdate)
                         << "Failed to unremove existing track: "
-                        << fileAccess.info();
+                        << fileAccess.info().location();
                 return TrackId();
             }
         }
@@ -889,8 +889,8 @@ TrackPointer TrackDAO::addTracksAddFile(
     const TrackId newTrackId = addTracksAddTrack(pTrack, unremove);
     if (!newTrackId.isValid()) {
         qWarning() << "TrackDAO::addTracksAddTrack:"
-                << "Failed to add track to database"
-                << pTrack->getFileInfo();
+                   << "Failed to add track to database"
+                   << pTrack->getLocation();
         // GlobalTrackCache will be unlocked implicitly
         return nullptr;
     }
@@ -1657,7 +1657,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
     qDebug() << "TrackDAO:"
              << "Updating track in database"
              << trackId
-             << track.getFileInfo();
+             << track.getLocation();
 
     SqlTransaction transaction(m_database);
     // PerformanceTimer time;
@@ -2152,7 +2152,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
     }
 
     // We quickly iterate through the results to prevent blocking the database
-    // for other operations. Bug #1399981.
+    // for other operations. Issue #7713.
     while (query.next()) {
         if (*pCancel) {
             return;
@@ -2297,7 +2297,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     // All following database queries assume that the list is
     // not empty. Otherwise the played history of all tracks
     // might be reset!!!
-    // https://bugs.launchpad.net/mixxx/+bug/1955159
+    // https://github.com/mixxxdj/mixxx/issues/10617
     VERIFY_OR_DEBUG_ASSERT(!trackIds.isEmpty()) {
         return false;
     }
@@ -2311,7 +2311,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     //
     // https://www.sqlite.org/lang_update.html#upfrom
     // UPDATE-FROM is supported beginning in SQLite version 3.33.0 (2020-08-14)
-    // https://bugs.launchpad.net/mixxx/+bug/1937941
+    // https://github.com/mixxxdj/mixxx/issues/10482
 #ifdef __SQLITE3__
     if (sqlite3_libversion_number() >= 3033000) {
 #endif // __SQLITE3__

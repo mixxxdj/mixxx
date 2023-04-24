@@ -108,10 +108,6 @@ void FlangerEffect::loadEngineEffectParameters(
     m_pTripletParameter = parameters.value("triplet");
 }
 
-FlangerEffect::~FlangerEffect() {
-    //qDebug() << debugString() << "destroyed";
-}
-
 void FlangerEffect::processChannel(
         FlangerGroupState* pState,
         const CSAMPLE* pInput,

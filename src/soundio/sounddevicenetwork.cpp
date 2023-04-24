@@ -30,7 +30,8 @@ constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 } // namespace
 
-SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
+SoundDeviceNetwork::SoundDeviceNetwork(
+        UserSettingsPointer config,
         SoundManager* sm,
         QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
@@ -62,12 +63,8 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
     }
 
     const SINT framesPerBuffer = m_configFramesPerBuffer;
-    qDebug() << "framesPerBuffer:" << framesPerBuffer;
-
     const auto requestedBufferTime = mixxx::Duration::fromSeconds(
             framesPerBuffer / m_dSampleRate);
-    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
-             << requestedBufferTime;
 
     // Feed the network device buffer directly from the
     // clock reference device callback
@@ -85,6 +82,9 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
 
     // Create the callback Thread if requested
     if (isClkRefDevice) {
+        kLogger.debug() << "Clock Reference with:" << framesPerBuffer << "frames/buffer @"
+                        << m_dSampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
+
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"),
@@ -98,6 +98,9 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
 
         m_pThread = std::make_unique<SoundDeviceNetworkThread>(this);
         m_pThread->start(QThread::TimeCriticalPriority);
+    } else {
+        kLogger.debug() << "Maximum:" << framesPerBuffer << "frames/buffer @"
+                        << m_dSampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
     }
 
     return SoundDeviceStatus::Ok;
@@ -130,6 +133,7 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
     if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) {
         return;
     }
+    DEBUG_ASSERT(m_configFramesPerBuffer >= framesPerBuffer);
 
     int inChunkSize = framesPerBuffer * m_iNumInputChannels;
     int readAvailable = m_pNetworkStream->getReadExpected()
@@ -221,9 +225,10 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
 }
 
 void SoundDeviceNetwork::writeProcess(SINT framesPerBuffer) {
-    if (!m_outputFifo || !m_pNetworkStream) {
+    if (!m_outputFifo || !m_pNetworkStream || !m_iNumOutputChannels) {
         return;
     }
+    DEBUG_ASSERT(m_configFramesPerBuffer >= framesPerBuffer);
 
     int outChunkSize = framesPerBuffer * m_iNumOutputChannels;
     int writeAvailable = m_outputFifo->writeAvailable();
@@ -285,37 +290,51 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         int outChunkSize, int readAvailable,
         CSAMPLE* dataPtr1, ring_buffer_size_t size1,
         CSAMPLE* dataPtr2, ring_buffer_size_t size2) {
-    int writeExpected = static_cast<int>(pWorker->getStreamTimeFrames() - pWorker->framesWritten());
+    int writeExpectedFrames = static_cast<int>(
+            pWorker->getStreamTimeFrames() - pWorker->framesWritten());
 
-    int writeAvailable = writeExpected * m_iNumOutputChannels;
-    int copyCount = qMin(readAvailable, writeAvailable);
+    int writeExpected = writeExpectedFrames * m_iNumOutputChannels;
+
+    if (writeExpected <= 0) {
+        // Overflow
+        // kLogger.debug() << "workerWriteProcess: buffer full"
+        //                 << "outChunkSize" << outChunkSize
+        //                 << "readAvailable" << readAvailable
+        //                 << "writeExpected" << writeExpected << pWorker->getStreamTimeFrames();
+        // catch up by skipping chunk
+        m_pSoundManager->underflowHappened(25);
+    }
+    int copyCount = qMin(readAvailable, writeExpected);
 
     if (copyCount > 0) {
-        if (writeAvailable - copyCount > outChunkSize) {
+        if (writeExpected - copyCount > outChunkSize) {
             // Underflow
-            //kLogger.debug() << "workerWriteProcess: buffer empty";
+            // kLogger.debug() << "workerWriteProcess: buffer empty";
             // catch up by filling buffer until we are synced
-            workerWriteSilence(pWorker, writeAvailable - copyCount);
+            workerWriteSilence(pWorker, writeExpected - copyCount);
             m_pSoundManager->underflowHappened(24);
-        } else if (writeAvailable - copyCount > outChunkSize / 2) {
+        } else if (writeExpected - copyCount > outChunkSize / 2) {
             // try to keep PAs buffer filled up to 0.5 chunks
             if (pWorker->outputDrift()) {
                 // duplicate one frame
-                //kLogger.debug() << "workerWriteProcess() duplicate one frame"
-                //                << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
+                // kLogger.debug() << "workerWriteProcess() duplicate one frame"
+                //                 << (float)writeExpected / outChunkSize
+                //                 << (float)readAvailable / outChunkSize;
                 workerWrite(pWorker, dataPtr1, 1);
             } else {
                 pWorker->setOutputDrift(true);
             }
-        } else if (writeAvailable < outChunkSize / 2 ||
-                readAvailable > outChunkSize * 1.5
-           ) {
-            // We are not able to store at least the half of the new frames
-            // or we have a risk of an m_outputFifo overflow
+        } else if (writeExpected < outChunkSize / 2) {
+            // We will overshoot by more than a half of the new frames
             if (pWorker->outputDrift()) {
-                //kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() skip one frame"
-                //                << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
+                // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() "
+                //                    "skip one frame"
+                //                 << (float)writeAvailable / outChunkSize
+                //                 << (float)readAvailable / outChunkSize;
+                if (size1 >= m_iNumOutputChannels) {
+                    dataPtr1 += m_iNumOutputChannels;
+                    size1 -= m_iNumOutputChannels;
+                }
             } else {
                 pWorker->setOutputDrift(true);
             }
@@ -421,7 +440,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         m_denormals = true;
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
-        // https://bugs.launchpad.net/mixxx/+bug/1404401
+        // https://github.com/mixxxdj/mixxx/issues/7747
 #ifdef __SSE__
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";

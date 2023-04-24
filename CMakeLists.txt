@@ -750,6 +750,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
@@ -1158,6 +1159,23 @@ if(UNIX AND NOT APPLE)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
 
+if(APPLE)
+  # Enable Automatic Reference Counting (ARC) when compiling Objective-C(++).
+  # This frees us from having to worry about memory management when interfacing
+  # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
+  # will automatically insert retain/release calls on Objective-C objects.
+  target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
+
+  option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
+  if(MACOS_ITUNES_LIBRARY)
+    target_sources(mixxx-lib PRIVATE
+      src/library/itunes/itunesmacosimporter.mm
+    )
+    target_link_libraries(mixxx-lib PRIVATE "-weak_framework iTunesLibrary")
+    target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
+  endif()
+endif()
+
 # QML Debugging
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(mixxx-lib PRIVATE QT_QML_DEBUG)
@@ -1366,7 +1384,7 @@ if (APPLE)
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
-        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/bundle.plist.in"
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Info.plist.in"
     )
   endif()
 endif()
@@ -1943,10 +1961,11 @@ endif()
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
-  set(LIBDJINTEROP_VERSION 0.16.0)
+  set(LIBDJINTEROP_VERSION 0.16.1)
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
-  find_package(DjInterop ${LIBDJINTEROP_VERSION})
+  # Note: Version 0.17.0 is not yet compatible
+  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
     message(STATUS "Using existing system installation of libdjinterop")
@@ -1977,7 +1996,7 @@ if(ENGINEPRIME)
     # the configuration.
     ExternalProject_Add(libdjinterop
       URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
-      URL_HASH SHA256=c998831fe4d3cc80c5c031491204244c9ed0c61575dd529260304b95d79db588
+      URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2030,10 +2049,13 @@ add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
 if(MSVC)
   target_compile_definitions(fidlib PRIVATE T_MSVC)
   target_compile_definitions(fidlib PRIVATE _USE_MATH_DEFINES)
+  target_compile_options(fidlib PRIVATE /W3)
 elseif(MINGW)
   target_compile_definitions(fidlib PRIVATE T_MINGW)
+  target_compile_options(fidlib PRIVATE -Wall -Wextra -Wfloat-conversion -Werror=return-type)
 else()
   target_compile_definitions(fidlib PRIVATE T_LINUX)
+  target_compile_options(fidlib PRIVATE -Wall -Wextra -Wfloat-conversion -Werror=return-type)
 endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
@@ -2764,12 +2786,12 @@ option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
   find_package(Shoutidjc)
   # Check if system lib is at least 2.4.6 and not suffering bugs
-  # https://bugs.launchpad.net/mixxx/+bug/1833225
-  # https://bugs.launchpad.net/mixxx/+bug/1913579
+  # https://github.com/mixxxdj/mixxx/issues/9681
+  # https://github.com/mixxxdj/mixxx/issues/10305
   if(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.4)
-      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from bug lp1833225")
+      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from issue #9681")
   elseif(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.6)
-      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
+      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from issue #10305")
   endif()
   if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
     # Fall back to internal library in the lib tree
@@ -3055,7 +3077,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic lunar)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
@@ -3074,7 +3096,7 @@ include(CPack)
 if(APPLE AND MACOS_BUNDLE)
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
     set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
-    set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/entitlements.plist")
+    set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Mixxx.entitlements")
 
     # Starting with arm64 macOS Apple will require ad-hoc code signatures,
     # which can be generated by setting the identity to a single dash (-).

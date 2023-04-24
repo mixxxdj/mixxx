@@ -979,15 +979,11 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     overviewWidget->setup(node, *m_pContext);
     overviewWidget->installEventFilter(m_pKeyboard);
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    overviewWidget->Init();
+    overviewWidget->initWithTrack(pPlayer->getLoadedTrack());
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, overviewWidget, &WOverview::slotTrackLoaded);
     connect(pPlayer, &BaseTrackPlayer::loadingTrack, overviewWidget, &WOverview::slotLoadingTrack);
-
-    // just in case track already loaded
-    overviewWidget->slotLoadingTrack(pPlayer->getLoadedTrack(), TrackPointer());
-    overviewWidget->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return overviewWidget;
 #endif
@@ -2114,7 +2110,7 @@ void LegacySkinParser::commonWidgetSetup(const QDomNode& node,
     // setupWidget since a BindProperty connection to the display parameter can
     // cause the widget to be polished (i.e. style computed) before it is
     // ready. The most common case is that the object name has not yet been set
-    // in setupWidget. See Bug #1285836.
+    // in setupWidget. See issue #7328.
     if (allowConnections) {
         setupConnections(node, pBaseWidget);
     }

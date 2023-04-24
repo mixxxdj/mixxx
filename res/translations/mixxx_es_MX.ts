@@ -11003,8 +11003,8 @@ Consejo: compensa las voces de &quot;ardillas&quot; o &quot;gruñonas&quot;</tra
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="409"/>
-        <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
-        <translation>Consulte https://bugs.launchpad.net/mixxx/+bug/686212 para más información.</translation>
+        <source>See https://github.com/mixxxdj/mixxx/issues/5701 for more information.</source>
+        <translation>Consulte https://github.com/mixxxdj/mixxx/issues/5701 para más información.</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="418"/>

@@ -70,6 +70,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     TraktorPlaylistModel* m_pTraktorPlaylistModel;
 
     bool m_isActivated;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;

@@ -1579,11 +1579,16 @@ WBeatSpinBox::down-button {
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
-  WPushButton#FxParameterButton[displayValue="0"],
   WTrackTableViewHeader,
   WTrackTableViewHeader::section {
     background-color: #171719;
   }
+  /* make Fx parameter buttons brighter so they stand out in 'fx focus' mode
+    (parameters row of focused effect is marked = dark bg, colored border) */
+  WPushButton#FxParameterButton[displayValue="0"] {
+    background-color: #2a2a2c;
+  }
+
   /* even buttons in 2nd level containers */
   #FxAssignButtons WPushButton[displayValue="0"],
   #VinylControls WPushButton[displayValue="0"],
@@ -2779,10 +2784,10 @@ WSearchLineEdit {
       height: 9px;
     }
     #WaveformSplitter::handle:pressed,
-    #SidebarCoverSplitter::handle:pressed
+    #SidebarCoverSplitter::handle:pressed {
     /* doesn't catch hover state:
     #HorizontalSplitter::handle:hover,
-    #HorizontalSplitter::handle[hover="true"] */ {
+    #HorizontalSplitter::handle[hover="true"] */
       image: url(skin:/palemoon/style/splitter_handle_horizontal_pressed.svg);
     }
 
@@ -2800,9 +2805,8 @@ WSearchLineEdit {
     /* 'height' works although it's actually the width of the handle */
     height: 6px;
   }
-  #LibrarySplitter::handle:pressed,
-  #LibrarySplitter::handle:hover {
-    image: url(skin:/palemoon/style/splitter_handle_vertical_pressed.png);
+  #LibrarySplitter::handle:pressed {
+    image: url(skin:/palemoon/style/splitter_handle_vertical_pressed.svg);
   }
 /************ splitters ***********************/
 
@@ -2852,7 +2856,7 @@ WLibrarySidebar {
 WLibrarySidebar::branch:closed:has-children:!has-siblings:!selected,
 WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
 /* Suppresses that selected sidebar items branch indicator shows wrong color when
-    out of focus ; lp:880588 */
+    out of focus ; #6040 */
   border-image: none;
   image: url(skin:/palemoon/style/library_branch_closed.svg);
   }

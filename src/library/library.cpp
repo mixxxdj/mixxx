@@ -689,6 +689,9 @@ std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
 #endif
 
 bool Library::isTrackIdInCurrentLibraryView(const TrackId& trackId) {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return false;
+    }
     if (m_pLibraryWidget) {
         return m_pLibraryWidget->isTrackInCurrentView(trackId);
     } else {

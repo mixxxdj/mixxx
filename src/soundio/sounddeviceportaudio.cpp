@@ -24,6 +24,8 @@
 #ifdef PA_USE_ALSA
 // for PaAlsa_EnableRealtimeScheduling
 #include <pa_linux_alsa.h>
+// for sched_getscheduler
+#include <sched.h>
 #endif
 
 namespace {
@@ -210,14 +212,17 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 
     SINT framesPerBuffer = m_configFramesPerBuffer;
-    if (m_deviceTypeId == paJACK) {
-        // PortAudio's JACK back end has its own buffering to split or merge the buffer
-        // received from JACK to the desired size.
-        // However, we use here paFramesPerBufferUnspecified to use the JACK buffer size
+    if (m_deviceTypeId == paJACK && framesPerBuffer <= 1024) {
+        // Up to a Jack buffer size of 1024 frames/period, PortAudio is able to
+        // follow the Jack buffer size dynamically.
+        // We make use of it by requesting paFramesPerBufferUnspecified
         // which offers the best response time without additional jitter due to two
         // successive callback without the expected pause.
         framesPerBuffer = paFramesPerBufferUnspecified;
         qDebug() << "Using JACK server's frames per period";
+        // in case of bigger buffers, the user need to select the same buffers
+        // size in Mixxx and Jack to avoid buffer underflow/overflow during broadcasting
+        // This fixes https://github.com/mixxxdj/mixxx/issues/11341
     } else {
         qDebug() << "framesPerBuffer:" << framesPerBuffer;
     }
@@ -879,17 +884,30 @@ int SoundDevicePortAudio::callbackProcessClkRef(
             m_deviceId.debugName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << m_deviceId;
-    // Turn on TimeCritical priority for the callback thread. If we are running
-    // in Linux userland, for example, this will have no effect.
-    if (!m_bSetThreadPriority) {
-        QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
-        m_bSetThreadPriority = true;
 
+    if (!m_bSetThreadPriority) {
+#ifdef __LINUX__
+        // Verify if we are a thread with "real-time" policy.
+        // The audio thread on Linux should be set to SCHED_FIFO with a priority
+        // that's somewhere between 60 and 90 depending on the allowed priority
+        // ranges (some USB devices by default get assigned a priority in the
+        // 50s with some system configs).
+        if ((sched_getscheduler(0) & SCHED_FIFO) == 0) {
+            qWarning() << "Engine thread not scheduled with the real-time policy SCHED_FIFO";
+        }
+#else
+        // Turn on TimeCritical priority for the callback thread.
+        // If we are running in Linux this will have no effect. Either the thread is
+        // already set up correctly because of the audio server, or it's still set to
+        // the SCHED_OTHER policy in which case the call also wouldn't do anything.
+        QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
+#endif
+        m_bSetThreadPriority = true;
 
 #ifdef __SSE__
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
-        // https://bugs.launchpad.net/mixxx/+bug/1404401
+        // https://github.com/mixxxdj/mixxx/issues/7747
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
@@ -938,7 +956,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #ifdef __WINDOWS__
     // We need to refresh the denormals flags every callback since some
     // driver + API combinations will reset them (known: DirectSound + Realtec)
-    // Fixes Bug #1495047
+    // Fixes issue #8220
     // (Both calls are very fast)
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);

@@ -16,6 +16,7 @@ class PhaserGroupState final : public EffectState {
             : EffectState(engineParameters) {
         clear();
     }
+    ~PhaserGroupState() override = default;
 
     void clear() {
         leftPhase = 0;
@@ -39,7 +40,7 @@ class PhaserGroupState final : public EffectState {
 class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
   public:
     PhaserEffect() = default;
-    virtual ~PhaserEffect();
+    ~PhaserEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

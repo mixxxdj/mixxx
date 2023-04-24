@@ -40,10 +40,14 @@ bool WOverviewLMH::drawNextPixmapPart() {
         // by total_gain
         // We keep full range waveform data to scale it on paint
         m_waveformSourceImage = QImage(
-                static_cast<int>(trackSamples / audioVisualRatio / 2),
+                static_cast<int>(trackSamples / audioVisualRatio / 2) + 1,
                 2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
+        if (dataSize / 2 != m_waveformSourceImage.width()) {
+            qWarning() << "Track duration has changed since last analysis"
+                       << m_waveformSourceImage.width() << "!=" << dataSize / 2;
+        }
     }
     DEBUG_ASSERT(!m_waveformSourceImage.isNull());
 

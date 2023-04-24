@@ -2223,7 +2223,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="138"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="139"/>
         <source>Adjust %1</source>
-        <translation>Dostosuj</translation>
+        <translation>Dostosuj %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="25"/>
@@ -10887,8 +10887,8 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="409"/>
-        <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
-        <translation>Zobacz https://bugs.launchpad.net/mixxx/+bug/686212 aby uzyskać więcej informacji.</translation>
+        <source>See https://github.com/mixxxdj/mixxx/issues/5701 for more information.</source>
+        <translation>Zobacz https://github.com/mixxxdj/mixxx/issues/5701 aby uzyskać więcej informacji.</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="418"/>

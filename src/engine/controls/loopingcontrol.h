@@ -87,6 +87,7 @@ class LoopingControl : public EngineControl {
 
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
+    void slotBeatJumpSizeChangeRequest(double beats);
     void slotBeatJumpSizeHalve(double pressed);
     void slotBeatJumpSizeDouble(double pressed);
     void slotBeatJumpForward(double pressed);

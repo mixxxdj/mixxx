@@ -236,7 +236,7 @@ void BaseSqlTableModel::select() {
     }
 
     // Remove all the rows from the table after(!) the query has been
-    // executed successfully. See Bug #1090888.
+    // executed successfully. See issue #6782.
     // TODO(rryan) we could edit the table in place instead of clearing it?
     clearRows();
 
@@ -363,7 +363,7 @@ void BaseSqlTableModel::setTable(QString tableName,
         // It's important that this not be a direct connection, or else the UI
         // might try to update while a cache operation is in progress, and that
         // will hit the cache again and cause dangerous reentry cycles
-        // See https://bugs.launchpad.net/mixxx/+bug/1365708
+        // See https://github.com/mixxxdj/mixxx/issues/7569
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
