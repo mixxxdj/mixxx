@@ -61,7 +61,15 @@ const skipButtonBehaviour = "skip";
 // number, the more sensitive the wheel will be.)
 const wheelSensitivity = 0.5;
 
-const rateRanges = [0.04, 0.08, 0.24, 0.5, 0.9];
+// Edit the values in this list to choose which tempo fader ranges you would like
+// to toggle through using [SHIFT} + Pitch bend [-] / [+] (0.5 = 50%).
+const rateRanges = [
+    0.04,
+    0.08,
+    0.24,
+    0.5,
+    0.9
+];
 
 /**************************************************
  *                                                *
@@ -79,6 +87,9 @@ if (skipButtonBehaviour === "skip") {
 } else if (skipButtonBehaviour === "seek") {
     trackSkipMode = ["back", "fwd"];
 }
+
+// Beatjump sizes
+const jumpSizes = [1, 2, 4, 8, 16, 32, 64, 128];
 
 // Component re-jigging for pad mode purposes
 components.ComponentContainer.prototype.reconnectComponents = function(operation, recursive) {
@@ -534,16 +545,51 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         key: trackSkipMode[1],
     });
 
-    // Beatjump Backward
+    // Beatjump Buttons
+    const currentJumpSize = new Prime4.CyclingArrayView(jumpSizes, 2);
     this.bjumpBackButton = new components.Button({
         midi: [0x90 + midiChannel, 0x06],
-        key: "beatjump_backward",
+        unshift: function() {
+            this.inKey = "beatjump_backward";
+            this.outKey = this.inKey;
+            this.input = components.Button.prototype.input;
+            this.outTrigger = true;
+            this.outConnect = true;
+        },
+        shift: function() {
+            this.inKey = "beatjump_size";
+            this.outKey = this.inKey;
+            this.input = function(channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status, group)) {
+                    this.inSetValue(currentJumpSize.previous());
+                }
+                this.send(value / 2 + 0.5); // Hacky way to get LEDs to respond properly
+            };
+            this.outTrigger = false;
+            this.outConnect = false;
+        },
     });
-
-    // Beatjump Forward
     this.bjumpFwdButton = new components.Button({
         midi: [0x90 + midiChannel, 0x07],
-        key: "beatjump_forward",
+        unshift: function() {
+            this.inKey = "beatjump_forward";
+            this.outKey = this.inKey;
+            this.input = components.Button.prototype.input;
+            this.outTrigger = true;
+            this.outConnect = true;
+        },
+        shift: function() {
+            this.inKey = "beatjump_size";
+            this.outKey = this.inKey;
+            this.input = function(channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status, group)) {
+                    this.inSetValue(currentJumpSize.next());
+                }
+                this.send(value / 2 + 0.5); // Hacky way to get LEDs to respond properly
+            };
+            this.outTrigger = false;
+            this.outConnect = false;
+        },
     });
 
     // Sync Button
@@ -591,8 +637,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 if (this.isPress(channel, control, value, status, group)) {
                     this.inSetValue(currentRateRange.next());
                 }
-                this.send(value);
-                console.log(value);
+                this.send(value / 2 + 0.5); // Hacky way to get LEDs to respond properly
             };
             console.log("Sifted");
             this.outTrigger = false;
@@ -616,8 +661,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 if (this.isPress(channel, control, value, status, group)) {
                     this.inSetValue(currentRateRange.previous());
                 }
-                this.send(value);
-                console.log(value);
+                this.send(value / 2 + 0.5); // Hacky way to get LEDs to respond properly
             };
             console.log("Shifted");
             this.outTrigger = false;
