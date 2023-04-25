@@ -72,10 +72,6 @@ DlgPrefMixer::DlgPrefMixer(
           m_bGainAutoReset(false) {
     setupUi(this);
 
-    QButtonGroup crossfaderModes;
-    crossfaderModes.addButton(radioButtonAdditive);
-    crossfaderModes.addButton(radioButtonConstantPower);
-
     loadSettings();
 
     connect(SliderXFader,
@@ -148,7 +144,10 @@ DlgPrefMixer::DlgPrefMixer(
 
     setUpMainEQ();
 
-    setScrollSafeGuardForAllInputWidgets(this);
+    setScrollSafeGuard(SliderXFader);
+    setScrollSafeGuard(SliderHiEQ);
+    setScrollSafeGuard(SliderLoEQ);
+    setScrollSafeGuard(comboBoxMainEq);
 
     slotUpdate();
     slotApply();
