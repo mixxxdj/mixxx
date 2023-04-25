@@ -473,9 +473,10 @@ void ITunesXMLImporter::parsePlaylist() {
                         continue;
                     }
 
-                    ITunesPlaylist playlist = {};
-                    playlist.id = id;
-                    playlist.name = name;
+                    ITunesPlaylist playlist = {
+                            .id = id,
+                            .name = name,
+                    };
                     if (!m_dao->importPlaylist(playlist)) {
                         // unexpected error
                         break;
