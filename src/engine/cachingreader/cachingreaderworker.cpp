@@ -215,8 +215,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
 
     // Emit that the track is loaded.
-    const SINT sampleCount =
-            CachingReaderChunk::frames2samples(
+    const double sampleCount =
+            CachingReaderChunk::dFrames2samples(
                     m_pAudioSource->frameLength());
 
     // The engine must not request any chunks before receiving the
