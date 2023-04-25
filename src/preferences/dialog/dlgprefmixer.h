@@ -51,7 +51,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotMainEqEffectChanged(int effectIndex);
 
   private:
-    void loadSettings();
     void drawXfaderDisplay();
     void setDefaultShelves();
     double getEqFreq(int value, int minimum, int maximum);
@@ -75,7 +74,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     UserSettingsPointer m_pConfig;
 
     // X-fader values
-    double m_xFaderMode, m_transform, m_cal;
+    int m_xFaderMode;
+    double m_transform, m_cal;
 
     PollingControlProxy m_mode;
     PollingControlProxy m_curve;

@@ -71,7 +71,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_bGainAutoReset(false) {
     setupUi(this);
 
-    loadSettings();
+    slotUpdate();
 
     connect(SliderXFader,
             QOverload<int>::of(&QSlider::valueChanged),
@@ -122,15 +122,6 @@ DlgPrefMixer::DlgPrefMixer(
             &QCheckBox::stateChanged,
             this,
             &DlgPrefMixer::slotSingleEqCheckboxChanged);
-    // Quick hack to update the checkbox "Use the same EQ filter for all decks"
-    // to not use the default state (checked) when slotNumDecksChanged() calls
-    // slotSingleEqCheckboxChanged(state) here in constructor, because that would
-    // be written to config immediateley and thus reset the previous unchecked state.
-    // TODO(ronso0) Write only in slotApply(), read from config only in slotUpdate().
-    // Currently config is read in both slotUpdate() and loadSettings().
-    CheckBoxSingleEqEffect->setChecked(
-            m_pConfig->getValue(ConfigKey(kConfigGroup, kSingleEq), "yes") == "yes");
-    slotSingleEqCheckboxChanged(CheckBoxSingleEqEffect->isChecked());
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
@@ -359,99 +350,6 @@ QUrl DlgPrefMixer::helpUrl() const {
     return QUrl(MIXXX_MANUAL_EQ_URL);
 }
 
-void DlgPrefMixer::loadSettings() {
-    // Range xFaderCurve EngineXfader::kTransformMin .. EngineXfader::kTransformMax
-    m_transform = m_pConfig->getValue(
-            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
-            EngineXfader::kTransformDefault);
-
-    // Range SliderXFader 0 .. 100
-    double sliderVal = RescalerUtils::oneByXToLinear(
-            m_transform - EngineXfader::kTransformMin + 1,
-            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
-            SliderXFader->minimum(),
-            SliderXFader->maximum());
-    SliderXFader->setValue(static_cast<int>(sliderVal + 0.5));
-
-    m_xFaderMode = m_pConfig->getValueString(
-                                    ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"))
-                           .toInt();
-
-    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
-        radioButtonConstantPower->setChecked(true);
-    } else {
-        radioButtonAdditive->setChecked(true);
-    }
-
-    m_xFaderReverse = m_pConfig->getValueString(
-                                       ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))
-                              .toInt() == 1;
-    checkBoxReverse->setChecked(m_xFaderReverse);
-
-    slotUpdateXFader();
-    slotApply();
-
-    // EQ ////////////////////////////////////////////////
-    QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "HiEQFrequency"));
-    QString highEqPrecise = m_pConfig->getValueString(
-            ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"));
-    QString lowEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "LoEQFrequency"));
-    QString lowEqPrecise = m_pConfig->getValueString(
-            ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"));
-    m_bEqAutoReset = static_cast<bool>(
-            m_pConfig->getValueString(ConfigKey(kConfigGroup, "EqAutoReset"))
-                    .toInt());
-    CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
-    m_bGainAutoReset = static_cast<bool>(
-            m_pConfig->getValueString(ConfigKey(kConfigGroup, "GainAutoReset"))
-                    .toInt());
-    CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
-    CheckBoxBypass->setChecked(
-            m_pConfig->getValue(
-                    ConfigKey(kConfigGroup, kEnableEqs), QString("yes")) == "no");
-    CheckBoxEqOnly->setChecked(
-            m_pConfig->getValue(
-                    ConfigKey(kConfigGroup, kEqsOnly), "yes") == "yes");
-    CheckBoxSingleEqEffect->setChecked(
-            m_pConfig->getValue(
-                    ConfigKey(kConfigGroup, kSingleEq), "yes") == "yes");
-
-    double lowEqFreq = 0.0;
-    double highEqFreq = 0.0;
-
-    // Precise takes precedence over course.
-    lowEqFreq = lowEqCourse.isEmpty() ? lowEqFreq : lowEqCourse.toDouble();
-    lowEqFreq = lowEqPrecise.isEmpty() ? lowEqFreq : lowEqPrecise.toDouble();
-    highEqFreq = highEqCourse.isEmpty() ? highEqFreq : highEqCourse.toDouble();
-    highEqFreq = highEqPrecise.isEmpty() ? highEqFreq : highEqPrecise.toDouble();
-
-    if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
-        setDefaultShelves();
-        lowEqFreq = m_pConfig
-                            ->getValueString(ConfigKey(
-                                    kConfigGroup, "LoEQFrequencyPrecise"))
-                            .toDouble();
-        highEqFreq = m_pConfig
-                             ->getValueString(ConfigKey(
-                                     kConfigGroup, "HiEQFrequencyPrecise"))
-                             .toDouble();
-    }
-
-    SliderHiEQ->setValue(
-            getSliderPosition(highEqFreq,
-                    SliderHiEQ->minimum(),
-                    SliderHiEQ->maximum()));
-    SliderLoEQ->setValue(
-            getSliderPosition(lowEqFreq,
-                    SliderLoEQ->minimum(),
-                    SliderLoEQ->maximum()));
-
-    if (m_pConfig->getValue(
-                ConfigKey(kConfigGroup, kEnableEqs), "yes") == "yes") {
-        CheckBoxBypass->setChecked(false);
-    }
-}
-
 void DlgPrefMixer::setDefaultShelves() {
     m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequency"), ConfigValue(2500));
     m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequency"), ConfigValue(250));
@@ -472,8 +370,6 @@ void DlgPrefMixer::slotResetToDefaults() {
     checkBoxReverse->setChecked(false);
 
     // EQ //////////////////////////////////
-    slotMainEQToDefault();
-    setDefaultShelves();
     for (const auto& pCombo : std::as_const(m_deckEqEffectSelectors)) {
         pCombo->setCurrentIndex(
                 pCombo->findData(kDefaultEqId));
@@ -482,13 +378,15 @@ void DlgPrefMixer::slotResetToDefaults() {
         pCombo->setCurrentIndex(
                 pCombo->findText(kDefaultQuickEffectChainName));
     }
-    loadSettings();
     CheckBoxBypass->setChecked(false);
     CheckBoxEqOnly->setChecked(true);
     CheckBoxSingleEqEffect->setChecked(true);
     CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
     CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
-    slotUpdate();
+
+    setDefaultShelves();
+    slotMainEQToDefault();
+    // slotUpdate();
     slotApply();
 }
 
@@ -699,27 +597,98 @@ void DlgPrefMixer::slotApply() {
     applySelections();
 }
 
-// supposed to set the widgets to match internal state
+// Update the widgets with values from config
 void DlgPrefMixer::slotUpdate() {
-    if (radioButtonAdditive->isChecked()) {
-        m_xFaderMode = MIXXX_XFADER_ADDITIVE;
+    // xfader //////////////////////////////////////////////////////////////////
+    m_transform = m_pConfig->getValue(
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
+            EngineXfader::kTransformDefault);
+
+    // Range SliderXFader 0 .. 100
+    double sliderVal = RescalerUtils::oneByXToLinear(
+            m_transform - EngineXfader::kTransformMin + 1,
+            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
+            SliderXFader->minimum(),
+            SliderXFader->maximum());
+    SliderXFader->setValue(static_cast<int>(sliderVal + 0.5));
+
+    m_xFaderMode = m_pConfig->getValueString(
+                                    ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"))
+                           .toInt();
+    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
+        radioButtonConstantPower->setChecked(true);
+    } else {
+        radioButtonAdditive->setChecked(true);
     }
-    if (radioButtonConstantPower->isChecked()) {
-        m_xFaderMode = MIXXX_XFADER_CONSTPWR;
-    }
+
+    m_xFaderReverse = m_pConfig->getValueString(
+                                       ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))
+                              .toInt() == 1;
+    checkBoxReverse->setChecked(m_xFaderReverse);
 
     slotUpdateXFader();
 
-    slotUpdateLoEQ();
-    slotUpdateHiEQ();
+    // EQs & QuickEffects //////////////////////////////////////////////////////
     slotPopulateDeckEffectSelectors();
-    CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
-    CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
-
+    CheckBoxSingleEqEffect->setChecked(
+            m_pConfig->getValue(ConfigKey(kConfigGroup, kSingleEq), "yes") == "yes");
+    slotSingleEqCheckboxChanged(CheckBoxSingleEqEffect->isChecked());
     m_eqIndiciesOnUpdate.clear();
     for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
         m_eqIndiciesOnUpdate.append(box->currentIndex());
     }
+
+    m_bEqAutoReset = static_cast<bool>(
+            m_pConfig->getValueString(ConfigKey(kConfigGroup, "EqAutoReset"))
+                    .toInt());
+    CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
+
+    m_bGainAutoReset = static_cast<bool>(
+            m_pConfig->getValueString(ConfigKey(kConfigGroup, "GainAutoReset"))
+                    .toInt());
+    CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
+
+    CheckBoxBypass->setChecked(
+            m_pConfig->getValue(ConfigKey(kConfigGroup, kEnableEqs),
+                    QString("yes")) == "no");
+    slotBypassEqChanged(CheckBoxBypass->checkState());
+
+    // EQ shelves //////////////////////////////////////////////////////////////
+    QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "HiEQFrequency"));
+    QString highEqPrecise = m_pConfig->getValueString(
+            ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"));
+    QString lowEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "LoEQFrequency"));
+    QString lowEqPrecise = m_pConfig->getValueString(
+            ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"));
+    double lowEqFreq = 0.0;
+    double highEqFreq = 0.0;
+
+    // Precise takes precedence over coarse.
+    lowEqFreq = lowEqCourse.isEmpty() ? lowEqFreq : lowEqCourse.toDouble();
+    lowEqFreq = lowEqPrecise.isEmpty() ? lowEqFreq : lowEqPrecise.toDouble();
+    highEqFreq = highEqCourse.isEmpty() ? highEqFreq : highEqCourse.toDouble();
+    highEqFreq = highEqPrecise.isEmpty() ? highEqFreq : highEqPrecise.toDouble();
+
+    if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
+        setDefaultShelves();
+        lowEqFreq = m_pConfig->getValueString(
+                                     ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"))
+                            .toDouble();
+        highEqFreq = m_pConfig->getValueString(
+                                      ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"))
+                             .toDouble();
+    }
+
+    SliderHiEQ->setValue(
+            getSliderPosition(highEqFreq,
+                    SliderHiEQ->minimum(),
+                    SliderHiEQ->maximum()));
+    SliderLoEQ->setValue(
+            getSliderPosition(lowEqFreq,
+                    SliderLoEQ->minimum(),
+                    SliderLoEQ->maximum()));
+    slotUpdateLoEQ();
+    slotUpdateHiEQ();
 }
 
 // Draw the crossfader curve graph. Only needs to get drawn when a change
@@ -797,6 +766,12 @@ void DlgPrefMixer::drawXfaderDisplay() {
 
 // Update and save the crossfader's parameters from the dialog's widgets.
 void DlgPrefMixer::slotUpdateXFader() {
+    if (radioButtonAdditive->isChecked()) {
+        m_xFaderMode = MIXXX_XFADER_ADDITIVE;
+    } else {
+        m_xFaderMode = MIXXX_XFADER_CONSTPWR;
+    }
+
     // m_transform is in the range of 1 to 1000 while 50 % slider results
     // to ~2, which represents a medium rounded fader curve.
     m_transform = RescalerUtils::linearToOneByX(
@@ -806,6 +781,7 @@ void DlgPrefMixer::slotUpdateXFader() {
                           EngineXfader::kTransformMax) -
             1 + EngineXfader::kTransformMin;
     m_cal = EngineXfader::getPowerCalibration(m_transform);
+    // TODO move to slotApply
     m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"),
             ConfigValue(m_xFaderMode));
     m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
@@ -825,11 +801,12 @@ void DlgPrefMixer::slotUpdateGainAutoReset(int i) {
 }
 
 void DlgPrefMixer::slotBypassEqChanged(int state) {
+    // TODO only disable EQ combobox here. Move config/Control parts to slotApply()
     bool bypass = static_cast<bool>(state);
 
     m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), ConfigValue(bypass ? "no" : "yes"));
     // Disable/enable EQ effect processing for all decks by setting the appropriate
-    // controls to 0 or 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
+    // controls to 0 or 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enabled")
     int deck = 0;
     for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
         QString group = EqualizerEffectChain::formatEffectSlotGroup(
@@ -838,6 +815,9 @@ void DlgPrefMixer::slotBypassEqChanged(int state) {
         deck++;
         box->setEnabled(!bypass);
     }
+
+    // TODO also disable waveform filtering for consistency of audio & GUI (waveforms + VU)
+    // pChainSlot->setFilterWaveform
 }
 
 void DlgPrefMixer::setUpMainEQ() {
@@ -890,6 +870,7 @@ void DlgPrefMixer::setUpMainEQ() {
 }
 
 void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
+    // TODO Add GUI hint that EQ changes are applied instantly
     // clear parameters view first
     qDeleteAll(m_mainEQSliders);
     m_mainEQSliders.clear();
