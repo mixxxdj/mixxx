@@ -80,12 +80,14 @@ DlgPrefMixer::DlgPrefMixer(
             &DlgPrefMixer::slotUpdateXFader);
     connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefMixer::slotUpdateXFader);
     connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotApply);
 
     // Update the crossfader curve graph and other settings when the
     // crossfader mode is changed.
-    connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdate);
-    connect(radioButtonConstantPower, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdate);
+    connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdateXFader);
+    connect(radioButtonConstantPower,
+            &QRadioButton::clicked,
+            this,
+            &DlgPrefMixer::slotUpdateXFader);
 
     // Don't allow the xfader graph getting keyboard focus
     graphicsViewXfader->setFocusPolicy(Qt::NoFocus);
