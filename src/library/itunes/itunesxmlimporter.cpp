@@ -89,7 +89,10 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                     parseTracks();
                     parsePlaylists();
 
-                    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(m_parentFeature);
+                    // The parent feature may ne null during testing
+                    std::unique_ptr<TreeItem> pRootItem = m_parentFeature
+                            ? TreeItem::newRoot(m_parentFeature)
+                            : std::make_unique<TreeItem>();
                     m_dao->appendPlaylistTree(pRootItem.get());
 
                     iTunesImport.playlistRoot = std::move(pRootItem);
