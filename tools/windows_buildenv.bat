@@ -72,7 +72,7 @@ EXIT /B 0
             CALL :UNZIP_POWERSHELL "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         ) ELSE (
             ECHO ^Unpacking "!BUILDENV_PATH!.zip" using 7z...
-            CALL :UNZIP_SEVENZIP "!RETVAL!" "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
+            CALL :UNZIP_SEVENZIP !RETVAL! "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         )
         IF NOT EXIST "%BUILDENV_PATH%" (
             ECHO ^Error: Unpacking failed. The downloaded archive might be broken, consider removing "!BUILDENV_PATH!.zip" to force redownload.
@@ -132,7 +132,7 @@ EXIT /B 0
 
 
 :UNZIP_SEVENZIP <7zippath> <newzipfile> <ExtractTo>
-    %1 x -o%3 %2
+    %1 x "-o%~3" %2
     GOTO :EOF
 
 
