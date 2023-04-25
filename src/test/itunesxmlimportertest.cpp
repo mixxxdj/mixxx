@@ -195,7 +195,13 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
 TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
     std::unique_ptr<MockITunesDAO> dao = makeMockDAO();
 
-    QString musicRoot = "/localhost/Z:/Media.localized/Music";
+    QString musicRoot =
+#ifdef _WIN32
+            "";
+#else
+            "/localhost/";
+#endif
+    musicRoot += "Z:/Media.localized/Music";
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
                     .id = 77,
