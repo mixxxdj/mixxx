@@ -58,6 +58,125 @@ std::unique_ptr<MockITunesDAO> makeMockDAO() {
 TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
     std::unique_ptr<MockITunesDAO> dao = makeMockDAO();
 
+    QString musicRoot = getITunesTestDir().absoluteFilePath(
+            "macOS Music Library/Media.localized/Music");
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 479,
+                    .artist = "AC/DC",
+                    .title = "Highway to Hell",
+                    .album = "Highway to Hell",
+                    .albumArtist = "AC/DC",
+                    .genre = "Hard Rock",
+                    .grouping = "",
+                    .year = 1979,
+                    .duration = 208,
+                    .location = musicRoot +
+                            "/AC_DC/Highway to Hell/01 Highway to Hell.m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 1,
+                    .bpm = 0,
+                    .bitrate = 256,
+            }));
+    EXPECT_CALL(*dao, importTrack(ITunesTrack{
+                              .id = 482,
+                              .artist = "AC/DC",
+                              .title = "Play Ball",
+                              .album = "Rock or Bust",
+                              .albumArtist = "AC/DC",
+                              .genre = "Rock",
+                              .grouping = "",
+                              .year = 2014,
+                              .duration = 167,
+                              .location = musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
+                              .rating = 0,
+                              .comment = "",
+                              .trackNumber = 2,
+                              .bpm = 0,
+                              .bitrate = 256,
+                      }));
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 476,
+                    .artist = "Jet",
+                    .title = "Are You Gonna Be My Girl",
+                    .album = "Are You Gonna Be My Girl - Single",
+                    .albumArtist = "Jet",
+                    .genre = "Rock",
+                    .grouping = "",
+                    .year = 2003,
+                    .duration = 213,
+                    .location = musicRoot +
+                            "/Jet/Are You Gonna Be My Girl - Single/01 Are You "
+                            "Gonna Be My Girl.m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 1,
+                    .bpm = 0,
+                    .bitrate = 256,
+            }));
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 473,
+                    .artist = "Ray Charles",
+                    .title = "What I'd Say",
+                    .album = "What I'd Say",
+                    .albumArtist = "Ray Charles",
+                    .genre = "Rock",
+                    .grouping = "",
+                    .year = 2012,
+                    .duration = 304,
+                    .location = musicRoot + "/Ray Charles/What I'd Say/01 What I'd Say.m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 1,
+                    .bpm = 0,
+                    .bitrate = 256,
+            }));
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 470,
+                    .artist = "The Rolling Stones",
+                    .title = "Beast of Burden (Live)",
+                    .album = "Sweet Summer Sun, Live in Hyde Park 2013 (Live) "
+                             "- Single",
+                    .albumArtist = "The Rolling Stones",
+                    .genre = "Rock",
+                    .grouping = "",
+                    .year = 2013,
+                    .duration = 306,
+                    .location = musicRoot +
+                            "/The Rolling Stones/Sweet Summer Sun, Live in "
+                            "Hyde Park 2013 (Live) - Single/01 Beast of Burden "
+                            "(Live).m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 1,
+                    .bpm = 0,
+                    .bitrate = 256,
+            }));
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 467,
+                    .artist = "Mungo Jerry",
+                    .title = "In the Summertime",
+                    .album = "In the Summertime",
+                    .albumArtist = "Mungo Jerry",
+                    .genre = "Rock",
+                    .grouping = "",
+                    .year = 1970,
+                    .duration = 214,
+                    .location = musicRoot +
+                            "/Compilations/In the Summertime/01 In the "
+                            "Summertime.m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 1,
+                    .bpm = 0,
+                    .bitrate = 256,
+            }));
+
     int root = kRootITunesPlaylistId;
     EXPECT_CALL(*dao, importPlaylistRelation(root, 1172)); // Downloaded (built-in playlist)
     EXPECT_CALL(*dao, importPlaylistRelation(root, 1425)); // Folder A
@@ -76,7 +195,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
 TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
     std::unique_ptr<MockITunesDAO> dao = makeMockDAO();
 
-    QString mediaRoot = "/localhost/Z:/Media.localized/Music";
+    QString musicRoot = "/localhost/Z:/Media.localized/Music";
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
                     .id = 77,
@@ -88,7 +207,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .grouping = "",
                     .year = 1979,
                     .duration = 208,
-                    .location = mediaRoot +
+                    .location = musicRoot +
                             "/AC_DC/Highway to Hell/01 Highway to Hell.m4a",
                     .rating = 0,
                     .comment = "",
@@ -106,7 +225,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                               .grouping = "",
                               .year = 2014,
                               .duration = 167,
-                              .location = mediaRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
+                              .location = musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
                               .rating = 0,
                               .comment = "",
                               .trackNumber = 2,
@@ -124,9 +243,8 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .grouping = "",
                     .year = 2003,
                     .duration = 213,
-                    .location = "/localhost/Z:/Media.localized/Music/Jet/Are "
-                                "You Gonna Be My Girl - Single/01 Are You "
-                                "Gonna Be My Girl.m4a",
+                    .location = musicRoot + "/Jet/Are You Gonna Be My Girl - Single/01 Are You "
+                                            "Gonna Be My Girl.m4a",
                     .rating = 0,
                     .comment = "",
                     .trackNumber = 1,
@@ -144,8 +262,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .grouping = "",
                     .year = 2012,
                     .duration = 304,
-                    .location = "/localhost/Z:/Media.localized/Music/Ray "
-                                "Charles/What I'd Say/01 What I'd Say.m4a",
+                    .location = musicRoot + "/Ray Charles/What I'd Say/01 What I'd Say.m4a",
                     .rating = 0,
                     .comment = "",
                     .trackNumber = 1,
@@ -165,9 +282,9 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .year = 2013,
                     .duration = 306,
                     .location =
-                            "/localhost/Z:/Media.localized/Music/The Rolling "
-                            "Stones/Sweet Summer Sun, Live in Hyde Park 2013 "
-                            "(Live) - Single/01 Beast of Burden (Live).m4a",
+                            musicRoot + "/The Rolling "
+                                        "Stones/Sweet Summer Sun, Live in Hyde Park 2013 "
+                                        "(Live) - Single/01 Beast of Burden (Live).m4a",
                     .rating = 0,
                     .comment = "",
                     .trackNumber = 1,
@@ -186,8 +303,8 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .year = 1970,
                     .duration = 214,
                     .location =
-                            "/localhost/Z:/Media.localized/Music/Compilations/"
-                            "In the Summertime/01 In the Summertime.m4a",
+                            musicRoot + "/Compilations/"
+                                        "In the Summertime/01 In the Summertime.m4a",
                     .rating = 0,
                     .comment = "",
                     .trackNumber = 1,
