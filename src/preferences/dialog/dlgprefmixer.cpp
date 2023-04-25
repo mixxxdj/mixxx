@@ -68,9 +68,9 @@ DlgPrefMixer::DlgPrefMixer(
           m_pNumDecks(nullptr),
           m_inSlotPopulateDeckEffectSelectors(false),
           m_singleEq(true),
-          m_bEqAutoReset(false),
-          m_bGainAutoReset(false),
-          m_bEqBypass(false),
+          m_eqAutoReset(false),
+          m_gainAutoReset(false),
+          m_eqBypass(false),
           m_initializing(true) {
     setupUi(this);
 
@@ -105,27 +105,27 @@ DlgPrefMixer::DlgPrefMixer(
     connect(SliderLoEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotUpdateLoEQ);
 
     connect(CheckBoxEqAutoReset,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             this,
-            &DlgPrefMixer::slotUpdateEqAutoReset);
+            &DlgPrefMixer::slotEqAutoResetToggled);
     connect(CheckBoxGainAutoReset,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             this,
-            &DlgPrefMixer::slotUpdateGainAutoReset);
+            &DlgPrefMixer::slotGainAutoResetToggled);
     connect(CheckBoxBypass,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             this,
-            &DlgPrefMixer::slotBypassEqChanged);
+            &DlgPrefMixer::slotBypassEqToggled);
 
     connect(CheckBoxEqOnly,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             this,
             &DlgPrefMixer::slotPopulateDeckEffectSelectors);
 
     connect(CheckBoxSingleEqEffect,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             this,
-            &DlgPrefMixer::slotSingleEqCheckboxChanged);
+            &DlgPrefMixer::slotSingleEqToggled);
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
@@ -146,6 +146,9 @@ DlgPrefMixer::DlgPrefMixer(
     setScrollSafeGuard(comboBoxMainEq);
 
     slotUpdate();
+
+    // Save all settings back to config, especially EQs and QuickEffects might
+    // changed.
     slotApply();
 }
 
@@ -170,7 +173,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
         connect(pEqComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
-                &DlgPrefMixer::slotEffectChangedOnDeck);
+                &DlgPrefMixer::slotEQEffectChangedOnDeck);
         setScrollSafeGuard(pEqComboBox);
 
         // Create the drop down list for Quick Effects
@@ -232,8 +235,8 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
         }
         m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEQEffectIndex);
     }
-    applySelections();
-    slotSingleEqCheckboxChanged(m_singleEq);
+    applySelectionsToDecks();
+    slotSingleEqToggled(m_singleEq);
 }
 
 void DlgPrefMixer::slotPopulateDeckEffectSelectors() {
@@ -319,8 +322,8 @@ void DlgPrefMixer::populateDeckQuickEffectBoxList(
     }
 }
 
-void DlgPrefMixer::slotSingleEqCheckboxChanged(int checked) {
-    m_singleEq = static_cast<bool>(checked);
+void DlgPrefMixer::slotSingleEqToggled(bool checked) {
+    m_singleEq = checked;
     // TODO move this line to slotApply()
     m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
             m_singleEq ? QString("yes") : QString("no"));
@@ -349,7 +352,7 @@ void DlgPrefMixer::slotSingleEqCheckboxChanged(int checked) {
     }
 
     // TODO move this line to slotApply()
-    applySelections();
+    applySelectionsToDecks();
 }
 
 QUrl DlgPrefMixer::helpUrl() const {
@@ -387,16 +390,15 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxBypass->setChecked(false);
     CheckBoxEqOnly->setChecked(true);
     CheckBoxSingleEqEffect->setChecked(true);
-    CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
-    CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
+    CheckBoxEqAutoReset->setChecked(m_eqAutoReset);
+    CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
 
     setDefaultShelves();
     slotMainEQToDefault();
-    // slotUpdate();
     slotApply();
 }
 
-void DlgPrefMixer::slotEffectChangedOnDeck(int effectIndex) {
+void DlgPrefMixer::slotEQEffectChangedOnDeck(int effectIndex) {
     QComboBox* c = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
     if (!c || m_inSlotPopulateDeckEffectSelectors) {
@@ -417,7 +419,7 @@ void DlgPrefMixer::slotEffectChangedOnDeck(int effectIndex) {
     }
 
     // This is required to remove a previous selected effect that does not
-    // fit to the current ShowAllEffects checkbox
+    // fit to the current 'EQ effects only' checkbox
     slotPopulateDeckEffectSelectors();
 }
 
@@ -451,15 +453,11 @@ void DlgPrefMixer::slotQuickEffectChangedOnDeck(int effectIndex) {
     }
 }
 
-void DlgPrefMixer::applySelections() {
+void DlgPrefMixer::applySelectionsToDecks() {
     if (m_inSlotPopulateDeckEffectSelectors) {
         return;
     }
 
-    applySelectionsToDecks();
-}
-
-void DlgPrefMixer::applySelectionsToDecks() {
     int deck = 0;
     for (QComboBox* box : std::as_const(m_deckEqEffectSelectors)) {
         const EffectManifestPointer pManifest =
@@ -509,7 +507,7 @@ void DlgPrefMixer::slotUpdateHiEQ() {
     m_highEqFreq = getEqFreq(SliderHiEQ->value(),
             SliderHiEQ->minimum(),
             SliderHiEQ->maximum());
-    validate_levels();
+    validateEQShelves();
     if (m_highEqFreq < 1000) {
         TextHiEQ->setText(QString("%1 Hz").arg((int)m_highEqFreq));
     } else {
@@ -521,6 +519,7 @@ void DlgPrefMixer::slotUpdateHiEQ() {
             ConfigValue(QString::number(m_highEqFreq, 'f')));
 
     slotApply();
+    // TODO Maybe add a 'Apply values immediately" checkbox for instant testing (sweep freq)?
 }
 
 void DlgPrefMixer::slotUpdateLoEQ() {
@@ -530,7 +529,7 @@ void DlgPrefMixer::slotUpdateLoEQ() {
     m_lowEqFreq = getEqFreq(SliderLoEQ->value(),
             SliderLoEQ->minimum(),
             SliderLoEQ->maximum());
-    validate_levels();
+    validateEQShelves();
     if (m_lowEqFreq < 1000) {
         TextLoEQ->setText(QString("%1 Hz").arg((int)m_lowEqFreq));
     } else {
@@ -542,6 +541,7 @@ void DlgPrefMixer::slotUpdateLoEQ() {
             ConfigValue(QString::number(m_lowEqFreq, 'f')));
 
     slotApply();
+    // TODO Maybe add a 'Apply values immediately" checkbox for instant testing (sweep freq)?
 }
 
 void DlgPrefMixer::slotApplyMainEQParameter(int value) {
@@ -570,6 +570,9 @@ void DlgPrefMixer::slotApplyMainEQParameter(int value) {
 }
 
 int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
+    // TODO there is some conversion issue with this and getEqFreq():
+    // values above ~15 kHz are lowered with each slotUpdate() until the settle
+    // at a certain value
     if (eqFreq >= kFrequencyUpperLimit) {
         return maxValue;
     } else if (eqFreq <= kFrequencyLowerLimit) {
@@ -582,6 +585,8 @@ int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
 }
 
 void DlgPrefMixer::slotApply() {
+    // TODO unify ConfigValues to int, migrate yes/no
+
     // xfader //////////////////////////////////////////////////////////////////
     m_mode.set(m_xFaderMode);
     m_curve.set(m_transform);
@@ -595,14 +600,14 @@ void DlgPrefMixer::slotApply() {
     slotUpdateXFader();
 
     // Bypass EQ ///////////////////////////////////////////////////////////////
-    m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), ConfigValue(m_bEqBypass ? "no" : "yes"));
+    m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), ConfigValue(m_eqBypass ? "no" : "yes"));
     // Disable/enable EQ effect processing for all decks by setting the appropriate
     // controls to 0 or 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enabled")
     int deck = 0;
     while (deck < m_deckEqEffectSelectors.count()) {
         QString group = EqualizerEffectChain::formatEffectSlotGroup(
                 PlayerManager::groupForDeck(deck));
-        ControlObject::set(ConfigKey(group, "enabled"), m_bEqBypass ? 0 : 1);
+        ControlObject::set(ConfigKey(group, "enabled"), m_eqBypass ? 0 : 1);
         deck++;
     }
     // TODO also disable waveform filtering for consistency of audio & GUI (waveforms + VU)
@@ -612,10 +617,10 @@ void DlgPrefMixer::slotApply() {
     m_COLoFreq.set(m_lowEqFreq);
     m_COHiFreq.set(m_highEqFreq);
     m_pConfig->set(ConfigKey(kConfigGroup, "EqAutoReset"),
-            ConfigValue(m_bEqAutoReset ? 1 : 0));
+            ConfigValue(m_eqAutoReset ? 1 : 0));
     m_pConfig->set(ConfigKey(kConfigGroup, "GainAutoReset"),
-            ConfigValue(m_bGainAutoReset ? 1 : 0));
-    applySelections();
+            ConfigValue(m_gainAutoReset ? 1 : 0));
+    applySelectionsToDecks();
 }
 
 // Update the widgets with values from config
@@ -654,7 +659,7 @@ void DlgPrefMixer::slotUpdate() {
     slotPopulateDeckEffectSelectors();
     if (m_initializing || CheckBoxSingleEqEffect->isChecked() != m_singleEq) {
         CheckBoxSingleEqEffect->setChecked(m_singleEq);
-        slotSingleEqCheckboxChanged(CheckBoxSingleEqEffect->checkState());
+        slotSingleEqToggled(CheckBoxSingleEqEffect->isChecked());
     }
 
     m_eqIndiciesOnUpdate.clear();
@@ -662,20 +667,21 @@ void DlgPrefMixer::slotUpdate() {
         m_eqIndiciesOnUpdate.append(box->currentIndex());
     }
 
-    m_bEqAutoReset = static_cast<bool>(
+    m_eqAutoReset = static_cast<bool>(
             m_pConfig->getValueString(ConfigKey(kConfigGroup, "EqAutoReset"))
                     .toInt());
-    CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
+    CheckBoxEqAutoReset->setChecked(m_eqAutoReset);
 
-    m_bGainAutoReset = static_cast<bool>(
+    m_gainAutoReset = static_cast<bool>(
             m_pConfig->getValueString(ConfigKey(kConfigGroup, "GainAutoReset"))
                     .toInt());
-    CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
+    CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
 
-    m_bEqBypass = m_pConfig->getValue(
-                          ConfigKey(kConfigGroup, kEnableEqs), QString("yes")) == "no";
-    CheckBoxBypass->setChecked(m_bEqBypass);
-    slotBypassEqChanged(CheckBoxBypass->checkState());
+    m_eqBypass = m_pConfig->getValue(
+                         ConfigKey(kConfigGroup, kEnableEqs), QString("yes")) == "no";
+    CheckBoxBypass->setChecked(m_eqBypass);
+    // Deactivate EQ comboboxes when Bypass is enabled
+    slotBypassEqToggled(CheckBoxBypass->isChecked());
 
     // EQ shelves //////////////////////////////////////////////////////////////
     QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "HiEQFrequency"));
@@ -788,7 +794,6 @@ void DlgPrefMixer::drawXfaderDisplay() {
     graphicsViewXfader->repaint();
 }
 
-// Update and save the crossfader's parameters from the dialog's widgets.
 void DlgPrefMixer::slotUpdateXFader() {
     if (radioButtonAdditive->isChecked()) {
         m_xFaderMode = MIXXX_XFADER_ADDITIVE;
@@ -816,21 +821,22 @@ void DlgPrefMixer::slotUpdateXFader() {
     drawXfaderDisplay();
 }
 
-void DlgPrefMixer::slotUpdateEqAutoReset(int i) {
-    m_bEqAutoReset = static_cast<bool>(i);
+void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
+    m_eqAutoReset = checked;
 }
 
-void DlgPrefMixer::slotUpdateGainAutoReset(int i) {
-    m_bGainAutoReset = static_cast<bool>(i);
+void DlgPrefMixer::slotGainAutoResetToggled(bool checked) {
+    m_gainAutoReset = checked;
 }
 
-void DlgPrefMixer::slotBypassEqChanged(int state) {
-    m_bEqBypass = static_cast<bool>(state);
+void DlgPrefMixer::slotBypassEqToggled(bool checked) {
+    m_eqBypass = checked;
 
     // De/activate deck EQ comboboxes
-    for (const auto& box : qAsConst(m_deckEqEffectSelectors)) {
-        box->setEnabled(!m_bEqBypass);
+    for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
+        box->setEnabled(!m_eqBypass);
     }
+    // TODO Also disable relevant checkboxes
 }
 
 void DlgPrefMixer::setUpMainEQ() {
@@ -884,7 +890,7 @@ void DlgPrefMixer::setUpMainEQ() {
 
 void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
     // TODO Add GUI hint that EQ changes are applied instantly
-    // clear parameters view first
+    // Clear parameters view first
     qDeleteAll(m_mainEQSliders);
     m_mainEQSliders.clear();
     qDeleteAll(m_mainEQValues);
@@ -961,6 +967,7 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
                     // Otherwise, without pressing 'Reset parameter', the previously saved
                     // parameter values (of another EQ effect) would be loaded on next start
                     // which (unnoticed) messes up the parameters displayed now.
+                    // TODO store this in effects.xml
                     m_pConfig->set(ConfigKey(kConfigGroup,
                                            kMainEQParameterKey + QString::number(i + 1)),
                             ConfigValue(valueText));
@@ -990,7 +997,7 @@ double DlgPrefMixer::getEqFreq(int sliderVal, int minValue, int maxValue) {
     return result;
 }
 
-void DlgPrefMixer::validate_levels() {
+void DlgPrefMixer::validateEQShelves() {
     m_highEqFreq = math_clamp<double>(m_highEqFreq, kFrequencyLowerLimit, kFrequencyUpperLimit);
     m_lowEqFreq = math_clamp<double>(m_lowEqFreq, kFrequencyLowerLimit, kFrequencyUpperLimit);
     if (m_lowEqFreq == m_highEqFreq) {
@@ -1037,6 +1044,7 @@ void DlgPrefMixer::setMainEQParameter(int i, double value) {
             QString valueText = QString::number(value);
             valueLabel->setText(valueText);
 
+            // TODO store this in effects.xml
             m_pConfig->set(ConfigKey(kConfigGroup,
                                    kMainEQParameterKey + QString::number(i + 1)),
                     ConfigValue(valueText));

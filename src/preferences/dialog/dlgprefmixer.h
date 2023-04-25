@@ -23,27 +23,26 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     QUrl helpUrl() const override;
 
   public slots:
-    // Apply changes to widget
     void slotApply() override;
     void slotUpdate() override;
     void slotResetToDefaults() override;
-    void slotUpdateXFader();
 
   private slots:
-    void slotEffectChangedOnDeck(int effectIndex);
-    void slotQuickEffectChangedOnDeck(int effectIndex);
     void slotNumDecksChanged(double numDecks);
-    void slotSingleEqCheckboxChanged(int checked);
-    // Slot for toggling between advanced and basic views
+    void slotEQEffectChangedOnDeck(int effectIndex);
+    void slotQuickEffectChangedOnDeck(int effectIndex);
+    void slotSingleEqToggled(bool checked);
+    void slotEqAutoResetToggled(bool checked);
+    void slotGainAutoResetToggled(bool checked);
+    void slotBypassEqToggled(bool checked);
+    // Create, populate and show/hide EQ & QuickEffect selectors, considering the
+    // number of decks and the 'Single EQ' checkbox
     void slotPopulateDeckEffectSelectors();
-    // Update Hi EQ
+
+    void slotUpdateXFader();
     void slotUpdateHiEQ();
-    // Update Lo EQ
     void slotUpdateLoEQ();
 
-    void slotUpdateEqAutoReset(int);
-    void slotUpdateGainAutoReset(int);
-    void slotBypassEqChanged(int state);
     // Update the Main EQ
     void slotApplyMainEQParameter(int value);
     void slotMainEQToDefault();
@@ -55,10 +54,10 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void setDefaultShelves();
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
-    void validate_levels();
-    void updateBandFilter(int index, double value);
+    void validateEQShelves();
     void setUpMainEQ();
-    void applySelections();
+
+    void applySelectionsToDecks();
 
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
     const QList<EffectManifestPointer> getFilteredManifests(
@@ -69,7 +68,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void populateDeckQuickEffectBoxList(
             const QList<QComboBox*>& boxList);
 
-    void applySelectionsToDecks();
 
     UserSettingsPointer m_pConfig;
 
@@ -106,9 +104,10 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     QWeakPointer<EffectSlot> m_pEffectMainEQ;
 
     bool m_singleEq;
-    bool m_bEqAutoReset;
-    bool m_bGainAutoReset;
-    bool m_bEqBypass;
+    bool m_eqEffectsOnly;
+    bool m_eqAutoReset;
+    bool m_gainAutoReset;
+    bool m_eqBypass;
 
     bool m_initializing;
 
