@@ -107,6 +107,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;
+    bool m_bEqBypass;
 
     QList<int> m_eqIndiciesOnUpdate;
 };

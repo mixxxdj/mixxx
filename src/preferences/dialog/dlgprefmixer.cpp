@@ -68,7 +68,8 @@ DlgPrefMixer::DlgPrefMixer(
           m_pNumDecks(nullptr),
           m_inSlotPopulateDeckEffectSelectors(false),
           m_bEqAutoReset(false),
-          m_bGainAutoReset(false) {
+          m_bGainAutoReset(false),
+          m_bEqBypass(false) {
     setupUi(this);
 
     slotUpdate();
@@ -576,6 +577,7 @@ int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
 }
 
 void DlgPrefMixer::slotApply() {
+    // xfader //////////////////////////////////////////////////////////////////
     m_mode.set(m_xFaderMode);
     m_curve.set(m_transform);
     m_calibration.set(m_cal);
@@ -587,7 +589,21 @@ void DlgPrefMixer::slotApply() {
     }
     slotUpdateXFader();
 
-    // EQ ////////////////////////////////////////
+    // Bypass EQ ///////////////////////////////////////////////////////////////
+    m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), ConfigValue(m_bEqBypass ? "no" : "yes"));
+    // Disable/enable EQ effect processing for all decks by setting the appropriate
+    // controls to 0 or 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enabled")
+    int deck = 0;
+    while (deck < m_deckEqEffectSelectors.count()) {
+        QString group = EqualizerEffectChain::formatEffectSlotGroup(
+                PlayerManager::groupForDeck(deck));
+        ControlObject::set(ConfigKey(group, "enabled"), m_bEqBypass ? 0 : 1);
+        deck++;
+    }
+    // TODO also disable waveform filtering for consistency of audio & GUI (waveforms + VU)
+    // pChainSlot->setFilterWaveform
+
+    // EQ shelves //////////////////////////////////////////////////////////////
     m_COLoFreq.set(m_lowEqFreq);
     m_COHiFreq.set(m_highEqFreq);
     m_pConfig->set(ConfigKey(kConfigGroup, "EqAutoReset"),
@@ -648,9 +664,9 @@ void DlgPrefMixer::slotUpdate() {
                     .toInt());
     CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
 
-    CheckBoxBypass->setChecked(
-            m_pConfig->getValue(ConfigKey(kConfigGroup, kEnableEqs),
-                    QString("yes")) == "no");
+    m_bEqBypass = m_pConfig->getValue(
+                          ConfigKey(kConfigGroup, kEnableEqs), QString("yes")) == "no";
+    CheckBoxBypass->setChecked(m_bEqBypass);
     slotBypassEqChanged(CheckBoxBypass->checkState());
 
     // EQ shelves //////////////////////////////////////////////////////////////
@@ -801,23 +817,12 @@ void DlgPrefMixer::slotUpdateGainAutoReset(int i) {
 }
 
 void DlgPrefMixer::slotBypassEqChanged(int state) {
-    // TODO only disable EQ combobox here. Move config/Control parts to slotApply()
-    bool bypass = static_cast<bool>(state);
+    m_bEqBypass = static_cast<bool>(state);
 
-    m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), ConfigValue(bypass ? "no" : "yes"));
-    // Disable/enable EQ effect processing for all decks by setting the appropriate
-    // controls to 0 or 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enabled")
-    int deck = 0;
-    for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
-        QString group = EqualizerEffectChain::formatEffectSlotGroup(
-                PlayerManager::groupForDeck(deck));
-        ControlObject::set(ConfigKey(group, "enabled"), bypass ? 0 : 1);
-        deck++;
-        box->setEnabled(!bypass);
+    // De/activate deck EQ comboboxes
+    for (const auto& box : qAsConst(m_deckEqEffectSelectors)) {
+        box->setEnabled(!m_bEqBypass);
     }
-
-    // TODO also disable waveform filtering for consistency of audio & GUI (waveforms + VU)
-    // pChainSlot->setFilterWaveform
 }
 
 void DlgPrefMixer::setUpMainEQ() {
