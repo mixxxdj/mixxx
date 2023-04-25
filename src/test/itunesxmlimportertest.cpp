@@ -199,7 +199,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
 #ifdef _WIN32
             "";
 #else
-            "/localhost/";
+            "/";
 #endif
     musicRoot += "Z:/Media.localized/Music";
     EXPECT_CALL(*dao,
