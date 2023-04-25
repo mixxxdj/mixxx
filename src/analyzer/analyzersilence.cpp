@@ -26,30 +26,32 @@ bool shouldAnalyze(TrackPointer pTrack) {
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_fThreshold(kSilenceThreshold),
-          m_iFramesProcessed(0),
+          m_framesProcessed(0),
           m_bPrevSilence(true),
-          m_iSignalStart(-1),
-          m_iSignalEnd(-1) {
+          m_signalStart(-1),
+          m_signalEnd(-1) {
 }
 
-bool AnalyzerSilence::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
+bool AnalyzerSilence::initialize(TrackPointer pTrack,
+        mixxx::audio::SampleRate sampleRate,
+        SINT frameLength) {
     Q_UNUSED(sampleRate);
-    Q_UNUSED(totalSamples);
+    Q_UNUSED(frameLength);
 
     if (!shouldAnalyze(pTrack)) {
         return false;
     }
 
-    m_iFramesProcessed = 0;
+    m_framesProcessed = 0;
     m_bPrevSilence = true;
-    m_iSignalStart = -1;
-    m_iSignalEnd = -1;
+    m_signalStart = -1;
+    m_signalEnd = -1;
 
     return true;
 }
 
-bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, const int iLen) {
-    for (int i = 0; i < iLen; i += mixxx::kAnalysisChannels) {
+bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
+    for (int i = 0; i < count; i += mixxx::kAnalysisChannels) {
         // Compute max of channels in this sample frame
         CSAMPLE fMax = CSAMPLE_ZERO;
         for (SINT ch = 0; ch < mixxx::kAnalysisChannels; ++ch) {
@@ -60,16 +62,16 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, const int iLen) {
         bool bSilence = fMax < m_fThreshold;
 
         if (m_bPrevSilence && !bSilence) {
-            if (m_iSignalStart < 0) {
-                m_iSignalStart = m_iFramesProcessed + i / mixxx::kAnalysisChannels;
+            if (m_signalStart < 0) {
+                m_signalStart = m_framesProcessed + i / mixxx::kAnalysisChannels;
             }
         } else if (!m_bPrevSilence && bSilence) {
-            m_iSignalEnd = m_iFramesProcessed + i / mixxx::kAnalysisChannels;
+            m_signalEnd = m_framesProcessed + i / mixxx::kAnalysisChannels;
         }
 
         m_bPrevSilence = bSilence;
     }
-    m_iFramesProcessed += iLen / mixxx::kAnalysisChannels;
+    m_framesProcessed += count / mixxx::kAnalysisChannels;
     return true;
 }
 
@@ -77,21 +79,21 @@ void AnalyzerSilence::cleanup() {
 }
 
 void AnalyzerSilence::storeResults(TrackPointer pTrack) {
-    if (m_iSignalStart < 0) {
-        m_iSignalStart = 0;
+    if (m_signalStart < 0) {
+        m_signalStart = 0;
     }
-    if (m_iSignalEnd < 0) {
-        m_iSignalEnd = m_iFramesProcessed;
+    if (m_signalEnd < 0) {
+        m_signalEnd = m_framesProcessed;
     }
 
     // If track didn't end with silence, place signal end marker
     // on the end of the track.
     if (!m_bPrevSilence) {
-        m_iSignalEnd = m_iFramesProcessed;
+        m_signalEnd = m_framesProcessed;
     }
 
-    double firstSound = mixxx::kAnalysisChannels * m_iSignalStart;
-    double lastSound = mixxx::kAnalysisChannels * m_iSignalEnd;
+    double firstSound = mixxx::kAnalysisChannels * m_signalStart;
+    double lastSound = mixxx::kAnalysisChannels * m_signalEnd;
 
     CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
     if (pAudibleSound == nullptr) {

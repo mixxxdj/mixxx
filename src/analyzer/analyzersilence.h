@@ -10,16 +10,18 @@ class AnalyzerSilence : public Analyzer {
     explicit AnalyzerSilence(UserSettingsPointer pConfig);
     ~AnalyzerSilence() override = default;
 
-    bool initialize(TrackPointer pTrack, int sampleRate, int totalSamples) override;
-    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    bool initialize(TrackPointer pTrack,
+            mixxx::audio::SampleRate sampleRate,
+            SINT frameLength) override;
+    bool processSamples(const CSAMPLE* pIn, SINT count) override;
     void storeResults(TrackPointer pTrack) override;
     void cleanup() override;
 
   private:
     UserSettingsPointer m_pConfig;
     CSAMPLE m_fThreshold;
-    int m_iFramesProcessed;
+    SINT m_framesProcessed;
     bool m_bPrevSilence;
-    int m_iSignalStart;
-    int m_iSignalEnd;
+    SINT m_signalStart;
+    SINT m_signalEnd;
 };

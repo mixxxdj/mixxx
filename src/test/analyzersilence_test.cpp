@@ -37,7 +37,9 @@ class AnalyzerSilenceTest : public MixxxTest {
     }
 
     void analyzeTrack() {
-        analyzerSilence.initialize(pTrack, pTrack->getSampleRate(), nTrackSampleDataLength);
+        analyzerSilence.initialize(pTrack,
+                mixxx::audio::SampleRate(44100),
+                kTrackLengthFrames);
         analyzerSilence.processSamples(pTrackSampleData, nTrackSampleDataLength);
         analyzerSilence.storeResults(pTrack);
         analyzerSilence.cleanup();

@@ -1,13 +1,14 @@
 #pragma once
 
+#include <QList>
 #include <QMutex>
 #include <QString>
-#include <QList>
 
 #include "control/controlproxy.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
 #include "util/math.h"
+#include "util/types.h"
 
 class KeyUtils {
   public:
@@ -79,7 +80,7 @@ class KeyUtils {
     static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
 
     static mixxx::track::io::key::ChromaticKey calculateGlobalKey(
-        const KeyChangeList& key_changes, int iTotalSamples, int iSampleRate);
+            const KeyChangeList& key_changes, SINT totalFrames, int iSampleRate);
 
     static void setNotation(
         const QMap<mixxx::track::io::key::ChromaticKey, QString>& notation);

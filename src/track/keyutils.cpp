@@ -418,20 +418,19 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
-    const KeyChangeList& key_changes, const int iTotalSamples, int iSampleRate) {
+        const KeyChangeList& key_changes, SINT totalFrames, int iSampleRate) {
     if (key_changes.size() == 1) {
         qDebug() << keyDebugName(key_changes[0].first);
         return key_changes[0].first;
     }
-
-    const int iTotalFrames = iTotalSamples / 2;
     QMap<mixxx::track::io::key::ChromaticKey, double> key_histogram;
 
     for (int i = 0; i < key_changes.size(); ++i) {
         mixxx::track::io::key::ChromaticKey key = key_changes[i].first;
         const double start_frame = key_changes[i].second;
-        const double next_frame = (i == key_changes.size() - 1) ?
-                iTotalFrames : key_changes[i+1].second;
+        const double next_frame = (i == key_changes.size() - 1)
+                ? totalFrames
+                : key_changes[i + 1].second;
         key_histogram[key] += (next_frame - start_frame);
     }
 
