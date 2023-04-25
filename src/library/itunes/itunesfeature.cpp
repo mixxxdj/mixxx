@@ -15,6 +15,7 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
+#include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
 #include "library/itunes/itunesxmlimporter.h"
@@ -307,14 +308,16 @@ QString ITunesFeature::getiTunesMusicPath() {
 }
 
 std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
+    std::unique_ptr<ITunesDAO> dao = std::make_unique<ITunesDAO>();
+    dao->initialize(m_database);
 #ifdef __MACOS_ITUNES_LIBRARY__
     if (isMacOSImporterUsed()) {
         qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
-        return std::make_unique<ITunesMacOSImporter>(this, m_database, m_cancelImport);
+        return std::make_unique<ITunesMacOSImporter>(this, m_cancelImport, std::move(dao));
     }
 #endif
     qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
-    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_database, m_cancelImport);
+    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_cancelImport, std::move(dao));
 }
 
 // This method is executed in a separate thread
