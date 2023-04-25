@@ -8,6 +8,33 @@
 #include "library/itunes/itunespathmapping.h"
 #include "library/queryutil.h"
 
+std::ostream& operator<<(std::ostream& os, const ITunesTrack& track) {
+    os << "ITunesTrack { "
+       << ".id = " << track.id << ", "
+       << ".artist = \"" << track.artist.toStdString() << "\", "
+       << ".title = \"" << track.title.toStdString() << "\", "
+       << ".album = \"" << track.album.toStdString() << "\", "
+       << ".albumArtist = \"" << track.albumArtist.toStdString() << "\", "
+       << ".genre = \"" << track.genre.toStdString() << "\", "
+       << ".grouping = \"" << track.grouping.toStdString() << "\", "
+       << ".year = " << track.year << ", "
+       << ".duration = " << track.duration << ", "
+       << ".location = \"" << track.location.toStdString() << "\", "
+       << ".rating = " << track.rating << ", "
+       << ".comment = \"" << track.comment.toStdString() << "\", "
+       << ".trackNumber = " << track.trackNumber << ", "
+       << ".bpm = " << track.bpm << ", "
+       << ".bitrate = " << track.bitrate << " }";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const ITunesPlaylist& playlist) {
+    os << "ITunesPlaylist { "
+       << ".id = " << playlist.id << ", "
+       << ".name = \"" << playlist.name.toStdString() << "\" }";
+    return os;
+}
+
 void ITunesDAO::initialize(const QSqlDatabase& database) {
     m_insertTrackQuery = QSqlQuery(database);
     m_insertPlaylistQuery = QSqlQuery(database);

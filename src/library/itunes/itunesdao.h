@@ -42,6 +42,9 @@ struct ITunesPlaylist {
     bool operator!=(const ITunesPlaylist&) const = default;
 };
 
+std::ostream& operator<<(std::ostream& os, const ITunesTrack& track);
+std::ostream& operator<<(std::ostream& os, const ITunesPlaylist& playlist);
+
 /// A wrapper around the iTunes database tables. Keeps track of the
 /// playlist tree, deals with duplicate disambiguation and can export
 /// the tree afterwards.
