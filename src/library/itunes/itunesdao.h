@@ -29,11 +29,17 @@ struct ITunesTrack {
     int trackNumber;
     int bpm;
     int bitrate;
+
+    bool operator==(const ITunesTrack&) const = default;
+    bool operator!=(const ITunesTrack&) const = default;
 };
 
 struct ITunesPlaylist {
     int id;
     QString name;
+
+    bool operator==(const ITunesPlaylist&) const = default;
+    bool operator!=(const ITunesPlaylist&) const = default;
 };
 
 /// A wrapper around the iTunes database tables. Keeps track of the
