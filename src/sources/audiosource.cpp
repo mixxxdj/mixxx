@@ -27,6 +27,7 @@ AudioSource::AudioSource(
           m_signalInfo(signalInfo),
           m_bitrate(inner.m_bitrate),
           m_frameIndexRange(inner.m_frameIndexRange) {
+    DEBUG_ASSERT(m_frameIndexRange.length() >= 0);
 }
 
 AudioSource::OpenResult AudioSource::open(
