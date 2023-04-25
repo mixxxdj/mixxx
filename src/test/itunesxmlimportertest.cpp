@@ -49,9 +49,15 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
     ON_CALL(*dao, importPlaylistRelation(_, _)).WillByDefault(Return(true));
     ON_CALL(*dao, applyPathMapping(_)).WillByDefault(Return(true));
 
-    EXPECT_CALL(*dao, importPlaylistRelation(kRootITunesPlaylistId, 1425)); // Folder A
-    EXPECT_CALL(*dao, importPlaylistRelation(kRootITunesPlaylistId, 1172)); // Downloaded
-    EXPECT_CALL(*dao, importPlaylistRelation(kRootITunesPlaylistId, 1449)); // Playlist D
+    int root = kRootITunesPlaylistId;
+    EXPECT_CALL(*dao, importPlaylistRelation(root, 1172)); // Downloaded (built-in playlist)
+    EXPECT_CALL(*dao, importPlaylistRelation(root, 1425)); // Folder A
+    EXPECT_CALL(*dao, importPlaylistRelation(1425, 1498)); // - Folder B
+    EXPECT_CALL(*dao, importPlaylistRelation(1498, 1431)); //   - Playlist A
+    EXPECT_CALL(*dao, importPlaylistRelation(1498, 1436)); //   - Playlist B
+    EXPECT_CALL(*dao, importPlaylistRelation(1425, 1494)); // - Playlist C
+    EXPECT_CALL(*dao, importPlaylistRelation(root, 1440)); // Downloaded (smart playlist)
+    EXPECT_CALL(*dao, importPlaylistRelation(root, 1449)); // Playlist D
 
     std::unique_ptr<ITunesXMLImporter> importer =
             makeImporter("macOS Music Library.xml", std::move(dao));
