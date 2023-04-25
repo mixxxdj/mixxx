@@ -103,7 +103,7 @@ bool WaveformWidgetRenderer::init() {
 
 void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     // For a valid track to render we need
-    m_trackSamples = static_cast<int>(m_pTrackSamplesControlObject->get());
+    m_trackSamples = m_pTrackSamplesControlObject->get();
     if (m_trackSamples <= 0) {
         return;
     }
@@ -135,7 +135,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 
     if (m_audioSamplePerPixel > 0 && truePlayPos != -1) {
         // Track length in pixels.
-        m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
+        m_trackPixelCount = m_trackSamples / 2.0 / m_audioSamplePerPixel;
 
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
