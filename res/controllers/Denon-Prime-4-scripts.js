@@ -842,8 +842,8 @@ Prime4.PadSection = function(deck, offset) {
 
     // Create component containers for each pad mode
     const modes = new components.ComponentContainer({
-        "hotcue": new Prime4.CyclingArrayView([new Prime4.hotcueMode(deck, offset), new Prime4.cueloopMode(deck, offset)], 0),
-        "loop": new Prime4.CyclingArrayView([new Prime4.autoloopMode(deck, offset)], 0),
+        "hotcue": new Prime4.CyclingArrayView([new Prime4.hotcueMode(deck, offset)], 0),
+        "loop": new Prime4.CyclingArrayView([new Prime4.cueloopMode(deck, offset), new Prime4.autoloopMode(deck, offset)], 0),
         "roll": new Prime4.CyclingArrayView([new Prime4.rollMode(deck, offset)], 0),
         "sampler": new Prime4.CyclingArrayView([new Prime4.samplerMode(deck, offset)], 0),
     });
@@ -970,8 +970,8 @@ Prime4.hotcueMode.prototype = Object.create(components.ComponentContainer.protot
 // CUE LOOP MODE
 Prime4.cueloopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = Prime4.padMode.HOTCUE;
-    this.colourOn = Prime4.rgbCode.green;
+    this.ledControl = Prime4.padMode.LOOP;
+    this.colourOn = Prime4.rgbCode.blue;
     this.colourOff = Prime4.rgbCode.whiteDark;
     const PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x0E + n];
@@ -983,7 +983,7 @@ Prime4.cueloopMode = function(deck, offset) {
     PerformancePad.prototype = new components.Button({
         group: deck.currentDeck,
         on: this.colourOn,
-        off: Prime4.rgbCode.whiteDark,
+        off: Prime4.rgbCode.blueDim,
         colorMapper: Prime4ColorMapper,
         outConnect: false,
         unshift: function() {
@@ -1004,11 +1004,25 @@ Prime4.cueloopMode = function(deck, offset) {
 Prime4.cueloopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 // AUTOLOOP MODE
-Prime4.autoloopMode = function(_deck, _offset) {
+Prime4.autoloopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.LOOP;
-    this.colourOn = Prime4.rgbCode.blue;
+    this.colourOn = Prime4.rgbCode.green;
     this.colourOff = Prime4.rgbCode.whiteDark;
+    this.pads = new components.ComponentContainer();
+    this.loopSize = [0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8];
+    for (let i = 1; i <= 8; i++) {
+        const loopSize = (this.loopSize[i - 1]);
+        this.pads[i] = new components.Button({
+            midi: [0x94 + offset, 0x0E + i],
+            group: deck.currentDeck,
+            outKey: "beatloop_" + loopSize + "_enabled",
+            inKey: "beatloop_" + loopSize + "_toggle",
+            on: Prime4.rgbCode.white,
+            off: Prime4.rgbCode.green,
+            outConnect: false,
+        });
+    }
 };
 Prime4.autoloopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
@@ -1021,14 +1035,14 @@ Prime4.rollMode = function(deck, offset) {
     this.pads = new components.ComponentContainer();
     // NOTE: The Prime 4's standalone Roll mode includes triplet loop rolls, but
     //       Mixxx doesn't support those yet.
-    this.loopSize = [0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8];
+    this.rollSize = [0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8];
     for (let i = 1; i <= 8; i++) {
-        const loopSize = (this.loopSize[i - 1]);
+        const rollSize = (this.rollSize[i - 1]);
         this.pads[i] = new components.Button({
             midi: [0x94 + offset, 0x0E + i],
             group: deck.currentDeck,
-            outKey: "beatloop_" + loopSize + "_enabled",
-            inKey: "beatlooproll_" + loopSize + "_activate",
+            outKey: "beatloop_" + rollSize + "_enabled",
+            inKey: "beatlooproll_" + rollSize + "_activate",
             on: Prime4.rgbCode.white,
             off: this.colourOn,
             outConnect: false,
