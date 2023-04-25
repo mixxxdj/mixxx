@@ -14,6 +14,7 @@ constexpr std::size_t kBigBufSize = 2 * 1920; // Matches the WaveformSummary
 constexpr std::size_t kCanarySize = 1024 * 4;
 constexpr float kMagicFloat = 1234.567890f;
 constexpr float kCanaryFloat = 0.0f;
+const QString kReferenceBuffersPath = QStringLiteral("/src/test/reference_buffers/");
 
 class AnalyzerWaveformTest : public MixxxTest {
   protected:
@@ -50,7 +51,7 @@ class AnalyzerWaveformTest : public MixxxTest {
             const QString& reference_title) {
         pWaveform->dump();
 
-        QFile f(QDir::currentPath() + "/src/test/reference_buffers/" + reference_title);
+        QFile f(QDir::currentPath() + kReferenceBuffersPath + reference_title);
         bool pass = true;
         // If the file is not there, we will fail and write out the .actual
         // reference file.
@@ -79,7 +80,7 @@ class AnalyzerWaveformTest : public MixxxTest {
             qWarning() << "Buffer does not match" << reference_title
                        << ", actual buffer written to "
                        << "reference_buffers/" + fname_actual;
-            QFile actualFile(QDir::currentPath() + "/src/test/reference_buffers/" + fname_actual);
+            QFile actualFile(QDir::currentPath() + kReferenceBuffersPath + fname_actual);
             ASSERT_TRUE(actualFile.open(QFile::WriteOnly));
             actualFile.write(actual);
             actualFile.close();
