@@ -48,7 +48,6 @@ DlgPrefMixer::DlgPrefMixer(
         UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
-          m_pxfScene(nullptr),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
           m_transform(EngineXfader::kTransformDefault),
           m_cal(0.0),
@@ -156,8 +155,6 @@ DlgPrefMixer::DlgPrefMixer(
 }
 
 DlgPrefMixer::~DlgPrefMixer() {
-    delete m_pxfScene;
-
     qDeleteAll(m_deckEqEffectSelectors);
     m_deckEqEffectSelectors.clear();
 
@@ -736,13 +733,9 @@ void DlgPrefMixer::drawXfaderDisplay() {
     int sizeY = graphicsViewXfader->height() - 2 * frameWidth;
 
     // Initialize Scene
-    if (m_pxfScene) {
-        delete m_pxfScene;
-        m_pxfScene = nullptr;
-    }
-    m_pxfScene = new QGraphicsScene();
-    m_pxfScene->setSceneRect(0, 0, sizeX, sizeY);
-    m_pxfScene->setBackgroundBrush(Qt::black);
+    QGraphicsScene* pXfScene = new QGraphicsScene();
+    pXfScene->setSceneRect(0, 0, sizeX, sizeY);
+    pXfScene->setBackgroundBrush(Qt::black);
 
     // Initialize QPens
     QPen gridPen(Qt::green);
@@ -750,11 +743,11 @@ void DlgPrefMixer::drawXfaderDisplay() {
 
     // draw grid
     for (int i = 1; i < kGrindXLines; i++) {
-        m_pxfScene->addLine(
+        pXfScene->addLine(
                 QLineF(0, i * (sizeY / kGrindXLines), sizeX, i * (sizeY / kGrindXLines)), gridPen);
     }
     for (int i = 1; i < kGrindYLines; i++) {
-        m_pxfScene->addLine(
+        pXfScene->addLine(
                 QLineF(i * (sizeX / kGrindYLines), 0, i * (sizeX / kGrindYLines), sizeY), gridPen);
     }
 
@@ -786,9 +779,9 @@ void DlgPrefMixer::drawXfaderDisplay() {
         point2 = QPointF(i + 1, (1. - gain2) * (sizeY)-3);
 
         if (i > 0) {
-            m_pxfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
-            m_pxfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
-            m_pxfScene->addLine(QLineF(point2, point2Prev), graphLinePen);
+            pXfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
+            pXfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
+            pXfScene->addLine(QLineF(point2, point2Prev), graphLinePen);
         }
 
         // Save old values
@@ -797,7 +790,7 @@ void DlgPrefMixer::drawXfaderDisplay() {
         point2Prev = point2;
     }
 
-    graphicsViewXfader->setScene(m_pxfScene);
+    graphicsViewXfader->setScene(pXfScene);
     graphicsViewXfader->show();
     graphicsViewXfader->repaint();
 }

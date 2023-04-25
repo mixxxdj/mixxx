@@ -74,8 +74,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     UserSettingsPointer m_pConfig;
 
-    QGraphicsScene* m_pxfScene;
-
     // X-fader values
     double m_xFaderMode, m_transform, m_cal;
 
