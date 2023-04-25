@@ -1423,14 +1423,6 @@
 					<Script-Binding/>
 				</options>
 			</control>
-			<control>
-				<key>Prime4.leftDeck.tempoFeedback.input</key>
-				<status>0xB4</status>
-				<midino>0x1f</midino>
-				<options>
-					<Script-Binding/>
-				</options>
-			</control>
             <control> <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
               <group></group>
               <key>Prime4.leftDeck.pitchBendDown.input</key>
@@ -2107,14 +2099,6 @@
 					<Script-Binding/>
 				</options>
 			</control>
-			<control>
-				<key>Prime4.rightDeck.tempoFeedback.input</key>
-				<status>0xB5</status>
-				<midino>0x1f</midino>
-				<options>
-					<Script-Binding/>
-				</options>
-			</control>
             <control> <!-- Deck B - Pitch Bend Down Button / Pitch Range Decrease Button -->
               <group></group>
               <key>Prime4.rightDeck.pitchBendDown.input</key>
@@ -2125,7 +2109,7 @@
                 <Script-Binding/>
               </options>
             </control>
-            <control> <!-- Deck B - Pitch Bend Up Button / Pitch Range Increase Button -->
+            <control> <!-- D"eck B - Pitch Bend Up Button / Pitch Range Increase Button -->
               <group></group>
               <key>Prime4.rightDeck.pitchBendUp.input</key>
               <description>Pitch Bend Up / Pitch Bend Range Up</description>

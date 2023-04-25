@@ -61,6 +61,8 @@ const skipButtonBehaviour = "skip";
 // number, the more sensitive the wheel will be.)
 const wheelSensitivity = 0.5;
 
+const rateRanges = [0.04, 0.08, 0.24, 0.5, 0.9];
+
 /**************************************************
  *                                                *
  *                   WARNING!!!                   *
@@ -93,6 +95,7 @@ components.ComponentContainer.prototype.reconnectComponents = function(operation
 // 'Off' value sets lights to dim instead of off
 components.Button.prototype.off = 0x01;
 
+
 // Colour codes designed to avoid memorizing MIDI velocity values
 Prime4.rgbCode = {
     black: 0,
@@ -120,13 +123,11 @@ Prime4.rgbCode = {
     white: 63,
 };
 
-/*
 // Used in Swiftb0y's NS6II mapping for tempo fader LEDs
 Prime4.physicalSliderPositions = {
-    left: 0,
-    right: 0,
+    left: 0.5,
+    right: 0.5,
 };
-*/
 
 // Map RGB Hex values to MIDI values for Prime 4's colour palette
 const Prime4ColorMapper = new ColorMapper({
@@ -247,6 +248,28 @@ Prime4.DeckAssignButton = function(options) {
 };
 
 Prime4.DeckAssignButton.prototype = Object.create(components.Button.prototype);
+
+// References array of rate ranges
+// See NS6II mapping
+Prime4.CyclingArrayView = class {
+    constructor(indexable, startIndex) {
+        this.indexable = indexable;
+        this.index = startIndex || 0;
+    }
+    advanceBy(n) {
+        this.index = script.posMod(this.index + n, this.indexable.length);
+        return this.current();
+    }
+    next() {
+        return this.advanceBy(1);
+    }
+    previous() {
+        return this.advanceBy(-1);
+    }
+    current() {
+        return this.indexable[this.index];
+    }
+};
 
 Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _group) {
     if (value >= 1 && value < 20) {
@@ -432,7 +455,6 @@ const mixerStrip = function(deckNumber, midiOffset) {
                     value = 0;
                 }
             }
-            console.log(value);
             this.send(value);
         },
     });
@@ -473,15 +495,30 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
     const theDeck = this;
 
+    // Used in Swiftb0y's NS6II mapping for tempo fader LEDs
+    const makeSliderPosAccessors = function() {
+        const lr = midiChannel % 2 === 0 ? "left" : "right";
+        return {
+            setter: function(pos) {
+                Prime4.physicalSliderPositions[lr] = pos;
+            },
+            getter: function() {
+                return Prime4.physicalSliderPositions[lr];
+            }
+        };
+    };
+    const sliderPosAccessors = makeSliderPosAccessors();
+
     // Censor Button
     this.censorButton = new components.Button({
         midi: [0x90 + midiChannel, 0x01],
-        outKey: "reverse",
         unshift: function() {
             this.inKey = "reverseroll";
+            this.outKey = this.inKey;
         },
         shift: function() {
             this.inKey = "reverse";
+            this.outKey = this.inKey;
         },
     });
 
@@ -536,34 +573,56 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     this.padGrid = new Prime4.PadSection(this, midiChannel - 4);
 
     // Pfitch Bend Buttons
-    //const rateRanges = [0.04, 0.06, 0.08, 0.1, 0.16, 0.24, 0.5, 0.9];
+    const currentRateRange = new Prime4.CyclingArrayView(rateRanges, 2);
     this.pitchBendUp = new components.Button({
         midi: [0x90 + midiChannel, 0x1E],
-        key: "rate_temp_up",
+        type: components.Button.prototype.types.push,
         unshift: function() {
             this.inKey = "rate_temp_up";
-            this.type = components.Button.prototype.types.push;
+            this.outKey = this.inKey;
+            this.input = components.Button.prototype.input;
+            this.outTrigger = true;
+            this.outConnect = true;
         },
-        /*
         shift: function() {
             this.inKey = "rateRange";
-            this.type = components.Button.prototype.types.toggle;
+            this.outKey = this.inKey;
+            this.input = function(channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status, group)) {
+                    this.inSetValue(currentRateRange.next());
+                }
+                this.send(value);
+                console.log(value);
+            };
+            console.log("Sifted");
+            this.outTrigger = false;
+            this.outConnect = false;
         },
-        */
     });
     this.pitchBendDown = new components.Button({
         midi: [0x90 + midiChannel, 0x1D],
-        key: "rate_temp_down",
+        type: components.Button.prototype.types.push,
         unshift: function() {
             this.inKey = "rate_temp_down";
-            this.type = components.Button.prototype.types.push;
+            this.outKey = this.inKey;
+            this.input = components.Button.prototype.input;
+            this.outTrigger = true;
+            this.outConnect = true;
         },
-        /*
         shift: function() {
             this.inKey = "rateRange";
-            this.type = components.Button.prototype.types.toggle;
+            this.outKey = this.inKey;
+            this.input = function(channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status, group)) {
+                    this.inSetValue(currentRateRange.previous());
+                }
+                this.send(value);
+                console.log(value);
+            };
+            console.log("Shifted");
+            this.outTrigger = false;
+            this.outConnect = false;
         },
-        */
     });
 
     // Tempo Fader
@@ -571,41 +630,19 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         midi: [0xB0 + midiChannel, 0x1F],
         inKey: "rate",
         invert: true,
-    });
-
-    // LED indicator when pitch fader is at centre.
-    this.tempoFeedback = new components.Component({
-        midi: [0x90 + midiChannel, 0x34],
-        outKey: "rate",
-        on: 0x02,
-        off: 0x00,
-        outValueScale: function(value) {
-            return value === 0 ? this.on : this.off;
+        inSetParameter: function(value) {
+            sliderPosAccessors.setter(value);
+            engine.setParameter(this.group, this.inKey, value);
+            theDeck.takeoverLeds.trigger();
         },
     });
 
-    /*
-    // Used in Swiftb0y's NS6II mapping for tempo fader LEDs
-    var makeSliderPosAccessors = function() {
-        var lr = midiChannel % 2 === 0 ? "left" : "right";
-        return {
-            setter: function(pos) {
-                Prime4.physicalSliderPositions[lr] = pos;
-            },
-            getter: function() {
-                return Prime4.physicalSliderPositions[lr];
-            }
-        };
-    };
-
-    var sliderPosAccessors = makeSliderPosAccessors();
-
-    var takeoverLEDValues = {
+    const takeoverLEDValues = {
         OFF: 0,
         DIMM: 1,
         FULL: 2,
     };
-    var takeoverLEDControls = {
+    const takeoverLEDControls = {
         up: 0x35,
         center: 0x34,
         down: 0x33,
@@ -619,10 +656,10 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             // rate slider centered?
             this.send(softwareSliderPosition === 0 ? takeoverLEDValues.FULL : takeoverLEDValues.OFF);
 
-            var distance2Brightness = function(distance) {
+            const distance2Brightness = function(distance) {
                 // src/controllers/softtakeover.cpp
                 // SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
-                var takeoverThreshold = 3 / 128;
+                const takeoverThreshold = 3 / 128;
                 if (distance > takeoverThreshold && distance < 0.10) {
                     return takeoverLEDValues.DIMM;
                 } else if (distance >= 0.10) {
@@ -632,9 +669,9 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
                 }
             };
 
-            var normalizedPhysicalSliderPosition = sliderPosAccessors.getter()*2 - 1;
-            var distance = Math.abs(normalizedPhysicalSliderPosition - softwareSliderPosition);
-            var directionLedBrightness = distance2Brightness(distance);
+            const normalizedPhysicalSliderPosition = sliderPosAccessors.getter()*2 - 1;
+            const distance = Math.abs(normalizedPhysicalSliderPosition - softwareSliderPosition);
+            const directionLedBrightness = distance2Brightness(distance);
 
             if (normalizedPhysicalSliderPosition > softwareSliderPosition) {
                 midi.sendShortMsg(this.midi[0], takeoverLEDControls.up, takeoverLEDValues.OFF);
@@ -645,7 +682,6 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             }
         },
     });
-    */
 
     // Keylock Button
     this.keylockButton = new components.Button({
@@ -763,6 +799,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             c.group = this.currentDeck;
         }
     });
+
 };
 
 Prime4.Deck.prototype = new components.Deck();
@@ -776,12 +813,16 @@ Prime4.shiftState = function(channel, control, value) {
         Prime4.rightDeck.shift();
         Prime4.effectBank[0].shift();
         Prime4.effectBank[1].shift();
+        Prime4.leftDeck.reconnectComponents();
+        Prime4.rightDeck.reconnectComponents();
     } else {
         midi.sendShortMsg(0x90 + channel, control, 0x01);
         Prime4.leftDeck.unshift();
         Prime4.rightDeck.unshift();
         Prime4.effectBank[0].unshift();
         Prime4.effectBank[1].unshift();
+        Prime4.leftDeck.reconnectComponents();
+        Prime4.rightDeck.reconnectComponents();
     }
 };
 
@@ -801,37 +842,39 @@ Prime4.PadSection = function(deck, offset) {
 
     // Create component containers for each pad mode
     const modes = new components.ComponentContainer({
-        "hotcue": new Prime4.hotcueMode(deck, offset),
-        "loop": new Prime4.loopMode(deck, offset),
-        //TODO: "autoloop": new Prime4.autoloopMode(deck, offset),
-        "roll": new Prime4.rollMode(deck, offset),
-        "sampler": new Prime4.samplerMode(deck, offset),
+        "hotcue": new Prime4.CyclingArrayView([new Prime4.hotcueMode(deck, offset), new Prime4.cueloopMode(deck, offset)], 0),
+        "loop": new Prime4.CyclingArrayView([new Prime4.autoloopMode(deck, offset)], 0),
+        "roll": new Prime4.CyclingArrayView([new Prime4.rollMode(deck, offset)], 0),
+        "sampler": new Prime4.CyclingArrayView([new Prime4.samplerMode(deck, offset)], 0),
     });
 
     modes.forEachComponent(c => c.disconnect());
 
     const controlToPadMode = control => {
+        const nextPadMode = (a) => {
+            console.log(a);
+            if (a.indexable.includes(this.currentMode)) {
+                return a.next();
+            } else {
+                a.index = 0;
+                return a.current();
+            }
+        };
+
         let mode;
+
         switch (control) {
         case Prime4.padMode.HOTCUE:
-            mode = modes.hotcue;
+            mode = nextPadMode(modes.hotcue);
             break;
         case Prime4.padMode.LOOP:
-            mode = modes.loop;
+            mode = nextPadMode(modes.loop);
             break;
-            /*
-            // TODO: Implement autoloop mode
-            if (Prime4.PadSection.currentMode === modes.loop) {
-                mode = modes.autoloop;
-            } else {
-                mode = modes.loop;
-            }
-            */
         case Prime4.padMode.ROLL:
-            mode = modes.roll;
+            mode = nextPadMode(modes.roll);
             break;
         case Prime4.padMode.SLICER:
-            mode = modes.sampler;
+            mode = nextPadMode(modes.sampler);
             break;
         }
 
@@ -842,16 +885,9 @@ Prime4.PadSection = function(deck, offset) {
 
     this.padModeSelectLeds = new components.Component({
         trigger: function() {
-            // This isn't very DRY code because I need to set the 'off' LEDs BEFORE the 'on' LEDs.
-            // Otherwise, the pads that have a secondary mode look like they're 'off' when that
-            // secondary mode is activated.
-            for (const mode of Object.values(modes)) {
-                midi.sendShortMsg(0x94 + offset, mode.ledControl, mode.colourOff);
-            }
-            for (const mode of Object.values(modes)) {
-                if (theContainer.currentMode === mode) {
-                    midi.sendShortMsg(0x94 + offset, mode.ledControl, mode.colourOn);
-                }
+            for (const modeLayers of Object.values(modes)) {
+                const mode = modeLayers.current();
+                midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
             }
         },
     }, false);
@@ -931,10 +967,10 @@ Prime4.hotcueMode = function(deck, offset) {
 };
 Prime4.hotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
 
-// LOOP MODE
-Prime4.loopMode = function(deck, offset) {
+// CUE LOOP MODE
+Prime4.cueloopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = Prime4.padMode.LOOP;
+    this.ledControl = Prime4.padMode.HOTCUE;
     this.colourOn = Prime4.rgbCode.green;
     this.colourOff = Prime4.rgbCode.whiteDark;
     const PerformancePad = function(n) {
@@ -965,7 +1001,16 @@ Prime4.loopMode = function(deck, offset) {
         this.pads[i] = new PerformancePad(i);
     }
 };
-Prime4.loopMode.prototype = Object.create(components.ComponentContainer.prototype);
+Prime4.cueloopMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+// AUTOLOOP MODE
+Prime4.autoloopMode = function(_deck, _offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = Prime4.padMode.LOOP;
+    this.colourOn = Prime4.rgbCode.blue;
+    this.colourOff = Prime4.rgbCode.whiteDark;
+};
+Prime4.autoloopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 // ROLL MODE
 Prime4.rollMode = function(deck, offset) {
