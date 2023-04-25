@@ -57,9 +57,9 @@ class AnalyzerWaveformTest : public MixxxTest {
         // reference file.
         QByteArray actual = pWaveform->toByteArray();
         QByteArray reference;
-        if (f.open(QFile::ReadOnly)) {
-            reference = f.readAll();
-        }
+
+        ASSERT_TRUE(f.open(QFile::ReadOnly));
+        reference = f.readAll();
 
         if (actual.size() == reference.size()) {
             for (int i = 0; i < actual.size(); ++i) {
