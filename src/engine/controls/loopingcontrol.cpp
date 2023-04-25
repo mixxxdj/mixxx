@@ -247,7 +247,7 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
         return;
     }
     const double loopLength = (loopSamples.end - loopSamples.start) * scaleFactor;
-    const int trackSamples = static_cast<int>(m_pTrackSamples->get());
+    const double trackSamples = m_pTrackSamples->get();
 
     // Abandon loops that are too short of extend beyond the end of the file.
     if (loopLength < MINIMUM_AUDIBLE_LOOP_SIZE ||
@@ -1027,7 +1027,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         beats = minBeatSize;
     }
 
-    int samples = static_cast<int>(m_pTrackSamples->get());
+    double samples = m_pTrackSamples->get();
     const mixxx::BeatsPointer pBeats = m_pBeats;
     if (samples == 0 || !pBeats) {
         clearActiveBeatLoop();
