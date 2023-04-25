@@ -59,6 +59,8 @@ class ITunesDAO : public DAO {
     QHash<int, QString> m_playlistNameById;
     std::multimap<int, int> m_playlistIdsByParentId;
 
+    // Note that these queries reference the database, which is expected
+    // to outlive the DAO.
     QSqlQuery m_insertTrackQuery;
     QSqlQuery m_insertPlaylistQuery;
     QSqlQuery m_insertPlaylistTrackQuery;
