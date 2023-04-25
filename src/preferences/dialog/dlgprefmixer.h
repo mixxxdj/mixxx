@@ -105,9 +105,12 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     QList<QLabel*> m_mainEQLabels;
     QWeakPointer<EffectSlot> m_pEffectMainEQ;
 
+    bool m_singleEq;
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;
     bool m_bEqBypass;
+
+    bool m_initializing;
 
     QList<int> m_eqIndiciesOnUpdate;
 };

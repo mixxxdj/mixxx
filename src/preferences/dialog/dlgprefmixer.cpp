@@ -67,12 +67,15 @@ DlgPrefMixer::DlgPrefMixer(
           m_firstSelectorLabel(nullptr),
           m_pNumDecks(nullptr),
           m_inSlotPopulateDeckEffectSelectors(false),
+          m_singleEq(true),
           m_bEqAutoReset(false),
           m_bGainAutoReset(false),
-          m_bEqBypass(false) {
+          m_bEqBypass(false),
+          m_initializing(true) {
     setupUi(this);
 
     slotUpdate();
+    m_initializing = false;
 
     connect(SliderXFader,
             QOverload<int>::of(&QSlider::valueChanged),
@@ -193,7 +196,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
 
         if (deckNo == 1) {
             m_firstSelectorLabel = label;
-            if (CheckBoxSingleEqEffect->isChecked()) {
+            if (m_singleEq) {
                 m_firstSelectorLabel->clear();
             }
         }
@@ -230,7 +233,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
         m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEQEffectIndex);
     }
     applySelections();
-    slotSingleEqCheckboxChanged(CheckBoxSingleEqEffect->isChecked());
+    slotSingleEqCheckboxChanged(m_singleEq);
 }
 
 void DlgPrefMixer::slotPopulateDeckEffectSelectors() {
@@ -317,13 +320,14 @@ void DlgPrefMixer::populateDeckQuickEffectBoxList(
 }
 
 void DlgPrefMixer::slotSingleEqCheckboxChanged(int checked) {
-    bool do_hide = static_cast<bool>(checked);
+    m_singleEq = static_cast<bool>(checked);
+    // TODO move this line to slotApply()
     m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
-            do_hide ? QString("yes") : QString("no"));
+            m_singleEq ? QString("yes") : QString("no"));
     if (m_deckEqEffectSelectors.size()) {
         int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
         for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
-            if (do_hide) {
+            if (m_singleEq) {
                 m_deckEqEffectSelectors.at(i - 1)->setCurrentIndex(deck1EQIndex);
                 gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
                 gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
@@ -337,13 +341,14 @@ void DlgPrefMixer::slotSingleEqCheckboxChanged(int checked) {
     }
 
     if (m_firstSelectorLabel != nullptr) {
-        if (do_hide) {
+        if (m_singleEq) {
             m_firstSelectorLabel->clear();
         } else {
             m_firstSelectorLabel->setText(QObject::tr("Deck 1"));
         }
     }
 
+    // TODO move this line to slotApply()
     applySelections();
 }
 
@@ -402,7 +407,7 @@ void DlgPrefMixer::slotEffectChangedOnDeck(int effectIndex) {
     int deckNumber = pBoxList->indexOf(c);
     // If we are in single-effect mode and the first effect was changed,
     // change the others as well.
-    if (deckNumber == 0 && CheckBoxSingleEqEffect->isChecked()) {
+    if (deckNumber == 0 && m_singleEq) {
         for (int otherDeck = 1;
                 otherDeck < static_cast<int>(m_pNumDecks->get());
                 ++otherDeck) {
@@ -427,7 +432,7 @@ void DlgPrefMixer::slotQuickEffectChangedOnDeck(int effectIndex) {
     int deckNumber = pBoxList->indexOf(c);
     // If we are in single-effect mode and the first effect was changed,
     // change the others as well.
-    if (deckNumber == 0 && CheckBoxSingleEqEffect->isChecked()) {
+    if (deckNumber == 0 && m_singleEq) {
         for (int otherDeck = 1;
                 otherDeck < static_cast<int>(m_pNumDecks->get());
                 ++otherDeck) {
@@ -645,10 +650,13 @@ void DlgPrefMixer::slotUpdate() {
     slotUpdateXFader();
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
+    m_singleEq = m_pConfig->getValue(ConfigKey(kConfigGroup, kSingleEq), "yes") == "yes";
     slotPopulateDeckEffectSelectors();
-    CheckBoxSingleEqEffect->setChecked(
-            m_pConfig->getValue(ConfigKey(kConfigGroup, kSingleEq), "yes") == "yes");
-    slotSingleEqCheckboxChanged(CheckBoxSingleEqEffect->isChecked());
+    if (m_initializing || CheckBoxSingleEqEffect->isChecked() != m_singleEq) {
+        CheckBoxSingleEqEffect->setChecked(m_singleEq);
+        slotSingleEqCheckboxChanged(CheckBoxSingleEqEffect->checkState());
+    }
+
     m_eqIndiciesOnUpdate.clear();
     for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
         m_eqIndiciesOnUpdate.append(box->currentIndex());
