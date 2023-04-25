@@ -653,11 +653,11 @@
   <tabstop>CheckBoxSingleEqEffect</tabstop>
   <!-- TODO(ronso0)
       Dynamically add Eq / Quick Effect comboboxes -->
-  <tabstop>SliderHiEQ</tabstop>
-  <tabstop>SliderLoEQ</tabstop>
+  <tabstop>CheckBoxBypass</tabstop>
   <tabstop>CheckBoxEqAutoReset</tabstop>
   <tabstop>CheckBoxGainAutoReset</tabstop>
-  <tabstop>CheckBoxBypass</tabstop>
+  <tabstop>SliderHiEQ</tabstop>
+  <tabstop>SliderLoEQ</tabstop>
   <tabstop>comboBoxMainEq</tabstop>
   <tabstop>pbResetMainEq</tabstop>
   <!-- TODO(ronso0)
