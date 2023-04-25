@@ -326,7 +326,13 @@ void ITunesXMLImporter::parseTrack() {
                     continue;
                 }
                 if (key == kLocation) {
-                    location = mixxx::FileInfo::fromQUrl(QUrl(content)).location();
+                    // Convert the location URL to a file path. Note that we intentionally
+                    // do not use FileInfo::location here since it would prepend a drive letter
+                    // prefix to Unix paths, something we already take care of through the
+                    // path mapping below (otherwise we'd end up with duplicate drive letter
+                    // prefixes, e.g. C:C:, if the translation rule already substitutes a
+                    // path with a drive letter).
+                    location = mixxx::FileInfo::fromQUrl(QUrl(content)).asQFileInfo().filePath();
                     // Replace first part of location with the mixxx iTunes Root
                     // on systems where iTunes installed it only strips //localhost
                     // on iTunes from foreign systems the mount point is replaced
