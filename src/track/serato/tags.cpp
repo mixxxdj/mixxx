@@ -73,18 +73,15 @@ std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
 
 bool isCueInfoValid(const mixxx::CueInfo& cueInfo) {
     if (cueInfo.getType() == mixxx::CueType::Loop &&
-            (!cueInfo.getEndPositionMillis() ||
-                    *cueInfo.getEndPositionMillis() == 0)) {
+            cueInfo.getEndPositionMillis().value_or(0) == 0) {
         // These entries are likely added via issue #11283
         qWarning() << "Discard loop cue" << cueInfo.getHotCueIndex()
                    << "with length of 0";
         return false;
     }
     if (cueInfo.getType() == mixxx::CueType::HotCue &&
-            (!cueInfo.getStartPositionMillis() ||
-                    *cueInfo.getStartPositionMillis() == 0) &&
-            (!cueInfo.getColor() ||
-                    *cueInfo.getColor() == mixxx::RgbColor(0))) {
+            cueInfo.getStartPositionMillis().value_or(0) == 0 &&
+            cueInfo.getColor().value_or(mixxx::RgbColor(0)) == mixxx::RgbColor(0)) {
         // These entries are likely added via issue #11283
         qWarning() << "Discard black hot cue" << cueInfo.getHotCueIndex()
                    << "at position 0";
