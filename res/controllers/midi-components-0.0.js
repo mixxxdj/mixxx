@@ -301,6 +301,9 @@
         this.outKey = "hotcue_" + this.number + "_enabled";
         Button.call(this, options);
     };
+    HotcueButton.isValidColor = function(colorCode) {
+        return _.isInteger(colorCode) && colorCode >= 0 && colorCode <= 0xFFFFFF;
+    };
     HotcueButton.prototype = new Button({
         unshift: function() {
             this.inKey = "hotcue_" + this.number + "_activate";
@@ -323,7 +326,7 @@
         outputColor: function(colorCode) {
             // Sends the color from the colorCode to the controller. This
             // method will not be called if no colorKey has been specified.
-            if (colorCode === undefined || colorCode < 0 || colorCode > 0xFFFFFF) {
+            if (!HotcueButton.isValidColor(colorCode)) {
                 print("Ignoring invalid color code '" + colorCode + "' in outputColor()");
                 return;
             }
