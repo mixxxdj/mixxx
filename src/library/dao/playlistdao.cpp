@@ -997,7 +997,9 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
 
     QHash<int, TrackId> trackPositionIds = allIds;
     QList<int> newPositions = positions;
-    const int searchDistance = math_max(static_cast<int>(trackPositionIds.count()) / 4, 1);
+    const int searchDistance = math_min(
+                math_max(static_cast<int>(trackPositionIds.count()) / 4, 1),
+                50);
 
     qDebug() << "Shuffling Tracks";
     qDebug() << "*** Search Distance: " << searchDistance;
@@ -1011,20 +1013,22 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
     //
     // Loop through the set of tracks to be shuffled:
     //     1) Set Track A as the current point in the shuffle set
-    //     2) Repeat a maximum of 10 times or until a good place (1/4 of the
+    //     2) Set the conflict window as 1/4 of the shuffle set or 50 tracks
+    //        whichever is lower
+    //     3) Repeat a maximum of 10 times or until a good place (1/4 of the
     //        playlist away from a conflict) is reached:
     //         a) Pick a random track within the shuffle set (Track B)
-    //         b) Check 1/4 of the playlist up and down (wrapped at the
+    //         b) Check the playlist window up and down (wrapped at the
     //            beginning and end) from Track B's position for Track A
-    //         c) Check 1/4 of the playlist up and down (wrapped at the
+    //         c) Check the playlist window up and down (wrapped at the
     //            beginning and end) from Track A's position for Track B
     //         d) If there was a conflict, store the position if it was better
     //            than the already stored best position. The position is deemed
     //            "better" if the distance (square of the difference) of
     //            the closest conflict (Track B near Track A's position and vv)
     //            is larger than previous iterations.
-    //     3) If no good place was found, use the stored best position
-    //     4) Swap Track A and Track B
+    //     4) If no good place was found, use the stored best position
+    //     5) Swap Track A and Track B
 
     for (int i = 0; i < newPositions.count(); i++) {
         bool conflictFound = true;
