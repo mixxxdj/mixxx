@@ -77,7 +77,7 @@ bool isCueInfoValid(const mixxx::CueInfo& cueInfo) {
                     *cueInfo.getEndPositionMillis() == 0)) {
         // These entries are likely added via issue #11283
         qWarning() << "Discard loop cue" << cueInfo.getHotCueIndex()
-                   << "found in markers2 with length of 0";
+                   << "with length of 0";
         return false;
     }
     if (cueInfo.getType() == mixxx::CueType::HotCue &&
@@ -87,7 +87,7 @@ bool isCueInfoValid(const mixxx::CueInfo& cueInfo) {
                     *cueInfo.getColor() == mixxx::RgbColor(0))) {
         // These entries are likely added via issue #11283
         qWarning() << "Discard black hot cue" << cueInfo.getHotCueIndex()
-                   << "found in markers2 at position 0";
+                   << "at position 0";
         return false;
     }
     return true;
@@ -228,13 +228,13 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         if (!isCueInfoValid(cueInfo)) {
             continue;
         }
-        std::optional<int> pIndex = findIndexForCueInfo(cueInfo);
-        if (!pIndex) {
+        std::optional<int> index = findIndexForCueInfo(cueInfo);
+        if (!index) {
             continue;
         }
         CueInfo newCueInfo(cueInfo);
-        newCueInfo.setHotCueIndex(*pIndex);
-        cueMap.insert(*pIndex, newCueInfo);
+        newCueInfo.setHotCueIndex(*index);
+        cueMap.insert(*index, newCueInfo);
     };
 
     // If the "Serato Markers_" tag does not exist at all, Serato DJ Pro just
@@ -260,8 +260,8 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         if (!isCueInfoValid(cueInfo)) {
             continue;
         }
-        std::optional<int> pIndex = findIndexForCueInfo(cueInfo);
-        if (!pIndex) {
+        std::optional<int> index = findIndexForCueInfo(cueInfo);
+        if (!index) {
             continue;
         }
 
@@ -270,18 +270,18 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         // object if none exists) and use it as template for the new CueInfo
         // object. Then overwrite all object values that are present in the
         // "SeratoMarkers_"tag.
-        CueInfo newCueInfo = cueMap.value(*pIndex);
+        CueInfo newCueInfo = cueMap.value(*index);
         newCueInfo.setType(cueInfo.getType());
         newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
         newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
-        newCueInfo.setHotCueIndex(*pIndex);
+        newCueInfo.setHotCueIndex(*index);
         newCueInfo.setFlags(cueInfo.flags());
         newCueInfo.setColor(cueInfo.getColor());
-        cueMap.insert(*pIndex, newCueInfo);
+        cueMap.insert(*index, newCueInfo);
 
         // This cue is set in the "Serato Markers_" tag, so remove it from the
         // set of unset cues
-        unsetCuesInMarkersTag.remove(*pIndex);
+        unsetCuesInMarkersTag.remove(*index);
     };
 
     // Now that we know which cues should be present in the "Serato Markers_"
