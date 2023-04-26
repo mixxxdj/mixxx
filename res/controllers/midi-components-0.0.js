@@ -361,6 +361,13 @@
                     }
                 });
             }
+            // Users can specify their own highlight(active) function
+            // so the mapping can respond when hotcues are currently active.
+            // The User should not call `trigger` in their highlight function
+            // to avoid crashing from endless recursion.
+            if (typeof this.highlight === "function") {
+                this.connections[2] = engine.makeConnection(this.group, "hotcue_" + this.number + "_activate", this.highlight);
+            }
         },
     });
     var SamplerButton = function(options) {
