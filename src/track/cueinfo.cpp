@@ -87,8 +87,7 @@ std::optional<int> CueInfo::getHotCueIndex() const {
     return m_hotCueIndex;
 }
 
-void CueInfo::setHotCueIndex(const std::optional<int> hotCueIndex) {
-    DEBUG_ASSERT(!hotCueIndex || *hotCueIndex >= kFirstHotCueIndex);
+void CueInfo::setHotCueIndex(int hotCueIndex) {
     m_hotCueIndex = hotCueIndex;
 }
 
