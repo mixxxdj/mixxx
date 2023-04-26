@@ -42,7 +42,7 @@ bool TrackRecord::updateGlobalKey(
     return false;
 }
 
-UpdateResult TrackRecord::updateGlobalKeyText(
+UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
         const QString& keyText,
         track::io::key::Source keySource) {
     // Try to parse the input as a key.

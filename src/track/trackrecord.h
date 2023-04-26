@@ -103,7 +103,7 @@ class TrackRecord final {
     QString getGlobalKeyText() const {
         return KeyUtils::formatGlobalKey(getKeys());
     }
-    UpdateResult updateGlobalKeyText(
+    UpdateResult updateGlobalKeyNormalizeText(
             const QString& keyText,
             track::io::key::Source keySource);
 
