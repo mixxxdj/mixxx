@@ -177,6 +177,42 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .bitrate = 256,
             }));
 
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1172,
+                              .name = "Downloaded",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1425,
+                              .name = "Folder A",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1498,
+                              .name = "Folder B",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1431,
+                              .name = "Playlist A",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1436,
+                              .name = "Playlist B",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1440,
+                              .name = "Downloaded",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1449,
+                              .name = "Playlist D",
+                      }));
+
+    // The XML importer currently does not import empty playlists.
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1494,
+                              .name = "Playlist C",
+                      }))
+            .Times(0);
+
     int root = kRootITunesPlaylistId;
     EXPECT_CALL(*dao, importPlaylistRelation(root, 1172)); // Downloaded (built-in playlist)
     EXPECT_CALL(*dao, importPlaylistRelation(root, 1425)); // Folder A
@@ -317,6 +353,42 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .bpm = 0,
                     .bitrate = 256,
             }));
+
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 98,
+                              .name = "Downloaded",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 153,
+                              .name = "Folder A",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 159,
+                              .name = "Folder B",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 165,
+                              .name = "Playlist A",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 170,
+                              .name = "Playlist B",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 177,
+                              .name = "Downloaded",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 186,
+                              .name = "Playlist D",
+                      }));
+
+    // The XML importer currently does not import empty playlists.
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 174,
+                              .name = "Playlist C",
+                      }))
+            .Times(0);
 
     int root = kRootITunesPlaylistId;
     EXPECT_CALL(*dao, importPlaylistRelation(root, 98));  // Downloaded (built-in playlist)
