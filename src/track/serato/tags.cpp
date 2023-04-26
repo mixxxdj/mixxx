@@ -307,13 +307,13 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
         }
 
         CueInfo newCueInfo(cueInfo);
-        if (!cueInfo.getStartPositionMillis()) {
+        if (!cueInfo.getStartPositionMillis().has_value()) {
             continue;
         }
         newCueInfo.setStartPositionMillis(
                 *cueInfo.getStartPositionMillis() - timingOffsetMillis);
 
-        if (cueInfo.getEndPositionMillis()) {
+        if (cueInfo.getEndPositionMillis().has_value()) {
             newCueInfo.setEndPositionMillis(*cueInfo.getEndPositionMillis() - timingOffsetMillis);
         }
         newCueInfo.setFlags(cueInfo.flags());
@@ -323,7 +323,7 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
             cueMap.insert(hotcueIndex, newCueInfo);
             break;
         case CueType::Loop:
-            if (!newCueInfo.getEndPositionMillis()) {
+            if (!newCueInfo.getEndPositionMillis().has_value()) {
                 qWarning() << "Loop Cue" << hotcueIndex << "has no end position";
                 DEBUG_ASSERT(false);
                 continue;
