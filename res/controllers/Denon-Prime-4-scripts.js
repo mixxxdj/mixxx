@@ -283,15 +283,8 @@ Prime4.CyclingArrayView = class {
 };
 
 Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _group) {
-    if (value >= 1 && value < 20) {
-        this.inSetParameter(this.inGetParameter() + (value / 100));
-    } else if (value <= 127 && value > 100) {
-        this.inSetParameter(this.inGetParameter() + ((value - 128) / 100));
-    }
-    /*
     const signedValue = value > (0x80 / 2) ? value - 128 : value;
-    this.inSetParameter(this.inGetParameter() + value / 100);
-    */
+    this.inSetParameter(this.inGetParameter() + (signedValue / 100));
 };
 
 Prime4.init = function(_id, _debug) {
@@ -1027,7 +1020,7 @@ Prime4.cueloopMode = function(deck, offset) {
     PerformancePad.prototype = new components.Button({
         group: deck.currentDeck,
         on: this.colourOn,
-        off: Prime4.rgbCode.blueDim,
+        off: Prime4.rgbCode.whiteDark,
         colorMapper: Prime4ColorMapper,
         outConnect: false,
         unshift: function() {
@@ -1063,7 +1056,7 @@ Prime4.autoloopMode = function(deck, offset) {
             outKey: "beatloop_" + loopSize + "_enabled",
             inKey: "beatloop_" + loopSize + "_toggle",
             on: Prime4.rgbCode.white,
-            off: Prime4.rgbCode.green,
+            off: Prime4.rgbCode.greenDark,
             outConnect: false,
         });
     }
@@ -1088,7 +1081,7 @@ Prime4.rollMode = function(deck, offset) {
             outKey: "beatloop_" + rollSize + "_enabled",
             inKey: "beatlooproll_" + rollSize + "_activate",
             on: Prime4.rgbCode.white,
-            off: this.colourOn,
+            off: Prime4.rgbCode.green,
             outConnect: false,
         });
     }
@@ -1108,8 +1101,7 @@ Prime4.samplerMode = function(deck, offset) {
             midi: [0x94 + offset, 0x0E + i],
             colorMapper: Prime4ColorMapper,
             on: this.colourOn,
-            off: Prime4.rgbCode.greenDark,
-            outConnect: false,
+            off: Prime4.rgbCode.whiteDark, outConnect: false,
         });
     }
 };
