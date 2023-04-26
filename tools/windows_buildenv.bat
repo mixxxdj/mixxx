@@ -1,6 +1,6 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
-REM this í is just to force some editors to recognize this file as ANSI, not UTF8.
+REM this ï¿½ is just to force some editors to recognize this file as ANSI, not UTF8.
 
 CALL :REALPATH "%~dp0\.."
 SET MIXXX_ROOT=%RETVAL%
@@ -23,12 +23,12 @@ IF NOT DEFINED INSTALL_ROOT (
 
 IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_BRANCH=2.4-rel
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-8f8342a
-    SET BUILDENV_SHA256=8dc9f310cde271e20e9dc21563aeb5fc7f618a316eae3dcb77f41cf18fc310f3
+    SET BUILDENV_NAME=mixxx-deps-rel-2.4-x64-windows-ef81bbb
+    SET BUILDENV_SHA256=27328ef1b084f181f04cefde17bcc5c4611701586eba22f6e5400c82d2ba10cb
 ) ELSE (
     SET BUILDENV_BRANCH=2.4
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-c9ebc36
-    SET BUILDENV_SHA256=551ffdcdf8c552eddddb425f61c934da00208dcb240685ec7e27c3c26ed4953e
+    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-e2a51b1
+    SET BUILDENV_SHA256=cd988e808506404d547496010b849520c4faeafb24a23158b1c0195e70451f91
 )
 
 IF "%~1"=="" (
