@@ -465,13 +465,13 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -546,13 +546,13 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -1100,7 +1100,11 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     shadowFont.setWeight(99);
+#else
+    shadowFont.setWeight(QFont::Black);
+#endif
     shadowFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 

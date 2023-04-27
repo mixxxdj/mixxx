@@ -109,10 +109,19 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
-
+option(QML "Build with QML" OFF)
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+
+if(QML AND NOT QT6)
+  message(FATAL_ERROR "Building with option QML=ON requires QT6=ON")
+endif()
+
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
+endif()
+
+if(QML)
+  add_compile_definitions(MIXXX_USE_QML)
 endif()
 
 if(APPLE)
@@ -120,7 +129,7 @@ if(APPLE)
     # Minimum macOS version supported by Qt 6
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
     if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
+      set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
     endif()
   else()
     if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
@@ -1103,7 +1112,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
 )
-if(QT6)
+if(QML)
   target_sources(mixxx-lib PRIVATE
     src/qml/asyncimageprovider.cpp
     src/qml/qmlapplication.cpp
@@ -2038,6 +2047,8 @@ if(ENGINEPRIME)
     message(STATUS "Using existing system installation of libdjinterop")
     target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
     target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
+    find_package(ZLIB 1.2.8 REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
   else()
     # Fetch djinterop sources from GitHub and build them statically.
 
@@ -2318,7 +2329,9 @@ if(QT6)
   foreach(COMPONENT ${QT6_NEW_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
   endforeach()
+endif()
 
+if(QML)
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
   set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-lib
@@ -2416,7 +2429,7 @@ endif()
 
 
 if(APPLE)
-  if(Qt_IS_STATIC)
+  if(Qt_IS_STATIC OR QT6)
     target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework Accelerate"
         "-weak_framework AppKit"
@@ -2520,7 +2533,11 @@ endif()
 if(APPLE OR WIN32)
   # qt_de.qm is just one arbitrary file in the directory that needs to be located;
   # there is no particular reason to look for this file versus any other one in the directory.
-  find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  if(QT6)
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt6_DIR}/../../../translations" "${Qt6_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  else()
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  endif()
   get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
   install(
     DIRECTORY "${QT_TRANSLATIONS}"

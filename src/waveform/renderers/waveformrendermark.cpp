@@ -263,7 +263,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     // though as soon as other OS-based font and app scaling mechanics join the
     // party the resulting font size is hard to predict (affects all supported OS).
     font.setPixelSize(13);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     font.setWeight(75); // bold
+#else
+    font.setWeight(QFont::Bold); // bold
+#endif
     font.setItalic(false);
 
     QFontMetrics metrics(font);

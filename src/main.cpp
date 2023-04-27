@@ -13,7 +13,7 @@
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
 #include "qml/qmlapplication.h"
 #else
 #include "mixxxmainwindow.h"
@@ -27,7 +27,7 @@
 namespace {
 
 // Exit codes
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
 constexpr int kFatalErrorOnStartupExitCode = 1;
 #endif
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
@@ -42,7 +42,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
     int exitCode;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
     mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
     exitCode = pApp->exec();
 #else
