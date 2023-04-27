@@ -84,7 +84,7 @@ class WSpinnyBase : public WGLWidget,
     double calculatePositionFromAngle(double angle);
     QPixmap scaledCoverArt(const QPixmap& normal);
 
-    void setLoadedCover(QPixmap pixmap);
+    void setLoadedCover(const QPixmap& pixmap);
 
   private:
     virtual void draw() = 0;

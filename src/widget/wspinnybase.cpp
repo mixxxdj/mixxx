@@ -240,7 +240,7 @@ void WSpinnyBase::setup(const QDomNode& node,
 #endif
 }
 
-void WSpinnyBase::setLoadedCover(QPixmap pixmap) {
+void WSpinnyBase::setLoadedCover(const QPixmap& pixmap) {
     m_loadedCover = pixmap;
     m_loadedCoverScaled = scaledCoverArt(pixmap);
 }
