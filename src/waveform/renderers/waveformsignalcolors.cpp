@@ -140,18 +140,18 @@ void WaveformSignalColors::fallBackFromSignalColor() {
     constexpr double analogousAngle = 1.0 / 12.0;
 
     if (s < 0.1) { // gray
-        const float sMax = 1.0 - h;
+        const float sMax = 1.0f - h;
         m_lowColor.setHslF(h,s,l);
         m_midColor.setHslF(h,s+sMax*0.2,l);
         m_highColor.setHslF(h,s+sMax*0.4,l);
     } else {
         if (l < 0.1) { // ~white
-            const float lMax = 1.0 - l;
+            const float lMax = 1.0f - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l+lMax*0.2);
             m_highColor.setHslF(h,s,l+lMax*0.4);
         } else if (l < 0.5) {
-            const float lMax = 1.0 - l;
+            const float lMax = 1.0f - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l+lMax*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l+lMax*0.4);
