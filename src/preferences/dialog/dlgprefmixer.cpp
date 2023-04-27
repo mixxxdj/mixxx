@@ -96,13 +96,13 @@ DlgPrefMixer::DlgPrefMixer(
     graphicsViewXfader->setFocusPolicy(Qt::NoFocus);
 
     // Connection
-    connect(SliderHiEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotUpdateHiEQ);
-    connect(SliderHiEQ, &QSlider::sliderMoved, this, &DlgPrefMixer::slotUpdateHiEQ);
-    connect(SliderHiEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotUpdateHiEQ);
+    connect(SliderHiEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotHiEqSliderChanged);
+    connect(SliderHiEQ, &QSlider::sliderMoved, this, &DlgPrefMixer::slotHiEqSliderChanged);
+    connect(SliderHiEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotHiEqSliderChanged);
 
-    connect(SliderLoEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotUpdateLoEQ);
-    connect(SliderLoEQ, &QSlider::sliderMoved, this, &DlgPrefMixer::slotUpdateLoEQ);
-    connect(SliderLoEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotUpdateLoEQ);
+    connect(SliderLoEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotLoEqSliderChanged);
+    connect(SliderLoEQ, &QSlider::sliderMoved, this, &DlgPrefMixer::slotLoEqSliderChanged);
+    connect(SliderLoEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotLoEqSliderChanged);
 
     connect(CheckBoxEqAutoReset,
             &QCheckBox::toggled,
@@ -244,10 +244,8 @@ void DlgPrefMixer::slotPopulateDeckEffectSelectors() {
 
     EffectManifestFilterFnc filterEQ;
     if (CheckBoxEqOnly->isChecked()) {
-        m_pConfig->set(ConfigKey(kConfigGroup, kEqsOnly), QString("yes"));
         filterEQ = isMixingEQ;
     } else {
-        m_pConfig->set(ConfigKey(kConfigGroup, kEqsOnly), QString("no"));
         filterEQ = nullptr; // take all
     }
 
@@ -324,9 +322,6 @@ void DlgPrefMixer::populateDeckQuickEffectBoxList(
 
 void DlgPrefMixer::slotSingleEqToggled(bool checked) {
     m_singleEq = checked;
-    // TODO move this line to slotApply()
-    m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
-            m_singleEq ? QString("yes") : QString("no"));
     if (m_deckEqEffectSelectors.size()) {
         int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
         for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
@@ -360,10 +355,16 @@ QUrl DlgPrefMixer::helpUrl() const {
 }
 
 void DlgPrefMixer::setDefaultShelves() {
-    m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequency"), ConfigValue(2500));
-    m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequency"), ConfigValue(250));
-    m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"), ConfigValue(2500.0));
-    m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"), ConfigValue(250.0));
+    SliderHiEQ->setValue(
+            getSliderPosition(2500,
+                    SliderHiEQ->minimum(),
+                    SliderHiEQ->maximum()));
+    SliderLoEQ->setValue(
+            getSliderPosition(250,
+                    SliderLoEQ->minimum(),
+                    SliderLoEQ->maximum()));
+    slotLoEqSliderChanged();
+    slotHiEqSliderChanged();
 }
 
 void DlgPrefMixer::slotResetToDefaults() {
@@ -442,15 +443,6 @@ void DlgPrefMixer::slotQuickEffectChangedOnDeck(int effectIndex) {
             box->setCurrentIndex(effectIndex);
         }
     }
-
-    QString deckGroupName = PlayerManager::groupForDeck(deckNumber);
-    QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
-    EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
-    QList<EffectChainPresetPointer> presetList =
-            m_pChainPresetManager->getQuickEffectPresetsSorted();
-    if (pChain && effectIndex >= 0 && effectIndex < presetList.size()) {
-        pChain->loadChainPreset(presetList[effectIndex]);
-    }
 }
 
 void DlgPrefMixer::applySelectionsToDecks() {
@@ -458,24 +450,30 @@ void DlgPrefMixer::applySelectionsToDecks() {
         return;
     }
 
-    int deck = 0;
+    // EQ effects
     for (QComboBox* box : std::as_const(m_deckEqEffectSelectors)) {
+        int deck = m_deckEqEffectSelectors.indexOf(box);
+        QString deckGroup = PlayerManager::groupForDeck(deck);
+
         const EffectManifestPointer pManifest =
                 m_pBackendManager->getManifestFromUniqueId(
                         box->itemData(box->currentIndex()).toString());
 
-        QString group = PlayerManager::groupForDeck(deck);
-
         bool needLoad = true;
-        bool startingUp = (m_eqIndiciesOnUpdate.size() < (deck + 1));
+        bool startingUp = m_eqIndiciesOnUpdate.size() < (deck + 1);
         if (!startingUp) {
-            needLoad = (box->currentIndex() != m_eqIndiciesOnUpdate[deck]);
+            needLoad = box->currentIndex() != m_eqIndiciesOnUpdate[deck];
         }
         if (needLoad) {
-            auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(group);
+            auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(deckGroup);
+
+            VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+                return;
+            }
+
             auto pEffectSlot = pChainSlot->getEffectSlot(0);
             pEffectSlot->loadEffectWithDefaults(pManifest);
-            if (pManifest && pManifest->isMixingEQ()) {
+            if (pManifest && pManifest->isMixingEQ() && !m_eqBypass) {
                 pChainSlot->setFilterWaveform(true);
             } else {
                 pChainSlot->setFilterWaveform(false);
@@ -489,18 +487,33 @@ void DlgPrefMixer::applySelectionsToDecks() {
             if (pManifest) {
                 configString = pManifest->uniqueId();
             }
-            m_pConfig->set(ConfigKey(kConfigGroup, kEffectForGroupPrefix + group),
+            // TODO store this in effects.xml
+            m_pConfig->set(ConfigKey(kConfigGroup, kEffectForGroupPrefix + deckGroup),
                     configString);
 
             // This is required to remove a previous selected effect that does not
             // fit to the current ShowAllEffects checkbox
             slotPopulateDeckEffectSelectors();
         }
-        ++deck;
+    }
+
+    // Quick effects
+    for (const auto& box : qAsConst(m_deckQuickEffectSelectors)) {
+        int deck = m_deckQuickEffectSelectors.indexOf(box);
+        QString deckGroup = PlayerManager::groupForDeck(deck);
+        const QString quickEffectGroup = QuickEffectChain::formatEffectChainGroup(deckGroup);
+        EffectChainPointer pChain = m_pEffectsManager->getEffectChain(quickEffectGroup);
+        const QList<EffectChainPresetPointer> presetList =
+                m_pChainPresetManager->getQuickEffectPresetsSorted();
+        int effectIndex = box->currentIndex();
+        // TODO handle index < 0 ??
+        if (pChain && effectIndex >= 0 && effectIndex < presetList.size()) {
+            pChain->loadChainPreset(presetList[effectIndex]);
+        }
     }
 }
 
-void DlgPrefMixer::slotUpdateHiEQ() {
+void DlgPrefMixer::slotHiEqSliderChanged() {
     if (SliderHiEQ->value() < SliderLoEQ->value()) {
         SliderHiEQ->setValue(SliderLoEQ->value());
     }
@@ -513,16 +526,11 @@ void DlgPrefMixer::slotUpdateHiEQ() {
     } else {
         TextHiEQ->setText(QString("%1 kHz").arg((int)m_highEqFreq / 1000.));
     }
-    m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequency"),
-            ConfigValue(QString::number(static_cast<int>(m_highEqFreq))));
-    m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"),
-            ConfigValue(QString::number(m_highEqFreq, 'f')));
 
-    slotApply();
     // TODO Maybe add a 'Apply values immediately" checkbox for instant testing (sweep freq)?
 }
 
-void DlgPrefMixer::slotUpdateLoEQ() {
+void DlgPrefMixer::slotLoEqSliderChanged() {
     if (SliderLoEQ->value() > SliderHiEQ->value()) {
         SliderLoEQ->setValue(SliderHiEQ->value());
     }
@@ -535,12 +543,7 @@ void DlgPrefMixer::slotUpdateLoEQ() {
     } else {
         TextLoEQ->setText(QString("%1 kHz").arg((int)m_lowEqFreq / 1000.));
     }
-    m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequency"),
-            ConfigValue(QString::number(static_cast<int>(m_lowEqFreq))));
-    m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"),
-            ConfigValue(QString::number(m_lowEqFreq, 'f')));
 
-    slotApply();
     // TODO Maybe add a 'Apply values immediately" checkbox for instant testing (sweep freq)?
 }
 
@@ -597,30 +600,65 @@ void DlgPrefMixer::slotApply() {
         m_crossfader.set(0.0 - position);
         m_xFaderReverse = checkBoxReverse->isChecked();
     }
-    slotUpdateXFader();
+    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"),
+            ConfigValue(m_xFaderMode));
+    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
+            ConfigValue(QString::number(m_transform)));
+    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"),
+            ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
 
     // Bypass EQ ///////////////////////////////////////////////////////////////
     m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs), ConfigValue(m_eqBypass ? "no" : "yes"));
     // Disable/enable EQ effect processing for all decks by setting the appropriate
     // controls to 0 or 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enabled")
-    int deck = 0;
-    while (deck < m_deckEqEffectSelectors.count()) {
-        QString group = EqualizerEffectChain::formatEffectSlotGroup(
+    for (const auto& box : qAsConst(m_deckEqEffectSelectors)) {
+        int deck = m_deckEqEffectSelectors.indexOf(box);
+        QString deckGroup = PlayerManager::groupForDeck(deck);
+        QString eqGroup = EqualizerEffectChain::formatEffectSlotGroup(
                 PlayerManager::groupForDeck(deck));
-        ControlObject::set(ConfigKey(group, "enabled"), m_eqBypass ? 0 : 1);
-        deck++;
-    }
-    // TODO also disable waveform filtering for consistency of audio & GUI (waveforms + VU)
-    // pChainSlot->setFilterWaveform
+        ControlObject::set(ConfigKey(eqGroup, "enabled"), m_eqBypass ? 0 : 1);
 
-    // EQ shelves //////////////////////////////////////////////////////////////
-    m_COLoFreq.set(m_lowEqFreq);
-    m_COHiFreq.set(m_highEqFreq);
+        auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(deckGroup);
+        VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+            return;
+        }
+        const EffectManifestPointer pManifest =
+                m_pBackendManager->getManifestFromUniqueId(
+                        box->itemData(box->currentIndex()).toString());
+        if (pManifest && pManifest->isMixingEQ() && !m_eqBypass) {
+            pChainSlot->setFilterWaveform(true);
+        } else {
+            pChainSlot->setFilterWaveform(false);
+        }
+    }
+
+    // EQ & QuickEffect comboboxes /////////////////////////////////////////////
+    m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
+            m_singleEq ? QString("yes") : QString("no"));
+    m_pConfig->set(ConfigKey(kConfigGroup, kEqsOnly),
+            ConfigValue(CheckBoxEqOnly->isChecked() ? "yes" : "no"));
+
     m_pConfig->set(ConfigKey(kConfigGroup, "EqAutoReset"),
             ConfigValue(m_eqAutoReset ? 1 : 0));
     m_pConfig->set(ConfigKey(kConfigGroup, "GainAutoReset"),
             ConfigValue(m_gainAutoReset ? 1 : 0));
     applySelectionsToDecks();
+
+    // EQ shelves //////////////////////////////////////////////////////////////
+    if (m_initializing) {
+        return;
+    }
+
+    m_COLoFreq.set(m_lowEqFreq);
+    m_COHiFreq.set(m_highEqFreq);
+    m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequency"),
+            ConfigValue(QString::number(static_cast<int>(m_highEqFreq))));
+    m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"),
+            ConfigValue(QString::number(m_highEqFreq, 'f')));
+    m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequency"),
+            ConfigValue(QString::number(static_cast<int>(m_lowEqFreq))));
+    m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"),
+            ConfigValue(QString::number(m_lowEqFreq, 'f')));
 }
 
 // Update the widgets with values from config
@@ -659,12 +697,17 @@ void DlgPrefMixer::slotUpdate() {
     slotPopulateDeckEffectSelectors();
     if (m_initializing || CheckBoxSingleEqEffect->isChecked() != m_singleEq) {
         CheckBoxSingleEqEffect->setChecked(m_singleEq);
-        slotSingleEqToggled(CheckBoxSingleEqEffect->isChecked());
+        slotSingleEqToggled(m_singleEq);
     }
 
+    // TODO populate these index lists in each populateDeck..Boxes()
     m_eqIndiciesOnUpdate.clear();
     for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
         m_eqIndiciesOnUpdate.append(box->currentIndex());
+    }
+    m_quickEffectIndiciesOnUpdate.clear();
+    for (const auto& box : std::as_const(m_deckQuickEffectSelectors)) {
+        m_quickEffectIndiciesOnUpdate.append(box->currentIndex());
     }
 
     m_eqAutoReset = static_cast<bool>(
@@ -717,8 +760,8 @@ void DlgPrefMixer::slotUpdate() {
             getSliderPosition(lowEqFreq,
                     SliderLoEQ->minimum(),
                     SliderLoEQ->maximum()));
-    slotUpdateLoEQ();
-    slotUpdateHiEQ();
+    slotLoEqSliderChanged();
+    slotHiEqSliderChanged();
 }
 
 // Draw the crossfader curve graph. Only needs to get drawn when a change
@@ -810,13 +853,6 @@ void DlgPrefMixer::slotUpdateXFader() {
                           EngineXfader::kTransformMax) -
             1 + EngineXfader::kTransformMin;
     m_cal = EngineXfader::getPowerCalibration(m_transform);
-    // TODO move to slotApply
-    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"),
-            ConfigValue(m_xFaderMode));
-    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
-            ConfigValue(QString::number(m_transform)));
-    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"),
-            ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
 
     drawXfaderDisplay();
 }

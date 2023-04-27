@@ -40,8 +40,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotPopulateDeckEffectSelectors();
 
     void slotUpdateXFader();
-    void slotUpdateHiEQ();
-    void slotUpdateLoEQ();
+    void slotHiEqSliderChanged();
+    void slotLoEqSliderChanged();
 
     // Update the Main EQ
     void slotApplyMainEQParameter(int value);
@@ -112,4 +112,5 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_initializing;
 
     QList<int> m_eqIndiciesOnUpdate;
+    QList<int> m_quickEffectIndiciesOnUpdate;
 };
