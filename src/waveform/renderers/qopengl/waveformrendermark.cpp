@@ -94,8 +94,9 @@ void qopengl::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* 
     m_textureShader.release();
 }
 
-void qopengl::WaveformRenderMark::fillRectWithGradient(
-        const QRectF& rect, QColor color, Qt::Orientation orientation) {
+void qopengl::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
+    // draw a gradient towards transparency at the upper and lower 25% of the waveform view
+
     const float qh = static_cast<float>(std::floor(rect.height() * 0.25));
     const float posx1 = static_cast<float>(rect.x());
     const float posx2 = static_cast<float>(rect.x() + rect.width());
@@ -109,12 +110,12 @@ void qopengl::WaveformRenderMark::fillRectWithGradient(
     getRgbF(color, &r, &g, &b, &a);
 
     VertexData vertices;
-    vertices.reserve(12);
+    vertices.reserve(12); // 4 triangles
     vertices.addRectangle(posx1, posy1, posx2, posy2);
     vertices.addRectangle(posx1, posy4, posx2, posy3);
 
     RGBAData rgbaData;
-    rgbaData.reserve(12);
+    rgbaData.reserve(12); // 4 triangles
     rgbaData.addForRectangleGradient(r, g, b, a, r, g, b, 0.f);
     rgbaData.addForRectangleGradient(r, g, b, a, r, g, b, 0.f);
 
@@ -204,13 +205,12 @@ void qopengl::WaveformRenderMark::renderGL() {
                     QColor color = pMark->fillColor();
                     color.setAlphaF(0.4);
 
-                    fillRectWithGradient(
+                    drawMark(
                             QRectF(QPointF(currentMarkPoint, 0),
                                     QPointF(currentMarkEndPoint,
                                             m_waveformRenderer
                                                     ->getBreadth())),
-                            color,
-                            Qt::Vertical);
+                            color);
                     visible = true;
                 }
             }

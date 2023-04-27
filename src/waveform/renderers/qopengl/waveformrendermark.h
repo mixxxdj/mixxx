@@ -57,7 +57,7 @@ class qopengl::WaveformRenderMark final : public QObject, public qopengl::Wavefo
     std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
     bool m_bCuesUpdates{};
 
-    void fillRectWithGradient(const QRectF& rect, QColor color, Qt::Orientation orientation);
+    void drawMark(const QRectF& rect, QColor color);
     void drawTexture(float x, float y, QOpenGLTexture* texture);
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
