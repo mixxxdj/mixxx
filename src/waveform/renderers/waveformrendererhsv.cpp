@@ -78,10 +78,8 @@ void WaveformRendererHSV::draw(
     float allGain(1.0);
     getGains(&allGain, nullptr, nullptr, nullptr);
 
-    // Save HSV of waveform color.
-    float h, s, v;
-
     // Get base color of waveform in the HSV format (s and v isn't use)
+    float h, s, v;
     getHsvF(m_pColors->getLowColor(), &h, &s, &v);
 
     QColor color;

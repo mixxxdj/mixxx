@@ -73,9 +73,11 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wskincolor.h"
 #include "widget/wslidercomposed.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
 #ifdef MIXXX_USE_QOPENGL
 #include "widget/qopengl/wspinnyglsl.h"
+#endif
 #endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
@@ -84,10 +86,12 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wvumeter.h"
 #include "widget/wvumeterlegacy.h"
 #ifdef MIXXX_USE_QOPENGL
 #include "widget/qopengl/wvumeterglsl.h"
+#endif
 #endif
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
