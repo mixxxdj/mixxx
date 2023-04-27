@@ -18,9 +18,6 @@ void ToolTipQOpenGL::onTimeout() {
     }
 }
 
-ToolTipQOpenGL::~ToolTipQOpenGL() {
-}
-
 ToolTipQOpenGL& ToolTipQOpenGL::singleton() {
     static ToolTipQOpenGL instance;
     return instance;

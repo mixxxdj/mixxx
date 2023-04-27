@@ -18,7 +18,6 @@ class ToolTipQOpenGL : public QObject {
     ToolTipQOpenGL();
 
   public:
-    ~ToolTipQOpenGL();
     static ToolTipQOpenGL& singleton();
     void setActive(bool active);
     void start(WGLWidget* widget, QPoint pos);
