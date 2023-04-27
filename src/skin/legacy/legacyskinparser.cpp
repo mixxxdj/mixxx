@@ -8,7 +8,6 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <QtGlobal>
-#include <iostream>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
