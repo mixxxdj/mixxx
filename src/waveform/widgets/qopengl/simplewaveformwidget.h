@@ -19,7 +19,7 @@ class qopengl::SimpleWaveformWidget final : public qopengl::WaveformWidget {
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("Simple (QOpenGL)");
+        return tr("Simple (all-shaders)");
     }
     static inline bool useOpenGl() {
         return true;

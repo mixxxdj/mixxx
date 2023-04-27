@@ -19,7 +19,7 @@ class qopengl::FilteredWaveformWidget final : public qopengl::WaveformWidget {
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("Filtered (QOpenGL)");
+        return tr("Filtered (all-shaders)");
     }
     static inline bool useOpenGl() {
         return true;

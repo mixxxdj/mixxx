@@ -19,7 +19,7 @@ class qopengl::RGBWaveformWidget final : public qopengl::WaveformWidget {
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("RGB (QOpenGL)");
+        return tr("RGB (all-shaders)");
     }
     static inline bool useOpenGl() {
         return true;
