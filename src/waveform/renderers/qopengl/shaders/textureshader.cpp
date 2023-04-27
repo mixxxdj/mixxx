@@ -25,4 +25,9 @@ void main()
 )--");
 
     load(vertexShaderCode, fragmentShaderCode);
+
+    m_matrixLocation = uniformLocation("matrix");
+    m_samplerLocation = uniformLocation("sampler");
+    m_positionLocation = attributeLocation("position");
+    m_texcoordLocation = attributeLocation("texcoor");
 }

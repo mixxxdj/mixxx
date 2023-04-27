@@ -227,9 +227,5 @@ void WKnobComposed::leaveEvent(QEvent* e) {
 }
 
 void WKnobComposed::inputActivity() {
-#ifdef USE_WIDGET_RENDER_TIMER
-    m_renderTimer.activity();
-#else
     update();
-#endif
 }

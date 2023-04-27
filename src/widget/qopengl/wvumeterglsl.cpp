@@ -1,16 +1,25 @@
-#include "widget/wvumetergl.h"
+#include "widget/qopengl/wvumeterglsl.h"
 
 #include "util/assert.h"
 #include "util/math.h"
 
-void WVuMeterGL::initializeGL() {
-    m_hasOpenGLShaderPrograms = QOpenGLShaderProgram::hasOpenGLShaderPrograms(
-            QOpenGLContext::currentContext());
+WVuMeterGLSL::WVuMeterGLSL(QWidget* parent)
+        : WVuMeterBase(parent) {
+}
 
-    if (!m_hasOpenGLShaderPrograms) {
-        return;
+WVuMeterGLSL::~WVuMeterGLSL() {
+    cleanupGL();
+}
+
+void WVuMeterGLSL::draw() {
+    if (shouldRender()) {
+        makeCurrentIfNeeded();
+        renderGL();
+        doneCurrent();
     }
+}
 
+void WVuMeterGLSL::initializeGL() {
     if (m_pPixmapBack.isNull()) {
         m_pTextureBack.reset();
     } else {
@@ -29,47 +38,10 @@ void WVuMeterGL::initializeGL() {
         m_pTextureVu->setWrapMode(QOpenGLTexture::ClampToBorder);
     }
 
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-attribute vec3 texcoor;
-varying vec3 vTexcoor;
-void main()
-{
-    vTexcoor = texcoor;
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform sampler2D sampler;
-varying vec3 vTexcoor;
-void main()
-{
-    gl_FragColor = texture2D(sampler, vec2(vTexcoor.x, vTexcoor.y));
-}
-)--");
-
-    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.addShaderFromSourceCode(
-            QOpenGLShader::Vertex, vertexShaderCode)) {
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.addShaderFromSourceCode(
-            QOpenGLShader::Fragment, fragmentShaderCode)) {
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.link()) {
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.bind()) {
-        return;
-    }
+    m_textureShader.init();
 }
 
-void WVuMeterGL::renderGL() {
+void WVuMeterGLSL::renderGL() {
     glClearColor(static_cast<float>(m_qBgColor.redF()),
             static_cast<float>(m_qBgColor.greenF()),
             static_cast<float>(m_qBgColor.blueF()),
@@ -80,17 +52,26 @@ void WVuMeterGL::renderGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_shaderProgram.bind();
-
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0, 0, width(), height()));
 
-    int matrixLocation = m_shaderProgram.uniformLocation("matrix");
+    m_textureShader.bind();
 
-    m_shaderProgram.setUniformValue(matrixLocation, matrix);
+    int matrixLocation = m_textureShader.matrixLocation();
+    int samplerLocation = m_textureShader.samplerLocation();
+    int positionLocation = m_textureShader.positionLocation();
+    int texcoordLocation = m_textureShader.texcoordLocation();
+
+    m_textureShader.setUniformValue(matrixLocation, matrix);
+
+    m_textureShader.setUniformValue(matrixLocation, matrix);
+
+    m_textureShader.enableAttributeArray(positionLocation);
+    m_textureShader.enableAttributeArray(texcoordLocation);
+
+    m_textureShader.setUniformValue(samplerLocation, 0);
 
     if (m_pTextureBack) {
-        // Draw background.
         QRectF sourceRect(0, 0, m_pPixmapBack->width(), m_pPixmapBack->height());
         drawTexture(m_pTextureBack.get(), rect(), sourceRect);
     }
@@ -166,16 +147,20 @@ void WVuMeterGL::renderGL() {
             }
         }
     }
+
+    m_textureShader.disableAttributeArray(positionLocation);
+    m_textureShader.disableAttributeArray(texcoordLocation);
+    m_textureShader.release();
 }
 
-void WVuMeterGL::cleanupGL() {
+void WVuMeterGLSL::cleanupGL() {
     makeCurrentIfNeeded();
     m_pTextureBack.reset();
     m_pTextureVu.reset();
     doneCurrent();
 }
 
-void WVuMeterGL::drawTexture(QOpenGLTexture* texture,
+void WVuMeterGLSL::drawTexture(QOpenGLTexture* texture,
         const QRectF& targetRect,
         const QRectF& sourceRect) {
     const float texx1 = static_cast<float>(sourceRect.x() / texture->width());
@@ -193,20 +178,17 @@ void WVuMeterGL::drawTexture(QOpenGLTexture* texture,
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
     const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
 
-    int samplerLocation = m_shaderProgram.uniformLocation("sampler");
-    int positionLocation = m_shaderProgram.attributeLocation("position");
-    int texcoordLocation = m_shaderProgram.attributeLocation("texcoor");
+    int positionLocation = m_textureShader.positionLocation();
+    int texcoordLocation = m_textureShader.texcoordLocation();
 
-    m_shaderProgram.enableAttributeArray(positionLocation);
-    m_shaderProgram.setAttributeArray(
+    m_textureShader.setAttributeArray(
             positionLocation, GL_FLOAT, posarray, 2);
-    m_shaderProgram.enableAttributeArray(texcoordLocation);
-    m_shaderProgram.setAttributeArray(
+    m_textureShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray, 2);
-
-    m_shaderProgram.setUniformValue(samplerLocation, 0);
 
     texture->bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    texture->release();
 }

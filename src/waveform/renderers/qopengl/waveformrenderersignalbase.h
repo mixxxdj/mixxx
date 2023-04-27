@@ -1,7 +1,7 @@
 #pragma once
 
 #include "util/class.h"
-#include "waveform/renderers/qopengl/iwaveformrenderer.h"
+#include "waveform/renderers/qopengl/waveformrendererabstract.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
 class WaveformWidgetRenderer;
@@ -11,7 +11,7 @@ class WaveformRendererSignalBase;
 }
 
 class qopengl::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
-                                            public qopengl::IWaveformRenderer {
+                                            public qopengl::WaveformRendererAbstract {
   public:
     explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget);
     ~WaveformRendererSignalBase() override = default;
@@ -19,7 +19,7 @@ class qopengl::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
     void draw(QPainter* painter, QPaintEvent* event) override {
     }
 
-    IWaveformRenderer* qopenglWaveformRenderer() override {
+    qopengl::WaveformRendererAbstract* qopenglWaveformRenderer() override {
         return this;
     }
 

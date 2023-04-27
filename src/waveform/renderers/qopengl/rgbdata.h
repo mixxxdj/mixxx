@@ -4,10 +4,10 @@
 #include <QVector>
 
 namespace qopengl {
-class ColorData;
+class RGBData;
 }
 
-class qopengl::ColorData {
+class qopengl::RGBData {
     QVector<QVector3D> mData;
 
   public:

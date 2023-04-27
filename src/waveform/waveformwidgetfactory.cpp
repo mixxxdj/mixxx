@@ -1,6 +1,7 @@
 #include "waveform/waveformwidgetfactory.h"
 
 #ifdef MIXXX_USE_QOPENGL
+#include <QOpenGLShaderProgram>
 #include <QOpenGLWindow>
 #else
 #include <QGLFormat>
@@ -48,7 +49,7 @@
 #include "waveform/widgets/qopengl/simplewaveformwidget.h"
 #endif
 #include "widget/wvumeter.h"
-#include "widget/wvumetergl.h"
+#include "widget/wvumeterlegacy.h"
 #include "widget/wwaveformviewer.h"
 
 namespace {
@@ -398,27 +399,27 @@ void WaveformWidgetFactory::destroyWidgets() {
     m_waveformWidgetHolders.clear();
 }
 
-void WaveformWidgetFactory::addVuMeter(WVuMeter* pVuMeter) {
+void WaveformWidgetFactory::addVuMeter(WVuMeterLegacy* pVuMeter) {
     // Do not hold the pointer to of timer listeners since they may be deleted.
     // We don't activate update() or repaint() directly so listener widgets
     // can decide whether to paint or not.
     connect(this,
             &WaveformWidgetFactory::waveformUpdateTick,
             pVuMeter,
-            &WVuMeter::maybeUpdate,
+            &WVuMeterLegacy::maybeUpdate,
             Qt::DirectConnection);
 }
 
-void WaveformWidgetFactory::addVuMeter(WVuMeterGL* pVuMeter) {
+void WaveformWidgetFactory::addVuMeter(WVuMeterBase* pVuMeter) {
     // WVuMeterGLs to be rendered and swapped from the vsync thread
     connect(this,
             &WaveformWidgetFactory::renderVuMeters,
             pVuMeter,
-            &WVuMeterGL::render);
+            &WVuMeterBase::render);
     connect(this,
             &WaveformWidgetFactory::swapVuMeters,
             pVuMeter,
-            &WVuMeterGL::swap);
+            &WVuMeterBase::swap);
 }
 
 void WaveformWidgetFactory::slotSkinLoaded() {

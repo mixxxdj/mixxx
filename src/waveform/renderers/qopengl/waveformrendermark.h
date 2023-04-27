@@ -4,7 +4,7 @@
 #include <QObject>
 
 #include "util/class.h"
-#include "waveform/renderers/qopengl/shaders/gradientshader.h"
+#include "waveform/renderers/qopengl/shaders/rgbashader.h"
 #include "waveform/renderers/qopengl/shaders/textureshader.h"
 #include "waveform/renderers/qopengl/waveformrenderer.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -52,7 +52,7 @@ class qopengl::WaveformRenderMark final : public QObject, public qopengl::Wavefo
             QPointF p3);
 
     WaveformMarkSet m_marks;
-    GradientShader m_rangeShader;
+    RGBAShader m_rgbaShader;
     TextureShader m_textureShader;
     std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
     bool m_bCuesUpdates{};

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "waveform/renderers/qopengl/shaders/shader.h"
 
 namespace qopengl {

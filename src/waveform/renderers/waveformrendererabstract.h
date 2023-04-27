@@ -11,7 +11,7 @@ class WaveformWidgetRenderer;
 
 #ifdef MIXXX_USE_QOPENGL
 namespace qopengl {
-class IWaveformRenderer;
+class WaveformRendererAbstract;
 }
 #endif
 
@@ -29,7 +29,7 @@ class WaveformRendererAbstract {
     virtual void onSetTrack() {}
 
 #ifdef MIXXX_USE_QOPENGL
-    virtual qopengl::IWaveformRenderer* qopenglWaveformRenderer() {
+    virtual qopengl::WaveformRendererAbstract* qopenglWaveformRenderer() {
         return nullptr;
     }
 #endif

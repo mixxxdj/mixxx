@@ -3,20 +3,20 @@
 #include <QOpenGLFunctions>
 
 namespace qopengl {
-class IWaveformRenderer;
+class WaveformRendererAbstract;
 }
 
-class qopengl::IWaveformRenderer : public QOpenGLFunctions {
+class qopengl::WaveformRendererAbstract : public QOpenGLFunctions {
   public:
     /// This interface class is called by class qopengl::WaveformWidget.
     /// Class qopengl::WaveformWidget is derived from the qopengl-based
     /// class WGLWidget and, in its implementation of the WGLWidget virtual
-    /// methods, calls a stack of IWaveformRenderer instances, for
+    /// methods, calls a stack of qopengl::WaveformRendererAbstract instances, for
     /// the different layers of the waveform graphics (background, beat
     /// markers, the actual waveform, etc). In other word, this interface
     /// mimics the WGLWidget virtuals, but to be called as layers of an
     /// actual WGLWidget.
-    virtual ~IWaveformRenderer() = default;
+    virtual ~WaveformRendererAbstract() = default;
     virtual void initializeGL() {
     }
     virtual void resizeGL(int w, int h) {

@@ -8,9 +8,12 @@
 #include "engine/controls/cuecontrol.h"
 #include "track/track.h"
 #include "util/color/color.h"
+#include "util/colorcomponents.h"
 #include "util/painterscope.h"
 #include "waveform/renderers/qopengl/matrixforwidgetgeometry.h"
 #include "waveform/renderers/qopengl/moc_waveformrendermark.cpp"
+#include "waveform/renderers/qopengl/rgbadata.h"
+#include "waveform/renderers/qopengl/vertexdata.h"
 #include "waveform/waveform.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
 #include "widget/wimagestore.h"
@@ -36,7 +39,7 @@ void qopengl::WaveformRenderMark::setup(const QDomNode& node, const SkinContext&
 }
 
 void qopengl::WaveformRenderMark::initializeGL() {
-    m_rangeShader.init();
+    m_rgbaShader.init();
     m_textureShader.init();
 
     for (const auto& pMark : m_marks) {
@@ -93,18 +96,27 @@ void qopengl::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* 
 
 void qopengl::WaveformRenderMark::fillRectWithGradient(
         const QRectF& rect, QColor color, Qt::Orientation orientation) {
-    const float grdx1 = 0.f;
-    const float grdy1 = 0.f;
-    const float grdx2 = orientation == Qt::Horizontal ? 1.f : 0.f;
-    const float grdy2 = orientation == Qt::Vertical ? 1.f : 0.f;
-
+    const float qh = static_cast<float>(std::floor(rect.height() * 0.25));
     const float posx1 = static_cast<float>(rect.x());
     const float posx2 = static_cast<float>(rect.x() + rect.width());
     const float posy1 = static_cast<float>(rect.y());
-    const float posy2 = static_cast<float>(rect.y() + rect.height());
+    const float posy2 = static_cast<float>(rect.y()) + qh;
+    const float posy3 = static_cast<float>(rect.y() + rect.height()) - qh;
+    const float posy4 = static_cast<float>(rect.y() + rect.height());
 
-    const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
-    const float grdarray[] = {grdx1, grdy1, grdx2, grdy1, grdx1, grdy2, grdx2, grdy2};
+    float r, g, b, a;
+
+    getRgbF(color, &r, &g, &b, &a);
+
+    VertexData vertices;
+    vertices.reserve(12);
+    vertices.addRectangle(posx1, posy1, posx2, posy2);
+    vertices.addRectangle(posx1, posy4, posx2, posy3);
+
+    RGBAData rgbaData;
+    rgbaData.reserve(12);
+    rgbaData.addForRectangleGradient(r, g, b, a, r, g, b, 0.f);
+    rgbaData.addForRectangleGradient(r, g, b, a, r, g, b, 0.f);
 
     QMatrix4x4 matrix;
     matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
@@ -113,28 +125,26 @@ void qopengl::WaveformRenderMark::fillRectWithGradient(
         matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
     }
 
-    m_rangeShader.bind();
+    m_rgbaShader.bind();
 
-    int matrixLocation = m_rangeShader.uniformLocation("matrix");
-    int colorLocation = m_rangeShader.uniformLocation("color");
-    int positionLocation = m_rangeShader.attributeLocation("position");
-    int gradientLocation = m_rangeShader.attributeLocation("gradient");
+    int matrixLocation = m_rgbaShader.uniformLocation("matrix");
+    int positionLocation = m_rgbaShader.attributeLocation("position");
+    int colorLocation = m_rgbaShader.attributeLocation("color");
 
-    m_rangeShader.setUniformValue(matrixLocation, matrix);
-    m_rangeShader.setUniformValue(colorLocation, color);
+    m_rgbaShader.setUniformValue(matrixLocation, matrix);
 
-    m_rangeShader.enableAttributeArray(positionLocation);
-    m_rangeShader.setAttributeArray(
-            positionLocation, GL_FLOAT, posarray, 2);
-    m_rangeShader.enableAttributeArray(gradientLocation);
-    m_rangeShader.setAttributeArray(
-            gradientLocation, GL_FLOAT, grdarray, 2);
+    m_rgbaShader.enableAttributeArray(positionLocation);
+    m_rgbaShader.setAttributeArray(
+            positionLocation, GL_FLOAT, vertices.constData(), 2);
+    m_rgbaShader.enableAttributeArray(colorLocation);
+    m_rgbaShader.setAttributeArray(
+            colorLocation, GL_FLOAT, rgbaData.constData(), 4);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
-    m_rangeShader.disableAttributeArray(positionLocation);
-    m_rangeShader.disableAttributeArray(gradientLocation);
-    m_rangeShader.release();
+    m_rgbaShader.disableAttributeArray(positionLocation);
+    m_rgbaShader.disableAttributeArray(colorLocation);
+    m_rgbaShader.release();
 }
 
 void qopengl::WaveformRenderMark::renderGL() {

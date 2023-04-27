@@ -38,9 +38,5 @@ void WKnob::leaveEvent(QEvent* e) {
 }
 
 void WKnob::inputActivity() {
-#ifdef USE_WIDGET_RENDER_TIMER
-    m_renderTimer.activity();
-#else
     update();
-#endif
 }

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "util/class.h"
-#include "waveform/renderers/qopengl/colordata.h"
-#include "waveform/renderers/qopengl/shaders/colorshader.h"
+#include "waveform/renderers/qopengl/rgbdata.h"
+#include "waveform/renderers/qopengl/shaders/rgbshader.h"
 #include "waveform/renderers/qopengl/vertexdata.h"
 #include "waveform/renderers/qopengl/waveformrenderersignalbase.h"
 
@@ -22,9 +22,9 @@ class qopengl::WaveformRendererRGB final : public qopengl::WaveformRendererSigna
     void renderGL() override;
 
   private:
-    ColorShader m_shader;
+    RGBShader m_shader;
     VertexData m_vertices;
-    ColorData m_colors;
+    RGBData m_colors;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererRGB);
 };

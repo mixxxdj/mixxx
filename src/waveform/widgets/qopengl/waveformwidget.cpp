@@ -1,6 +1,6 @@
 #include "waveform/widgets/qopengl/waveformwidget.h"
 
-#include "waveform/renderers/qopengl/iwaveformrenderer.h"
+#include "waveform/renderers/qopengl/waveformrendererabstract.h"
 #include "widget/wwaveformviewer.h"
 
 using namespace qopengl;

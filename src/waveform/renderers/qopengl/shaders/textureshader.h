@@ -1,3 +1,5 @@
+#pragma once
+
 #include "waveform/renderers/qopengl/shaders/shader.h"
 
 namespace qopengl {
@@ -10,6 +12,24 @@ class qopengl::TextureShader final : public qopengl::Shader {
     ~TextureShader() = default;
     void init();
 
+    int matrixLocation() const {
+        return m_matrixLocation;
+    }
+    int samplerLocation() const {
+        return m_samplerLocation;
+    }
+    int positionLocation() const {
+        return m_positionLocation;
+    }
+    int texcoordLocation() const {
+        return m_texcoordLocation;
+    }
+
   private:
+    int m_matrixLocation;
+    int m_samplerLocation;
+    int m_positionLocation;
+    int m_texcoordLocation;
+
     DISALLOW_COPY_AND_ASSIGN(TextureShader)
 };

@@ -1,10 +1,23 @@
-#include "widget/wspinny.h"
+#include "widget/qopengl/wspinnyglsl.h"
 
 #include <QOpenGLContext>
 
 #include "util/assert.h"
 
-void WSpinny::cleanupGL() {
+WSpinnyGLSL::WSpinnyGLSL(
+        QWidget* parent,
+        const QString& group,
+        UserSettingsPointer pConfig,
+        VinylControlManager* pVCMan,
+        BaseTrackPlayer* pPlayer)
+        : WSpinnyBase(parent, group, pConfig, pVCMan, pPlayer) {
+}
+
+WSpinnyGLSL::~WSpinnyGLSL() {
+    cleanupGL();
+}
+
+void WSpinnyGLSL::cleanupGL() {
     makeCurrentIfNeeded();
     m_pBgTexture.reset();
     m_pMaskTexture.reset();
@@ -15,7 +28,7 @@ void WSpinny::cleanupGL() {
     doneCurrent();
 }
 
-void WSpinny::updateLoaderCoverGL() {
+void WSpinnyGLSL::coverChanged() {
     makeCurrentIfNeeded();
     if (m_loadedCoverScaled.isNull()) {
         m_pLoadedCoverTextureScaled.reset();
@@ -25,18 +38,33 @@ void WSpinny::updateLoaderCoverGL() {
     doneCurrent();
 }
 
-void WSpinny::renderGL() {
+void WSpinnyGLSL::draw() {
+    if (shouldRender()) {
+        makeCurrentIfNeeded();
+        renderGL();
+        doneCurrent();
+    }
+}
+
+void WSpinnyGLSL::renderGL() {
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_shaderProgram.bind();
+    m_textureShader.bind();
+
+    int matrixLocation = m_textureShader.matrixLocation();
+    int samplerLocation = m_textureShader.samplerLocation();
+    int positionLocation = m_textureShader.positionLocation();
+    int texcoordLocation = m_textureShader.texcoordLocation();
 
     QMatrix4x4 matrix;
-    // matrix.ortho(QRectF(0, 0, width(), height()));
-    int matrixLocation = m_shaderProgram.uniformLocation("matrix");
+    m_textureShader.setUniformValue(matrixLocation, matrix);
 
-    m_shaderProgram.setUniformValue(matrixLocation, matrix);
+    m_textureShader.enableAttributeArray(positionLocation);
+    m_textureShader.enableAttributeArray(texcoordLocation);
+
+    m_textureShader.setUniformValue(samplerLocation, 0);
 
     if (m_pBgTexture) {
         drawTexture(m_pBgTexture.get());
@@ -69,7 +97,7 @@ void WSpinny::renderGL() {
     if (paintGhost) {
         QMatrix4x4 rotate;
         rotate.rotate(m_fGhostAngle, 0, 0, -1);
-        m_shaderProgram.setUniformValue(matrixLocation, rotate);
+        m_textureShader.setUniformValue(matrixLocation, rotate);
 
         drawTexture(m_pGhostTextureScaled.get());
     }
@@ -77,20 +105,15 @@ void WSpinny::renderGL() {
     if (m_pFgTextureScaled) {
         QMatrix4x4 rotate;
         rotate.rotate(m_fAngle, 0, 0, -1);
-        m_shaderProgram.setUniformValue(matrixLocation, rotate);
+        m_textureShader.setUniformValue(matrixLocation, rotate);
 
         drawTexture(m_pFgTextureScaled.get());
     }
+
+    m_textureShader.release();
 }
 
-void WSpinny::initializeGL() {
-    m_hasOpenGLShaderPrograms = QOpenGLShaderProgram::hasOpenGLShaderPrograms(
-            QOpenGLContext::currentContext());
-
-    if (!m_hasOpenGLShaderPrograms) {
-        return;
-    }
-
+void WSpinnyGLSL::initializeGL() {
     if (m_pBgImage && !m_pBgImage->isNull())
         m_pBgTexture.reset(new QOpenGLTexture(*m_pBgImage));
     if (m_pMaskImage && !m_pMaskImage->isNull())
@@ -105,47 +128,10 @@ void WSpinny::initializeGL() {
     if (!m_qImage.isNull())
         m_pQTexture.reset(new QOpenGLTexture(m_qImage));
 
-    QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-attribute vec3 texcoor;
-varying vec3 vTexcoor;
-void main()
-{
-    vTexcoor = texcoor;
-    gl_Position = matrix * position;
-}
-)--");
-
-    QString fragmentShaderCode = QStringLiteral(R"--(
-uniform sampler2D sampler;
-varying vec3 vTexcoor;
-void main()
-{
-    gl_FragColor = texture2D(sampler, vec2(vTexcoor.x, vTexcoor.y));
-}
-)--");
-
-    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.addShaderFromSourceCode(
-            QOpenGLShader::Vertex, vertexShaderCode)) {
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.addShaderFromSourceCode(
-            QOpenGLShader::Fragment, fragmentShaderCode)) {
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.link()) {
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(m_shaderProgram.bind()) {
-        return;
-    }
+    m_textureShader.init();
 }
 
-void WSpinny::drawTexture(QOpenGLTexture* texture) {
+void WSpinnyGLSL::drawTexture(QOpenGLTexture* texture) {
     const float texx1 = 0.f;
     const float texy1 = 1.f;
     const float texx2 = 1.f;
@@ -163,20 +149,17 @@ void WSpinny::drawTexture(QOpenGLTexture* texture) {
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
     const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
 
-    int samplerLocation = m_shaderProgram.uniformLocation("sampler");
-    int positionLocation = m_shaderProgram.attributeLocation("position");
-    int texcoordLocation = m_shaderProgram.attributeLocation("texcoor");
+    int positionLocation = m_textureShader.positionLocation();
+    int texcoordLocation = m_textureShader.texcoordLocation();
 
-    m_shaderProgram.enableAttributeArray(positionLocation);
-    m_shaderProgram.setAttributeArray(
+    m_textureShader.setAttributeArray(
             positionLocation, GL_FLOAT, posarray, 2);
-    m_shaderProgram.enableAttributeArray(texcoordLocation);
-    m_shaderProgram.setAttributeArray(
+    m_textureShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray, 2);
-
-    m_shaderProgram.setUniformValue(samplerLocation, 0);
 
     texture->bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    texture->release();
 }

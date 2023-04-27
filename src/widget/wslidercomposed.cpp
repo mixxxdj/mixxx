@@ -365,9 +365,5 @@ double WSliderComposed::calculateHandleLength() {
 }
 
 void WSliderComposed::inputActivity() {
-#ifdef USE_WIDGET_RENDER_TIMER
-    m_renderTimer.activity();
-#else
     update();
-#endif
 }
