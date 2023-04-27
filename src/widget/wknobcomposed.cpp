@@ -20,8 +20,7 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dArcBgThickness(0),
           m_arcUnipolar(true),
           m_arcReversed(false),
-          m_arcPenCap(Qt::FlatCap)
-{
+          m_arcPenCap(Qt::FlatCap) {
 }
 
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {

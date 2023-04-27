@@ -8,8 +8,7 @@
 #include "util/duration.h"
 
 WKnob::WKnob(QWidget* pParent)
-        : WDisplay(pParent)
-{
+        : WDisplay(pParent) {
     setFocusPolicy(Qt::NoFocus);
 }
 
