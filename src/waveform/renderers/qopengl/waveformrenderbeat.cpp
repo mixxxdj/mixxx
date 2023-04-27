@@ -68,7 +68,9 @@ void WaveformRenderBeat::renderGL() {
     const float rendererBreadth = m_waveformRenderer->getBreadth();
 
     const int numVerticesPerLine = 6; // 2 triangles
-    const int numBeatsInRange = trackBeats->numBeatsInRange(startPosition, endPosition);
+    const int numBeatsInRange = startPosition.isValid() && endPosition.isValid()
+            ? trackBeats->numBeatsInRange(startPosition, endPosition)
+            : 0;
 
     // In corner cases numBeatsInRange returns -1, while the for loop below
     // iterates 1 time, resulting in a mismatch between reserved and drawn
