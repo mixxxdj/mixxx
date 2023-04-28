@@ -149,7 +149,7 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
 
         if (selectedId == playlistId) {
             // save index for selection
-            selectedRow = childrenToAdd.size() - 1;
+            selectedRow = static_cast<int>(childrenToAdd.size()) - 1;
         }
 
         // Create the TreeItem whose parent is the invisible root item
