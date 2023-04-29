@@ -11,7 +11,7 @@ WaveformWidget::WaveformWidget(const QString& group, QWidget* parent)
 
 WaveformWidget::~WaveformWidget() {
     makeCurrentIfNeeded();
-    for (auto renderer : m_rendererStack) {
+    for (auto renderer : std::as_const(m_rendererStack)) {
         delete renderer;
     }
     m_rendererStack.clear();
@@ -35,14 +35,14 @@ void WaveformWidget::renderGL() {
             m_rendererStack[0]->qopenglWaveformRenderer()->renderGL();
         }
     } else {
-        for (auto renderer : m_rendererStack) {
+        for (auto renderer : std::as_const(m_rendererStack)) {
             renderer->qopenglWaveformRenderer()->renderGL();
         }
     }
 }
 
 void WaveformWidget::initializeGL() {
-    for (auto renderer : m_rendererStack) {
+    for (auto renderer : std::as_const(m_rendererStack)) {
         renderer->qopenglWaveformRenderer()->initializeOpenGLFunctions();
         renderer->qopenglWaveformRenderer()->initializeGL();
     }
@@ -50,7 +50,7 @@ void WaveformWidget::initializeGL() {
 
 void WaveformWidget::resizeGL(int w, int h) {
     makeCurrentIfNeeded();
-    for (auto renderer : m_rendererStack) {
+    for (auto renderer : std::as_const(m_rendererStack)) {
         renderer->qopenglWaveformRenderer()->resizeGL(w, h);
     }
     doneCurrent();
