@@ -1050,7 +1050,7 @@ Track::ImportStatus Track::importCueInfos(
         return ImportStatus::Complete;
     }
     DEBUG_ASSERT(!m_pCueInfoImporterPending);
-    m_pCueInfoImporterPending = pCueInfoImporter;
+    m_pCueInfoImporterPending = std::move(pCueInfoImporter);
     if (m_pCueInfoImporterPending->isEmpty()) {
         // Just return the current import status without clearing any
         // existing cue points.
