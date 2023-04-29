@@ -1066,6 +1066,7 @@ Track::ImportStatus Track::importCueInfos(
         // Clear all existing cue points, that are supposed
         // to be replaced with the imported cue points soon.
         QList<CuePointer> cuePoints;
+        cuePoints.reserve(m_cuePoints.size());
         for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
             if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
                 cuePoints.append(pCue);
@@ -1398,6 +1399,7 @@ bool Track::exportSeratoMetadata() {
     const mixxx::audio::SampleRate sampleRate =
             streamInfo->getSignalInfo().getSampleRate();
     QList<mixxx::CueInfo> cueInfos;
+    cueInfos.reserve(m_cuePoints.size());
     for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         cueInfos.append(pCue->getCueInfo(sampleRate));
     }
