@@ -1065,9 +1065,15 @@ Track::ImportStatus Track::importCueInfos(
                 << "cue(s) is pending until the actual sample rate becomes available";
         // Clear all existing cue points, that are supposed
         // to be replaced with the imported cue points soon.
+        QList<CuePointer> cuePoints;
+        for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+            if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
+                cuePoints.append(pCue);
+            }
+        }
         setCuePointsMarkDirtyAndUnlock(
                 &lock,
-                QList<CuePointer>{});
+                cuePoints);
         return ImportStatus::Pending;
     }
 }
@@ -1084,11 +1090,6 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
         // Nothing to do
         return false;
     }
-    // Prevent inconsistencies between cue infos that have been queued
-    // and are waiting to be imported and new cue points. At least one
-    // of these two collections must be empty.
-    DEBUG_ASSERT(cuePoints.isEmpty() || !m_pCueInfoImporterPending ||
-            m_pCueInfoImporterPending->isEmpty());
     // disconnect existing cue points
     for (const auto& pCue : qAsConst(m_cuePoints)) {
         disconnect(pCue.get(), nullptr, this, nullptr);
@@ -1611,7 +1612,6 @@ void Track::updateStreamInfoFromSource(
 
     auto cuesImported = false;
     if (importCueInfos) {
-        DEBUG_ASSERT(m_cuePoints.isEmpty());
         kLogger.debug()
                 << "Finishing deferred import of"
                 << m_pCueInfoImporterPending->size()
