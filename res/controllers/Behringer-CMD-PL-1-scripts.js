@@ -1,4 +1,4 @@
-let CMDPL1 = {};
+const CMDPL1 = {};
 
 CMDPL1.init = function() {
     // mixxx --controllerDebug
