@@ -42,6 +42,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotUpdateXFader();
     void slotHiEqSliderChanged();
     void slotLoEqSliderChanged();
+
+    void slotInstantEQShelvesToggled(bool checked);
     void slotInstantMainEQToggled(bool checked);
 
     // Update the Main EQ
@@ -51,12 +53,15 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
   private:
     void drawXfaderDisplay();
+
     void setDefaultShelves();
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validateEQShelves();
 
     void applySelectionsToDecks();
+
+    void applyEQShelves();
 
     void setUpMainEQ();
     void updateMainEQ();
@@ -112,6 +117,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqAutoReset;
     bool m_gainAutoReset;
     bool m_eqBypass;
+    bool m_instantEqShelves;
     bool m_instantMainEq;
 
     bool m_initializing;

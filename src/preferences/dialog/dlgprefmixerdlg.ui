@@ -337,6 +337,17 @@
      <layout class="QVBoxLayout" name="vBoxLayout_1">
 
       <item>
+       <widget class="QCheckBox" name="CheckBoxInstantEQShelves">
+        <property name="toolTip">
+         <string>EQ shelves are applied instantly without clicking Apply</string>
+        </property>
+        <property name="text">
+         <string>Apply EQ shelves instantly</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
        <widget class="QWidget" name="GroupHiEQ" native="true">
         <layout class="QVBoxLayout" name="vBoxLayout_2">
 
@@ -668,6 +679,7 @@
   <tabstop>CheckBoxBypass</tabstop>
   <tabstop>CheckBoxEqAutoReset</tabstop>
   <tabstop>CheckBoxGainAutoReset</tabstop>
+  <tabstop>CheckBoxInstantEQShelves</tabstop>
   <tabstop>SliderHiEQ</tabstop>
   <tabstop>SliderLoEQ</tabstop>
   <tabstop>CheckBoxInstantMainEQ</tabstop>

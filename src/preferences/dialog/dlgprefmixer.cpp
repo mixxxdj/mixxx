@@ -72,6 +72,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_eqAutoReset(false),
           m_gainAutoReset(false),
           m_eqBypass(false),
+          m_instantEqShelves(false),
           m_instantMainEq(false),
           m_initializing(true) {
     setupUi(this);
@@ -130,6 +131,11 @@ DlgPrefMixer::DlgPrefMixer(
             &QCheckBox::toggled,
             this,
             &DlgPrefMixer::slotSingleEqToggled);
+
+    connect(CheckBoxInstantEQShelves,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefMixer::slotInstantEQShelvesToggled);
 
     connect(CheckBoxInstantMainEQ,
             &QCheckBox::toggled,
@@ -357,6 +363,13 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
     applySelectionsToDecks();
 }
 
+void DlgPrefMixer::slotInstantEQShelvesToggled(bool checked) {
+    m_instantEqShelves = checked;
+    if (checked) {
+        applyEQShelves();
+    }
+}
+
 void DlgPrefMixer::slotInstantMainEQToggled(bool checked) {
     m_instantMainEq = checked;
     if (checked) {
@@ -408,6 +421,7 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxEqAutoReset->setChecked(m_eqAutoReset);
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
 
+    CheckBoxInstantEQShelves->setChecked(false);
     setDefaultShelves();
     slotMainEQToDefault();
     CheckBoxInstantMainEQ->setChecked(false);
@@ -542,7 +556,9 @@ void DlgPrefMixer::slotHiEqSliderChanged() {
         TextHiEQ->setText(QString("%1 kHz").arg((int)m_highEqFreq / 1000.));
     }
 
-    // TODO Maybe add a 'Apply values immediately" checkbox for instant testing (sweep freq)?
+    if (m_instantEqShelves) {
+        applyEQShelves();
+    }
 }
 
 void DlgPrefMixer::slotLoEqSliderChanged() {
@@ -559,7 +575,9 @@ void DlgPrefMixer::slotLoEqSliderChanged() {
         TextLoEQ->setText(QString("%1 kHz").arg((int)m_lowEqFreq / 1000.));
     }
 
-    // TODO Maybe add a 'Apply values immediately" checkbox for instant testing (sweep freq)?
+    if (m_instantEqShelves) {
+        applyEQShelves();
+    }
 }
 
 void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
@@ -663,9 +681,12 @@ void DlgPrefMixer::slotApply() {
             ConfigValue(m_gainAutoReset ? 1 : 0));
     applySelectionsToDecks();
 
-    applyMainEQ();
+    applyEQShelves();
 
-    // EQ shelves //////////////////////////////////////////////////////////////
+    applyMainEQ();
+}
+
+void DlgPrefMixer::applyEQShelves() {
     if (m_initializing) {
         return;
     }
@@ -756,6 +777,8 @@ void DlgPrefMixer::slotUpdate() {
             ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"));
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
+
+    CheckBoxInstantEQShelves->setChecked(m_instantEqShelves);
 
     // Precise takes precedence over coarse.
     lowEqFreq = lowEqCourse.isEmpty() ? lowEqFreq : lowEqCourse.toDouble();
