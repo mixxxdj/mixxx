@@ -65,19 +65,23 @@ void WaveformRenderBeat::renderGL() {
     const auto endPosition = mixxx::audio::FramePos::fromEngineSamplePos(
             lastDisplayedPosition * trackSamples);
 
+    if (!startPosition.isValid() || !endPosition.isValid()) {
+        return;
+    }
+
     const float rendererBreadth = m_waveformRenderer->getBreadth();
 
     const int numVerticesPerLine = 6; // 2 triangles
-    const int numBeatsInRange = startPosition.isValid() && endPosition.isValid()
-            ? trackBeats->numBeatsInRange(startPosition, endPosition)
-            : 0;
 
-    // In corner cases numBeatsInRange returns -1, while the for loop below
-    // iterates 1 time, resulting in a mismatch between reserved and drawn
-    // lines. This probably should be fixed in beats.h/cpp but for now just
-    // return.
-    if (numBeatsInRange <= 0) {
-        return;
+    // Count the number of beats in the range to reserve space in the m_vertices vector.
+    // Note that we could also use
+    //   int numBearsInRange = trackBeats->numBeatsInRange(startPosition, endPosition);
+    // for this, but there have been reports of that method failing with a DEBUG_ASSERT.
+    int numBeatsInRange = 0;
+    for (auto it = trackBeats->iteratorFrom(startPosition);
+            it != trackBeats->cend() && *it <= endPosition;
+            ++it) {
+        numBeatsInRange++;
     }
 
     const int reserved = numBeatsInRange * numVerticesPerLine;
