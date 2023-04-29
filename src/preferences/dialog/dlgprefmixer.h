@@ -1,9 +1,5 @@
 #pragma once
 
-#include <QComboBox>
-#include <QWidget>
-#include <functional>
-
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
 #include "effects/effectsmanager.h"

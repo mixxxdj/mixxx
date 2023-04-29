@@ -3,8 +3,6 @@
 #include <QButtonGroup>
 #include <QHBoxLayout>
 #include <QStandardItemModel>
-#include <QString>
-#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -78,15 +76,14 @@ DlgPrefMixer::DlgPrefMixer(
           m_initializing(true) {
     setupUi(this);
 
+    // Update the crossfader curve graph and other settings when the
+    // crossfader mode is changed or the slider is moved.
     connect(SliderXFader,
             QOverload<int>::of(&QSlider::valueChanged),
             this,
             &DlgPrefMixer::slotUpdateXFader);
     connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefMixer::slotUpdateXFader);
     connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotUpdateXFader);
-
-    // Update the crossfader curve graph and other settings when the
-    // crossfader mode is changed.
     connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdateXFader);
     connect(radioButtonConstantPower,
             &QRadioButton::clicked,
@@ -96,7 +93,7 @@ DlgPrefMixer::DlgPrefMixer(
     // Don't allow the xfader graph getting keyboard focus
     graphicsViewXfader->setFocusPolicy(Qt::NoFocus);
 
-    // Connection
+    // EQ shelf sliders
     connect(SliderHiEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotHiEqSliderChanged);
     connect(SliderHiEQ, &QSlider::sliderMoved, this, &DlgPrefMixer::slotHiEqSliderChanged);
     connect(SliderHiEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotHiEqSliderChanged);
