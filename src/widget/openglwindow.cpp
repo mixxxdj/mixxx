@@ -29,14 +29,17 @@ void OpenGLWindow::initializeGL() {
 void OpenGLWindow::paintGL() {
     if (m_pWidget && isExposed()) {
         m_pWidget->renderGL();
-        m_pWidget->swapBuffers();
-        m_pWidget->renderGL();
     }
 }
 
 void OpenGLWindow::resizeGL(int w, int h) {
     if (m_pWidget) {
         m_pWidget->resizeGL(w, h);
+        // To avoid flickering when resizing
+        m_pWidget->makeCurrentIfNeeded();
+        m_pWidget->renderGL();
+        m_pWidget->swapBuffers();
+        m_pWidget->doneCurrent();
     }
 }
 
@@ -58,14 +61,8 @@ bool OpenGLWindow::event(QEvent* ev) {
             ToolTipQOpenGL::singleton().stop(m_pWidget);
         }
 
-        // Forward the following events to the WGLWidget
-        if (t == QEvent::MouseButtonDblClick || t == QEvent::MouseButtonPress ||
-                t == QEvent::MouseButtonRelease || t == QEvent::MouseMove ||
-                t == QEvent::Enter || t == QEvent::Leave ||
-                t == QEvent::DragEnter || t == QEvent::DragLeave ||
-                t == QEvent::DragMove || t == QEvent::Drop || t == QEvent::Wheel) {
-            m_pWidget->handleEventFromWindow(ev);
-        }
+        m_pWidget->handleEventFromWindow(ev);
+
         if (t == QEvent::Expose) {
             m_pWidget->windowExposed();
         }
