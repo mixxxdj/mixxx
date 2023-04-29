@@ -55,10 +55,3 @@ void WaveformWidget::resizeGL(int w, int h) {
     }
     doneCurrent();
 }
-
-void WaveformWidget::handleEventFromWindow(QEvent* ev) {
-    auto viewer = dynamic_cast<WWaveformViewer*>(parent());
-    if (viewer) {
-        viewer->handleEventFromWindow(ev);
-    }
-}

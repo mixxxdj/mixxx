@@ -47,10 +47,6 @@ void WGLWidget::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);
 }
 
-void WGLWidget::handleEventFromWindow(QEvent* e) {
-    event(e);
-}
-
 bool WGLWidget::isContextValid() const {
     return m_pOpenGLWindow && m_pOpenGLWindow->context() && m_pOpenGLWindow->context()->isValid();
 }

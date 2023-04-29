@@ -1,5 +1,6 @@
 #include "widget/openglwindow.h"
 
+#include <QApplication>
 #include <QResizeEvent>
 
 #include "widget/tooltipqopengl.h"
@@ -53,6 +54,8 @@ bool OpenGLWindow::event(QEvent* ev) {
     if (m_pWidget) {
         const auto t = ev->type();
 
+        // Tooltip don't work by forwarding the events. This mimics the
+        // tooltip behavior.
         if (ev->type() == QEvent::MouseMove) {
             ToolTipQOpenGL::singleton().start(
                     m_pWidget, dynamic_cast<QMouseEvent*>(ev)->globalPos());
@@ -61,10 +64,17 @@ bool OpenGLWindow::event(QEvent* ev) {
             ToolTipQOpenGL::singleton().stop(m_pWidget);
         }
 
-        m_pWidget->handleEventFromWindow(ev);
-
         if (t == QEvent::Expose) {
+            // This event is only for windows, so we need a method to inform
+            // the widget
             m_pWidget->windowExposed();
+        } else if (ev->type() != QEvent::Resize && ev->type() != QEvent::Move) {
+            // Forward event to m_pWidget, except for resize and move events.
+            // The widget was the first to receive the geometry changed passed
+            // them to the OpenGLWindow. If we forward the events back to the
+            // m_pWidget we quickly overflow the event queue.
+
+            QApplication::sendEvent(m_pWidget, ev);
         }
     }
 

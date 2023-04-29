@@ -27,9 +27,4 @@ class qopengl::WaveformWidget : public ::WGLWidget,
     virtual WGLWidget* getGLWidget() override {
         return this;
     }
-
-  private:
-    // We need to forward events coming from the QOpenGLWindow
-    // (drag&drop, mouse) to the viewer
-    void handleEventFromWindow(QEvent* ev) override;
 };
