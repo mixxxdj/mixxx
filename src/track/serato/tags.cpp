@@ -268,7 +268,14 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
             hotCueMap.insert(*loopCueInfo.getHotCueIndex(), loopCueInfo);
         }
     }
-    return hotCueMap.values();
+
+    const QList<CueInfo> cueInfos = hotCueMap.values();
+    qDebug() << "SeratoTags::getCueInfos()";
+    for (const CueInfo& cueInfo : cueInfos) {
+        qDebug() << cueInfo;
+    }
+
+    return cueInfos;
 }
 
 void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffsetMillis) {
