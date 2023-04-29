@@ -1,21 +1,21 @@
-var CMDPL1 = {};
+let CMDPL1 = {};
 
 CMDPL1.init = function() {
     // mixxx --controllerDebug
-    print("> Init CMDPL1 Done");
+    //print("> Init CMDPL1 Done");
 };
 
 CMDPL1.pitchSlider = function(channel, control, value, status, group) {   // Lower the sensitivity of the pitch slider
     const currentValue = engine.getValue(group, "rate");
-    print("> Current : "+currentValue);
-    print("> value : "+value);
+    //print("> Current : "+currentValue);
+    //print("> value : "+value);
     engine.setValue(group, "rate", (value-64)/64);
 };
 
 CMDPL1.wheel = function(channel, control, value, status, group) {   // Lower the sensitivity of the pitch slider
     const currentValue = engine.getValue(group, "rate");
-    print("> Current : "+currentValue);
-    print("> value : "+value);
+    //print("> Current : "+currentValue);
+    //print("> value : "+value);
     engine.setValue(group, "rate", currentValue+(value-64)/128);
     // engine.setValue(group,"rate",(value-64)/64);
 };
@@ -23,7 +23,7 @@ CMDPL1.wheel = function(channel, control, value, status, group) {   // Lower the
 // The wheel that actually controls the scratching
 CMDPL1.wheelTurn = function(channel, control, value, status, group) {
     let deckNumber = script.deckFromGroup(group);
-    print("> value : "+deckNumber);
+    //print("> value : "+deckNumber);
 
     // A: For a control that centers on 0:
     let newValue;
