@@ -1,8 +1,6 @@
 #include "waveform/renderers/qopengl/waveformrendererendoftrack.h"
 
 #include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
 #include <memory>
 
 #include "control/controlobject.h"

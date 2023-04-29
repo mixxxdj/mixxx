@@ -19,6 +19,15 @@
 #include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
 
+// On the use of QPainter:
+//
+// The renderers in this folder are optimized to use GLSL shaders and refrain
+// from using QPainter on the QOpenGLWindow, which causes degredated performance.
+//
+// This renderer does use QPainter, but only to draw on a QImage. This is only
+// done once when needed and the images are then used as textures to be drawn
+// with a GLSL shader.
+
 namespace {
 constexpr int kMaxCueLabelLength = 23;
 } // namespace
@@ -250,6 +259,7 @@ void qopengl::WaveformRenderMark::generatePlayPosMarkTexture() {
     image.setDevicePixelRatio(devicePixelRatio);
     image.fill(QColor(0, 0, 0, 0).rgba());
 
+    // See comment on use of QPainter at top of file
     QPainter painter;
 
     painter.begin(&image);
@@ -338,7 +348,6 @@ void qopengl::WaveformRenderMark::checkCuesUpdated() {
     if (!m_bCuesUpdates) {
         return;
     }
-    // TODO @m0dB use atomic?
     m_bCuesUpdates = false;
 
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
@@ -403,6 +412,7 @@ void qopengl::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     }
 
     {
+        // See comment on use of QPainter at top of file
         QPainter painter;
 
         // Determine mark text.

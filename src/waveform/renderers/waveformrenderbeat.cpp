@@ -41,7 +41,9 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 #ifdef MIXXX_USE_QOPENGL
-    // TODO @m0dB using alpha transparency for the beat lines causes has artifacts with QOpenGL.
+    // Using alpha transparency with drawLines causes a graphical issue when
+    // drawing with QPainter on the QOpenGLWindow: instead of individual lines
+    // a large rectangle encompassing all beatlines is drawn.
     m_beatColor.setAlphaF(1.f);
 #else
     m_beatColor.setAlphaF(alpha/100.0);

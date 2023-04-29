@@ -3,13 +3,10 @@
 #include <QColor>
 #include <QDomNode>
 #include <QObject>
-#include <QPaintEvent>
-#include <QPainter>
 #include <QVector>
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/painterscope.h"
 #include "waveform/renderers/qopengl/matrixforwidgetgeometry.h"
 #include "waveform/widgets/qopengl/waveformwidget.h"
 #include "widget/wskincolor.h"

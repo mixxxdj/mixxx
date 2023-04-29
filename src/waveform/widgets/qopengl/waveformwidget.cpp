@@ -11,8 +11,8 @@ WaveformWidget::WaveformWidget(const QString& group, QWidget* parent)
 
 WaveformWidget::~WaveformWidget() {
     makeCurrentIfNeeded();
-    for (int i = 0; i < m_rendererStack.size(); ++i) {
-        delete m_rendererStack[i];
+    for (auto renderer : m_rendererStack) {
+        delete renderer;
     }
     m_rendererStack.clear();
     doneCurrent();
@@ -22,7 +22,10 @@ mixxx::Duration WaveformWidget::render() {
     makeCurrentIfNeeded();
     renderGL();
     doneCurrent();
-    // not used, here for API compatibility
+    // In the legacy widgets, this is used to "return timer for painter setup"
+    // which is not relevant here. Also note that the return value is not used
+    // at all, so it might be better to remove it everywhere. In the meantime.
+    // we need to return something for API compatibility.
     return mixxx::Duration();
 }
 
@@ -32,23 +35,23 @@ void WaveformWidget::renderGL() {
             m_rendererStack[0]->qopenglWaveformRenderer()->renderGL();
         }
     } else {
-        for (int i = 0; i < m_rendererStack.size(); ++i) {
-            m_rendererStack[i]->qopenglWaveformRenderer()->renderGL();
+        for (auto renderer : m_rendererStack) {
+            renderer->qopenglWaveformRenderer()->renderGL();
         }
     }
 }
 
 void WaveformWidget::initializeGL() {
-    for (int i = 0; i < m_rendererStack.size(); ++i) {
-        m_rendererStack[i]->qopenglWaveformRenderer()->initializeOpenGLFunctions();
-        m_rendererStack[i]->qopenglWaveformRenderer()->initializeGL();
+    for (auto renderer : m_rendererStack) {
+        renderer->qopenglWaveformRenderer()->initializeOpenGLFunctions();
+        renderer->qopenglWaveformRenderer()->initializeGL();
     }
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
     makeCurrentIfNeeded();
-    for (int i = 0; i < m_rendererStack.size(); ++i) {
-        m_rendererStack[i]->qopenglWaveformRenderer()->resizeGL(w, h);
+    for (auto renderer : m_rendererStack) {
+        renderer->qopenglWaveformRenderer()->resizeGL(w, h);
     }
     doneCurrent();
 }

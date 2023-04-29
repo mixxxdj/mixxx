@@ -21,16 +21,16 @@ class qopengl::FilteredWaveformWidget final : public qopengl::WaveformWidget {
     static inline QString getWaveformWidgetName() {
         return tr("Filtered (all-shaders)");
     }
-    static inline bool useOpenGl() {
+    static constexpr bool useOpenGl() {
         return true;
     }
-    static inline bool useOpenGles() {
+    static constexpr bool useOpenGles() {
         return false;
     }
-    static inline bool useOpenGLShaders() {
+    static constexpr bool useOpenGLShaders() {
         return true;
     }
-    static inline bool developerOnly() {
+    static constexpr bool developerOnly() {
         return false;
     }
 
