@@ -42,6 +42,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotUpdateXFader();
     void slotHiEqSliderChanged();
     void slotLoEqSliderChanged();
+    void slotInstantMainEQToggled(bool checked);
 
     // Update the Main EQ
     void slotMainEQParameterSliderChanged(int value);
@@ -111,6 +112,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqAutoReset;
     bool m_gainAutoReset;
     bool m_eqBypass;
+    bool m_instantMainEq;
 
     bool m_initializing;
 

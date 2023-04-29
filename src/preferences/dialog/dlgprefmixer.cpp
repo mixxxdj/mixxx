@@ -72,6 +72,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_eqAutoReset(false),
           m_gainAutoReset(false),
           m_eqBypass(false),
+          m_instantMainEq(false),
           m_initializing(true) {
     setupUi(this);
 
@@ -129,6 +130,11 @@ DlgPrefMixer::DlgPrefMixer(
             &QCheckBox::toggled,
             this,
             &DlgPrefMixer::slotSingleEqToggled);
+
+    connect(CheckBoxInstantMainEQ,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefMixer::slotInstantMainEQToggled);
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
@@ -351,6 +357,13 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
     applySelectionsToDecks();
 }
 
+void DlgPrefMixer::slotInstantMainEQToggled(bool checked) {
+    m_instantMainEq = checked;
+    if (checked) {
+        applyMainEQ();
+    }
+}
+
 QUrl DlgPrefMixer::helpUrl() const {
     return QUrl(MIXXX_MANUAL_EQ_URL);
 }
@@ -397,6 +410,7 @@ void DlgPrefMixer::slotResetToDefaults() {
 
     setDefaultShelves();
     slotMainEQToDefault();
+    CheckBoxInstantMainEQ->setChecked(false);
     slotApply();
 }
 
@@ -566,6 +580,10 @@ void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
         return;
     }
     valueLabel->setText(QString::number(value / 100.0));
+
+    if (m_instantMainEq) {
+        applyMainEqParameter(index);
+    }
 }
 
 int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
@@ -639,6 +657,8 @@ void DlgPrefMixer::slotApply() {
     m_pConfig->set(ConfigKey(kConfigGroup, "GainAutoReset"),
             ConfigValue(m_gainAutoReset ? 1 : 0));
     applySelectionsToDecks();
+
+    applyMainEQ();
 
     // EQ shelves //////////////////////////////////////////////////////////////
     if (m_initializing) {
@@ -759,6 +779,7 @@ void DlgPrefMixer::slotUpdate() {
     slotLoEqSliderChanged();
     slotHiEqSliderChanged();
 
+    CheckBoxInstantMainEQ->setChecked(m_instantMainEq);
     updateMainEQ();
 }
 
@@ -933,7 +954,6 @@ void DlgPrefMixer::updateMainEQ() {
 }
 
 void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
-    // TODO Add GUI hint that EQ changes are applied instantly
     // Clear parameters view first
     qDeleteAll(m_mainEQSliders);
     m_mainEQSliders.clear();
@@ -1002,6 +1022,10 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
         // when slider is moved. See WEffectParameterNameBase::parameterUpdated()
         m_mainEQValues.append(valueLabel);
         slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
+    }
+
+    if (m_instantMainEq) {
+        applyMainEQ();
     }
 }
 
