@@ -1046,17 +1046,14 @@ bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
 Track::ImportStatus Track::importCueInfos(
         mixxx::CueInfoImporterPointer pCueInfoImporter) {
     QMutexLocker lock(&m_qMutex);
-    VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter) {
+    VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter && !pCueInfoImporter->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
         return ImportStatus::Complete;
     }
     DEBUG_ASSERT(!m_pCueInfoImporterPending);
     m_pCueInfoImporterPending = std::move(pCueInfoImporter);
-    if (m_pCueInfoImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
-        m_pCueInfoImporterPending.reset();
-        return ImportStatus::Complete;
-    } else if (m_record.hasStreamInfoFromSource()) {
+    if (m_record.hasStreamInfoFromSource()) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingCueInfosMarkDirtyAndUnlock(&lock);
