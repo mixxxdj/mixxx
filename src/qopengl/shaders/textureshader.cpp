@@ -1,4 +1,4 @@
-#include "waveform/renderers/qopengl/shaders/textureshader.h"
+#include "qopengl/shaders/textureshader.h"
 
 using namespace qopengl;
 

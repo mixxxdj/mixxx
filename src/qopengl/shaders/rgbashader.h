@@ -1,6 +1,6 @@
 #pragma once
 
-#include "waveform/renderers/qopengl/shaders/shader.h"
+#include "qopengl/shaders/shader.h"
 
 namespace qopengl {
 class RGBAShader;

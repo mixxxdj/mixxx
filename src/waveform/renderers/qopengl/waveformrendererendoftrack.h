@@ -3,9 +3,9 @@
 #include <QColor>
 #include <memory>
 
+#include "qopengl/shaders/endoftrackshader.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
-#include "waveform/renderers/qopengl/shaders/endoftrackshader.h"
 #include "waveform/renderers/qopengl/waveformrenderer.h"
 
 class ControlObject;

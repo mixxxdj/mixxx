@@ -1,7 +1,7 @@
 #pragma once
 
+#include "qopengl/shaders/unicolorshader.h"
 #include "util/class.h"
-#include "waveform/renderers/qopengl/shaders/unicolorshader.h"
 #include "waveform/renderers/qopengl/vertexdata.h"
 #include "waveform/renderers/qopengl/waveformrenderersignalbase.h"
 

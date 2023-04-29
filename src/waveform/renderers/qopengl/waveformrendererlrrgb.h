@@ -1,8 +1,8 @@
 #pragma once
 
+#include "qopengl/shaders/rgbshader.h"
 #include "util/class.h"
 #include "waveform/renderers/qopengl/rgbdata.h"
-#include "waveform/renderers/qopengl/shaders/rgbshader.h"
 #include "waveform/renderers/qopengl/vertexdata.h"
 #include "waveform/renderers/qopengl/waveformrenderersignalbase.h"
 

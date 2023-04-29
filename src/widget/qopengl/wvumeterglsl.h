@@ -5,7 +5,7 @@
 #include <QOpenGLTexture>
 #include <memory>
 
-#include "waveform/renderers/qopengl/shaders/textureshader.h"
+#include "qopengl/shaders/textureshader.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wvumeterbase.h"
 #include "widget/wwidget.h"

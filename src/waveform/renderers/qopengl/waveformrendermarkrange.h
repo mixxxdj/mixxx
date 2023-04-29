@@ -3,8 +3,8 @@
 #include <QColor>
 #include <vector>
 
+#include "qopengl/shaders/unicolorshader.h"
 #include "util/class.h"
-#include "waveform/renderers/qopengl/shaders/unicolorshader.h"
 #include "waveform/renderers/qopengl/waveformrenderer.h"
 #include "waveform/renderers/waveformmarkrange.h"
 

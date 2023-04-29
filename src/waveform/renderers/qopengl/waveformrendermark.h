@@ -3,9 +3,9 @@
 #include <QColor>
 #include <QObject>
 
+#include "qopengl/shaders/rgbashader.h"
+#include "qopengl/shaders/textureshader.h"
 #include "util/class.h"
-#include "waveform/renderers/qopengl/shaders/rgbashader.h"
-#include "waveform/renderers/qopengl/shaders/textureshader.h"
 #include "waveform/renderers/qopengl/waveformrenderer.h"
 #include "waveform/renderers/waveformmarkset.h"
 

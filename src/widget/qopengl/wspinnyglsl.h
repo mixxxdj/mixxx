@@ -3,7 +3,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 
-#include "waveform/renderers/qopengl/shaders/textureshader.h"
+#include "qopengl/shaders/textureshader.h"
 #include "widget/wspinnybase.h"
 
 class WSpinnyGLSL : public WSpinnyBase {

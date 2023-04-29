@@ -1,4 +1,4 @@
-#include "waveform/renderers/qopengl/shaders/shader.h"
+#include "qopengl/shaders/shader.h"
 
 #include "util/assert.h"
 

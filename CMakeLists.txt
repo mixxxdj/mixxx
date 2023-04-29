@@ -1185,12 +1185,12 @@ else()
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE
       src/waveform/renderers/qopengl/matrixforwidgetgeometry.cpp
-      src/waveform/renderers/qopengl/shaders/endoftrackshader.cpp
-      src/waveform/renderers/qopengl/shaders/rgbashader.cpp
-      src/waveform/renderers/qopengl/shaders/rgbshader.cpp
-      src/waveform/renderers/qopengl/shaders/shader.cpp
-      src/waveform/renderers/qopengl/shaders/textureshader.cpp
-      src/waveform/renderers/qopengl/shaders/unicolorshader.cpp
+      src/qopengl/shaders/endoftrackshader.cpp
+      src/qopengl/shaders/rgbashader.cpp
+      src/qopengl/shaders/rgbshader.cpp
+      src/qopengl/shaders/shader.cpp
+      src/qopengl/shaders/textureshader.cpp
+      src/qopengl/shaders/unicolorshader.cpp
       src/waveform/renderers/qopengl/waveformrenderbackground.cpp
       src/waveform/renderers/qopengl/waveformrenderbeat.cpp
       src/waveform/renderers/qopengl/waveformrenderer.cpp

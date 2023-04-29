@@ -1,4 +1,4 @@
-#include "waveform/renderers/qopengl/shaders/endoftrackshader.h"
+#include "qopengl/shaders/endoftrackshader.h"
 
 using namespace qopengl;
 
