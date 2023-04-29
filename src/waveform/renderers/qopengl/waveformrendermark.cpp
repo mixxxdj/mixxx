@@ -128,12 +128,7 @@ void qopengl::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
     rgbaData.addForRectangleGradient(r, g, b, a, r, g, b, 0.f);
     rgbaData.addForRectangleGradient(r, g, b, a, r, g, b, 0.f);
 
-    QMatrix4x4 matrix;
-    matrix.ortho(QRectF(0.0, 0.0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight()));
-    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-        matrix.rotate(90.f, 0.0f, 0.0f, 1.0f);
-        matrix.translate(0.f, -m_waveformRenderer->getWidth(), 0.f);
-    }
+    QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
     m_rgbaShader.bind();
 
