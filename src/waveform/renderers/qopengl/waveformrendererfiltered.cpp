@@ -179,7 +179,7 @@ void WaveformRendererFiltered::renderGL() {
     colors[2].setRgbF(static_cast<float>(m_rgbHighColor_r),
             static_cast<float>(m_rgbHighColor_g),
             static_cast<float>(m_rgbHighColor_b));
-    colors[4].setRgbF(static_cast<float>(m_axesColor_r),
+    colors[3].setRgbF(static_cast<float>(m_axesColor_r),
             static_cast<float>(m_axesColor_g),
             static_cast<float>(m_axesColor_b),
             static_cast<float>(m_axesColor_a));
