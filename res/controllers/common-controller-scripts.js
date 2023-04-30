@@ -16,7 +16,6 @@
        Control:off
        Deck:off
  */
-/*eslint no-var:off */
 
 // ----------------- Prototype enhancements ---------------------
 

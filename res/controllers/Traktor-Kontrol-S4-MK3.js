@@ -1,5 +1,4 @@
 /// Created by Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
-/* global LibraryColumns*/
 
 const LedColors = {
     off: 0,
@@ -88,7 +87,7 @@ const WheelLedBlinkOnTrackEnd = true;
 
 // When shifting either decks, the mixer will control microphones or auxiliary lines. If there is both a mic and an configure on the same channel, the mixer will control the auxiliary.
 // Default: true
-const MixerControlsMixAnxOnShift = true;
+const MixerControlsMixAuxOnShift = false;
 
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
 // less responsive it gets in Mixxx. Default: 5
@@ -96,7 +95,7 @@ const WheelSpeedSample = 3;
 
 // Make the sampler tab a beatlooproll tab instead
 // Default: false
-const UseBeatloopRollInsteadOfSampler = true;
+const UseBeatloopRollInsteadOfSampler = false;
 
 // Predefined beatlooproll sizes. Note that if you use AddLoopHalveAndDoubleOnBeatloopRollTab, the first and
 // last size will be ignored
@@ -114,7 +113,7 @@ const BaseRevolutionsPerMinute = 33 + 1/3;
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
 // Default: false
-const UseMotors = true;
+const UseMotors = false;
 
 // Define how many wheel moves are sampled to compute the speed when using the motor. This is helpful to mitigate delay that
 // occurs in communication as well as Mixxx limitation to 20ms latency.
@@ -279,7 +278,7 @@ class Component {
             this.inKey = this.key;
             this.outKey = this.key;
         }
-        if (typeof this.unshift === "function" && this.unshift.length) {
+        if (typeof this.unshift === "function" && this.unshift.length === 0) {
             this.unshift();
         }
         this.shifted = false;
@@ -363,7 +362,7 @@ class ComponentContainer extends Component {
             if (typeof component.outDisconnect === "function" && component.outDisconnect.length === 0) {
                 component.outDisconnect();
             }
-            if (typeof callback === "function" && callback.length === 0) {
+            if (typeof callback === "function" && callback.length === 1) {
                 callback.call(this, component);
             }
             if (typeof component.outConnect === "function" && component.outConnect.length === 0) {
@@ -2602,9 +2601,9 @@ class S4Mk3MixerColumn extends ComponentContainer {
         this.volume = new Pot({
             inKey: "volume",
             mixer: this,
-            input: MixerControlsMixAnxOnShift ? function(value) {
-                if (this.mixer.shifted) {
-                    const controlKey = (this.group === `[Microphone" +  this.mixer.${idx}]` || this.group === "[Microphone]") ? "talkover" : "master";
+            input: MixerControlsMixAuxOnShift ? function(value) {
+                if (this.mixer.shifted && this.group !== `[Channel${idx}]`) { // FIXME only if group != [ChannelX]
+                    const controlKey = (this.group === `[Microphone${idx}]` || this.group === "[Microphone]") ? "talkover" : "master";
                     const isPlaying = engine.getValue(this.group, controlKey);
                     if ((value !== 0) !== isPlaying) {
                         engine.setValue(this.group, controlKey, value !== 0);
@@ -2670,7 +2669,7 @@ class S4Mk3MixerColumn extends ComponentContainer {
             }
         }
 
-        if (MixerControlsMixAnxOnShift) {
+        if (MixerControlsMixAuxOnShift) {
             this.shift = function() {
                 engine.setValue("[Microphone]", "show_microphone", true);
                 this.updateGroup(true);
