@@ -40,7 +40,6 @@ QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
 constexpr int kFirstLoopIndex = mixxx::kFirstHotCueIndex + 8;
 constexpr int kNumCuesInMarkersTag = 5;
 
-
 bool isCueInfoValid(const mixxx::CueInfo& cueInfo) {
     if (cueInfo.getType() == mixxx::CueType::Loop &&
             cueInfo.getEndPositionMillis().value_or(0) == 0) {
