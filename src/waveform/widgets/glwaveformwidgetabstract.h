@@ -23,6 +23,12 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWavefo
     }
 
   protected:
+#ifdef MIXXX_USE_QOPENGL
+    void renderGL() override {
+        // called by OpenGLWindow to avoid flickering on resize
+        static_cast<WaveformWidgetAbstract*>(this)->render();
+    }
+#endif
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     void initializeGL() override {
         if (m_pGlRenderer) {
