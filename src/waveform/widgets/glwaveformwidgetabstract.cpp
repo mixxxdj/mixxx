@@ -1,10 +1,8 @@
 #include "waveform/widgets/glwaveformwidgetabstract.h"
 
-#include "widget/wwaveformviewer.h"
-
 GLWaveformWidgetAbstract::GLWaveformWidgetAbstract(const QString& group, QWidget* parent)
         : WaveformWidgetAbstract(group),
-          WGLWidget(parent)
+          WGLWaveformWidget(parent)
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
           ,
           m_pGlRenderer(nullptr)

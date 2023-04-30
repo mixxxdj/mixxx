@@ -1,15 +1,13 @@
 #pragma once
 
 #include "waveform/widgets/waveformwidgetabstract.h"
-#include "widget/wglwidget.h"
-
-class WWaveformViewer;
+#include "widget/wglwaveformwidget.h"
 
 namespace qopengl {
 class WaveformWidget;
 }
 
-class qopengl::WaveformWidget : public ::WGLWidget,
+class qopengl::WaveformWidget : public ::WGLWaveformWidget,
                                 public ::WaveformWidgetAbstract {
     Q_OBJECT
   public:

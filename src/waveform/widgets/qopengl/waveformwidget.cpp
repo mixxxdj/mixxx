@@ -1,12 +1,11 @@
 #include "waveform/widgets/qopengl/waveformwidget.h"
 
 #include "waveform/renderers/qopengl/waveformrendererabstract.h"
-#include "widget/wwaveformviewer.h"
 
 using namespace qopengl;
 
 WaveformWidget::WaveformWidget(const QString& group, QWidget* parent)
-        : WGLWidget(parent), WaveformWidgetAbstract(group) {
+        : WGLWaveformWidget(parent), WaveformWidgetAbstract(group) {
 }
 
 WaveformWidget::~WaveformWidget() {
