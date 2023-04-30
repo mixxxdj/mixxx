@@ -82,7 +82,7 @@ void WaveformRendererPreroll::renderGL() {
                 polyPixelWidth;
         if (x >= limit) {
             // Don't draw invisible triangles beyond the right side of the display
-            x -= std::floor((x - limit) / polyPixelWidth) * polyPixelWidth;
+            x -= std::ceil((x - limit) / polyPixelWidth) * polyPixelWidth;
         }
 
         while (x >= 0) {
@@ -107,7 +107,7 @@ void WaveformRendererPreroll::renderGL() {
         const double limit = -polyPixelWidth;
         if (x <= limit) {
             // Don't draw invisible triangles before the left side of the display
-            x += std::floor((limit - x) / polyPixelWidth) * polyPixelWidth;
+            x += std::ceil((limit - x) / polyPixelWidth) * polyPixelWidth;
         }
 
         const double end = static_cast<double>(m_waveformRenderer->getLength());
