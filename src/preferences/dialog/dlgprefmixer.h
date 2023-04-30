@@ -37,7 +37,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotBypassEqToggled(bool checked);
     // Create, populate and show/hide EQ & QuickEffect selectors, considering the
     // number of decks and the 'Single EQ' checkbox
-    void slotPopulateDeckEffectSelectors();
+    void slotPopulateDeckEqSelectors();
+    void slotPopulateQuickEffectSelectors();
 
     void slotUpdateXFader();
     void slotHiEqSliderChanged();
@@ -59,7 +60,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validateEQShelves();
 
-    void applySelectionsToDecks();
+    void applyDeckEQs();
+    void applyQuickEffects();
 
     void applyEQShelves();
 
@@ -71,12 +73,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
     const QList<EffectManifestPointer> getFilteredManifests(
             EffectManifestFilterFnc filterFunc) const;
-    void populateDeckEqBoxList(
-            const QList<QComboBox*>& boxList,
-            EffectManifestFilterFnc filterFunc);
-    void populateDeckQuickEffectBoxList(
-            const QList<QComboBox*>& boxList);
-
 
     UserSettingsPointer m_pConfig;
 
@@ -104,7 +100,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     QList<QComboBox*> m_deckQuickEffectSelectors;
     ControlProxy* m_pNumDecks;
 
-    bool m_inSlotPopulateDeckEffectSelectors;
+    bool m_ignoreEqQuickEffectBoxSignals;
 
     // Members needed for the Main EQ
     QList<QSlider*> m_mainEQSliders;
