@@ -17,6 +17,7 @@ class WGLWidget : public QWidget {
   private:
     OpenGLWindow* m_pOpenGLWindow{};
     QWidget* m_pContainerWidget{};
+    QWidget* m_pEventReceiver;
 
   public:
     WGLWidget(QWidget* parent);
@@ -34,6 +35,17 @@ class WGLWidget : public QWidget {
     void resizeEvent(QResizeEvent* event) override;
 
     void showEvent(QShowEvent* event) override;
+
+    // By default the QOpenGLWindow will send its event to its owner
+    // WGLWidget. This function allows to override that with a different
+    // receiver. This is used for WWaveformViewer.
+    void setEventReceiver(QWidget* target) {
+        m_pEventReceiver = target;
+    }
+
+    QWidget* eventReceiver() const {
+        return m_pEventReceiver;
+    }
 
     // called (indirectly) by WaveformWidgetFactory
     virtual void renderGL();

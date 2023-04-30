@@ -5,7 +5,7 @@
 #include "widget/wglwidget.h"
 
 WGLWidget::WGLWidget(QWidget* parent)
-        : QWidget(parent) {
+        : QWidget(parent), m_pEventReceiver(this) {
 }
 
 WGLWidget::~WGLWidget() {

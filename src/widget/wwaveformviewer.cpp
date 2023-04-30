@@ -268,11 +268,12 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
         connect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
         m_waveformWidget->getWidget()->setMouseTracking(true);
 #ifdef MIXXX_USE_QOPENGL
-        // The OpenGLWindow used to display the waveform widget interferes with the
-        // normal Qt tooltip mechanism and uses it's own mechanism. We set the tooltip
-        // of the waveform widget to the tooltip of its parent WWaveformViewer so the
-        // OpenGLWindow will display it.
-        m_waveformWidget->getWidget()->setToolTip(toolTip());
+        if (m_waveformWidget->getGLWidget()) {
+            // The WGLWidget's OpenGLWindow should send its events here
+            // instead of to the WGLWidget itself. Also used for the
+            // OpenGLWindow's tooltip mechanism.
+            m_waveformWidget->getGLWidget()->setEventReceiver(this);
+        }
 #endif
         // Make connection to show "Passthrough" label on the waveform, except for
         // "Empty" waveform type

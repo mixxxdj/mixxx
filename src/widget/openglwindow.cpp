@@ -74,7 +74,7 @@ bool OpenGLWindow::event(QEvent* ev) {
             // them to the OpenGLWindow. If we forward the events back to the
             // m_pWidget we quickly overflow the event queue.
 
-            QApplication::sendEvent(m_pWidget, ev);
+            QApplication::sendEvent(m_pWidget->eventReceiver(), ev);
         }
     }
 

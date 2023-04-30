@@ -14,7 +14,7 @@ ToolTipQOpenGL::ToolTipQOpenGL() {
 
 void ToolTipQOpenGL::onTimeout() {
     if (m_widget) {
-        QToolTip::showText(m_pos, m_widget->toolTip(), m_widget);
+        QToolTip::showText(m_pos, m_widget->eventReceiver()->toolTip(), m_widget);
     }
 }
 
