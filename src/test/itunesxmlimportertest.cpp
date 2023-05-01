@@ -242,8 +242,23 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
             makeImporter("macOS Music Library.xml", std::move(dao));
     ITunesImport import = importer->importLibrary();
 
-    TreeItem* playlistRoot = import.playlistRoot.get();
-    EXPECT_EQ(playlistRoot->children().size(), 4);
+    TreeItem* rootItem = import.playlistRoot.get();
+    EXPECT_EQ(rootItem->children().size(), 4);
+    EXPECT_EQ(rootItem->child(0)->getLabel().toStdString(), "Downloaded");
+    EXPECT_EQ(rootItem->child(1)->getLabel().toStdString(), "Folder A");
+    EXPECT_EQ(rootItem->child(2)->getLabel().toStdString(), "Downloaded #2");
+    EXPECT_EQ(rootItem->child(3)->getLabel().toStdString(), "Playlist D");
+
+    TreeItem* folderA = rootItem->child(1);
+    EXPECT_EQ(folderA->children().size(), 2);
+    EXPECT_EQ(folderA->child(0)->getLabel().toStdString(), "Folder B");
+    // TODO: Fix empty playlist
+    // EXPECT_EQ(folderA->child(1)->getLabel().toStdString(), "Playlist C");
+
+    TreeItem* folderB = folderA->child(0);
+    EXPECT_EQ(folderB->children().size(), 2);
+    EXPECT_EQ(folderB->child(0)->getLabel().toStdString(), "Playlist A");
+    EXPECT_EQ(folderB->child(1)->getLabel().toStdString(), "Playlist B");
 }
 
 TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
