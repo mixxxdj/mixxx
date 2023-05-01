@@ -10,6 +10,7 @@ class OpenGLWindow : public QOpenGLWindow {
     Q_OBJECT
 
     WGLWidget* m_pWidget;
+    bool m_dirty{};
 
   public:
     OpenGLWindow(WGLWidget* widget);

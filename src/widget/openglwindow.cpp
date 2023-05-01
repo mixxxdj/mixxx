@@ -29,6 +29,12 @@ void OpenGLWindow::initializeGL() {
 
 void OpenGLWindow::paintGL() {
     if (m_pWidget && isExposed()) {
+        if (m_dirty) {
+            // Extra render and swap to avoid flickering when resizing
+            m_pWidget->renderGL();
+            m_pWidget->swapBuffers();
+            m_dirty = false;
+        }
         m_pWidget->renderGL();
     }
 }
@@ -36,11 +42,7 @@ void OpenGLWindow::paintGL() {
 void OpenGLWindow::resizeGL(int w, int h) {
     if (m_pWidget) {
         m_pWidget->resizeGL(w, h);
-        // To avoid flickering when resizing
-        m_pWidget->makeCurrentIfNeeded();
-        m_pWidget->renderGL();
-        m_pWidget->swapBuffers();
-        m_pWidget->doneCurrent();
+        m_dirty = true;
     }
 }
 
