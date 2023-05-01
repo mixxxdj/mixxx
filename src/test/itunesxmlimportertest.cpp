@@ -417,5 +417,21 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
 
     std::unique_ptr<ITunesXMLImporter> importer =
             makeImporter("iTunes Music Library.xml", std::move(dao));
-    importer->importLibrary();
+    ITunesImport import = importer->importLibrary();
+
+    TreeItem* rootItem = import.playlistRoot.get();
+    EXPECT_EQ(rootItem->children().size(), 3);
+    EXPECT_EQ(rootItem->child(0)->getLabel().toStdString(), "Folder A");
+    EXPECT_EQ(rootItem->child(1)->getLabel().toStdString(), "Downloaded");
+    EXPECT_EQ(rootItem->child(2)->getLabel().toStdString(), "Playlist D");
+
+    TreeItem* folderA = rootItem->child(0);
+    EXPECT_EQ(folderA->children().size(), 2);
+    EXPECT_EQ(folderA->child(0)->getLabel().toStdString(), "Folder B");
+    EXPECT_EQ(folderA->child(1)->getLabel().toStdString(), "Playlist C");
+
+    TreeItem* folderB = folderA->child(0);
+    EXPECT_EQ(folderB->children().size(), 2);
+    EXPECT_EQ(folderB->child(0)->getLabel().toStdString(), "Playlist A");
+    EXPECT_EQ(folderB->child(1)->getLabel().toStdString(), "Playlist B");
 }
