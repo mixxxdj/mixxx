@@ -43,10 +43,10 @@
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #ifdef MIXXX_USE_QOPENGL
-#include "waveform/widgets/qopengl/filteredwaveformwidget.h"
-#include "waveform/widgets/qopengl/lrrgbwaveformwidget.h"
-#include "waveform/widgets/qopengl/rgbwaveformwidget.h"
-#include "waveform/widgets/qopengl/simplewaveformwidget.h"
+#include "waveform/widgets/allshader/filteredwaveformwidget.h"
+#include "waveform/widgets/allshader/lrrgbwaveformwidget.h"
+#include "waveform/widgets/allshader/rgbwaveformwidget.h"
+#include "waveform/widgets/allshader/simplewaveformwidget.h"
 #endif
 #include "widget/wvumeter.h"
 #include "widget/wvumeterlegacy.h"
@@ -950,32 +950,32 @@ void WaveformWidgetFactory::evaluateWidgets() {
             break;
 #ifdef MIXXX_USE_QOPENGL
         case WaveformWidgetType::QOpenGLRGBWaveform:
-            widgetName = qopengl::RGBWaveformWidget::getWaveformWidgetName();
-            useOpenGl = qopengl::RGBWaveformWidget::useOpenGl();
-            useOpenGles = qopengl::RGBWaveformWidget::useOpenGles();
-            useOpenGLShaders = qopengl::RGBWaveformWidget::useOpenGLShaders();
-            developerOnly = qopengl::RGBWaveformWidget::developerOnly();
+            widgetName = allshader::RGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = allshader::RGBWaveformWidget::useOpenGl();
+            useOpenGles = allshader::RGBWaveformWidget::useOpenGles();
+            useOpenGLShaders = allshader::RGBWaveformWidget::useOpenGLShaders();
+            developerOnly = allshader::RGBWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QOpenGLLRRGBWaveform:
-            widgetName = qopengl::LRRGBWaveformWidget::getWaveformWidgetName();
-            useOpenGl = qopengl::LRRGBWaveformWidget::useOpenGl();
-            useOpenGles = qopengl::LRRGBWaveformWidget::useOpenGles();
-            useOpenGLShaders = qopengl::LRRGBWaveformWidget::useOpenGLShaders();
-            developerOnly = qopengl::LRRGBWaveformWidget::developerOnly();
+            widgetName = allshader::LRRGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = allshader::LRRGBWaveformWidget::useOpenGl();
+            useOpenGles = allshader::LRRGBWaveformWidget::useOpenGles();
+            useOpenGLShaders = allshader::LRRGBWaveformWidget::useOpenGLShaders();
+            developerOnly = allshader::LRRGBWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QOpenGLFilteredWaveform:
-            widgetName = qopengl::FilteredWaveformWidget::getWaveformWidgetName();
-            useOpenGl = qopengl::FilteredWaveformWidget::useOpenGl();
-            useOpenGles = qopengl::FilteredWaveformWidget::useOpenGles();
-            useOpenGLShaders = qopengl::FilteredWaveformWidget::useOpenGLShaders();
-            developerOnly = qopengl::FilteredWaveformWidget::developerOnly();
+            widgetName = allshader::FilteredWaveformWidget::getWaveformWidgetName();
+            useOpenGl = allshader::FilteredWaveformWidget::useOpenGl();
+            useOpenGles = allshader::FilteredWaveformWidget::useOpenGles();
+            useOpenGLShaders = allshader::FilteredWaveformWidget::useOpenGLShaders();
+            developerOnly = allshader::FilteredWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QOpenGLSimpleWaveform:
-            widgetName = qopengl::SimpleWaveformWidget::getWaveformWidgetName();
-            useOpenGl = qopengl::SimpleWaveformWidget::useOpenGl();
-            useOpenGles = qopengl::SimpleWaveformWidget::useOpenGles();
-            useOpenGLShaders = qopengl::SimpleWaveformWidget::useOpenGLShaders();
-            developerOnly = qopengl::SimpleWaveformWidget::developerOnly();
+            widgetName = allshader::SimpleWaveformWidget::getWaveformWidgetName();
+            useOpenGl = allshader::SimpleWaveformWidget::useOpenGl();
+            useOpenGles = allshader::SimpleWaveformWidget::useOpenGles();
+            useOpenGLShaders = allshader::SimpleWaveformWidget::useOpenGLShaders();
+            developerOnly = allshader::SimpleWaveformWidget::developerOnly();
             break;
 #endif
         default:
@@ -1086,16 +1086,16 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
 #ifdef MIXXX_USE_QOPENGL
         case WaveformWidgetType::QOpenGLRGBWaveform:
-            widget = new qopengl::RGBWaveformWidget(viewer->getGroup(), viewer);
+            widget = new allshader::RGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::QOpenGLLRRGBWaveform:
-            widget = new qopengl::LRRGBWaveformWidget(viewer->getGroup(), viewer);
+            widget = new allshader::LRRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::QOpenGLFilteredWaveform:
-            widget = new qopengl::FilteredWaveformWidget(viewer->getGroup(), viewer);
+            widget = new allshader::FilteredWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::QOpenGLSimpleWaveform:
-            widget = new qopengl::SimpleWaveformWidget(viewer->getGroup(), viewer);
+            widget = new allshader::SimpleWaveformWidget(viewer->getGroup(), viewer);
             break;
 #endif
         default:

@@ -10,7 +10,7 @@ class SkinContext;
 class WaveformWidgetRenderer;
 
 #ifdef MIXXX_USE_QOPENGL
-namespace qopengl {
+namespace allshader {
 class WaveformRendererAbstract;
 }
 #endif
@@ -28,7 +28,7 @@ class WaveformRendererAbstract {
     virtual void onResize() {}
     virtual void onSetTrack() {}
 #ifdef MIXXX_USE_QOPENGL
-    virtual qopengl::WaveformRendererAbstract* qopenglWaveformRenderer() {
+    virtual allshader::WaveformRendererAbstract* allshaderWaveformRenderer() {
         return nullptr;
     }
 #endif

@@ -14,7 +14,7 @@ class SkinContext;
 class WaveformSignalColors;
 
 #ifdef MIXXX_USE_QOPENGL
-namespace qopengl {
+namespace allshader {
 class WaveformRenderMarkRange;
 }
 #endif
@@ -78,7 +78,7 @@ class WaveformMarkRange {
 
     friend class WaveformRenderMarkRange;
 #ifdef MIXXX_USE_QOPENGL
-    friend class qopengl::WaveformRenderMarkRange;
+    friend class allshader::WaveformRenderMarkRange;
 #endif
     friend class WOverview;
 };

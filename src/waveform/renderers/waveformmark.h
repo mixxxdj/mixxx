@@ -16,7 +16,7 @@ class WOverview;
 
 #ifdef MIXXX_USE_QOPENGL
 class QOpenGLTexture;
-namespace qopengl {
+namespace allshader {
 class WaveformRenderMark;
 }
 #endif
@@ -110,8 +110,8 @@ class WaveformMark {
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
 #ifdef MIXXX_USE_QOPENGL
-    std::unique_ptr<QOpenGLTexture> m_pTexture; // used by qopengl::WaveformRenderMark
-    friend class qopengl::WaveformRenderMark;
+    std::unique_ptr<QOpenGLTexture> m_pTexture; // used by allshader::WaveformRenderMark
+    friend class allshader::WaveformRenderMark;
 #endif
     int m_iHotCue;
     QImage m_image;
