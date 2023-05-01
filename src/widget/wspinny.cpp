@@ -1,6 +1,5 @@
 #include "widget/wspinny.h"
 
-
 WSpinny::WSpinny(
         QWidget* parent,
         const QString& group,
