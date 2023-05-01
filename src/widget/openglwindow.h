@@ -16,7 +16,6 @@ class OpenGLWindow : public QOpenGLWindow {
     OpenGLWindow(WGLWidget* widget);
     ~OpenGLWindow();
 
-    void clear();
     void widgetDestroyed();
 
   private:

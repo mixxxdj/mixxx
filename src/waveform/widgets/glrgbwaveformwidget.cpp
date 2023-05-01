@@ -23,7 +23,7 @@ GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    m_pGlRenderer = addRenderer<GLWaveformRendererRGB>();
+    addRenderer<GLWaveformRendererRGB>();
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
@@ -51,7 +51,6 @@ mixxx::Duration GLRGBWaveformWidget::render() {
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
     QPainter painter(paintDevice());
-    clearPaintDevice();
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();

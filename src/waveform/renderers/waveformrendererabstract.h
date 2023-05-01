@@ -27,7 +27,6 @@ class WaveformRendererAbstract {
 
     virtual void onResize() {}
     virtual void onSetTrack() {}
-
 #ifdef MIXXX_USE_QOPENGL
     virtual qopengl::WaveformRendererAbstract* qopenglWaveformRenderer() {
         return nullptr;

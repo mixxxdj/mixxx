@@ -26,7 +26,7 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget(const QString& group, QWidget* pa
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    m_pGlRenderer = addRenderer<GLWaveformRendererSimpleSignal>();
+    addRenderer<GLWaveformRendererSimpleSignal>();
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
@@ -53,7 +53,6 @@ mixxx::Duration GLSimpleWaveformWidget::render() {
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
     QPainter painter(paintDevice());
-    clearPaintDevice();
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();

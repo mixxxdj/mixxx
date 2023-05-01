@@ -20,15 +20,6 @@ QPaintDevice* WGLWidget::paintDevice() {
     return m_pOpenGLWindow;
 }
 
-void WGLWidget::clearPaintDevice() {
-    // glClear the color buffer bit, to avoid
-    // green or cyan background on specific
-    // hardware
-    if (m_pOpenGLWindow) {
-        m_pOpenGLWindow->clear();
-    }
-}
-
 void WGLWidget::showEvent(QShowEvent* event) {
     if (!m_pOpenGLWindow) {
         m_pOpenGLWindow = new OpenGLWindow(this);

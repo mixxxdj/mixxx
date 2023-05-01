@@ -21,7 +21,4 @@ class WGLWidget : public QGLWidget {
     QPaintDevice* paintDevice() {
         return this;
     }
-    void clearPaintDevice() {
-        // Not needed, here for using the same API as wglwidgetqopengl.h
-    }
 };

@@ -9,11 +9,10 @@
 
 class GLWaveformRenderer : protected QOpenGLFunctions_2_1 {
   public:
-    GLWaveformRenderer(WaveformWidgetRenderer* waveformWidgetRenderer)
-            : WaveformRendererSignalBase(waveformWidgetRenderer)
+    GLWaveformRenderer()
 #ifndef MIXXX_USE_QOPENGL
-              ,
-              m_pLastContext(nullptr)
+            ,
+            m_pLastContext(nullptr)
 #endif
     {
     }

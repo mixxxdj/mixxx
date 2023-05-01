@@ -50,11 +50,11 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     if (type == GlslType::Filtered) {
-        m_pGlRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
+        addRenderer<GLSLWaveformRendererFilteredSignal>();
     } else if (type == GlslType::RGB) {
-        m_pGlRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
+        addRenderer<GLSLWaveformRendererRGBSignal>();
     } else if (type == GlslType::RGBStacked) {
-        m_pGlRenderer = addRenderer<GLSLWaveformRendererStackedSignal>();
+        addRenderer<GLSLWaveformRendererStackedSignal>();
     }
 #else
     Q_UNUSED(type);
@@ -81,7 +81,6 @@ mixxx::Duration GLSLWaveformWidget::render() {
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
     QPainter painter(paintDevice());
-    clearPaintDevice();
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();
