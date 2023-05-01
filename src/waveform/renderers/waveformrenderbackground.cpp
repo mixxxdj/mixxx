@@ -24,8 +24,7 @@ void WaveformRenderBackground::setup(const QDomNode& node,
     setDirty(true);
 }
 
-void WaveformRenderBackground::draw(QPainter* painter,
-                                    QPaintEvent* /*event*/) {
+bool WaveformRenderBackground::drawImage(QPainter* painter) {
     if (isDirty()) {
         generateImage();
     }
@@ -33,9 +32,7 @@ void WaveformRenderBackground::draw(QPainter* painter,
     // If there is no background image, just fill the painter with the
     // background color.
     if (m_backgroundImage.isNull()) {
-        painter->fillRect(0, 0, m_waveformRenderer->getWidth(),
-                          m_waveformRenderer->getHeight(), m_backgroundColor);
-        return;
+        return false;
     }
 
     // since we use opaque widget we need to draw the background !
@@ -44,6 +41,19 @@ void WaveformRenderBackground::draw(QPainter* painter,
     // This produces a white back ground with Linux QT 4.6 QGlWidget and
     // Intel i915 driver and has peroformance issues on other setups. See lp:981210
     //painter->drawPixmap(QPoint(0, 0), m_backgroundPixmap);
+
+    return true;
+}
+
+void WaveformRenderBackground::draw(QPainter* painter,
+        QPaintEvent* /*event*/) {
+    if (!drawImage(painter)) {
+        painter->fillRect(0,
+                0,
+                m_waveformRenderer->getWidth(),
+                m_waveformRenderer->getHeight(),
+                m_backgroundColor);
+    }
 }
 
 void WaveformRenderBackground::generateImage() {

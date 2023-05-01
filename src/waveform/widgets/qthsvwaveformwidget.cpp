@@ -5,7 +5,7 @@
 #include <QtDebug>
 
 #include "moc_qthsvwaveformwidget.cpp"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/glwaveformrenderbackground.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererhsv.h"
@@ -20,7 +20,7 @@ QtHSVWaveformWidget::QtHSVWaveformWidget(const QString& group, QWidget* parent)
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
-    addRenderer<WaveformRenderBackground>();
+    addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();

@@ -19,11 +19,15 @@ class WaveformRenderBackground : public WaveformRendererAbstract {
     virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
+  protected:
+    bool drawImage(QPainter* painter);
+
+    QColor m_backgroundColor;
+
   private:
     void generateImage();
 
     QString m_backgroundPixmapPath;
-    QColor m_backgroundColor;
     QImage m_backgroundImage;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBackground);
