@@ -193,10 +193,6 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
             }));
 
     EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
-                              .id = 1172,
-                              .name = "Downloaded",
-                      }));
-    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
                               .id = 1425,
                               .name = "Folder A",
                       }));
@@ -213,6 +209,10 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                               .name = "Playlist B",
                       }));
     EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 1494,
+                              .name = "Playlist C",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
                               .id = 1440,
                               .name = "Downloaded",
                       }));
@@ -221,15 +221,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                               .name = "Playlist D",
                       }));
 
-    // The XML importer currently does not import empty playlists.
-    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
-                              .id = 1494,
-                              .name = "Playlist C",
-                      }))
-            .Times(0);
-
     int root = kRootITunesPlaylistId;
-    EXPECT_CALL(*dao, importPlaylistRelation(root, 1172)); // Downloaded (built-in playlist)
     EXPECT_CALL(*dao, importPlaylistRelation(root, 1425)); // Folder A
     EXPECT_CALL(*dao, importPlaylistRelation(1425, 1498)); // - Folder B
     EXPECT_CALL(*dao, importPlaylistRelation(1498, 1431)); //   - Playlist A
@@ -243,17 +235,15 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
     ITunesImport import = importer->importLibrary();
 
     TreeItem* rootItem = import.playlistRoot.get();
-    EXPECT_EQ(rootItem->children().size(), 4);
-    EXPECT_EQ(rootItem->child(0)->getLabel().toStdString(), "Downloaded");
-    EXPECT_EQ(rootItem->child(1)->getLabel().toStdString(), "Folder A");
-    EXPECT_EQ(rootItem->child(2)->getLabel().toStdString(), "Downloaded #2");
-    EXPECT_EQ(rootItem->child(3)->getLabel().toStdString(), "Playlist D");
+    EXPECT_EQ(rootItem->children().size(), 3);
+    EXPECT_EQ(rootItem->child(0)->getLabel().toStdString(), "Folder A");
+    EXPECT_EQ(rootItem->child(1)->getLabel().toStdString(), "Downloaded");
+    EXPECT_EQ(rootItem->child(2)->getLabel().toStdString(), "Playlist D");
 
-    TreeItem* folderA = rootItem->child(1);
+    TreeItem* folderA = rootItem->child(0);
     EXPECT_EQ(folderA->children().size(), 2);
     EXPECT_EQ(folderA->child(0)->getLabel().toStdString(), "Folder B");
-    // TODO: Fix empty playlist
-    // EXPECT_EQ(folderA->child(1)->getLabel().toStdString(), "Playlist C");
+    EXPECT_EQ(folderA->child(1)->getLabel().toStdString(), "Playlist C");
 
     TreeItem* folderB = folderA->child(0);
     EXPECT_EQ(folderB->children().size(), 2);
@@ -388,10 +378,6 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
             }));
 
     EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
-                              .id = 98,
-                              .name = "Downloaded",
-                      }));
-    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
                               .id = 153,
                               .name = "Folder A",
                       }));
@@ -408,6 +394,10 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                               .name = "Playlist B",
                       }));
     EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
+                              .id = 174,
+                              .name = "Playlist C",
+                      }));
+    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
                               .id = 177,
                               .name = "Downloaded",
                       }));
@@ -416,20 +406,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                               .name = "Playlist D",
                       }));
 
-    // The XML importer currently does not import empty playlists.
-    EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
-                              .id = 174,
-                              .name = "Playlist C",
-                      }))
-            .Times(0);
-
     int root = kRootITunesPlaylistId;
-    EXPECT_CALL(*dao, importPlaylistRelation(root, 98));  // Downloaded (built-in playlist)
-    EXPECT_CALL(*dao, importPlaylistRelation(root, 125)); // Downloaded (built-in playlist)
-    EXPECT_CALL(*dao, importPlaylistRelation(root, 134)); // Downloaded (built-in playlist)
-    EXPECT_CALL(*dao, importPlaylistRelation(root, 140)); // Podcasts (built-in playlist)
-    EXPECT_CALL(*dao, importPlaylistRelation(root, 147)); // Audiobooks (built-in playlist)
-    EXPECT_CALL(*dao, importPlaylistRelation(root, 150)); // Genius (built-in playlist)
     EXPECT_CALL(*dao, importPlaylistRelation(root, 153)); // Folder A
     EXPECT_CALL(*dao, importPlaylistRelation(153, 159));  // - Folder B
     EXPECT_CALL(*dao, importPlaylistRelation(159, 165));  //   - Playlist A

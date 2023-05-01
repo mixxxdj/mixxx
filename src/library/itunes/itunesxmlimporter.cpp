@@ -87,6 +87,7 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                     }
                 } else if (key == "Tracks") {
                     parseTracks();
+                } else if (key == "Playlists") {
                     parsePlaylists();
 
                     // The parent feature may ne null during testing
@@ -425,8 +426,7 @@ bool ITunesXMLImporter::readNextStartElement() {
 void ITunesXMLImporter::parsePlaylist() {
     // qDebug() << "Parse Playlist";
 
-    QString name;
-    int id = -1;
+    ITunesPlaylist playlist = {.id = -1, .name{}};
     QString persistentId;
     QString parentPersistentId;
     int trackPosition = -1;
@@ -448,13 +448,13 @@ void ITunesXMLImporter::parsePlaylist() {
                 // Afterwars the playlist entries occur
                 if (key == "Name") {
                     readNextStartElement();
-                    name = m_xml.readElementText();
+                    playlist.name = m_xml.readElementText();
                     continue;
                 }
                 // When parsing the ID, the playlistname has already been found
                 if (key == "Playlist ID") {
                     readNextStartElement();
-                    id = m_xml.readElementText().toInt();
+                    playlist.id = m_xml.readElementText().toInt();
                     trackPosition = 1;
                     continue;
                 }
@@ -466,12 +466,17 @@ void ITunesXMLImporter::parsePlaylist() {
                 if (key == "Parent Persistent ID") {
                     readNextStartElement();
                     parentPersistentId = m_xml.readElementText();
+                    continue;
                 }
                 // Hide playlists that are system playlists
-                if (key == "Master" || key == "Movies" || key == "TV Shows" ||
-                        key == "Music" || key == "Books" || key == "Purchased") {
+                if (key == "Distinguished Kind") {
                     readNextStartElement();
-                    if (m_xml.name() == QString("true")) {
+                    isSystemPlaylist = true;
+                    continue;
+                }
+                if (key == "Visible") {
+                    readNextStartElement();
+                    if (m_xml.name() == QString("false")) {
                         isSystemPlaylist = true;
                     }
                     continue;
@@ -481,18 +486,14 @@ void ITunesXMLImporter::parsePlaylist() {
                     isPlaylistItemsStarted = true;
 
                     // if the playlist is prebuilt don't hit the database
-                    if (isSystemPlaylist) {
-                        continue;
+                    if (!isSystemPlaylist) {
+                        if (!m_dao->importPlaylist(playlist)) {
+                            // unexpected error
+                            break;
+                        }
                     }
 
-                    ITunesPlaylist playlist = {
-                            .id = id,
-                            .name = name,
-                    };
-                    if (!m_dao->importPlaylist(playlist)) {
-                        // unexpected error
-                        break;
-                    }
+                    continue;
                 }
                 // When processing playlist entries, playlist name and id have
                 // already been processed and persisted
@@ -502,7 +503,7 @@ void ITunesXMLImporter::parsePlaylist() {
 
                     // Insert tracks if we are not in a pre-built playlist
                     if (!isSystemPlaylist) {
-                        m_dao->importPlaylistTrack(id,
+                        m_dao->importPlaylistTrack(playlist.id,
                                 trackReference,
                                 trackPosition++);
                     }
@@ -522,7 +523,12 @@ void ITunesXMLImporter::parsePlaylist() {
     }
 
     if (!isSystemPlaylist) {
-        m_playlistIdByPersistentId[persistentId] = id;
+        // Make sure empty playlists are imported too
+        if (!isPlaylistItemsStarted) {
+            m_dao->importPlaylist(playlist);
+        }
+
+        m_playlistIdByPersistentId[persistentId] = playlist.id;
 
         int parentId = kRootITunesPlaylistId;
         if (!parentPersistentId.isNull()) {
@@ -532,6 +538,6 @@ void ITunesXMLImporter::parsePlaylist() {
             }
         }
 
-        m_dao->importPlaylistRelation(parentId, id);
+        m_dao->importPlaylistRelation(parentId, playlist.id);
     }
 }
