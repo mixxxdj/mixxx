@@ -69,6 +69,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_pNumDecks(nullptr),
           m_ignoreEqQuickEffectBoxSignals(false),
           m_singleEq(true),
+          m_eqEffectsOnly(true),
           m_eqAutoReset(false),
           m_gainAutoReset(false),
           m_eqBypass(false),
@@ -463,8 +464,8 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxBypass->setChecked(false);
     CheckBoxEqOnly->setChecked(true);
     CheckBoxSingleEqEffect->setChecked(true);
-    CheckBoxEqAutoReset->setChecked(m_eqAutoReset);
-    CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
+    CheckBoxEqAutoReset->setChecked(false);
+    CheckBoxGainAutoReset->setChecked(false);
 
     CheckBoxInstantEQShelves->setChecked(false);
     setDefaultShelves();
@@ -673,8 +674,6 @@ int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
 }
 
 void DlgPrefMixer::slotApply() {
-    // TODO unify ConfigValues to int, migrate yes/no
-
     // xfader //////////////////////////////////////////////////////////////////
     m_mode.set(m_xFaderMode);
     m_curve.set(m_transform);
@@ -694,11 +693,11 @@ void DlgPrefMixer::slotApply() {
 
     // EQ & QuickEffect settings ///////////////////////////////////////////////
     m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs),
-            ConfigValue(m_eqBypass ? QString("yes") : QString("no")));
+            ConfigValue(m_eqBypass ? 0 : 1));
     m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
-            m_singleEq ? QString("yes") : QString("no"));
+            ConfigValue(m_singleEq ? 1 : 0));
     m_pConfig->set(ConfigKey(kConfigGroup, kEqsOnly),
-            ConfigValue(CheckBoxEqOnly->isChecked() ? "yes" : "no"));
+            ConfigValue(m_eqEffectsOnly ? 1 : 0));
     m_pConfig->set(ConfigKey(kConfigGroup, "EqAutoReset"),
             ConfigValue(m_eqAutoReset ? 1 : 0));
     m_pConfig->set(ConfigKey(kConfigGroup, "GainAutoReset"),
@@ -760,7 +759,12 @@ void DlgPrefMixer::slotUpdate() {
     slotUpdateXFader();
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
-    m_singleEq = m_pConfig->getValue(ConfigKey(kConfigGroup, kSingleEq), "yes") == "yes";
+    QString eqsOnly = m_pConfig->getValue(ConfigKey(kConfigGroup, kEqsOnly), "1");
+    m_eqEffectsOnly = eqsOnly == "yes" || eqsOnly == "1";
+    CheckBoxEqOnly->setChecked(m_eqEffectsOnly);
+
+    QString singleEqCfg = m_pConfig->getValue(ConfigKey(kConfigGroup, kSingleEq), "1");
+    m_singleEq = singleEqCfg == "yes" || singleEqCfg == "1";
     if (!m_initializing) {
         slotPopulateDeckEqSelectors();
         slotPopulateQuickEffectSelectors();
@@ -780,8 +784,8 @@ void DlgPrefMixer::slotUpdate() {
                     .toInt());
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
 
-    m_eqBypass = m_pConfig->getValue(
-                         ConfigKey(kConfigGroup, kEnableEqs), QString("yes")) == "no";
+    QString eqBaypassCfg = m_pConfig->getValue(ConfigKey(kConfigGroup, kEnableEqs), "1");
+    m_eqBypass = !(eqBaypassCfg == "yes" || eqBaypassCfg == "1");
     CheckBoxBypass->setChecked(m_eqBypass);
     // Deactivate EQ comboboxes when Bypass is enabled
     slotBypassEqToggled(CheckBoxBypass->isChecked());
