@@ -15,7 +15,7 @@ class allshader::SimpleWaveformWidget final : public allshader::WaveformWidget {
     ~SimpleWaveformWidget() override;
 
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::QOpenGLSimpleWaveform;
+        return WaveformWidgetType::AllShaderSimpleWaveform;
     }
 
     static inline QString getWaveformWidgetName() {

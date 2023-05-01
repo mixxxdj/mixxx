@@ -1,26 +1,5 @@
 #include "widget/wspinny.h"
 
-/*
-#include <QApplication>
-#include <QMimeData>
-#include <QStylePainter>
-#include <QUrl>
-#include <QWindow>
-#include <QtDebug>
-
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "library/coverartcache.h"
-#include "library/coverartutils.h"
-#include "track/track.h"
-#include "util/dnd.h"
-#include "util/fpclassify.h"
-#include "vinylcontrol/vinylcontrol.h"
-#include "vinylcontrol/vinylcontrolmanager.h"
-#include "waveform/visualplayposition.h"
-#include "waveform/vsyncthread.h"
-#include "wimagestore.h"
-*/
 
 WSpinny::WSpinny(
         QWidget* parent,

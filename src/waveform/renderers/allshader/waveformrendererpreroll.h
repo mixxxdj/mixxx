@@ -20,7 +20,7 @@ class allshader::WaveformRendererPreroll final : public allshader::WaveformRende
     ~WaveformRendererPreroll() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
-    void renderGL() override;
+    void paintGL() override;
     void initializeGL() override;
 
   private:

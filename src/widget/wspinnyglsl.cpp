@@ -1,7 +1,5 @@
 #include "widget/wspinnyglsl.h"
 
-#include <QOpenGLContext>
-
 #include "util/assert.h"
 
 WSpinnyGLSL::WSpinnyGLSL(
@@ -41,12 +39,12 @@ void WSpinnyGLSL::coverChanged() {
 void WSpinnyGLSL::draw() {
     if (shouldRender()) {
         makeCurrentIfNeeded();
-        renderGL();
+        paintGL();
         doneCurrent();
     }
 }
 
-void WSpinnyGLSL::renderGL() {
+void WSpinnyGLSL::paintGL() {
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

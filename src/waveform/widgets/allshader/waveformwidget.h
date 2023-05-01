@@ -18,11 +18,12 @@ class allshader::WaveformWidget : public ::WGLWaveformWidget,
     mixxx::Duration render() override;
 
     // overrides for WGLWidget
+    void paintGL() override;
     void initializeGL() override;
-    void renderGL() override;
     void resizeGL(int w, int h) override;
-
     virtual WGLWidget* getGLWidget() override {
         return this;
     }
+
+  private:
 };

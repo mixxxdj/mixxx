@@ -23,7 +23,7 @@ class allshader::WaveformRenderMarkRange final : public allshader::WaveformRende
     void setup(const QDomNode& node, const SkinContext& context) override;
 
     void initializeGL() override;
-    void renderGL() override;
+    void paintGL() override;
 
   private:
     void fillRect(const QRectF& rect, QColor color);

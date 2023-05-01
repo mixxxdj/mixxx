@@ -25,10 +25,11 @@ void WaveformRendererPreroll::setup(
 }
 
 void WaveformRendererPreroll::initializeGL() {
+    WaveformRenderer::initializeGL();
     m_shader.init();
 }
 
-void WaveformRendererPreroll::renderGL() {
+void WaveformRendererPreroll::paintGL() {
     const TrackPointer track = m_waveformRenderer->getTrackInfo();
     if (!track) {
         return;

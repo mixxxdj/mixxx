@@ -24,7 +24,7 @@ void WaveformRenderBackground::setup(const QDomNode& node,
     }
 }
 
-void WaveformRenderBackground::renderGL() {
+void WaveformRenderBackground::paintGL() {
     glClearColor(static_cast<float>(m_backgroundColor.redF()),
             static_cast<float>(m_backgroundColor.greenF()),
             static_cast<float>(m_backgroundColor.blueF()),

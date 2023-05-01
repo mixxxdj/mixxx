@@ -18,8 +18,9 @@ class allshader::WaveformRendererAbstract : public QOpenGLFunctions {
     /// actual WGLWidget.
     virtual ~WaveformRendererAbstract() = default;
     virtual void initializeGL() {
+        initializeOpenGLFunctions();
     }
     virtual void resizeGL(int w, int h) {
     }
-    virtual void renderGL() = 0;
+    virtual void paintGL() = 0;
 };

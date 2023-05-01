@@ -48,6 +48,7 @@ void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContex
 }
 
 void allshader::WaveformRenderMark::initializeGL() {
+    WaveformRenderer::initializeGL();
     m_rgbaShader.init();
     m_textureShader.init();
 
@@ -152,7 +153,7 @@ void allshader::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
     m_rgbaShader.release();
 }
 
-void allshader::WaveformRenderMark::renderGL() {
+void allshader::WaveformRenderMark::paintGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     QMap<WaveformMarkPointer, int> marksOnScreen;
 

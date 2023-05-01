@@ -25,8 +25,6 @@ void GLWaveformRendererRGB::onSetup(const QDomNode& /* node */) {
 }
 
 void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    maybeInitializeGL();
-
     ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;

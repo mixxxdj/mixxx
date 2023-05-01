@@ -193,8 +193,9 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
     }
 }
 
-void GLSLWaveformRendererSignal::onInitializeGL() {
-    initializeOpenGLFunctions();
+void GLSLWaveformRendererSignal::initializeGL() {
+    GLWaveformRenderer::initializeGL();
+
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
@@ -242,7 +243,7 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 }
 
 void GLSLWaveformRendererSignal::onResize() {
-    // onInitializeGL not called yet
+    // initializeGL not called yet
     if (!m_frameShaderProgram) {
         return;
     }
@@ -251,7 +252,7 @@ void GLSLWaveformRendererSignal::onResize() {
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
     m_textureRenderedWaveformCompletion = 0;
-    // onInitializeGL not called yet
+    // initializeGL not called yet
     if (!m_frameShaderProgram) {
         return;
     }
@@ -283,8 +284,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     if (trackSamples <= 0) {
         return;
     }
-
-    maybeInitializeGL();
 
     // save the GL state set for QPainter
     painter->beginNativePainting();

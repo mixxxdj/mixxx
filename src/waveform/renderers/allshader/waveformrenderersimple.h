@@ -18,7 +18,7 @@ class allshader::WaveformRendererSimple final : public allshader::WaveformRender
     void onSetup(const QDomNode& node) override;
 
     void initializeGL() override;
-    void renderGL() override;
+    void paintGL() override;
 
   private:
     mixxx::UnicolorShader m_shader;

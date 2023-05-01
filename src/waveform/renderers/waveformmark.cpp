@@ -1,8 +1,6 @@
 #include "waveformmark.h"
 
-#ifdef MIXXX_USE_QOPENGL
 #include <QOpenGLTexture>
-#endif
 #include <QtDebug>
 
 #include "skin/legacy/skincontext.h"

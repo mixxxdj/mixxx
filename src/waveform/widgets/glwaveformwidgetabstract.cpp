@@ -2,6 +2,5 @@
 
 GLWaveformWidgetAbstract::GLWaveformWidgetAbstract(const QString& group, QWidget* parent)
         : WaveformWidgetAbstract(group),
-          WGLWaveformWidget(parent)
-{
+          WGLWaveformWidget(parent) {
 }

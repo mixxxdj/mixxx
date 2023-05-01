@@ -42,7 +42,7 @@ class GLSLWaveformRendererSignal : public QObject,
     ~GLSLWaveformRendererSignal() override;
 
     void onSetup(const QDomNode& node) override;
-    void onInitializeGL() override;
+    void initializeGL() override;
     void draw(QPainter* painter, QPaintEvent* event) override;
 
     void onSetTrack() override;

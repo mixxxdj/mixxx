@@ -75,9 +75,7 @@
 #include "widget/wslidercomposed.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
-#ifdef MIXXX_USE_QOPENGL
 #include "widget/wspinnyglsl.h"
-#endif
 #endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
@@ -88,10 +86,8 @@
 #include "widget/wtrackwidgetgroup.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wvumeter.h"
-#include "widget/wvumeterlegacy.h"
-#ifdef MIXXX_USE_QOPENGL
 #include "widget/wvumeterglsl.h"
-#endif
+#include "widget/wvumeterlegacy.h"
 #endif
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
@@ -1305,7 +1301,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
     WSpinnyBase* pSpinny;
     if (qApp->platformName() == QLatin1String("xcb")) {
-#ifdef MIXXX_USE_QOPENGL
+#ifndef MIXXX_USE_QPAINTER_WSPINNY
         if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
             pSpinny = new WSpinnyGLSL(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
         } else
@@ -1315,7 +1311,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         }
         pSpinny->setParent(m_pParent);
     } else {
-#ifdef MIXXX_USE_QOPENGL
+#ifndef MIXXX_USE_QPAINTER_WSPINNY
         if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
             pSpinny = new WSpinnyGLSL(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
         } else
@@ -1393,7 +1389,7 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
     WVuMeterBase* pVuMeterWidget;
     if (qApp->platformName() == QLatin1String("xcb")) {
-#ifdef MIXXX_USE_QOPENGL
+#ifndef MIXXX_USE_QPAINTER_VUMETER
         if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
             pVuMeterWidget = new WVuMeterGLSL();
         } else
@@ -1403,7 +1399,7 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
         }
         pVuMeterWidget->setParent(m_pParent);
     } else {
-#ifdef MIXXX_USE_QOPENGL
+#ifndef MIXXX_USE_QPAINTER_VUMETER
         if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
             pVuMeterWidget = new WVuMeterGLSL(m_pParent);
         } else

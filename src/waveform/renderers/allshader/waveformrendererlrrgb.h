@@ -19,7 +19,7 @@ class allshader::WaveformRendererLRRGB final : public allshader::WaveformRendere
     void onSetup(const QDomNode& node) override;
 
     void initializeGL() override;
-    void renderGL() override;
+    void paintGL() override;
 
   private:
     mixxx::RGBShader m_shader;

@@ -24,10 +24,11 @@ void WaveformRendererFiltered::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererFiltered::initializeGL() {
+    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 
-void WaveformRendererFiltered::renderGL() {
+void WaveformRendererFiltered::paintGL() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;

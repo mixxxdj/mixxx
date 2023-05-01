@@ -19,7 +19,7 @@ WaveformWidget::~WaveformWidget() {
 
 mixxx::Duration WaveformWidget::render() {
     makeCurrentIfNeeded();
-    renderGL();
+    paintGL();
     doneCurrent();
     // In the legacy widgets, this is used to "return timer for painter setup"
     // which is not relevant here. Also note that the return value is not used
@@ -28,21 +28,20 @@ mixxx::Duration WaveformWidget::render() {
     return mixxx::Duration();
 }
 
-void WaveformWidget::renderGL() {
+void WaveformWidget::paintGL() {
     if (shouldOnlyDrawBackground()) {
         if (!m_rendererStack.empty()) {
-            m_rendererStack[0]->allshaderWaveformRenderer()->renderGL();
+            m_rendererStack[0]->allshaderWaveformRenderer()->paintGL();
         }
     } else {
         for (auto renderer : std::as_const(m_rendererStack)) {
-            renderer->allshaderWaveformRenderer()->renderGL();
+            renderer->allshaderWaveformRenderer()->paintGL();
         }
     }
 }
 
 void WaveformWidget::initializeGL() {
     for (auto renderer : std::as_const(m_rendererStack)) {
-        renderer->allshaderWaveformRenderer()->initializeOpenGLFunctions();
         renderer->allshaderWaveformRenderer()->initializeGL();
     }
 }

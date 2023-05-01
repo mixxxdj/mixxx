@@ -26,7 +26,7 @@ class allshader::WaveformRenderMark final : public QObject, public allshader::Wa
     void setup(const QDomNode& node, const SkinContext& context) override;
 
     void initializeGL() override;
-    void renderGL() override;
+    void paintGL() override;
     void resizeGL(int w, int h) override;
 
     // Called when a new track is loaded.

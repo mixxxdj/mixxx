@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QOpenGLFunctions>
-#include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <memory>
 
@@ -24,6 +22,6 @@ class WVuMeterGLSL : public WVuMeterBase {
     void draw() override;
     void initializeGL() override;
     void cleanupGL();
-    void renderGL() override;
+    void paintGL() override;
     void drawTexture(QOpenGLTexture* texture, const QRectF& sourceRect, const QRectF& targetRect);
 };

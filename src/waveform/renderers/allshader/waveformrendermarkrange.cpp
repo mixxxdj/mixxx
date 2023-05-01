@@ -20,6 +20,7 @@ allshader::WaveformRenderMarkRange::~WaveformRenderMarkRange() {
 }
 
 void allshader::WaveformRenderMarkRange::initializeGL() {
+    WaveformRenderer::initializeGL();
     m_shader.init();
 }
 
@@ -61,7 +62,7 @@ void allshader::WaveformRenderMarkRange::setup(const QDomNode& node, const SkinC
     }
 }
 
-void allshader::WaveformRenderMarkRange::renderGL() {
+void allshader::WaveformRenderMarkRange::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

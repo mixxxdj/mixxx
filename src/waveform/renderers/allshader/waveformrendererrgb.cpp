@@ -30,10 +30,11 @@ void WaveformRendererRGB::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererRGB::initializeGL() {
+    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 
-void WaveformRendererRGB::renderGL() {
+void WaveformRendererRGB::paintGL() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;

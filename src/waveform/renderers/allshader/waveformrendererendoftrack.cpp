@@ -53,6 +53,7 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
 }
 
 void WaveformRendererEndOfTrack::initializeGL() {
+    WaveformRenderer::initializeGL();
     m_shader.init();
 }
 
@@ -83,7 +84,7 @@ void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
     m_shader.release();
 }
 
-void WaveformRendererEndOfTrack::renderGL() {
+void WaveformRendererEndOfTrack::paintGL() {
     if (!m_pEndOfTrackControl->toBool()) {
         return;
     }

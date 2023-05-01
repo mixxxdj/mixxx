@@ -14,7 +14,7 @@ WVuMeterGLSL::~WVuMeterGLSL() {
 void WVuMeterGLSL::draw() {
     if (shouldRender()) {
         makeCurrentIfNeeded();
-        renderGL();
+        paintGL();
         doneCurrent();
     }
 }
@@ -41,7 +41,7 @@ void WVuMeterGLSL::initializeGL() {
     m_textureShader.init();
 }
 
-void WVuMeterGLSL::renderGL() {
+void WVuMeterGLSL::paintGL() {
     glClearColor(static_cast<float>(m_qBgColor.redF()),
             static_cast<float>(m_qBgColor.greenF()),
             static_cast<float>(m_qBgColor.blueF()),

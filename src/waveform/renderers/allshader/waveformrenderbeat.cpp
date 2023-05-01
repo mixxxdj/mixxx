@@ -20,6 +20,7 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 }
 
 void WaveformRenderBeat::initializeGL() {
+    WaveformRenderer::initializeGL();
     m_shader.init();
 }
 
@@ -28,7 +29,7 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 
-void WaveformRenderBeat::renderGL() {
+void WaveformRenderBeat::paintGL() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if (!trackInfo) {

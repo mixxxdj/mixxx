@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 
 #include "shaders/textureshader.h"
@@ -20,7 +19,7 @@ class WSpinnyGLSL : public WSpinnyBase {
     void coverChanged() override;
 
     void initializeGL() override;
-    void renderGL() override;
+    void paintGL() override;
     void drawTexture(QOpenGLTexture* texture);
     void cleanupGL();
     void updateLoaderCoverGL();

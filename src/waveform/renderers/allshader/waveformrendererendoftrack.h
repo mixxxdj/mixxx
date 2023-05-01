@@ -28,7 +28,7 @@ class allshader::WaveformRendererEndOfTrack final : public allshader::WaveformRe
     bool init() override;
 
     void initializeGL() override;
-    void renderGL() override;
+    void paintGL() override;
 
   private:
     void fillWithGradient(QColor color);

@@ -9,11 +9,9 @@ QT_FORWARD_DECLARE_CLASS(QPainter)
 class SkinContext;
 class WaveformWidgetRenderer;
 
-#ifdef MIXXX_USE_QOPENGL
 namespace allshader {
 class WaveformRendererAbstract;
 }
-#endif
 
 class WaveformRendererAbstract {
   public:
@@ -27,11 +25,9 @@ class WaveformRendererAbstract {
 
     virtual void onResize() {}
     virtual void onSetTrack() {}
-#ifdef MIXXX_USE_QOPENGL
     virtual allshader::WaveformRendererAbstract* allshaderWaveformRenderer() {
         return nullptr;
     }
-#endif
 
   protected:
     bool isDirty() const {

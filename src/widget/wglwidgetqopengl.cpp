@@ -58,7 +58,7 @@ void WGLWidget::doneCurrent() {
     }
 }
 
-void WGLWidget::renderGL() {
+void WGLWidget::paintGL() {
     // to be implemented in derived widgets if needed
 }
 

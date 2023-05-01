@@ -27,11 +27,11 @@ void OpenGLWindow::paintGL() {
     if (m_pWidget && isExposed()) {
         if (m_dirty) {
             // Extra render and swap to avoid flickering when resizing
-            m_pWidget->renderGL();
+            m_pWidget->paintGL();
             m_pWidget->swapBuffers();
             m_dirty = false;
         }
-        m_pWidget->renderGL();
+        m_pWidget->paintGL();
     }
 }
 
