@@ -40,7 +40,7 @@ declare namespace controller {
      *  @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
      *  @returns Returns report data with ReportID byte as prefix
      */
-    function getInputReport(reportID: number): Uint8Array;
+    function getInputReport(reportID: number): ArrayBuffer;
 
     /**
      * Sends a FeatureReport to HID device
@@ -57,5 +57,5 @@ declare namespace controller {
      *  @returns The returned array matches the input format of sendFeatureReport,
      *          allowing it to be read, modified and sent it back to the controller.
      */
-    function getFeatureReport(reportID: number): Uint8Array;
+    function getFeatureReport(reportID: number): ArrayBuffer;
     }
