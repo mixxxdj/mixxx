@@ -206,7 +206,7 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     };
 
     const QList<CueInfo> cuesMarkers = m_seratoMarkers.getCues();
-    if (cuesMarkers.size()) {
+    if (cuesMarkers.size() > 0) {
         // The "Serato Markers_" tag always contains entries for the first five
         // cues. If a cue is not set, that entry is present but empty.
         // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
