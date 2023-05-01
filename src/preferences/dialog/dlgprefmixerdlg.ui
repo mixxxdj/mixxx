@@ -371,25 +371,22 @@
          <item>
           <widget class="QSlider" name="SliderHiEQ">
            <property name="minimum">
-            <number>80</number>
+            <number>100</number>
            </property>
            <property name="maximum">
-            <number>480</number>
+            <number>100000</number>
            </property>
            <property name="singleStep">
-            <number>1</number>
+            <number>30</number>
            </property>
            <property name="pageStep">
-            <number>1</number>
+            <number>300</number>
            </property>
            <property name="value">
-            <number>80</number>
+            <number>100</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="tickInterval">
-            <number>5</number>
            </property>
           </widget>
          </item>
@@ -486,25 +483,22 @@
          <item>
           <widget class="QSlider" name="SliderLoEQ">
            <property name="minimum">
-            <number>80</number>
+            <number>100</number>
            </property>
            <property name="maximum">
-            <number>480</number>
+            <number>100000</number>
            </property>
            <property name="singleStep">
-            <number>1</number>
+            <number>30</number>
            </property>
            <property name="pageStep">
-            <number>1</number>
+            <number>300</number>
            </property>
            <property name="value">
-            <number>80</number>
+            <number>100</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="tickInterval">
-            <number>5</number>
            </property>
           </widget>
          </item>

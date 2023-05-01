@@ -390,8 +390,6 @@ void DlgPrefMixer::setDefaultShelves() {
             getSliderPosition(250,
                     SliderLoEQ->minimum(),
                     SliderLoEQ->maximum()));
-    slotLoEqSliderChanged();
-    slotHiEqSliderChanged();
 }
 
 void DlgPrefMixer::slotResetToDefaults() {
@@ -621,7 +619,7 @@ int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
     double dsliderPos = (eqFreq - kFrequencyLowerLimit) /
             (kFrequencyUpperLimit - kFrequencyLowerLimit);
     dsliderPos = pow(dsliderPos, 1.0 / 4.0) * (maxValue - minValue) + minValue;
-    return static_cast<int>(dsliderPos);
+    return static_cast<int>(std::round(dsliderPos));
 }
 
 void DlgPrefMixer::slotApply() {
@@ -788,24 +786,19 @@ void DlgPrefMixer::slotUpdate() {
 
     if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
         setDefaultShelves();
-        lowEqFreq = m_pConfig->getValueString(
-                                     ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"))
-                            .toDouble();
-        highEqFreq = m_pConfig->getValueString(
-                                      ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"))
-                             .toDouble();
-    }
+        // apply instantly so WYYSIWYG
+        applyEQShelves();
+    } else {
+        SliderHiEQ->setValue(
+                getSliderPosition(highEqFreq,
+                        SliderHiEQ->minimum(),
+                        SliderHiEQ->maximum()));
 
-    SliderHiEQ->setValue(
-            getSliderPosition(highEqFreq,
-                    SliderHiEQ->minimum(),
-                    SliderHiEQ->maximum()));
-    SliderLoEQ->setValue(
-            getSliderPosition(lowEqFreq,
-                    SliderLoEQ->minimum(),
-                    SliderLoEQ->maximum()));
-    slotLoEqSliderChanged();
-    slotHiEqSliderChanged();
+        SliderLoEQ->setValue(
+                getSliderPosition(lowEqFreq,
+                        SliderLoEQ->minimum(),
+                        SliderLoEQ->maximum()));
+    }
 
     CheckBoxInstantMainEQ->setChecked(m_instantMainEq);
     updateMainEQ();
