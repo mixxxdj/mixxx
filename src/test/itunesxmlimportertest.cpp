@@ -8,6 +8,7 @@
 
 #include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
+#include "library/itunes/itunespathmapping.h"
 #include "library/itunes/itunesxmlimporter.h"
 #include "test/mixxxtest.h"
 
@@ -44,11 +45,25 @@ using testing::Return;
 namespace {
 std::unique_ptr<MockITunesDAO> makeMockDAO() {
     std::unique_ptr<MockITunesDAO> dao = std::make_unique<MockITunesDAO>();
+    MockITunesDAO* pDao = dao.get();
 
-    ON_CALL(*dao, importTrack(_)).WillByDefault(Return(true));
-    ON_CALL(*dao, importPlaylist(_)).WillByDefault(Return(true));
-    ON_CALL(*dao, importPlaylistRelation(_, _)).WillByDefault(Return(true));
-    ON_CALL(*dao, applyPathMapping(_)).WillByDefault(Return(true));
+    // Delegate the calls to the original implementations so they can still
+    // perform internal bookkeeping for the TreeItem. Note that we mock them
+    // still so we can place expectations on them. Since the mock dao lives on
+    // the heap, capturing it by pointer for its own mock implementations should
+    // be safe.
+    ON_CALL(*dao, importTrack(_)).WillByDefault([pDao](const ITunesTrack& track) {
+        return pDao->ITunesDAO::importTrack(track);
+    });
+    ON_CALL(*dao, importPlaylist(_)).WillByDefault([pDao](const ITunesPlaylist& playlist) {
+        return pDao->ITunesDAO::importPlaylist(playlist);
+    });
+    ON_CALL(*dao, importPlaylistRelation(_, _)).WillByDefault([pDao](int parentId, int childId) {
+        return pDao->ITunesDAO::importPlaylistRelation(parentId, childId);
+    });
+    ON_CALL(*dao, applyPathMapping(_)).WillByDefault([pDao](const ITunesPathMapping& pathMapping) {
+        return pDao->ITunesDAO::applyPathMapping(pathMapping);
+    });
 
     return dao;
 }
@@ -225,7 +240,10 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
 
     std::unique_ptr<ITunesXMLImporter> importer =
             makeImporter("macOS Music Library.xml", std::move(dao));
-    importer->importLibrary();
+    ITunesImport import = importer->importLibrary();
+
+    TreeItem* playlistRoot = import.playlistRoot.get();
+    EXPECT_EQ(playlistRoot->children().size(), 4);
 }
 
 TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
