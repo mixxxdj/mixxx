@@ -579,7 +579,12 @@ void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
     VERIFY_OR_DEBUG_ASSERT(valueLabel) {
         return;
     }
-    valueLabel->setText(QString::number(value / 100.0));
+    // hide decimals for large ranges
+    if (slider->property("roundToInt").toBool()) {
+        valueLabel->setText(QString::number(std::round(value / 100.0)));
+    } else {
+        valueLabel->setText(QString::number(value / 100.0));
+    }
 
     if (m_instantMainEq) {
         applyMainEqParameter(index);
@@ -996,8 +1001,20 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
         slider->setMinimumHeight(90);
         slider->setMinimum(static_cast<int>(param->getMinimum() * 100));
         slider->setMaximum(static_cast<int>(param->getMaximum() * 100));
-        // TODO make steps depend on range: 0.1, 1, 10, 100
-        slider->setSingleStep(1);
+        // Make steps depend on range
+        int step = 1;
+        bool roundToInt = false;
+        const double range = param->getMaximum() - param->getMinimum();
+        if (range > 1000) {
+            step = 100;
+            // Used to round value text to integer
+            roundToInt = true;
+        } else if (range > 100) {
+            step = 10;
+        }
+        slider->setProperty("roundToInt", roundToInt);
+        slider->setSingleStep(step);
+        slider->setPageStep(step * 10);
         slider->setValue(static_cast<int>(param->getDefault() * 100));
         // Set the index as a property because we need it in applyMainEqParameter
         // Ignore scroll events if slider is not focused.
@@ -1018,8 +1035,21 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
         QLabel* valueLabel = new QLabel(this);
         QString valueText = QString::number((double)slider->value() / 100);
         valueLabel->setText(valueText);
-        // TODO use max required label width so column width doesn't change
-        // when slider is moved. See WEffectParameterNameBase::parameterUpdated()
+
+        // Use max required label width so column width doesn't change
+        // when slider is moved.
+        // Considers decimals only where we actually show them
+        QFontMetrics metrics(font());
+        QString maxValueString = QString::number(
+                roundToInt ? slider->maximum() : slider->maximum() - 0.01);
+        QString minValueString = QString::number(
+                slider->maximum() ? slider->minimum() : slider->minimum() + 0.01);
+        int optWidth = math_max(
+                metrics.size(0, maxValueString).width(),
+                metrics.size(0, minValueString).width());
+        valueLabel->setMinimumWidth(optWidth);
+        valueLabel->setAlignment(Qt::AlignCenter);
+
         m_mainEQValues.append(valueLabel);
         slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
     }
