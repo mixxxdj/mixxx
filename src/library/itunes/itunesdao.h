@@ -68,6 +68,11 @@ class ITunesDAO : public DAO {
     QHash<int, QString> m_playlistNameById;
     std::multimap<int, int> m_playlistIdsByParentId;
 
+    // Keeps track of whether the database has been initialized.
+    // In tests the database is not used, so the importer will
+    // only be used to construct a TreeItem.
+    bool m_isDatabaseInitialized = false;
+
     // Note that these queries reference the database, which is expected
     // to outlive the DAO.
     QSqlQuery m_insertTrackQuery;

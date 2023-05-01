@@ -58,31 +58,35 @@ void ITunesDAO::initialize(const QSqlDatabase& database) {
     m_applyPathMappingQuery.prepare(
             "UPDATE itunes_library SET location = replace( location, "
             ":itunes_path, :mixxx_path )");
+
+    m_isDatabaseInitialized = true;
 }
 
 bool ITunesDAO::importTrack(const ITunesTrack& track) {
-    QSqlQuery& query = m_insertTrackQuery;
+    if (m_isDatabaseInitialized) {
+        QSqlQuery& query = m_insertTrackQuery;
 
-    query.bindValue(":id", track.id);
-    query.bindValue(":artist", track.artist);
-    query.bindValue(":title", track.title);
-    query.bindValue(":album", track.album);
-    query.bindValue(":album_artist", track.albumArtist);
-    query.bindValue(":genre", track.genre);
-    query.bindValue(":grouping", track.grouping);
-    query.bindValue(":year", track.year > 0 ? QVariant(track.year) : QVariant());
-    query.bindValue(":duration", track.duration);
-    query.bindValue(":location", track.location);
-    query.bindValue(":rating", track.rating);
-    query.bindValue(":comment", track.comment);
-    query.bindValue(":tracknumber",
-            track.trackNumber > 0 ? QVariant(track.trackNumber) : QVariant());
-    query.bindValue(":bpm", track.bpm);
-    query.bindValue(":bitrate", track.bitrate);
+        query.bindValue(":id", track.id);
+        query.bindValue(":artist", track.artist);
+        query.bindValue(":title", track.title);
+        query.bindValue(":album", track.album);
+        query.bindValue(":album_artist", track.albumArtist);
+        query.bindValue(":genre", track.genre);
+        query.bindValue(":grouping", track.grouping);
+        query.bindValue(":year", track.year > 0 ? QVariant(track.year) : QVariant());
+        query.bindValue(":duration", track.duration);
+        query.bindValue(":location", track.location);
+        query.bindValue(":rating", track.rating);
+        query.bindValue(":comment", track.comment);
+        query.bindValue(":tracknumber",
+                track.trackNumber > 0 ? QVariant(track.trackNumber) : QVariant());
+        query.bindValue(":bpm", track.bpm);
+        query.bindValue(":bitrate", track.bitrate);
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return false;
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            return false;
+        }
     }
 
     return true;
@@ -90,14 +94,17 @@ bool ITunesDAO::importTrack(const ITunesTrack& track) {
 
 bool ITunesDAO::importPlaylist(const ITunesPlaylist& playlist) {
     QString uniqueName = uniquifyPlaylistName(playlist.name);
-    QSqlQuery& query = m_insertPlaylistQuery;
 
-    query.bindValue(":id", playlist.id);
-    query.bindValue(":name", uniqueName);
+    if (m_isDatabaseInitialized) {
+        QSqlQuery& query = m_insertPlaylistQuery;
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return false;
+        query.bindValue(":id", playlist.id);
+        query.bindValue(":name", uniqueName);
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            return false;
+        }
     }
 
     m_playlistNameById[playlist.id] = uniqueName;
@@ -111,30 +118,34 @@ bool ITunesDAO::importPlaylistRelation(int parentId, int childId) {
 }
 
 bool ITunesDAO::importPlaylistTrack(int playlistId, int trackId, int position) {
-    QSqlQuery& query = m_insertPlaylistTrackQuery;
+    if (m_isDatabaseInitialized) {
+        QSqlQuery& query = m_insertPlaylistTrackQuery;
 
-    query.bindValue(":playlist_id", playlistId);
-    query.bindValue(":track_id", trackId);
-    query.bindValue(":position", position);
+        query.bindValue(":playlist_id", playlistId);
+        query.bindValue(":track_id", trackId);
+        query.bindValue(":position", position);
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return false;
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            return false;
+        }
     }
 
     return true;
 }
 
 bool ITunesDAO::applyPathMapping(const ITunesPathMapping& pathMapping) {
-    QSqlQuery& query = m_insertPlaylistTrackQuery;
+    if (m_isDatabaseInitialized) {
+        QSqlQuery& query = m_insertPlaylistTrackQuery;
 
-    query.bindValue(":itunes_path",
-            QString(pathMapping.dbITunesRoot).replace(kiTunesLocalhostToken, ""));
-    query.bindValue(":mixxx_path", pathMapping.mixxxITunesRoot);
+        query.bindValue(":itunes_path",
+                QString(pathMapping.dbITunesRoot).replace(kiTunesLocalhostToken, ""));
+        query.bindValue(":mixxx_path", pathMapping.mixxxITunesRoot);
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return false;
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            return false;
+        }
     }
 
     return true;
