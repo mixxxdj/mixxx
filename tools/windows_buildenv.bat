@@ -1,6 +1,5 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
-REM this í is just to force some editors to recognize this file as ANSI, not UTF8.
 
 CALL :REALPATH "%~dp0\.."
 SET MIXXX_ROOT=%RETVAL%
@@ -174,13 +173,13 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
 
     CALL :SETANSICONSOLE
     SET OLDCODEPAGE=%RETVAL%
-    REM set byte order mark (BOM) for the file .
-    REM WARNING: Ensure that the script is saved as ANSI, or these characters will not
-    REM contain the correct values. Correct values are EF BB BF (&iuml; &raquo; &iquest;) .
-    REM The last character is an actual character for the file, the start "{"
-    >"%CMakeSettings%" echo ï»¿{
+    REM Start with a UTF-8-BOM
+    REM Correct values are EF BB BF (&iuml; &raquo; &iquest;)
+    REM Make sure the BOM is not removed from UTF-8-BOM.txt
+    copy "%MIXXX_ROOT%\tools\UTF-8-BOM.txt" "%CMakeSettings%"
     CALL :SETUTF8CONSOLE
 
+    >>"%CMakeSettings%" echo {
     >>"%CMakeSettings%" echo   "configurations": [
     SET configElementTermination=,
     CALL :Configuration2CMakeSettings_JSON off       Debug
