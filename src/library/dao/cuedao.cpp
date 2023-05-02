@@ -39,7 +39,7 @@ inline QString labelFromQVariant(const QVariant& value) {
 CuePointer cueFromRow(const QSqlRecord& row) {
     const auto id = DbId(row.value(row.indexOf("id")));
     TrackId trackId(row.value(row.indexOf("track_id")));
-    int type = row.value(row.indexOf("type")).toInt();
+    auto type = static_cast<mixxx::CueType>(row.value(row.indexOf("type")).toInt());
     double position = row.value(row.indexOf("position")).toDouble();
     int length = row.value(row.indexOf("length")).toInt();
     int hotcue = row.value(row.indexOf("hotcue")).toInt();
@@ -48,9 +48,19 @@ CuePointer cueFromRow(const QSqlRecord& row) {
     VERIFY_OR_DEBUG_ASSERT(color) {
         return CuePointer();
     }
+    if (type == mixxx::CueType::Loop && length == 0) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard loop cue" << hotcue << "found in database with length of 0";
+        return CuePointer();
+    }
+    if (type == mixxx::CueType::HotCue && position == 0 && *color == mixxx::RgbColor(0)) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard black hot cue" << hotcue << "found in database at position 0";
+        return CuePointer();
+    }
     CuePointer pCue(new Cue(id,
             trackId,
-            static_cast<mixxx::CueType>(type),
+            type,
             position,
             length,
             hotcue,
@@ -81,7 +91,7 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     QMap<int, CuePointer> hotCuesByNumber;
     while (query.next()) {
         CuePointer pCue = cueFromRow(query.record());
-        VERIFY_OR_DEBUG_ASSERT(pCue) {
+        if (!pCue) {
             continue;
         }
         int hotCueNumber = pCue->getHotCue();

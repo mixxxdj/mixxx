@@ -1046,17 +1046,14 @@ bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
 Track::ImportStatus Track::importCueInfos(
         mixxx::CueInfoImporterPointer pCueInfoImporter) {
     QMutexLocker lock(&m_qMutex);
-    VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter) {
+    VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter && !pCueInfoImporter->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
         return ImportStatus::Complete;
     }
     DEBUG_ASSERT(!m_pCueInfoImporterPending);
-    m_pCueInfoImporterPending = pCueInfoImporter;
-    if (m_pCueInfoImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
-        m_pCueInfoImporterPending.reset();
-        return ImportStatus::Complete;
-    } else if (m_record.hasStreamInfoFromSource()) {
+    m_pCueInfoImporterPending = std::move(pCueInfoImporter);
+    if (m_record.hasStreamInfoFromSource()) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingCueInfosMarkDirtyAndUnlock(&lock);
@@ -1068,9 +1065,16 @@ Track::ImportStatus Track::importCueInfos(
                 << "cue(s) is pending until the actual sample rate becomes available";
         // Clear all existing cue points, that are supposed
         // to be replaced with the imported cue points soon.
+        QList<CuePointer> cuePoints;
+        cuePoints.reserve(m_cuePoints.size());
+        for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+            if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
+                cuePoints.append(pCue);
+            }
+        }
         setCuePointsMarkDirtyAndUnlock(
                 &lock,
-                QList<CuePointer>{});
+                cuePoints);
         return ImportStatus::Pending;
     }
 }
@@ -1087,11 +1091,6 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
         // Nothing to do
         return false;
     }
-    // Prevent inconsistencies between cue infos that have been queued
-    // and are waiting to be imported and new cue points. At least one
-    // of these two collections must be empty.
-    DEBUG_ASSERT(cuePoints.isEmpty() || !m_pCueInfoImporterPending ||
-            m_pCueInfoImporterPending->isEmpty());
     // disconnect existing cue points
     for (const auto& pCue : qAsConst(m_cuePoints)) {
         disconnect(pCue.get(), nullptr, this, nullptr);
@@ -1400,6 +1399,7 @@ bool Track::exportSeratoMetadata() {
     const mixxx::audio::SampleRate sampleRate =
             streamInfo->getSignalInfo().getSampleRate();
     QList<mixxx::CueInfo> cueInfos;
+    cueInfos.reserve(m_cuePoints.size());
     for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         cueInfos.append(pCue->getCueInfo(sampleRate));
     }
@@ -1614,7 +1614,6 @@ void Track::updateStreamInfoFromSource(
 
     auto cuesImported = false;
     if (importCueInfos) {
-        DEBUG_ASSERT(m_cuePoints.isEmpty());
         kLogger.debug()
                 << "Finishing deferred import of"
                 << m_pCueInfoImporterPending->size()
