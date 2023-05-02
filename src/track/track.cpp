@@ -158,9 +158,10 @@ void Track::replaceMetadataFromSource(
     {
         // Save some new values for later
         const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
-        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
+        const QString importedKeyText = importedMetadata.getTrackInfo().getKeyText();
         // Parse the imported key before entering the locking scope
-        const auto importedKey = KeyUtils::guessKeyFromText(importedKeyText);
+        const mixxx::track::io::key::ChromaticKey importedKey =
+                KeyUtils::guessKeyFromText(importedKeyText);
 
         // enter locking scope
         auto locked = lockMutex(&m_qMutex);
@@ -170,7 +171,8 @@ void Track::replaceMetadataFromSource(
         // set together with the beat grid and the key text must be parsed
         // and validated.
         importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
-        importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
+        importedMetadata.refTrackInfo().setKeyText(
+                m_record.getMetadata().getTrackInfo().getKeyText());
 
         const auto oldReplayGain =
                 m_record.getMetadata().getTrackInfo().getReplayGain();
@@ -199,7 +201,7 @@ void Track::replaceMetadataFromSource(
         if (importedKey != mixxx::track::io::key::INVALID) {
             // Only update the current key with a valid value. Otherwise preserve
             // the existing value.
-            keysModified = m_record.updateGlobalKeyText(importedKeyText,
+            keysModified = m_record.updateGlobalKeyNormalizeText(importedKeyText,
                                    mixxx::track::io::key::FILE_METADATA) ==
                     mixxx::UpdateResult::Updated;
         }
@@ -1406,7 +1408,7 @@ QString Track::getKeyText() const {
 void Track::setKeyText(const QString& keyText,
                        mixxx::track::io::key::Source keySource) {
     auto locked = lockMutex(&m_qMutex);
-    if (m_record.updateGlobalKeyText(keyText, keySource) == mixxx::UpdateResult::Updated) {
+    if (m_record.updateGlobalKeyNormalizeText(keyText, keySource) == mixxx::UpdateResult::Updated) {
         afterKeysUpdated(&locked);
     }
 }

@@ -689,7 +689,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
     const auto keyText = txtKey->text().trimmed();
     const auto updateResult =
-            m_trackRecord.updateGlobalKeyText(
+            m_trackRecord.updateGlobalKeyNormalizeText(
                     keyText,
                     mixxx::track::io::key::USER);
     if (updateResult == mixxx::UpdateResult::Rejected) {
@@ -700,7 +700,7 @@ mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
 }
 
 void DlgTrackInfo::displayKeyText() {
-    const auto keyText = m_trackRecord.getMetadata().getTrackInfo().getKey();
+    const QString keyText = m_trackRecord.getMetadata().getTrackInfo().getKeyText();
     txtKey->setText(keyText);
 }
 

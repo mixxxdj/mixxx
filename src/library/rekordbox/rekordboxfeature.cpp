@@ -1312,7 +1312,14 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     // Assume that the key of the file the has been analyzed in Recordbox is correct
     // and prevent the AnalyzerKey from re-analyzing.
-    track->setKeys(KeyFactory::makeBasicKeysFromText(
+    // Form 5.4.3 Key format depends on the preferences option:
+    // Classic: Abm,B,Ebm,F#,Bbm,Db,Fm,Ab,…,F#m,A,Dbm,E
+    // Alphanumeric (Camelot): 1A,1B,2A,2B,3A,3B,4A,4B,…,11A,11B,12A,12B
+    // Not reckognized: 1m, 01A
+    // Earlier versions allow any format
+    // Decision: We normalize the KeyText here to not write garbage to the
+    // file metadata and it is unlikely to loose extra info.
+    track->setKeys(KeyFactory::makeBasicKeysNormalized(
             index.sibling(index.row(), fieldIndex("key")).data().toString(),
             mixxx::track::io::key::USER));
 
