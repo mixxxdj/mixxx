@@ -872,6 +872,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefvinyldlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
+  src/preferences/dialog/dlgprefremotecontrol.ui
+  src/preferences/dialog/dlgprefremotecontrol.cpp
   src/preferences/effectchainpresetlistmodel.cpp
   src/preferences/effectmanifesttablemodel.cpp
   src/preferences/colorpaletteeditor.cpp
@@ -1082,6 +1084,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
 )
+
 if(QT6)
   target_sources(mixxx-lib PRIVATE
     src/qml/asyncimageprovider.cpp
@@ -3030,6 +3033,16 @@ if(WAVPACK)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
+
+#remote control dependencies
+add_subdirectory(
+        "${CMAKE_SOURCE_DIR}/lib/QtWebApp" 
+)
+
+add_dependencies(mixxx-lib qtwebapp)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/QtWebApp/)
+target_sources(mixxx-lib PRIVATE src/remote/remote.cpp)
+target_link_libraries(mixxx-lib PRIVATE qtwebapp)
 
 # Configure file with build options
 file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")
