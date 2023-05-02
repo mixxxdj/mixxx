@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.3.0+" schemaVersion="1">
+    <info>
+        <name>Behringer CMD PL-1</name>
+        <author>Yann Le Doaré</author>
+        <description>Mapping for the Behringer CMD PL-1 single-deck controller</description>
+        <forums>https://mixxx.discourse.group/t/behringer-cmd-pl-1/15755/2</forums>
+        <wiki>https://github.com/mixxxdj/mixxx/wiki/Behringer%20CMD%20PL-1</wiki>
+    </info>
+    <controller id="CMD">
+        <scriptfiles>
+            <file functionprefix="CMDPL1" filename="Behringer-CMD-PL-1-scripts.js"/>
+        </scriptfiles>
+        <controls>
+		<control>
+			<group>[Channel1]</group>
+			<key>play</key> i
+			<description>Play</description> i
+			<status>0x90</status> i
+			<midino>0x23</midino>
+			<options> <switch/> </options>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>play</key>
+			<description>Play</description>
+			<status>0x91</status>
+			<midino>0x23</midino>
+			<options> <switch/> </options>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>cue_default</key>
+			<description>Cue</description>
+			<status>0x90</status>
+			<midino>0x22</midino>
+			<options> <switch/> </options> </control>
+		<control>
+			<group>[Channel2]</group>
+			<key>cue_default</key>
+			<description>Cue</description>
+			<status>0x91</status>
+			<midino>0x22</midino>
+			<options> <switch/> </options>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>CMDPL1.wheelTurn</key>
+			<status>0xB0</status>
+			<midino>0x1F</midino>
+			<options> <script-binding/> </options>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>CMDPL1.wheelTurn</key>
+			<status>0xB1</status>
+			<midino>0x1F</midino>
+			<options> <script-binding/> </options>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>CMDPL1.pitchSlider</key>
+			<status>0xE0</status>
+			<options> <script-binding/> </options>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>CMDPL1.pitchSlider</key>
+			<status>0xE1</status>
+			<options> <script-binding/> </options>
+		</control>
+        </controls>
+        <outputs/>
+    </controller>
+</MixxxControllerPreset>
