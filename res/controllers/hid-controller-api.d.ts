@@ -7,7 +7,7 @@ declare namespace controller {
      *        This function only works with HID devices, which don't use ReportIDs
      *
      * @param dataList Data to send as list of bytes
-     * @param length This optional argument is no longer evaluated, and only here for backwards compatibility [default = 0]
+     * @param length Unused but mandatory argument for backwards compatibility
      */
     function send(dataList: number[], length?: number): void;
 
@@ -15,7 +15,7 @@ declare namespace controller {
      * Sends HID OutputReport to HID device
      *
      * @param dataList Data to send as list of bytes
-     * @param length Unused but mandatory argument
+     * @param length Unused but mandatory argument for backwards compatibility
      * @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
      * @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending [default = false]
      */
@@ -58,4 +58,4 @@ declare namespace controller {
      *          allowing it to be read, modified and sent it back to the controller.
      */
     function getFeatureReport(reportID: number): ArrayBuffer;
-    }
+}

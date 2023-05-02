@@ -6,7 +6,7 @@ declare class ScriptConnection {
      * Disconnect the script connection,
      * established by {@link engine.makeConnection} or {@link engine.makeUnbufferedConnection}
      *
-     * @returns Returns true if the connection is successful disconnected
+     * @returns Returns true if the connection has been disconnected successfully
      */
     disconnect(): boolean;
 
@@ -141,7 +141,7 @@ declare namespace engine {
 
     /**
      * Triggers the execution of all connected callback functions, with the actual value of a control.
-     * Note: To trigger a single connection, us {@link ScriptConnection.trigger} instead
+     * Note: To trigger a single connection, use {@link ScriptConnection.trigger} instead
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
@@ -181,7 +181,7 @@ declare namespace engine {
      * responsiveness and looseness of the imaginary slip mat
      *
      * @param deck The deck number to use, e.g: 1
-     * @param intervalsPerRev The resolution of the MIDI control (in intervals per revolution, typically 128.)
+     * @param intervalsPerRev The resolution of the MIDI control (in intervals per revolution)
      * @param rpm The speed of the imaginary record at 0% pitch (in revolutions per minute (RPM) typically 33+1/3, adjust for comfort)
      * @param alpha The alpha coefficient of the filter (start with 1/8 (0.125) and tune from there)
      * @param beta The beta coefficient of the filter (start with alpha/32 and tune from there)
@@ -226,7 +226,7 @@ declare namespace engine {
     function softTakeover(group: string, name: string, enable: boolean): void;
 
     /**
-     * Inhibits a suden value change from the hardware control.
+     * Inhibits a sudden value change from the hardware control.
      * Should be called when receiving input for the knob/fader,
      * that switches its behavior (e.g. Shift-Button pressed)
      *

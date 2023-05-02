@@ -135,4 +135,4 @@ declare namespace console {
      */
     function exception(...data: any[]): void;
 
-    }
+}

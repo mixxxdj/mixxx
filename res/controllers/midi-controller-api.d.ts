@@ -29,4 +29,4 @@ declare namespace controller {
      */
     function sendSysexMsg(dataList: number[], length?: number): void;
 
-    }
+}
