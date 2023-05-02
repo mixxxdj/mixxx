@@ -32,7 +32,7 @@ class CueInfoImporter {
             const audio::SignalInfo& signalInfo);
 
   private:
-    const QList<CueInfo> m_cueInfos;
+    QList<CueInfo> m_cueInfos;
 };
 
 } // namespace mixxx
