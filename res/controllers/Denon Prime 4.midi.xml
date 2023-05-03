@@ -616,43 +616,43 @@
               </options>
             </control>
             <control> <!-- Deck 1 - Gain Knob -->
-                <group>[Channel1]</group>
-                <key>pregain</key>
+                <group></group>
+                <key>Prime4.mixerA.gain.input</key>
                 <description>MIDI Learned from 576 messages.</description>
                 <status>0xB0</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 1 - EQ High Knob -->
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter3</key>
+                <group></group>
+                <key>Prime4.mixerA.eqHigh.input</key>
                 <description>MIDI Learned from 540 messages.</description>
                 <status>0xB0</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 1 - EQ Mid Knob -->
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
+                <group></group>
+                <key>Prime4.mixerA.eqMid.input</key>
                 <description>MIDI Learned from 528 messages.</description>
                 <status>0xB0</status>
                 <midino>0x06</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 1 - EQ Low Knob -->
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
+                <group></group>
+                <key>Prime4.mixerA.eqLow.input</key>
                 <description>MIDI Learned from 518 messages.</description>
                 <status>0xB0</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 			<control> <!-- Deck 1 - Sweep FX Knob -->
@@ -737,43 +737,43 @@
               </options>
             </control>
             <control> <!-- Deck 2 - Gain Knob -->
-                <group>[Channel2]</group>
-                <key>pregain</key>
+                <group></group>
+                <key>Prime4.mixerB.gain.input</key>
                 <description>MIDI Learned from 576 messages.</description>
                 <status>0xB1</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 2 - EQ High Knob -->
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter3</key>
+                <group></group>
+                <key>Prime4.mixerB.eqHigh.input</key>
                 <description>MIDI Learned from 540 messages.</description>
                 <status>0xB1</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 2 - EQ Mid Knob -->
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
+                <group></group>
+                <key>Prime4.mixerB.eqMid.input</key>
                 <description>MIDI Learned from 528 messages.</description>
                 <status>0xB1</status>
                 <midino>0x06</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 2 - EQ Low Knob -->
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter1</key>
+                <group></group>
+                <key>Prime4.mixerB.eqLow.input</key>
                 <description>MIDI Learned from 518 messages.</description>
                 <status>0xB1</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 			<control> <!-- Deck 2 - Sweep FX Knob -->
@@ -858,43 +858,43 @@
               </options>
             </control>
             <control> <!-- Deck 3 - Gain Knob -->
-                <group>[Channel3]</group>
-                <key>pregain</key>
+                <group></group>
+                <key>Prime4.mixerC.gain.input</key>
                 <description>MIDI Learned from 576 messages.</description>
                 <status>0xB2</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 3 - EQ High Knob -->
-                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter3</key>
+                <group></group>
+                <key>Prime4.mixerC.eqHigh.input</key>
                 <description>MIDI Learned from 540 messages.</description>
                 <status>0xB2</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 3 - EQ Mid Knob -->
-                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter2</key>
+                <group></group>
+                <key>Prime4.mixerC.eqMid.input</key>
                 <description>MIDI Learned from 528 messages.</description>
                 <status>0xB2</status>
                 <midino>0x06</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 3 - EQ Low Knob -->
-                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter1</key>
+                <group></group>
+                <key>Prime4.mixerC.eqLow.input</key>
                 <description>MIDI Learned from 518 messages.</description>
                 <status>0xB2</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 			<control> <!-- Deck 3 - Sweep FX Knob -->
@@ -979,43 +979,43 @@
               </options>
             </control>
             <control> <!-- Deck 4 - Gain Knob -->
-                <group>[Channel4]</group>
-                <key>pregain</key>
+                <group></group>
+                <key>Prime4.mixerD.gain.input</key>
                 <description>MIDI Learned from 576 messages.</description>
                 <status>0xB3</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 4 - EQ High Knob -->
-                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter3</key>
+                <group></group>
+                <key>Prime4.mixerD.eqHigh.input</key>
                 <description>MIDI Learned from 540 messages.</description>
                 <status>0xB3</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 4 - EQ Mid Knob -->
-                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter2</key>
+                <group></group>
+                <key>Prime4.mixerD.eqMid.input</key>
                 <description>MIDI Learned from 528 messages.</description>
                 <status>0xB3</status>
                 <midino>0x06</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control> <!-- Deck 4 - EQ Low Knob -->
-                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter1</key>
+                <group></group>
+                <key>Prime4.mixerD.eqLow.input</key>
                 <description>MIDI Learned from 518 messages.</description>
                 <status>0xB3</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 			<control> <!-- Deck 4 - Sweep FX Knob -->

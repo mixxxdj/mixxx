@@ -204,13 +204,15 @@ const Prime4ColorMapper = new ColorMapper({
     0xC0C0C0: 0x3F, // white
 });
 
-// Set active + inactive values for user-defined deck colours
+// Set active values for user-defined deck colours
 const colDeck = [
     Prime4.rgbCode[deckColors[0]],
     Prime4.rgbCode[deckColors[1]],
     Prime4.rgbCode[deckColors[2]],
     Prime4.rgbCode[deckColors[3]],
 ];
+
+// Set inactive values for user-defined deck colours
 const colDeckDark = [
     Prime4.rgbCode[deckColors[0] + "Dark"],
     Prime4.rgbCode[deckColors[1] + "Dark"],
@@ -254,9 +256,7 @@ Prime4.DeckAssignButton = function(options) {
         this.assignmentButtons.forEachComponent(btn => btn.trigger());
         Prime4[deckSide].forEachComponent(c => { c.connect(); c.trigger(); });
     };
-
 };
-
 Prime4.DeckAssignButton.prototype = Object.create(components.Button.prototype);
 
 // References array of rate ranges
@@ -440,13 +440,33 @@ const mixerStrip = function(deckNumber, midiOffset) {
         });
     }
 
-    //TODO: Gain Knob
+    // Gain Knob
+    this.gain = new components.Pot({
+        midi: [0xB0 + midiOffset, 0x03],
+        group: "[Channel" + deckNumber + "]",
+        inKey: "pregain",
+    });
 
-    //TODO: High EQ Knob
+    // High EQ Knob
+    this.eqHigh = new components.Pot({
+        midi: [0xB0 + midiOffset, 0x04],
+        group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
+        inKey: "parameter3",
+    });
 
-    //TODO: Mid EQ Knob
+    // Mid EQ Knob
+    this.eqMid = new components.Pot({
+        midi: [0xB0 + midiOffset, 0x06],
+        group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
+        inKey: "parameter2",
+    });
 
-    //TODO: Low EQ Knob
+    // Low EQ Knob
+    this.eqLow = new components.Pot({
+        midi: [0xB0 + midiOffset, 0x08],
+        group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
+        inKey: "parameter1",
+    });
 
     // VU Meters
     this.vuMeter = new components.Component({
