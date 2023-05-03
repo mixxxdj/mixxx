@@ -14,7 +14,6 @@ class GLWaveformRenderBackground : public WaveformRenderBackground
   public:
     explicit GLWaveformRenderBackground(
             WaveformWidgetRenderer* waveformWidgetRenderer);
-    virtual ~GLWaveformRenderBackground();
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     virtual void draw(QPainter* painter, QPaintEvent* event);
