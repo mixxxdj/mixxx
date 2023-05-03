@@ -20,6 +20,8 @@ void GLWaveformRenderBackground::draw(QPainter* painter, QPaintEvent* /*event*/)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     painter->endNativePainting();
 
-    drawImage(painter);
+    if (hasImage()) {
+        drawImage(painter);
+    }
 }
 #endif

@@ -20,7 +20,8 @@ class WaveformRenderBackground : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   protected:
-    bool drawImage(QPainter* painter);
+    bool hasImage();
+    void drawImage(QPainter* painter);
 
     QColor m_backgroundColor;
 
