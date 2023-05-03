@@ -2363,6 +2363,11 @@ target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 # https://github.com/rigtorp/SPSCQueue
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
+# Kokkos mdspan
+# https://github.com/kokkos/mdspan
+# TODO: obsolete after adopting C++23
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/mdspan/include)
+
 # Qt
 if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
