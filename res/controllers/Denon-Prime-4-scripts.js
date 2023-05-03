@@ -42,13 +42,13 @@ const deckColors = [
     "green",
 
     // Deck 2
-    "blue",
+    "green",
 
     // Deck 3
-    "cyan",
+    "blue",
 
     // Deck 4
-    "magenta",
+    "blue",
 
 ];
 
@@ -105,7 +105,6 @@ components.ComponentContainer.prototype.reconnectComponents = function(operation
 
 // 'Off' value sets lights to dim instead of off
 components.Button.prototype.off = 0x01;
-
 
 // Colour codes designed to avoid memorizing MIDI velocity values
 Prime4.rgbCode = {

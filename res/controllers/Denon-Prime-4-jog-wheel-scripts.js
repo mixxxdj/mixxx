@@ -1,18 +1,34 @@
 // eslint-disable-next-line-no-var
 var Prime4Jog = {};
 
+let wheelSide;
+
 const denonHeader = [0x00, 0x02, 0x0B];
 
-/*
 // Convert hex value (0xYZ) to individual bytes for SysEx (0x0Y, 0x0Z)
 const valueToDenonBytes = function(number) {
-    value = number.toString();
+    const value = number.toString(16);
+    console.log("number: ", number, ", value: ", value);
     const array = [0x00 + value[0], 0x00 + value[1]];
     return array;
 };
-*/
 
-/*
+const colourToDenonBytes = function(colourArray) {
+    const array = [];
+    for (let i = 0; i < 4; i++) {
+        const byte = colourArray[i].toString();
+        array.push(...valueToDenonBytes(byte));
+    }
+    return (array);
+};
+
+const changeTextColour = function(display, denonColourArray) {
+    const array = [display, 0x08, 0x0b, 0x00, 0x09, 0x08];
+    array.push(...colourToDenonBytes(denonColourArray));
+    finalSysexWrap(array);
+    return (array);
+};
+
 const textToSysex = function(text) {
     switch (text) {
     case "1/64":
@@ -59,9 +75,16 @@ const textToSysex = function(text) {
         return 0x0d;
     }
 };
-*/
 
-const sysEx = function(sysExMsg) {
+const displayText = function(display, text) {
+    const array = [display, 0x08, 0x0A, 0x00, 0x04];
+    array.push(0x00, 0x02, 0x00);
+    array.push(textToSysex(text));
+    finalSysexWrap(array);
+    return (array);
+};
+
+const sysex = function(sysExMsg) {
     midi.sendSysexMsg(sysExMsg, sysExMsg.length);
 };
 
@@ -99,7 +122,12 @@ const blackScreen = function(display) {
 };
 
 Prime4Jog.init = function(id, _debug) {
-    const wheelSide = wheelSideToSysex(id);
-    sysEx(unlockDisplay(wheelSide));
-    sysEx(blackScreen(wheelSide));
+    wheelSide = wheelSideToSysex(id);
+    sysex(unlockDisplay(wheelSide));
+    sysex(displayText(wheelSide, "1/54"));
+    sysex(changeTextColour(wheelSide, [0x63, 0x63, 0x63, 0x63]));
+};
+
+Prime4Jog.shutdown = function() {
+    sysex(blackScreen(wheelSide));
 };
