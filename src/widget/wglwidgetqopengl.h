@@ -31,9 +31,6 @@ class WGLWidget : public QWidget {
     void doneCurrent();
 
     void swapBuffers();
-    void resizeEvent(QResizeEvent* event) override;
-
-    void showEvent(QShowEvent* event) override;
 
     // called (indirectly) by WaveformWidgetFactory
     virtual void paintGL();
@@ -43,5 +40,8 @@ class WGLWidget : public QWidget {
     virtual void windowExposed();
 
   protected:
+    void showEvent(QShowEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+
     QPaintDevice* paintDevice();
 };

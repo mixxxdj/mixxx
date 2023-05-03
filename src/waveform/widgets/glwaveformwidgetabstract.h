@@ -2,7 +2,7 @@
 
 #include "waveform/sharedglcontext.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
-#include "widget/wglwaveformwidget.h"
+#include "widget/wglwidget.h"
 
 QT_FORWARD_DECLARE_CLASS(QString)
 
@@ -12,9 +12,7 @@ QT_FORWARD_DECLARE_CLASS(QString)
 /// (which overrides WGLWidget::initializeGL). This can be used for initialization
 /// that must be deferred until the GL context has been initialized and that can't
 /// be done in the constructor.
-/// Note: WGLWaveformWidget is WGLWidget with added event forwarding when used with
-/// OpenGLWindow
-class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWaveformWidget {
+class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget {
   public:
     GLWaveformWidgetAbstract(const QString& group, QWidget* parent);
 

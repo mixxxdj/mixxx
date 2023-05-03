@@ -1,13 +1,13 @@
 #pragma once
 
 #include "waveform/widgets/waveformwidgetabstract.h"
-#include "widget/wglwaveformwidget.h"
+#include "widget/wglwidget.h"
 
 namespace allshader {
 class WaveformWidget;
 }
 
-class allshader::WaveformWidget : public ::WGLWaveformWidget,
+class allshader::WaveformWidget : public ::WGLWidget,
                                   public ::WaveformWidgetAbstract {
     Q_OBJECT
   public:

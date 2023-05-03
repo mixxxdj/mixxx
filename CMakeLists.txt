@@ -1195,7 +1195,6 @@ else()
     src/waveform/widgets/rgbwaveformwidget.cpp
     src/waveform/widgets/softwarewaveformwidget.cpp
     src/waveform/widgets/waveformwidgetabstract.cpp
-    src/widget/wglwaveformwidget.cpp
     src/widget/woverview.cpp
     src/widget/woverviewhsv.cpp
     src/widget/woverviewlmh.cpp

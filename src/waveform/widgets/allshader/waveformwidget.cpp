@@ -5,7 +5,7 @@
 using namespace allshader;
 
 WaveformWidget::WaveformWidget(const QString& group, QWidget* parent)
-        : WGLWaveformWidget(parent), WaveformWidgetAbstract(group) {
+        : WGLWidget(parent), WaveformWidgetAbstract(group) {
 }
 
 WaveformWidget::~WaveformWidget() {

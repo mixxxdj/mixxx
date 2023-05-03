@@ -47,6 +47,18 @@ void OpenGLWindow::widgetDestroyed() {
 }
 
 bool OpenGLWindow::event(QEvent* ev) {
+    // From here we call QApplication::sendEvent(m_pWidget, ev) to trigger
+    // handling of the event as if it were received by the main window.
+    // With drag move and drag leave events it may happen that this function
+    // gets called recursive, potentially resulting in infinite recursion
+    // and a stack overflow. The boolean m_handlingEvent protects against
+    // this recursion.
+
+    if (m_handlingEvent) {
+        return false;
+    }
+    m_handlingEvent = true;
+
     bool result = QOpenGLWindow::event(ev);
 
     if (m_pWidget) {
@@ -67,14 +79,16 @@ bool OpenGLWindow::event(QEvent* ev) {
             // the widget
             m_pWidget->windowExposed();
         } else if (ev->type() != QEvent::Resize && ev->type() != QEvent::Move) {
-            // Forward event to m_pWidget, except for resize and move events.
-            // The widget was the first to receive the geometry changed passed
-            // them to the OpenGLWindow. If we forward the events back to the
-            // m_pWidget we quickly overflow the event queue.
+            // Any change to the geometry comes from m_pWidget and its child
+            // m_pContainerWidget. If we send the resulting events back to the
+            // m_pWidget we quickly overflow the event queue with repeated resize
+            // and move events. All other events will be send to the widget.
 
             QApplication::sendEvent(m_pWidget, ev);
         }
     }
+
+    m_handlingEvent = false;
 
     return result;
 }
