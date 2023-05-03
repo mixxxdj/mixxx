@@ -281,6 +281,7 @@ Prime4.CyclingArrayView = class {
     }
 };
 
+// Re-interpret incoming MIDI messages from the Prime 4's effect unit knobs
 Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _group) {
     const signedValue = value > (0x80 / 2) ? value - 128 : value;
     this.inSetParameter(this.inGetParameter() + (signedValue / 100));
@@ -300,10 +301,11 @@ Prime4.init = function(_id, _debug) {
     // Disconnect all decks at first so they don't fight with each other
     decks.forEach(deck => deck.forEachComponent(comp => { console.log(`disconnecting "${comp.group}, ${comp.inKey}"`); comp.disconnect(); }));
 
-    // Bind the sections
+    // Assign each console deck to Mixxx decks 1 and 2 on startup
     Prime4.leftDeck = decks[0];
     Prime4.rightDeck = decks[1];
 
+    // Initialize deck toggle buttons
     Prime4.assignmentButtons = new components.ComponentContainer();
     for (let i = 0; i < decks.length; i++) {
         Prime4.assignmentButtons[i] = new Prime4.DeckAssignButton({
@@ -317,6 +319,7 @@ Prime4.init = function(_id, _debug) {
         Prime4.assignmentButtons[i].trigger();
     }
 
+    // Initialize mixer channel strips
     Prime4.mixerA = new mixerStrip(1, 0);
     Prime4.mixerB = new mixerStrip(2, 1);
     Prime4.mixerC = new mixerStrip(3, 2);
@@ -337,14 +340,14 @@ Prime4.init = function(_id, _debug) {
         Prime4.effectBank[i].init();
     }
 
-    // Load song to deck with library encoder button
+    // Press down on the library encoder, acts as 'Enter' key in Mixxx library
     Prime4.encoderLoad = new components.Button({
         midi: [0x9F, 0x06],
         group: "[Library]",
         key: "GoToItem",
     });
 
-    // View Button
+    // VIEW Button
     Prime4.maxView = new components.Button({
         midi: [0x9F, 0x07],
         group: "[Master]",
@@ -386,6 +389,8 @@ Prime4.init = function(_id, _debug) {
             }
         },
     });
+
+    // TODO: Implement selection of specific QuickEffect preset for all 4 decks
 
     // Sweep FX - Echo Button
     Prime4.sweepEcho = new components.Button({
