@@ -74,7 +74,7 @@ bool OpenGLWindow::event(QEvent* ev) {
             ToolTipQOpenGL::singleton().stop(m_pWidget);
         }
 
-        if (ev->type() != QEvent::Resize && ev->type() != QEvent::Move && t != QEvent::Expose) {
+        if (t != QEvent::Resize && t != QEvent::Move && t != QEvent::Expose) {
             // Send all events to the widget that owns the window container widget that contains
             // this QOpenGLWindow.
             // Except for:
