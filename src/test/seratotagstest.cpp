@@ -206,7 +206,7 @@ TEST_F(SeratoTagsTest, SetIncompatibleCueInfos) {
                     0,
                     QString(),
                     mixxx::RgbColor(0xFF0000)),
-            // Icompatible cue type
+            // Incompatible cue type
             mixxx::CueInfo(mixxx::CueType::MainCue,
                     100,
                     std::nullopt,

@@ -209,9 +209,9 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
                 continue;
             }
             hotcueIndex += kLoopImportIndexOffset;
-            CueInfo mixxCue = cueInfo;
-            mixxCue.setHotCueIndex(hotcueIndex);
-            cueMap.insert(hotcueIndex, mixxCue);
+            CueInfo mixxxCue = cueInfo;
+            mixxxCue.setHotCueIndex(hotcueIndex);
+            cueMap.insert(hotcueIndex, mixxxCue);
         } else {
             if (hotcueIndex < kFirstSeratoHotCueIndex ||
                     hotcueIndex > kLastSeratoHotCueIndex) {
