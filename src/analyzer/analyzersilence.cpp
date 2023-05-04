@@ -107,6 +107,13 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     pAudibleSound->setStartPosition(firstSound);
     pAudibleSound->setEndPosition(lastSound);
 
+    setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.get());
+    setupOutroCue(pTrack.get(), lastSound);
+}
+
+// static
+void AnalyzerSilence::setupMainAndIntroCue(
+        Track* pTrack, double firstSound, UserSettings* pConfig) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
 
     double mainCue = pTrack->getCuePoint().getPosition();
@@ -120,7 +127,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (mainCue == Cue::kNoPosition || upgradingWithMainCueAtDefault) {
         pTrack->setCuePoint(CuePosition(firstSound));
         // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
-    } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
+    } else if (pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
             pIntroCue == nullptr) {
         introStart = mainCue;
     }
@@ -131,7 +138,10 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         pIntroCue->setStartPosition(introStart);
         pIntroCue->setEndPosition(Cue::kNoPosition);
     }
+}
 
+// static
+void AnalyzerSilence::setupOutroCue(Track* pTrack, double lastSound) {
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
     if (pOutroCue == nullptr) {
         pOutroCue = pTrack->createAndAddCue();
