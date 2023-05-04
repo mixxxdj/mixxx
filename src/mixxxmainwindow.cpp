@@ -157,9 +157,9 @@ void MixxxMainWindow::initializeQOpenGL() {
         WInitialGLWidget* widget = new WInitialGLWidget(this);
         widget->setGeometry(QRect(0, 0, 3, 3));
         SharedGLContext::setWidget(widget);
-        // When the widget's QOpenGLWindow has been exposed, we continue
+        // When the widget's QOpenGLWindow has been initialized, we continue
         // with the actual initialization
-        connect(widget, &WInitialGLWidget::onWindowExposed, this, &MixxxMainWindow::initialize);
+        connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
         widget->show();
         // note: the format is set in the WGLWidget's OpenGLWindow constructor
     } else {

@@ -37,7 +37,6 @@ class WGLWidget : public QWidget {
     // called by OpenGLWindow
     virtual void resizeGL(int w, int h);
     virtual void initializeGL();
-    virtual void windowExposed();
 
   protected:
     void showEvent(QShowEvent* event) override;

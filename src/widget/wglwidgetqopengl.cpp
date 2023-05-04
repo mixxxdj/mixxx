@@ -6,6 +6,11 @@
 
 WGLWidget::WGLWidget(QWidget* parent)
         : QWidget(parent) {
+    // When the widget is resized or moved, the QOpenGLWindow visibly resizes
+    // or moves before the widgets do. This can be solved by calling
+    //   setAttribute(Qt::WA_PaintOnScreen);
+    // here, but this comes with a clear performance penalty and drop in
+    // frame rate.
 }
 
 WGLWidget::~WGLWidget() {
@@ -67,10 +72,6 @@ void WGLWidget::initializeGL() {
 }
 
 void WGLWidget::resizeGL(int w, int h) {
-    // to be implemented in derived widgets if needed
-}
-
-void WGLWidget::windowExposed() {
     // to be implemented in derived widgets if needed
 }
 

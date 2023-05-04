@@ -66,23 +66,24 @@ bool OpenGLWindow::event(QEvent* ev) {
 
         // Tooltip don't work by forwarding the events. This mimics the
         // tooltip behavior.
-        if (ev->type() == QEvent::MouseMove) {
+        if (t == QEvent::MouseMove) {
             ToolTipQOpenGL::singleton().start(
                     m_pWidget, dynamic_cast<QMouseEvent*>(ev)->globalPos());
         }
-        if (ev->type() == QEvent::Leave) {
+        if (t == QEvent::Leave) {
             ToolTipQOpenGL::singleton().stop(m_pWidget);
         }
 
-        if (t == QEvent::Expose) {
-            // This event is only for windows, so we need a method to inform
-            // the widget
-            m_pWidget->windowExposed();
-        } else if (ev->type() != QEvent::Resize && ev->type() != QEvent::Move) {
-            // Any change to the geometry comes from m_pWidget and its child
-            // m_pContainerWidget. If we send the resulting events back to the
-            // m_pWidget we quickly overflow the event queue with repeated resize
-            // and move events. All other events will be send to the widget.
+        if (ev->type() != QEvent::Resize && ev->type() != QEvent::Move && t != QEvent::Expose) {
+            // Send all events to the widget that owns the window container widget that contains
+            // this QOpenGLWindow.
+            // Except for:
+            // - Resize and Move
+            //    Any change to the geometry comes from m_pWidget and its child m_pContainerWidget.
+            //    If we send the resulting events back to the m_pWidget we will quickly overflow
+            //    the event queue with repeated resize and move events.
+            // - Expose
+            //    This event is only for windows
 
             QApplication::sendEvent(m_pWidget, ev);
         }

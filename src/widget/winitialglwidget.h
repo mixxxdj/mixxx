@@ -4,13 +4,10 @@
 
 class WInitialGLWidget : public WGLWidget {
     Q_OBJECT
-  private:
-    bool m_windowExposedCalled{};
-
   public:
     WInitialGLWidget(QWidget* parent);
 
-    void windowExposed() override;
+    void initializeGL() override;
   signals:
-    void onWindowExposed();
+    void onInitialized();
 };
