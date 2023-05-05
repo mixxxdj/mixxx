@@ -75,17 +75,20 @@ bool OpenGLWindow::event(QEvent* ev) {
         }
 
         if (t != QEvent::Resize && t != QEvent::Move && t != QEvent::Expose) {
-            // Send all events to the widget that owns the window container widget that contains
-            // this QOpenGLWindow.
-            // Except for:
+            // Send all events to the relevant widget. In the case of WSpinny and
+            // WVuMeter, that's m_pWidget itself (the widget that contains the window
+            // container widget that contains this QOpenGLWindow), in the case of
+            // waveforms, it will be the parent WWaveformViewer.
+            //
+            // All events except for:
             // - Resize and Move
-            //    Any change to the geometry comes from m_pWidget and its child m_pContainerWidget.
-            //    If we send the resulting events back to the m_pWidget we will quickly overflow
+            //    Any change to the geometry comes from the widget layouts.
+            //    If we send the resulting events back we will quickly overflow
             //    the event queue with repeated resize and move events.
             // - Expose
-            //    This event is only for windows
+            //    This event is only for windows.
 
-            QApplication::sendEvent(m_pWidget, ev);
+            QApplication::sendEvent(m_pWidget->windowEventTarget(), ev);
         }
     }
 

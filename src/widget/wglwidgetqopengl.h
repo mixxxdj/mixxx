@@ -17,6 +17,7 @@ class WGLWidget : public QWidget {
   private:
     OpenGLWindow* m_pOpenGLWindow{};
     QWidget* m_pContainerWidget{};
+    QWidget* m_pWindowEventTarget{};
 
   public:
     WGLWidget(QWidget* parent);
@@ -31,6 +32,9 @@ class WGLWidget : public QWidget {
     void doneCurrent();
 
     void swapBuffers();
+
+    void setWindowEventTarget(QWidget* target);
+    QWidget* windowEventTarget() const;
 
     // called (indirectly) by WaveformWidgetFactory
     virtual void paintGL();

@@ -274,6 +274,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
         // OpenGLWindow will display it.
         if (m_waveformWidget->getGLWidget()) {
             m_waveformWidget->getGLWidget()->setToolTip(toolTip());
+            m_waveformWidget->getGLWidget()->setWindowEventTarget(this);
         }
 #endif
         // Make connection to show "Passthrough" label on the waveform, except for

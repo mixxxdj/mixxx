@@ -5,7 +5,7 @@
 #include "widget/wglwidget.h"
 
 WGLWidget::WGLWidget(QWidget* parent)
-        : QWidget(parent) {
+        : QWidget(parent), m_pWindowEventTarget(this) {
     // When the widget is resized or moved, the QOpenGLWindow visibly resizes
     // or moves before the widgets do. This can be solved by calling
     //   setAttribute(Qt::WA_PaintOnScreen);
@@ -23,6 +23,14 @@ WGLWidget::~WGLWidget() {
 QPaintDevice* WGLWidget::paintDevice() {
     makeCurrentIfNeeded();
     return m_pOpenGLWindow;
+}
+
+void WGLWidget::setWindowEventTarget(QWidget* widget) {
+    m_pWindowEventTarget = widget;
+}
+
+QWidget* WGLWidget::windowEventTarget() const {
+    return m_pWindowEventTarget;
 }
 
 void WGLWidget::showEvent(QShowEvent* event) {
