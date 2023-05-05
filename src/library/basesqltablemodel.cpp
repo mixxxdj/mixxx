@@ -430,7 +430,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     int trackSourceColumnCount = m_trackSource ? m_trackSource->columnCount() : 0;
 
     if (column < 0 ||
-            column >= trackSourceColumnCount + m_sortColumns.size() - 1) {
+            column >= trackSourceColumnCount + m_tableColumns.size() - 1) {
         // -1 because id column is in both tables
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;

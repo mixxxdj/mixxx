@@ -56,8 +56,7 @@ class CueInfo {
             const std::optional<double>& positionMillis = std::nullopt);
 
     std::optional<int> getHotCueIndex() const;
-    void setHotCueIndex(
-            const std::optional<int>& hotCueIndex = std::nullopt);
+    void setHotCueIndex(int hotCueIndex);
 
     QString getLabel() const;
     void setLabel(
