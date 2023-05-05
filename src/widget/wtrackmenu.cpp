@@ -1337,7 +1337,7 @@ class ResetMainCueTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pAudibleSound) {
             double firstSound = pAudibleSound->getPosition();
             if (firstSound != Cue::kNoPosition) {
-                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.get());
+                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.data());
             }
         }
     }
@@ -1359,7 +1359,7 @@ class ResetIntroTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pAudibleSound) {
             double firstSound = pAudibleSound->getPosition();
             if (firstSound != Cue::kNoPosition) {
-                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.get());
+                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.data());
             }
         }
     }
