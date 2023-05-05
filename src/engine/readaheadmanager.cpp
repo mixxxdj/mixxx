@@ -47,7 +47,8 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     //qDebug() << "start" << start_sample << requested_samples;
 
     double target;
-    // A loop will only limit the amount we can read in one shot.
+    // A loop (beat loop or track on repeat) will only limit the amount we
+    // can read in one shot.
     const double loop_trigger = m_pLoopingControl->nextTrigger(
             in_reverse, m_currentPosition, &target);
 
@@ -115,7 +116,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     if (reachedTrigger) {
         DEBUG_ASSERT(target != kNoTrigger);
 
-        // Jump to other end of loop.
+        // Jump to other end of loop or track.
         m_currentPosition = target;
         if (preloop_samples > 0) {
             // we are up to one frame ahead of the loop trigger

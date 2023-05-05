@@ -329,8 +329,6 @@ class EngineBuffer : public EngineObject {
     ControlPushButton* m_stopStartButton;
     ControlPushButton* m_stopButton;
 
-    ControlObject* m_fwdButton;
-    ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
 
     ControlObject* m_pQuantize;
