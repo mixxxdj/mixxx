@@ -107,7 +107,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     pAudibleSound->setStartPosition(firstSound);
     pAudibleSound->setEndPosition(lastSound);
 
-    setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.get());
+    setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.data());
     setupOutroCue(pTrack.get(), lastSound);
 }
 
