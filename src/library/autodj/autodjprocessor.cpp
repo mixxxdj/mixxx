@@ -150,8 +150,8 @@ AutoDJProcessor::AutoDJProcessor(
     m_pEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
     m_pEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pEnabledAutoDJ, &ControlObject::valueChanged,
-            this, &AutoDJProcessor::controlEnable);
+    m_pEnabledAutoDJ->connectValueChangeRequest(this,
+            &AutoDJProcessor::controlEnableChangeRequest);
 
     // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
     // are created.
@@ -233,6 +233,7 @@ void AutoDJProcessor::fadeNow() {
     if (!pLeftDeck || !pRightDeck) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
         return;
     }
 
@@ -265,6 +266,7 @@ void AutoDJProcessor::fadeNow() {
         // Deck is empty or track too short, disable AutoDJ
         // This happens only if the user has changed deck orientation to such deck.
         toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
         return;
     }
 
@@ -339,6 +341,7 @@ void AutoDJProcessor::fadeNow() {
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     if (m_eState == ADJ_DISABLED) {
+        emit autoDJError(ADJ_IS_INACTIVE);
         return ADJ_IS_INACTIVE;
     }
     // Load the next song from the queue.
@@ -347,6 +350,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     if (!pLeftDeck || !pRightDeck) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
         return ADJ_NOT_TWO_DECKS;
     }
 
@@ -379,6 +383,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         if (!pLeftDeck || !pRightDeck) {
             // Keep the current state.
             emitAutoDJStateChanged(m_eState);
+            emit autoDJError(ADJ_NOT_TWO_DECKS);
             return ADJ_NOT_TWO_DECKS;
         }
 
@@ -389,6 +394,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             qDebug() << "One deck must be stopped before enabling Auto DJ mode";
             // Keep the current state.
             emitAutoDJStateChanged(m_eState);
+            emit autoDJError(ADJ_BOTH_DECKS_PLAYING);
             return ADJ_BOTH_DECKS_PLAYING;
         }
 
@@ -397,6 +403,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         for (int i = 2; i < m_decks.length(); ++i) {
             if (m_decks[i] && m_decks[i]->isPlaying()) {
                 // Keep the current state.
+                emit autoDJError(ADJ_DECKS_3_4_PLAYING);
                 return ADJ_DECKS_3_4_PLAYING;
             }
         }
@@ -425,18 +432,15 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
 
         TrackPointer nextTrack = getNextTrackFromQueue();
         if (!nextTrack) {
-            qDebug() << "Queue is empty now";
-            if (m_pEnabledAutoDJ->get() != 0.0) {
-                m_pEnabledAutoDJ->set(0.0);
-            }
+            qDebug() << "Queue is empty now, disable Auto DJ";
+            m_pEnabledAutoDJ->setAndConfirm(0.0);
             emitAutoDJStateChanged(m_eState);
+            emit autoDJError(ADJ_QUEUE_EMPTY);
             return ADJ_QUEUE_EMPTY;
         }
 
         // Track is available so GO
-        if (m_pEnabledAutoDJ->get() != 1.0) {
-            m_pEnabledAutoDJ->set(1.0);
-        }
+        m_pEnabledAutoDJ->setAndConfirm(1.0);
         qDebug() << "Auto DJ enabled";
 
         m_pCOCrossfader->connectValueChanged(this, &AutoDJProcessor::crossfaderChanged);
@@ -565,7 +569,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         emitAutoDJStateChanged(m_eState);
     } else { // Disable Auto DJ
-        m_pEnabledAutoDJ->set(0.0);
+        m_pEnabledAutoDJ->setAndConfirm(0.0);
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
         disconnect(m_pCOCrossfader,
@@ -580,7 +584,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
     return ADJ_OK;
 }
 
-void AutoDJProcessor::controlEnable(double value) {
+void AutoDJProcessor::controlEnableChangeRequest(double value) {
     toggleAutoDJ(value > 0.0);
 }
 
@@ -637,6 +641,7 @@ void AutoDJProcessor::crossfaderChanged(double value) {
                     }
                     pToDeck->play();
                 } else {
+                    // Track in toDeck was ejected manually, stop.
                     toggleAutoDJ(false);
                     return;
                 }
@@ -1534,6 +1539,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
             }
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
+            emit autoDJError(ADJ_NOT_TWO_DECKS);
             return;
         }
         pDeck->startPos = kKeepPosition;
@@ -1642,6 +1648,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
         if (!pLeftDeck || !pRightDeck) {
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
+            emit autoDJError(ADJ_NOT_TWO_DECKS);
             return;
         }
         if (pLeftDeck->isPlaying()) {
@@ -1670,6 +1677,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     if (!pLeftDeck || !pRightDeck) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
         return;
     }
 

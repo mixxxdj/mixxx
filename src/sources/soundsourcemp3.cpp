@@ -152,7 +152,9 @@ bool decodeFrameHeader(
         logFrameHeader(kLogger.info(), *pMadHeader);
         return false;
     }
-    DEBUG_ASSERT(pMadStream->error == MAD_ERROR_NONE);
+    // Note: Recoverable errors are maintained until a frame has been successfully decoded
+    // Kurt Roeckx's length-check.patch applied on Debian fixes that.
+    DEBUG_ASSERT(!hasUnrecoverableError(pMadStream));
     return true;
 }
 

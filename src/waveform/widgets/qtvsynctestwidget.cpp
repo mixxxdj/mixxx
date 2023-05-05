@@ -6,8 +6,8 @@
 
 #include "moc_qtvsynctestwidget.cpp"
 #include "util/performancetimer.h"
+#include "waveform/renderers/glwaveformrenderbackground.h"
 #include "waveform/renderers/qtvsynctestrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
