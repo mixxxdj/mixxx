@@ -132,6 +132,13 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         pN60dBSound->setStartAndEndPosition(firstSoundPosition, lastSoundPosition);
     }
 
+    setupMainAndIntroCue(pTrack.get(), firstSoundPosition, m_pConfig.get());
+    setupOutroCue(pTrack.get(), lastSoundPosition);
+}
+
+// static
+void AnalyzerSilence::setupMainAndIntroCue(
+        Track* pTrack, mixxx::audio::FramePos firstSoundPosition, UserSettings* pConfig) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
 
     mixxx::audio::FramePos mainCuePosition = pTrack->getMainCuePosition();
@@ -147,7 +154,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (!mainCuePosition.isValid() || upgradingWithMainCueAtDefault) {
         pTrack->setMainCuePosition(firstSoundPosition);
         // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
-    } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
+    } else if (pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
             pIntroCue == nullptr) {
         introStartPosition = mainCuePosition;
     }
@@ -159,7 +166,10 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
                 introStartPosition,
                 mixxx::audio::kInvalidFramePos);
     }
+}
 
+// static
+void AnalyzerSilence::setupOutroCue(Track* pTrack, mixxx::audio::FramePos lastSoundPosition) {
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
     if (pOutroCue == nullptr) {
         pOutroCue = pTrack->createAndAddCue(

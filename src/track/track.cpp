@@ -1,5 +1,6 @@
 #include "track/track.h"
 
+#include <QDebug>
 #include <QDirIterator>
 #include <atomic>
 
@@ -1041,15 +1042,15 @@ void Track::removeCuesOfType(mixxx::CueType type) {
         if (pCue->getType() == type) {
             disconnect(pCue.get(), nullptr, this, nullptr);
             it.remove();
+            if (type == mixxx::CueType::MainCue) {
+                m_record.setMainCuePosition(mixxx::audio::kStartFramePos);
+            }
             dirty = true;
         }
     }
     // If loop cues are removed, also clear the last active loop
     if (type == mixxx::CueType::Loop) {
         emit loopRemove();
-    }
-    if (compareAndSet(m_record.ptrMainCuePosition(), mixxx::audio::kStartFramePos)) {
-        dirty = true;
     }
     if (dirty) {
         markDirtyAndUnlock(&locked);
@@ -1179,18 +1180,6 @@ Track::ImportStatus Track::importCueInfos(
                 << "Import of"
                 << m_pCueInfoImporterPending->size()
                 << "cue(s) is pending until the actual sample rate becomes available";
-        // Clear all existing cue points, that are supposed
-        // to be replaced with the imported cue points soon.
-        QList<CuePointer> cuePoints;
-        cuePoints.reserve(m_cuePoints.size());
-        for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
-            if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
-                cuePoints.append(pCue);
-            }
-        }
-        setCuePointsMarkDirtyAndUnlock(
-                &locked,
-                cuePoints);
         return ImportStatus::Pending;
     }
 }
@@ -1267,11 +1256,19 @@ bool Track::importPendingCueInfosWhileLocked() {
     QList<CuePointer> cuePoints;
     cuePoints.reserve(m_pCueInfoImporterPending->size() + m_cuePoints.size());
 
-    // Preserve all existing cues with types that are not available for
-    // importing.
+    // Serato cues are only a subset of the Mixxx cues. Re-Importing them has the risk of losing
+    // user data that cannot be expressed in Serato. https://github.com/mixxxdj/mixxx/issues/11530
+    // For now the save route is to skip the imports if Mixxx cues already exist.
+    // TODO() Consider a merge strategy.
     for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
             cuePoints.append(pCue);
+        } else {
+            qWarning() << "Skipping import of Serato cues because Mixxx "
+                          "Hotcues are already set. Reset them first via the "
+                          "track context menu.";
+            m_pCueInfoImporterPending.reset();
+            return false;
         }
     }
 
