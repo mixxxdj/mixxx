@@ -262,7 +262,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="430"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="424"/>
         <source>Couldn&apos;t load track.</source>
         <translation>Ne morem naložiti skladbe.</translation>
     </message>
@@ -3684,40 +3684,40 @@ Prehod začne na izbranem številu sekund pred zadnjim zvokom.</translation>
         <translation>Ponavljanje</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="278"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="288"/>
         <source>Auto DJ requires two decks assigned to opposite sides of the crossfader.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="286"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="294"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
         <translation>Eden od predvajalnikov mora biti zaustavljen, da bi lahko vklopili samodejno didžejanje.</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="293"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="300"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation>Predvajalnika 3 in 4 morata biti zaustavljena, da bi lahko vklopili samodejno didžejanje.</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="316"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="322"/>
         <source>Enable</source>
         <translation>Vklopi</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="325"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="331"/>
         <source>Disable</source>
         <translation>Izklopi</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="370"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="376"/>
         <source>Displays the duration and number of selected tracks.</source>
         <translation>Prikaže čas trajanja in število izbranih skladb.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="285"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="292"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="287"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="293"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="299"/>
         <source>Auto DJ</source>
         <translation>Samodejni DJ</translation>
     </message>
@@ -6660,28 +6660,28 @@ Ciljna glasnost je približna in predpostavlja, da ostaneta predojačitev in izh
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="814"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="819"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation>Mikrofonski vhodi so zamaknjeni v signalu za snemanje in prenašanje časovno zamaknjeni in ne ustrezajo temu kar slišite.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="815"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="820"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Izmerite latenco kroženja zvoka in jo vnesite zgoraj za kompenzacijo latence mikrofona in poravnavo časa mikrofona.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="816"/>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="823"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="821"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="828"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation>Preverite Mixxx uporabniški priročnik za več podrobnosti.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="821"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="826"/>
         <source>Configured latency has changed.</source>
         <translation>Nastavljena latenca je bila spremenjena.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="822"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="827"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Ponovno izmerite latenco kroženja zvoka in jo vnesite zgoraj za kompenzacijo latence mikrofona in poravnavo časa mikrofona.</translation>
     </message>
@@ -7371,27 +7371,27 @@ Izbirajte med različnimi vrstami prikaza valovne oblike, ki se primarno razliku
         <translation>Nova barva iztočnice</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="224"/>
+        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="225"/>
         <source>Selecting database rows...</source>
         <translation>Izbira vrstic podatkovne baze...</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="355"/>
+        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="356"/>
         <source>No colors changed!</source>
         <translation>Nobena barva ni bila spremenjena!</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="356"/>
+        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="357"/>
         <source>No cues matched the specified criteria.</source>
         <translation>Nobena iztočnica ni ustrezala izbranim kriterijem.</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="363"/>
+        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="364"/>
         <source>Confirm Color Replacement</source>
         <translation>Potrdi zamenjavo barve</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="364"/>
+        <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="365"/>
         <source>The colors of %1 cues in %2 tracks will be replaced. This change cannot be undone! Are you sure?</source>
         <translation>Barve %1 iztočnic(e) v %2 skladbi/-ah bodo zamenjane. Te spremembe ni mogoče razveljaviti! Ste prepričani?</translation>
     </message>
@@ -8104,15 +8104,15 @@ Večinoma ustrvarja bolj kakovostno ritmično mrežo, vendar ne deluje dobro s s
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1251"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1317"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1247"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1313"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Vklopljen je varni način</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1261"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1325"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1257"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1321"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -8124,57 +8124,57 @@ Shown when VuMeter can not be displayed. Please keep
 OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2271"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2267"/>
         <source>activate</source>
         <translation>aktiviraj</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2276"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2272"/>
         <source>toggle</source>
         <translation>preklopi</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2286"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2282"/>
         <source>right</source>
         <translation>desno</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2291"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2287"/>
         <source>left</source>
         <translation>levo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2296"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2292"/>
         <source>right small</source>
         <translation>desno malo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2301"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2297"/>
         <source>left small</source>
         <translation>levo malo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2306"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2302"/>
         <source>up</source>
         <translation>gor</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2311"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2307"/>
         <source>down</source>
         <translation>dol</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2316"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2312"/>
         <source>up small</source>
         <translation>gor malo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2321"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2317"/>
         <source>down small</source>
         <translation>dol malo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2349"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2345"/>
         <source>Shortcut</source>
         <translation>Bližnjica</translation>
     </message>
@@ -13196,12 +13196,12 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
 <context>
     <name>WColorPicker</name>
     <message>
-        <location filename="../../src/widget/wcolorpicker.cpp" line="175"/>
+        <location filename="../../src/widget/wcolorpicker.cpp" line="178"/>
         <source>No color</source>
         <translation>Brez barve</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcolorpicker.cpp" line="197"/>
+        <location filename="../../src/widget/wcolorpicker.cpp" line="201"/>
         <source>Custom color</source>
         <translation>Prilagojena barva</translation>
     </message>
@@ -13726,20 +13726,20 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
         <translation>Prehod</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="742"/>
+        <location filename="../../src/widget/woverview.cpp" line="752"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Pripravljen za predvajanje, analiziram ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="745"/>
         <location filename="../../src/widget/woverview.cpp" line="755"/>
+        <location filename="../../src/widget/woverview.cpp" line="765"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Nalaganje skladbe ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="749"/>
+        <location filename="../../src/widget/woverview.cpp" line="759"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Zaključujem...</translation>
@@ -13834,391 +13834,391 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
 <context>
     <name>WTrackMenu</name>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="95"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="96"/>
         <source>Load to</source>
         <translation>Naloži v</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="97"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="98"/>
         <source>Deck</source>
         <translation>Predvajalnik</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="99"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="100"/>
         <source>Sampler</source>
         <translation>Vzročevalnik</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="104"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="105"/>
         <source>Add to Playlist</source>
         <translation>Dodaj v seznam predvajanja</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="110"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="111"/>
         <source>Crates</source>
         <translation>Zaboji</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="117"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="118"/>
         <source>Metadata</source>
         <translation>Metapodatki</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="120"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="121"/>
         <source>Update external collections</source>
         <translation>Osveži zunanje zbirke</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="123"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="124"/>
         <source>Cover Art</source>
         <translation>Naslovnica</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="130"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="131"/>
         <source>Adjust BPM</source>
         <translation>Prilagodi BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="135"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="136"/>
         <source>Select Color</source>
         <translation>Izberi barvo</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="141"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="142"/>
         <source>Reset</source>
         <extracomment>Reset metadata in right click track context menu in library</extracomment>
         <translation>Ponastavi</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="147"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="148"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Dodaj k zaporedju samodejnega DJ-a (na dno)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="150"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="151"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Dodaj k zaporedju samodejnega DJ-a (na vrh)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="153"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="154"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>Dodaj v zaporedje samodejnega DJ-a  (zamenjaj)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="158"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="159"/>
         <source>Preview Deck</source>
         <translation>Predvajalnik za predogled</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="165"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="166"/>
         <source>Remove</source>
         <translation>Odstrani</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="168"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="169"/>
         <source>Remove from Playlist</source>
         <translation>Odstrani iz seznama predvajanja</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="171"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="172"/>
         <source>Remove from Crate</source>
         <translation>Odstrani iz zaboja</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="176"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="177"/>
         <source>Hide from Library</source>
         <translation>Skrij iz knjižnice</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="179"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="180"/>
         <source>Unhide from Library</source>
         <translation>Pokaži v knjižnici</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="182"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="183"/>
         <source>Purge from Library</source>
         <translation>Pobriši iz knjižnice</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="187"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="188"/>
         <source>Properties</source>
         <translation>Lastnosti</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="192"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="193"/>
         <source>Open in File Browser</source>
         <translation>Odpri v brskalniku datotek</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="198"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="199"/>
         <source>Import From File Tags</source>
         <translation>naloži iz oznak v datoteki</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="205"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="206"/>
         <source>Import From MusicBrainz</source>
         <translation>Naloži iz MusicBrainz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="212"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="213"/>
         <source>Export To File Tags</source>
         <translation>Izvozi oznake v datoteko</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="233"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="234"/>
         <source>BPM and Beatgrid</source>
         <translation>BPM in ritmična mreža</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="236"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="237"/>
         <source>Play Count</source>
         <translation>Števec predvajanj</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="239"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="240"/>
         <source>Rating</source>
         <translation>Ocena</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="242"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="243"/>
         <source>Cue Point</source>
         <translation>Cue iztočnica</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="245"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="246"/>
         <source>Hotcues</source>
         <translation>Hotcue iztočnice</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="248"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="249"/>
         <source>Intro</source>
         <translation>Uvod</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="251"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="252"/>
         <source>Outro</source>
         <translation>Zaključek</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="254"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="255"/>
         <source>Loop</source>
         <translation>Zanka</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="257"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="258"/>
         <source>Key</source>
         <translation>Tonaliteta</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="260"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="261"/>
         <source>ReplayGain</source>
         <translation>ReplayGain</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="263"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="264"/>
         <source>Waveform</source>
         <translation>Valovna oblika</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="266"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="267"/>
         <source>All</source>
         <translation>Vse</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="271"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="272"/>
         <source>Lock BPM</source>
         <translation>Zakleni BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="272"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="273"/>
         <source>Unlock BPM</source>
         <translation>Odkleni BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="277"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="278"/>
         <source>Double BPM</source>
         <translation>Podvoji BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="278"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="279"/>
         <source>Halve BPM</source>
         <translation>Razpolovi BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="279"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="280"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="280"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="281"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="281"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="282"/>
         <source>4/3 BPM</source>
         <translation>4/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="282"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="283"/>
         <source>3/2 BPM</source>
         <translation>3/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="303"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="304"/>
         <source>Reset BPM</source>
         <translation>Ponastavi barvo</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="572"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="573"/>
         <source>Deck %1</source>
         <translation>Predvajalnik %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="588"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="589"/>
         <source>Sampler %1</source>
         <translation>Vzorčevalnik %1</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="859"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="860"/>
         <source>Importing metadata of %n track(s) from file tags</source>
         <translation><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datoteki</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="891"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="892"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
         <translation><numerusform>Označevanje metapodatkov %n skladbe za izvoz v oznake datoteke</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="941"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="963"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="942"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
         <source>Create New Playlist</source>
         <translation>Ustvari nov seznam predvajanja</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="965"/>
         <source>Enter name for new playlist:</source>
         <translation>Vnesi ime seznama predvajanja:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="966"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="967"/>
         <source>New Playlist</source>
         <translation>Nov seznam predvajanja</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="974"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="978"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="987"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
         <source>Playlist Creation Failed</source>
         <translation>Ustvarjanje seznama predvajanja je spodletelo</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="976"/>
         <source>A playlist by that name already exists.</source>
         <translation>Seznam predvajanja s tem imenom že obstaja.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="980"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Seznam predvajanja ne more biti brez imena.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="989"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Neznana napaka pri ustvarjanju novega seznama predvajanja:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1053"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1054"/>
         <source>Add to New Crate</source>
         <translation>Dodaj v nov zaboj</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1147"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1148"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation><numerusform>Povečanje BPM %n sklabe</numerusform><numerusform>Povečanje BPM %n sklab</numerusform><numerusform>Povečanje BPM %n sklab</numerusform><numerusform>Povečanje BPM %n sklab</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1177"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1178"/>
         <source>Locking BPM of %n track(s)</source>
         <translation><numerusform>Zaklepanje BPM %n skladbe</numerusform><numerusform>Zaklepanje BPM %n skladb</numerusform><numerusform>Zaklepanje BPM %n skladb</numerusform><numerusform>Zaklepanje BPM %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1178"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1179"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation><numerusform>Odklepanje BPM %n skladbe</numerusform><numerusform>Odklepanje BPM %n skladb</numerusform><numerusform>Odklepanje BPM %n skladb</numerusform><numerusform>Odklepanje BPM %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1207"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1208"/>
         <source>Setting color of %n track(s)</source>
         <translation><numerusform>Določanje barve %n skladbe</numerusform><numerusform>Določanje barve %n skladb</numerusform><numerusform>Določanje barve %n skladb</numerusform><numerusform>Določanje barve %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1255"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1256"/>
         <source>Resetting play count of %n track(s)</source>
         <translation><numerusform>Ponastavljanje števca predvajanj %n skladbe</numerusform><numerusform>Ponastavljanje števca predvajanj %n skladb</numerusform><numerusform>Ponastavljanje števca predvajanj %n skladb</numerusform><numerusform>Ponastavljanje števca predvajanj %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1277"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1278"/>
         <source>Resetting beats of %n track(s)</source>
         <translation><numerusform>Ponastavljanje ritma %n skladbe</numerusform><numerusform>Ponastavljanje ritma %n skladb</numerusform><numerusform>Ponastavljanje ritma %n skladb</numerusform><numerusform>Ponastavljanje ritma %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1300"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1301"/>
         <source>Clearing rating of %n track(s)</source>
         <translation><numerusform>Brisanje ocen za %1 skladbo</numerusform><numerusform>Brisanje ocen za %1 skladbi</numerusform><numerusform>Brisanje ocen za %1 skladbe</numerusform><numerusform>Brisanje ocen za %1 skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1329"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1393"/>
         <source>Removing main cue from %n track(s)</source>
         <translation><numerusform>Odstranjevanje glavne iztočnice %n skladbe</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1339"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1403"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation><numerusform>Odstranjevanje izstopne iztočnice %n skladbe</numerusform><numerusform>Odstranjevanje izstopne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje izstopne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje izstopne iztočnice %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1349"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1413"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation><numerusform>Odstranjevanje vstopne iztočnice %n skladbe</numerusform><numerusform>Odstranjevanje vstopne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje vstopne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje vstopne iztočnice %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1359"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1423"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation><numerusform>Odstranjevanje iztočnic zank iz %n skladbe</numerusform><numerusform>Odstranjevanje iztočnic zank iz %n skladb</numerusform><numerusform>Odstranjevanje iztočnic zank iz %n skladb</numerusform><numerusform>Odstranjevanje iztočnic zank iz %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1369"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1433"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation><numerusform>Odstranjevanje hotcue iztočnic %n skladbe</numerusform><numerusform>Odstranjevanje hotcue iztočnic %n skladb</numerusform><numerusform>Odstranjevanje hotcue iztočnic %n skladb</numerusform><numerusform>Odstranjevanje hotcue iztočnic %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1391"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1455"/>
         <source>Resetting keys of %n track(s)</source>
         <translation><numerusform>Ponastavljanje ključa %n skladbe</numerusform><numerusform>Ponastavljanje ključa %n skladb</numerusform><numerusform>Ponastavljanje ključa %n skladb</numerusform><numerusform>Ponastavljanje ključa %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1413"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1477"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation><numerusform>Ponastavljanje pomovitvene pojačitve %n skladbe</numerusform><numerusform>Ponastavljanje pomovitvene pojačitve %n skladb</numerusform><numerusform>Ponastavljanje pomovitvene pojačitve %n skladb</numerusform><numerusform>Ponastavljanje pomovitvene pojačitve %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1444"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1512"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation><numerusform>Ponastavitev valovne oblike %n skladbe</numerusform><numerusform>Ponastavitev valovne oblike %n skladb</numerusform><numerusform>Ponastavitev valovne oblike %n skladb</numerusform><numerusform>Ponastavitev valovne oblike %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1500"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1568"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation><numerusform>Ponastavitev vseh metapodatkov o izvajanju %n skladbe</numerusform><numerusform>Ponastavitev vseh metapodatkov o izvajanju %n skladb</numerusform><numerusform>Ponastavitev vseh metapodatkov o izvajanju %n skladb</numerusform><numerusform>Ponastavitev vseh metapodatkov o izvajanju %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1606"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1674"/>
         <source>Setting cover art of %n track(s)</source>
         <translation><numerusform>Določitev naslovnice %n sklabe</numerusform><numerusform>Določitev naslovnice %n sklab</numerusform><numerusform>Določitev naslovnice %n sklab</numerusform><numerusform>Določitev naslovnice %n sklab</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1630"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1698"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation><numerusform>Ponovno nalaganje naslovnice %n skladbe</numerusform><numerusform>Ponovno nalaganje naslovnice %n skladb</numerusform><numerusform>Ponovno nalaganje naslovnice %n skladb</numerusform><numerusform>Ponovno nalaganje naslovnice %n skladb</numerusform></translation>
     </message>
