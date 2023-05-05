@@ -24,6 +24,7 @@
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefinterface.h"
+#include "preferences/dialog/dlgprefmixer.h"
 #ifndef MIXXX_USE_QML
 #include "preferences/dialog/dlgprefwaveform.h"
 #endif
