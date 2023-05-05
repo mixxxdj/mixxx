@@ -175,6 +175,9 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotBeatJump, Qt::DirectConnection);
     m_pCOBeatJumpSize = new ControlObject(ConfigKey(group, "beatjump_size"),
                                           true, false, false, 4.0);
+    m_pCOBeatJumpSize->connectValueChangeRequest(this,
+            &LoopingControl::slotBeatJumpSizeChangeRequest,
+            Qt::DirectConnection);
 
     m_pCOBeatJumpSizeHalve = new ControlPushButton(ConfigKey(group, "beatjump_size_halve"));
     connect(m_pCOBeatJumpSizeHalve,
@@ -340,7 +343,7 @@ void LoopingControl::slotLoopHalve(double pressed) {
         return;
     }
 
-    slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
+    m_pCOBeatLoopSize->set(m_pCOBeatLoopSize->get() / 2.0);
 }
 
 void LoopingControl::slotLoopDouble(double pressed) {
@@ -348,7 +351,7 @@ void LoopingControl::slotLoopDouble(double pressed) {
         return;
     }
 
-    slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
+    m_pCOBeatLoopSize->set(m_pCOBeatLoopSize->get() * 2.0);
 }
 
 void LoopingControl::process(const double dRate,
@@ -1429,6 +1432,14 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
     // slotBeatLoop will call m_pCOBeatLoopSize->setAndConfirm if
     // new beatloop_size is valid
+
+    double maxBeatLoopSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatLoopSize = s_dBeatSizes[0];
+    if ((beats < minBeatLoopSize) || (beats > maxBeatLoopSize)) {
+        // Don't clamp the value here to not fall out of a measure
+        return;
+    }
+
     slotBeatLoop(beats, true, false);
 }
 
@@ -1493,6 +1504,19 @@ void LoopingControl::slotBeatJump(double beats) {
             seekExact(seekPosition);
         }
     }
+}
+
+void LoopingControl::slotBeatJumpSizeChangeRequest(double beats) {
+    // Use same limits as for beat loop size
+    double maxBeatJumpSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatJumpSize = s_dBeatSizes[0];
+
+    if ((beats < minBeatJumpSize) || (beats > maxBeatJumpSize)) {
+        // Don't clamp the value here to not fall out of a measure
+        return;
+    }
+
+    m_pCOBeatJumpSize->setAndConfirm(beats);
 }
 
 void LoopingControl::slotBeatJumpSizeHalve(double pressed) {

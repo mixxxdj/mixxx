@@ -313,7 +313,7 @@ bool exportTrackMetadataIntoTag(TagLib::APE::Tag* pTag, const TrackMetadata& tra
 
     writeItem(pTag, "BPM", toTString(formatBpm(trackMetadata)));
 
-    writeItem(pTag, "INITIALKEY", toTString(trackMetadata.getTrackInfo().getKey()));
+    writeItem(pTag, "INITIALKEY", toTString(trackMetadata.getTrackInfo().getKeyText()));
 
     writeItem(pTag, "REPLAYGAIN_TRACK_GAIN", toTString(formatTrackGain(trackMetadata)));
     writeItem(pTag, "REPLAYGAIN_TRACK_PEAK", toTString(formatTrackPeak(trackMetadata)));

@@ -37,38 +37,29 @@ QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
 /// have a loop and a hotcue with the same number. In Mixxx, loops
 /// and hotcues share indices. Hence, we import them with an offset
 /// of 8 (the maximum number of hotcues in Serato).
-constexpr int kFirstLoopIndex = mixxx::kFirstHotCueIndex + 8;
+constexpr int kFirstLoopIndex = mixxx::kFirstHotCueIndex + 8; // = 8
 constexpr int kNumCuesInMarkersTag = 5;
 
-std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
+bool isCueInfoValid(const mixxx::CueInfo& cueInfo) {
+    if (cueInfo.getType() == mixxx::CueType::Loop &&
+            cueInfo.getEndPositionMillis().value_or(0) == 0) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard loop cue" << cueInfo.getHotCueIndex()
+                   << "with length of 0";
+        return false;
+    }
+    if (cueInfo.getType() == mixxx::CueType::HotCue &&
+            cueInfo.getStartPositionMillis().value_or(0) == 0 &&
+            cueInfo.getColor().value_or(mixxx::RgbColor(0)) == mixxx::RgbColor(0)) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard black hot cue" << cueInfo.getHotCueIndex()
+                   << "at position 0";
+        return false;
+    }
     VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueIndex()) {
-        qWarning() << "SeratoTags::getCues: Cue without number found!";
-        return std::nullopt;
+        return false;
     }
-
-    int index = *cueInfo.getHotCueIndex();
-    VERIFY_OR_DEBUG_ASSERT(index >= mixxx::kFirstHotCueIndex) {
-        qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
-        return std::nullopt;
-    }
-
-    switch (cueInfo.getType()) {
-    case mixxx::CueType::HotCue:
-        if (index >= kFirstLoopIndex) {
-            qWarning()
-                    << "SeratoTags::getCues: Non-loop Cue with number >="
-                    << kFirstLoopIndex << "found!";
-            return std::nullopt;
-        }
-        break;
-    case mixxx::CueType::Loop:
-        index += kFirstLoopIndex;
-        break;
-    default:
-        return std::nullopt;
-    }
-
-    return index;
+    return true;
 }
 
 } // namespace
@@ -186,12 +177,12 @@ BeatsImporterPointer SeratoTags::importBeats() const {
             m_seratoBeatGrid.terminalMarker());
 }
 
-CueInfoImporterPointer SeratoTags::importCueInfos() const {
+std::unique_ptr<CueInfoImporter> SeratoTags::createCueInfoImporter() const {
     auto cueInfos = getCueInfos();
     if (cueInfos.isEmpty()) {
         return nullptr;
     }
-    return std::make_shared<SeratoCueInfoImporter>(std::move(cueInfos));
+    return std::make_unique<SeratoCueInfoImporter>(std::move(cueInfos));
 }
 
 QList<CueInfo> SeratoTags::getCueInfos() const {
@@ -200,77 +191,97 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     // "Serato Markers_" and "Serato Markers2" contradict each other,
     // Serato will use the values from "Serato Markers_").
 
-    QMap<int, CueInfo> cueMap;
+    QMap<int, CueInfo> hotCueMap;
+    QMap<int, CueInfo> loopCueMap;
     const QList<CueInfo> cuesMarkers2 = m_seratoMarkers2.getCues();
     for (const CueInfo& cueInfo : cuesMarkers2) {
-        std::optional<int> index = findIndexForCueInfo(cueInfo);
-        if (!index) {
+        if (!isCueInfoValid(cueInfo)) {
             continue;
         }
-
-        CueInfo newCueInfo(cueInfo);
-        newCueInfo.setHotCueIndex(index);
-        cueMap.insert(*index, newCueInfo);
+        if (cueInfo.getType() == CueType::Loop) {
+            loopCueMap.insert(*cueInfo.getHotCueIndex(), cueInfo);
+        } else {
+            hotCueMap.insert(*cueInfo.getHotCueIndex(), cueInfo);
+        }
     };
-
-    // If the "Serato Markers_" tag does not exist at all, Serato DJ Pro just
-    // takes data from the "Serato Markers2" tag, so we can exit early
-    // here. If the "Serato Markers_" exists, its data will take precedence.
-    if (m_seratoMarkers.isEmpty()) {
-        return cueMap.values();
-    }
-
-    // The "Serato Markers_" tag always contains entries for the first five
-    // cues. If a cue is not set, that entry is present but empty.
-    // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
-    // Serato DJ Pro considers it as "not set" and ignores it.
-    // To mirror the behaviour of Serato, we need to remove from the output of
-    // this function.
-    QSet<int> unsetCuesInMarkersTag;
-    for (int i = 0; i < kNumCuesInMarkersTag; i++) {
-        unsetCuesInMarkersTag.insert(i);
-    }
 
     const QList<CueInfo> cuesMarkers = m_seratoMarkers.getCues();
-    for (const CueInfo& cueInfo : cuesMarkers) {
-        std::optional<int> index = findIndexForCueInfo(cueInfo);
-        if (!index) {
-            continue;
+    if (cuesMarkers.size() > 0) {
+        // The "Serato Markers_" tag always contains entries for the first five
+        // cues. If a cue is not set, that entry is present but empty.
+        // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
+        // Serato DJ Pro considers it as "not set" and ignores it.
+        // To mirror the behaviour of Serato, we need to remove from the output of
+        // this function.
+        QSet<int> unsetCuesInMarkersTag;
+        unsetCuesInMarkersTag.reserve(kNumCuesInMarkersTag);
+        for (int i = 0; i < kNumCuesInMarkersTag; i++) {
+            unsetCuesInMarkersTag.insert(i);
         }
 
-        // Take a pre-existing CueInfo object that was read from
-        // "SeratoMarkers2" from the CueMap (or a default constructed CueInfo
-        // object if none exists) and use it as template for the new CueInfo
-        // object. Then overwrite all object values that are present in the
-        // "SeratoMarkers_"tag.
-        CueInfo newCueInfo = cueMap.value(*index);
-        newCueInfo.setType(cueInfo.getType());
-        newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
-        newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
-        newCueInfo.setHotCueIndex(index);
-        newCueInfo.setFlags(cueInfo.flags());
-        newCueInfo.setColor(cueInfo.getColor());
-        cueMap.insert(*index, newCueInfo);
+        for (const CueInfo& cueInfo : cuesMarkers) {
+            if (!isCueInfoValid(cueInfo)) {
+                continue;
+            }
+            // Take a pre-existing CueInfo object that was read from
+            // "SeratoMarkers2" from the CueMap (or a default constructed CueInfo
+            // object if none exists) and use it as template for the new CueInfo
+            // object. Then overwrite all object values that are present in the
+            // "SeratoMarkers_"tag.
+            CueInfo& newCueInfo = cueInfo.getType() == CueType::Loop
+                    ? loopCueMap[*cueInfo.getHotCueIndex()]
+                    : hotCueMap[*cueInfo.getHotCueIndex()];
+            newCueInfo.setType(cueInfo.getType());
+            newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
+            newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
+            newCueInfo.setHotCueIndex(*cueInfo.getHotCueIndex());
+            newCueInfo.setFlags(cueInfo.flags());
+            newCueInfo.setColor(cueInfo.getColor());
 
-        // This cue is set in the "Serato Markers_" tag, so remove it from the
-        // set of unset cues
-        unsetCuesInMarkersTag.remove(*index);
-    };
+            // This cue is set in the "Serato Markers_" tag, so remove it from the
+            // set of unset cues
+            unsetCuesInMarkersTag.remove(*cueInfo.getHotCueIndex());
+        };
 
-    // Now that we know which cues should be present in the "Serato Markers_"
-    // tag but aren't, remove them from the set.
-    for (const int index : unsetCuesInMarkersTag) {
-        cueMap.remove(index);
+        // Now that we know which cues should be present in the "Serato Markers_"
+        // tag but aren't, remove them from the set.
+        for (const int index : unsetCuesInMarkersTag) {
+            hotCueMap.remove(index);
+        }
     }
 
-    return cueMap.values();
+    // Serato has a separate indexing for loop and hot cues.
+    // We sort the Loops Cues into the HotCue map if the given index is free,
+    // add an offset of 8 otherwise or loop until we find a free index.
+    // Cues above index 8 are not accessible in Mixxx, only visible in waveforms
+    // During export the Mixxx indexes are kept to allow a perfect round-trip.
+    for (const CueInfo& loopCueInfo : qAsConst(loopCueMap)) {
+        if (hotCueMap.contains(*loopCueInfo.getHotCueIndex())) {
+            CueInfo cueInfo = loopCueInfo;
+            cueInfo.setHotCueIndex(*loopCueInfo.getHotCueIndex() + kFirstLoopIndex);
+            while (hotCueMap.contains(*cueInfo.getHotCueIndex())) {
+                cueInfo.setHotCueIndex(*cueInfo.getHotCueIndex() + 1);
+            }
+            hotCueMap.insert(*cueInfo.getHotCueIndex(), cueInfo);
+        } else {
+            hotCueMap.insert(*loopCueInfo.getHotCueIndex(), loopCueInfo);
+        }
+    }
+
+    const QList<CueInfo> cueInfos = hotCueMap.values();
+    qDebug() << "SeratoTags::getCueInfos()";
+    for (const CueInfo& cueInfo : cueInfos) {
+        qDebug() << cueInfo;
+    }
+
+    return cueInfos;
 }
 
 void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffsetMillis) {
     // Filter out all cues that cannot be mapped to Serato's tag data,
     // ensure that each hotcue number is unique (by using a map), apply the
     // timing offset and split up cues and loops.
-    QMap<int, CueInfo> cueMap;
+    QMap<int, CueInfo> hotCueMap;
     QMap<int, CueInfo> loopMap;
     for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
         if (!cueInfo.getHotCueIndex()) {
@@ -279,27 +290,34 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
 
         int hotcueIndex = *cueInfo.getHotCueIndex();
         if (hotcueIndex < kFirstHotCueIndex) {
+            // Skip indexes < 0;
             continue;
         }
 
-        CueInfo newCueInfo(cueInfo);
-        if (!cueInfo.getStartPositionMillis()) {
+        CueInfo cueInfoSeratoAdjusted = cueInfo;
+
+        if (!cueInfo.getStartPositionMillis().has_value()) {
             continue;
         }
-        newCueInfo.setStartPositionMillis(
+        cueInfoSeratoAdjusted.setStartPositionMillis(
                 *cueInfo.getStartPositionMillis() - timingOffsetMillis);
 
-        if (cueInfo.getEndPositionMillis()) {
-            newCueInfo.setEndPositionMillis(*cueInfo.getEndPositionMillis() - timingOffsetMillis);
+        if (cueInfo.getEndPositionMillis().has_value()) {
+            cueInfoSeratoAdjusted.setEndPositionMillis(
+                    *cueInfo.getEndPositionMillis() - timingOffsetMillis);
         }
-        newCueInfo.setFlags(cueInfo.flags());
 
         switch (cueInfo.getType()) {
         case CueType::HotCue:
-            cueMap.insert(hotcueIndex, newCueInfo);
+            hotCueMap.insert(hotcueIndex, cueInfoSeratoAdjusted);
             break;
         case CueType::Loop:
-            loopMap.insert(hotcueIndex, newCueInfo);
+            if (!cueInfoSeratoAdjusted.getEndPositionMillis().has_value()) {
+                qWarning() << "Loop Cue" << hotcueIndex << "has no end position";
+                DEBUG_ASSERT(false);
+                continue;
+            }
+            loopMap.insert(hotcueIndex, cueInfoSeratoAdjusted);
             break;
         default:
             qWarning() << "Skipping incompatible cue type";
@@ -310,19 +328,18 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
     // Check if loops were imported or set using a constant offset
     int loopIndexOffset = 0;
     if (!loopMap.isEmpty()) {
+        // firstKey() return the smallest hotcueIndex in the QMap
         if (loopMap.firstKey() >= kFirstLoopIndex) {
             loopIndexOffset = kFirstLoopIndex;
         }
     }
 
-    // Apply loop index offset and create list
-    QList<CueInfo> cueInfoList = cueMap.values();
-    auto it = loopMap.constBegin();
-    while (it != loopMap.constEnd()) {
-        CueInfo cueInfo(it.value());
+    // Recreate a common, sorted list of Serato adjusted CueInfos
+    QList<CueInfo> cueInfoList = hotCueMap.values();
+    for (auto&& cueInfo : loopMap) {
+        // Remove offset of loop cues that they are starting with index 0
         cueInfo.setHotCueIndex(*cueInfo.getHotCueIndex() - loopIndexOffset);
         cueInfoList.append(cueInfo);
-        it++;
     }
 
     m_seratoMarkers.setCues(cueInfoList);

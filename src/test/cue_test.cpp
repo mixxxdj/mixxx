@@ -36,7 +36,7 @@ TEST(CueTest, ConvertCueInfoToCueRoundtrip) {
     const auto cueInfo1 = CueInfo(
             CueType::HotCue,
             std::make_optional(1.0 * 44100 * mixxx::kEngineChannelCount),
-            std::make_optional(2.0 * 44100 * mixxx::kEngineChannelCount),
+            std::nullopt,
             std::make_optional(3),
             QStringLiteral("label"),
             RgbColor::optional(0xABCDEF));

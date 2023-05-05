@@ -239,107 +239,107 @@ fid_run_new(FidFilter *filt, double (**funcpp)(void *,double)) {
       int n_iir = 0;
       int cnt;
       double *iir, *fir;
-      double adj;
+      double adj = 1.0;
       if (filt->typ == 'F' && filt->len == 1) {
-	 gain *= filt->val[0];
-	 filt= FFNEXT(filt);
-	 continue;
+         gain *= filt->val[0];
+         filt= FFNEXT(filt);
+         continue;
       }
       if (filt->typ == 'F') {
-	 iir= 0;
-	 fir= filt->val; n_fir= filt->len;
-	 filt= FFNEXT(filt);
+         iir= 0;
+         fir= filt->val; n_fir= filt->len;
+         filt= FFNEXT(filt);
       } else if (filt->typ == 'I') {
-	 iir= filt->val; n_iir= filt->len;
-	 fir= 0;
-	 filt= FFNEXT(filt);
-	 while (filt->typ == 'F' && filt->len == 1) {
-	    gain *= filt->val[0]; 
-	    filt= FFNEXT(filt);
-	 }
-	 if (filt->typ == 'F') {
-	    fir= filt->val; n_fir= filt->len;
-	    filt= FFNEXT(filt); 
-	 }
+         iir= filt->val; n_iir= filt->len;
+         fir= 0;
+         filt= FFNEXT(filt);
+         while (filt->typ == 'F' && filt->len == 1) {
+            gain *= filt->val[0];
+            filt= FFNEXT(filt);
+         }
+         if (filt->typ == 'F') {
+            fir= filt->val; n_fir= filt->len;
+            filt= FFNEXT(filt);
+         }
       } else 
-	 error("Internal error: fid_run_new can only handle IIR + FIR types");
+         error("Internal error: fid_run_new can only handle IIR + FIR types");
       
       // Okay, we now have an IIR/FIR pair to process, possibly with
       // n_iir or n_fir == 0 if one half is missing
       cnt= n_iir > n_fir ? n_iir : n_fir;
       buf_size += cnt-1;
       if (n_iir) {
-	 adj= 1.0 / iir[0];
-	 gain *= adj;
+         adj= 1.0 / iir[0];
+         gain *= adj;
       }
       if (n_fir == 3 && n_iir == 3) {
-	 if (prev == 18) { cp[-1]= prev= 21; *cp++= 2; }
-	 else if (prev == 21) { cp[-1]++; }
-	 else *cp++= prev= 18;
-	 *dp++= iir[2]*adj; *dp++= fir[2];
-	 *dp++= iir[1]*adj; *dp++= fir[1];
-	 *dp++= fir[0];
+         if (prev == 18) { cp[-1]= prev= 21; *cp++= 2; }
+         else if (prev == 21) { cp[-1]++; }
+         else *cp++= prev= 18;
+         *dp++= iir[2]*adj; *dp++= fir[2];
+         *dp++= iir[1]*adj; *dp++= fir[1];
+         *dp++= fir[0];
       } else if (n_fir == 3 && n_iir == 0) {
-	 if (prev == 17) { cp[-1]= prev= 20; *cp++= 2; }
-	 else if (prev == 20) { cp[-1]++; }
-	 else *cp++= prev= 17;
-	 *dp++= fir[2];
-	 *dp++= fir[1];
-	 *dp++= fir[0];
+         if (prev == 17) { cp[-1]= prev= 20; *cp++= 2; }
+         else if (prev == 20) { cp[-1]++; }
+         else *cp++= prev= 17;
+         *dp++= fir[2];
+         *dp++= fir[1];
+         *dp++= fir[0];
       } else if (n_fir == 0 && n_iir == 3) {
-	 if (prev == 16) { cp[-1]= prev= 19; *cp++= 2; }
-	 else if (prev == 19) { cp[-1]++; }
-	 else *cp++= prev= 16;
-	 *dp++= iir[2]*adj;
-	 *dp++= iir[1]*adj;
+         if (prev == 16) { cp[-1]= prev= 19; *cp++= 2; }
+         else if (prev == 19) { cp[-1]++; }
+         else *cp++= prev= 16;
+         *dp++= iir[2]*adj;
+         *dp++= iir[1]*adj;
       } else {
-	 prev= 0;	// Just cancel 'prev' as we only use it for 16-18,19-21
-	 if (cnt > n_fir) {
-	    a= 0; 
-	    while (cnt > n_fir && cnt > 2) {
-	       *dp++= iir[--cnt] * adj; a++;
-	    }
-	    while (a >= 4) { 
-	       int nn= a/4; if (nn > 255) nn= 255;
-	       *cp++= 4; *cp++= nn; a -= nn*4; 
-	    }
-	    if (a) *cp++= a;
-	 }
-	 if (cnt > n_iir) {
-	    a= 0; 
-	    while (cnt > n_iir && cnt > 2) {
-	       *dp++= fir[--cnt]; a++;
-	    }
-	    while (a >= 4) { 
-	       int nn= a/4; if (nn > 255) nn= 255;
-	       *cp++= 8; *cp++= nn; a -= nn*4; 
-	    }
-	    if (a) *cp++= 4+a;
-	 }
-	 a= 0;
-	 while (cnt > 2) {
-	    cnt--; a++;
-	    *dp++= iir[cnt]*adj; *dp++= fir[cnt];
-	 }
-	 while (a >= 4) { 
-	    int nn= a/4; if (nn > 255) nn= 255;
-	    *cp++= 12; *cp++= nn; a -= nn*4; 
-	 }
-	 if (a) *cp++= 8+a;
+         prev= 0;        // Just cancel 'prev' as we only use it for 16-18,19-21
+         if (cnt > n_fir) {
+            a= 0;
+            while (cnt > n_fir && cnt > 2) {
+               *dp++= iir[--cnt] * adj; a++;
+            }
+            while (a >= 4) {
+               int nn= a/4; if (nn > 255) nn= 255;
+               *cp++= 4; *cp++= nn; a -= nn*4;
+            }
+            if (a) *cp++= a;
+         }
+         if (cnt > n_iir) {
+            a= 0;
+            while (cnt > n_iir && cnt > 2) {
+               *dp++= fir[--cnt]; a++;
+            }
+            while (a >= 4) {
+               int nn= a/4; if (nn > 255) nn= 255;
+               *cp++= 8; *cp++= nn; a -= nn*4;
+            }
+            if (a) *cp++= 4+a;
+         }
+         a= 0;
+         while (cnt > 2) {
+            cnt--; a++;
+            *dp++= iir[cnt]*adj; *dp++= fir[cnt];
+         }
+         while (a >= 4) {
+            int nn= a/4; if (nn > 255) nn= 255;
+            *cp++= 12; *cp++= nn; a -= nn*4;
+         }
+         if (a) *cp++= 8+a;
 
-	 if (!n_fir) {
-	    *cp++= 13;
-	    *dp++= iir[1];
-	 } else if (!n_iir) {
-	    *cp++= 14;
-	    *dp++= fir[1];
-	    *dp++= fir[0];
-	 } else {
-	    *cp++= 15;
-	    *dp++= iir[1];
-	    *dp++= fir[1];
-	    *dp++= fir[0];
-	 }
+         if (!n_fir) {
+            *cp++= 13;
+            *dp++= iir[1];
+         } else if (!n_iir) {
+            *cp++= 14;
+            *dp++= fir[1];
+            *dp++= fir[0];
+         } else {
+            *cp++= 15;
+            *dp++= iir[1];
+            *dp++= fir[1];
+            *dp++= fir[0];
+         }
       }
    }
    
@@ -350,16 +350,16 @@ fid_run_new(FidFilter *filt, double (**funcpp)(void *,double)) {
    *cp++= 0;
 
    // Sanity checks
-   coef_cnt= dp-coef_tmp;
-   cmd_cnt= cp-cmd_tmp;
+   coef_cnt= (int)(dp-coef_tmp);
+   cmd_cnt= (int)(cp-cmd_tmp);
    if (coef_cnt > coef_max ||
        cmd_cnt > cmd_max) 
       error("fid_run_new internal error; arrays exceeded");
 
    // Allocate the final Run structure to return
    rr= (Run*)Alloc(sizeof(Run) +
-		   coef_cnt*sizeof(double) +
-		   cmd_cnt*sizeof(char));
+                   coef_cnt*sizeof(double) +
+				   cmd_cnt*sizeof(char));
    rr->magic= 0x64966325;
    rr->buf_size= buf_size;
    rr->coef= (double*)(rr+1);

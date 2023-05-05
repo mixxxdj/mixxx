@@ -845,6 +845,42 @@
   [#8818](https://github.com/mixxxdj/mixxx/pull/8818)
   [#4907](https://github.com/mixxxdj/mixxx/pull/4907)
 
+## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (unreleased)
+
+* Fix empty waveform overview after loading a track (Mixxx 2.3.4 regression)
+  Fixed by [#11333](https://github.com/mixxxdj/mixxx/pull/11333)
+  [#11359](https://github.com/mixxxdj/mixxx/pull/11359)
+  [#11344](https://github.com/mixxxdj/mixxx/issues/11344)
+* Fullscreen: Fix a crash that occurs on Linux after enabling fullsceen and using menu
+  shortcuts e.g. Alt-F.
+  [#11328](https://github.com/mixxxdj/mixxx/pull/11328)
+  [#11320](https://github.com/mixxxdj/mixxx/issues/11320)
+* Fullscreen: Rebuild & reconnect menu only on desktops with global menu
+  [#11350](https://github.com/mixxxdj/mixxx/pull/11350)
+* macOS: Request Microphone and line-in access permission.
+  [#11367](https://github.com/mixxxdj/mixxx/pull/11367)
+  [#11365](https://github.com/mixxxdj/mixxx/issues/11365)
+* JACK API: Allow to explicit select buffers of 2048 and 4096 frames/period. They are not
+  supported by the automatic buffer setting of the used PortAudio library.
+  [#11366](https://github.com/mixxxdj/mixxx/pull/11366)
+  [#11341](https://github.com/mixxxdj/mixxx/issues/11341)
+* Pioneer DDJ-400: Make Beat FX section more intuitive
+  [#10912](https://github.com/mixxxdj/mixxx/pull/10912)
+* Playlist export: Adopt new extension after changing the playlist type
+  [#11332](https://github.com/mixxxdj/mixxx/pull/11332)
+  [#11327](https://github.com/mixxxdj/mixxx/issues/11327)
+* LateNight: brighter fx parameter buttons
+  [#11397](https://github.com/mixxxdj/mixxx/pull/11397)
+* Fix drift in analyzis data after exporting metadata to MP3 files with ID3v1.1 tags
+  [#11168](https://github.com/mixxxdj/mixxx/pull/11168)
+  [#11159](https://github.com/mixxxdj/mixxx/issues/11159)
+* Fix broadcasting using Opus encoding
+  [#11349](https://github.com/mixxxdj/mixxx/pull/11349)
+  [#10666](https://github.com/mixxxdj/mixxx/issues/10666)
+* Tango: Remove VU peak indicators from stacked layout. This fixes a visual regression in Mixxx 2.3.4.
+  [#11430](https://github.com/mixxxdj/mixxx/pull/11430)
+  [#11362](https://github.com/mixxxdj/mixxx/issues/11362)
+
 ## [2.3.4](https://launchpad.net/mixxx/+milestone/2.3.4) (2023-03-03)
 
 * Track Properties: Show 'date added' as local time [#4838](https://github.com/mixxxdj/mixxx/pull/4838) [#10776](https://github.com/mixxxdj/mixxx/issues/10776)
@@ -889,7 +925,7 @@
 * Allow search in external libraries [#11221](https://github.com/mixxxdj/mixxx/pull/11221) [#11216](https://github.com/mixxxdj/mixxx/issues/11216)
 * JACK buffer size fix [#11121](https://github.com/mixxxdj/mixxx/pull/11121)
 * Don't discard file tags with tuning information like "A#m +50" [#10992](https://github.com/mixxxdj/mixxx/pull/10992)
-* Year search: Find also full date entries [#11251](https://github.com/mixxxdj/mixxx/pull/11251) [#11251](https://github.com/mixxxdj/mixxx/issues/11113)
+* Year search: Find also full date entries [#11251](https://github.com/mixxxdj/mixxx/pull/11251) [#11113](https://github.com/mixxxdj/mixxx/issues/11113)
 * Fix visual alignment of beats and waveform in case of decoding issues [#11162](https://github.com/mixxxdj/mixxx/pull/11162)
 * Avoid "active key-value observers" messages during skin parsing on macOS [#11265](https://github.com/mixxxdj/mixxx/pull/11265)
 * Fullscreen on Linux: Fix issues caused by Ubuntu Unity workaround [#11295](https://github.com/mixxxdj/mixxx/pull/11295) [#11281](https://github.com/mixxxdj/mixxx/issues/11281) [#11294](https://github.com/mixxxdj/mixxx/issues/11294)

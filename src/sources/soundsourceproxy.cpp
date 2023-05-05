@@ -802,7 +802,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
                 << "Parsing missing"
                 << (splitArtistTitle ? "artist/title" : "title")
                 << "from file name:"
-                << fileInfo;
+                << fileInfo.location();
         if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
                     fileInfo.fileName(), splitArtistTitle)) {
             // Pretend that metadata import succeeded
