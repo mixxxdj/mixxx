@@ -9,7 +9,7 @@
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLWaveformRenderer(waveformWidgetRenderer),
+        : GLWaveformRendererSignal(waveformWidgetRenderer),
           m_drawcount(0) {
 }
 

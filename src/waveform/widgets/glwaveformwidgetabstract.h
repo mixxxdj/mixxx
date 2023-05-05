@@ -2,7 +2,7 @@
 
 #include <QGLWidget>
 
-#include "waveform/renderers/glwaveformrenderer.h"
+#include "../renderers/glwaveformrenderersignal.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 
@@ -34,6 +34,6 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget
         }
     }
 
-    GLWaveformRenderer* m_pGlRenderer;
+    GLWaveformRendererSignal* m_pGlRenderer;
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 };
