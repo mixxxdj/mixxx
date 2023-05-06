@@ -1,35 +1,6 @@
 // eslint-disable-next-line-no-var
 var Prime4 = {};
 
-/**
- * DENON DJ PRIME 4 - CONTROLLER MAPPING FOR MIXXX
- *
- * When you boot up the Prime 4, it will be in standalone mode,
- * which will prevent it from connecting to Mixxx. To put your
- * Prime 4 into Computer Mode, follow these steps:
- *
- *  - Turn on the Prime 4
- *  - Hold down the VIEW button to access the main menu
- *  - Tap "SOURCES"
- *  - Tap the icon of a laptop with a USB symbol in the top-right
- *  - Tap "YES"
- *  - Plug in the Prime 4 to your computer using the provided USB cable
- *  - Confirm that your device is connected (This might take a few seconds)
- *  - Start Mixxx
- *  - Open the Preferences window
- *  - Click "Controllers" to expand the list of USB devices Mixxx is detecting
- *  - Click "PRIME 4 Control Surface MIDI" from the list
- *  - In the "Load Mapping" dropdown list, select "Denon Prime 4 - Mixxx Mapping"
- *  - Make sure the "Enabled" box is ticked
- *  - Click "Apply" or "OK"
- *
- * If everything works, you should see the LEDs on your Prime 4
- * light up and respond to Mixxx. Enjoy!
- *
- * Below are a few parameters you can change if you want to
- * customize anything :)
- */
-
 // Would you like each deck to show the colour of its loaded track (if specified)?
 // (Choose between true or false)
 //const showTrackColor = false; // NOT IMPLEMENTED YET
