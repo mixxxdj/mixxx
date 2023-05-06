@@ -7,16 +7,13 @@ const denonHeader = [0x00, 0x02, 0x0B];
 
 // Convert hex value (0xYZ) to individual bytes for SysEx (0x0Y, 0x0Z)
 const valueToDenonBytes = function(number) {
-    const value = number.toString(16);
-    console.log("number: ", number, ", value: ", value);
-    const array = [0x00 + value[0], 0x00 + value[1]];
-    return array;
+    return [(number >> 4) & 0xF, number & 0xF];
 };
 
 const colourToDenonBytes = function(colourArray) {
     const array = [];
     for (let i = 0; i < 4; i++) {
-        const byte = colourArray[i].toString();
+        const byte = colourArray[i];
         array.push(...valueToDenonBytes(byte));
     }
     return (array);
@@ -78,12 +75,13 @@ const textToSysex = function(text) {
 
 const displayText = function(display, text) {
     const array = [display, 0x08, 0x0A, 0x00, 0x04];
-    array.push(0x00, 0x02, 0x00);
+    array.push(0x00, 0x02, 0x00); //TODO: Add flexibility for background images
     array.push(textToSysex(text));
     finalSysexWrap(array);
     return (array);
 };
 
+// Simplify process of sending SysEx messages
 const sysex = function(sysExMsg) {
     midi.sendSysexMsg(sysExMsg, sysExMsg.length);
 };
@@ -121,11 +119,12 @@ const blackScreen = function(display) {
     return (array);
 };
 
+
 Prime4Jog.init = function(id, _debug) {
     wheelSide = wheelSideToSysex(id);
     sysex(unlockDisplay(wheelSide));
-    sysex(displayText(wheelSide, "1/54"));
-    sysex(changeTextColour(wheelSide, [0x63, 0x63, 0x63, 0x63]));
+    sysex(displayText(wheelSide, "--"));
+    sysex(changeTextColour(wheelSide, [0xff, 0xff, 0xff, 0xff]));
 };
 
 Prime4Jog.shutdown = function() {

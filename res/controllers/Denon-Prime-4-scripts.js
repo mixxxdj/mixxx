@@ -42,13 +42,13 @@ const deckColors = [
     "green",
 
     // Deck 2
-    "green",
+    "blue",
 
     // Deck 3
-    "blue",
+    "cyan",
 
     // Deck 4
-    "blue",
+    "magenta",
 
 ];
 
