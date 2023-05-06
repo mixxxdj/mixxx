@@ -875,7 +875,7 @@ Prime4.PadSection = function(deck, offset) {
     // Create component containers for each pad mode
     const modes = new components.ComponentContainer({
         "hotcue": new Prime4.CyclingArrayView([new Prime4.hotcueMode(deck, offset)], 0),
-        "loop": new Prime4.CyclingArrayView([new Prime4.cueloopMode(deck, offset), new Prime4.autoloopMode(deck, offset)], 0),
+        "loop": new Prime4.CyclingArrayView([new Prime4.savedLoopMode(deck, offset), new Prime4.autoloopMode(deck, offset)], 0),
         "roll": new Prime4.CyclingArrayView([new Prime4.rollMode(deck, offset)], 0),
         "sampler": new Prime4.CyclingArrayView([new Prime4.samplerMode(deck, offset)], 0),
     });
@@ -999,41 +999,26 @@ Prime4.hotcueMode = function(deck, offset) {
 };
 Prime4.hotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
 
-// CUE LOOP MODE
-Prime4.cueloopMode = function(deck, offset) {
+// SAVED LOOP MODE
+Prime4.savedLoopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.LOOP;
     this.colourOn = Prime4.rgbCode.blue;
     this.colourOff = Prime4.rgbCode.whiteDark;
-    const PerformancePad = function(n) {
-        this.midi = [0x94 + offset, 0x0E + n];
-        this.number = n;
-        this.outKey = "hotcue_" + this.number + "_enabled";
-        this.colorKey = "hotcue_" + this.number + "_color";
-        components.Button.call(this);
-    };
-    PerformancePad.prototype = new components.Button({
-        group: deck.currentDeck,
-        on: this.colourOn,
-        off: Prime4.rgbCode.whiteDark,
-        colorMapper: Prime4ColorMapper,
-        outConnect: false,
-        unshift: function() {
-            this.inKey = "hotcue_" + this.number + "_cueloop";
-        },
-        shift: function() {
-            this.inKey = "hotcue_" + this.number + "_cueloop";
-        },
-        output: components.HotcueButton.prototype.output,
-        outputColor: components.HotcueButton.prototype.outputColor,
-        connect: components.HotcueButton.prototype.connect,
-    });
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
-        this.pads[i] = new PerformancePad(i);
+        this.pads[i] = new components.HotcueButton({
+            number: i + 8,
+            group: deck.currentDeck,
+            midi: [0x94 + offset, 0x0E + i],
+            colorMapper: Prime4ColorMapper,
+            on: this.colourOn,
+            off: this.colourOff,
+            outConnect: false,
+        });
     }
 };
-Prime4.cueloopMode.prototype = Object.create(components.ComponentContainer.prototype);
+Prime4.savedLoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 // AUTOLOOP MODE
 Prime4.autoloopMode = function(deck, offset) {
@@ -1096,7 +1081,8 @@ Prime4.samplerMode = function(deck, offset) {
             midi: [0x94 + offset, 0x0E + i],
             colorMapper: Prime4ColorMapper,
             on: this.colourOn,
-            off: Prime4.rgbCode.whiteDark, outConnect: false,
+            off: Prime4.rgbCode.whiteDark,
+            outConnect: false,
         });
     }
 };
