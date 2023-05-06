@@ -2,6 +2,8 @@
 
 #include <QString>
 
+class QEvent;
+
 /// Mixin to mark a widget as a drop target for tracks.
 ///
 /// This class is *not* derived from QObject (inheriting from 2 QObject classes
@@ -19,6 +21,8 @@ class TrackDropTarget {
     void emitTrackDropped(const QString& filename, const QString& group) {
         emit trackDropped(filename, group); // clazy:exclude=incorrect-emit
     }
+
+    virtual bool handleDragAndDropEventFromWindow(QEvent* event) { return false; }
 
   signals:
     virtual void trackDropped(const QString& filename, const QString& group) = 0;

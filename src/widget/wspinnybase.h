@@ -79,6 +79,9 @@ class WSpinnyBase : public WGLWidget,
     void hideEvent(QHideEvent* event) override;
     bool event(QEvent* pEvent) override;
 
+    // TrackDropTarget:
+    bool handleDragAndDropEventFromWindow(QEvent* ev) override;
+
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);
     double calculatePositionFromAngle(double angle);

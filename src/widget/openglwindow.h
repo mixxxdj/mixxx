@@ -11,7 +11,6 @@ class OpenGLWindow : public QOpenGLWindow {
 
     WGLWidget* m_pWidget;
     bool m_dirty{};
-    bool m_handlingEvent{};
 
   public:
     OpenGLWindow(WGLWidget* widget);

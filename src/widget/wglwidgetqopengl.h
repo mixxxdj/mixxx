@@ -12,11 +12,13 @@
 
 class QPaintDevice;
 class OpenGLWindow;
+class TrackDropTarget;
 
 class WGLWidget : public QWidget {
   private:
     OpenGLWindow* m_pOpenGLWindow{};
     QWidget* m_pContainerWidget{};
+    TrackDropTarget* m_pTrackDropTarget{};
 
   public:
     WGLWidget(QWidget* parent);
@@ -37,6 +39,9 @@ class WGLWidget : public QWidget {
     // called by OpenGLWindow
     virtual void resizeGL(int w, int h);
     virtual void initializeGL();
+
+    void setTrackDropTarget(TrackDropTarget* target);
+    TrackDropTarget* trackDropTarget() const;
 
   protected:
     void showEvent(QShowEvent* event) override;

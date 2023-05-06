@@ -25,6 +25,15 @@ QPaintDevice* WGLWidget::paintDevice() {
     return m_pOpenGLWindow;
 }
 
+void WGLWidget::setTrackDropTarget(TrackDropTarget* target)
+{
+    m_pTrackDropTarget = target;
+}
+
+TrackDropTarget* WGLWidget::trackDropTarget() const {
+    return m_pTrackDropTarget;
+}
+
 void WGLWidget::showEvent(QShowEvent* event) {
     if (!m_pOpenGLWindow) {
         m_pOpenGLWindow = new OpenGLWindow(this);

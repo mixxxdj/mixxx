@@ -95,6 +95,10 @@ WSpinnyBase::WSpinnyBase(
             this,
             &WSpinnyBase::slotCoverInfoSelected);
     connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WSpinnyBase::slotReloadCoverArt);
+
+#ifdef MIXXX_USE_QOPENGL
+    setTrackDropTarget(this);
+#endif
 }
 
 WSpinnyBase::~WSpinnyBase() {
@@ -647,6 +651,10 @@ bool WSpinnyBase::event(QEvent* pEvent) {
         updateTooltip();
     }
     return WGLWidget::event(pEvent);
+}
+
+bool WSpinnyBase::handleDragAndDropEventFromWindow(QEvent* ev) {
+    return event(ev);
 }
 
 void WSpinnyBase::dragEnterEvent(QDragEnterEvent* event) {
