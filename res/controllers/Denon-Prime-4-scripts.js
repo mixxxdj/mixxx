@@ -878,12 +878,15 @@ Prime4.PadSection = function(deck, offset) {
         "hotcue": new Prime4.CyclingArrayView([new Prime4.hotcueMode(deck, offset)], 0),
         "loop": new Prime4.CyclingArrayView([new Prime4.savedLoopMode(deck, offset), new Prime4.autoloopMode(deck, offset)], 0),
         "roll": new Prime4.CyclingArrayView([new Prime4.rollMode(deck, offset)], 0),
-        "sampler": new Prime4.CyclingArrayView([new Prime4.samplerMode(deck, offset)], 0),
+        "slicer": new Prime4.CyclingArrayView([new Prime4.extraCueMode(deck, offset)], 0),
+        "rollShift": new Prime4.CyclingArrayView([new Prime4.samplerMode(deck, offset)], 0),
     });
 
     modes.forEachComponent(c => c.disconnect());
 
     const controlToPadMode = control => {
+        // If a pad selector button has multiple modes, go to the first mode
+        // by default. Otherwise, go to the next mode in that button's list.
         const nextPadMode = (a) => {
             console.log(a);
             if (a.indexable.includes(this.currentMode)) {
@@ -904,10 +907,14 @@ Prime4.PadSection = function(deck, offset) {
             mode = nextPadMode(modes.loop);
             break;
         case Prime4.padMode.ROLL:
-            mode = nextPadMode(modes.roll);
+            if (Prime4.shift) {
+                mode = nextPadMode(modes.rollShift);
+            } else {
+                mode = nextPadMode(modes.roll);
+            }
             break;
         case Prime4.padMode.SLICER:
-            mode = nextPadMode(modes.sampler);
+            mode = nextPadMode(modes.slicer);
             break;
         }
 
@@ -918,9 +925,26 @@ Prime4.PadSection = function(deck, offset) {
 
     this.padModeSelectLeds = new components.Component({
         trigger: function() {
+            /*
+             * This function results in the currently selected pad mode showing
+             * an inactive state when selecting pad modes with the shift button
+             *
             for (const modeLayers of Object.values(modes)) {
                 const mode = modeLayers.current();
                 midi.sendShortMsg(0x94 + offset, mode.ledControl, theContainer.currentMode === mode ? mode.colourOn : mode.colourOff);
+            }
+            */
+            for (const modeLayers of Object.values(modes)) {
+                const mode = modeLayers.current();
+                if (theContainer.currentMode !== mode) {
+                    midi.sendShortMsg(0x94 + offset, mode.ledControl, mode.colourOff);
+                }
+            }
+            for (const modeLayers of Object.values(modes)) {
+                const mode = modeLayers.current();
+                if (theContainer.currentMode === mode) {
+                    midi.sendShortMsg(0x94 + offset, mode.ledControl, mode.colourOn);
+                }
             }
         },
     }, false);
@@ -1072,7 +1096,7 @@ Prime4.rollMode.prototype = Object.create(components.ComponentContainer.prototyp
 // SAMPLER MODE
 Prime4.samplerMode = function(deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = Prime4.padMode.SLICER;
+    this.ledControl = Prime4.padMode.ROLL;
     this.colourOn = Prime4.rgbCode.green;
     this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
@@ -1088,3 +1112,43 @@ Prime4.samplerMode = function(deck, offset) {
     }
 };
 Prime4.samplerMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+/*
+ * TODO: Add slicer mode
+ *
+ * Thanks to the new controls added in 2.4, I believe I can create a custom
+ * pad mode that behaves just like Slicer Mode in the Prime 4's standalone
+ * mode. It would involve setting 8 hotcues across the next 8 beats on the
+ * beatgrid, then clearing and re-setting those hotcues every 8 beats.
+ * Slicer Loop mode could work in a similar way, but instead of re-setting
+ * the hotcues every 8 beats, I just set the 8 hotcues once, then make an
+ * 8-beat loop starting from the first new hotcue, and activate a 1-beat
+ * loop roll whenever one of the hotcue pads get pressed. I need to
+ * familiarize myself with these new Mixxx Controls first, but I'm pretty
+ * sure it's possible. Hopefully this can then be implemented in
+ * ComponentsJS so that it can easily be added to other hardware in the
+ * future.
+ *
+ * For now, I'll just make the Slicer pad mode control hotcues 17 to 24,
+ * like how Loop mode controls hotcues 9 to 16 for the time-being.
+ */
+
+Prime4.extraCueMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = Prime4.padMode.SLICER;
+    this.colourOn = Prime4.rgbCode.blue;
+    this.colourOff = Prime4.rgbCode.whiteDark;
+    this.pads = new components.ComponentContainer();
+    for (let i = 1; i <= 8; i++) {
+        this.pads[i] = new components.HotcueButton({
+            number: i + 16,
+            group: deck.currentDeck,
+            midi: [0x94 + offset, 0x0E + i],
+            colorMapper: Prime4ColorMapper,
+            on: this.colourOn,
+            off: this.colourOff,
+            outConnect: false,
+        });
+    }
+};
+Prime4.extraCueMode.prototype = Object.create(components.ComponentContainer.prototype);
