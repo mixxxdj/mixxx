@@ -878,7 +878,7 @@ Prime4.PadSection = function(deck, offset) {
         "hotcue": new Prime4.CyclingArrayView([new Prime4.hotcueMode(deck, offset)], 0),
         "loop": new Prime4.CyclingArrayView([new Prime4.savedLoopMode(deck, offset), new Prime4.autoloopMode(deck, offset)], 0),
         "roll": new Prime4.CyclingArrayView([new Prime4.rollMode(deck, offset)], 0),
-        "slicer": new Prime4.CyclingArrayView([new Prime4.extraCueMode(deck, offset)], 0),
+        "slicer": new Prime4.CyclingArrayView([new Prime4.extraCueModeA(deck, offset), new Prime4.extraCueModeB(deck, offset)], 0),
         "rollShift": new Prime4.CyclingArrayView([new Prime4.samplerMode(deck, offset)], 0),
     });
 
@@ -1133,7 +1133,7 @@ Prime4.samplerMode.prototype = Object.create(components.ComponentContainer.proto
  * like how Loop mode controls hotcues 9 to 16 for the time-being.
  */
 
-Prime4.extraCueMode = function(deck, offset) {
+Prime4.extraCueModeA = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = Prime4.padMode.SLICER;
     this.colourOn = Prime4.rgbCode.blue;
@@ -1151,4 +1151,24 @@ Prime4.extraCueMode = function(deck, offset) {
         });
     }
 };
-Prime4.extraCueMode.prototype = Object.create(components.ComponentContainer.prototype);
+Prime4.extraCueModeA.prototype = Object.create(components.ComponentContainer.prototype);
+
+Prime4.extraCueModeB = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = Prime4.padMode.SLICER;
+    this.colourOn = Prime4.rgbCode.green;
+    this.colourOff = Prime4.rgbCode.whiteDark;
+    this.pads = new components.ComponentContainer();
+    for (let i = 1; i <= 8; i++) {
+        this.pads[i] = new components.HotcueButton({
+            number: i + 24,
+            group: deck.currentDeck,
+            midi: [0x94 + offset, 0x0E + i],
+            colorMapper: Prime4ColorMapper,
+            on: this.colourOn,
+            off: this.colourOff,
+            outConnect: false,
+        });
+    }
+};
+Prime4.extraCueModeB.prototype = Object.create(components.ComponentContainer.prototype);
