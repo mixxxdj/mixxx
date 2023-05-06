@@ -1,5 +1,6 @@
 #pragma once
 
+#include "waveform/renderers/glwaveformrenderer.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wglwidget.h"
@@ -38,13 +39,6 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget
             }
         }
     }
-
-    GLWaveformRendererSignal* m_pGlRenderer;
-
-  private:
-#ifdef MIXXX_USE_QOPENGL
-    void handleEventFromWindow(QEvent* ev) override;
-#endif
 
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 };
