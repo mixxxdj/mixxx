@@ -4,8 +4,8 @@
 #include <QResizeEvent>
 
 #include "widget/tooltipqopengl.h"
-#include "widget/wglwidget.h"
 #include "widget/trackdroptarget.h"
+#include "widget/wglwidget.h"
 
 OpenGLWindow::OpenGLWindow(WGLWidget* widget)
         : m_pWidget(widget) {
@@ -69,9 +69,9 @@ bool OpenGLWindow::event(QEvent* ev) {
             ToolTipQOpenGL::singleton().stop(m_pWidget);
         }
 
-        if (t == QEvent::DragEnter || t == QEvent::DragMove || t == QEvent::DragLeave || t == QEvent::Drop)
-        {
-            // Drag & Drop events are not delivered correctly when using QApplication::sendEvent 
+        if (t == QEvent::DragEnter || t == QEvent::DragMove ||
+                t == QEvent::DragLeave || t == QEvent::Drop) {
+            // Drag & Drop events are not delivered correctly when using QApplication::sendEvent
             // and even result in a recursive call to this method, so we use our own mechanism.
             if (m_pWidget->trackDropTarget()) {
                 return m_pWidget->trackDropTarget()->handleDragAndDropEventFromWindow(ev);
@@ -91,9 +91,10 @@ bool OpenGLWindow::event(QEvent* ev) {
             return result;
         }
 
-        // Send all remaining events to the widget that owns the window container widget that contains
-        // this QOpenGLWindow. With this mouse events, keyboard events, etc all arrive as intended,
-        // including the events for the WWaveformViewer that contains the waveform widget.
+        // Send all remaining events to the widget that owns the window
+        // container widget that contains this QOpenGLWindow. With this mouse
+        // events, keyboard events, etc all arrive as intended, including the
+        // events for the WWaveformViewer that contains the waveform widget.
         QApplication::sendEvent(m_pWidget, ev);
     }
 
