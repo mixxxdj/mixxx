@@ -793,6 +793,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Jog Wheel LED
     this.jogWheelLed = new components.Component({
         midi: [0x90 + midiChannel, 0x21],
+        //outKey: "scratch2_enable", //TODO: Show white on jog wheel LED to indicate scratching
         on: colDeck[deckNumbers - 1],
         trigger: function() {
             this.send(this.on);
