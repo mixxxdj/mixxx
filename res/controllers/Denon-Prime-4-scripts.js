@@ -1089,6 +1089,9 @@ Prime4.rollMode = function(deck, offset) {
             off: Prime4.rgbCode.green,
             outConnect: false,
         });
+        if (i % 2 === 0 & i < 8) {
+            this.pads[i].off = 0x23;
+        }
     }
 };
 Prime4.rollMode.prototype = Object.create(components.ComponentContainer.prototype);
@@ -1105,8 +1108,8 @@ Prime4.samplerMode = function(deck, offset) {
             number: i,
             midi: [0x94 + offset, 0x0E + i],
             colorMapper: Prime4ColorMapper,
-            on: this.colourOn,
-            off: Prime4.rgbCode.whiteDark,
+            on: Prime4.rgbCode.yellow,
+            off: Prime4.rgbCode.yellowDark,
             outConnect: false,
         });
     }
@@ -1144,7 +1147,6 @@ Prime4.extraCueModeA = function(deck, offset) {
             number: i + 16,
             group: deck.currentDeck,
             midi: [0x94 + offset, 0x0E + i],
-            colorMapper: Prime4ColorMapper,
             on: this.colourOn,
             off: this.colourOff,
             outConnect: false,
@@ -1164,7 +1166,6 @@ Prime4.extraCueModeB = function(deck, offset) {
             number: i + 24,
             group: deck.currentDeck,
             midi: [0x94 + offset, 0x0E + i],
-            colorMapper: Prime4ColorMapper,
             on: this.colourOn,
             off: this.colourOff,
             outConnect: false,
