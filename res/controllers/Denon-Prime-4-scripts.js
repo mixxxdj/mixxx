@@ -826,6 +826,18 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         key: "LoadSelectedTrack",
         off: colDeckDark[deckNumbers - 1],
         on: colDeck[deckNumbers - 1],
+        shift: function() {
+            this.inKey = "eject";
+            this.outKey = this.inKey;
+            this.off = Prime4.rgbCode.whiteDark;
+            this.on = Prime4.rgbCode.white;
+        },
+        unshift: function() {
+            this.inKey = "LoadSelectedTrack";
+            this.outKey = this.inKey;
+            this.off = colDeckDark[deckNumbers - 1];
+            this.on = colDeck[deckNumbers - 1];
+        },
     });
 
     this.reconnectComponents(function(c) {
