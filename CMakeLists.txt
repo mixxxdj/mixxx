@@ -108,7 +108,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
-project(mixxx VERSION 2.3.4)
+project(mixxx VERSION 2.3.5)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "") # set to "alpha-pre" "beta" or ""
 
