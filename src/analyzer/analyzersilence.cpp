@@ -132,7 +132,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         pN60dBSound->setStartAndEndPosition(firstSoundPosition, lastSoundPosition);
     }
 
-    setupMainAndIntroCue(pTrack.get(), firstSoundPosition, m_pConfig.get());
+    setupMainAndIntroCue(pTrack.get(), firstSoundPosition, m_pConfig.data());
     setupOutroCue(pTrack.get(), lastSoundPosition);
 }
 
