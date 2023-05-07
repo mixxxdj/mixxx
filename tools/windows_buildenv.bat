@@ -114,7 +114,7 @@ EXIT /B 0
 
 
 :DETECT_SEVENZIP
-    SET SEVENZIP_PATH=7z.exe
+    SET SEVENZIP_PATH="7z.exe"
     !SEVENZIP_PATH! --help >NUL 2>NUL
     IF errorlevel 1 (
         SET SEVENZIP_PATH="c:\Program Files\7-Zip\7z.exe"
@@ -123,11 +123,11 @@ EXIT /B 0
             SET SEVENZIP_PATH="c:\Program Files (x86)\7-Zip\7z.exe"
             !SEVENZIP_PATH! --help >NUL 2>NUL
             if errorlevel 1 (
-                SET SEVENZIP_PATH=
+                SET SEVENZIP_PATH=""
             )
         )
     )
-    SET RETVAL="!SEVENZIP_PATH!"
+    SET RETVAL=!SEVENZIP_PATH!
     GOTO :EOF
 
 
