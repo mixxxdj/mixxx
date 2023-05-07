@@ -6,7 +6,7 @@ var Prime4 = {};
 //const showTrackColor = false; // NOT IMPLEMENTED YET
 
 // What default colour would you like each deck to be?
-// (Choose between "red", "yellow", "green", "cyan", "blue", "magenta", or "white")
+// (Choose between "red", "orange", "yellow", "green", "cyan", "blue", "magenta", or "white")
 const deckColors = [
 
     // Deck 1
@@ -95,6 +95,7 @@ Prime4.rgbCode = {
     whiteDark: 21,
     redDim: 32,
     magentaDim: 34,
+    orangeDark: 36,
     yellowDim: 40,
     whiteDim: 42,
     red: 48,
@@ -145,7 +146,7 @@ const Prime4ColorMapper = new ColorMapper({
     0xA00020: 0x21,
     0xA000A0: 0x22, // dim magenta
     0xA000C0: 0x23,
-    0xA02000: 0x24,
+    0xA02000: 0x24, // dark orange
     0xA02020: 0x25,
     0xA020A0: 0x26,
     0xA020C0: 0x27,
@@ -1108,8 +1109,8 @@ Prime4.samplerMode = function(deck, offset) {
             number: i,
             midi: [0x94 + offset, 0x0E + i],
             colorMapper: Prime4ColorMapper,
-            on: Prime4.rgbCode.yellow,
-            off: Prime4.rgbCode.yellowDark,
+            on: Prime4.rgbCode.orange,
+            off: Prime4.rgbCode.orangeDark,
             outConnect: false,
         });
     }
