@@ -55,15 +55,14 @@ class AnalyzerWaveformTest : public MixxxTest {
         bool pass = true;
         // If the file is not there, we will fail and write out the .actual
         // reference file.
-        QByteArray actual = pWaveform->toByteArray();
-        QByteArray reference;
+        const QByteArray actual = pWaveform->toByteArray();
 
         ASSERT_TRUE(f.open(QFile::ReadOnly));
-        reference = f.readAll();
+        const QByteArray reference = f.readAll();
 
         if (actual.size() == reference.size()) {
             for (int i = 0; i < actual.size(); ++i) {
-                if (actual[i] != reference[i]) {
+                if (actual.at(i) != reference.at(i)) {
                     qDebug() << "#" << i << QString::number(actual[i], 16)
                              << QString::number(reference[i], 16);
                     pass = false;
