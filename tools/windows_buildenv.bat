@@ -66,20 +66,15 @@ EXIT /B 0
             ECHO ^Using cached archive at "!BUILDENV_PATH!.zip".
         )
 
-        CALL :DETECT_SEVENZIP
-        IF !RETVAL!=="" (
-            ECHO ^Unpacking "!BUILDENV_PATH!.zip" using powershell...
-            CALL :UNZIP_POWERSHELL "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
-        ) ELSE (
-            ECHO ^Unpacking "!BUILDENV_PATH!.zip" using 7z...
-            CALL :UNZIP_SEVENZIP "!RETVAL!" "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
-        )
+        ECHO ^Unpacking "!BUILDENV_PATH!.zip" using CMake...
+        CALL :UNZIP_CMAKE "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
+
         IF NOT EXIST "%BUILDENV_PATH%" (
             ECHO ^Error: Unpacking failed. The downloaded archive might be broken, consider removing "!BUILDENV_PATH!.zip" to force redownload.
             EXIT /B 1
         )
 
-        ECHO ^Unpacking complete.
+        ECHO ^Unpacking complete, deleting downloaded "!BUILDENV_PATH!.zip"...
         DEL /f /q "%BUILDENV_PATH%.zip"
     )
 
@@ -113,32 +108,10 @@ EXIT /B 0
     GOTO :EOF
 
 
-:DETECT_SEVENZIP
-    SET SEVENZIP_PATH=7z.exe
-    !SEVENZIP_PATH! --help >NUL 2>NUL
-    IF errorlevel 1 (
-        SET SEVENZIP_PATH="c:\Program Files\7-Zip\7z.exe"
-        !SEVENZIP_PATH! --help >NUL 2>NUL
-        IF errorlevel 1 (
-            SET SEVENZIP_PATH="c:\Program Files (x86)\7-Zip\7z.exe"
-            !SEVENZIP_PATH! --help >NUL 2>NUL
-            if errorlevel 1 (
-                SET SEVENZIP_PATH=
-            )
-        )
-    )
-    SET RETVAL="!SEVENZIP_PATH!"
-    GOTO :EOF
-
-
-:UNZIP_SEVENZIP <7zippath> <newzipfile> <ExtractTo>
-    %1 x -o%3 %2
-    GOTO :EOF
-
-
-:UNZIP_POWERSHELL <newzipfile> <ExtractTo>
-    SET SCRIPTDIR=%~dp0
-    powershell -executionpolicy bypass -File "%SCRIPTDIR%\unzip.ps1" %1 %2
+:UNZIP_CMAKE <newzipfile> <ExtractTo>
+    PUSHD %2
+    cmake -E tar xzf %1
+    POPD
     GOTO :EOF
 
 
