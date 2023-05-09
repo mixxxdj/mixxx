@@ -349,10 +349,22 @@
   [#10835](https://github.com/mixxxdj/mixxx/pull/10835)
   [#10843](https://github.com/mixxxdj/mixxx/pull/10843)
 
-### Controllers
+### Controller Mappings
+
+* Novation Launchpad: Update controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
+* Roland DJ-505: Make blinking lights blink in sync and other improvements [#4159](https://github.com/mixxxdj/mixxx/pull/4159) [#4517](https://github.com/mixxxdj/mixxx/pull/4517)
+* Behringer DDM4000 mixer: Update controller mapping [#4262](https://github.com/mixxxdj/mixxx/pull/4262) [#4799](https://github.com/mixxxdj/mixxx/pull/4799)
+* Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons [#4287](https://github.com/mixxxdj/mixxx/pull/4287)
+* Denon MC6000MK2: Improve mapping code [#4385](https://github.com/mixxxdj/mixxx/pull/4385)
+* Yaeltex MiniMixxx: Add controller mapping [#4350](https://github.com/mixxxdj/mixxx/pull/4350)
+* Traktor S3: Fix timedelta calculation bugs [#4646](https://github.com/mixxxdj/mixxx/pull/4646) [#10645](https://github.com/mixxxdj/mixxx/issues/10645)
+* Novation Twitch: Removed along with Mixco Scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+* Korg Nanokontrol 2: Removed along with Mixco Scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+* MAudio Xponent: Removed along with Mixco Scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+
+### Controller Backend
 
 * Never raise a fatal error if a controller mapping tries access a non-existent control object [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
-* Update Novation Launchpad controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
 * Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
 * Add support for reading the status of an HID controller (like MIDI SYSEX) [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
 * Exclude HID device: ELAN touch screen [#11324](https://github.com/mixxxdj/mixxx/pull/11324) [#11323](https://github.com/mixxxdj/mixxx/issues/11323)
@@ -372,20 +384,15 @@
 * Fix segfault during Mixxx shutdown due to a stale controller connection [#4476](https://github.com/mixxxdj/mixxx/pull/4476) [#10553](https://github.com/mixxxdj/mixxx/issues/10553)
 * Components JS: Fix syncbutton [#4329](https://github.com/mixxxdj/mixxx/pull/4329)
 * Components JS: Add script.posMod for euclidean modulo [#11415](https://github.com/mixxxdj/mixxx/pull/11415)
-* Roland DJ-505: Make blinking lights blink in sync and other improvements [#4159](https://github.com/mixxxdj/mixxx/pull/4159) [#4517](https://github.com/mixxxdj/mixxx/pull/4517)
-* Behringer DDM4000 mixer: Update controller mapping [#4262](https://github.com/mixxxdj/mixxx/pull/4262) [#4799](https://github.com/mixxxdj/mixxx/pull/4799)
-* Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons [#4287](https://github.com/mixxxdj/mixxx/pull/4287)
-* Denon MC6000MK2: Improve mapping code [#4385](https://github.com/mixxxdj/mixxx/pull/4385)
-* Yaeltex MiniMixxx: Add controller mapping [#4350](https://github.com/mixxxdj/mixxx/pull/4350)
 * Added Trace for the mapping connections, to allow JS profiling [#4766](https://github.com/mixxxdj/mixxx/pull/4766)
 * Fix crash when using `midi.sendShortMsg` and platform vnc [#4635](https://github.com/mixxxdj/mixxx/pull/4635)
-* Traktor S3: Fix timedelta calculation bugs [#4646](https://github.com/mixxxdj/mixxx/pull/4646) [#10645](https://github.com/mixxxdj/mixxx/issues/10645)
 * HID mappings: Modernize and document common-hid-packet-parser.js [#4718](https://github.com/mixxxdj/mixxx/pull/4718) [#4894](https://github.com/mixxxdj/mixxx/pull/4894)
 * Controller preferences: Allow creating a new mapping with 'No Mapping' selected
   [#4905](https://github.com/mixxxdj/mixxx/pull/4905)
   [#10540](https://github.com/mixxxdj/mixxx/issues/10540)
   [#10539](https://github.com/mixxxdj/mixxx/issues/10539)
 * Controller preferences: add search bars to mapping tables [#11165](https://github.com/mixxxdj/mixxx/pull/11165)
+* Retire Mixco Scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
 * Prepare code for upcoming ES6 based controller mapping system with module support
   [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
   [#2868](https://github.com/mixxxdj/mixxx/pull/2868)

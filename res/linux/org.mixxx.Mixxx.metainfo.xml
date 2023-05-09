@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2023-05-08" timestamp="1683571913">
+    <release version="2.4.0" type="development" date="2023-05-08" timestamp="1683502867">
       <description>
  <p>
   Cover Art
@@ -787,16 +787,60 @@
   </li>
  </ul>
  <p>
-  Controllers
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Novation Launchpad: Update controller scripts
+   #2600
+  </li>
+  <li>
+   Roland DJ-505: Make blinking lights blink in sync and other improvements
+   #4159
+   #4517
+  </li>
+  <li>
+   Behringer DDM4000 mixer: Update controller mapping
+   #4262
+   #4799
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons
+   #4287
+  </li>
+  <li>
+   Denon MC6000MK2: Improve mapping code
+   #4385
+  </li>
+  <li>
+   Yaeltex MiniMixxx: Add controller mapping
+   #4350
+  </li>
+  <li>
+   Traktor S3: Fix timedelta calculation bugs
+   #4646
+   #10645
+  </li>
+  <li>
+   Novation Twitch: Removed along with Mixco Scripts
+   #2682
+  </li>
+  <li>
+   Korg Nanokontrol 2: Removed along with Mixco Scripts
+   #2682
+  </li>
+  <li>
+   MAudio Xponent: Removed along with Mixco Scripts
+   #2682
+  </li>
+ </ul>
+ <p>
+  Controller Backend
  </p>
  <ul>
   <li>
    Never raise a fatal error if a controller mapping tries access a non-existent control object
    #2947
-  </li>
-  <li>
-   Update Novation Launchpad controller scripts
-   #2600
   </li>
   <li>
    Add generic USB HID "Set Reports (Feature)" functionality
@@ -895,28 +939,6 @@
    #11415
   </li>
   <li>
-   Roland DJ-505: Make blinking lights blink in sync and other improvements
-   #4159
-   #4517
-  </li>
-  <li>
-   Behringer DDM4000 mixer: Update controller mapping
-   #4262
-   #4799
-  </li>
-  <li>
-   Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons
-   #4287
-  </li>
-  <li>
-   Denon MC6000MK2: Improve mapping code
-   #4385
-  </li>
-  <li>
-   Yaeltex MiniMixxx: Add controller mapping
-   #4350
-  </li>
-  <li>
    Added Trace for the mapping connections, to allow JS profiling
    #4766
   </li>
@@ -925,11 +947,6 @@
    midi.sendShortMsg
    and platform vnc
    #4635
-  </li>
-  <li>
-   Traktor S3: Fix timedelta calculation bugs
-   #4646
-   #10645
   </li>
   <li>
    HID mappings: Modernize and document common-hid-packet-parser.js
@@ -945,6 +962,10 @@
   <li>
    Controller preferences: add search bars to mapping tables
    #11165
+  </li>
+  <li>
+   Retire Mixco Scripts
+   #2682
   </li>
   <li>
    Prepare code for upcoming ES6 based controller mapping system with module support
@@ -1850,7 +1871,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.5" type="development" date="2023-05-08" timestamp="1683571913">
+    <release version="2.3.5" type="development" date="2023-05-08" timestamp="1683502867">
       <description>
  <ul>
   <li>
