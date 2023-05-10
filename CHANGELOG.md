@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (unreleased)
+## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 
 * Fix empty waveform overview after loading a track (Mixxx 2.3.4 regression)
   Fixed by [#11333](https://github.com/mixxxdj/mixxx/pull/11333)
