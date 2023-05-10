@@ -5,8 +5,8 @@
 
 #include "moc_qtsimplewaveformwidget.cpp"
 #include "util/performancetimer.h"
+#include "waveform/renderers/glwaveformrenderbackground.h"
 #include "waveform/renderers/qtwaveformrenderersimplesignal.h"
-#include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
@@ -23,7 +23,7 @@ QtSimpleWaveformWidget::QtSimpleWaveformWidget(
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
 
-    addRenderer<WaveformRenderBackground>();
+    addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();

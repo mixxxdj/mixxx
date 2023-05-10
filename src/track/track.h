@@ -333,7 +333,7 @@ class Track : public QObject {
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
     ImportStatus importCueInfos(
-            mixxx::CueInfoImporterPointer pCueInfoImporter);
+            std::unique_ptr<mixxx::CueInfoImporter> pCueInfoImporter);
     ImportStatus getCueImportStatus() const;
 
     bool isDirty() const;
@@ -563,7 +563,7 @@ class Track : public QObject {
     ConstWaveformPointer m_waveformSummary;
 
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
-    mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
+    std::unique_ptr<mixxx::CueInfoImporter> m_pCueInfoImporterPending;
 
     friend class TrackDAO;
     void setHeaderParsedFromTrackDAO(bool headerParsed) {

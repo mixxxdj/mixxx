@@ -46,7 +46,7 @@ class KeyUtils {
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
                                KeyNotation notation = KeyNotation::Custom);
 
-    static QString getGlobalKeyText(
+    static QString formatGlobalKey(
             const Keys& keys,
             KeyNotation notation = KeyNotation::Custom);
 

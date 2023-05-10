@@ -24,7 +24,7 @@ jobs:
     steps:
       # version between v4.0.3 and the one after which has not yet been tagged
       # at the time of writing
-      - uses: actions/labeler@9471598e3b7ff22b2fa181bd79addf94cb3e0847
+      - uses: actions/labeler@8bb487275077addd935ff34fd81cda8dc53b6cbe
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           sync-labels: false
