@@ -18,6 +18,7 @@
 #include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
+#include "library/itunes/itunesplaylistmodel.h"
 #include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
 #include "library/queryutil.h"
@@ -95,11 +96,8 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             "mixxx.db.model.itunes",
             "itunes_library",
             m_trackSource);
-    m_pITunesPlaylistModel = new BaseExternalPlaylistModel(this,
+    m_pITunesPlaylistModel = new ITunesPlaylistModel(this,
             m_pLibrary->trackCollectionManager(),
-            "mixxx.db.model.itunes_playlist",
-            "itunes_playlists",
-            "itunes_playlist_tracks",
             m_trackSource);
     m_isActivated = false;
     m_title = tr("iTunes");

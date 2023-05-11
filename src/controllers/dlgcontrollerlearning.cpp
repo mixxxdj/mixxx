@@ -101,7 +101,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
     connect(pushButtonFakeControl,
             &QAbstractButton::clicked,
             this,
-            &DlgControllerLearning::DEBUGFakeMidiMessage;
+            &DlgControllerLearning::DEBUGFakeMidiMessage);
     connect(pushButtonFakeControl2,
             &QAbstractButton::clicked,
             this,
