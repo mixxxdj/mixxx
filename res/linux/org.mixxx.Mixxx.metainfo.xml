@@ -98,6 +98,15 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.3.6" type="development" date="2023-05-10" timestamp="1683748523">
+      <description>
+ <ul>
+  <li>
+   TODO
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.3.5" type="stable" date="2023-05-10" timestamp="1683676800">
       <description>
  <ul>
