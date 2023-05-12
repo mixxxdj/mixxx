@@ -602,17 +602,17 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 }
 
 TrackPointer PlayerManager::getLastEjectedTrack() const {
-    if (m_pLibrary) {
-        return m_pLibrary->trackCollectionManager()->getTrackById(m_lastEjectedTrackId);
+    VERIFY_OR_DEBUG_ASSERT(m_pLibrary != nullptr) {
+        return nullptr;
     }
-    return nullptr;
+    return m_pLibrary->trackCollectionManager()->getTrackById(m_lastEjectedTrackId);
 }
 
 TrackPointer PlayerManager::getSecondLastEjectedTrack() const {
-    if (m_pLibrary) {
-        return m_pLibrary->trackCollectionManager()->getTrackById(m_secondLastEjectedTrackId);
+    VERIFY_OR_DEBUG_ASSERT(m_pLibrary != nullptr) {
+        return nullptr;
     }
-    return nullptr;
+    return m_pLibrary->trackCollectionManager()->getTrackById(m_secondLastEjectedTrackId);
 }
 
 Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
