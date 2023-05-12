@@ -612,6 +612,26 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Performance Pads
     this.padGrid = new Prime4.PadSection(this, midiChannel - 4);
 
+    this.gridEditMode = true;
+
+    // Beatgrid edit mode
+    this.gridEditButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x1B],
+        key: "show_beatgrid_controls",
+        group: "[Skin]",
+        type: components.Button.prototype.types.toggle,
+    });
+
+    // Beatgrid shift buttons
+    this.gridShiftLeft = new components.Button({
+        midi: [0x90 + midiChannel, 0x19],
+        key: "beats_translate_earlier",
+    });
+    this.gridShiftRight = new components.Button({
+        midi: [0x90 + midiChannel, 0x1A],
+        key: "beats_translate_later",
+    });
+
     // Pfitch Bend Buttons
     const currentRateRange = new Prime4.CyclingArrayView(rateRanges, 2);
     this.pitchBendUp = new components.Button({

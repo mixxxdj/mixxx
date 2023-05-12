@@ -1359,7 +1359,7 @@
             </control>
             <control> <!-- Deck A - Beatgrid Downbeat Left Button / Beatgrid Half Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.gridShiftLeft.input</key>
               <description>Beatgrid Downbeat Left / Beatgrid Half</description>
               <status>0x94</status>
               <midino>0x19</midino>
@@ -1369,7 +1369,7 @@
             </control>
             <control> <!-- Deck A - Beatgrid Downbeat Right Button / Beatgrid Double Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.gridShiftRight.input</key>
               <description>Beatgrid Downbeat Right / Beatgrid Double</description>
               <status>0x94</status>
               <midino>0x1A</midino>
@@ -1377,11 +1377,41 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck A - Beatgrid Downbeat Left Button / Beatgrid Half Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridShiftLeft.input</key>
+              <description>Beatgrid Downbeat Left / Beatgrid Half</description>
+              <status>0x84</status>
+              <midino>0x19</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Beatgrid Downbeat Right Button / Beatgrid Double Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridShiftRight.input</key>
+              <description>Beatgrid Downbeat Right / Beatgrid Double</description>
+              <status>0x84</status>
+              <midino>0x1A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck A - Edit Beatgrid Button / Reset Beatgrid Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.leftDeck.gridEditButton.input</key>
               <description>Edit Beatgrid / Reset Beatgrid</description>
               <status>0x94</status>
+              <midino>0x1B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Edit Beatgrid Button / Reset Beatgrid Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridEditButton.input</key>
+              <description>Edit Beatgrid / Reset Beatgrid</description>
+              <status>0x84</status>
               <midino>0x1B</midino>
               <options>
                 <Script-Binding/>
@@ -2035,7 +2065,7 @@
             </control>
             <control> <!-- Deck B - Beatgrid Downbeat Left Button / Beatgrid Half Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.gridShiftLeft.input</key>
               <description>Beatgrid Downbeat Left / Beatgrid Half</description>
               <status>0x95</status>
               <midino>0x19</midino>
@@ -2045,7 +2075,7 @@
             </control>
             <control> <!-- Deck B - Beatgrid Downbeat Right Button / Beatgrid Double Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.gridShiftRight.input</key>
               <description>Beatgrid Downbeat Right / Beatgrid Double</description>
               <status>0x95</status>
               <midino>0x1A</midino>
@@ -2053,11 +2083,41 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck B - Beatgrid Downbeat Left Button / Beatgrid Half Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridShiftLeft.input</key>
+              <description>Beatgrid Downbeat Left / Beatgrid Half</description>
+              <status>0x85</status>
+              <midino>0x19</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Beatgrid Downbeat Right Button / Beatgrid Double Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridShiftRight.input</key>
+              <description>Beatgrid Downbeat Right / Beatgrid Double</description>
+              <status>0x85</status>
+              <midino>0x1A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
             <control> <!-- Deck B - Edit Beatgrid Button / Reset Beatgrid Button -->
               <group></group>
-              <key></key>
+              <key>Prime4.rightDeck.gridEditButton.input</key>
               <description>Edit Beatgrid / Reset Beatgrid</description>
               <status>0x95</status>
+              <midino>0x1B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Edit Beatgrid Button / Reset Beatgrid Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridEditButton.input</key>
+              <description>Edit Beatgrid / Reset Beatgrid</description>
+              <status>0x85</status>
               <midino>0x1B</midino>
               <options>
                 <Script-Binding/>
