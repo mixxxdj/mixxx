@@ -132,7 +132,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     }
     // make sure eject does not trigger 'unreplace':
     // sleep for longer than 500 ms 'unreplace' period so this is not registered as double-click
-    QTest::qSleep(500); // millis
+    QTest::qSleep(kUnreplaceDelay); // millis
     deck1->slotEjectTrack(1.0);
 
     // Load another track.
@@ -144,7 +144,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     auto deck2 = m_pPlayerManager->getDeck(2);
     ASSERT_EQ(nullptr, deck2->getLoadedTrack());
     // make sure eject does not trigger 'unreplace'
-    QTest::qSleep(500); // millis
+    QTest::qSleep(kUnreplaceDelay); // millis
     deck2->slotEjectTrack(2.0);
     ASSERT_NE(nullptr, deck2->getLoadedTrack());
     ASSERT_EQ(testId1, deck2->getLoadedTrack()->getId());
@@ -180,7 +180,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     auto deck2 = m_pPlayerManager->getDeck(2);
     ASSERT_EQ(nullptr, deck2->getLoadedTrack());
     // make sure eject does not trigger 'unreplace'
-    QTest::qSleep(500);
+    QTest::qSleep(kUnreplaceDelay);
     deck2->slotEjectTrack(1.0);
     ASSERT_NE(nullptr, deck2->getLoadedTrack());
     ASSERT_EQ(testId1, deck2->getLoadedTrack()->getId());
@@ -194,7 +194,7 @@ TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     auto deck1 = m_pPlayerManager->getDeck(1);
     // Does nothing -- no crash.
     // make sure eject does not trigger 'unreplace'
-    QTest::qSleep(500);
+    QTest::qSleep(kUnreplaceDelay);
     deck1->slotEjectTrack(1.0);
     ASSERT_EQ(nullptr, deck1->getLoadedTrack());
 }
@@ -226,7 +226,7 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
 
     // Eject. Make sure eject does not trigger 'unreplace':
     // sleep for longer than 500 ms 'unreplace' period so this is not registered as double-click
-    QTest::qSleep(500); // millis
+    QTest::qSleep(kUnreplaceDelay); // millis
     deck1->slotEjectTrack(1.0);
     ASSERT_EQ(nullptr, deck1->getLoadedTrack());
 

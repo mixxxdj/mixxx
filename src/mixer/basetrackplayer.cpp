@@ -316,7 +316,7 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
 
     // Double-click always restores the last replaced track, i.e. un-eject the second
     // last track: the first click ejects or unejects, and the second click reloads.
-    if (elapsed < mixxx::Duration::fromSeconds(0.5)) {
+    if (elapsed < mixxx::Duration::fromMillis(kUnreplaceDelay)) {
         TrackPointer lastEjected = m_pPlayerManager->getSecondLastEjectedTrack();
         if (lastEjected) {
             slotLoadTrack(lastEjected, false);

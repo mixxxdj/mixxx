@@ -21,6 +21,8 @@ class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
 
+constexpr int kUnreplaceDelay = 500;
+
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.
 class BaseTrackPlayer : public BasePlayer {
