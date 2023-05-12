@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QStandardPaths>
 
+#include "library/trackset/baseplaylistfeature.h"
+
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
@@ -104,6 +106,21 @@ inline QLocale inputLocale() {
 
 namespace mixxx {
 
+// Function to check if a given file is a playlist
+bool isPlaylist(QString fileName) {
+    // Create a list of known playlist file extensions
+    const QStringList playlistExtensions = {
+            QStringLiteral("m3u"),
+            QStringLiteral("m3u8"),
+            QStringLiteral("pls")};
+
+    // Get file information using the given file name
+    QFileInfo fileInfo(fileName);
+
+    // Check if the file extension of the given file is in the playlist
+    // extensions list, in a case-insensitive manner and return the result
+    return playlistExtensions.contains(fileInfo.suffix(), Qt::CaseInsensitive);
+}
 CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
           m_cmdlineArgs(args),
@@ -462,13 +479,18 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
+
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
+
     for (int i = 0; i < (int)m_pPlayerManager->numDecks() && i < musicFiles.count(); ++i) {
         if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
+        } else if (isPlaylist(musicFiles.at(i))) {
+            const QString playlistFile = musicFiles.at(i);
+            qDebug() << "Found playlist files in the command line arguments!!" << playlistFile;
+            m_pLibrary->importPlaylistFile(playlistFile);
         }
     }
-
     m_isInitialized = true;
 }
 
@@ -524,11 +546,11 @@ void CoreServices::initializeKeyboard() {
 void CoreServices::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     if (toggle) {
-        //qDebug() << "Enable keyboard shortcuts/mappings";
+        // qDebug() << "Enable keyboard shortcuts/mappings";
         m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfig.get());
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
     } else {
-        //qDebug() << "Disable keyboard shortcuts/mappings";
+        // qDebug() << "Disable keyboard shortcuts/mappings";
         m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfigEmpty.get());
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(0));
     }
