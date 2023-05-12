@@ -259,9 +259,14 @@ Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _gr
     this.inSetParameter(this.inGetParameter() + (signedValue / 100));
 };
 
+const initialPrime4Sysex = [0xf0, 0x00, 0x02, 0x0b, 0x7f, 0x08, 0x60, 0x00, 0x04, 0x04, 0x01, 0x02, 0x00, 0xf7];
+
 Prime4.init = function(_id, _debug) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
+
+    // Return position of all components
+    midi.sendSysexMsg(initialPrime4Sysex, initialPrime4Sysex.length);
 
     const decks = [
         new Prime4.Deck(1, 4),
