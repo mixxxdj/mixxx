@@ -106,7 +106,7 @@ declare namespace engine {
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
      *
-     *          This connection has a FIFO buffer - all value change events are processed in serial order.
+     * This connection has a FIFO buffer - all value change events are processed in serial order.
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
@@ -118,8 +118,8 @@ declare namespace engine {
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
      *
-     *          This connection is unbuffered - when value change events occur faster, than the mapping can process them,
-     *          only the last value set for the control is processed.
+     * This connection is unbuffered - when value change events occur faster, than the mapping can process them,
+     * only the last value set for the control is processed.
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "VuMeter"

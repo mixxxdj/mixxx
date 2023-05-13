@@ -4,7 +4,8 @@
 declare namespace controller {
     /**
      * Sends HID OutputReport with hard coded ReportID 0 to HID device
-     *        This function only works with HID devices, which don't use ReportIDs
+     *
+     * This function only works with HID devices, which don't use ReportIDs
      *
      * @param dataList Data to send as list of bytes
      * @param length Unused but mandatory argument for backwards compatibility
