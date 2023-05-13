@@ -1,7 +1,7 @@
 
 /** MidiControllerJSProxy */
 
-declare namespace controller {
+declare namespace midi {
 
     /**
      * Sends a 3 byte MIDI short message
