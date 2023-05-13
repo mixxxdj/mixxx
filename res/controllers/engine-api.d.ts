@@ -29,7 +29,8 @@ declare namespace engine {
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
-     * @returns Value of the control (within it's range according Mixxx Controls manual page)
+     * @returns Value of the control (within it's range according Mixxx Controls manual page:
+     *                                https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
      */
     function getValue(group: string, name: string): number;
 
@@ -38,7 +39,8 @@ declare namespace engine {
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
-     * @param newValue Value to be set (within it's range according Mixxx Controls manual page)
+     * @param newValue Value to be set (within it's range according Mixxx Controls manual page:
+     *                                  https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
      */
     function setValue(group: string, name: string, newValue: number): void;
 
@@ -66,7 +68,8 @@ declare namespace engine {
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
-     * @param value Value with the controls range according Mixxx Controls manual page
+     * @param value Value with the controls range according Mixxx Controls manual page:
+     *              https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html
      * @returns Value normalized to range of 0..1
      */
     function getParameterForValue(group: string, name: string, value: number): number;
@@ -84,7 +87,8 @@ declare namespace engine {
      *
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
-     * @returns Default value with the controls range according Mixxx Controls manual page
+     * @returns Default value with the controls range according Mixxx Controls manual page:
+     *          https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html
      */
     function getDefaultValue(group: string, name: string): number;
 
