@@ -1,10 +1,5 @@
 #pragma once
 
-#ifndef MIXXX_USE_QOPENGL
-#include <QGLContext>
-#endif
-#include <QOpenGLFunctions_2_1>
-
 #include "waveform/renderers/glwaveformrenderer.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
