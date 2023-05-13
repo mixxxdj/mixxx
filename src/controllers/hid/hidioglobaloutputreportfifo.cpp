@@ -50,7 +50,7 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
 
-    auto pFront = m_fifoQueue.front();
+    QByteArray* pFront = m_fifoQueue.front();
 
     if (pFront == nullptr) {
         // No data in FIFO to be send
