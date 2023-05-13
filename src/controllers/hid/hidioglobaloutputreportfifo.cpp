@@ -59,7 +59,8 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
         return false;
     }
 
-    QByteArray dataToSend(std::move(*pFront));
+    // Array containing the ReportID byte followed by the data to be send
+    QByteArray reportToSend(std::move(*pFront));
     m_fifoQueue.pop();
 
     auto hidDeviceLock = lockMutex(pHidDeviceAndPollMutex);
@@ -67,8 +68,8 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
     // hid_write can take several milliseconds, because hidapi synchronizes
     // the asyncron HID communication from the OS
     int result = hid_write(pHidDevice,
-            reinterpret_cast<const unsigned char*>(dataToSend.constData()),
-            dataToSend.size());
+            reinterpret_cast<const unsigned char*>(reportToSend.constData()),
+            reportToSend.size());
     if (result == -1) {
         qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
                              << mixxx::convertWCStringToQString(
@@ -81,7 +82,7 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
     if (result != -1) {
         qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                            << " " << result << "bytes (including ReportID of"
-                           << static_cast<quint8>(dataToSend[0])
+                           << static_cast<quint8>(reportToSend[0])
                            << ") sent from non-skipping FIFO - Needed: "
                            << (mixxx::Time::elapsed() - startOfHidWrite)
                                       .formatMicrosWithUnit();
