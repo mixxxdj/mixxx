@@ -53,9 +53,9 @@ void allshader::WaveformRenderMark::initializeGL() {
     m_textureShader.init();
 
     for (const auto& pMark : m_marks) {
-        generateMarkImage(pMark);
+        generateMarkImage(pMark, m_waveformRenderer->getBreadth());
     }
-    generatePlayPosMarkTexture();
+    generatePlayPosMarkTexture(m_waveformRenderer->getBreadth());
 }
 
 void allshader::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* texture) {
@@ -172,7 +172,7 @@ void allshader::WaveformRenderMark::paintGL() {
         }
 
         if (pMark->m_image.isNull()) {
-            generateMarkImage(pMark);
+            generateMarkImage(pMark, m_waveformRenderer->getBreadth());
         }
 
         const double samplePosition = pMark->getSamplePosition();
@@ -237,11 +237,11 @@ void allshader::WaveformRenderMark::paintGL() {
     drawTexture(drawOffset, 0.f, m_pPlayPosMarkTexture.get());
 }
 
-void allshader::WaveformRenderMark::generatePlayPosMarkTexture() {
+void allshader::WaveformRenderMark::generatePlayPosMarkTexture(float breadth) {
     float imgwidth;
     float imgheight;
 
-    const float height = m_waveformRenderer->getBreadth();
+    const float height = breadth;
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
     const float lineX = 5.5f;
@@ -316,11 +316,18 @@ void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
     painter->fillPath(triangle, fillColor);
 }
 
-void allshader::WaveformRenderMark::resizeGL(int, int) {
+void allshader::WaveformRenderMark::resizeGL(int w, int h) {
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+    const float breadth =
+            static_cast<float>(
+                    m_waveformRenderer->getOrientation() == Qt::Vertical ? w
+                                                                         : h) /
+            devicePixelRatio;
+
     for (const auto& pMark : m_marks) {
-        generateMarkImage(pMark);
+        generateMarkImage(pMark, breadth);
     }
-    generatePlayPosMarkTexture();
+    generatePlayPosMarkTexture(breadth);
 }
 
 void allshader::WaveformRenderMark::onSetTrack() {
@@ -373,12 +380,12 @@ void allshader::WaveformRenderMark::checkCuesUpdated() {
             pMark->m_text = newLabel;
             int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
             pMark->setBaseColor(newColor, dimBrightThreshold);
-            generateMarkImage(pMark);
+            generateMarkImage(pMark, m_waveformRenderer->getBreadth());
         }
     }
 }
 
-void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
+void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark, float breadth) {
     // Load the pixmap from file.
     // If that succeeds loading the text and stroke is skipped.
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
@@ -463,7 +470,7 @@ void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark)
         float height;
 
         width = 2.f * labelRectWidth + 1.f;
-        height = m_waveformRenderer->getBreadth();
+        height = breadth;
 
         pMark->m_image = QImage(
                 static_cast<int>(width * devicePixelRatio),

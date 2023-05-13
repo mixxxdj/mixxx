@@ -42,8 +42,8 @@ class allshader::WaveformRenderMark final : public QObject, public allshader::Wa
   private:
     void checkCuesUpdated();
 
-    void generateMarkImage(WaveformMarkPointer pMark);
-    void generatePlayPosMarkTexture();
+    void generateMarkImage(WaveformMarkPointer pMark, float breadth);
+    void generatePlayPosMarkTexture(float breadth);
 
     void drawTriangle(QPainter* painter,
             const QBrush& fillColor,

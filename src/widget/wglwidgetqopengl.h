@@ -40,7 +40,7 @@ class WGLWidget : public QWidget {
     virtual void resizeGL(int w, int h);
     virtual void initializeGL();
 
-    void setTrackDropTarget(TrackDropTarget* target);
+    void setTrackDropTarget(TrackDropTarget* pTarget);
     TrackDropTarget* trackDropTarget() const;
 
   protected:
