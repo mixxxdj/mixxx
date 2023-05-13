@@ -1,7 +1,7 @@
 
 /** ScriptConnectionJSProxy */
 
-declare class ScriptConnection {
+declare interface ScriptConnection {
     /**
      * Disconnect the script connection,
      * established by {@link engine.makeConnection} or {@link engine.makeUnbufferedConnection}
