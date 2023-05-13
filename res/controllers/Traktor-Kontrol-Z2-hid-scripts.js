@@ -777,8 +777,8 @@ class TraktorZ2Class {
         for (let inputReportIdx = 0x01; inputReportIdx <= 0x02; ++inputReportIdx) {
             const reportData = new Uint8Array(controller.getInputReport(inputReportIdx));
 
-            this.incomingData(new Uint8Array([inputReportIdx, ...Uint8Array.from(reportData.map(x => ~x))]));
-            this.incomingData(new Uint8Array([inputReportIdx, ...Uint8Array.from(reportData)]));
+            this.incomingData([inputReportIdx, ...reportData.map(x => ~x)]);
+            this.incomingData([inputReportIdx, ...reportData]);
         }
 
         const inputRpt01 = new Uint8Array(controller.getInputReport(0x01));
