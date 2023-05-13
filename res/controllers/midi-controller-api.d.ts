@@ -17,7 +17,7 @@ declare namespace midi {
      * Sends a MIDI system-exclusive message of arbitrary number of bytes
      *
      * @param dataList List of bytes to send
-     * @param length This is no longer evaluated, and only here for backwards compatibility to old scripts [default = 0]
+     * @param length This is no longer evaluated, and only here for backwards compatibility with old scripts [default = 0]
      */
     function send(dataList: number[], length?: number): void;
 
@@ -25,7 +25,7 @@ declare namespace midi {
      * Sends a MIDI system-exclusive message of arbitrary number of bytes
      *
      * @param dataList List of bytes to send
-     * @param length This is no longer evaluated, and only here for backwards compatibility to old scripts [default = 0]
+     * @param length This is no longer evaluated, and only here for backwards compatibility with old scripts [default = 0]
      */
     function sendSysexMsg(dataList: number[], length?: number): void;
 
