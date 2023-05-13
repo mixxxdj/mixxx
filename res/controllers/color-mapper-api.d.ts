@@ -2,19 +2,28 @@
 /** ColorMapperJSProxy */
 
 declare class ColorMapper {
-// Passing a QMap<QRgb, QVariant> argument to the constructor as needed by
-    // the ColorMapper constructor segfaults. QJSEngine converts a JS object to
-    // a QVariantMap, so this constructor converts the QVariantMap to a
-    // QMap<QRgb, QVariant>.
-    constructor (availableColors: { [rgb: number]: number });
+    /**
+     * Constructs a ColorMapper object which maps RGB colors to device specific color codes
+     *
+     * @param availableColors List of number pairs (e.g. {0xFF0000: 1, 0x00FF00: 2} )
+     */
+    constructor (availableColors: { [rgbColor: number]: number });
 
-    /// For a given RGB color code (e.g. 0xFF0000), this finds the nearest
-    /// available color and returns a JS object with properties "red", "green",
-    /// "blue" (each with value range 0-255).
-    getNearestColor(ColorCode: number): {[rgb: number]: number};
+    /**
+     * For a given RGB color code (e.g. 0xFF0000), this finds the nearest
+     * available color and returns a JS object with properties "red", "green",
+     * "blue" (each with value range 0-255).
+     *
+     * @param colorCode Device specific color code
+     */
+    getNearestColor(colorCode: number): {[rgb: number]: number};
 
-    /// For a given RGB color code (e.g. 0xFF0000), this finds the nearest
-    /// available color, then returns the value associated with that color
-    /// (which could be a MIDI byte value for example).
-    getValueForNearestColor(ColorCode: number): number;
+    /**
+     * For a given RGB color code (e.g. 0xFF0000), this finds the nearest
+     * available color, then returns the value associated with that color
+     * (which could be a MIDI byte value for example).
+     *
+     * @param rgbColor RGB color (e.g. 0xFF00CC)
+     */
+    getValueForNearestColor(rgbColor: number): number;
 }
