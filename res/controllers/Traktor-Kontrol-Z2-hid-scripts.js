@@ -27,7 +27,7 @@ class DeckClass {
      * @param {string} group
      */
     constructor(parent, deckNumber, group) {
-        /** @type TraktorZ2Class */
+        /** @type {TraktorZ2Class} */
         this.parent = parent;
         this.deckNumber = deckNumber;
         this.group = group;
@@ -208,9 +208,7 @@ class DeckClass {
             this.syncPressedTimerId = engine.beginTimer(300, function() {
                 this.syncPressed = true;
                 // Change display values to key notation
-                // @ts-ignore
                 this.parent.displayLoopCount("[Channel1]", false);
-                // @ts-ignore
                 this.parent.displayLoopCount("[Channel2]", true);
 
                 // Reset sync button timer state if active
@@ -703,7 +701,7 @@ class TraktorZ2Class {
         this.microphoneButtonStatus = undefined;
         this.traktorButtonStatus = [];
 
-        this.dataF1 = new Uint8Array(2);
+        this.dataF1 = new ArrayBuffer(2);
 
         /**
          * Knob encoder states (hold values between 0x0 and 0xF)
@@ -1576,8 +1574,8 @@ class TraktorZ2Class {
     }
 
     messageCallback(_packet, data) {
-        HIDController.fastForIn(data, (field_name) => {
-            this.controller.processButton(data[field_name]);
+        HIDController.fastForIn(data, (fieldName) => {
+            this.controller.processButton(data[fieldName]);
         }
         );
     }
@@ -2147,14 +2145,14 @@ class TraktorZ2Class {
             "-1": [["b", "e", "f"], ["a", "c", "d", "g"]],
         };
         // Switch LEDs On
-        HIDController.fastForIn(symbolArray[digit][0], (segment_name) => {
-            this.controller.setOutput(group, "segment_" + symbolArray[digit][0][segment_name], brightness, false);
+        HIDController.fastForIn(symbolArray[digit][0], (segmentName) => {
+            this.controller.setOutput(group, "segment_" + symbolArray[digit][0][segmentName], brightness, false);
         }
         );
         // Switch LEDs Off
 
-        HIDController.fastForIn(symbolArray[digit][1], (segment_name) => {
-            this.controller.setOutput(group, "segment_" + symbolArray[digit][1][segment_name], kLedOff, false);
+        HIDController.fastForIn(symbolArray[digit][1], (segmentName) => {
+            this.controller.setOutput(group, "segment_" + symbolArray[digit][1][segmentName], kLedOff, false);
         }
         );
     }
