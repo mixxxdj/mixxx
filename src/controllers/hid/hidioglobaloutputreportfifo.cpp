@@ -11,8 +11,8 @@
 #include "util/trace.h"
 
 namespace {
-constexpr int kMaxHidErrorMessageSize = 512;
-constexpr int kSizeOfFifoInReports = 32;
+constexpr size_t kMaxHidErrorMessageSize = 512;
+constexpr size_t kSizeOfFifoInReports = 32;
 } // namespace
 
 HidIoGlobalOutputReportFifo::HidIoGlobalOutputReportFifo()

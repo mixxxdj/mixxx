@@ -13,7 +13,7 @@
 
 namespace {
 constexpr int kReportIdSize = 1;
-constexpr int kMaxHidErrorMessageSize = 512;
+constexpr size_t kMaxHidErrorMessageSize = 512;
 
 // Sleep time of run loop, in idle case, when no time consuming operation was executed before
 // The lower the time the more even the CPU load is spread over time

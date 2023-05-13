@@ -11,7 +11,7 @@
 
 namespace {
 constexpr int kReportIdSize = 1;
-constexpr int kMaxHidErrorMessageSize = 512;
+constexpr size_t kMaxHidErrorMessageSize = 512;
 } // namespace
 
 HidIoOutputReport::HidIoOutputReport(
