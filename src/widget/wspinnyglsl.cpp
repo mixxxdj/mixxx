@@ -27,13 +27,14 @@ void WSpinnyGLSL::cleanupGL() {
 }
 
 void WSpinnyGLSL::coverChanged() {
-    makeCurrentIfNeeded();
-    if (m_loadedCoverScaled.isNull()) {
-        m_pLoadedCoverTextureScaled.reset();
-    } else {
-        m_pLoadedCoverTextureScaled.reset(new QOpenGLTexture(m_loadedCoverScaled.toImage()));
+    if (isContextValid()) {
+        makeCurrentIfNeeded();
+        m_pLoadedCoverTextureScaled.reset(!m_loadedCoverScaled.isNull()
+                        ? new QOpenGLTexture(m_loadedCoverScaled.toImage())
+                        : nullptr);
+        doneCurrent();
     }
-    doneCurrent();
+    // otherwise this will happen in initializeGL
 }
 
 void WSpinnyGLSL::draw() {
@@ -112,19 +113,22 @@ void WSpinnyGLSL::paintGL() {
 }
 
 void WSpinnyGLSL::initializeGL() {
-    if (m_pBgImage && !m_pBgImage->isNull())
-        m_pBgTexture.reset(new QOpenGLTexture(*m_pBgImage));
-    if (m_pMaskImage && !m_pMaskImage->isNull())
-        m_pMaskTexture.reset(new QOpenGLTexture(*m_pMaskImage));
-    if (!m_fgImageScaled.isNull())
-        m_pFgTextureScaled.reset(new QOpenGLTexture(m_fgImageScaled));
-    if (!m_ghostImageScaled.isNull())
-        m_pGhostTextureScaled.reset(new QOpenGLTexture(m_ghostImageScaled));
-    if (!m_loadedCoverScaled.isNull()) {
-        m_pLoadedCoverTextureScaled.reset(new QOpenGLTexture(m_loadedCoverScaled.toImage()));
-    }
-    if (!m_qImage.isNull())
-        m_pQTexture.reset(new QOpenGLTexture(m_qImage));
+    m_pBgTexture.reset(m_pBgImage && !m_pBgImage->isNull()
+                    ? new QOpenGLTexture(*m_pBgImage)
+                    : nullptr);
+    m_pMaskTexture.reset(m_pMaskImage && !m_pMaskImage->isNull()
+                    ? new QOpenGLTexture(*m_pMaskImage)
+                    : nullptr);
+    m_pFgTextureScaled.reset(!m_fgImageScaled.isNull()
+                    ? new QOpenGLTexture(m_fgImageScaled)
+                    : nullptr);
+    m_pGhostTextureScaled.reset(!m_ghostImageScaled.isNull()
+                    ? new QOpenGLTexture(m_ghostImageScaled)
+                    : nullptr);
+    m_pLoadedCoverTextureScaled.reset(!m_loadedCoverScaled.isNull()
+                    ? new QOpenGLTexture(m_loadedCoverScaled.toImage())
+                    : nullptr);
+    m_pQTexture.reset(!m_qImage.isNull() ? new QOpenGLTexture(m_qImage) : nullptr);
 
     m_textureShader.init();
 }

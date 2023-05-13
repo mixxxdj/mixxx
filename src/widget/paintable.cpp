@@ -96,6 +96,10 @@ bool Paintable::isNull() const {
     return m_source.isEmpty();
 }
 
+bool Paintable::isPixmapNull() const {
+    return m_pPixmap.isNull();
+}
+
 QSize Paintable::size() const {
     if (!m_pPixmap.isNull()) {
         return m_pPixmap->size();

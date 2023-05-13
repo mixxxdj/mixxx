@@ -46,6 +46,7 @@ class Paintable {
     void drawCentered(const QRectF& targetRect, QPainter* pPainter,
                       const QRectF& sourceRect);
     bool isNull() const;
+    bool isPixmapNull() const;
 
     static DrawMode DrawModeFromString(const QString& str);
     static QString DrawModeToString(DrawMode mode);

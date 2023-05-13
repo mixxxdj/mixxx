@@ -20,7 +20,7 @@ void WVuMeterGLSL::draw() {
 }
 
 void WVuMeterGLSL::initializeGL() {
-    if (m_pPixmapBack.isNull()) {
+    if (m_pPixmapBack.isNull() || m_pPixmapBack->isPixmapNull()) {
         m_pTextureBack.reset();
     } else {
         m_pTextureBack.reset(new QOpenGLTexture(m_pPixmapBack->toImage()));
@@ -29,7 +29,7 @@ void WVuMeterGLSL::initializeGL() {
         m_pTextureBack->setWrapMode(QOpenGLTexture::ClampToBorder);
     }
 
-    if (m_pPixmapVu.isNull()) {
+    if (m_pPixmapVu.isNull() || m_pPixmapVu->isPixmapNull()) {
         m_pTextureVu.reset();
     } else {
         m_pTextureVu.reset(new QOpenGLTexture(m_pPixmapVu->toImage()));
