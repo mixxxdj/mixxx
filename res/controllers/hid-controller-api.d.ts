@@ -33,9 +33,9 @@ declare namespace controller {
     /**
      * getInputReport receives an InputReport from the HID device on request.
      *
-     *           This can be used on startup to initialize the knob positions in Mixxx
-     *           to the physical position of the hardware knobs on the controller.
-     *           This is an optional command in the HID standard - not all devices support it.
+     * This can be used on startup to initialize the knob positions in Mixxx
+     * to the physical position of the hardware knobs on the controller.
+     * This is an optional command in the HID standard - not all devices support it.
      *
      *  @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
      *  @returns Returns report data with ReportID byte as prefix
