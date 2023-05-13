@@ -30,7 +30,7 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control (within it's range according Mixxx Controls manual page:
-     *                                https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
+     *          https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
      */
     function getValue(group: string, name: string): number;
 
@@ -40,7 +40,7 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set (within it's range according Mixxx Controls manual page:
-     *                                  https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
+     *                 https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
      */
     function setValue(group: string, name: string, newValue: number): void;
 
