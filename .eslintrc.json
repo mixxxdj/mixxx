@@ -1,5 +1,9 @@
 {
-  "extends": [ "eslint:recommended", "plugin:jsdoc/recommended" ],
+  "extends": [ "eslint:recommended",
+               "plugin:jsdoc/recommended",
+               "plugin:@typescript-eslint/recommended" ],
+
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 7,
     "sourceType": "script"
@@ -7,7 +11,7 @@
   "env": {
     "es6": true
   },
-  "plugins": [ "jsdoc" ],
+  "plugins": [ "jsdoc", "@typescript-eslint" ],
   "settings": {
     "jsdoc": {
       "preferredTypes": {
@@ -93,6 +97,12 @@
     "console": "readonly"
   },
   "overrides": [
+   {
+       "files": [ "res/controllers/*.d.ts" ],
+       "rules": {
+         "no-unused-vars": "off"
+       }
+    },
     {
       "files": [ "**/*.mjs" ],
       "parserOptions": {
