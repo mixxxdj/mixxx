@@ -377,7 +377,7 @@ void LoopingControl::process(const double dRate,
                     // here the loop has changed and the play position
                     // should be moved with it
                     const auto targetPosition =
-                            seekInsideAdjustedLoop(currentPosition,
+                            adjustedPositionInsideAdjustedLoop(currentPosition,
                                     dRate < 0, // reverse
                                     m_oldLoopInfo.startPosition,
                                     m_oldLoopInfo.endPosition,
@@ -446,7 +446,7 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
             case LoopSeekMode::Changed:
                 // here the loop has changed and the play position
                 // should be moved with it
-                *pTargetPosition = seekInsideAdjustedLoop(currentPosition,
+                *pTargetPosition = adjustedPositionInsideAdjustedLoop(currentPosition,
                         reverse,
                         m_oldLoopInfo.startPosition,
                         m_oldLoopInfo.endPosition,
@@ -466,7 +466,7 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
                     }
                 }
                 if (movedOut) {
-                    *pTargetPosition = seekInsideAdjustedLoop(currentPosition,
+                    *pTargetPosition = adjustedPositionInsideAdjustedLoop(currentPosition,
                             reverse,
                             loopInfo.startPosition,
                             loopInfo.endPosition,
@@ -1603,8 +1603,7 @@ void LoopingControl::slotLoopMove(double beats) {
     }
 }
 
-// Must be called from the engine thread only
-mixxx::audio::FramePos LoopingControl::seekInsideAdjustedLoop(
+mixxx::audio::FramePos LoopingControl::adjustedPositionInsideAdjustedLoop(
         mixxx::audio::FramePos currentPosition,
         bool reverse,
         mixxx::audio::FramePos oldLoopStartPosition,
@@ -1656,7 +1655,7 @@ mixxx::audio::FramePos LoopingControl::seekInsideAdjustedLoop(
             // I'm not even sure this is possible.  The new loop would have to be bigger than the
             // old loop, and the playhead was somehow outside the old loop.
             qWarning()
-                    << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop "
+                    << "SHOULDN'T HAPPEN: adjustedPositionInsideAdjustedLoop "
                        "couldn't find a new position --"
                     << " seeking to in point";
             adjustedPosition = newLoopStartPosition;
@@ -1671,7 +1670,7 @@ mixxx::audio::FramePos LoopingControl::seekInsideAdjustedLoop(
         DEBUG_ASSERT(adjustedPosition >= newLoopStartPosition);
         VERIFY_OR_DEBUG_ASSERT(adjustedPosition < newLoopEndPosition) {
             qWarning()
-                    << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop "
+                    << "SHOULDN'T HAPPEN: adjustedPositionInsideAdjustedLoop "
                        "couldn't find a new position --"
                     << " seeking to in point";
             adjustedPosition = newLoopStartPosition;
