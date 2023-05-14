@@ -846,10 +846,10 @@ void EngineBuffer::processTrackLocked(
     bool is_scratching = false;
     bool is_reverse = false;
 
-    // Update the slipped position and seek if it was disabled.
+    // Update the slipped position and seek to it if slip mode was disabled.
     processSlip(iBufferSize);
 
-    // Note: This may effects the m_playPosition, play, scaler and crossfade buffer
+    // Note: This may affect the m_playPosition, play, scaler and crossfade buffer
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time
@@ -1207,7 +1207,18 @@ void EngineBuffer::processSlip(int iBufferSize) {
         // back and forth calculations.
         const int bufferFrameCount = iBufferSize / mixxx::kEngineChannelCount;
         DEBUG_ASSERT(bufferFrameCount * mixxx::kEngineChannelCount == iBufferSize);
-        m_slipPosition += static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        const mixxx::audio::FrameDiff_t slipDelta =
+                static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        // Simulate looping if a regular loop is active
+        if (m_pLoopingControl->isLoopingEnabled() &&
+                !m_pLoopingControl->isLoopRollActive()) {
+            const mixxx::audio::FramePos newPos = m_slipPosition + slipDelta;
+            m_slipPosition = m_pLoopingControl->adjustedPositionForCurrentLoop(
+                    newPos,
+                    m_dSlipRate < 0);
+        } else {
+            m_slipPosition += slipDelta;
+        }
     }
 }
 

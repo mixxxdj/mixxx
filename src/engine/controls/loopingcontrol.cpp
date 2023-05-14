@@ -1118,6 +1118,10 @@ bool LoopingControl::isLoopingEnabled() {
     return m_bLoopingEnabled;
 }
 
+bool LoopingControl::isLoopRollActive() {
+    return m_bLoopRollActive;
+}
+
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
     m_pTrack = pNewTrack;
     mixxx::BeatsPointer pBeats;
@@ -1600,6 +1604,28 @@ void LoopingControl::slotLoopMove(double beats) {
         emit loopUpdated(loopInfo.startPosition, loopInfo.endPosition);
         m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    }
+}
+
+// Used to simulate looping while slip mode is enabled
+mixxx::audio::FramePos LoopingControl::adjustedPositionForCurrentLoop(
+        mixxx::audio::FramePos currentPosition,
+        bool reverse) {
+    if (!m_bLoopingEnabled) {
+        return currentPosition;
+    }
+    LoopInfo loopInfo = m_loopInfo.getValue();
+    const auto targetPosition = adjustedPositionInsideAdjustedLoop(
+            currentPosition,
+            reverse,
+            loopInfo.startPosition,
+            loopInfo.endPosition,
+            loopInfo.startPosition,
+            loopInfo.endPosition);
+    if (targetPosition.isValid()) {
+        return targetPosition;
+    } else {
+        return currentPosition;
     }
 }
 

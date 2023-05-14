@@ -48,12 +48,19 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(mixxx::audio::FramePos position) override;
 
+    // Wrapper to use adjustedPositionInsideAdjustedLoop() with the current loop.
+    // Called from EngineBuffer while slip mode is enabled
+    mixxx::audio::FramePos adjustedPositionForCurrentLoop(
+            mixxx::audio::FramePos newPosition,
+            bool reverse);
+
     void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
     void setLoop(mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
             bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
+    bool isLoopRollActive();
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
