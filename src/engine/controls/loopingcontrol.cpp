@@ -1065,6 +1065,12 @@ void LoopingControl::slotLoopEndPos(double positionSamples) {
 
 // This is called from the engine thread
 void LoopingControl::notifySeek(mixxx::audio::FramePos newPosition) {
+    // Leave loop alone if we're in slip mode and if it was turned on
+    // by something that was not a rolling beatloop.
+    if (m_pSlipEnabled->toBool() && !m_bLoopRollActive) {
+        return;
+    }
+
     LoopInfo loopInfo = m_loopInfo.getValue();
     const auto currentPosition = m_currentPosition.getValue();
     VERIFY_OR_DEBUG_ASSERT(m_pRateControl) {
