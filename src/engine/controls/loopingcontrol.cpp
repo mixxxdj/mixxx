@@ -1062,6 +1062,11 @@ void LoopingControl::slotLoopEndPos(double positionSamples) {
 void LoopingControl::notifySeek(mixxx::audio::FramePos position) {
     LoopInfo loopInfo = m_loopInfo.getValue();
     const auto currentPosition = m_currentPosition.getValue();
+    VERIFY_OR_DEBUG_ASSERT(m_pRateControl) {
+        qWarning() << "LoopingControl: RateControl not set!";
+        return;
+    }
+    bool reverse = m_pRateControl->isReverseButtonPressed();
     if (m_bLoopingEnabled) {
         // Disable loop when we jumping out, or over a catching loop,
         // using hot cues or waveform overview.
@@ -1347,10 +1352,11 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     } else {
         // If running reverse, move the loop one loop size to the left.
         // Thus, the loops end will be closest to the current position
-        bool reverse = false;
-        if (m_pRateControl != nullptr) {
-            reverse = m_pRateControl->isReverseButtonPressed();
+        VERIFY_OR_DEBUG_ASSERT(m_pRateControl) {
+            qWarning() << "LoopingControl: RateControl not set!";
+            return;
         }
+        bool reverse = m_pRateControl->isReverseButtonPressed();
         if (reverse) {
             currentPosition = pBeats->findNBeatsFromPosition(currentPosition, -beats);
         }
