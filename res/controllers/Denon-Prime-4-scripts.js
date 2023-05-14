@@ -6,7 +6,19 @@ var Prime4 = {};
 //const showTrackColor = false; // NOT IMPLEMENTED YET
 
 // What default colour would you like each deck to be?
-// (Choose between "red", "orange", "yellow", "green", "cyan", "blue", "magenta", or "white")
+/*
+ * "red",
+ * "green",
+ * "blue",
+ * "yellow",
+ * "magenta",
+ * "cyan",
+ * "orange",
+ * "aqua",
+ * "violet",
+ * "white",
+ */
+
 const deckColors = [
 
     // Deck 1
@@ -16,10 +28,10 @@ const deckColors = [
     "blue",
 
     // Deck 3
-    "cyan",
+    "red",
 
     // Deck 4
-    "magenta",
+    "yellow",
 
 ];
 
@@ -77,6 +89,12 @@ components.ComponentContainer.prototype.reconnectComponents = function(operation
 // 'Off' value sets lights to dim instead of off
 components.Button.prototype.off = 0x01;
 
+// Function to send specific RGB values through SysEx messages
+const sendSysexRGB = function(channel, control, red, green, blue) {
+    const msg = [0xf0, 0x00, 0x02, 0x0b, 0x7f, 0x08, 0x03, 0x00, 0x05, channel, control, red, green, blue, 0xf7];
+    midi.sendSysexMsg(msg, msg.length);
+};
+
 // Colour codes designed to avoid memorizing MIDI velocity values
 Prime4.rgbCode = {
     black: 0,
@@ -105,78 +123,34 @@ Prime4.rgbCode = {
     white: 63,
 };
 
+Prime4.rgbCodeSysex = {
+    red: [0x7f, 0x00, 0x00],
+    green: [0x00, 0x7f, 0x00],
+    blue: [0x00, 0x00, 0x7f],
+    yellow: [0x7f, 0x7f, 0x00],
+    magenta: [0x7f, 0x00, 0x7f],
+    cyan: [0x00, 0x7f, 0x7f],
+    orange: [0x7f, 0x2f, 0x00],
+    aqua: [0x00, 0x7f, 0x2f],
+    violet: [0x2f, 0x00, 0x7f],
+    white: [0x7e, 0x7e, 0x7f],
+    redDark: [0x1f, 0x00, 0x00],
+    greenDark: [0x00, 0x1f, 0x00],
+    blueDark: [0x00, 0x00, 0x1f],
+    yellowDark: [0x1f, 0x1f, 0x00],
+    magentaDark: [0x1f, 0x00, 0x1f],
+    cyanDark: [0x00, 0x1f, 0x1f],
+    orangeDark: [0x1f, 0x0c, 0x00],
+    aquaDark: [0x00, 0x1f, 0x0c],
+    violetDark: [0x0c, 0x00, 0x1f],
+    whiteDark: [0x1e, 0x1e, 0x1f],
+};
+
 // Used in Swiftb0y's NS6II mapping for tempo fader LEDs
 Prime4.physicalSliderPositions = {
     left: 0.5,
     right: 0.5,
 };
-
-/*
-// Map RGB Hex values to MIDI values for Prime 4's colour palette
-const Prime4ColorMapper = new ColorMapper({
-    0x000020: 0x01, // dark blue
-    0x0000AA: 0x02, // dim blue
-    0x0000C0: 0x03, // blue
-    0x002000: 0x04, // dark green
-    0x002020: 0x05, // dark cyan
-    0x0020A0: 0x06,
-    0x0020C0: 0x07,
-    0x00A000: 0x08, // dim green
-    0x00A020: 0x09,
-    0x00A0A0: 0x0A, // dim cyan
-    0x00A0C0: 0x0B,
-    0x00C000: 0x0C, // green
-    0x00C020: 0x0D,
-    0x00C0A0: 0x0E,
-    0x00C0C0: 0x0F, // cyan
-    0x200000: 0x10, // dark red
-    0x200020: 0x11, // dark magenta
-    0x2000A0: 0x12,
-    0x2000C0: 0x13,
-    0x2020A0: 0x16,
-    0x2020C0: 0x17,
-    0x20A000: 0x18,
-    0x20A020: 0x19,
-    0x20A0A0: 0x1A,
-    0x20A0C0: 0x1B,
-    0x20C000: 0x1C,
-    0x20C020: 0x1D,
-    0x20C0A0: 0x1E,
-    0x20C0C0: 0x1F,
-    0xA00000: 0x20, // dim red
-    0xA00020: 0x21,
-    0xA000A0: 0x22, // dim magenta
-    0xA000C0: 0x23,
-    0xA02000: 0x24, // dark orange
-    0xA02020: 0x25,
-    0xA020A0: 0x26,
-    0xA020C0: 0x27,
-    0xA0A000: 0x28, // dim yellow
-    0xA0A020: 0x29,
-    0xA0A0A0: 0x2A, // dim white/grey
-    0xA0A0C0: 0x2B,
-    0xA0C000: 0x2C,
-    0xA0C020: 0x2D,
-    0xA0C0A0: 0x2E,
-    0xA0C0C0: 0x2F,
-    0xC00000: 0x30, // red
-    0xC00020: 0x31,
-    0xC000A0: 0x32,
-    0xC000C0: 0x33, // purple
-    0xC02000: 0x34, // orange
-    0xC02020: 0x35,
-    0xC020A0: 0x36,
-    0xC020C0: 0x37,
-    0xC0A000: 0x38,
-    0xC0A020: 0x39,
-    0xC0A0A0: 0x3A, // pink
-    0xC0A0C0: 0x3B,
-    0xC0C000: 0x3C, // yellow
-    0xC0C020: 0x3D,
-    0xC0C0A0: 0x3E,
-    0xC0C0C0: 0x3F, // white
-});
-*/
 
 // Set active values for user-defined deck colours
 const colDeck = [
@@ -186,12 +160,26 @@ const colDeck = [
     Prime4.rgbCode[deckColors[3]],
 ];
 
+const colDeckSysex = [
+    Prime4.rgbCodeSysex[deckColors[0]],
+    Prime4.rgbCodeSysex[deckColors[1]],
+    Prime4.rgbCodeSysex[deckColors[2]],
+    Prime4.rgbCodeSysex[deckColors[3]],
+];
+
 // Set inactive values for user-defined deck colours
 const colDeckDark = [
     Prime4.rgbCode[deckColors[0] + "Dark"],
     Prime4.rgbCode[deckColors[1] + "Dark"],
     Prime4.rgbCode[deckColors[2] + "Dark"],
     Prime4.rgbCode[deckColors[3] + "Dark"],
+];
+
+const colDeckDarkSysex = [
+    Prime4.rgbCodeSysex[deckColors[0] + "Dark"],
+    Prime4.rgbCodeSysex[deckColors[1] + "Dark"],
+    Prime4.rgbCodeSysex[deckColors[2] + "Dark"],
+    Prime4.rgbCodeSysex[deckColors[3] + "Dark"],
 ];
 
 // Register '0x9n' as a button press and 'ox8n' as a button release
@@ -215,6 +203,14 @@ Prime4.DeckAssignButton = function(options) {
     }
     const isActive = () => {
         return Prime4[deckSide] === this.toDeck;
+    };
+
+    this.output = function() {
+        if (this.toDeck < 2) {
+            sendSysexRGB(0x0F, 0x1C + this.deckIndex, ...this.on);
+        } else {
+            sendSysexRGB(0x0F, 0x1C + this.deckIndex, ...this.off);
+        }
     };
 
     this.trigger = function() {
@@ -292,8 +288,8 @@ Prime4.init = function(_id, _debug) {
             deckIndex: i,
             toDeck: decks[i],
             assignmentButtons: this.assignmentButtons,
-            off: colDeckDark[i],
-            on: colDeck[i],
+            off: colDeckDarkSysex[i],
+            on: colDeckSysex[i],
         });
         Prime4.assignmentButtons[i].trigger();
     }
@@ -472,9 +468,16 @@ const mixerStrip = function(deckNumber, midiOffset) {
     this.headphoneCue = new components.Button({
         midi: [0x90 + midiOffset, 0x0D],
         key: "pfl",
-        on: colDeck[midiOffset],
-        off: colDeckDark[midiOffset],
+        on: colDeckSysex[midiOffset],
+        off: colDeckDarkSysex[midiOffset],
         type: components.Button.prototype.types.toggle,
+        output: function() {
+            if (engine.getValue(this.group, this.key) > 0) {
+                sendSysexRGB(midiOffset, 0x0D, ...this.on);
+            } else {
+                sendSysexRGB(midiOffset, 0x0D, ...this.off);
+            }
+        },
     });
 
     //TODO: Volume Fader
@@ -614,7 +617,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Performance Pads
     this.padGrid = new Prime4.PadSection(this, midiChannel - 4);
 
-    this.gridEditMode = true;
+    //this.gridEditMode = true;
 
     // Beatgrid edit mode
     this.gridEditButton = new components.Button({
@@ -634,7 +637,7 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         key: "beats_translate_later",
     });
 
-    // Pfitch Bend Buttons
+    // Pitch Bend Buttons
     const currentRateRange = new Prime4.CyclingArrayView(rateRanges, 2);
     this.pitchBendUp = new components.Button({
         midi: [0x90 + midiChannel, 0x1E],
@@ -822,17 +825,17 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     this.jogWheelLed = new components.Component({
         midi: [0x90 + midiChannel, 0x21],
         outKey: "scratch2_enable",
-        on: Prime4.rgbCode.white,
-        off: colDeck[deckNumbers - 1],
+        on: [0x7f, 0x7f, 0x7f],
+        off: colDeckSysex[deckNumbers - 1],
         output: function(value) {
             if (value > 0) {
-                this.send(this.on);
+                sendSysexRGB(midiChannel, 0x21, ...this.on);
             } else {
-                this.send(this.off);
+                sendSysexRGB(midiChannel, 0x21, ...this.off);
             }
         },
         trigger: function() {
-            this.send(this.off);
+            sendSysexRGB(midiChannel, 0x21, ...this.off);
         },
     });
 
@@ -864,14 +867,21 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         shift: function() {
             this.inKey = "eject";
             this.outKey = this.inKey;
-            this.off = Prime4.rgbCode.whiteDark;
-            this.on = Prime4.rgbCode.white;
+            this.off = Prime4.rgbCodeSysex.whiteDark;
+            this.on = Prime4.rgbCodeSysex.white;
         },
         unshift: function() {
             this.inKey = "LoadSelectedTrack";
             this.outKey = this.inKey;
-            this.off = colDeckDark[deckNumbers - 1];
-            this.on = colDeck[deckNumbers - 1];
+            this.off = colDeckDarkSysex[deckNumbers - 1];
+            this.on = colDeckSysex[deckNumbers - 1];
+        },
+        output: function(value) {
+            if (value > 0) {
+                sendSysexRGB(0x0F, midiChannel - 3, ...this.on);
+            } else {
+                sendSysexRGB(0x0F, midiChannel - 3, ...this.off);
+            }
         },
     });
 

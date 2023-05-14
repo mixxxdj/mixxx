@@ -68,7 +68,7 @@ const textToSysex = function(text) {
         return 0x13;
     case "D":
         return 0x14;
-    default:
+    default: // "--"
         return 0x0d;
     }
 };
