@@ -11,6 +11,7 @@
 #include "track/cueinfoimporter.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
+#include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
@@ -298,18 +299,21 @@ class Track : public QObject {
             mixxx::CueType type,
             int hotCueIndex,
             mixxx::audio::FramePos startPosition,
-            mixxx::audio::FramePos endPosition);
+            mixxx::audio::FramePos endPosition,
+            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor);
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
             double startPositionSamples,
-            double endPositionSamples) {
+            double endPositionSamples,
+            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor) {
         return createAndAddCue(type,
                 hotCueIndex,
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         startPositionSamples),
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        endPositionSamples));
+                        endPositionSamples),
+                color);
     }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;

@@ -896,34 +896,48 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     int hotcueIndex = pControl->getHotcueIndex();
 
-    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
-            cueType,
-            hotcueIndex,
-            cueStartPosition,
-            cueEndPosition);
-
-    // TODO(XXX) deal with spurious signals
-    attachCue(pCue, pControl);
+    mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor;
+    auto hotcueColorPalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
 
     if (cueType == mixxx::CueType::Loop) {
         ConfigKey autoLoopColorsKey("[Controls]", "auto_loop_colors");
         if (getConfig()->getValue(autoLoopColorsKey, false)) {
-            auto hotcueColorPalette =
-                    m_colorPaletteSettings.getHotcueColorPalette();
-            pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcueIndex));
+            color = hotcueColorPalette.colorForHotcueIndex(hotcueIndex);
         } else {
-            pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultLoopColor);
+            int loopDefaultColorIndex = m_pConfig->getValue(
+                    ConfigKey("[Controls]", "LoopDefaultColorIndex"), -1);
+            if (loopDefaultColorIndex < 0 || loopDefaultColorIndex >= hotcueColorPalette.size()) {
+                loopDefaultColorIndex = hotcueColorPalette.size() -
+                        1; // default to last color (orange)
+            }
+            color = hotcueColorPalette.at(loopDefaultColorIndex);
         }
     } else {
         ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
         if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-            auto hotcueColorPalette =
-                    m_colorPaletteSettings.getHotcueColorPalette();
-            pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcueIndex));
+            color = hotcueColorPalette.colorForHotcueIndex(hotcueIndex);
         } else {
-            pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
+            int hotcueDefaultColorIndex = m_pConfig->getValue(
+                    ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
+            if (hotcueDefaultColorIndex < 0 ||
+                    hotcueDefaultColorIndex >= hotcueColorPalette.size()) {
+                hotcueDefaultColorIndex = hotcueColorPalette.size() -
+                        1; // default to last color (orange)
+            }
+            color = hotcueColorPalette.at(hotcueDefaultColorIndex);
         }
     }
+
+    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
+            cueType,
+            hotcueIndex,
+            cueStartPosition,
+            cueEndPosition,
+            color);
+
+    // TODO(XXX) deal with spurious signals
+    attachCue(pCue, pControl);
 
     if (cueType == mixxx::CueType::Loop) {
         setCurrentSavedLoopControlAndActivate(pControl);
@@ -2631,6 +2645,7 @@ void HotcueControl::slotHotcueColorChangeRequest(double color) {
         qWarning() << "slotHotcueColorChanged got invalid value:" << color;
         return;
     }
+    qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << color;
     m_hotcueColor->setAndConfirm(color);
 }
 
@@ -2661,6 +2676,7 @@ void HotcueControl::setCue(const CuePointer& pCue) {
     Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
     setPosition(pos.startPosition);
     setEndPosition(pos.endPosition);
+    qDebug() << "HotcueControl::setCue";
     setColor(pCue->getColor());
     setStatus((pCue->getType() == mixxx::CueType::Invalid)
                     ? HotcueControl::Status::Empty
@@ -2675,6 +2691,7 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 }
 
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
+    qDebug() << "HotcueControl::::setColor()" << newColor;
     if (newColor) {
         m_hotcueColor->set(*newColor);
     }
