@@ -111,6 +111,7 @@ Prime4.physicalSliderPositions = {
     right: 0.5,
 };
 
+/*
 // Map RGB Hex values to MIDI values for Prime 4's colour palette
 const Prime4ColorMapper = new ColorMapper({
     0x000020: 0x01, // dark blue
@@ -175,6 +176,7 @@ const Prime4ColorMapper = new ColorMapper({
     0xC0C0A0: 0x3E,
     0xC0C0C0: 0x3F, // white
 });
+*/
 
 // Set active values for user-defined deck colours
 const colDeck = [
@@ -1061,7 +1063,10 @@ Prime4.hotcueMode = function(deck, offset) {
             number: i,
             group: deck.currentDeck,
             midi: [0x94 + offset, 0x0E + i],
-            colorMapper: Prime4ColorMapper,
+            sendRGB: function(color_obj) {
+                const msg = [0xf0, 0x00, 0x02, 0x0b, 0x7f, 0x08, 0x03, 0x00, 0x05, 0x04 + offset, 0x0E + i, color_obj.red>>1, color_obj.green>>1, color_obj.blue>>1, 0xf7];
+                midi.sendSysexMsg(msg, msg.length);
+            },
             on: this.colourOn,
             off: this.colourOff,
             outConnect: false,
@@ -1082,7 +1087,10 @@ Prime4.savedLoopMode = function(deck, offset) {
             number: i + 8,
             group: deck.currentDeck,
             midi: [0x94 + offset, 0x0E + i],
-            colorMapper: Prime4ColorMapper,
+            sendRGB: function(color_obj) {
+                const msg = [0xf0, 0x00, 0x02, 0x0b, 0x7f, 0x08, 0x03, 0x00, 0x05, 0x04 + offset, 0x0E + i, color_obj.red>>1, color_obj.green>>1, color_obj.blue>>1, 0xf7];
+                midi.sendSysexMsg(msg, msg.length);
+            },
             on: this.colourOn,
             off: this.colourOff,
             outConnect: false,
@@ -1153,7 +1161,6 @@ Prime4.samplerMode = function(deck, offset) {
         this.pads[i] = new components.SamplerButton({
             number: i,
             midi: [0x94 + offset, 0x0E + i],
-            colorMapper: Prime4ColorMapper,
             on: Prime4.rgbCode.orange,
             off: Prime4.rgbCode.orangeDark,
             outConnect: false,
