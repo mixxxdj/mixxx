@@ -133,7 +133,9 @@ class LoopingControl : public EngineControl {
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
     mixxx::audio::FramePos seekInsideAdjustedLoop(
             mixxx::audio::FramePos currentPosition,
+            bool reverse,
             mixxx::audio::FramePos oldLoopInPosition,
+            mixxx::audio::FramePos oldLoopOutPosition,
             mixxx::audio::FramePos newLoopInPosition,
             mixxx::audio::FramePos newLoopOutPosition);
     mixxx::audio::FramePos findQuantizedBeatloopStart(
