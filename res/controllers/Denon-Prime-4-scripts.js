@@ -270,16 +270,16 @@ Prime4.DeckAssignButton = function(options) {
         return Prime4[deckSide] === this.toDeck;
     };
 
-    this.output = function() {
-        if (this.deckIndex instanceof Prime4.Deck) {
-            sendSysexRGB(0x0F, 0x1C + this.deckIndex, ...this.on);
-        } else {
-            sendSysexRGB(0x0F, 0x1C + this.deckIndex, ...this.off);
-        }
+    this.output = function(sysexColour) {
+        sendSysexRGB(this.midi[0], this.midi[1], ...sysexColour);
     };
 
     this.trigger = function() {
-        this.output(isActive());
+        this.output(this.outValueScale(isActive()));
+    };
+
+    this.outValueScale = function(value) {
+        return value ? this.on : this.off;
     };
 
     this.input = function(channel, control, value, status, _group) {
@@ -384,7 +384,7 @@ Prime4.init = function(_id, _debug) {
     Prime4.assignmentButtons = new components.ComponentContainer();
     for (let i = 0; i < decks.length; i++) {
         Prime4.assignmentButtons[i] = new Prime4.DeckAssignButton({
-            midi: [0x9F, 0x1C + i],
+            midi: [0x0F, 0x1C + i],
             deckIndex: i,
             toDeck: decks[i],
             assignmentButtons: this.assignmentButtons,
