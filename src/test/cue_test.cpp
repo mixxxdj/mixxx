@@ -5,6 +5,7 @@
 #include "engine/engine.h"
 #include "test/mixxxtest.h"
 #include "util/color/color.h"
+#include "util/color/predefinedcolorpalettes.h"
 
 namespace mixxx {
 
@@ -13,7 +14,8 @@ TEST(CueTest, NewCueIsDirty) {
             mixxx::CueType::HotCue,
             1,
             mixxx::audio::kStartFramePos,
-            mixxx::audio::kInvalidFramePos);
+            mixxx::audio::kInvalidFramePos,
+            mixxx::PredefinedColorPalettes::kDefaultCueColor);
     EXPECT_TRUE(cue.isDirty());
 }
 
