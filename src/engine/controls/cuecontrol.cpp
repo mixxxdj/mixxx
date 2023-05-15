@@ -2640,7 +2640,7 @@ void HotcueControl::slotHotcueColorChangeRequest(double color) {
         qWarning() << "slotHotcueColorChanged got invalid value:" << color;
         return;
     }
-    qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << color;
+    // qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << color;
     m_hotcueColor->setAndConfirm(color);
 }
 
@@ -2671,7 +2671,7 @@ void HotcueControl::setCue(const CuePointer& pCue) {
     Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
     setPosition(pos.startPosition);
     setEndPosition(pos.endPosition);
-    qDebug() << "HotcueControl::setCue";
+    // qDebug() << "HotcueControl::setCue";
     setColor(pCue->getColor());
     setStatus((pCue->getType() == mixxx::CueType::Invalid)
                     ? HotcueControl::Status::Empty
@@ -2686,7 +2686,7 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 }
 
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
-    qDebug() << "HotcueControl::::setColor()" << newColor;
+    // qDebug() << "HotcueControl::setColor()" << newColor;
     if (newColor) {
         m_hotcueColor->set(*newColor);
     }
