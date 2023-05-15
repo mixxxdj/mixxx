@@ -118,13 +118,21 @@ if(APPLE)
       set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
     endif()
   else()
-    # Minimum macOS version supported by Qt 5.12
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
-    if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
+    if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
+      # Minimum macOS version for arm64 Support
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
+      set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target achritecture")
+      set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
+      set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Setting this enables CMAKE_CROSSCOMPILE")
+    else()
+      # Minimum macOS version supported by Qt 5.12
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
+      if(NOT VCPKG_TARGET_TRIPLET)
+        set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
+      endif()
+      # Needed for deployment target < 10.14
+      add_compile_options(-fno-aligned-allocation)
     endif()
-    # Needed for deployment target < 10.14
-    add_compile_options(-fno-aligned-allocation)
   endif()
 endif()
 
@@ -170,8 +178,13 @@ else()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  # using regular Clang or AppleClang
-  set(LLVM_CLANG true)
+  if (CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
+    set(LLVM_CLANG false)
+    set(MSVC true)
+  else()
+    # using regular Clang or AppleClang
+    set(LLVM_CLANG true)
+  endif()
 else()
   set(LLVM_CLANG false)
 endif()
@@ -186,6 +199,9 @@ set(CMAKE_CXX_STANDARD 20)
 if(MSVC)
   # Ensure MSVC populates __cplusplus correctly.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+  # Remove unreferenced code and data
+  # Since c++11 they can safely be removed to speed up linking.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
 endif()
 
 # Speed up builds on HDDs and prevent wearing of SDDs
@@ -289,6 +305,11 @@ if(MSVC)
       string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+      # /O2 is applied by CMake and this implies /Od2
+      string(REPLACE "/Ob1" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob1" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+
       # Reduce the size of the binary in RelWithDebInfo builds
       # Do not use /OPT:ICF because it has no effect.
       # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
@@ -355,8 +376,9 @@ if(MSVC)
       #Remove optimize flags set by cmake defaults
       string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
       string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
-      string(REPLACE "/Ob2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+      string(REPLACE "/Ob1" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob1" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     endif()
@@ -673,7 +695,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/engineworker.cpp
   src/engine/engineworkerscheduler.cpp
   src/engine/enginexfader.cpp
-  src/engine/filters/enginefilter.cpp
   src/engine/filters/enginefilterbessel4.cpp
   src/engine/filters/enginefilterbessel8.cpp
   src/engine/filters/enginefilterbiquad1.cpp
@@ -749,7 +770,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/trackexportworker.cpp
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
+  src/library/itunes/itunesdao.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesplaylistmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
@@ -840,14 +863,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefbeatsdlg.ui
   src/preferences/dialog/dlgprefcolors.cpp
   src/preferences/dialog/dlgprefcolorsdlg.ui
-  src/preferences/dialog/dlgprefcrossfader.cpp
-  src/preferences/dialog/dlgprefcrossfaderdlg.ui
+  src/preferences/dialog/dlgprefmixer.cpp
+  src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
   src/preferences/dialog/dlgprefdeckdlg.ui
   src/preferences/dialog/dlgprefeffects.cpp
   src/preferences/dialog/dlgprefeffectsdlg.ui
-  src/preferences/dialog/dlgprefeq.cpp
-  src/preferences/dialog/dlgprefeqdlg.ui
   src/preferences/dialog/dlgpreferencepage.cpp
   src/preferences/dialog/dlgpreferences.cpp
   src/preferences/dialog/dlgpreferencesdlg.ui
@@ -1103,6 +1124,7 @@ else()
     src/waveform/guitick.cpp
     src/waveform/renderers/glslwaveformrenderersignal.cpp
     src/waveform/renderers/glvsynctestrenderer.cpp
+    src/waveform/renderers/glwaveformrenderbackground.cpp
     src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/glwaveformrendererrgb.cpp
     src/waveform/renderers/glwaveformrenderersimplesignal.cpp
@@ -1270,10 +1292,6 @@ target_compile_definitions(mixxx-lib PUBLIC
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
   $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
   $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
-  # Disable assert.h assertions in release mode. Some libraries use
-  # this as a signal for when to enable code that should be disabled
-  # in release mode.
-  $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
 # Mac-specific options
@@ -2051,10 +2069,13 @@ add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
 if(MSVC)
   target_compile_definitions(fidlib PRIVATE T_MSVC)
   target_compile_definitions(fidlib PRIVATE _USE_MATH_DEFINES)
+  target_compile_options(fidlib PRIVATE /W3)
 elseif(MINGW)
   target_compile_definitions(fidlib PRIVATE T_MINGW)
+  target_compile_options(fidlib PRIVATE -fno-finite-math-only -Wall -Wextra -Wfloat-conversion -Werror=return-type)
 else()
   target_compile_definitions(fidlib PRIVATE T_LINUX)
+  target_compile_options(fidlib PRIVATE -fno-finite-math-only -Wall -Wextra -Wfloat-conversion -Werror=return-type)
 endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
@@ -2129,7 +2150,10 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 # inlining It is compiled without optimization and allows to use these function
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
-if(GNU_GCC OR LLVM_CLANG)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
+  target_compile_options(FpClassify PRIVATE /fp:precise)
+elseif(GNU_GCC OR LLVM_CLANG)
   # The option `-ffp-contract=on` must precede `-fno-fast-math`
   # to silence a warning on Clang 14
   target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math)
@@ -3076,7 +3100,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic lunar)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")

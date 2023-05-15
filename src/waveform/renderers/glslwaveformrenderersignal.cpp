@@ -13,7 +13,7 @@
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
         ColorType colorType,
         const QString& fragShader)
-        : GLWaveformRenderer(waveformWidgetRenderer),
+        : GLWaveformRendererSignal(waveformWidgetRenderer),
           m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),

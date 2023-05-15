@@ -15,7 +15,7 @@ const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLWaveformRenderer(waveformWidgetRenderer) {
+        : GLWaveformRendererSignal(waveformWidgetRenderer) {
 }
 
 GLWaveformRendererRGB::~GLWaveformRendererRGB() {

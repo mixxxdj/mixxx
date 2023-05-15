@@ -979,15 +979,11 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     overviewWidget->setup(node, *m_pContext);
     overviewWidget->installEventFilter(m_pKeyboard);
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    overviewWidget->Init();
+    overviewWidget->initWithTrack(pPlayer->getLoadedTrack());
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, overviewWidget, &WOverview::slotTrackLoaded);
     connect(pPlayer, &BaseTrackPlayer::loadingTrack, overviewWidget, &WOverview::slotLoadingTrack);
-
-    // just in case track already loaded
-    overviewWidget->slotLoadingTrack(pPlayer->getLoadedTrack(), TrackPointer());
-    overviewWidget->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return overviewWidget;
 #endif

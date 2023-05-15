@@ -6,9 +6,9 @@
 #include <memory>
 #include <utility>
 
+#include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
-#include "library/itunes/itunespathmapping.h"
 #include "library/queryutil.h"
 #include "library/treeitemmodel.h"
 #include "util/lcs.h"
@@ -45,23 +45,28 @@ const QString kRemote = "Remote";
 
 ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
         const QString& xmlFilePath,
-        const QSqlDatabase& database,
-        ITunesPathMapping& pathMapping,
-        const std::atomic<bool>& cancelImport)
+        const std::atomic<bool>& cancelImport,
+        std::unique_ptr<ITunesDAO> dao)
         : m_parentFeature(parentFeature),
           m_xmlFilePath(xmlFilePath),
           m_xmlFile(xmlFilePath),
           m_xml(&m_xmlFile),
-          m_database(database),
-          m_pathMapping(pathMapping),
-          m_cancelImport(cancelImport) {
+          m_cancelImport(cancelImport),
+          m_dao(std::move(dao)) {
+    // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
+    // file://localhost/ from the URL. When we load the user's iTunes XML
+    // configuration we may replace this with something based on the detected
+    // location of the user's iTunes path but the defaults are necessary in case
+    // their iTunes XML does not include the "Music Folder" key.
+    m_pathMapping.mixxxITunesRoot = "";
+    m_pathMapping.dbITunesRoot = kiTunesLocalhostToken;
 }
 
 ITunesImport ITunesXMLImporter::importLibrary() {
     bool isTracksParsed = false;
 
     ITunesImport iTunesImport;
-    iTunesImport.isMusicFolderLocatedAfterTracks = false;
+    bool isMusicFolderLocatedAfterTracks = false;
 
     if (!m_xmlFile.open(QIODevice::ReadOnly)) {
         qDebug() << "Could not open iTunes music collection";
@@ -75,14 +80,19 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                 QString key = m_xml.readElementText();
                 if (key == "Music Folder") {
                     if (isTracksParsed) {
-                        iTunesImport.isMusicFolderLocatedAfterTracks = true;
+                        isMusicFolderLocatedAfterTracks = true;
                     }
                     if (readNextStartElement()) {
                         guessMusicLibraryMountpoint();
                     }
                 } else if (key == "Tracks") {
                     parseTracks();
-                    iTunesImport.playlistRoot = parsePlaylists();
+                    parsePlaylists();
+
+                    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(m_parentFeature);
+                    m_dao->appendPlaylistTree(pRootItem.get());
+
+                    iTunesImport.playlistRoot = std::move(pRootItem);
                     isTracksParsed = true;
                 }
             }
@@ -95,6 +105,15 @@ ITunesImport ITunesXMLImporter::importLibrary() {
         qDebug() << "line:" << m_xml.lineNumber()
                  << "column:" << m_xml.columnNumber()
                  << "error:" << m_xml.errorString();
+    }
+
+    if (isMusicFolderLocatedAfterTracks) {
+        qDebug() << "Updating iTunes real path from "
+                 << m_pathMapping.dbITunesRoot << " to "
+                 << m_pathMapping.mixxxITunesRoot;
+        // In some iTunes files "Music Folder" XML node is located at the end of
+        // file. So, we need to
+        m_dao->applyPathMapping(m_pathMapping);
     }
 
     return iTunesImport;
@@ -186,18 +205,6 @@ void ITunesXMLImporter::guessMusicLibraryMountpoint() {
 void ITunesXMLImporter::parseTracks() {
     bool inContainerDictionary = false;
     bool inTrackDictionary = false;
-    QSqlQuery query(m_database);
-    query.prepare(
-            "INSERT INTO itunes_library (id, artist, title, album, "
-            "album_artist, year, genre, grouping, comment, tracknumber,"
-            "bpm, bitrate,"
-            "duration, location,"
-            "rating ) "
-            "VALUES (:id, :artist, :title, :album, :album_artist, :year, "
-            ":genre, :grouping, :comment, :tracknumber,"
-            ":bpm, :bitrate,"
-            ":duration, :location,"
-            ":rating )");
 
     qDebug() << "Parse iTunes music collection";
 
@@ -214,7 +221,7 @@ void ITunesXMLImporter::parseTracks() {
                     // We are in a <dict> tag that holds track information
                     inTrackDictionary = true;
                     // Parse track here
-                    parseTrack(query);
+                    parseTrack();
                 }
             }
         }
@@ -231,7 +238,7 @@ void ITunesXMLImporter::parseTracks() {
     }
 }
 
-void ITunesXMLImporter::parseTrack(QSqlQuery& query) {
+void ITunesXMLImporter::parseTrack() {
     // qDebug() << "----------------TRACK-----------------";
     int id = -1;
     QString title;
@@ -354,50 +361,37 @@ void ITunesXMLImporter::parseTrack(QSqlQuery& query) {
 
     // If we reach the end of <dict>
     // Save parsed track to database
-    query.bindValue(":id", id);
-    query.bindValue(":artist", artist);
-    query.bindValue(":title", title);
-    query.bindValue(":album", album);
-    query.bindValue(":album_artist", albumArtist);
-    query.bindValue(":genre", genre);
-    query.bindValue(":grouping", grouping);
-    query.bindValue(":year", year);
-    query.bindValue(":duration", playtime);
-    query.bindValue(":location", location);
-    query.bindValue(":rating", rating);
-    query.bindValue(":comment", comment);
-    query.bindValue(":tracknumber", tracknumber);
-    query.bindValue(":bpm", bpm);
-    query.bindValue(":bitrate", bitrate);
+    ITunesTrack track = {
+            .id = id,
+            .artist = artist,
+            .title = title,
+            .album = album,
+            .albumArtist = albumArtist,
+            .genre = genre,
+            .grouping = grouping,
+            .year = year.toInt(),
+            .duration = playtime,
+            .location = location,
+            .rating = rating,
+            .comment = comment,
+            .trackNumber = tracknumber.toInt(),
+            .bpm = bpm,
+            .bitrate = bitrate,
+    };
 
-    bool success = query.exec();
-
-    if (!success) {
-        LOG_FAILED_QUERY(query);
+    if (!m_dao->importTrack(track)) {
         return;
     }
 }
 
-std::unique_ptr<TreeItem> ITunesXMLImporter::parsePlaylists() {
+void ITunesXMLImporter::parsePlaylists() {
     qDebug() << "Parse iTunes playlists";
-    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(m_parentFeature);
-    QSqlQuery queryInsertToPlaylists(m_database);
-    queryInsertToPlaylists.prepare(
-            "INSERT INTO itunes_playlists (id, name) "
-            "VALUES (:id, :name)");
-
-    QSqlQuery queryInsertToPlaylistTracks(m_database);
-    queryInsertToPlaylistTracks.prepare(
-            "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
-            "VALUES (:playlist_id, :track_id, :position)");
 
     while (!m_xml.atEnd() && !m_cancelImport.load()) {
         m_xml.readNext();
         // We process and iterate the <dict> tags holding playlist summary information here
         if (m_xml.isStartElement() && m_xml.name() == kDict) {
-            parsePlaylist(queryInsertToPlaylists,
-                    queryInsertToPlaylistTracks,
-                    *pRootItem);
+            parsePlaylist();
             continue;
         }
         if (m_xml.isEndElement()) {
@@ -406,7 +400,6 @@ std::unique_ptr<TreeItem> ITunesXMLImporter::parsePlaylists() {
             }
         }
     }
-    return pRootItem;
 }
 
 bool ITunesXMLImporter::readNextStartElement() {
@@ -420,15 +413,15 @@ bool ITunesXMLImporter::readNextStartElement() {
     return false;
 }
 
-void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
-        QSqlQuery& queryInsertToPlaylistTracks,
-        TreeItem& root) {
+void ITunesXMLImporter::parsePlaylist() {
     // qDebug() << "Parse Playlist";
 
-    QString playlistname;
-    int playlist_id = -1;
-    int playlist_position = -1;
-    int track_reference = -1;
+    QString name;
+    int id = -1;
+    QString persistentId;
+    QString parentPersistentId;
+    int trackPosition = -1;
+    int trackReference = -1;
     // indicates that we haven't found the <
     bool isSystemPlaylist = false;
     bool isPlaylistItemsStarted = false;
@@ -446,74 +439,63 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
                 // Afterwars the playlist entries occur
                 if (key == "Name") {
                     readNextStartElement();
-                    playlistname = m_xml.readElementText();
+                    name = m_xml.readElementText();
                     continue;
                 }
                 // When parsing the ID, the playlistname has already been found
                 if (key == "Playlist ID") {
                     readNextStartElement();
-                    playlist_id = m_xml.readElementText().toInt();
-                    playlist_position = 1;
+                    id = m_xml.readElementText().toInt();
+                    trackPosition = 1;
                     continue;
+                }
+                if (key == "Playlist Persistent ID") {
+                    readNextStartElement();
+                    persistentId = m_xml.readElementText();
+                    continue;
+                }
+                if (key == "Parent Persistent ID") {
+                    readNextStartElement();
+                    parentPersistentId = m_xml.readElementText();
                 }
                 // Hide playlists that are system playlists
                 if (key == "Master" || key == "Movies" || key == "TV Shows" ||
                         key == "Music" || key == "Books" || key == "Purchased") {
-                    isSystemPlaylist = true;
+                    readNextStartElement();
+                    if (m_xml.name() == QString("true")) {
+                        isSystemPlaylist = true;
+                    }
                     continue;
                 }
 
                 if (key == "Playlist Items") {
                     isPlaylistItemsStarted = true;
 
-                    // if the playlist is prebuild don't hit the database
+                    // if the playlist is prebuilt don't hit the database
                     if (isSystemPlaylist) {
                         continue;
                     }
-                    queryInsertToPlaylists.bindValue(":id", playlist_id);
-                    queryInsertToPlaylists.bindValue(":name", playlistname);
 
-                    bool success = queryInsertToPlaylists.exec();
-                    if (!success) {
-                        if (queryInsertToPlaylists.lastError()
-                                        .nativeErrorCode() ==
-                                QString::number(SQLITE_CONSTRAINT)) {
-                            // We assume a duplicate Playlist name
-                            playlistname += QString(" #%1").arg(playlist_id);
-                            queryInsertToPlaylists.bindValue(":name", playlistname);
-
-                            bool success = queryInsertToPlaylists.exec();
-                            if (!success) {
-                                // unexpected error
-                                LOG_FAILED_QUERY(queryInsertToPlaylists);
-                                break;
-                            }
-                        } else {
-                            // unexpected error
-                            LOG_FAILED_QUERY(queryInsertToPlaylists);
-                            return;
-                        }
+                    ITunesPlaylist playlist = {
+                            .id = id,
+                            .name = name,
+                    };
+                    if (!m_dao->importPlaylist(playlist)) {
+                        // unexpected error
+                        break;
                     }
-                    // append the playlist to the child model
-                    root.appendChild(playlistname);
                 }
                 // When processing playlist entries, playlist name and id have
                 // already been processed and persisted
                 if (key == kTrackId) {
                     readNextStartElement();
-                    track_reference = m_xml.readElementText().toInt();
+                    trackReference = m_xml.readElementText().toInt();
 
-                    queryInsertToPlaylistTracks.bindValue(":playlist_id", playlist_id);
-                    queryInsertToPlaylistTracks.bindValue(":track_id", track_reference);
-                    queryInsertToPlaylistTracks.bindValue(":position", playlist_position++);
-
-                    // Insert tracks if we are not in a pre-build playlist
-                    if (!isSystemPlaylist && !queryInsertToPlaylistTracks.exec()) {
-                        qDebug() << "SQL Error in ITunesXMLImporter.cpp: line" << __LINE__ << " "
-                                 << queryInsertToPlaylistTracks.lastError();
-                        qDebug() << "trackid" << track_reference;
-                        qDebug() << "playlistname; " << playlistname;
-                        qDebug() << "-----------------";
+                    // Insert tracks if we are not in a pre-built playlist
+                    if (!isSystemPlaylist) {
+                        m_dao->importPlaylistTrack(id,
+                                trackReference,
+                                trackPosition++);
                     }
                 }
             }
@@ -528,5 +510,19 @@ void ITunesXMLImporter::parsePlaylist(QSqlQuery& queryInsertToPlaylists,
                 break;
             }
         }
+    }
+
+    if (!isSystemPlaylist) {
+        m_playlistIdByPersistentId[persistentId] = id;
+
+        int parentId = kRootITunesPlaylistId;
+        if (!parentPersistentId.isNull()) {
+            auto found = m_playlistIdByPersistentId.find(parentPersistentId);
+            if (found != m_playlistIdByPersistentId.end()) {
+                parentId = found.value();
+            }
+        }
+
+        m_dao->importPlaylistRelation(parentId, id);
     }
 }

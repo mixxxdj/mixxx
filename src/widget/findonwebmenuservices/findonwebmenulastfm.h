@@ -5,6 +5,7 @@
 #include "widget/wfindonwebmenu.h"
 
 class FindOnWebMenuLastfm : public WFindOnWebMenu {
+    Q_OBJECT
   public:
     FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& track);
 };

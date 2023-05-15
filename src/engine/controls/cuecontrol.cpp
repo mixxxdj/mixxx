@@ -820,6 +820,16 @@ void CueControl::quantizeChanged(double v) {
     }
 }
 
+mixxx::RgbColor CueControl::colorFromConfig(const ConfigKey& configKey) {
+    auto hotcueColorPalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
+    int colorIndex = m_pConfig->getValue(configKey, -1);
+    if (colorIndex < 0 || colorIndex >= hotcueColorPalette.size()) {
+        return hotcueColorPalette.defaultColor();
+    }
+    return hotcueColorPalette.at(colorIndex);
+};
+
 void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode mode) {
     //qDebug() << "CueControl::hotcueSet" << value;
 
@@ -896,34 +906,32 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     int hotcueIndex = pControl->getHotcueIndex();
 
-    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
-            cueType,
-            hotcueIndex,
-            cueStartPosition,
-            cueEndPosition);
-
-    // TODO(XXX) deal with spurious signals
-    attachCue(pCue, pControl);
-
+    mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor;
     if (cueType == mixxx::CueType::Loop) {
         ConfigKey autoLoopColorsKey("[Controls]", "auto_loop_colors");
         if (getConfig()->getValue(autoLoopColorsKey, false)) {
-            auto hotcueColorPalette =
-                    m_colorPaletteSettings.getHotcueColorPalette();
-            pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcueIndex));
+            color = m_colorPaletteSettings.getHotcueColorPalette().colorForHotcueIndex(hotcueIndex);
         } else {
-            pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultLoopColor);
+            color = colorFromConfig(ConfigKey("[Controls]", "LoopDefaultColorIndex"));
         }
     } else {
         ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
         if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-            auto hotcueColorPalette =
-                    m_colorPaletteSettings.getHotcueColorPalette();
-            pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcueIndex));
+            color = m_colorPaletteSettings.getHotcueColorPalette().colorForHotcueIndex(hotcueIndex);
         } else {
-            pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
+            color = colorFromConfig(ConfigKey("[Controls]", "HotcueDefaultColorIndex"));
         }
     }
+
+    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
+            cueType,
+            hotcueIndex,
+            cueStartPosition,
+            cueEndPosition,
+            color);
+
+    // TODO(XXX) deal with spurious signals
+    attachCue(pCue, pControl);
 
     if (cueType == mixxx::CueType::Loop) {
         setCurrentSavedLoopControlAndActivate(pControl);
@@ -2631,6 +2639,7 @@ void HotcueControl::slotHotcueColorChangeRequest(double color) {
         qWarning() << "slotHotcueColorChanged got invalid value:" << color;
         return;
     }
+    // qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << color;
     m_hotcueColor->setAndConfirm(color);
 }
 
@@ -2661,6 +2670,7 @@ void HotcueControl::setCue(const CuePointer& pCue) {
     Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
     setPosition(pos.startPosition);
     setEndPosition(pos.endPosition);
+    // qDebug() << "HotcueControl::setCue";
     setColor(pCue->getColor());
     setStatus((pCue->getType() == mixxx::CueType::Invalid)
                     ? HotcueControl::Status::Empty
@@ -2675,6 +2685,7 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 }
 
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
+    // qDebug() << "HotcueControl::setColor()" << newColor;
     if (newColor) {
         m_hotcueColor->set(*newColor);
     }

@@ -38,6 +38,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     void setup(const QDomNode& node, const SkinContext& context);
+    virtual void initWithTrack(TrackPointer pTrack);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;

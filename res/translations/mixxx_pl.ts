@@ -2223,7 +2223,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="138"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="139"/>
         <source>Adjust %1</source>
-        <translation>Dostosuj</translation>
+        <translation>Dostosuj %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="25"/>
