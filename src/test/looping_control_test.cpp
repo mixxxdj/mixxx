@@ -63,6 +63,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pButtonBeatLoopRoll1Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatlooproll_1_activate");
         m_pButtonBeatLoopRoll2Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatlooproll_2_activate");
         m_pButtonBeatLoopRoll4Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatlooproll_4_activate");
+
+        ProcessBuffer();
     }
 
     bool isLoopEnabled() {
@@ -427,8 +429,10 @@ TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(16.0);
+    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
+    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
     m_pButtonLoopDouble->set(1.0);
     m_pButtonLoopDouble->set(0.0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
