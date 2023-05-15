@@ -73,7 +73,6 @@ WSpinnyBase::WSpinnyBase(
     qDebug() << "WSpinnyBase(): Created WGLWidget, Context"
              << "Valid:" << isContextValid()
              << "Sharing:" << isContextSharing();
-    makeCurrentIfNeeded();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -86,8 +85,6 @@ WSpinnyBase::WSpinnyBase(
     if (m_pPlayer != nullptr) {
         connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WSpinnyBase::slotLoadTrack);
         connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WSpinnyBase::slotLoadingTrack);
-        // just in case a track is already loaded
-        slotLoadTrack(m_pPlayer->getLoadedTrack());
     }
 
     connect(m_pCoverMenu,
@@ -146,6 +143,11 @@ void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& rep
 void WSpinnyBase::setup(const QDomNode& node,
         const SkinContext& context,
         const ConfigKey& showCoverConfigKey) {
+    if (m_pPlayer) {
+        // just in case a track is already loaded
+        slotLoadTrack(m_pPlayer->getLoadedTrack());
+    }
+
     // Set images
     QDomElement backPathElement = context.selectElement(node, "PathBackground");
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
