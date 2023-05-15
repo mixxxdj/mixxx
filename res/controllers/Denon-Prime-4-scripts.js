@@ -22,7 +22,7 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "green",
+    "orange",
 
     // Deck 2
     "blue",
@@ -95,7 +95,7 @@ const sendSysexRGB = function(channel, control, red, green, blue) {
     midi.sendSysexMsg(msg, msg.length);
 };
 
-// Colour codes designed to avoid memorizing MIDI velocity values
+// Internal MIDI colour palette
 Prime4.rgbCode = {
     black: 0,
     blueDark: 1,
@@ -123,26 +123,36 @@ Prime4.rgbCode = {
     white: 63,
 };
 
+// SysEx RGB values for more precise colour control
 Prime4.rgbCodeSysex = {
     red: [0x7f, 0x00, 0x00],
-    green: [0x00, 0x7f, 0x00],
-    blue: [0x00, 0x00, 0x7f],
-    yellow: [0x7f, 0x7f, 0x00],
-    magenta: [0x7f, 0x00, 0x7f],
-    cyan: [0x00, 0x7f, 0x7f],
-    orange: [0x7f, 0x2f, 0x00],
-    aqua: [0x00, 0x7f, 0x2f],
-    violet: [0x2f, 0x00, 0x7f],
-    white: [0x7e, 0x7e, 0x7f],
     redDark: [0x1f, 0x00, 0x00],
+
+    green: [0x00, 0x7f, 0x00],
     greenDark: [0x00, 0x1f, 0x00],
+
+    blue: [0x00, 0x00, 0x7f],
     blueDark: [0x00, 0x00, 0x1f],
+
+    yellow: [0x7f, 0x7f, 0x00],
     yellowDark: [0x1f, 0x1f, 0x00],
+
+    magenta: [0x7f, 0x00, 0x7f],
     magentaDark: [0x1f, 0x00, 0x1f],
+
+    cyan: [0x00, 0x7f, 0x7f],
     cyanDark: [0x00, 0x1f, 0x1f],
+
+    orange: [0x7f, 0x2f, 0x00],
     orangeDark: [0x1f, 0x0c, 0x00],
+
+    aqua: [0x00, 0x7f, 0x2f],
     aquaDark: [0x00, 0x1f, 0x0c],
+
+    violet: [0x2f, 0x00, 0x7f],
     violetDark: [0x0c, 0x00, 0x1f],
+
+    white: [0x7e, 0x7e, 0x7f],
     whiteDark: [0x1e, 0x1e, 0x1f],
 };
 
@@ -153,12 +163,14 @@ Prime4.physicalSliderPositions = {
 };
 
 // Set active values for user-defined deck colours
+/*
 const colDeck = [
     Prime4.rgbCode[deckColors[0]],
     Prime4.rgbCode[deckColors[1]],
     Prime4.rgbCode[deckColors[2]],
     Prime4.rgbCode[deckColors[3]],
 ];
+*/
 
 const colDeckSysex = [
     Prime4.rgbCodeSysex[deckColors[0]],
@@ -168,12 +180,14 @@ const colDeckSysex = [
 ];
 
 // Set inactive values for user-defined deck colours
+/*
 const colDeckDark = [
     Prime4.rgbCode[deckColors[0] + "Dark"],
     Prime4.rgbCode[deckColors[1] + "Dark"],
     Prime4.rgbCode[deckColors[2] + "Dark"],
     Prime4.rgbCode[deckColors[3] + "Dark"],
 ];
+*/
 
 const colDeckDarkSysex = [
     Prime4.rgbCodeSysex[deckColors[0] + "Dark"],
@@ -206,7 +220,7 @@ Prime4.DeckAssignButton = function(options) {
     };
 
     this.output = function() {
-        if (this.toDeck < 2) {
+        if (this.deckIndex instanceof Prime4.Deck) {
             sendSysexRGB(0x0F, 0x1C + this.deckIndex, ...this.on);
         } else {
             sendSysexRGB(0x0F, 0x1C + this.deckIndex, ...this.off);
@@ -257,6 +271,7 @@ Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _gr
     this.inSetParameter(this.inGetParameter() + (signedValue / 100));
 };
 
+// SysEx message for returning position of all components
 const initialPrime4Sysex = [0xf0, 0x00, 0x02, 0x0b, 0x7f, 0x08, 0x60, 0x00, 0x04, 0x04, 0x01, 0x02, 0x00, 0xf7];
 
 Prime4.init = function(_id, _debug) {
@@ -468,9 +483,9 @@ const mixerStrip = function(deckNumber, midiOffset) {
     this.headphoneCue = new components.Button({
         midi: [0x90 + midiOffset, 0x0D],
         key: "pfl",
+        type: components.Button.prototype.types.toggle,
         on: colDeckSysex[midiOffset],
         off: colDeckDarkSysex[midiOffset],
-        type: components.Button.prototype.types.toggle,
         output: function() {
             if (engine.getValue(this.group, this.key) > 0) {
                 sendSysexRGB(midiOffset, 0x0D, ...this.on);
@@ -862,8 +877,6 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     this.deckLoad = new components.Button({
         midi: [0x9F, midiChannel - 3],
         key: "LoadSelectedTrack",
-        off: colDeckDark[deckNumbers - 1],
-        on: colDeck[deckNumbers - 1],
         shift: function() {
             this.inKey = "eject";
             this.outKey = this.inKey;
