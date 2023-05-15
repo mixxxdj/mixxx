@@ -45,6 +45,10 @@ class ColorPalette final {
         return m_colorList.end();
     }
 
+    mixxx::RgbColor defaultColor() const {
+        return m_colorList.last();
+    }
+
     QString getName() const {
         return m_name;
     }
