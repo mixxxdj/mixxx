@@ -1037,9 +1037,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         beats = minBeatSize;
     }
 
-    int samples = static_cast<int>(m_pTrackSamples->get());
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
     const mixxx::BeatsPointer pBeats = m_pBeats;
-    if (samples == 0 || !pBeats) {
+    if (sampleOfTrack.total <= 0 || !pBeats) {
         clearActiveBeatLoop();
         m_pCOBeatLoopSize->setAndConfirm(beats);
         return;
@@ -1050,32 +1050,26 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     LoopSamples newloopSamples = {kNoTrigger, kNoTrigger, false};
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    SampleOfTrack sampleOfTrack = getSampleOfTrack();
-    // Note: currentPos can be past the end of the track, in the padded
-    // silence of the last buffer. This position might be not reachable in
-    // a future runs, depending on the buffering.
-    double currentSample = math_min(sampleOfTrack.current, sampleOfTrack.total);
-
     // Start from the current position/closest beat and
     // create the loop around X beats from there.
     if (keepStartPoint) {
         if (loopSamples.start != kNoTrigger) {
             newloopSamples.start = loopSamples.start;
         } else {
-            newloopSamples.start = currentSample;
+            newloopSamples.start = math_min(sampleOfTrack.current, sampleOfTrack.total);
         }
     } else {
         // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
         // The closest beat might be ahead of play position and will cause a catching loop.
         double prevBeat;
         double nextBeat;
-        pBeats->findPrevNextBeats(currentSample, &prevBeat, &nextBeat);
+        pBeats->findPrevNextBeats(sampleOfTrack.current, &prevBeat, &nextBeat);
 
         if (m_pQuantizeEnabled->toBool() && prevBeat != -1) {
             double beatLength = nextBeat - prevBeat;
             double loopLength = beatLength * beats;
 
-            double closestBeat = pBeats->findClosestBeat(currentSample);
+            double closestBeat = pBeats->findClosestBeat(sampleOfTrack.current);
             if (beats >= 1.0) {
                 newloopSamples.start = closestBeat;
             } else {
@@ -1086,12 +1080,12 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                 //
                 // If we press 1/2 beatloop we want loop from 50% to 100%,
                 // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                double samplesSinceLastBeat = currentSample - prevBeat;
+                double samplesSinceLastBeat = sampleOfTrack.current - prevBeat;
 
                 // find the previous beat fraction and check if the current position is closer to this or the next one
                 // place the new loop start to the closer one
                 double previousFractionBeat = prevBeat + floor(samplesSinceLastBeat / loopLength) * loopLength;
-                double samplesSinceLastFractionBeat = currentSample - previousFractionBeat;
+                double samplesSinceLastFractionBeat = sampleOfTrack.current - previousFractionBeat;
 
                 if (samplesSinceLastFractionBeat <= (loopLength / 2.0)) {
                     newloopSamples.start = previousFractionBeat;
@@ -1110,13 +1104,16 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                 newloopSamples.start -= loopLength;
             }
         } else {
-            newloopSamples.start = currentSample;
+            newloopSamples.start = sampleOfTrack.current;
         }
     }
 
     newloopSamples.end = pBeats->findNBeatsFromSample(newloopSamples.start, beats);
-    if (newloopSamples.start >= newloopSamples.end // happens when the call above fails
-            || newloopSamples.end > samples) { // Do not allow beat loops to go beyond the end of the track
+    if (newloopSamples.start >=
+                    newloopSamples.end // happens when the call above fails
+            || newloopSamples.end >
+                    sampleOfTrack.total) { // Do not allow beat loops to go
+                                           // beyond the end of the track
         // If a track is loaded with beatloop_size larger than
         // the distance between the loop in point and
         // the end of the track, let beatloop_size be set to
