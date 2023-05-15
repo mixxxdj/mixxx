@@ -287,6 +287,7 @@ class CueControl : public EngineControl {
     void seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition);
     void setHotcueFocusIndex(int hotcueIndex);
     int getHotcueFocusIndex() const;
+    mixxx::RgbColor colorFromConfig(const ConfigKey& configKey);
 
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;

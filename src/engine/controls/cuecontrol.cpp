@@ -820,6 +820,16 @@ void CueControl::quantizeChanged(double v) {
     }
 }
 
+mixxx::RgbColor CueControl::colorFromConfig(const ConfigKey& configKey) {
+    auto hotcueColorPalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
+    int colorIndex = m_pConfig->getValue(configKey, -1);
+    if (colorIndex < 0 || colorIndex >= hotcueColorPalette.size()) {
+        return hotcueColorPalette.defaultColor();
+    }
+    return hotcueColorPalette.at(colorIndex);
+};
+
 void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode mode) {
     //qDebug() << "CueControl::hotcueSet" << value;
 
@@ -897,28 +907,17 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     int hotcueIndex = pControl->getHotcueIndex();
 
     mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor;
-    auto hotcueColorPalette =
-            m_colorPaletteSettings.getHotcueColorPalette();
-
-    auto colorFromConfig = [this, &hotcueColorPalette](const ConfigKey& configKey) {
-        int colorIndex = m_pConfig->getValue(configKey, -1);
-        if (colorIndex < 0 || colorIndex >= hotcueColorPalette.size()) {
-            return hotcueColorPalette.defaultColor();
-        }
-        return hotcueColorPalette.at(colorIndex);
-    };
-
     if (cueType == mixxx::CueType::Loop) {
         ConfigKey autoLoopColorsKey("[Controls]", "auto_loop_colors");
         if (getConfig()->getValue(autoLoopColorsKey, false)) {
-            color = hotcueColorPalette.colorForHotcueIndex(hotcueIndex);
+            color = m_colorPaletteSettings.getHotcueColorPalette().colorForHotcueIndex(hotcueIndex);
         } else {
             color = colorFromConfig(ConfigKey("[Controls]", "LoopDefaultColorIndex"));
         }
     } else {
         ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
         if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-            color = hotcueColorPalette.colorForHotcueIndex(hotcueIndex);
+            color = m_colorPaletteSettings.getHotcueColorPalette().colorForHotcueIndex(hotcueIndex);
         } else {
             color = colorFromConfig(ConfigKey("[Controls]", "HotcueDefaultColorIndex"));
         }
