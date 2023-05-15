@@ -63,6 +63,57 @@ const rateRanges = [
  *                                                *
  **************************************************/
 
+///////////// FX SCREEN LIBRARY /////////////
+
+const denonId = [0x00, 0x02, 0x0b];
+
+// Shorthand for sending SysEx message to FX screens
+const fxSendMsg = function(msg) {
+    midi.sendSysexMsg(msg, msg.length);
+};
+
+// Add final layer to SysEx message (f0, 00, 02, 0b, ..., 0xf7)
+const wrapFinalMsg = function(msg) {
+    msg.unshift(...denonId);
+    msg.unshift(0xf0);
+    msg.push(0xf7);
+    return msg;
+};
+
+// Show text
+const fxText = function(screen, text, size = 0x02, align = 0x01) {
+    const textBytes = [];
+
+    // Convert text to ASCII
+    for (const i in text) {
+        textBytes[i] = text.charCodeAt(i);
+    }
+
+    // Alignment (0x00 = Left, 0x01 = Centre, 0x02 = Right)
+    const position = 0x00; // top of screen
+    const msg = [0x00, 0x08, 0x08, 0x00, 0, screen, size, align, position, ...textBytes];
+    msg[4] = msg.length - 5;
+    return (wrapFinalMsg(msg));
+};
+
+// Clear screen
+const fxClear = function(screen) {
+    return (fxText(screen, ""));
+};
+
+// Draw meter
+const fxMeter = function(screen, end, start = 0) {
+    const width = 0x7f;
+    const height = 0x00;
+    const fillColour = 0x01;
+    const emptyColour = 0x00;
+    const position = 0x03;
+    const msg = [0x00, 0x08, 0x09, 0x00, 0x09, screen, width, height, 0x01, fillColour, emptyColour, position, start, end];
+    return (wrapFinalMsg(msg));
+};
+
+/////////////////////////////////////////////
+
 // Convert user-preference for `skipButtonBehaviour` into appropriate keys for components
 let trackSkipMode = [];
 if (skipButtonBehaviour === "skip") {
@@ -274,6 +325,31 @@ Prime4.EffectUnitEncoderInput = function(_channel, _control, value, _status, _gr
 // SysEx message for returning position of all components
 const initialPrime4Sysex = [0xf0, 0x00, 0x02, 0x0b, 0x7f, 0x08, 0x60, 0x00, 0x04, 0x04, 0x01, 0x02, 0x00, 0xf7];
 
+// Meters on OLED screens to visualize effects
+const fxScreen = function(offset, bank) {
+    components.Deck.call(this, bank);
+    const effectMeta = [];
+    for (let i = 1; i <= 3; i++) {
+        effectMeta[i - 1] = new components.Component({
+            group: "[EffectRack1_EffectUnit" + bank + "_Effect" + i + "]",
+            outKey: "meta",
+            output: function() {
+                const barFill = ((engine.getParameter("[EffectRack1_EffectUnit" + bank + "_Effect" + i + "]", "meta")) * 127);
+                fxSendMsg(fxMeter(i + offset - 1, barFill));
+            },
+        });
+    }
+    new components.Component({
+        group: "[EffectRack1_EffectUnit" + bank + "]",
+        outKey: "mix",
+        output: function() {
+            const barFill = ((engine.getParameter("[EffectRack1_EffectUnit" + bank + "]", "mix")) * 127);
+            fxSendMsg(fxMeter(3 + offset, barFill));
+        },
+    });
+};
+fxScreen.prototype = new components.Deck();
+
 Prime4.init = function(_id, _debug) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
@@ -287,6 +363,15 @@ Prime4.init = function(_id, _debug) {
         new Prime4.Deck(3, 4),
         new Prime4.Deck(4, 5),
     ];
+
+    Prime4.fxScreens1 = new fxScreen(0, 1);
+    Prime4.fxScreens2 = new fxScreen(4, 2);
+    for (let j = 0; j <= 1; j++) {
+        for (let i = 0; i <= 2; i++) {
+            fxSendMsg(fxText(i + (j * 4), ("Effect " + (i + 1))));
+        }
+        fxSendMsg(fxText(3 + (j * 4), "Dry / Wet"));
+    }
 
     // Disconnect all decks at first so they don't fight with each other
     decks.forEach(deck => deck.forEachComponent(comp => { console.log(`disconnecting "${comp.group}, ${comp.inKey}"`); comp.disconnect(); }));
@@ -414,6 +499,11 @@ Prime4.init = function(_id, _debug) {
 Prime4.shutdown = function() {
     // Return all LEDs to initial dim state
     midi.sendShortMsg(0x90, 0x75, 0x01);
+
+    // Clear OLED screens
+    for (let i = 0; i < 8; i++) {
+        fxSendMsg(fxClear(i));
+    }
 };
 
 // All components contained in each mixer strip
