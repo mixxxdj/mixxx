@@ -5,11 +5,14 @@ let wheelSide;
 
 const denonHeader = [0x00, 0x02, 0x0B];
 
+/*
 // Convert hex value (0xYZ) to individual bytes for SysEx (0x0Y, 0x0Z)
 const valueToDenonBytes = function(number) {
     return [(number >> 4) & 0xF, number & 0xF];
 };
+*/
 
+/*
 const colourToDenonBytes = function(colourArray) {
     const array = [];
     for (let i = 0; i < 4; i++) {
@@ -18,14 +21,18 @@ const colourToDenonBytes = function(colourArray) {
     }
     return (array);
 };
+*/
 
+/*
 const changeTextColour = function(display, denonColourArray) {
     const array = [display, 0x08, 0x0b, 0x00, 0x09, 0x08];
     array.push(...colourToDenonBytes(denonColourArray));
     finalSysexWrap(array);
     return (array);
 };
+*/
 
+/*
 const textToSysex = function(text) {
     switch (text) {
     case "1/64":
@@ -72,7 +79,9 @@ const textToSysex = function(text) {
         return 0x0d;
     }
 };
+*/
 
+/*
 const displayText = function(display, text) {
     const array = [display, 0x08, 0x0A, 0x00, 0x04];
     array.push(0x00, 0x02, 0x00); //TODO: Add flexibility for background images
@@ -80,6 +89,7 @@ const displayText = function(display, text) {
     finalSysexWrap(array);
     return (array);
 };
+*/
 
 // Simplify process of sending SysEx messages
 const sysex = function(sysExMsg) {
@@ -114,19 +124,24 @@ const unlockDisplay = function(display) {
 };
 
 const blackScreen = function(display) {
-    const array = [display, 0x08, 0x0a, 0x00, 0x04, 0x01, 0x00, 0x01, 0x00];
+    const array = [display, 0x08, 0x0a, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00];
     finalSysexWrap(array);
     return (array);
 };
 
+const brightness = function(display, brightness) {
+    const array = [display, 0x08, 0x7c, 0x00, 0x01, brightness];
+    finalSysexWrap(array);
+    return (array);
+};
 
 Prime4Jog.init = function(id, _debug) {
     wheelSide = wheelSideToSysex(id);
     sysex(unlockDisplay(wheelSide));
-    sysex(displayText(wheelSide, "--"));
-    sysex(changeTextColour(wheelSide, [0xff, 0xff, 0xff, 0xff]));
+    sysex(brightness(wheelSide, 0));
 };
 
 Prime4Jog.shutdown = function() {
+    sysex(brightness(wheelSide, 127));
     sysex(blackScreen(wheelSide));
 };
