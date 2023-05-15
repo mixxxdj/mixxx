@@ -2,6 +2,7 @@
 
 #include "util/assert.h"
 #include "util/math.h"
+#include "util/texture.h"
 
 WVuMeterGLSL::WVuMeterGLSL(QWidget* parent)
         : WVuMeterBase(parent) {
@@ -20,24 +21,8 @@ void WVuMeterGLSL::draw() {
 }
 
 void WVuMeterGLSL::initializeGL() {
-    if (m_pPixmapBack.isNull() || m_pPixmapBack->isPixmapNull()) {
-        m_pTextureBack.reset();
-    } else {
-        m_pTextureBack.reset(new QOpenGLTexture(m_pPixmapBack->toImage()));
-        m_pTextureBack->setMinificationFilter(QOpenGLTexture::Linear);
-        m_pTextureBack->setMagnificationFilter(QOpenGLTexture::Linear);
-        m_pTextureBack->setWrapMode(QOpenGLTexture::ClampToBorder);
-    }
-
-    if (m_pPixmapVu.isNull() || m_pPixmapVu->isPixmapNull()) {
-        m_pTextureVu.reset();
-    } else {
-        m_pTextureVu.reset(new QOpenGLTexture(m_pPixmapVu->toImage()));
-        m_pTextureVu->setMinificationFilter(QOpenGLTexture::Linear);
-        m_pTextureVu->setMagnificationFilter(QOpenGLTexture::Linear);
-        m_pTextureVu->setWrapMode(QOpenGLTexture::ClampToBorder);
-    }
-
+    m_pTextureBack.reset(createTexture(m_pPixmapBack));
+    m_pTextureVu.reset(createTexture(m_pPixmapVu));
     m_textureShader.init();
 }
 

@@ -1,6 +1,7 @@
 #include "widget/wspinnyglsl.h"
 
 #include "util/assert.h"
+#include "util/texture.h"
 
 WSpinnyGLSL::WSpinnyGLSL(
         QWidget* parent,
@@ -29,9 +30,7 @@ void WSpinnyGLSL::cleanupGL() {
 void WSpinnyGLSL::coverChanged() {
     if (isContextValid()) {
         makeCurrentIfNeeded();
-        m_pLoadedCoverTextureScaled.reset(!m_loadedCoverScaled.isNull()
-                        ? new QOpenGLTexture(m_loadedCoverScaled.toImage())
-                        : nullptr);
+        m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
         doneCurrent();
     }
     // otherwise this will happen in initializeGL
@@ -113,22 +112,12 @@ void WSpinnyGLSL::paintGL() {
 }
 
 void WSpinnyGLSL::initializeGL() {
-    m_pBgTexture.reset(m_pBgImage && !m_pBgImage->isNull()
-                    ? new QOpenGLTexture(*m_pBgImage)
-                    : nullptr);
-    m_pMaskTexture.reset(m_pMaskImage && !m_pMaskImage->isNull()
-                    ? new QOpenGLTexture(*m_pMaskImage)
-                    : nullptr);
-    m_pFgTextureScaled.reset(!m_fgImageScaled.isNull()
-                    ? new QOpenGLTexture(m_fgImageScaled)
-                    : nullptr);
-    m_pGhostTextureScaled.reset(!m_ghostImageScaled.isNull()
-                    ? new QOpenGLTexture(m_ghostImageScaled)
-                    : nullptr);
-    m_pLoadedCoverTextureScaled.reset(!m_loadedCoverScaled.isNull()
-                    ? new QOpenGLTexture(m_loadedCoverScaled.toImage())
-                    : nullptr);
-    m_pQTexture.reset(!m_qImage.isNull() ? new QOpenGLTexture(m_qImage) : nullptr);
+    m_pBgTexture.reset(createTexture(m_pBgImage));
+    m_pMaskTexture.reset(createTexture(m_pMaskImage));
+    m_pFgTextureScaled.reset(createTexture(m_fgImageScaled));
+    m_pGhostTextureScaled.reset(createTexture(m_ghostImageScaled));
+    m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
+    m_pQTexture.reset(createTexture(m_qImage));
 
     m_textureShader.init();
 }

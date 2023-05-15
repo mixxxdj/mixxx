@@ -1124,12 +1124,6 @@ if(QT6)
 else()
   target_sources(mixxx-lib PRIVATE
     src/mixxxmainwindow.cpp
-    src/shaders/endoftrackshader.cpp
-    src/shaders/rgbashader.cpp
-    src/shaders/rgbshader.cpp
-    src/shaders/shader.cpp
-    src/shaders/textureshader.cpp
-    src/shaders/unicolorshader.cpp
     src/waveform/guitick.cpp
     src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
     src/waveform/renderers/allshader/waveformrenderbackground.cpp
@@ -1201,19 +1195,26 @@ else()
     src/widget/woverviewrgb.cpp
     src/widget/wspinny.cpp
     src/widget/wspinnybase.cpp
-    src/widget/wspinnyglsl.cpp
     src/widget/wvumeter.cpp
     src/widget/wvumeterbase.cpp
-    src/widget/wvumeterglsl.cpp
     src/widget/wvumeterlegacy.cpp
     src/widget/wwaveformviewer.cpp
   )
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE
+      src/shaders/endoftrackshader.cpp
+      src/shaders/rgbashader.cpp
+      src/shaders/rgbshader.cpp
+      src/shaders/shader.cpp
+      src/shaders/textureshader.cpp
+      src/shaders/unicolorshader.cpp
+      src/util/texture.cpp
       src/widget/openglwindow.cpp
       src/widget/tooltipqopengl.cpp
       src/widget/wglwidgetqopengl.cpp
       src/widget/winitialglwidget.cpp
+      src/widget/wspinnyglsl.cpp
+      src/widget/wvumeterglsl.cpp
     )
   else()
     target_sources(mixxx-lib PRIVATE
