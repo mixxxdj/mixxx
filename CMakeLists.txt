@@ -695,7 +695,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/engineworker.cpp
   src/engine/engineworkerscheduler.cpp
   src/engine/enginexfader.cpp
-  src/engine/filters/enginefilter.cpp
   src/engine/filters/enginefilterbessel4.cpp
   src/engine/filters/enginefilterbessel8.cpp
   src/engine/filters/enginefilterbiquad1.cpp
