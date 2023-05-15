@@ -513,11 +513,16 @@ void LoopingControl::setLoopInToCurrentPosition() {
     const mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    double pos = m_currentSample.getValue();
+
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+    // Note: currentPos can be past the end of the track, in the padded
+    // silence of the last buffer. This position might be not reachable in
+    // a future runs, depending on the buffering.
+    double pos = math_min(sampleOfTrack.current, sampleOfTrack.total);
     if (m_pQuantizeEnabled->toBool() && pBeats) {
         if (m_bAdjustingLoopIn) {
             double closestBeat = m_pClosestBeat->get();
-            if (closestBeat == m_currentSample.getValue()) {
+            if (closestBeat == pos) {
                 quantizedBeat = closestBeat;
             } else {
                 quantizedBeat = m_pPreviousBeat->get();
@@ -615,11 +620,16 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    double pos = m_currentSample.getValue();
+
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+    // Note: currentPos can be past the end of the track, in the padded
+    // silence of the last buffer. This position might be not reachable in
+    // a future runs, depending on the buffering.
+    double pos = math_min(sampleOfTrack.current, sampleOfTrack.total);
     if (m_pQuantizeEnabled->toBool() && pBeats) {
         if (m_bAdjustingLoopOut) {
             double closestBeat = m_pClosestBeat->get();
-            if (closestBeat == m_currentSample.getValue()) {
+            if (closestBeat == pos) {
                 quantizedBeat = closestBeat;
             } else {
                 quantizedBeat = m_pNextBeat->get();
@@ -1039,7 +1049,12 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     // give start and end defaults so we can detect problems
     LoopSamples newloopSamples = {kNoTrigger, kNoTrigger, false};
     LoopSamples loopSamples = m_loopSamples.getValue();
-    double currentSample = m_currentSample.getValue();
+
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+    // Note: currentPos can be past the end of the track, in the padded
+    // silence of the last buffer. This position might be not reachable in
+    // a future runs, depending on the buffering.
+    double currentSample = math_min(sampleOfTrack.current, sampleOfTrack.total);
 
     // Start from the current position/closest beat and
     // create the loop around X beats from there.
