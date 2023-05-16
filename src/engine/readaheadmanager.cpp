@@ -141,23 +141,42 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         int loop_read_position = SampleUtil::roundPlayPosToFrameStart(
                 m_currentPosition + (in_reverse ? preloop_samples : -preloop_samples), kNumChannels);
 
-        const auto readResult = m_pReader->read(
-                loop_read_position, samples_from_reader, in_reverse, m_pCrossFadeBuffer);
-        if (readResult == CachingReader::ReadResult::UNAVAILABLE) {
-            qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
-            // Cache miss - no samples written
-            SampleUtil::clear(m_pCrossFadeBuffer, samples_from_reader);
-            // Set the cache miss flag to decide when to apply ramping
-            // after the following read attempts.
-            m_cacheMissHappened = true;
+        int crossFadeStart = 0;
+        int crossFadeSamples = samples_from_reader;
+        if (loop_read_position < 0) {
+            // we start in the pre-role without suitable samples for crossfading
+            crossFadeStart = -loop_read_position;
+            crossFadeSamples -= crossFadeStart;
+        } else {
+            int trackSamples = static_cast<int>(m_pLoopingControl->getTrackSamples());
+            if (loop_read_position > trackSamples) {
+                crossFadeStart = loop_read_position - trackSamples;
+                crossFadeSamples -= crossFadeStart;
+            }
         }
 
-        // do crossfade from the current buffer into the new loop beginning
-        if (samples_from_reader != 0) { // avoid division by zero
-            SampleUtil::linearCrossfadeBuffersOut(
-                    pOutput,
-                    m_pCrossFadeBuffer,
-                    samples_from_reader);
+        if (crossFadeSamples > 0) {
+            const auto readResult = m_pReader->read(loop_read_position +
+                            (in_reverse ? crossFadeStart : -crossFadeStart),
+                    crossFadeSamples,
+                    in_reverse,
+                    m_pCrossFadeBuffer);
+            if (readResult == CachingReader::ReadResult::UNAVAILABLE) {
+                qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
+                // Cache miss - no samples written
+                SampleUtil::clear(m_pCrossFadeBuffer, samples_from_reader);
+                // Set the cache miss flag to decide when to apply ramping
+                // after the following read attempts.
+                m_cacheMissHappened = true;
+            }
+
+            // do crossfade from the current buffer into the new loop beginning
+            if (samples_from_reader != 0) { // avoid division by zero
+                SampleUtil::linearCrossfadeBuffersOut(
+                        pOutput + crossFadeStart,
+                        m_pCrossFadeBuffer,
+                        crossFadeSamples);
+            }
         }
     }
 

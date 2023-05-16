@@ -440,6 +440,10 @@ double LoopingControl::nextTrigger(bool reverse,
     return kNoTrigger;
 }
 
+double LoopingControl::getTrackSamples() {
+    return LoopingControl::m_pTrackSamples->get();
+}
+
 void LoopingControl::hintReader(HintVector* pHintList) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     Hint loop_hint;

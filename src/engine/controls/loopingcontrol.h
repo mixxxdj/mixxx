@@ -52,6 +52,8 @@ class LoopingControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
+    double getTrackSamples();
+
   public slots:
     void slotLoopIn(double pressed);
     void slotLoopInGoto(double);
