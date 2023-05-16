@@ -520,18 +520,24 @@ void LoopingControl::setLoopInToCurrentPosition() {
     // a future runs, depending on the buffering.
     double pos = math_min(sampleOfTrack.current, sampleOfTrack.total);
     if (m_pQuantizeEnabled->toBool() && pBeats) {
-        if (m_bAdjustingLoopIn) {
-            double closestBeat = m_pClosestBeat->get();
-            if (closestBeat == pos) {
-                quantizedBeat = closestBeat;
+        double prevBeat;
+        double nextBeat;
+        if (pBeats->findPrevNextBeats(pos, &prevBeat, &nextBeat)) {
+            double closestBeat =
+                    (nextBeat - pos > pos - prevBeat) ? prevBeat : nextBeat;
+            if (m_bAdjustingLoopIn) {
+                if (closestBeat == pos) {
+                    pos = closestBeat;
+                } else {
+                    pos = prevBeat;
+                }
             } else {
-                quantizedBeat = m_pPreviousBeat->get();
+                if (closestBeat > sampleOfTrack.total) {
+                    pos = prevBeat;
+                } else {
+                    pos = closestBeat;
+                }
             }
-        } else {
-            quantizedBeat = m_pClosestBeat->get();
-        }
-        if (quantizedBeat != -1) {
-            pos = quantizedBeat;
         }
     }
 
@@ -627,18 +633,28 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     // a future runs, depending on the buffering.
     double pos = math_min(sampleOfTrack.current, sampleOfTrack.total);
     if (m_pQuantizeEnabled->toBool() && pBeats) {
-        if (m_bAdjustingLoopOut) {
-            double closestBeat = m_pClosestBeat->get();
-            if (closestBeat == pos) {
-                quantizedBeat = closestBeat;
+        double prevBeat;
+        double nextBeat;
+        if (pBeats->findPrevNextBeats(pos, &prevBeat, &nextBeat)) {
+            double closestBeat =
+                    (nextBeat - pos > pos - prevBeat) ? prevBeat : nextBeat;
+            if (m_bAdjustingLoopOut) {
+                if (closestBeat == pos) {
+                    pos = closestBeat;
+                } else {
+                    if (nextBeat > sampleOfTrack.total) {
+                        pos = prevBeat;
+                    } else {
+                        pos = nextBeat;
+                    }
+                }
             } else {
-                quantizedBeat = m_pNextBeat->get();
+                if (closestBeat > sampleOfTrack.total) {
+                    pos = prevBeat;
+                } else {
+                    pos = closestBeat;
+                }
             }
-        } else {
-            quantizedBeat = m_pClosestBeat->get();
-        }
-        if (quantizedBeat != -1) {
-            pos = quantizedBeat;
         }
     }
 
