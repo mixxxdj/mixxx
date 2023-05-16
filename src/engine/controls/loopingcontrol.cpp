@@ -429,11 +429,11 @@ double LoopingControl::nextTrigger(bool reverse,
     // Return trigger if repeat is enabled
     if (m_pRepeatButton->toBool()) {
         if (reverse) {
-            *pTarget = m_pTrackSamples->get();
+            *pTarget = getTrackSamples();
             return 0.0;
         } else {
             *pTarget = 0.0;
-            return m_pTrackSamples->get();
+            return getTrackSamples();
         }
     }
 
@@ -441,7 +441,8 @@ double LoopingControl::nextTrigger(bool reverse,
 }
 
 double LoopingControl::getTrackSamples() {
-    return LoopingControl::m_pTrackSamples->get();
+    SampleOfTrack trackSamples = getSampleOfTrack();
+    return trackSamples.total;
 }
 
 void LoopingControl::hintReader(HintVector* pHintList) {
