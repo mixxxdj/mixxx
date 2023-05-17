@@ -47,9 +47,7 @@ void WaveformWidget::initializeGL() {
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
-    makeCurrentIfNeeded();
     for (auto renderer : std::as_const(m_rendererStack)) {
         renderer->allshaderWaveformRenderer()->resizeGL(w, h);
     }
-    doneCurrent();
 }

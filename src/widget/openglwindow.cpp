@@ -38,10 +38,14 @@ void OpenGLWindow::paintGL() {
 
 void OpenGLWindow::resizeGL(int w, int h) {
     if (m_pWidget) {
+        // QGLWidget::resizeGL has a valid context (QOpenGLWindow::resizeGL does not), so we
+        // mimic the same behaviour
+        m_pWidget->makeCurrentIfNeeded();
         // QGLWidget::resizeGL has devicePixelRatio applied, so we mimic the same behaviour
         m_pWidget->resizeGL(static_cast<int>(static_cast<float>(w) * devicePixelRatio()),
                 static_cast<int>(static_cast<float>(h) * devicePixelRatio()));
         m_dirty = true;
+        m_pWidget->doneCurrent();
     }
 }
 
