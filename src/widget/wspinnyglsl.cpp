@@ -44,6 +44,20 @@ void WSpinnyGLSL::draw() {
     }
 }
 
+void WSpinnyGLSL::resizeGL(int w, int h) {
+    // The images were resized in WSpinnyBase::resizeEvent.
+    updateTextures();
+}
+
+void WSpinnyGLSL::updateTextures() {
+    m_pBgTexture.reset(createTexture(m_pBgImage));
+    m_pMaskTexture.reset(createTexture(m_pMaskImage));
+    m_pFgTextureScaled.reset(createTexture(m_fgImageScaled));
+    m_pGhostTextureScaled.reset(createTexture(m_ghostImageScaled));
+    m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
+    m_pQTexture.reset(createTexture(m_qImage));
+}
+
 void WSpinnyGLSL::paintGL() {
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -112,12 +126,7 @@ void WSpinnyGLSL::paintGL() {
 }
 
 void WSpinnyGLSL::initializeGL() {
-    m_pBgTexture.reset(createTexture(m_pBgImage));
-    m_pMaskTexture.reset(createTexture(m_pMaskImage));
-    m_pFgTextureScaled.reset(createTexture(m_fgImageScaled));
-    m_pGhostTextureScaled.reset(createTexture(m_ghostImageScaled));
-    m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
-    m_pQTexture.reset(createTexture(m_qImage));
+    updateTextures();
 
     m_textureShader.init();
 }

@@ -20,9 +20,10 @@ class WSpinnyGLSL : public WSpinnyBase {
 
     void initializeGL() override;
     void paintGL() override;
+    void resizeGL(int w, int h) override;
     void drawTexture(QOpenGLTexture* texture);
     void cleanupGL();
-    void updateLoaderCoverGL();
+    void updateTextures();
 
     mixxx::TextureShader m_textureShader;
     std::unique_ptr<QOpenGLTexture> m_pBgTexture;

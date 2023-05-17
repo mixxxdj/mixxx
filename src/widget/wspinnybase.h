@@ -85,13 +85,16 @@ class WSpinnyBase : public WGLWidget,
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);
     double calculatePositionFromAngle(double angle);
-    QPixmap scaledCoverArt(const QPixmap& normal);
 
     void setLoadedCover(const QPixmap& pixmap);
 
   private:
     virtual void draw() = 0;
     virtual void coverChanged() = 0;
+
+    QPixmap scaleToSize(const QPixmap& pixmap) const;
+    QImage scaleToSize(const QImage& image) const;
+    QImage scaleToSize(const std::shared_ptr<QImage>& image) const;
 
     const QString m_group;
     UserSettingsPointer m_pConfig;

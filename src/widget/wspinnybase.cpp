@@ -165,17 +165,11 @@ void WSpinnyBase::setup(const QDomNode& node,
     m_pFgImage = WImageStore::getImage(
             context.getPixmapSource(context.selectNode(node, "PathForeground")),
             context.getScaleFactor());
-    if (m_pFgImage && !m_pFgImage->isNull()) {
-        m_fgImageScaled = m_pFgImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
+    m_fgImageScaled = scaleToSize(m_pFgImage);
     m_pGhostImage = WImageStore::getImage(
             context.getPixmapSource(context.selectNode(node, "PathGhost")),
             context.getScaleFactor());
-    if (m_pGhostImage && !m_pGhostImage->isNull()) {
-        m_ghostImageScaled = m_pGhostImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
+    m_ghostImageScaled = scaleToSize(m_pGhostImage);
 
     // Dynamic skin option, set in WSpinnyBase's <ShowCoverControl> node.
     if (showCoverConfigKey.isValid()) {
@@ -248,7 +242,7 @@ void WSpinnyBase::setup(const QDomNode& node,
 
 void WSpinnyBase::setLoadedCover(const QPixmap& pixmap) {
     m_loadedCover = pixmap;
-    m_loadedCoverScaled = scaledCoverArt(pixmap);
+    m_loadedCoverScaled = scaleToSize(pixmap);
 }
 
 void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
@@ -364,11 +358,26 @@ void WSpinnyBase::swap() {
     doneCurrent();
 }
 
-QPixmap WSpinnyBase::scaledCoverArt(const QPixmap& normal) {
-    if (normal.isNull()) {
+QImage WSpinnyBase::scaleToSize(const QImage& image) const {
+    if (image.isNull()) {
+        return QImage();
+    }
+    QImage scaled = image.scaled(size() * devicePixelRatioF(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(devicePixelRatioF());
+    return scaled;
+}
+
+QImage WSpinnyBase::scaleToSize(const std::shared_ptr<QImage>& image) const {
+    return image ? scaleToSize(*image) : QImage();
+}
+
+QPixmap WSpinnyBase::scaleToSize(const QPixmap& pixmap) const {
+    if (pixmap.isNull()) {
         return QPixmap();
     }
-    QPixmap scaled = normal.scaled(size() * devicePixelRatioF(),
+    QPixmap scaled = pixmap.scaled(size() * devicePixelRatioF(),
             Qt::KeepAspectRatio,
             Qt::SmoothTransformation);
     scaled.setDevicePixelRatio(devicePixelRatioF());
@@ -376,15 +385,10 @@ QPixmap WSpinnyBase::scaledCoverArt(const QPixmap& normal) {
 }
 
 void WSpinnyBase::resizeEvent(QResizeEvent* event) {
-    m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
-    if (m_pFgImage && !m_pFgImage->isNull()) {
-        m_fgImageScaled = m_pFgImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
-    if (m_pGhostImage && !m_pGhostImage->isNull()) {
-        m_ghostImageScaled = m_pGhostImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
+    m_loadedCoverScaled = scaleToSize(m_loadedCover);
+    m_fgImageScaled = scaleToSize(m_pFgImage);
+    m_ghostImageScaled = scaleToSize(m_pGhostImage);
+
     WGLWidget::resizeEvent(event);
 }
 
