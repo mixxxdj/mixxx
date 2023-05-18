@@ -22,16 +22,13 @@ class WStarRating : public WWidget {
     virtual void setup(const QDomNode& node, const SkinContext& context);
     QSize sizeHint() const override;
 
-    /// Manually set a custom rating
-    ///
-    /// The value must be consistent with the current track if connected.
-    void setRating(int rating);
-
   public slots:
-    void slotTrackLoaded(TrackPointer pTrack = TrackPointer());
+    void slotSetRating(int rating);
+
+  signals:
+    void ratingChanged(int rating);
 
   private slots:
-    void slotTrackChanged(TrackId);
     void slotStarsUp(double v);
     void slotStarsDown(double v);
 
@@ -42,14 +39,14 @@ class WStarRating : public WWidget {
     void leaveEvent(QEvent * /*unused*/) override;
     void fillDebugTooltip(QStringList* debug) override;
 
+  private:
     StarRating m_starRating;
-    TrackPointer m_pCurrentTrack;
     bool m_focused;
     mutable QRect m_contentRect;
 
-  private:
-    void updateRatingFromTrack();
     int starAtPosition(int x);
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;
+
+    int m_currRating;
 };
