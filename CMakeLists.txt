@@ -1125,19 +1125,6 @@ else()
   target_sources(mixxx-lib PRIVATE
     src/mixxxmainwindow.cpp
     src/waveform/guitick.cpp
-    src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
-    src/waveform/renderers/allshader/waveformrenderbackground.cpp
-    src/waveform/renderers/allshader/waveformrenderbeat.cpp
-    src/waveform/renderers/allshader/waveformrenderer.cpp
-    src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
-    src/waveform/renderers/allshader/waveformrendererfiltered.cpp
-    src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
-    src/waveform/renderers/allshader/waveformrendererpreroll.cpp
-    src/waveform/renderers/allshader/waveformrendererrgb.cpp
-    src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
-    src/waveform/renderers/allshader/waveformrenderersimple.cpp
-    src/waveform/renderers/allshader/waveformrendermark.cpp
-    src/waveform/renderers/allshader/waveformrendermarkrange.cpp
     src/waveform/renderers/glslwaveformrenderersignal.cpp
     src/waveform/renderers/glvsynctestrenderer.cpp
     src/waveform/renderers/glwaveformrenderbackground.cpp
@@ -1168,11 +1155,6 @@ else()
     src/waveform/vsyncthread.cpp
     src/waveform/waveformmarklabel.cpp
     src/waveform/waveformwidgetfactory.cpp
-    src/waveform/widgets/allshader/filteredwaveformwidget.cpp
-    src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
-    src/waveform/widgets/allshader/rgbwaveformwidget.cpp
-    src/waveform/widgets/allshader/simplewaveformwidget.cpp
-    src/waveform/widgets/allshader/waveformwidget.cpp
     src/waveform/widgets/emptywaveformwidget.cpp
     src/waveform/widgets/glrgbwaveformwidget.cpp
     src/waveform/widgets/glsimplewaveformwidget.cpp
@@ -1209,6 +1191,24 @@ else()
       src/shaders/textureshader.cpp
       src/shaders/unicolorshader.cpp
       src/util/texture.cpp
+      src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
+      src/waveform/renderers/allshader/waveformrenderbackground.cpp
+      src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderer.cpp
+      src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+      src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
+      src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+      src/waveform/renderers/allshader/waveformrenderersimple.cpp
+      src/waveform/renderers/allshader/waveformrendermark.cpp
+      src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+      src/waveform/widgets/allshader/filteredwaveformwidget.cpp
+      src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
+      src/waveform/widgets/allshader/rgbwaveformwidget.cpp
+      src/waveform/widgets/allshader/simplewaveformwidget.cpp
+      src/waveform/widgets/allshader/waveformwidget.cpp
       src/widget/openglwindow.cpp
       src/widget/tooltipqopengl.cpp
       src/widget/wglwidgetqopengl.cpp

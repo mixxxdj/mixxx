@@ -26,10 +26,12 @@
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/vsyncthread.h"
+#ifdef MIXXX_USE_QOPENGL
 #include "waveform/widgets/allshader/filteredwaveformwidget.h"
 #include "waveform/widgets/allshader/lrrgbwaveformwidget.h"
 #include "waveform/widgets/allshader/rgbwaveformwidget.h"
 #include "waveform/widgets/allshader/simplewaveformwidget.h"
+#endif
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/glrgbwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
@@ -946,6 +948,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = QtRGBWaveformWidget::useOpenGLShaders();
             developerOnly = QtRGBWaveformWidget::developerOnly();
             break;
+#ifdef MIXXX_USE_QOPENGL
         case WaveformWidgetType::AllShaderRGBWaveform:
             widgetName = allshader::RGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = allshader::RGBWaveformWidget::useOpenGl();
@@ -974,6 +977,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = allshader::SimpleWaveformWidget::useOpenGLShaders();
             developerOnly = allshader::SimpleWaveformWidget::developerOnly();
             break;
+#endif
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
@@ -1080,6 +1084,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::QtRGBWaveform:
             widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
+#ifdef MIXXX_USE_QOPENGL
         case WaveformWidgetType::AllShaderRGBWaveform:
             widget = new allshader::RGBWaveformWidget(viewer->getGroup(), viewer);
             break;
@@ -1092,6 +1097,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::AllShaderSimpleWaveform:
             widget = new allshader::SimpleWaveformWidget(viewer->getGroup(), viewer);
             break;
+#endif
         default:
         //case WaveformWidgetType::SoftwareSimpleWaveform: TODO: (vrince)
         //case WaveformWidgetType::EmptyWaveform:
