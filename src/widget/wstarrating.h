@@ -43,7 +43,6 @@ class WStarRating : public WWidget {
     void fillDebugTooltip(QStringList* debug) override;
 
     StarRating m_starRating;
-    const QString m_group;
     TrackPointer m_pCurrentTrack;
     bool m_focused;
     mutable QRect m_contentRect;
