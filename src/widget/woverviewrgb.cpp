@@ -2,8 +2,9 @@
 
 #include <QPainter>
 
-#include "util/timer.h"
+#include "moc_woverviewrgb.cpp"
 #include "util/math.h"
+#include "util/timer.h"
 #include "waveform/waveform.h"
 
 WOverviewRGB::WOverviewRGB(

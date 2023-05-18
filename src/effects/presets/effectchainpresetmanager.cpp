@@ -9,6 +9,7 @@
 #include "effects/effectchain.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectxmlelements.h"
+#include "moc_effectchainpresetmanager.cpp"
 #include "util/filename.h"
 #include "util/xml.h"
 

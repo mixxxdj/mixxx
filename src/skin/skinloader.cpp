@@ -11,6 +11,7 @@
 #include "effects/effectsmanager.h"
 #include "library/library.h"
 #include "mixer/playermanager.h"
+#include "moc_skinloader.cpp"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"

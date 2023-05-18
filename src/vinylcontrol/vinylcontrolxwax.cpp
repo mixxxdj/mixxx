@@ -1,12 +1,15 @@
-#include <QtDebug>
+#include "vinylcontrol/vinylcontrolxwax.h"
+
 #include <limits.h>
 
-#include "vinylcontrol/vinylcontrolxwax.h"
-#include "util/timer.h"
-#include "control/controlproxy.h"
+#include <QtDebug>
+
 #include "control/controlobject.h"
-#include "util/math.h"
+#include "control/controlproxy.h"
+#include "moc_vinylcontrolxwax.cpp"
 #include "util/defs.h"
+#include "util/math.h"
+#include "util/timer.h"
 
 /****** TODO *******
    Stuff to maybe implement here

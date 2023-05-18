@@ -1,10 +1,11 @@
 #include "widget/woverviewhsv.h"
 
-#include <QPainter>
 #include <QColor>
+#include <QPainter>
 
-#include "util/timer.h"
+#include "moc_woverviewhsv.cpp"
 #include "util/math.h"
+#include "util/timer.h"
 #include "waveform/waveform.h"
 
 WOverviewHSV::WOverviewHSV(

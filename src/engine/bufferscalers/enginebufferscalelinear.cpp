@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "moc_enginebufferscalelinear.cpp"
 #include "track/keyutils.h"
 #include "util/assert.h"
 #include "util/math.h"
