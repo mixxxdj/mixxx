@@ -11,7 +11,6 @@
 WStarRating::WStarRating(const QString& group, QWidget* pParent)
         : WWidget(pParent),
           m_starRating(0, 5),
-          m_focused(false),
           m_currRating(0) {
     // Controls to change the star rating with controllers.
     // Note that 'group' maybe NULLPTR, e.g. when called from DlgTrackInfo,
@@ -68,7 +67,6 @@ void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
 }
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {
-    m_focused = true;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     int star = starAtPosition(event->position().toPoint().x());
 #else
@@ -96,7 +94,6 @@ void WStarRating::slotStarsDown(double v) {
 }
 
 void WStarRating::leaveEvent(QEvent* /*unused*/) {
-    m_focused = false;
     // reset to applied track rating
     m_starRating.setStarCount(m_currRating);
     update();

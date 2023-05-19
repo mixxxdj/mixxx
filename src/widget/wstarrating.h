@@ -41,7 +41,6 @@ class WStarRating : public WWidget {
 
   private:
     StarRating m_starRating;
-    bool m_focused;
     mutable QRect m_contentRect;
 
     int starAtPosition(int x);
