@@ -720,8 +720,12 @@ void LegacySkinParser::parseChildren(
 
 QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
-    commonWidgetSetup(node, pGroup);
+    setupBaseWidget(node, pGroup);
+    setupWidget(node, pGroup->toQWidget());
     pGroup->setup(node, *m_pContext);
+    // Note: if we call setupConnections earlier and it sets the visible property
+    // to true, the style is not applied correctly
+    setupConnections(node, pGroup);
     pGroup->Init();
     parseChildren(node, pGroup);
     return pGroup;
