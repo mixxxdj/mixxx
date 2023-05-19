@@ -1,5 +1,7 @@
 #include "qmldlgpreferencesproxy.h"
 
+#include "moc_qmldlgpreferencesproxy.cpp"
+
 namespace mixxx {
 namespace qml {
 
