@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2023-05-17" timestamp="1684316546">
+    <release version="2.4.0" type="development" date="2023-05-19" timestamp="1684533240">
       <description>
  <p>
   Cover Art
@@ -699,7 +699,7 @@
    #11203
   </li>
   <li>
-   Slip mode: consider active (regular) loop
+   Slip Mode: Preserve active (regular) loop when leaving Slip Mode
    #11435
    #6993
   </li>
@@ -869,7 +869,7 @@
    #4054
   </li>
   <li>
-   Fix hid controllers: restore legacy passing of HID data in plain array
+   Fix broken HID controller mappings Traktor Kontrol S2 MK3 and others
    #11470
    #11461
   </li>
@@ -974,7 +974,7 @@
    #11165
   </li>
   <li>
-   Added declarations for engine and controller scripting API
+   Added TypeScript declarations for engine and controller scripting API to improve IDE code completion during mapping developent
    #4759
   </li>
   <li>
@@ -1308,7 +1308,7 @@
  </p>
  <ul>
   <li>
-   Added support Mixxx for macOS on M1/M2 Apple silicon
+   Added support for macOS ARM builds on M1/M2 Apple silicon
    #11398
   </li>
   <li>
@@ -1463,7 +1463,7 @@
    #11562
   </li>
   <li>
-   Windows buildenv: Fix 7-Zip quoting
+   Windows: Fix extraction of build environment archive when using 7-Zip
    #11510
   </li>
   <li>
@@ -1743,7 +1743,7 @@
    #11383
   </li>
   <li>
-   Fix setting the wrong default cue color.
+   Fix setting the wrong default cue color
    #11554
    #11260
   </li>
@@ -1903,7 +1903,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.6" type="development" date="2023-05-17" timestamp="1684316546">
+    <release version="2.3.6" type="development" date="2023-05-19" timestamp="1684533240">
       <description>
  <ul>
   <li>
