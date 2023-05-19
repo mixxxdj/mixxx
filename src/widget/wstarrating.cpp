@@ -10,8 +10,8 @@
 
 WStarRating::WStarRating(const QString& group, QWidget* pParent)
         : WWidget(pParent),
-          m_starRating(0, 5),
-          m_currRating(0) {
+          m_starCount(0),
+          m_visualStarRating(m_starCount, 5) {
     // Controls to change the star rating with controllers.
     // Note that 'group' maybe NULLPTR, e.g. when called from DlgTrackInfo,
     // so only create rate change COs if there's a group passed when creating deck widgets.
@@ -36,23 +36,27 @@ void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
 QSize WStarRating::sizeHint() const {
     QStyleOption option;
     option.initFrom(this);
-    QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
-                                                 m_starRating.sizeHint(), this);
+    QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton,
+            &option,
+            m_visualStarRating.sizeHint(),
+            this);
 
     m_contentRect.setRect(
-        (widgetSize.width() - m_starRating.sizeHint().width()) / 2,
-        (widgetSize.height() - m_starRating.sizeHint().height()) / 2,
-        m_starRating.sizeHint().width(),
-        m_starRating.sizeHint().height()
-    );
+            (widgetSize.width() - m_visualStarRating.sizeHint().width()) / 2,
+            (widgetSize.height() - m_visualStarRating.sizeHint().height()) / 2,
+            m_visualStarRating.sizeHint().width(),
+            m_visualStarRating.sizeHint().height());
 
     return widgetSize;
 }
 
-void WStarRating::slotSetRating(int rating) {
-    m_starRating.setStarCount(rating);
-    m_currRating = rating;
-    update();
+void WStarRating::slotSetRating(int starCount) {
+    if (starCount == m_starCount) {
+        // Unchanged
+        return;
+    }
+    m_starCount = starCount;
+    updateVisualRating(starCount);
 }
 
 void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
@@ -63,7 +67,7 @@ void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
     painter.setBrush(option.palette.text());
     painter.drawPrimitive(QStyle::PE_Widget, option);
 
-    m_starRating.paint(&painter, m_contentRect);
+    m_visualStarRating.paint(&painter, m_contentRect);
 }
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {
@@ -73,41 +77,47 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event) {
     int star = starAtPosition(event->x());
 #endif
 
-    if (star != m_starRating.starCount() && star != -1) {
-        m_starRating.setStarCount(star);
-        update();
+    if (star != -1) {
+        updateVisualRating(star);
     }
 }
 
 void WStarRating::slotStarsUp(double v) {
-    if (v > 0 && m_currRating < m_starRating.maxStarCount()) {
-        int star = m_currRating + 1;
-        emit ratingChanged(star);
+    if (v > 0 && m_starCount < m_visualStarRating.maxStarCount()) {
+        slotSetRating(m_starCount + 1);
     }
 }
 
 void WStarRating::slotStarsDown(double v) {
-    if (v > 0 && m_currRating > 0) {
-        int star = m_currRating - 1;
-        emit ratingChanged(star);
+    if (v > 0 && m_starCount > StarRating::kMinStarCount) {
+        slotSetRating(m_starCount - 1);
     }
 }
 
 void WStarRating::leaveEvent(QEvent* /*unused*/) {
-    // reset to applied track rating
-    m_starRating.setStarCount(m_currRating);
+    resetVisualRating();
+}
+
+void WStarRating::updateVisualRating(int starCount) {
+    if (starCount == m_visualStarRating.starCount()) {
+        return;
+    }
+    m_visualStarRating.setStarCount(starCount);
     update();
 }
 
 // The method uses basic linear algebra to find out which star is under the cursor.
-int WStarRating::starAtPosition(int x) {
+int WStarRating::starAtPosition(int x) const {
     // If the mouse is very close to the left edge, set 0 stars.
-    if (x < m_starRating.sizeHint().width() * 0.05) {
+    if (x < m_visualStarRating.sizeHint().width() * 0.05) {
         return 0;
     }
-    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
+    int star = (x /
+                       (m_visualStarRating.sizeHint().width() /
+                               m_visualStarRating.maxStarCount())) +
+            1;
 
-    if (star <= 0 || star > m_starRating.maxStarCount()) {
+    if (star <= 0 || star > m_visualStarRating.maxStarCount()) {
         return 0;
     }
 
@@ -115,16 +125,16 @@ int WStarRating::starAtPosition(int x) {
 }
 
 void WStarRating::mouseReleaseEvent(QMouseEvent* /*unused*/) {
-    emit ratingChanged(m_starRating.starCount());
+    int starCount = m_visualStarRating.starCount();
+    emit ratingChanged(starCount);
 }
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {
     WWidget::fillDebugTooltip(debug);
 
     QString currentRating;
-    currentRating.setNum(m_currRating);
-    QString maximumRating = QString::number(m_starRating.maxStarCount());
-
+    currentRating.setNum(m_starCount);
+    QString maximumRating = QString::number(m_visualStarRating.maxStarCount());
 
     *debug << QString("Rating: %1/%2").arg(currentRating, maximumRating);
 }

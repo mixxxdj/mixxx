@@ -23,10 +23,10 @@ class WStarRating : public WWidget {
     QSize sizeHint() const override;
 
   public slots:
-    void slotSetRating(int rating);
+    void slotSetRating(int starCount);
 
   signals:
-    void ratingChanged(int rating);
+    void ratingChanged(int starCount);
 
   private slots:
     void slotStarsUp(double v);
@@ -40,12 +40,17 @@ class WStarRating : public WWidget {
     void fillDebugTooltip(QStringList* debug) override;
 
   private:
-    StarRating m_starRating;
+    int m_starCount;
+
+    StarRating m_visualStarRating;
     mutable QRect m_contentRect;
 
-    int starAtPosition(int x);
+    int starAtPosition(int x) const;
+    void updateVisualRating(int starCount);
+    void resetVisualRating() {
+        updateVisualRating(m_starCount);
+    }
+
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;
-
-    int m_currRating;
 };
