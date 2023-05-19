@@ -578,7 +578,7 @@
 
 ### Target Support
 
-* Added support Mixxx for macOS on M1/M2 Apple silicon [#11398](https://github.com/mixxxdj/mixxx/pull/11398)
+* Added support for macOS ARM builds on M1/M2 Apple silicon [#11398](https://github.com/mixxxdj/mixxx/pull/11398)
 * Require C++20 but keep Ubuntu Focal support
   [#4889](https://github.com/mixxxdj/mixxx/pull/4889)
   [#4895](https://github.com/mixxxdj/mixxx/pull/4895)
