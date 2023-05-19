@@ -19,7 +19,7 @@ class allshader::LRRGBWaveformWidget final : public allshader::WaveformWidget {
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("RGB-L/R (all-shaders)");
+        return tr("RGB L/R (all-shaders)");
     }
     static constexpr bool useOpenGl() {
         return true;

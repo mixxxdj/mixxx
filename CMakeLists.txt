@@ -1131,9 +1131,6 @@ else()
     src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/glwaveformrendererrgb.cpp
     src/waveform/renderers/glwaveformrenderersimplesignal.cpp
-    src/waveform/renderers/qtvsynctestrenderer.cpp
-    src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
-    src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
     src/waveform/renderers/waveformmark.cpp
     src/waveform/renderers/waveformmarkrange.cpp
     src/waveform/renderers/waveformmarkset.cpp
@@ -1163,11 +1160,6 @@ else()
     src/waveform/widgets/glwaveformwidget.cpp
     src/waveform/widgets/glwaveformwidgetabstract.cpp
     src/waveform/widgets/hsvwaveformwidget.cpp
-    src/waveform/widgets/qthsvwaveformwidget.cpp
-    src/waveform/widgets/qtrgbwaveformwidget.cpp
-    src/waveform/widgets/qtsimplewaveformwidget.cpp
-    src/waveform/widgets/qtvsynctestwidget.cpp
-    src/waveform/widgets/qtwaveformwidget.cpp
     src/waveform/widgets/rgbwaveformwidget.cpp
     src/waveform/widgets/softwarewaveformwidget.cpp
     src/waveform/widgets/waveformwidgetabstract.cpp
@@ -1218,6 +1210,14 @@ else()
     )
   else()
     target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/qtvsynctestrenderer.cpp
+      src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
+      src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+      src/waveform/widgets/qthsvwaveformwidget.cpp
+      src/waveform/widgets/qtrgbwaveformwidget.cpp
+      src/waveform/widgets/qtsimplewaveformwidget.cpp
+      src/waveform/widgets/qtvsynctestwidget.cpp
+      src/waveform/widgets/qtwaveformwidget.cpp
       src/widget/wglwidgetqglwidget.cpp
     )
   endif()

@@ -31,6 +31,12 @@
 #include "waveform/widgets/allshader/lrrgbwaveformwidget.h"
 #include "waveform/widgets/allshader/rgbwaveformwidget.h"
 #include "waveform/widgets/allshader/simplewaveformwidget.h"
+#else
+#include "waveform/widgets/qthsvwaveformwidget.h"
+#include "waveform/widgets/qtrgbwaveformwidget.h"
+#include "waveform/widgets/qtsimplewaveformwidget.h"
+#include "waveform/widgets/qtvsynctestwidget.h"
+#include "waveform/widgets/qtwaveformwidget.h"
 #endif
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/glrgbwaveformwidget.h"
@@ -40,11 +46,6 @@
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/nonglwaveformwidgetabstract.h"
-#include "waveform/widgets/qthsvwaveformwidget.h"
-#include "waveform/widgets/qtrgbwaveformwidget.h"
-#include "waveform/widgets/qtsimplewaveformwidget.h"
-#include "waveform/widgets/qtvsynctestwidget.h"
-#include "waveform/widgets/qtwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
@@ -865,19 +866,27 @@ void WaveformWidgetFactory::evaluateWidgets() {
             break;
 #endif
         case WaveformWidgetType::QtSimpleWaveform:
+#ifdef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtSimpleWaveformWidget::useOpenGl();
             useOpenGles = QtSimpleWaveformWidget::useOpenGles();
             useOpenGLShaders = QtSimpleWaveformWidget::useOpenGLShaders();
             developerOnly = QtSimpleWaveformWidget::developerOnly();
             break;
+#endif
         case WaveformWidgetType::QtWaveform:
+#ifdef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = QtWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtWaveformWidget::useOpenGl();
             useOpenGles = QtWaveformWidget::useOpenGles();
             useOpenGLShaders = QtWaveformWidget::useOpenGLShaders();
             developerOnly = QtWaveformWidget::developerOnly();
             break;
+#endif
         case WaveformWidgetType::GLSimpleWaveform:
             widgetName = GLSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSimpleWaveformWidget::useOpenGl();
@@ -928,49 +937,75 @@ void WaveformWidgetFactory::evaluateWidgets() {
             developerOnly = GLRGBWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QtVSyncTest:
+#ifdef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = QtVSyncTestWidget::getWaveformWidgetName();
             useOpenGl = QtVSyncTestWidget::useOpenGl();
             useOpenGles =  QtVSyncTestWidget::useOpenGles();
             useOpenGLShaders = QtVSyncTestWidget::useOpenGLShaders();
             developerOnly = QtVSyncTestWidget::developerOnly();
+#endif
             break;
         case WaveformWidgetType::QtHSVWaveform:
+#ifdef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = QtHSVWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtHSVWaveformWidget::useOpenGl();
             useOpenGles = QtHSVWaveformWidget::useOpenGles();
             useOpenGLShaders = QtHSVWaveformWidget::useOpenGLShaders();
             developerOnly = QtHSVWaveformWidget::developerOnly();
             break;
+#endif
         case WaveformWidgetType::QtRGBWaveform:
+#ifdef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = QtRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtRGBWaveformWidget::useOpenGl();
             useOpenGles = QtRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = QtRGBWaveformWidget::useOpenGLShaders();
             developerOnly = QtRGBWaveformWidget::developerOnly();
             break;
-#ifdef MIXXX_USE_QOPENGL
+#endif
         case WaveformWidgetType::AllShaderRGBWaveform:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = allshader::RGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = allshader::RGBWaveformWidget::useOpenGl();
             useOpenGles = allshader::RGBWaveformWidget::useOpenGles();
             useOpenGLShaders = allshader::RGBWaveformWidget::useOpenGLShaders();
             developerOnly = allshader::RGBWaveformWidget::developerOnly();
             break;
+#endif
         case WaveformWidgetType::AllShaderLRRGBWaveform:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = allshader::LRRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = allshader::LRRGBWaveformWidget::useOpenGl();
             useOpenGles = allshader::LRRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = allshader::LRRGBWaveformWidget::useOpenGLShaders();
             developerOnly = allshader::LRRGBWaveformWidget::developerOnly();
             break;
+#endif
         case WaveformWidgetType::AllShaderFilteredWaveform:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = allshader::FilteredWaveformWidget::getWaveformWidgetName();
             useOpenGl = allshader::FilteredWaveformWidget::useOpenGl();
             useOpenGles = allshader::FilteredWaveformWidget::useOpenGles();
             useOpenGLShaders = allshader::FilteredWaveformWidget::useOpenGLShaders();
             developerOnly = allshader::FilteredWaveformWidget::developerOnly();
             break;
+#endif
         case WaveformWidgetType::AllShaderSimpleWaveform:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
             widgetName = allshader::SimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = allshader::SimpleWaveformWidget::useOpenGl();
             useOpenGles = allshader::SimpleWaveformWidget::useOpenGles();
@@ -1048,12 +1083,6 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::RGBWaveform:
             widget = new RGBWaveformWidget(viewer->getGroup(), viewer);
             break;
-        case WaveformWidgetType::QtSimpleWaveform:
-            widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::QtWaveform:
-            widget = new QtWaveformWidget(viewer->getGroup(), viewer);
-            break;
         case WaveformWidgetType::GLSimpleWaveform:
             widget = new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
             break;
@@ -1075,15 +1104,6 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::GLVSyncTest:
             widget = new GLVSyncTestWidget(viewer->getGroup(), viewer);
             break;
-        case WaveformWidgetType::QtVSyncTest:
-            widget = new QtVSyncTestWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::QtHSVWaveform:
-            widget = new QtHSVWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::QtRGBWaveform:
-            widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
-            break;
 #ifdef MIXXX_USE_QOPENGL
         case WaveformWidgetType::AllShaderRGBWaveform:
             widget = new allshader::RGBWaveformWidget(viewer->getGroup(), viewer);
@@ -1096,6 +1116,22 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::AllShaderSimpleWaveform:
             widget = new allshader::SimpleWaveformWidget(viewer->getGroup(), viewer);
+            break;
+#else
+        case WaveformWidgetType::QtSimpleWaveform:
+            widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtWaveform:
+            widget = new QtWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtVSyncTest:
+            widget = new QtVSyncTestWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtHSVWaveform:
+            widget = new QtHSVWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtRGBWaveform:
+            widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
 #endif
         default:
