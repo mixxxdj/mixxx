@@ -322,7 +322,7 @@ void PlaylistFeature::slotPlaylistTableRenamed(
     Q_UNUSED(newName);
     // qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
-        updateChildModel(QSet<int>{playlistId});
+        slotPlaylistTableChanged(playlistId);
     }
 }
 

@@ -164,6 +164,8 @@ void BasePlaylistFeature::connectPlaylistDAO() {
     connect(&m_playlistDao,
             &PlaylistDAO::renamed,
             this,
+            // In "History") just the item is renamed, while in "Playlists" the
+            // entire sidebar model is rebuilt to resort items by name
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 }
 
