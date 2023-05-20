@@ -74,7 +74,6 @@ class CrateFeature : public BaseTrackSetFeature {
     void htmlLinkClicked(const QUrl& link);
     void slotTrackSelected(TrackId trackId);
     void slotResetSelectedTrack();
-    void slotUpdateCrateLabel(CrateId updatedCrateId);
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
 
   private:

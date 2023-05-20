@@ -171,7 +171,7 @@ void CrateFeature::connectTrackCollection() {
     connect(m_pTrackCollection, // renamed, un/locked, toggled AutoDJ source
             &TrackCollection::crateUpdated,
             this,
-            &CrateFeature::slotUpdateCrateLabel);
+            &CrateFeature::slotCrateTableChanged);
     connect(m_pTrackCollection,
             &TrackCollection::crateDeleted,
             this,
@@ -883,11 +883,6 @@ void CrateFeature::slotCrateTableChanged(CrateId crateId) {
 void CrateFeature::slotCrateContentChanged(CrateId crateId) {
     QSet<CrateId> updatedCrateIds;
     updatedCrateIds.insert(crateId);
-    updateChildModel(updatedCrateIds);
-}
-
-void CrateFeature::slotUpdateCrateLabel(CrateId updatedCrateId) {
-    QSet<CrateId> updatedCrateIds = {updatedCrateId};
     updateChildModel(updatedCrateIds);
 }
 
