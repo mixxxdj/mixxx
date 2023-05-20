@@ -132,7 +132,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             // Note (TagLib 1.1.11): TagLib::MPEG::File::tag() returns a
             // valid pointer even if neither an ID3v2 nor an ID3v1 tag is
             // present!
-            // See also: https://bugs.launchpad.net/mixxx/+bug/1865957
+            // See also: https://github.com/mixxxdj/mixxx/issues/9891
             const TagLib::Tag* pTag = file.tag();
             if (pTag) {
                 taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
@@ -320,11 +320,25 @@ class MpegTagSaver : public TagSaver {
     }
 
     bool saveModifiedTags() override {
+        DEBUG_ASSERT(hasModifiedTags());
+#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION < 12)
         // NOTE(uklotzde, 2016-08-28): Only save the tags that have
         // actually been modified! Otherwise TagLib 1.11 adds unwanted
         // ID3v1 tags, even if the file does not already contain those
         // legacy tags.
         return m_file.save(m_modifiedTagsBitmask);
+#else
+        // Keep ID3v1 tag synchronized if it already exists in the file
+        const auto duplicateTags =
+                m_file.hasID3v1Tag()
+                ? TagLib::File::DuplicateTags::Duplicate
+                : TagLib::File::DuplicateTags::DoNotDuplicate;
+        return m_file.save(
+                m_modifiedTagsBitmask,
+                TagLib::File::StripTags::StripNone,
+                TagLib::ID3v2::Version::v4,
+                duplicateTags);
+#endif
     }
 
   private:
@@ -448,7 +462,7 @@ class OggTagSaver : public TagSaver {
         (TAGLIB_PATCH_VERSION == 1)
         // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
         // when writing tags: https://github.com/taglib/taglib/issues/864
-        // Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/1833190
+        // Launchpad issue: https://github.com/mixxxdj/mixxx/issues/9680
         Q_UNUSED(pFile);
         Q_UNUSED(trackMetadata);
         kLogger.warning() << "Skipping export of metadata into Ogg file due to "

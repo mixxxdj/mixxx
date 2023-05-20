@@ -37,7 +37,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
         qWarning() << "ERROR: Could not open log file:" << logFileName;
     }
 
-    // Connect search box signals to the library
+    // Set up the control search box
     connect(controlSearch,
             &WSearchLineEdit::search,
             this,

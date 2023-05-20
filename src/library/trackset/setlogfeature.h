@@ -27,6 +27,7 @@ class SetlogFeature : public BasePlaylistFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotJoinWithPrevious();
+    void slotDeletePlaylist() override;
     void slotGetNewPlaylist();
     void activate() override;
 

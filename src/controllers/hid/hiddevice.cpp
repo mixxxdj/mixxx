@@ -33,17 +33,15 @@ DeviceInfo::DeviceInfo(
           usage_page(device_info.usage_page),
           usage(device_info.usage),
           interface_number(device_info.interface_number),
-          m_pathRaw(device_info.path, mixxx::strnlen(device_info.path, PATH_MAX)),
+          m_pathRaw(device_info.path, mixxx::strnlen_s(device_info.path, PATH_MAX)),
           m_serialNumberRaw(device_info.serial_number,
-                  mixxx::wcsnlen(device_info.serial_number,
+                  mixxx::wcsnlen_s(device_info.serial_number,
                           kDeviceInfoStringMaxLength)),
           m_manufacturerString(mixxx::convertWCStringToQString(
                   device_info.manufacturer_string,
-                  mixxx::wcsnlen(device_info.manufacturer_string,
-                          kDeviceInfoStringMaxLength))),
+                  kDeviceInfoStringMaxLength)),
           m_productString(mixxx::convertWCStringToQString(device_info.product_string,
-                  mixxx::wcsnlen(device_info.product_string,
-                          kDeviceInfoStringMaxLength))),
+                  kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
 }

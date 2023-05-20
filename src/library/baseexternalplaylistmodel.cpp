@@ -111,6 +111,16 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
         return;
     }
 
+    // Store search text
+    QString currSearch = currentSearch();
+    if (m_currentPlaylistId != -1) {
+        if (!currSearch.trimmed().isEmpty()) {
+            m_searchTexts.insert(m_currentPlaylistId, currSearch);
+        } else {
+            m_searchTexts.remove(m_currentPlaylistId);
+        }
+    }
+
     const auto playlistIdNumber =
             QString::number(playlistId);
     const auto playlistViewTable =
@@ -146,7 +156,8 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
     setTable(playlistViewTable, playlistViewColumns.first(), playlistViewColumns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
-    setSearch("");
+    // Restore search text
+    setSearch(m_searchTexts.value(m_currentPlaylistId));
 }
 
 TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {

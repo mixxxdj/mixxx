@@ -80,6 +80,7 @@ case "$1" in
             libupower-glib-dev \
             libusb-1.0-0-dev \
             libwavpack-dev \
+            lv2-dev \
             markdown \
             portaudio19-dev \
             protobuf-compiler \

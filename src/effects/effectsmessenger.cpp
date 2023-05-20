@@ -4,10 +4,9 @@
 #include "engine/effects/engineeffectchain.h"
 
 EffectsMessenger::EffectsMessenger(
-        EffectsRequestPipe* pRequestPipe, EffectsResponsePipe* pResponsePipe)
+        std::unique_ptr<EffectsRequestPipe> pRequestPipe)
         : m_bShuttingDown(false),
-          m_pRequestPipe(pRequestPipe),
-          m_pResponsePipe(pResponsePipe),
+          m_pRequestPipe(std::move(pRequestPipe)),
           m_nextRequestId(0) {
 }
 
@@ -28,7 +27,7 @@ bool EffectsMessenger::writeRequest(EffectsRequest* request) {
         collectGarbage(request);
     }
 
-    if (m_pRequestPipe.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pRequestPipe) {
         delete request;
         return false;
     }
@@ -48,7 +47,7 @@ bool EffectsMessenger::writeRequest(EffectsRequest* request) {
 }
 
 void EffectsMessenger::processEffectsResponses() {
-    if (m_pRequestPipe.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pRequestPipe) {
         return;
     }
 
@@ -90,13 +89,5 @@ void EffectsMessenger::collectGarbage(const EffectsRequest* pRequest) {
             qDebug() << debugString() << "delete" << pRequest->RemoveEffectChain.pChain;
         }
         delete pRequest->RemoveEffectChain.pChain;
-    } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
-        if (kEffectDebugOutput) {
-            qDebug() << debugString() << "deleting states for input channel"
-                     << pRequest->DisableInputChannelForChain.channelHandle
-                     << "for EngineEffectChain" << pRequest->pTargetChain;
-        }
-        pRequest->pTargetChain->deleteStatesForInputChannel(
-                pRequest->DisableInputChannelForChain.channelHandle);
     }
 }

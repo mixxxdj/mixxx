@@ -61,6 +61,7 @@ class ChannelCount {
             return 2;
         }
         DEBUG_ASSERT(!"unreachable code");
+        return kValueDefault;
     }
 
   public:
@@ -201,7 +202,7 @@ class Bitrate {
 
   public:
     static constexpr const char* unit() {
-        return "kbps";
+        return "kbit/s";
     }
 
     explicit constexpr Bitrate(

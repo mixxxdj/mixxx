@@ -583,14 +583,14 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
 }
 
 void EngineBuffer::ejectTrack() {
-    // clear track values in any case, may fix https://bugs.launchpad.net/mixxx/+bug/1450424
+    // clear track values in any case, may fix https://github.com/mixxxdj/mixxx/issues/8000
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineBuffer::ejectTrack()";
     }
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
 
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
@@ -846,10 +846,10 @@ void EngineBuffer::processTrackLocked(
     bool is_scratching = false;
     bool is_reverse = false;
 
-    // Update the slipped position and seek if it was disabled.
+    // Update the slipped position and seek to it if slip mode was disabled.
     processSlip(iBufferSize);
 
-    // Note: This may effects the m_playPosition, play, scaler and crossfade buffer
+    // Note: This may affect the m_playPosition, play, scaler and crossfade buffer
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time
@@ -1017,18 +1017,23 @@ void EngineBuffer::processTrackLocked(
         rate = m_rate_old;
     }
 
-    const mixxx::audio::FramePos trackEndPosition = getTrackEndPosition();
-    bool atEnd = m_playPosition >= trackEndPosition;
-    bool backwards = rate < 0;
-
     bool bCurBufferPaused = false;
-    if (atEnd && !backwards) {
-        // do not play past end
-        bCurBufferPaused = true;
-    } else if (rate == 0 && !is_scratching) {
-        // do not process samples if have no transport
-        // the linear scaler supports ramping down to 0
-        // this is used for pause by scratching only
+    bool atEnd = false;
+    bool backwards = rate < 0;
+    const mixxx::audio::FramePos trackEndPosition = getTrackEndPosition();
+    if (trackEndPosition.isValid()) {
+        atEnd = m_playPosition >= trackEndPosition;
+        if (atEnd && !backwards) {
+            // do not play past end
+            bCurBufferPaused = true;
+        } else if (rate == 0 && !is_scratching) {
+            // do not process samples if have no transport
+            // the linear scaler supports ramping down to 0
+            // this is used for pause by scratching only
+            bCurBufferPaused = true;
+        }
+    } else {
+        // Track has already been ejected.
         bCurBufferPaused = true;
     }
 
@@ -1089,12 +1094,10 @@ void EngineBuffer::processTrackLocked(
 
     // Handle repeat mode
     const bool atStart = m_playPosition <= mixxx::audio::kStartFramePos;
-    atEnd = m_playPosition >= trackEndPosition;
 
     bool repeat_enabled = m_pRepeat->toBool();
 
-    bool end_of_track = //(at_start && backwards) ||
-            (atEnd && !backwards);
+    bool end_of_track = atEnd && !backwards;
 
     // If playbutton is pressed, check if we are at start or end of track
     if ((m_playButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool()))
@@ -1137,8 +1140,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     m_pScaleST->setSampleRate(m_sampleRate);
     m_pScaleRB->setSampleRate(m_sampleRate);
 
-    bool bTrackLoading = m_iTrackLoading.loadAcquire() != 0;
-    if (!bTrackLoading && m_pause.tryLock()) {
+    bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
+    if (hasStableTrack && m_pause.tryLock()) {
         processTrackLocked(pOutput, iBufferSize, m_sampleRate);
         // release the pauselock
         m_pause.unlock();
@@ -1204,7 +1207,18 @@ void EngineBuffer::processSlip(int iBufferSize) {
         // back and forth calculations.
         const int bufferFrameCount = iBufferSize / mixxx::kEngineChannelCount;
         DEBUG_ASSERT(bufferFrameCount * mixxx::kEngineChannelCount == iBufferSize);
-        m_slipPosition += static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        const mixxx::audio::FrameDiff_t slipDelta =
+                static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        // Simulate looping if a regular loop is active
+        if (m_pLoopingControl->isLoopingEnabled() &&
+                !m_pLoopingControl->isLoopRollActive()) {
+            const mixxx::audio::FramePos newPos = m_slipPosition + slipDelta;
+            m_slipPosition = m_pLoopingControl->adjustedPositionForCurrentLoop(
+                    newPos,
+                    m_dSlipRate < 0);
+        } else {
+            m_slipPosition += slipDelta;
+        }
     }
 }
 
@@ -1379,12 +1393,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         speed = 0;
     }
 
-    // Report fractional playpos to SyncControl.
-    // TODO(rryan) It's kind of hacky that this is in updateIndicators but it
-    // prevents us from computing fFractionalPlaypos multiple times per
-    // EngineBuffer::process().
-    m_pSyncControl->reportTrackPosition(fFractionalPlaypos);
-
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesSinceLastIndicatorUpdate >
@@ -1396,19 +1404,20 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update visual control object, this needs to be done more often than the
     // playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos,
+    m_visualPlayPos->set(
+            fFractionalPlaypos,
             speed * m_baserate_old,
             static_cast<int>(iBufferSize) /
                     m_trackEndPositionOld.toEngineSamplePos(),
             fractionalPlayposFromAbsolute(m_slipPosition),
-            tempoTrackSeconds);
+            tempoTrackSeconds,
+            iBufferSize / kSamplesPerFrame / m_sampleRate.toDouble() * 1000000.0);
 
     // TODO: Especially with long audio buffers, jitter is visible. This can be fixed by moving the
     // ClockControl::updateIndicators into the waveform update loop which is synced with the display refresh rate.
     // Via the visual play position it's possible to access to the sample that is currently played,
     // and not the one that have been processed as in the current solution.
-    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
-    m_pClockControl->updateIndicators(speed * m_baserate_old, m_playPosition, sampleRate);
+    m_pClockControl->updateIndicators(speed * m_baserate_old, m_playPosition, m_sampleRate);
 }
 
 void EngineBuffer::hintReader(const double dRate) {

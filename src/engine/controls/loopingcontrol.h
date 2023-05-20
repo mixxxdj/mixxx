@@ -48,12 +48,19 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(mixxx::audio::FramePos position) override;
 
+    // Wrapper to use adjustedPositionInsideAdjustedLoop() with the current loop.
+    // Called from EngineBuffer while slip mode is enabled
+    mixxx::audio::FramePos adjustedPositionForCurrentLoop(
+            mixxx::audio::FramePos newPosition,
+            bool reverse);
+
     void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
     void setLoop(mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
             bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
+    bool isLoopRollActive();
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
@@ -87,6 +94,7 @@ class LoopingControl : public EngineControl {
 
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
+    void slotBeatJumpSizeChangeRequest(double beats);
     void slotBeatJumpSizeHalve(double pressed);
     void slotBeatJumpSizeDouble(double pressed);
     void slotBeatJumpForward(double pressed);
@@ -121,7 +129,7 @@ class LoopingControl : public EngineControl {
     void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
     void updateBeatLoopingControls();
-    bool currentLoopMatchesBeatloopSize();
+    bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const;
 
     // Given loop in and out points, determine if this is a beatloop of a particular
     // size.
@@ -129,10 +137,12 @@ class LoopingControl : public EngineControl {
             mixxx::audio::FramePos endPosition) const;
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
-    // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
-    mixxx::audio::FramePos seekInsideAdjustedLoop(
+    // the beat. It will even keep multi-bar phrasing correct with 4/4 tracks.
+    mixxx::audio::FramePos adjustedPositionInsideAdjustedLoop(
             mixxx::audio::FramePos currentPosition,
+            bool reverse,
             mixxx::audio::FramePos oldLoopInPosition,
+            mixxx::audio::FramePos oldLoopOutPosition,
             mixxx::audio::FramePos newLoopInPosition,
             mixxx::audio::FramePos newLoopOutPosition);
     mixxx::audio::FramePos findQuantizedBeatloopStart(

@@ -1,5 +1,6 @@
 #include "util/imageutils.h"
 
+#include <QByteArray>
 #include <QCryptographicHash>
 
 namespace {
@@ -15,9 +16,10 @@ ImageDigest digestImage(const QImage& image) {
         return ImageDigest();
     }
     QCryptographicHash cryptoHash(kImageHashAlgorithm);
-    cryptoHash.addData(
+    const QByteArray data = QByteArray::fromRawData(
             reinterpret_cast<const char*>(image.constBits()),
             image.sizeInBytes());
+    cryptoHash.addData(data);
     return cryptoHash.result();
 }
 

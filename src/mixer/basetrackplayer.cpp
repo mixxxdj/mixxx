@@ -127,6 +127,22 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             this,
             &BaseTrackPlayerImpl::slotCloneFromSampler);
 
+    // Load track from other deck/sampler
+    m_pLoadTrackFromDeck = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromDeck"),
+            false);
+    connect(m_pLoadTrackFromDeck.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromDeck);
+    m_pLoadTrackFromSampler = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromSampler"),
+            false);
+    connect(m_pLoadTrackFromSampler.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromSampler);
+
     // Waveform controls
     // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
     // do not work properly with this CO.
@@ -260,22 +276,18 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     // The loop in and out points must be set here and not in slotTrackLoaded
     // so LoopingControl::trackLoaded can access them.
     if (!m_pChannelToCloneFrom) {
-        const QList<CuePointer> trackCues(m_pLoadedTrack->getCuePoints());
-        QListIterator<CuePointer> it(trackCues);
-        CuePointer pLoopCue;
         // Restore loop from the first loop cue with minimum hotcue number.
         // For the volatile "most recent loop" the hotcue number will be -1.
         // If no such loop exists, restore a saved loop cue.
-        while (it.hasNext()) {
-            CuePointer pCue(it.next());
+        CuePointer pLoopCue;
+        const QList<CuePointer> trackCues = m_pLoadedTrack->getCuePoints();
+        for (const auto& pCue : trackCues) {
             if (pCue->getType() != mixxx::CueType::Loop) {
                 continue;
             }
-
             if (pLoopCue && pLoopCue->getHotCue() <= pCue->getHotCue()) {
                 continue;
             }
-
             pLoopCue = pCue;
         }
 
@@ -343,10 +355,8 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
                     m_pLoopOutPoint->get());
     if (loopStart.isValid() && loopEnd.isValid() && loopStart <= loopEnd) {
         CuePointer pLoopCue;
-        QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
-        QListIterator<CuePointer> it(cuePoints);
-        while (it.hasNext()) {
-            CuePointer pCue(it.next());
+        const QList<CuePointer> cuePoints = m_pLoadedTrack->getCuePoints();
+        for (const auto& pCue : cuePoints) {
             if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
                 pLoopCue = pCue;
                 break;
@@ -441,7 +451,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
 
     // await slotTrackLoaded()/slotLoadFailed()
     // emit this before pEngineBuffer->loadTrack() to avoid receiving
-    // unexpected slotTrackLoaded() before, in case the track is still cached (lp1941743)
+    // unexpected slotTrackLoaded() before, in case the track is still cached #10504.
     emit loadingTrack(pNewTrack, pOldTrack);
 
     // Request a new track from EngineBuffer
@@ -644,6 +654,30 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     TrackPointer pTrack = m_pChannelToCloneFrom->getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         m_pChannelToCloneFrom = nullptr;
+        return;
+    }
+
+    slotLoadTrack(pTrack, false);
+}
+
+void BaseTrackPlayerImpl::slotLoadTrackFromDeck(double d) {
+    int deck = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForDeck(deck - 1));
+}
+
+void BaseTrackPlayerImpl::slotLoadTrackFromSampler(double d) {
+    int sampler = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForSampler(sampler - 1));
+}
+
+void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
+    EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
+    if (!pChannel) {
+        return;
+    }
+
+    TrackPointer pTrack = pChannel->getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
         return;
     }
 

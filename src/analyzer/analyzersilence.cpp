@@ -7,35 +7,42 @@
 
 namespace {
 
-constexpr CSAMPLE kSilenceThreshold = 0.001f;
+// This threshold must not be changed, because this value is also used to
+// verify that the track samples have not changed since the last analysis
+constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 // TODO: Change the above line to:
 //constexpr CSAMPLE kSilenceThreshold = db2ratio(-60.0f);
 
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
+    CuePointer pN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
 
-    if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLengthFrames() <= 0) {
+    if (!pIntroCue || !pOutroCue || !pN60dBSound || pN60dBSound->getLengthFrames() <= 0) {
         return true;
     }
     return false;
+}
+
+template<typename Iterator>
+Iterator first_sound(Iterator begin, Iterator end) {
+    return std::find_if(begin, end, [](const auto elem) {
+        return fabs(elem) >= kSilenceThreshold;
+    });
 }
 
 } // anonymous namespace
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_fThreshold(kSilenceThreshold),
           m_iFramesProcessed(0),
-          m_bPrevSilence(true),
           m_iSignalStart(-1),
           m_iSignalEnd(-1) {
 }
 
 bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
+        SINT totalSamples) {
     Q_UNUSED(sampleRate);
     Q_UNUSED(totalSamples);
 
@@ -44,34 +51,53 @@ bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
     }
 
     m_iFramesProcessed = 0;
-    m_bPrevSilence = true;
     m_iSignalStart = -1;
     m_iSignalEnd = -1;
 
     return true;
 }
 
-bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, const int iLen) {
-    for (int i = 0; i < iLen; i += mixxx::kAnalysisChannels) {
-        // Compute max of channels in this sample frame
-        CSAMPLE fMax = CSAMPLE_ZERO;
-        for (SINT ch = 0; ch < mixxx::kAnalysisChannels; ++ch) {
-            CSAMPLE fAbs = fabs(pIn[i + ch]);
-            fMax = math_max(fMax, fAbs);
-        }
+// static
+SINT AnalyzerSilence::findFirstSoundInChunk(std::span<const CSAMPLE> samples) {
+    return std::distance(samples.begin(), first_sound(samples.begin(), samples.end()));
+}
 
-        bool bSilence = fMax < m_fThreshold;
-
-        if (m_bPrevSilence && !bSilence) {
-            if (m_iSignalStart < 0) {
-                m_iSignalStart = m_iFramesProcessed + i / mixxx::kAnalysisChannels;
-            }
-        } else if (!m_bPrevSilence && bSilence) {
-            m_iSignalEnd = m_iFramesProcessed + i / mixxx::kAnalysisChannels;
-        }
-
-        m_bPrevSilence = bSilence;
+// static
+SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
+    // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
+    SINT ret = std::distance(first_sound(samples.rbegin(), samples.rend()), samples.rend()) - 1;
+    if (ret == -1) {
+        ret = samples.size();
     }
+    return ret;
+}
+
+// static
+bool AnalyzerSilence::verifyFirstSound(
+        std::span<const CSAMPLE> samples,
+        mixxx::audio::FramePos firstSoundFrame) {
+    const SINT firstSoundSample = findFirstSoundInChunk(samples);
+    if (firstSoundSample < static_cast<SINT>(samples.size())) {
+        return mixxx::audio::FramePos::fromEngineSamplePos(firstSoundSample) == firstSoundFrame;
+    }
+    return false;
+}
+
+bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
+    std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pIn, iLen);
+    if (m_iSignalStart < 0) {
+        const SINT firstSoundSample = findFirstSoundInChunk(samples);
+        if (firstSoundSample < iLen) {
+            m_iSignalStart = m_iFramesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
+        }
+    }
+    if (m_iSignalStart >= 0) {
+        const SINT lastSoundSample = findLastSoundInChunk(samples);
+        if (lastSoundSample < iLen - 1) { // not only sound or silence
+            m_iSignalEnd = m_iFramesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
+        }
+    }
+
     m_iFramesProcessed += iLen / mixxx::kAnalysisChannels;
     return true;
 }
@@ -87,32 +113,32 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
-    // If track didn't end with silence, place signal end marker
-    // on the end of the track.
-    if (!m_bPrevSilence) {
-        m_iSignalEnd = m_iFramesProcessed;
-    }
-
     const auto firstSoundPosition = mixxx::audio::FramePos(m_iSignalStart);
     const auto lastSoundPosition = mixxx::audio::FramePos(m_iSignalEnd);
 
-    CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pAudibleSound == nullptr) {
-        pAudibleSound = pTrack->createAndAddCue(
-                mixxx::CueType::AudibleSound,
+    CuePointer pN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
+    if (pN60dBSound == nullptr) {
+        pN60dBSound = pTrack->createAndAddCue(
+                mixxx::CueType::N60dBSound,
                 Cue::kNoHotCue,
                 firstSoundPosition,
                 lastSoundPosition);
     } else {
-        // The user has no way to directly edit the AudibleSound cue. If the user
+        // The user has no way to directly edit the N60dBSound cue. If the user
         // has deleted the Intro or Outro Cue, this analysis will be rerun when
-        // the track is loaded again. In this case, adjust the AudibleSound Cue's
+        // the track is loaded again. In this case, adjust the N60dBSound Cue's
         // positions. This could be helpful, for example, when the track length
-        // is changed in a different program, or the silence detection threshold
-        // is changed.
-        pAudibleSound->setStartAndEndPosition(firstSoundPosition, lastSoundPosition);
+        // is changed in a different program.
+        pN60dBSound->setStartAndEndPosition(firstSoundPosition, lastSoundPosition);
     }
 
+    setupMainAndIntroCue(pTrack.get(), firstSoundPosition, m_pConfig.data());
+    setupOutroCue(pTrack.get(), lastSoundPosition);
+}
+
+// static
+void AnalyzerSilence::setupMainAndIntroCue(
+        Track* pTrack, mixxx::audio::FramePos firstSoundPosition, UserSettings* pConfig) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
 
     mixxx::audio::FramePos mainCuePosition = pTrack->getMainCuePosition();
@@ -128,7 +154,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (!mainCuePosition.isValid() || upgradingWithMainCueAtDefault) {
         pTrack->setMainCuePosition(firstSoundPosition);
         // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
-    } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
+    } else if (pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
             pIntroCue == nullptr) {
         introStartPosition = mainCuePosition;
     }
@@ -140,7 +166,10 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
                 introStartPosition,
                 mixxx::audio::kInvalidFramePos);
     }
+}
 
+// static
+void AnalyzerSilence::setupOutroCue(Track* pTrack, mixxx::audio::FramePos lastSoundPosition) {
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
     if (pOutroCue == nullptr) {
         pOutroCue = pTrack->createAndAddCue(

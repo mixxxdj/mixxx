@@ -103,6 +103,19 @@ void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
     transaction.commit();
 }
 
+void SetlogFeature::slotDeletePlaylist() {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == m_playlistId) {
+        // the current setlog must not be deleted
+        return;
+    }
+    // regular setlog, call the base implementation
+    BasePlaylistFeature::slotDeletePlaylist();
+}
+
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
     Q_UNUSED(globalPos);
     m_lastRightClickedIndex = QModelIndex();
@@ -180,8 +193,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     int createdColumn = record.indexOf("date_created");
 
     QMap<int, TreeItem*> groups;
-
-    QList<TreeItem*> itemList;
+    std::vector<std::unique_ptr<TreeItem>> itemList;
     // Generous estimate (number of years the db is used ;))
     itemList.reserve(kNumToplevelHistoryEntries + 15);
 
@@ -204,33 +216,31 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             int yearCreated = dateCreated.date().year();
 
             auto i = groups.find(yearCreated);
-            TreeItem* groupItem;
-            if (i != groups.end() && i.key() == yearCreated) {
-                groupItem = i.value();
+            TreeItem* pGroupItem;
+            if (i != groups.end()) {
+                pGroupItem = i.value();
             } else {
-                groupItem = new TreeItem(QString::number(yearCreated), kInvalidPlaylistId);
-                groups.insert(yearCreated, groupItem);
-                itemList.append(groupItem);
+                auto pNewGroupItem = std::make_unique<TreeItem>(
+                        QString::number(yearCreated), kInvalidPlaylistId);
+                pGroupItem = pNewGroupItem.get();
+                groups.insert(yearCreated, pGroupItem);
+                itemList.push_back(std::move(pNewGroupItem));
             }
 
-            auto item = std::make_unique<TreeItem>(name, id);
-            item->setBold(m_playlistIdsOfSelectedTrack.contains(id));
-
-            decorateChild(item.get(), id);
-
-            groupItem->appendChild(std::move(item));
+            TreeItem* pItem = pGroupItem->appendChild(name, id);
+            pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
+            decorateChild(pItem, id);
         } else {
-            TreeItem* item = new TreeItem(name, id);
-            item->setBold(m_playlistIdsOfSelectedTrack.contains(id));
+            auto pItem = std::make_unique<TreeItem>(name, id);
+            pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
+            decorateChild(pItem.get(), id);
 
-            decorateChild(item, id);
-
-            itemList.append(item);
+            itemList.push_back(std::move(pItem));
         }
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_pSidebarModel->insertTreeItemRows(itemList, 0);
+    m_pSidebarModel->insertTreeItemRows(std::move(itemList), 0);
 
     if (selectedId) {
         return indexFromPlaylistId(selectedId);

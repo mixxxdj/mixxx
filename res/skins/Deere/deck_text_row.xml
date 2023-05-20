@@ -106,7 +106,7 @@
 
                           <!-- We allow to hide the current BPM info in the skin settings,
                                 display just a label with asterixes instead.
-                                See https://bugs.launchpad.net/mixxx/+bug/722889 -->
+                                See https://github.com/mixxxdj/mixxx/issues/5783 -->
                           <WidgetGroup>
                             <Layout>horizontal</Layout>
                             <Children>

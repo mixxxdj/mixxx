@@ -16,8 +16,6 @@
 
 const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
 
-QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
-
 class QueryNode {
   public:
     QueryNode(const QueryNode&) = delete; // prevent copying
@@ -28,8 +26,6 @@ class QueryNode {
 
   protected:
     QueryNode() = default;
-
-    static QString concatSqlClauses(const QStringList& sqlClauses, const QString& sqlConcatOp);
 };
 
 class GroupNode : public QueryNode {
@@ -149,7 +145,6 @@ class NumericFilterNode : public QueryNode {
     // derived classes.
     void init(QString argument);
 
-  private:
     virtual double parse(const QString& arg, bool* ok);
 
     QStringList m_sqlColumns;
@@ -213,6 +208,12 @@ class SqlNode : public QueryNode {
 
   private:
     QString m_sql;
+};
+
+class YearFilterNode : public NumericFilterNode {
+  public:
+    YearFilterNode(const QStringList& sqlColumns, const QString& argument);
+    QString toSql() const override;
 };
 
 #endif /* SEARCHQUERY_H */

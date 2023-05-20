@@ -171,7 +171,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Shows the current volume for the left channel of the main output.");
 
     add("master_VuMeterR")
-            << tr("Master Channel R Volume Meter")
+            << tr("Main Channel R Volume Meter")
             << tr("Shows the current volume for the right channel of the main output.");
 
     add("channel_volume")
@@ -286,7 +286,7 @@ void Tooltips::addStandardTooltips() {
 
     add("show_vumeters")
             << tr("Volume Meters")
-            << tr("Show/hide volume meters for channels and master output.");
+            << tr("Show/hide volume meters for channels and main output.");
 
     add("microphone_volume")
             << tr("Microphone Volume")
@@ -323,7 +323,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.")
             << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
-    QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
+    QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
     add("rate_perm_up_rate_perm_up_small")
             << tr("Raise Pitch")
             << QString("%1: %2").arg(leftClick, tr("Sets the pitch higher."))

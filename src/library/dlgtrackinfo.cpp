@@ -48,7 +48,13 @@ DlgTrackInfo::DlgTrackInfo(
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
-          m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
+          m_pWStarRating(make_parented<WStarRating>(nullptr, this)),
+          m_pColorPicker(make_parented<WColorPickerAction>(
+                  WColorPicker::Option::AllowNoColor |
+                          // TODO(xxx) remove this once the preferences are themed via QSS
+                          WColorPicker::Option::NoExtStyleSheet,
+                  ColorPaletteSettings(m_pUserSettings).getTrackColorPalette(),
+                  this)) {
     init();
 }
 
@@ -245,6 +251,23 @@ void DlgTrackInfo::init() {
             &WCoverArtMenu::reloadCoverArt,
             this,
             &DlgTrackInfo::slotReloadCoverArt);
+
+    btnColorPicker->setStyle(QStyleFactory::create(QStringLiteral("fusion")));
+    QMenu* pColorPickerMenu = new QMenu(this);
+    pColorPickerMenu->addAction(m_pColorPicker);
+    btnColorPicker->setMenu(pColorPickerMenu);
+
+    connect(btnColorPicker,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotColorButtonClicked);
+    connect(m_pColorPicker.get(),
+            &WColorPickerAction::colorPicked,
+            this,
+            [this](const mixxx::RgbColor::optional_t& newColor) {
+                trackColorDialogSetColor(newColor);
+                m_trackRecord.setColor(newColor);
+            });
 }
 
 void DlgTrackInfo::slotApply() {
@@ -260,9 +283,6 @@ void DlgTrackInfo::slotOk() {
 void DlgTrackInfo::slotCancel() {
     clear();
     reject();
-}
-
-void DlgTrackInfo::trackUpdated() {
 }
 
 void DlgTrackInfo::slotNextButton() {
@@ -310,6 +330,9 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
     replaceTrackRecord(
             track.getRecord(),
             track.getLocation());
+
+    // paint the color selector and check the respective color picker button
+    trackColorDialogSetColor(track.getColor());
 
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
 
@@ -371,8 +394,12 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     // Non-editable fields
     txtDuration->setText(
             m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
-    txtBitrate->setText(
-            m_trackRecord.getMetadata().getBitrateText());
+    QString bitrate = m_trackRecord.getMetadata().getBitrateText();
+    if (bitrate.isEmpty()) {
+        txtBitrate->clear();
+    } else {
+        txtBitrate->setText(bitrate + QChar(' ') + mixxx::audio::Bitrate::unit());
+    }
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
                     m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
@@ -432,7 +459,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
         return;
     }
     loadTrackInternal(pTrack);
-    if (m_pDlgTagFetcher && m_pLoadedTrack) {
+    if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
     }
 }
@@ -444,7 +471,7 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_currentTrackIndex = index;
     loadTrackInternal(pTrack);
-    if (m_pDlgTagFetcher && m_currentTrackIndex.isValid()) {
+    if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_currentTrackIndex);
     }
 }
@@ -487,8 +514,36 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
     if (!m_pLoadedTrack) {
         return;
     }
-
     mixxx::DesktopHelper::openInFileBrowser(QStringList(m_pLoadedTrack->getLocation()));
+}
+
+void DlgTrackInfo::slotColorButtonClicked() {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    btnColorPicker->showMenu();
+}
+
+void DlgTrackInfo::trackColorDialogSetColor(const mixxx::RgbColor::optional_t& newColor) {
+    m_pColorPicker->setSelectedColor(newColor);
+    btnColorPicker->menu()->close();
+
+    if (newColor) {
+        btnColorPicker->setText("");
+        const QColor ccolor = mixxx::RgbColor::toQColor(newColor);
+        const QString styleSheet =
+                QStringLiteral(
+                        "QPushButton { background-color: %1; color: %2; }")
+                        .arg(ccolor.name(QColor::HexRgb),
+                                Color::isDimColor(ccolor)
+                                        ? "white"
+                                        : "black");
+        btnColorPicker->setStyleSheet(styleSheet);
+    } else { // no color
+        btnColorPicker->setText(tr("(no color)"));
+        // clear custom stylesheet, i.e. restore Fusion style,
+        btnColorPicker->setStyleSheet("");
+    }
 }
 
 void DlgTrackInfo::saveTrack() {
@@ -634,7 +689,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
     const auto keyText = txtKey->text().trimmed();
     const auto updateResult =
-            m_trackRecord.updateGlobalKeyText(
+            m_trackRecord.updateGlobalKeyNormalizeText(
                     keyText,
                     mixxx::track::io::key::USER);
     if (updateResult == mixxx::UpdateResult::Rejected) {
@@ -645,7 +700,7 @@ mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
 }
 
 void DlgTrackInfo::displayKeyText() {
-    const auto keyText = m_trackRecord.getMetadata().getTrackInfo().getKey();
+    const QString keyText = m_trackRecord.getMetadata().getTrackInfo().getKeyText();
     txtKey->setText(keyText);
 }
 
@@ -663,7 +718,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     // Initialize the metadata with the current metadata to avoid
     // losing existing metadata or to lose the beat grid by replacing
     // it with a default grid created from an imprecise BPM.
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1929311
+    // See also: https://github.com/mixxxdj/mixxx/issues/10420
     // In addition we need to preserve all other track properties
     // that are stored in TrackRecord, which serves as the underlying
     // model for this dialog.
@@ -703,7 +758,7 @@ void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     if (!m_pDlgTagFetcher) {
         m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
-                m_pTrackModel);
+                m_pUserSettings, m_pTrackModel);
         connect(m_pDlgTagFetcher.get(),
                 &QDialog::finished,
                 this,

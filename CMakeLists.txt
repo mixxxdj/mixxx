@@ -118,26 +118,27 @@ if(APPLE)
       set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
     endif()
   else()
-    # Minimum macOS version supported by Qt 5.12
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
-    if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
+    if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
+      # Minimum macOS version for arm64 Support
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
+      set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target achritecture")
+      set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
+      set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Setting this enables CMAKE_CROSSCOMPILE")
+    else()
+      # Minimum macOS version supported by Qt 5.12
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
+      if(NOT VCPKG_TARGET_TRIPLET)
+        set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
+      endif()
+      # Needed for deployment target < 10.14
+      add_compile_options(-fno-aligned-allocation)
     endif()
-    # Needed for deployment target < 10.14
-    add_compile_options(-fno-aligned-allocation)
   endif()
 endif()
 
-if(DEFINED VCPKG_ROOT AND DEFINED VCPKG_TARGET_TRIPLET)
-  if(NOT EXISTS "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}")
-    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET} "
-        "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
-  endif()
-endif()
-
-project(mixxx VERSION 2.4.0)
+project(mixxx VERSION 2.5.0)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
-set(MIXXX_VERSION_PRERELEASE "alpha-pre") # set to "alpha-pre" "beta" or ""
+set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -154,6 +155,18 @@ include(GNUInstallDirs)
 include(DefaultOption)
 include(IsStaticLibrary)
 
+# Verify VCPKG settings
+if(DEFINED _VCPKG_INSTALLED_DIR)
+  if(NOT EXISTS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+    # Fail early if this part of CMAKE_PREFIX_PATH does not exist
+    # else the library lookups below will fail with misleading error messages
+    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
+        "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
+  else()
+    message(STATUS "Using VCPKG_TARGET_TRIPLET: ${VCPKG_TARGET_TRIPLET}")
+  endif()
+endif()
+
 #######################################################################
 # Compilers and toolchains
 
@@ -165,8 +178,13 @@ else()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  # using regular Clang or AppleClang
-  set(LLVM_CLANG true)
+  if (CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
+    set(LLVM_CLANG false)
+    set(MSVC true)
+  else()
+    # using regular Clang or AppleClang
+    set(LLVM_CLANG true)
+  endif()
 else()
   set(LLVM_CLANG false)
 endif()
@@ -181,6 +199,9 @@ set(CMAKE_CXX_STANDARD 20)
 if(MSVC)
   # Ensure MSVC populates __cplusplus correctly.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+  # Remove unreferenced code and data
+  # Since c++11 they can safely be removed to speed up linking.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
 endif()
 
 # Speed up builds on HDDs and prevent wearing of SDDs
@@ -240,7 +261,7 @@ if(MSVC)
   add_compile_options(/UTF8)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
-    message(STATUS "x64 Enabling SS2 CPU optimizations (>= Pentium 4)")
+    message(STATUS "x64 Enabling SSE2 CPU optimizations (>= Pentium 4)")
     # Define gcc/clang style defines for SSE and SSE2 for compatibility
     add_compile_definitions("__SSE__" "__SSE2__")
   endif()
@@ -284,6 +305,11 @@ if(MSVC)
       string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+      # /O2 is applied by CMake and this implies /Od2
+      string(REPLACE "/Ob1" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob1" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+
       # Reduce the size of the binary in RelWithDebInfo builds
       # Do not use /OPT:ICF because it has no effect.
       # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
@@ -308,7 +334,7 @@ if(MSVC)
     if(OPTIMIZE STREQUAL "portable")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
-        message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
         # Set compiler option for SSE/SSE2
@@ -318,7 +344,7 @@ if(MSVC)
       message("Enabling optimizations for native system, specified by user")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
-        message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
       endif()
@@ -350,8 +376,9 @@ if(MSVC)
       #Remove optimize flags set by cmake defaults
       string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
       string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
-      string(REPLACE "/Ob2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+      string(REPLACE "/Ob1" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob1" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     endif()
@@ -380,7 +407,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
     if(OPTIMIZE STREQUAL "portable")
       # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
-        message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
+        message(STATUS "Enabling SSE2 CPU optimizations (>= Pentium 4)")
         add_compile_options(-mtune=generic)
         # -mtune=generic picks the most common, but compatible options.
         # on arm platforms equivalent to -march=arch
@@ -603,6 +630,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
+  src/effects/backends/builtin/distortioneffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
   src/effects/backends/builtin/phasereffect.cpp
   src/effects/backends/builtin/pitchshifteffect.cpp
@@ -667,7 +695,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/engineworker.cpp
   src/engine/engineworkerscheduler.cpp
   src/engine/enginexfader.cpp
-  src/engine/filters/enginefilter.cpp
   src/engine/filters/enginefilterbessel4.cpp
   src/engine/filters/enginefilterbessel8.cpp
   src/engine/filters/enginefilterbiquad1.cpp
@@ -743,7 +770,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/trackexportworker.cpp
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
+  src/library/itunes/itunesdao.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesplaylistmodel.cpp
+  src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
@@ -817,6 +847,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/musicbrainzxml.cpp
   src/musicbrainz/tagfetcher.cpp
   src/musicbrainz/web/acoustidlookuptask.cpp
+  src/musicbrainz/web/coverartarchiveimagetask.cpp
+  src/musicbrainz/web/coverartarchivelinkstask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
@@ -831,14 +863,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefbeatsdlg.ui
   src/preferences/dialog/dlgprefcolors.cpp
   src/preferences/dialog/dlgprefcolorsdlg.ui
-  src/preferences/dialog/dlgprefcrossfader.cpp
-  src/preferences/dialog/dlgprefcrossfaderdlg.ui
+  src/preferences/dialog/dlgprefmixer.cpp
+  src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
   src/preferences/dialog/dlgprefdeckdlg.ui
   src/preferences/dialog/dlgprefeffects.cpp
   src/preferences/dialog/dlgprefeffectsdlg.ui
-  src/preferences/dialog/dlgprefeq.cpp
-  src/preferences/dialog/dlgprefeqdlg.ui
   src/preferences/dialog/dlgpreferencepage.cpp
   src/preferences/dialog/dlgpreferences.cpp
   src/preferences/dialog/dlgpreferencesdlg.ui
@@ -913,6 +943,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/replaygain.cpp
   src/track/serato/beatgrid.cpp
   src/track/serato/beatsimporter.cpp
+  src/track/serato/color.cpp
   src/track/serato/cueinfoimporter.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
@@ -1091,6 +1122,7 @@ else()
     src/waveform/guitick.cpp
     src/waveform/renderers/glslwaveformrenderersignal.cpp
     src/waveform/renderers/glvsynctestrenderer.cpp
+    src/waveform/renderers/glwaveformrenderbackground.cpp
     src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/glwaveformrendererrgb.cpp
     src/waveform/renderers/glwaveformrenderersimplesignal.cpp
@@ -1147,6 +1179,23 @@ target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src
 if(UNIX AND NOT APPLE)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
+endif()
+
+if(APPLE)
+  # Enable Automatic Reference Counting (ARC) when compiling Objective-C(++).
+  # This frees us from having to worry about memory management when interfacing
+  # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
+  # will automatically insert retain/release calls on Objective-C objects.
+  target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
+
+  option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
+  if(MACOS_ITUNES_LIBRARY)
+    target_sources(mixxx-lib PRIVATE
+      src/library/itunes/itunesmacosimporter.mm
+    )
+    target_link_libraries(mixxx-lib PRIVATE "-weak_framework iTunesLibrary")
+    target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
+  endif()
 endif()
 
 # QML Debugging
@@ -1241,10 +1290,6 @@ target_compile_definitions(mixxx-lib PUBLIC
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
   $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
   $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
-  # Disable assert.h assertions in release mode. Some libraries use
-  # this as a signal for when to enable code that should be disabled
-  # in release mode.
-  $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
 # Mac-specific options
@@ -1357,7 +1402,7 @@ if (APPLE)
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
-        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/bundle.plist.in"
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Info.plist.in"
     )
   endif()
 endif()
@@ -1616,19 +1661,6 @@ if(MSVC)
 endif()
 
 if(WIN32)
-  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
-  # there is no particular reason to look for this file versus any other one in the directory.
-  find_file(QT_TRANSLATION_FILE qt_de.qm PATH_SUFFIXES share/qt5/translations)
-  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
-  install(
-    DIRECTORY "${QT_TRANSLATIONS}"
-    DESTINATION "${MIXXX_INSTALL_DATADIR}"
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-    FILES_MATCHING REGEX
-      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-  )
-
   # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is blocklisted.
   # Qt does not link these and vcpkg does not build them as a dependency of Qt,
   # so copy them manually.
@@ -1719,7 +1751,9 @@ add_executable(mixxx-test
   #src/test/metaknob_link_test.cpp
   src/test/midicontrollertest.cpp
   src/test/mixxxtest.cpp
+  src/test/mock_networkaccessmanager.cpp
   src/test/movinginterquartilemean_test.cpp
+  src/test/musicbrainzrecordingstasktest.cpp
   src/test/nativeeffects_test.cpp
   src/test/performancetimer_test.cpp
   src/test/playcountertest.cpp
@@ -1945,10 +1979,11 @@ endif()
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
-  set(LIBDJINTEROP_VERSION 0.16.0)
+  set(LIBDJINTEROP_VERSION 0.16.1)
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
-  find_package(DjInterop ${LIBDJINTEROP_VERSION})
+  # Note: Version 0.17.0 is not yet compatible
+  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
     message(STATUS "Using existing system installation of libdjinterop")
@@ -1979,7 +2014,7 @@ if(ENGINEPRIME)
     # the configuration.
     ExternalProject_Add(libdjinterop
       URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
-      URL_HASH SHA256=c998831fe4d3cc80c5c031491204244c9ed0c61575dd529260304b95d79db588
+      URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2032,19 +2067,22 @@ add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
 if(MSVC)
   target_compile_definitions(fidlib PRIVATE T_MSVC)
   target_compile_definitions(fidlib PRIVATE _USE_MATH_DEFINES)
+  target_compile_options(fidlib PRIVATE /W3)
 elseif(MINGW)
   target_compile_definitions(fidlib PRIVATE T_MINGW)
+  target_compile_options(fidlib PRIVATE -fno-finite-math-only -Wall -Wextra -Wfloat-conversion -Werror=return-type)
 else()
   target_compile_definitions(fidlib PRIVATE T_LINUX)
+  target_compile_options(fidlib PRIVATE -fno-finite-math-only -Wall -Wextra -Wfloat-conversion -Werror=return-type)
 endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
 
 # KeyFinder
-set(LIBKEYFINDER_VERSION 2.2.6)
-find_package(KeyFinder ${LIBKEYFINDER_VERSION})
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
+  set(LIBKEYFINDER_VERSION 2.2.6)
+  find_package(KeyFinder ${LIBKEYFINDER_VERSION})
   if (KeyFinder_FOUND)
     target_link_libraries(mixxx-lib PRIVATE KeyFinder::KeyFinder)
   else()
@@ -2110,7 +2148,10 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 # inlining It is compiled without optimization and allows to use these function
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
-if(GNU_GCC OR LLVM_CLANG)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
+  target_compile_options(FpClassify PRIVATE /fp:precise)
+elseif(GNU_GCC OR LLVM_CLANG)
   # The option `-ffp-contract=on` must precede `-fno-fast-math`
   # to silence a warning on Clang 14
   target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math)
@@ -2427,6 +2468,21 @@ elseif(WIN32)
   endif()
 endif()
 
+if(APPLE OR WIN32)
+  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
+  # there is no particular reason to look for this file versus any other one in the directory.
+  find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
+  install(
+    DIRECTORY "${QT_TRANSLATIONS}"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
+endif()
+
 # Queen Mary DSP
 add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/base/KaiserWindow.cpp
@@ -2606,8 +2662,6 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
-  find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${AUDIOTOOLBOX_LIBRARY})
   target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
@@ -2735,8 +2789,8 @@ endif()
 find_package(lilv)
 default_option(LILV "Lilv (LV2) support" "lilv_FOUND")
 if(LILV)
-  if(NOT TARGET lilv::lilv)
-    message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
+  if(NOT lilv_FOUND)
+    message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and LV2 libraries and development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
     src/effects/backends/lv2/lv2backend.cpp
@@ -2753,12 +2807,12 @@ option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
   find_package(Shoutidjc)
   # Check if system lib is at least 2.4.6 and not suffering bugs
-  # https://bugs.launchpad.net/mixxx/+bug/1833225
-  # https://bugs.launchpad.net/mixxx/+bug/1913579
+  # https://github.com/mixxxdj/mixxx/issues/9681
+  # https://github.com/mixxxdj/mixxx/issues/10305
   if(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.4)
-      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from bug lp1833225")
+      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from issue #9681")
   elseif(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.6)
-      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
+      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from issue #10305")
   endif()
   if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
     # Fall back to internal library in the lib tree
@@ -3044,7 +3098,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic lunar)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
@@ -3063,7 +3117,7 @@ include(CPack)
 if(APPLE AND MACOS_BUNDLE)
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
     set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
-    set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/entitlements.plist")
+    set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Mixxx.entitlements")
 
     # Starting with arm64 macOS Apple will require ad-hoc code signatures,
     # which can be generated by setting the identity to a single dash (-).

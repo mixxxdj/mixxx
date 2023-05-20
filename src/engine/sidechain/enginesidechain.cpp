@@ -34,7 +34,7 @@ EngineSideChain::EngineSideChain(
     // a suitable choice since we do semi-realtime tasks
     // in the sidechain thread. To get reliable timing, it's important
     // that this work be prioritized over the GUI and non-realtime tasks. See
-    // discussion on Bug #1270583 and Bug #1194543.
+    // discussion on issue #7272 and https://bugs.launchpad.net/mixxx/1.11/+bug/1194543.
     start(QThread::HighPriority);
 }
 

@@ -44,7 +44,7 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
 
 bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
+        SINT totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -125,8 +125,8 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
         pluginID = defaultPlugin().id();
     }
 
-    const Keys keys(tio->getKeys());
-    if (keys.isValid()) {
+    const Keys keys = tio->getKeys();
+    if (keys.getGlobalKey() != mixxx::track::io::key::INVALID) {
         QString version = keys.getVersion();
         QString subVersion = keys.getSubVersion();
 
@@ -151,7 +151,7 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-bool AnalyzerKey::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT iLen) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }

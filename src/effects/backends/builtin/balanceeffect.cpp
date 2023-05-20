@@ -57,7 +57,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     midLowPass->setDescription(QObject::tr(
             "Frequencies below this cutoff are not adjusted in the stereo field"));
     midLowPass->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
     midLowPass->setDefaultLinkType(EffectManifestParameter::LinkType::None);
     midLowPass->setNeutralPointOnScale(1);
     midLowPass->setRange(kMinCornerHz, kMinCornerHz, kMaxCornerHz);
@@ -79,9 +79,6 @@ BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& engineParame
     m_high->setStartFromDry(true);
 }
 
-BalanceGroupState::~BalanceGroupState() {
-}
-
 void BalanceGroupState::setFilters(int sampleRate, double freq) {
     m_low->setFrequencyCorners(sampleRate, freq);
     m_high->setFrequencyCorners(sampleRate, freq);
@@ -92,9 +89,6 @@ void BalanceEffect::loadEngineEffectParameters(
     m_pBalanceParameter = parameters.value("balance");
     m_pMidSideParameter = parameters.value("midSide");
     m_pBypassFreqParameter = parameters.value("bypassFreq");
-}
-
-BalanceEffect::~BalanceEffect() {
 }
 
 void BalanceEffect::processChannel(

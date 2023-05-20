@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QComboBox>
+#include <QCompleter>
 #include <QDomNode>
 #include <QEvent>
 #include <QTimer>
@@ -22,9 +23,13 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     static constexpr int kMaxDebouncingTimeoutMillis = 9999;
     static constexpr int kSaveTimeoutMillis = 5000;
     static constexpr int kMaxSearchEntries = 50;
+    static constexpr bool kCompletionsEnabledDefault = true;
+    static constexpr bool kHistoryShortcutsEnabledDefault = true;
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
+    static void setSearchCompletionsEnabled(bool searchCompletionsEnabled);
+    static void setSearchHistoryShortcutsEnabled(bool searchHistoryShortcutsEnabled);
     virtual void showPopup() override;
 
     explicit WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig = nullptr);
@@ -74,14 +79,19 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     // value provider that sends signals whenever the corresponding
     // configuration value changes.
     static int s_debouncingTimeoutMillis;
+    static bool s_completionsEnabled;
+    static bool s_historyShortcutsEnabled;
 
     void refreshState();
 
     void enableSearch(const QString& text);
     void updateEditBox(const QString& text);
     void updateClearAndDropdownButton(const QString& text);
+    void updateCompleter();
     void deleteSelectedComboboxItem();
     void deleteSelectedListItem();
+    void triggerSearchDebounced();
+    bool hasSelectedText() const;
 
     inline int findCurrentTextIndex() {
         return findData(currentText(), Qt::DisplayRole);
@@ -96,9 +106,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void loadQueriesFromConfig();
     void saveQueriesInConfig();
 
+    parented_ptr<QCompleter> m_completer;
     parented_ptr<QToolButton> const m_clearButton;
-
-    int m_innerHeight;
 
     QTimer m_debouncingTimer;
     QTimer m_saveTimer;

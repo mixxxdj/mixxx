@@ -45,25 +45,17 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>AlignBottom</ObjectName>
-        <Layout>horizontal</Layout>
+      <EffectParameterName>
+        <ObjectName>FxKnobLabel</ObjectName>
         <SizePolicy>me,f</SizePolicy>
         <MinimumSize>40,10</MinimumSize>
-        <MaximumSize>58,10</MaximumSize>
-        <Children>
-          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
-          <EffectParameterName>
-            <ObjectName>FxKnobLabel</ObjectName>
-            <EffectRack>1</EffectRack>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-            <Effect><Variable name="FxNum"/></Effect>
-            <EffectParameter><Variable name="FxParameter"/></EffectParameter>
-            <Alignment>center</Alignment>
-          </EffectParameterName>
-          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
-        </Children>
-      </WidgetGroup>
+        <MaximumSize>60,10</MaximumSize>
+        <EffectRack>1</EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+        <Elide>right</Elide>
+      </EffectParameterName>
 
       <WidgetGroup>
         <ObjectName>FxLinkButtons</ObjectName>

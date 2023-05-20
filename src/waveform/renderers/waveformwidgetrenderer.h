@@ -11,6 +11,7 @@
 #include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
@@ -39,9 +40,13 @@ class WaveformWidgetRenderer {
     const QString& getGroup() const {
         return m_group;
     }
+
     const TrackPointer& getTrackInfo() const {
         return m_pTrack;
     }
+
+    ConstWaveformPointer getWaveform() const;
+
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
 
@@ -83,9 +88,6 @@ class WaveformWidgetRenderer {
         return m_trackPixelCount * (position - m_firstDisplayedPosition);
     }
 
-    double getPlayPos() const {
-        return m_playPos;
-    }
     int getPlayPosVSample() const {
         return m_playPosVSample;
     }
@@ -176,18 +178,15 @@ class WaveformWidgetRenderer {
     double m_zoomFactor;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
-    double m_audioVisualRatio;
 
     int m_alphaBeatGrid;
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
-    double m_playPos;
     int m_playPosVSample;
     int m_totalVSamples;
     ControlProxy* m_pRateRatioCO;
-    double m_rateRatio;
     ControlProxy* m_pGainControlObject;
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
@@ -216,5 +215,7 @@ private:
             QPointF p2,
             QPointF p3);
     void drawPassthroughLabel(QPainter* painter);
+
     bool m_passthroughEnabled;
+    double m_playPos;
 };

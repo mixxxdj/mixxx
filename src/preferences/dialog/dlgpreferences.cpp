@@ -21,11 +21,10 @@
 
 #include "preferences/dialog/dlgprefautodj.h"
 #include "preferences/dialog/dlgprefcolors.h"
-#include "preferences/dialog/dlgprefcrossfader.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefeffects.h"
-#include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgprefinterface.h"
+#include "preferences/dialog/dlgprefmixer.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "preferences/dialog/dlgprefwaveform.h"
 #endif
@@ -46,7 +45,6 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "skin/skinloader.h"
 #include "util/color/color.h"
 #include "util/widgethelper.h"
 
@@ -64,6 +62,19 @@ DlgPreferences::DlgPreferences(
           m_pageSizeHint(QSize(0, 0)) {
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
+
+    // Add '&' to default button labels to always have Alt shortcuts, indpependent
+    // of operating system.
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Help)->setText(tr("&Help"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::RestoreDefaults)->setText(tr("&Restore Defaults"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Apply)->setText(tr("&Apply"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Ok)->setText(tr("&Ok"));
 
     connect(buttonBox,
             QOverload<QAbstractButton*>::of(&QDialogButtonBox::clicked),
@@ -172,15 +183,9 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_decks.svg");
 
     addPageWidget(PreferencesPage(
-                          new DlgPrefEQ(this, pEffectsManager, m_pConfig),
+                          new DlgPrefMixer(this, pEffectsManager, m_pConfig),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Equalizers"),
-            "ic_preferences_equalizers.svg");
-
-    addPageWidget(PreferencesPage(
-                          new DlgPrefCrossfader(this, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Crossfader"),
+            tr("Mixer"),
             "ic_preferences_crossfader.svg");
 
     addPageWidget(PreferencesPage(

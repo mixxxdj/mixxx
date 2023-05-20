@@ -665,6 +665,9 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 }
 
 // This function is executed in a separate thread other than the main thread
+// The returned list owns the pointers, but we can't use a unique_ptr because
+// the result is passed by a const reference inside QFuture and than copied
+// to the main thread requiring a copy-able object.
 QList<TreeItem*> findSeratoDatabases() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -847,42 +850,40 @@ SeratoFeature::SeratoFeature(
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("serato")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
-    QStringList columns;
-    columns << LIBRARYTABLE_ID
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_GROUPING
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_SAMPLERATE
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_KEY
-            << LIBRARYTABLE_TRACKNUMBER
-            << TRACKLOCATIONSTABLE_LOCATION
-            << LIBRARYTABLE_BPM_LOCK;
+    QString idColumn = LIBRARYTABLE_ID;
+    QStringList columns = {
+            LIBRARYTABLE_ID,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_GROUPING,
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BITRATE,
+            LIBRARYTABLE_SAMPLERATE,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_KEY,
+            LIBRARYTABLE_TRACKNUMBER,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_BPM_LOCK};
+    QStringList searchColumns = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_GENRE,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_GROUPING};
 
-    QStringList searchColumns;
-    searchColumns
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_TRACKNUMBER
-            << TRACKLOCATIONSTABLE_LOCATION
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_KEY;
-
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, kSeratoLibraryTable, LIBRARYTABLE_ID, columns, false));
-    m_trackSource->setSearchColumns(searchColumns);
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
+            m_pTrackCollection,
+            kSeratoLibraryTable,
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
     m_pSeratoPlaylistModel = new SeratoPlaylistModel(
             this, pLibrary->trackCollectionManager(), m_trackSource);
 
@@ -947,11 +948,12 @@ void SeratoFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    SeratoPlaylistModel* model = new SeratoPlaylistModel(
+std::unique_ptr<BaseSqlTableModel>
+SeratoFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    auto pModel = std::make_unique<SeratoPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    model->setPlaylist(playlist);
-    return model;
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 QVariant SeratoFeature::title() {
@@ -986,7 +988,7 @@ QString SeratoFeature::formatRootViewHtml() const {
 
     //Colorize links in lighter blue, instead of QT default dark blue.
     //Links are still different from regular text, but readable on dark/light backgrounds.
-    //https://bugs.launchpad.net/mixxx/+bug/1744816
+    //https://github.com/mixxxdj/mixxx/issues/9103
     html.append(QString("<a style=\"color:#0496FF;\" href=\"refresh\">%1</a>")
                         .arg(refreshLink));
     return html;
@@ -1007,6 +1009,7 @@ void SeratoFeature::activate() {
 
     emit enableCoverArtDisplay(true);
     emit switchToView("SERATOHOME");
+    emit disableSearch();
 }
 
 void SeratoFeature::activateChild(const QModelIndex& index) {
@@ -1054,9 +1057,12 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
 }
 
 void SeratoFeature::onSeratoDatabasesFound() {
-    QList<TreeItem*> foundDatabases = m_databasesFuture.result();
-    TreeItem* root = m_pSidebarModel->getRootItem();
+    const QList<TreeItem*> result = m_databasesFuture.result();
+    auto foundDatabases = std::vector<std::unique_ptr<TreeItem>>(result.cbegin(), result.cend());
 
+    clearLastRightClickedIndex();
+
+    TreeItem* root = m_pSidebarModel->getRootItem();
     QSqlDatabase database = m_pTrackCollection->database();
 
     if (foundDatabases.size() == 0) {
@@ -1071,44 +1077,37 @@ void SeratoFeature::onSeratoDatabasesFound() {
             TreeItem* child = root->child(databaseIndex);
             bool removeChild = true;
 
-            for (int foundDatabaseIndex = 0; foundDatabaseIndex < foundDatabases.size(); foundDatabaseIndex++) {
-                TreeItem* databaseFound = foundDatabases[foundDatabaseIndex];
-
-                if (databaseFound->getLabel() == child->getLabel()) {
+            for (const auto& pDatabaseFound : foundDatabases) {
+                if (pDatabaseFound->getLabel() == child->getLabel()) {
                     removeChild = false;
                     break;
                 }
             }
-
             if (removeChild) {
                 // Device has since been unmounted, cleanup DB
-
                 m_pSidebarModel->removeRows(databaseIndex, 1);
             }
         }
 
-        QList<TreeItem*> childrenToAdd;
+        std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
 
-        for (int foundDatabaseIndex = 0; foundDatabaseIndex < foundDatabases.size(); foundDatabaseIndex++) {
-            TreeItem* databaseFound = foundDatabases[foundDatabaseIndex];
+        for (auto&& pDatabaseFound : foundDatabases) {
             bool addNewChild = true;
-
             for (int databaseIndex = 0; databaseIndex < root->childRows(); databaseIndex++) {
                 TreeItem* child = root->child(databaseIndex);
-
-                if (databaseFound->getLabel() == child->getLabel()) {
+                if (pDatabaseFound->getLabel() == child->getLabel()) {
                     // This database already exists in the TreeModel, don't add or parse is again
                     addNewChild = false;
+                    break;
                 }
             }
-
             if (addNewChild) {
-                childrenToAdd << databaseFound;
+                childrenToAdd.push_back(std::move(pDatabaseFound));
             }
         }
 
         if (!childrenToAdd.empty()) {
-            m_pSidebarModel->insertTreeItemRows(childrenToAdd, 0);
+            m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
         }
     }
 

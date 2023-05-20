@@ -14,7 +14,7 @@
 class LoudnessContourEffectGroupState final : public EffectState {
   public:
     LoudnessContourEffectGroupState(const mixxx::EngineParameters& engineParameters);
-    ~LoudnessContourEffectGroupState();
+    ~LoudnessContourEffectGroupState() override;
 
     void setFilters(int sampleRate, double gain);
 
@@ -33,7 +33,7 @@ class LoudnessContourEffect
         : public EffectProcessorImpl<LoudnessContourEffectGroupState> {
   public:
     LoudnessContourEffect() = default;
-    ~LoudnessContourEffect() override;
+    ~LoudnessContourEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

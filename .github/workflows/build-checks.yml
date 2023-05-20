@@ -6,8 +6,15 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read #  to fetch code (actions/checkout)
+
 jobs:
   build-checks:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      checks: write #  to create new checks (coverallsapp/github-action)
+
     strategy:
       matrix:
         include:

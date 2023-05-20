@@ -56,7 +56,8 @@ class Cue : public QObject {
             mixxx::CueType type,
             int hotCueIndex,
             mixxx::audio::FramePos startPosition,
-            mixxx::audio::FramePos endPosition);
+            mixxx::audio::FramePos endPosition,
+            mixxx::RgbColor color);
 
     ~Cue() override = default;
 

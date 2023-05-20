@@ -1,7 +1,6 @@
 <!DOCTYPE template>
 <Template>
   <SetVariable name="QuickEffectGroup">[QuickEffectRack1_<Variable name="Group"/>]</SetVariable>
-  <SetVariable name="QuickEffect">[QuickEffectRack1_<Variable name="Group"/>_Effect1]</SetVariable>
 
   <WidgetGroup>
     <ObjectName>AlignRight</ObjectName>
@@ -44,7 +43,7 @@
                       <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
                     </State>
                     <Connection>
-                      <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                      <ConfigKey><Variable name="QuickEffectGroup"/>,enabled</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
@@ -95,7 +94,7 @@
                       <Number>1</Number>
                     </State>
                     <Connection>
-                      <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                      <ConfigKey><Variable name="QuickEffectGroup"/>,enabled</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
@@ -111,7 +110,11 @@
 
             </Children>
             <Connection>
-              <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
+              <ConfigKey><Variable name="QuickEffectGroup"/>,loaded_chain_preset</ConfigKey>
+              <Transform>
+                <IsEqual>0</IsEqual>
+                <Not/>
+              </Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Kill button + knob -->

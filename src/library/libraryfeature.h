@@ -115,6 +115,14 @@ class LibraryFeature : public QObject {
         Q_UNUSED(globalPos);
         Q_UNUSED(index);
     }
+    // called when F2 key is pressed in WLibrarySidebar
+    virtual void renameItem(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+    // called when Del or Backspace key is pressed in WLibrarySidebar
+    virtual void deleteItem(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
     // Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
     // This method is executed whenever you **double** click child items
     virtual void onLazyChildExpandation(const QModelIndex& index) {

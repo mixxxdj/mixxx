@@ -27,7 +27,6 @@ Item {
             key: "pregain"
             color: Theme.gainKnobColor
         }
-
     }
 
     Item {
@@ -65,7 +64,6 @@ Item {
             barColor: Theme.volumeSliderBarColor
             bg: Theme.imgVolumeSliderBackground
         }
-
     }
 
     Skin.ControlButton {
@@ -80,5 +78,4 @@ Item {
         activeColor: Theme.pflActiveButtonColor
         toggleable: true
     }
-
 }

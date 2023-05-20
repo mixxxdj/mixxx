@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "analyzer/analyzersilence.h"
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -221,8 +222,8 @@ void WTrackMenu::createMenus() {
 void WTrackMenu::createActions() {
     const auto hideRemoveKeySequence =
             // TODO(XXX): Qt6 replace enum | with QKeyCombination
-            QKeySequence(static_cast<int>(kPropertiesShortcutModifier) |
-                    kPropertiesShortcutKey);
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
 
     if (featureIsEnabled(Feature::AutoDJ)) {
         m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
@@ -359,16 +360,16 @@ void WTrackMenu::createActions() {
         connect(m_pClearRatingAction, &QAction::triggered, this, &WTrackMenu::slotClearRating);
 
         m_pClearMainCueAction = new QAction(tr("Cue Point"), m_pClearMetadataMenu);
-        connect(m_pClearMainCueAction, &QAction::triggered, this, &WTrackMenu::slotClearMainCue);
+        connect(m_pClearMainCueAction, &QAction::triggered, this, &WTrackMenu::slotResetMainCue);
 
         m_pClearHotCuesAction = new QAction(tr("Hotcues"), m_pClearMetadataMenu);
         connect(m_pClearHotCuesAction, &QAction::triggered, this, &WTrackMenu::slotClearHotCues);
 
         m_pClearIntroCueAction = new QAction(tr("Intro"), m_pClearMetadataMenu);
-        connect(m_pClearIntroCueAction, &QAction::triggered, this, &WTrackMenu::slotClearIntroCue);
+        connect(m_pClearIntroCueAction, &QAction::triggered, this, &WTrackMenu::slotResetIntroCue);
 
         m_pClearOutroCueAction = new QAction(tr("Outro"), m_pClearMetadataMenu);
-        connect(m_pClearOutroCueAction, &QAction::triggered, this, &WTrackMenu::slotClearOutroCue);
+        connect(m_pClearOutroCueAction, &QAction::triggered, this, &WTrackMenu::slotResetOutroCue);
 
         m_pClearLoopsAction = new QAction(tr("Loops"), m_pClearMetadataMenu);
         connect(m_pClearLoopsAction, &QAction::triggered, this, &WTrackMenu::slotClearLoops);
@@ -1203,27 +1204,25 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
     const PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                              ->internalCollection()
                                              ->getPlaylistDAO();
-    QMap<QString, int> playlists;
-    int numPlaylists = playlistDao.playlistCount();
-    for (int i = 0; i < numPlaylists; ++i) {
-        int iPlaylistId = playlistDao.getPlaylistId(i);
-        playlists.insert(playlistDao.getPlaylistName(iPlaylistId), iPlaylistId);
-    }
-    QMapIterator<QString, int> it(playlists);
-    while (it.hasNext()) {
-        it.next();
-        if (!playlistDao.isHidden(it.value())) {
-            // No leak because making the menu the parent means they will be
-            // auto-deleted
-            auto* pAction = new QAction(
-                    mixxx::escapeTextPropertyWithoutShortcuts(it.key()),
-                    m_pPlaylistMenu);
-            bool locked = playlistDao.isPlaylistLocked(it.value());
-            pAction->setEnabled(!locked);
-            m_pPlaylistMenu->addAction(pAction);
-            int iPlaylistId = it.value();
-            connect(pAction, &QAction::triggered, this, [this, iPlaylistId] { addSelectionToPlaylist(iPlaylistId); });
-        }
+    QList<QPair<int, QString>> playlists =
+            playlistDao.getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
+
+    for (const auto& [id, name] : playlists) {
+        // No leak because making the menu the parent means they will be
+        // auto-deleted
+        int plId = id;
+        auto* pAction = new QAction(
+                mixxx::escapeTextPropertyWithoutShortcuts(name),
+                m_pPlaylistMenu);
+        bool locked = playlistDao.isPlaylistLocked(plId);
+        pAction->setEnabled(!locked);
+        m_pPlaylistMenu->addAction(pAction);
+        connect(pAction,
+                &QAction::triggered,
+                this,
+                [this, plId] {
+                    addSelectionToPlaylist(plId);
+                });
     }
     m_pPlaylistMenu->addSeparator();
     QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
@@ -1688,33 +1687,96 @@ class RemoveCuesOfTypeTrackPointerOperation : public mixxx::TrackPointerOperatio
     const mixxx::CueType m_cueType;
 };
 
+class ResetMainCueTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ResetMainCueTrackPointerOperation(UserSettingsPointer pConfig)
+            : m_pConfig(pConfig) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->removeCuesOfType(mixxx::CueType::MainCue);
+        CuePointer pN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
+        if (pN60dBSound) {
+            mixxx::audio::FramePos firstSound = pN60dBSound->getPosition();
+            if (firstSound.isValid()) {
+                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.data());
+            }
+        }
+    }
+
+    UserSettingsPointer m_pConfig;
+};
+
+class ResetIntroTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ResetIntroTrackPointerOperation(UserSettingsPointer pConfig)
+            : m_pConfig(pConfig) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->removeCuesOfType(mixxx::CueType::Intro);
+        CuePointer pN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
+        if (pN60dBSound) {
+            mixxx::audio::FramePos firstSound = pN60dBSound->getPosition();
+            if (firstSound.isValid()) {
+                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.data());
+            }
+        }
+    }
+
+    UserSettingsPointer m_pConfig;
+};
+
+class ResetOutroTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ResetOutroTrackPointerOperation() {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->removeCuesOfType(mixxx::CueType::Outro);
+        CuePointer pN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
+        if (pN60dBSound) {
+            mixxx::audio::FramePos lastSound = pN60dBSound->getEndPosition();
+            if (lastSound.isValid()) {
+                AnalyzerSilence::setupOutroCue(pTrack.get(), lastSound);
+            }
+        }
+    }
+};
+
 } // anonymous namespace
 
-void WTrackMenu::slotClearMainCue() {
+void WTrackMenu::slotResetMainCue() {
     const auto progressLabelText =
             tr("Removing main cue from %n track(s)", "", getTrackCount());
     const auto trackOperator =
-            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::MainCue);
+            ResetMainCueTrackPointerOperation(m_pConfig);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
 }
 
-void WTrackMenu::slotClearOutroCue() {
+void WTrackMenu::slotResetOutroCue() {
     const auto progressLabelText =
             tr("Removing outro cue from %n track(s)", "", getTrackCount());
     const auto trackOperator =
-            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::Outro);
+            ResetOutroTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
 }
 
-void WTrackMenu::slotClearIntroCue() {
+void WTrackMenu::slotResetIntroCue() {
     const auto progressLabelText =
             tr("Removing intro cue from %n track(s)", "", getTrackCount());
     const auto trackOperator =
-            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::Intro);
+            ResetIntroTrackPointerOperation(m_pConfig);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
@@ -1798,6 +1860,10 @@ class ResetWaveformTrackPointerOperation : public mixxx::TrackPointerOperation {
         m_analysisDao.deleteAnalysesForTrack(pTrack->getId());
         pTrack->setWaveform(WaveformPointer());
         pTrack->setWaveformSummary(WaveformPointer());
+        // We Remove the invisible AudibleSound cue here as well, because the
+        // same reasons that apply for reanalyze of the waveforms applies also
+        // for the AudibleSound cue.
+        pTrack->removeCuesOfType(mixxx::CueType::N60dBSound);
     }
 
     AnalysisDao& m_analysisDao;
@@ -1836,14 +1902,14 @@ class ClearAllPerformanceMetadataTrackPointerOperation : public mixxx::TrackPoin
         m_resetBeats.apply(pTrack);
         m_resetPlayCounter.apply(pTrack);
         m_removeMainCue.apply(pTrack);
-        m_removeIntroCue.apply(pTrack);
-        m_removeOutroCue.apply(pTrack);
         m_removeHotCues.apply(pTrack);
         m_removeLoopCues.apply(pTrack);
         m_resetKeys.apply(pTrack);
         m_resetReplayGain.apply(pTrack);
         m_resetWaveform.apply(pTrack);
         m_resetRating.apply(pTrack);
+        m_removeIntroCue.apply(pTrack);
+        m_removeOutroCue.apply(pTrack);
     }
 
     const ResetBeatsTrackPointerOperation m_resetBeats;
@@ -2048,6 +2114,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
     if (tracksToKeep.isEmpty()) {
         // All selected tracks could be processed. Finish!
+        emit restoreCurrentIndex();
         return;
     }
     // Else show a message with a list of tracks that could not be deleted.
@@ -2086,6 +2153,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     // Required for being able to close the dialog
     connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
     dlgNotDeleted.exec();
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotShowDlgTrackInfo() {
@@ -2119,7 +2187,7 @@ void WTrackMenu::slotShowDlgTagFetcher() {
     }
     // Create a fresh dialog on invocation
     m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
-            m_pTrackModel);
+            m_pConfig, m_pTrackModel);
     connect(m_pDlgTagFetcher.get(),
             &QDialog::finished,
             this,
@@ -2224,6 +2292,7 @@ void WTrackMenu::slotRemove() {
         return;
     }
     m_pTrackModel->removeTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotHide() {
@@ -2231,6 +2300,7 @@ void WTrackMenu::slotHide() {
         return;
     }
     m_pTrackModel->hideTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotUnhide() {
@@ -2238,6 +2308,7 @@ void WTrackMenu::slotUnhide() {
         return;
     }
     m_pTrackModel->unhideTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::slotPurge() {
@@ -2245,6 +2316,7 @@ void WTrackMenu::slotPurge() {
         return;
     }
     m_pTrackModel->purgeTracks(getTrackIndices());
+    emit restoreCurrentIndex();
 }
 
 void WTrackMenu::clearTrackSelection() {
