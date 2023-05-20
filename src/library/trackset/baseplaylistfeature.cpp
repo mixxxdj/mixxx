@@ -735,7 +735,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
             for (TreeItem* pChild : pTreeItem->children()) {
                 id = pChild->getData().toInt(&ok);
                 if (ok && id != kInvalidPlaylistId && playlistIds.contains(id)) {
-                    label = m_playlistDao.getPlaylistName(id);
+                    label = fetchPlaylistLabel(id);
                     pChild->setLabel(label);
                     decorateChild(pChild, id);
                 }
@@ -743,7 +743,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
         } else {
             id = pTreeItem->getData().toInt(&ok);
             if (ok && id != kInvalidPlaylistId && playlistIds.contains(id)) {
-                label = m_playlistDao.getPlaylistName(id);
+                label = fetchPlaylistLabel(id);
                 pTreeItem->setLabel(label);
                 decorateChild(pTreeItem, id);
             }
