@@ -54,8 +54,9 @@ void WSpinny::draw() {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);
-        p.drawImage(-(m_ghostImageScaled.width() / 2),
-                    -(m_ghostImageScaled.height() / 2), m_ghostImageScaled);
+        p.drawImage(QPointF(-m_ghostImageScaled.width() / scaleFactor / 2.0,
+                            -m_ghostImageScaled.height() / scaleFactor / 2.0),
+                m_ghostImageScaled);
 
         //Rotate back to the playback position (not the ghost position),
         //and draw the beat marks from there.
@@ -65,8 +66,9 @@ void WSpinny::draw() {
     if (m_pFgImage && !m_pFgImage->isNull()) {
         // Now rotate the image and draw it on the screen.
         p.rotate(m_fAngle);
-        p.drawImage(-(m_fgImageScaled.width() / 2),
-                    -(m_fgImageScaled.height() / 2), m_fgImageScaled);
+        p.drawImage(QPointF(-m_fgImageScaled.width() / scaleFactor / 2.0,
+                            -m_fgImageScaled.height() / scaleFactor / 2.0),
+                m_fgImageScaled);
     }
 }
 
