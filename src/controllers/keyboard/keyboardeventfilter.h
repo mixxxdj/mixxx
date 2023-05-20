@@ -44,12 +44,12 @@ class KeyboardEventFilter : public QObject {
     // Run through list of active keys to see if the pressed key is already active
     // and is not a control that repeats when held.
     bool shouldSkipHeldKey(int keyId) {
-        foreach (const KeyDownInformation& keyDownInfo, m_qActiveKeyList) {
-            if (keyDownInfo.keyId == keyId && !keyDownInfo.pControl->getKbdRepeatable()) {
-                return true;
-            }
-        }
-        return false;
+        return std::any_of(
+                m_qActiveKeyList.cbegin(),
+                m_qActiveKeyList.cend(),
+                [&](const KeyDownInformation& keyDownInfo) {
+                    return keyDownInfo.keyId == keyId && !keyDownInfo.pControl->getKbdRepeatable();
+                });
     }
 
     // List containing keys which is currently pressed
