@@ -525,9 +525,24 @@ void CrateFeature::slotToggleCrateLock() {
 void CrateFeature::slotToggleCrateArchived() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
-        crate.setArchived(!crate.isArchived());
+        bool archiving = !crate.isArchived();
+        // If we are archiving the crate, select the crate below rather than following
+        // the crate into the archive subtree.
+        int reselectRow = 0;
+        if (archiving) {
+            const auto index = indexFromCrateId(crate.getId());
+            // Constrain reselection between first and last valid crate positions.
+            reselectRow = std::min(std::max(index.row(), 0), m_pSidebarModel->rowCount() - 3);
+        }
+        crate.setArchived(archiving);
         if (!m_pTrackCollection->updateCrate(crate)) {
             qDebug() << "Failed to toggle archive status of crate" << crate;
+        } else if (archiving) {
+            const auto reselectIndex = m_pSidebarModel->index(reselectRow, 0);
+            const auto crateId = crateIdFromIndex(reselectIndex);
+            if (crateId.isValid()) {
+                activateCrate(crateId);
+            }
         }
     } else {
         qDebug() << "Failed to toggle archive status of selected crate";
@@ -924,7 +939,6 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
         }
     }
 
-    // XXXXXXXXXXXXXXXX need to descend into archive submenu
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
     for (TreeItem* pTreeItem : pRootItem->children()) {
@@ -936,6 +950,18 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
                         sortedTrackCrates.end(),
                         CrateId(pTreeItem->getData()));
         pTreeItem->setBold(crateContainsSelectedTrack);
+        if (pTreeItem->hasChildren()) {
+            for (auto subItem : pTreeItem->children()) {
+                DEBUG_ASSERT(subItem != nullptr);
+                bool crateContainsSelectedTrack =
+                        m_selectedTrackId.isValid() &&
+                        std::binary_search(
+                                sortedTrackCrates.begin(),
+                                sortedTrackCrates.end(),
+                                CrateId(subItem->getData()));
+                subItem->setBold(crateContainsSelectedTrack);
+            }
+        }
     }
 
     m_pSidebarModel->triggerRepaint();
