@@ -320,6 +320,11 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
     }
+    if (!m_pTrackCollection->crates().readCrateSummaryById(crateId)) {
+        // this may happen if called by slotCrateTableChanged()
+        // and the crate has just been deleted
+        return false;
+    }
     QModelIndex index = indexFromCrateId(crateId);
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return false;
