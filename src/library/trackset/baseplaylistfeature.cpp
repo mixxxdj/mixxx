@@ -60,7 +60,6 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotCreatePlaylist);
-
     m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
     m_pRenamePlaylistAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenamePlaylistAction,
@@ -87,7 +86,6 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotTogglePlaylistLock);
-
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,
@@ -103,13 +101,11 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAddToAutoDJReplace);
-
     m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
     connect(m_pAnalyzePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAnalyzePlaylist);
-
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
     connect(m_pImportPlaylistAction,
             &QAction::triggered,
@@ -125,12 +121,16 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotExportPlaylist);
+    m_pExportPlaylistsAction = new QAction(tr("Export All Playlists"), this);
+    connect(m_pExportPlaylistsAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotExportPlaylists);
     m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
     connect(m_pExportTrackFilesAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotExportTrackFiles);
-
     connect(&m_playlistDao,
             &PlaylistDAO::added,
             this,
@@ -151,7 +151,6 @@ void BasePlaylistFeature::initActions() {
             &PlaylistDAO::renamed,
             this,
             &BasePlaylistFeature::slotPlaylistTableRenamed);
-
     connect(m_pLibrary,
             &Library::trackSelected,
             this,
@@ -536,11 +535,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     activatePlaylist(lastPlaylistId);
 }
 
-void BasePlaylistFeature::slotExportPlaylist() {
-    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    if (playlistId == kInvalidPlaylistId) {
-        return;
-    }
+void BasePlaylistFeature::exportPlaylistById(int playlistId) {
     QString playlistName = m_playlistDao.getPlaylistName(playlistId);
     // replace separator character with something generic
     playlistName = playlistName.replace(QDir::separator(), kUnsafeFilenameReplacement);
@@ -615,6 +610,26 @@ void BasePlaylistFeature::slotExportPlaylist() {
                 fileLocation,
                 playlistItems,
                 useRelativePath);
+    }
+}
+
+void BasePlaylistFeature::slotExportPlaylist() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+    exportPlaylistByID(playlistId);
+}
+
+void BasePlaylistFeature::slotExportPlaylists() {
+    QList<QPair<int, QString>> allPlaylists =
+            m_playlistDao.getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
+
+    for (const auto& [playlistId, playlistName] : allPlaylists) {
+        if (playlistId == kInvalidPlaylistId) {
+            return;
+        }
+        exportPlaylistByID(playlistId);
     }
 }
 

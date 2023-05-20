@@ -74,6 +74,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotImportPlaylistFile(const QString& playlist_file);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
+    void slotExportPlaylists();
     // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
     void slotAnalyzePlaylist();
@@ -96,6 +97,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
+    void exportPlaylistById(int playlistId);
 
     PlaylistDAO& m_playlistDao;
     QModelIndex m_lastRightClickedIndex;
@@ -111,6 +113,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QAction* m_pImportPlaylistAction;
     QAction* m_pCreateImportPlaylistAction;
     QAction* m_pExportPlaylistAction;
+    QAction* m_pExportPlaylistsAction;
     QAction* m_pExportTrackFilesAction;
     QAction* m_pDuplicatePlaylistAction;
     QAction* m_pAnalyzePlaylistAction;
