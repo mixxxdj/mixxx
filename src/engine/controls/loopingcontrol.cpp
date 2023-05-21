@@ -375,48 +375,61 @@ double LoopingControl::nextTrigger(bool reverse,
     }
 
     if (m_bLoopingEnabled &&
-            !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
             loopSamples.start != kNoTrigger &&
             loopSamples.end != kNoTrigger) {
-
-        if (loopSamples.start != m_oldLoopSamples.start ||
-                loopSamples.end != m_oldLoopSamples.end) {
-            // bool seek is only valid after the loop has changed
-            if (loopSamples.seek) {
-                // here the loop has changed and the play position
-                // should be moved with it
-                *pTarget = seekInsideAdjustedLoop(currentSample,
-                        m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
-            } else {
-                bool movedOut = false;
-                // Check if we have moved out of the loop, before we could enable it
-                if (reverse) {
-                    if (loopSamples.start > currentSample) {
-                        movedOut = true;
-                    }
-                } else {
-                    if (loopSamples.end < currentSample) {
-                        movedOut = true;
-                    }
-                }
-                if (movedOut) {
+        if (!m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
+            if (loopSamples.start != m_oldLoopSamples.start ||
+                    loopSamples.end != m_oldLoopSamples.end) {
+                // bool seek is only valid after the loop has changed
+                if (loopSamples.seek) {
+                    // here the loop has changed and the play position
+                    // should be moved with it
                     *pTarget = seekInsideAdjustedLoop(currentSample,
-                            loopSamples.start, loopSamples.start, loopSamples.end);
+                            m_oldLoopSamples.start,
+                            loopSamples.start,
+                            loopSamples.end);
+                } else {
+                    bool movedOut = false;
+                    // Check if we have moved out of the loop, before we could enable it
+                    if (reverse) {
+                        if (loopSamples.start > currentSample) {
+                            movedOut = true;
+                        }
+                    } else {
+                        if (loopSamples.end < currentSample) {
+                            movedOut = true;
+                        }
+                    }
+                    if (movedOut) {
+                        *pTarget = seekInsideAdjustedLoop(currentSample,
+                                loopSamples.start,
+                                loopSamples.start,
+                                loopSamples.end);
+                    }
+                }
+                m_oldLoopSamples = loopSamples;
+                if (*pTarget != kNoTrigger) {
+                    // jump immediately
+                    return currentSample;
                 }
             }
-            m_oldLoopSamples = loopSamples;
-            if (*pTarget != kNoTrigger) {
-                // jump immediately
-                return currentSample;
-            }
-        }
 
-        if (reverse) {
-            *pTarget = loopSamples.end;
-            return loopSamples.start;
+            if (reverse) {
+                *pTarget = loopSamples.end;
+                return loopSamples.start;
+            } else {
+                *pTarget = loopSamples.start;
+                return loopSamples.end;
+            }
         } else {
-            *pTarget = loopSamples.start;
-            return loopSamples.end;
+            // LOOP in or out button is pressed for adjusting.
+            // Jump back to loop start, when reaching the track end this
+            // prevents that the track stops outside the adjusted loop.
+            if (!reverse) {
+                SampleOfTrack sampleOfTrack = getSampleOfTrack();
+                *pTarget = loopSamples.start;
+                return sampleOfTrack.total;
+            }
         }
     }
     return kNoTrigger;
