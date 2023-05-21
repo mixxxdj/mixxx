@@ -556,6 +556,9 @@ void LoopingControl::setLoopInToCurrentPosition() {
             loopSamples.end < pos) {
         loopSamples.end = kNoTrigger;
         m_pCOLoopEndPosition->set(kNoTrigger);
+        if (m_bLoopingEnabled) {
+            setLoopingEnabled(false);
+        }
     }
 
     // If we're looping and the loop-in and out points are now so close
