@@ -426,9 +426,20 @@ double LoopingControl::nextTrigger(bool reverse,
             // Jump back to loop start, when reaching the track end this
             // prevents that the track stops outside the adjusted loop.
             if (!reverse) {
+                if (m_bAdjustingLoopIn) {
+                    // Just in case the user does not release loop-in in time.
+                    *pTarget = m_oldLoopSamples.start;
+                    return loopSamples.end;
+                }
                 SampleOfTrack sampleOfTrack = getSampleOfTrack();
                 *pTarget = loopSamples.start;
                 return sampleOfTrack.total;
+            } else {
+                if (m_bAdjustingLoopOut) {
+                    // Just in case the user does not release loop-out in time.
+                    *pTarget = m_oldLoopSamples.end;
+                    return loopSamples.start;
+                }
             }
         }
     }
