@@ -289,7 +289,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
 }
 
 int createDevicePlaylist(QSqlDatabase& database, const QString& devicePath) {
-    int playlistID = -1;
+    int playlistID = kInvalidPlaylistId;
 
     QSqlQuery queryInsertIntoDevicePlaylist(database);
     queryInsertIntoDevicePlaylist.prepare(
@@ -726,7 +726,7 @@ void buildPlaylistTree(
             return;
         }
 
-        int playlistID = -1;
+        int playlistID = kInvalidPlaylistId;
         while (idQuery.next()) {
             playlistID = idQuery.value(idQuery.record().indexOf("id")).toInt();
         }
@@ -796,7 +796,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     ScopedTransaction transaction(database);
 
     int trackID = -1;
-    int playlistID = -1;
+    int playlistID = kInvalidPlaylistId;
     QSqlQuery tracksQuery(database);
     tracksQuery.prepare("select id from " + kRekordboxLibraryTable + " where device=:device");
     tracksQuery.bindValue(":device", child->getLabel());

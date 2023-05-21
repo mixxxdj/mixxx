@@ -27,6 +27,8 @@ class SetlogFeature : public BasePlaylistFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotJoinWithPrevious();
+    void slotLockAllChildPlaylists();
+    void slotUnlockAllChildPlaylists();
     void slotDeletePlaylist() override;
     void slotGetNewPlaylist();
     void activate() override;
@@ -39,18 +41,25 @@ class SetlogFeature : public BasePlaylistFeature {
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
     void slotPlaylistTableChanged(int playlistId) override;
-    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
+    void slotDeleteAllUnlockedChildPlaylists();
 
   private:
     void deleteAllUnlockedPlaylistsWithFewerTracks();
-    void reloadChildModel(int playlistId);
+    void lockOrUnlockAllChildPlaylists(bool lock);
     QString getRootViewHtml() const override;
 
     std::list<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pStartNewPlaylist;
+    QAction* m_pLockAllChildPlaylists;
+    QAction* m_pUnlockAllChildPlaylists;
+    QAction* m_pDeleteAllChildPlaylists;
+
     int m_playlistId;
+    int m_placeholderId;
+
     QPointer<WLibrary> m_libraryWidget;
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
