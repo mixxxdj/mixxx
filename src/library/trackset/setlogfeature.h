@@ -58,8 +58,8 @@ class SetlogFeature : public BasePlaylistFeature {
     QAction* m_pUnlockAllChildPlaylists;
     QAction* m_pDeleteAllChildPlaylists;
 
-    int m_playlistId;
-    int m_placeholderId;
+    int m_currentPlaylistId;
+    int m_yearNodeId;
 
     QPointer<WLibrary> m_libraryWidget;
     Library* m_pLibrary;
