@@ -669,8 +669,8 @@ QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
         if (pTreeItem->hasChildren()) {
             for (int childRow = 0; childRow < pTreeItem->childRows(); childRow++) {
                 TreeItem* pChild = pTreeItem->child(childRow);
-                QModelIndex childIndex = m_pSidebarModel->index(childRow, 0, index);
                 if (!pChild->hasChildren() && CrateId(pChild->getData()) == crateId) {
+                    QModelIndex childIndex = m_pSidebarModel->index(childRow, 0, index);
                     return childIndex;
                 }
             }
