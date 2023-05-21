@@ -32,6 +32,7 @@ class SetlogFeature : public BasePlaylistFeature {
     void slotDeletePlaylist() override;
     void slotGetNewPlaylist();
     void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   protected:
     QModelIndex constructChildModel(int selectedId);

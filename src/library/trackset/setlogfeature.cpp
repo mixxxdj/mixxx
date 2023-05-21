@@ -639,7 +639,6 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (newIndex.isValid()) {
         emit featureSelect(this, newIndex);
         activateChild(newIndex);
-        return;
     } else if (rootWasSelected) {
         // calling featureSelect with invalid index will select the root item
         emit featureSelect(this, newIndex);
@@ -672,6 +671,27 @@ void SetlogFeature::activate() {
     activatePlaylist(m_playlistId);
 }
 
+void SetlogFeature::activateChild(const QModelIndex& index) {
+    // qDebug() << "SetlogFeature::activateChild()" << index;
+    int playlistId = playlistIdFromIndex(index);
+    if (playlistId == kInvalidPlaylistId) {
+        // may happen during initialization
+        return;
+    }
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = QModelIndex();
+    emit saveModelState();
+    m_pPlaylistTableModel->setTableModel(playlistId);
+    emit showTrackModel(m_pPlaylistTableModel);
+    if (playlistId == m_placeholderId) {
+        // Disable search and cover art for YEAR items
+        emit disableSearch();
+        emit enableCoverArtDisplay(false);
+    } else {
+        emit enableCoverArtDisplay(true);
+    }
+}
+
 void SetlogFeature::activatePlaylist(int playlistId) {
     // qDebug() << "SetlogFeature::activatePlaylist()" << playlistId;
     if (playlistId == kInvalidPlaylistId) {
@@ -684,8 +704,8 @@ void SetlogFeature::activatePlaylist(int playlistId) {
     emit saveModelState();
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
-    emit enableCoverArtDisplay(true);
-    // Update sidebar selection only if this is a child, incl. current playlist.
+    // Update sidebar selection only if this is a child, incl. current playlist
+    // and YEAR nodes.
     // indexFromPlaylistId() can't be used because, in case the root item was
     // selected, that would switch to the 'current' child.
     if (m_lastClickedIndex != m_pSidebarModel->getRootIndex()) {
@@ -694,10 +714,14 @@ void SetlogFeature::activatePlaylist(int playlistId) {
         // redundant
         // activateChild(index);
 
-        // TODO(ronso0) Disable search for YEAR items
-        // emit disableSearch();
-        // emit enableCoverArtDisplay(false);
+        if (playlistId == m_placeholderId) {
+            // Disable search and cover art for YEAR items
+            emit disableSearch();
+            emit enableCoverArtDisplay(false);
+            return;
+        }
     }
+    emit enableCoverArtDisplay(true);
 }
 
 QString SetlogFeature::getRootViewHtml() const {
