@@ -110,9 +110,6 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
-    m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
-    m_pPreviousBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
-    m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
     m_pSlipEnabled = ControlObject::getControl(ConfigKey(group, "slip_enabled"));
 
