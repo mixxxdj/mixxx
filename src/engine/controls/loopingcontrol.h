@@ -141,7 +141,6 @@ class LoopingControl : public EngineControl {
     LoopSamples m_oldLoopSamples;
     ControlValueAtomic<double> m_currentSample;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pTrackSamples;
     QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.

@@ -110,7 +110,6 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
-    m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
     m_pSlipEnabled = ControlObject::getControl(ConfigKey(group, "slip_enabled"));
 
     // DEPRECATED: Use beatloop_size and beatloop_set instead.
@@ -244,11 +243,11 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
         return;
     }
     const double loopLength = (loopSamples.end - loopSamples.start) * scaleFactor;
-    const int trackSamples = static_cast<int>(m_pTrackSamples->get());
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
 
     // Abandon loops that are too short of extend beyond the end of the file.
     if (loopLength < MINIMUM_AUDIBLE_LOOP_SIZE ||
-            loopSamples.start + loopLength > trackSamples) {
+            loopSamples.start + loopLength > sampleOfTrack.total) {
         return;
     }
 
@@ -261,15 +260,15 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
 
     // Don't allow 0 samples loop, so one can still manipulate it
     if (loopSamples.end == loopSamples.start) {
-        if ((loopSamples.end + 2) >= trackSamples) {
+        if ((loopSamples.end + 2) >= sampleOfTrack.total) {
             loopSamples.start -= 2;
         } else {
             loopSamples.end += 2;
         }
     }
     // Do not allow loops to go past the end of the song
-    else if (loopSamples.end > trackSamples) {
-        loopSamples.end = trackSamples;
+    else if (loopSamples.end > sampleOfTrack.total) {
+        loopSamples.end = sampleOfTrack.total;
     }
 
     // Reseek if the loop shrank out from under the playposition.
