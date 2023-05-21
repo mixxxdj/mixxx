@@ -66,7 +66,7 @@ const QString kCrate = QStringLiteral(CLM_CRATE);
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.banshee_playlist"),
           m_pConnection(pConnection),
-          m_playlistId(-1) {
+          m_playlistId(kInvalidPlaylistId) {
     m_tempTableName = BANSHEE_TABLE + QString::number(sTableNumber.fetchAndAddAcquire(1));
 }
 
@@ -77,7 +77,7 @@ BansheePlaylistModel::~BansheePlaylistModel() {
 void BansheePlaylistModel::dropTempTable() {
     if (m_playlistId >= 0) {
         // Clear old playlist
-        m_playlistId = -1;
+        m_playlistId = kInvalidPlaylistId;
         QSqlQuery query(m_database);
         QString strQuery("DROP TABLE IF EXISTS %1");
         if (!query.exec(strQuery.arg(m_tempTableName))) {
