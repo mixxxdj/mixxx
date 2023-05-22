@@ -576,7 +576,7 @@ bool CrateStorage::onInsertingCrate(
     }
     FwdSqlQuery query(m_database,
             QStringLiteral(
-                    "INSERT INTO %1 (%2,%3,%4) "
+                    "INSERT INTO %1 (%2,%3,%4,%5) "
                     "VALUES (:name,:locked,:archived,:autoDjSource)")
                     .arg(
                             CRATE_TABLE,
