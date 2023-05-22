@@ -71,6 +71,11 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
             </Connection>
           </WidgetGroup>
 
+          <!-- In case an EQ/non-EQ effect has less than 3 knobs we need
+               center those vertically. This spacer and the one below knob 3
+               push Gain and QuickEffect etc. to the top/bottom -->
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
           <Template src="skin:/mixer/eq_knob_right.xml">
             <SetVariable name="EqParameter">3</SetVariable>
             <SetVariable name="EqRange">High</SetVariable>
@@ -90,11 +95,11 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
             <SetVariable name="EqRange">Low</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,2me</Size></WidgetGroup>
 
           <Template src="skin:/mixer/quick_effect_knob_right.xml"/>
 
-          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_eq_knobs</ConfigKey>

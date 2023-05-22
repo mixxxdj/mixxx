@@ -17,6 +17,9 @@ class AnalyzerSilence : public Analyzer {
     void storeResults(TrackPointer pTrack) override;
     void cleanup() override;
 
+    static void setupMainAndIntroCue(Track* pTrack, double firstSound, UserSettings* pConfig);
+    static void setupOutroCue(Track* pTrack, double lastSound);
+
   private:
     UserSettingsPointer m_pConfig;
     CSAMPLE m_fThreshold;

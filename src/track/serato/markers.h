@@ -159,8 +159,8 @@ class SeratoMarkers final {
     const QList<SeratoMarkersEntryPointer>& getEntries() const {
         return m_entries;
     }
-    void setEntries(const QList<SeratoMarkersEntryPointer>& entries) {
-        m_entries = entries;
+    void setEntries(QList<SeratoMarkersEntryPointer> entries) {
+        m_entries = std::move(entries);
     }
 
     /// Always returns a color if the tag is present (i.e. `isEmpty()` is
