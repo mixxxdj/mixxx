@@ -24,7 +24,7 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
           m_trackSource(trackSource),
-          m_currentPlaylistId(-1) {
+          m_currentPlaylistId(kInvalidPlaylistId) {
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
@@ -100,20 +100,20 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
     }
 
     // TODO(XXX): Why not last-insert id?
-    int playlistId = -1;
+    int playlistId = kInvalidPlaylistId;
     QSqlRecord finder_query_record = finder_query.record();
     while (finder_query.next()) {
         playlistId = finder_query.value(finder_query_record.indexOf("id")).toInt();
     }
 
-    if (playlistId == -1) {
+    if (playlistId == kInvalidPlaylistId) {
         qWarning() << "ERROR: Could not get the playlist ID for playlist:" << playlist_path;
         return;
     }
 
     // Store search text
     QString currSearch = currentSearch();
-    if (m_currentPlaylistId != -1) {
+    if (m_currentPlaylistId != kInvalidPlaylistId) {
         if (!currSearch.trimmed().isEmpty()) {
             m_searchTexts.insert(m_currentPlaylistId, currSearch);
         } else {

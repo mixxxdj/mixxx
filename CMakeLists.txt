@@ -1738,6 +1738,7 @@ add_executable(mixxx-test
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
+  src/test/itunesxmlimportertest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp

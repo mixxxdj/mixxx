@@ -42,6 +42,7 @@ class CrateFeature : public BaseTrackSetFeature {
     TreeItemModel* sidebarModel() const override;
 
   public slots:
+    void activate() override;
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
@@ -63,7 +64,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotToggleCrateLock();
     void slotToggleCrateArchived();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(const QString& playlist_file);
+    void slotImportPlaylistFile(const QString& playlistFile, CrateId crateId);
     void slotCreateImportCrate();
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
@@ -95,6 +96,7 @@ class CrateFeature : public BaseTrackSetFeature {
     CrateId crateIdFromIndex(const QModelIndex& index) const;
     QModelIndex indexFromCrateId(CrateId crateId) const;
 
+    bool isChildIndexSelectedInSidebar(const QModelIndex& index);
     bool readLastRightClickedCrate(Crate* pCrate) const;
 
     QString formatRootViewHtml() const;
@@ -110,6 +112,7 @@ class CrateFeature : public BaseTrackSetFeature {
     // Can be used to restore a similar selection after the sidebar model was rebuilt.
     CrateId m_prevSiblingCrate;
 
+    QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     TrackId m_selectedTrackId;
 

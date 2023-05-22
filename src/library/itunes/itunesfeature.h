@@ -45,14 +45,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     std::unique_ptr<ITunesImporter> makeImporter();
     // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
-    void guessMusicLibraryMountpoint(QXmlStreamReader& xml);
-    void parseTracks(QXmlStreamReader& xml);
-    void parseTrack(QXmlStreamReader& xml, QSqlQuery& query);
-    TreeItem* parsePlaylists(QXmlStreamReader &xml);
-    void parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query1,
-                       QSqlQuery &query2, TreeItem*);
     void clearTable(const QString& table_name);
-    bool readNextStartElement(QXmlStreamReader& xml);
 
     /// Presents an 'open file' dialog for selecting an iTunes library XML and
     /// returns the file path.
