@@ -195,6 +195,7 @@ TraktorS3.Deck = function(controller, deckNumber, group) {
     this.lastTickTime = 0;
     this.lastTickWallClock = 0;
     this.wheelTouchInertiaTimer = 0;
+    this.seekRateLimitLastTick = 0;
 
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
@@ -680,10 +681,16 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
         if (this.wheelTouchInertiaTimer !== 0) {
             return;
         }
-        let playPosition = engine.getValue(this.activeChannel, "playposition");
-        playPosition += deltas[0] / 2048.0;
-        playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
-        engine.setValue(this.activeChannel, "playposition", playPosition);
+        // If we spam seeks on every single update, it can cause problems with HQ
+        // Rubberband.
+        now = Date.now();
+        if (now - this.seekRateLimitLastTick > 10) {
+            this.seekRateLimitLastTick = now;
+            let playPosition = engine.getValue(this.activeChannel, "playposition");
+            playPosition += deltas[0] / 256.0;
+            playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
+            engine.setValue(this.activeChannel, "playposition", playPosition);
+        }
         return;
     }
     const tickDelta = deltas[0];
