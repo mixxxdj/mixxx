@@ -103,6 +103,7 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
     m_menu.popup(event->globalPos());
 }
 
