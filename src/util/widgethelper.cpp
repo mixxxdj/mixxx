@@ -66,9 +66,10 @@ void growListWidget(QListWidget& listWidget, const QWidget& parent) {
             listWidget.style()->pixelMetric(QStyle::PM_ScrollBarExtent);
     int minW = listWidget.sizeHintForColumn(0) + margin;
     int minH = listWidget.sizeHintForRow(0) * listWidget.count() + margin;
-    // The file list should fit into the window, but clamp to 90% of screen size.
-    int newW = std::min(minW, static_cast<int>(screenSpace.width() * 0.9));
-    int newH = std::min(minH, static_cast<int>(screenSpace.height() * 0.9));
+    // The file list should fit into the window, but clamp to 80% of screen size
+    // to account for horizontal/vertical side bars.
+    int newW = std::min(minW, static_cast<int>(screenSpace.width() * 0.8));
+    int newH = std::min(minH, static_cast<int>(screenSpace.height() * 0.8));
     // Apply new size
     if (newW > 0 && newH > 0) {
         listWidget.setMinimumSize(newW, newH);
