@@ -2069,7 +2069,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
     // Set up and initiate the track batch operation
     const auto progressLabelText =
-            tr("Removing %1 track file(s) from disk...",
+            tr("Removing %n track file(s) from disk...",
                     "",
                     getTrackCount());
     const auto trackOperator =
