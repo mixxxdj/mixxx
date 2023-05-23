@@ -308,7 +308,8 @@ void CrateFeature::activate() {
 void CrateFeature::activateChild(const QModelIndex& index) {
     qDebug() << "   CrateFeature::activateChild()" << index;
     CrateId crateId(crateIdFromIndex(index));
-    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
+    if (!crateId.isValid()) {
+        // happens when clicking the 'Archived' item
         return;
     }
     m_lastClickedIndex = index;
