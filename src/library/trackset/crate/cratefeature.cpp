@@ -989,13 +989,6 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
     // clear all the bolding).
     for (TreeItem* pTreeItem : pRootItem->children()) {
         DEBUG_ASSERT(pTreeItem != nullptr);
-        bool crateContainsSelectedTrack =
-                m_selectedTrackId.isValid() &&
-                std::binary_search(
-                        sortedTrackCrates.begin(),
-                        sortedTrackCrates.end(),
-                        CrateId(pTreeItem->getData()));
-        pTreeItem->setBold(crateContainsSelectedTrack);
         if (pTreeItem->hasChildren()) {
             for (auto subItem : pTreeItem->children()) {
                 DEBUG_ASSERT(subItem != nullptr);
@@ -1007,6 +1000,14 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
                                 CrateId(subItem->getData()));
                 subItem->setBold(crateContainsSelectedTrack);
             }
+        } else {
+            bool crateContainsSelectedTrack =
+                    m_selectedTrackId.isValid() &&
+                    std::binary_search(
+                            sortedTrackCrates.begin(),
+                            sortedTrackCrates.end(),
+                            CrateId(pTreeItem->getData()));
+            pTreeItem->setBold(crateContainsSelectedTrack);
         }
     }
 
