@@ -181,8 +181,10 @@ const QList<int>& BrowseTableModel::searchColumns() const {
 }
 
 void BrowseTableModel::setPath(const MDir& path) {
-    m_current_directory = path;
-    m_pBrowseThread->executePopulation(m_current_directory, this);
+    if (m_pBrowseThread) {
+        m_current_directory = path;
+        m_pBrowseThread->executePopulation(m_current_directory, this);
+    }
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
@@ -470,4 +472,8 @@ QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject*
         return new PreviewButtonDelegate(pTableView, i);
     }
     return nullptr;
+}
+
+void BrowseTableModel::stopBrowseThread() {
+    m_pBrowseThread.reset();
 }

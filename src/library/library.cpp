@@ -102,21 +102,21 @@ Library::Library(
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
 
-    BrowseFeature* browseFeature = new BrowseFeature(
-        this, m_pConfig, pRecordingManager);
-    connect(browseFeature,
+    m_pBrowseFeature = new BrowseFeature(
+            this, m_pConfig, pRecordingManager);
+    connect(m_pBrowseFeature,
             &BrowseFeature::scanLibrary,
             m_pTrackCollectionManager,
             &TrackCollectionManager::startLibraryScan);
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanStarted,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanStarted);
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanFinished);
-    addFeature(browseFeature);
+    addFeature(m_pBrowseFeature);
 
     addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
     addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
@@ -218,8 +218,8 @@ TrackCollectionManager* Library::trackCollections() const {
 void Library::stopPendingTasks() {
     if (m_pAnalysisFeature) {
         m_pAnalysisFeature->stopAnalysis();
-        m_pAnalysisFeature = nullptr;
     }
+    m_pBrowseFeature->stopBrowseThread();
 }
 
 void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
