@@ -358,55 +358,59 @@ void SetlogFeature::slotGetNewPlaylist() {
 
 void SetlogFeature::slotJoinWithPrevious() {
     // qDebug() << "SetlogFeature::slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
 
-    if (m_lastRightClickedIndex.isValid()) {
-        int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
-                m_lastRightClickedIndex.data().toString());
+    int clickedPlaylistId = m_playlistDao.getPlaylistIdFromName(
+            m_lastRightClickedIndex.data().toString());
+    if (clickedPlaylistId == kInvalidPlaylistId) {
+        return;
+    }
 
-        if (currentPlaylistId >= 0) {
-            bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
+    bool locked = m_playlistDao.isPlaylistLocked(clickedPlaylistId);
+    if (locked) {
+        qDebug() << "Aborting playlist join because playlist"
+                 << clickedPlaylistId << "is locked.";
+        return;
+    }
 
-            if (locked) {
-                qDebug() << "Skipping playlist deletion because playlist"
-                         << currentPlaylistId << "is locked.";
-                return;
-            }
+    // Add every track from right-clicked playlist to that with the next smaller ID
+    int previousPlaylistId = m_playlistDao.getPreviousPlaylist(
+            clickedPlaylistId, PlaylistDAO::PLHT_SET_LOG);
+    if (previousPlaylistId == kInvalidPlaylistId) {
+        qDebug() << "Aborting playlist join because playlist"
+                 << clickedPlaylistId << "because there's no previous playlist.";
+        return;
+    }
 
-            // Add every track from right-clicked playlist to that with the next smaller ID
-            int previousPlaylistId = m_playlistDao.getPreviousPlaylist(
-                    currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
-            if (previousPlaylistId >= 0) {
-                m_pPlaylistTableModel->setTableModel(previousPlaylistId);
+    m_pPlaylistTableModel->setTableModel(previousPlaylistId);
 
-                if (currentPlaylistId == m_currentPlaylistId) {
-                    // mark all the Tracks in the previous Playlist as played
+    if (clickedPlaylistId == m_currentPlaylistId) {
+        // mark all the Tracks in the previous Playlist as played
 
-                    m_pPlaylistTableModel->select();
-                    int rows = m_pPlaylistTableModel->rowCount();
-                    for (int i = 0; i < rows; ++i) {
-                        QModelIndex index = m_pPlaylistTableModel->index(i, 0);
-                        if (index.isValid()) {
-                            TrackPointer track =
-                                    m_pPlaylistTableModel->getTrack(index);
-                            // Do not update the play count, just set played status.
-                            PlayCounter playCounter(track->getPlayCounter());
-                            playCounter.triggerLastPlayedNow();
-                            track->setPlayCounter(playCounter);
-                        }
-                    }
-
-                    // Change current setlog
-                    m_currentPlaylistId = previousPlaylistId;
-                }
-                qDebug() << "slotJoinWithPrevious() current:"
-                         << currentPlaylistId
-                         << " previous:" << previousPlaylistId;
-                if (m_playlistDao.copyPlaylistTracks(
-                            currentPlaylistId, previousPlaylistId)) {
-                    m_playlistDao.deletePlaylist(currentPlaylistId);
-                }
+        m_pPlaylistTableModel->select();
+        int rows = m_pPlaylistTableModel->rowCount();
+        for (int i = 0; i < rows; ++i) {
+            QModelIndex index = m_pPlaylistTableModel->index(i, 0);
+            if (index.isValid()) {
+                TrackPointer track = m_pPlaylistTableModel->getTrack(index);
+                DEBUG_ASSERT(track != nullptr);
+                // Do not update the play count, just set played status.
+                PlayCounter playCounter(track->getPlayCounter());
+                playCounter.triggerLastPlayedNow();
+                track->setPlayCounter(playCounter);
             }
         }
+
+        // Change current setlog
+        m_currentPlaylistId = previousPlaylistId;
+    }
+    qDebug() << "slotJoinWithPrevious() current:"
+             << clickedPlaylistId
+             << " previous:" << previousPlaylistId;
+    if (m_playlistDao.copyPlaylistTracks(clickedPlaylistId, previousPlaylistId)) {
+        m_playlistDao.deletePlaylist(clickedPlaylistId);
     }
 }
 
