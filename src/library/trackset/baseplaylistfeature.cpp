@@ -207,7 +207,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_pPlaylistTableModel->setTableModel(playlistId);
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
 }
@@ -224,7 +224,7 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_pPlaylistTableModel->setTableModel(playlistId);
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
     // Update selection
@@ -474,7 +474,7 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
             new PlaylistTableModel(this,
                     m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export"));
-    pPlaylistTableModel->setTableModel(playlistId);
+    pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(
             pPlaylistTableModel->fieldIndex(
                     ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
@@ -583,7 +583,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
                     "mixxx.db.model.playlist_export"));
 
     emit saveModelState();
-    pPlaylistTableModel->setTableModel(playlistId);
+    pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(
             pPlaylistTableModel->fieldIndex(
                     ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
@@ -629,7 +629,7 @@ void BasePlaylistFeature::slotExportTrackFiles() {
                     "mixxx.db.model.playlist_export"));
 
     emit saveModelState();
-    pPlaylistTableModel->setTableModel(playlistId);
+    pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
                                          ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);

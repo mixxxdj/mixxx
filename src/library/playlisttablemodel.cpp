@@ -121,8 +121,8 @@ void PlaylistTableModel::initSortColumnMapping() {
     }
 }
 
-void PlaylistTableModel::setTableModel(int playlistId) {
-    //qDebug() << "PlaylistTableModel::setTableModel" << playlistId;
+void PlaylistTableModel::selectPlaylist(int playlistId) {
+    // qDebug() << "PlaylistTableModel::selectPlaylist" << playlistId;
     if (m_iPlaylistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;

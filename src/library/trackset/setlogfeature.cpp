@@ -389,7 +389,7 @@ void SetlogFeature::slotJoinWithPrevious() {
             new PlaylistTableModel(this,
                     m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export"));
-    pPlaylistTableModel->setTableModel(previousPlaylistId);
+    pPlaylistTableModel->selectPlaylist(previousPlaylistId);
 
     if (clickedPlaylistId == m_currentPlaylistId) {
         // mark all the Tracks in the previous Playlist as played
@@ -684,7 +684,7 @@ void SetlogFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_pPlaylistTableModel->setTableModel(playlistId);
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     if (playlistId == m_yearNodeId) {
         // Disable search and cover art for YEAR items
@@ -705,7 +705,7 @@ void SetlogFeature::activatePlaylist(int playlistId) {
         return;
     }
     emit saveModelState();
-    m_pPlaylistTableModel->setTableModel(playlistId);
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     // Update sidebar selection only if this is a child, incl. current playlist
     // and YEAR nodes.
