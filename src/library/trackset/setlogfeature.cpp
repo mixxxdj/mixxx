@@ -591,7 +591,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     bool rootWasSelected = false;
     if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
         // a child index was selected (actual playlist or YEAR item)
-        int lastClickedPlaylistId = m_pPlaylistTableModel->getPlaylist();
+        int lastClickedPlaylistId = playlistIdFromIndex(m_lastClickedIndex);
         if (lastClickedPlaylistId == m_yearNodeId) {
             // a YEAR item was selected
             selectedYearIndexRow = m_lastClickedIndex.row();
@@ -660,8 +660,9 @@ void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newN
 }
 
 void SetlogFeature::activate() {
-    // The root item was clicked, so actuvate the current playlist.
+    // The root item was clicked, so activate the current playlist.
     m_lastClickedIndex = m_pSidebarModel->getRootIndex();
+    m_lastRightClickedIndex = QModelIndex();
     activatePlaylist(m_currentPlaylistId);
 }
 
@@ -704,9 +705,8 @@ void SetlogFeature::activatePlaylist(int playlistId) {
     // selected, that would switch to the 'current' child.
     if (m_lastClickedIndex != m_pSidebarModel->getRootIndex()) {
         m_lastClickedIndex = index;
+        m_lastRightClickedIndex = QModelIndex();
         emit featureSelect(this, index);
-        // redundant
-        // activateChild(index);
 
         if (playlistId == m_yearNodeId) {
             // Disable search and cover art for YEAR items
