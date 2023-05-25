@@ -287,13 +287,9 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
                 m_bufferIntSize = m_pReadAheadManager->getNextSamples(
                         rate_new == 0 ? rate_old : rate_new,
                         m_bufferInt, samples_to_read);
-
-                VERIFY_OR_DEBUG_ASSERT(m_bufferIntSize != 0) {
-                    // getNextSamples() must never fail,
-                    // using silence as a last resort
-                    SampleUtil::clear(m_bufferInt, samples_to_read);
-                    m_bufferIntSize = getOutputSignal().samples2frames(samples_to_read);
-                }
+                // Note we may get 0 samples once if we just hit a loop trigger,
+                // e.g. when reloop_toggle jumps back to loop_in, or when
+                // moving a loop causes the play position to be moved along.
 
                 frames_read += getOutputSignal().samples2frames(m_bufferIntSize);
                 unscaled_frames_needed -= getOutputSignal().samples2frames(m_bufferIntSize);
