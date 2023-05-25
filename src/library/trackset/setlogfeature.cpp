@@ -362,8 +362,7 @@ void SetlogFeature::slotJoinWithPrevious() {
         return;
     }
 
-    int clickedPlaylistId = m_playlistDao.getPlaylistIdFromName(
-            m_lastRightClickedIndex.data().toString());
+    int clickedPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
     if (clickedPlaylistId == kInvalidPlaylistId) {
         return;
     }
@@ -384,17 +383,22 @@ void SetlogFeature::slotJoinWithPrevious() {
         return;
     }
 
-    m_pPlaylistTableModel->setTableModel(previousPlaylistId);
+    // Right-clicked playlist may not be loaded. Use a temporary model to
+    // keep sidebar selection and table view in sync
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+            new PlaylistTableModel(this,
+                    m_pLibrary->trackCollectionManager(),
+                    "mixxx.db.model.playlist_export"));
+    pPlaylistTableModel->setTableModel(previousPlaylistId);
 
     if (clickedPlaylistId == m_currentPlaylistId) {
         // mark all the Tracks in the previous Playlist as played
-
-        m_pPlaylistTableModel->select();
-        int rows = m_pPlaylistTableModel->rowCount();
+        pPlaylistTableModel->select();
+        int rows = pPlaylistTableModel->rowCount();
         for (int i = 0; i < rows; ++i) {
-            QModelIndex index = m_pPlaylistTableModel->index(i, 0);
+            QModelIndex index = pPlaylistTableModel->index(i, 0);
             if (index.isValid()) {
-                TrackPointer track = m_pPlaylistTableModel->getTrack(index);
+                TrackPointer track = pPlaylistTableModel->getTrack(index);
                 DEBUG_ASSERT(track != nullptr);
                 // Do not update the play count, just set played status.
                 PlayCounter playCounter(track->getPlayCounter());

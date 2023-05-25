@@ -468,7 +468,7 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
 
     // Create a temporary PlaylistTableModel for the Playlist the entries shall be imported to.
     // This is used as a proxy object to write to the database.
-    // We cannot use  m_pPlaylistTableModel since it might have another playlist selected which
+    // We cannot use m_pPlaylistTableModel since it might have another playlist selected which
     // is not the playlist that received the right-click.
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this,
