@@ -213,11 +213,11 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
+    // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
     VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
@@ -718,7 +718,8 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
-    // qDebug() << "BasePlaylistFeature::updateChildModel";
+    // qDebug() << "BasePlaylistFeature::updateChildModel() for"
+    //          << playlistIds.count() << "playlist(s)";
     if (playlistIds.isEmpty()) {
         return;
     }

@@ -215,6 +215,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 /// Use a custom model in the history for grouping by year
 /// @param selectedId row which should be selected
 QModelIndex SetlogFeature::constructChildModel(int selectedId) {
+    // qDebug() << "SetlogFeature::constructChildModel() id:" << selectedId;
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this,
             m_pLibrary->trackCollectionManager()->internalCollection()->database());
@@ -362,7 +363,7 @@ void SetlogFeature::slotGetNewPlaylist() {
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
-    //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "SetlogFeature::slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
         int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
@@ -583,7 +584,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 }
 
 void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
-    //qDebug() << "updateChildModel() playlistId:" << playlistId;
+    // qDebug() << "SetlogFeature::slotPlaylistTableChanged() id:" << playlistId;
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type != PlaylistDAO::PLHT_SET_LOG &&
             type != PlaylistDAO::PLHT_UNKNOWN) { // deleted Playlist
@@ -645,7 +646,8 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
-    // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
+    // qDebug() << "slotPlaylistContentOrLockChanged() for"
+    //          << playlistIds.count() << "playlist(s)";
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : qAsConst(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
