@@ -27,6 +27,7 @@ class SetlogFeature : public BasePlaylistFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotJoinWithPrevious();
+    void slotMarkAllTracksPlayed();
     void slotLockAllChildPlaylists();
     void slotUnlockAllChildPlaylists();
     void slotDeletePlaylist() override;
@@ -53,6 +54,7 @@ class SetlogFeature : public BasePlaylistFeature {
 
     std::list<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
+    QAction* m_pMarkTracksPlayedAction;
     QAction* m_pStartNewPlaylist;
     QAction* m_pLockAllChildPlaylists;
     QAction* m_pUnlockAllChildPlaylists;
