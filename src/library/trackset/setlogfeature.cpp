@@ -398,12 +398,10 @@ void SetlogFeature::slotJoinWithPrevious() {
         for (int i = 0; i < rows; ++i) {
             QModelIndex index = pPlaylistTableModel->index(i, 0);
             if (index.isValid()) {
-                TrackPointer track = pPlaylistTableModel->getTrack(index);
-                DEBUG_ASSERT(track != nullptr);
+                TrackPointer pTrack = pPlaylistTableModel->getTrack(index);
+                DEBUG_ASSERT(pTrack != nullptr);
                 // Do not update the play count, just set played status.
-                PlayCounter playCounter(track->getPlayCounter());
-                playCounter.triggerLastPlayedNow();
-                track->setPlayCounter(playCounter);
+                pTrack->updatePlayedStatusKeepPlayCount(true);
             }
         }
 
