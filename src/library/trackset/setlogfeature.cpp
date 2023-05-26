@@ -162,13 +162,6 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         return;
     }
 
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
-    m_pDeletePlaylistAction->setEnabled(!locked);
-    m_pRenamePlaylistAction->setEnabled(!locked);
-    m_pJoinWithPreviousAction->setEnabled(!locked);
-
-    m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
-
     QMenu menu(m_pSidebarWidget);
     if (playlistId == m_yearNodeId) {
         // this is a YEAR item
@@ -206,6 +199,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         menu.addSeparator();
         menu.addAction(m_pExportPlaylistAction);
     }
+
     menu.exec(globalPos);
 }
 
