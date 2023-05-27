@@ -475,5 +475,8 @@ QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject*
 }
 
 void BrowseTableModel::stopBrowseThread() {
+    // The shared browse thread is actually stopped in the desctuctor
+    // if this is the last reference. All references must be reset before
+    // the library is destructed.
     m_pBrowseThread.reset();
 }
