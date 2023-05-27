@@ -16,7 +16,6 @@
 
 QtHSVWaveformWidget::QtHSVWaveformWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    makeCurrentIfNeeded();
     addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

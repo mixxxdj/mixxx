@@ -168,6 +168,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
                 m_openGLVersion += " (" + rendererString + ")";
             }
         }
+        widget->doneCurrent();
         widget->hide();
     }
 #else

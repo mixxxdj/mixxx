@@ -62,6 +62,8 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 
+    doneCurrent();
+
     m_initSuccess = init();
 }
 
@@ -93,6 +95,7 @@ void GLSLWaveformWidget::resize(int width, int height) {
     // and the Gl Context should be properly set
     makeCurrentIfNeeded();
     WaveformWidgetAbstract::resize(width, height);
+    doneCurrent();
 }
 
 void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
@@ -103,5 +106,6 @@ void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
             m_signalRenderer->debugClick();
         }
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+        doneCurrent();
     }
 }
