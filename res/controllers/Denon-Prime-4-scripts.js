@@ -22,16 +22,16 @@ var Prime4 = {};
 const deckColors = [
 
     // Deck 1
-    "orange",
+    "green",
 
     // Deck 2
     "blue",
 
     // Deck 3
-    "red",
+    "cyan",
 
     // Deck 4
-    "yellow",
+    "magenta",
 
 ];
 
@@ -727,8 +727,8 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
     // Beatgrid edit mode
     this.gridEditButton = new components.Button({
         midi: [0x90 + midiChannel, 0x1B],
-        key: "show_beatgrid_controls",
-        group: "[Skin]",
+        //key: "show_beatgrid_controls",
+        //group: "[Skin]",
         type: components.Button.prototype.types.toggle,
     });
 
@@ -1005,16 +1005,16 @@ Prime4.shiftState = function(channel, control, value) {
         midi.sendShortMsg(0x90 + channel, control, 0x02);
         Prime4.leftDeck.shift();
         Prime4.rightDeck.shift();
-        Prime4.effectBank[0].shift();
-        Prime4.effectBank[1].shift();
+        //Prime4.effectBank[0].shift();
+        //Prime4.effectBank[1].shift();
         Prime4.leftDeck.reconnectComponents();
         Prime4.rightDeck.reconnectComponents();
     } else {
         midi.sendShortMsg(0x90 + channel, control, 0x01);
         Prime4.leftDeck.unshift();
         Prime4.rightDeck.unshift();
-        Prime4.effectBank[0].unshift();
-        Prime4.effectBank[1].unshift();
+        //Prime4.effectBank[0].unshift();
+        //Prime4.effectBank[1].unshift();
         Prime4.leftDeck.reconnectComponents();
         Prime4.rightDeck.reconnectComponents();
     }
