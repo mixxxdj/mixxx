@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2023-05-29" timestamp="1685366841">
+    <release version="2.5.0" type="development" date="2023-05-29" timestamp="1685369411">
       <description>
 </description>
     </release>
-    <release version="2.4.0" type="development" date="2023-05-29" timestamp="1685366841">
+    <release version="2.4.0" type="development" date="2023-05-29" timestamp="1685369411">
       <description>
  <p>
   Cover Art
@@ -316,6 +316,10 @@
    #10488
   </li>
   <li>
+   Sidebar: Improve UX (right-click and selection after add, rename, delete, duplicate etc.)
+   #11208
+  </li>
+  <li>
    Sidebar: Map Left Arrow Key to jump to parent node and activates it
    #4253
   </li>
@@ -323,6 +327,10 @@
    Library sidebar: add F2 and Del/Backspace shortcuts for renaming &amp; deleting playlists and crates
    #11172
    #11235
+  </li>
+  <li>
+   History: Fix sidebar context menu actions
+   #4384
   </li>
   <li>
    Fix assertion when navigating history playlists
@@ -342,10 +350,6 @@
    #4360
    #10184
    #10523
-  </li>
-  <li>
-   History: Fix sidebar context menu actions
-   #4384
   </li>
   <li>
    Allow to remove tracks from the library by pressing the Delete key
@@ -416,6 +420,9 @@
    #4560
    #4831
    #10763
+   #11580
+   #11577
+   #11583
   </li>
   <li>
    Track Menu: Allow to clear the comment field
@@ -486,6 +493,7 @@
    #11444
    #11503
    #11500
+   #11509
   </li>
   <li>
    Refactoring of library code
@@ -852,11 +860,11 @@
    #2947
   </li>
   <li>
-   Add generic USB HID "Set Reports (Feature)" functionality
+   Add support to access HID FeatureReports
    #3051
   </li>
   <li>
-   Add support for reading the status of an HID controller (like MIDI SYSEX)
+   Add function to request HID InputReports, to determine controller state at startup
    #3317
   </li>
   <li>
@@ -1197,6 +1205,16 @@
    #11387
    #11384
   </li>
+  <li>
+   Waveform overhaul based on QOpenGlWindow and introduce full GLSL shader based waveforms, vumeters and spinnies. This fixes a couple of performance issues mainly on macOS.
+   #10989
+   #10416
+   #11460
+   #11556
+   #11460
+   #11460
+   #10416
+  </li>
  </ul>
  <p>
   Effects
@@ -1323,6 +1341,7 @@
    #4832
    #4803
    #11551
+   #11573
   </li>
   <li>
    Drop Ubuntu Bionic support, require Qt 5.12
@@ -1907,7 +1926,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.6" type="development" date="2023-05-29" timestamp="1685366841">
+    <release version="2.3.6" type="development" date="2023-05-29" timestamp="1685369411">
       <description>
  <ul>
   <li>
