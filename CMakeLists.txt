@@ -2233,7 +2233,7 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
 if(WIN32)
-  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__ _CRT_SECURE_NO_WARNINGS)
 endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
