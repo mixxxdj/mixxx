@@ -30,16 +30,43 @@ struct ITunesTrack {
     int bpm;
     int bitrate;
 
+#if __cplusplus >= 202002L
     bool operator==(const ITunesTrack&) const = default;
     bool operator!=(const ITunesTrack&) const = default;
+#else
+    bool operator==(const ITunesTrack& other) const {
+        return (id == other.id &&
+                artist == other.artist &&
+                title == other.title &&
+                album == other.album &&
+                albumArtist == other.albumArtist &&
+                genre == other.genre &&
+                grouping == other.grouping &&
+                year == other.year &&
+                duration == other.duration &&
+                location == other.location &&
+                rating == other.rating &&
+                comment == other.comment &&
+                trackNumber == other.trackNumber &&
+                bpm == other.bpm &&
+                bitrate == other.bitrate);
+    }
+#endif
 };
 
 struct ITunesPlaylist {
     int id;
     QString name;
 
+#if __cplusplus >= 202002L
     bool operator==(const ITunesPlaylist&) const = default;
     bool operator!=(const ITunesPlaylist&) const = default;
+#else
+    bool operator==(const ITunesPlaylist& other) const {
+        return (id == other.id &&
+                name == other.name);
+    }
+#endif
 };
 
 std::ostream& operator<<(std::ostream& os, const ITunesTrack& track);
