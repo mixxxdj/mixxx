@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2023-05-29" timestamp="1685366667">
+    <release version="2.4.0" type="development" date="2023-05-29" timestamp="1685369411">
       <description>
  <p>
   Cover Art
@@ -856,11 +856,11 @@
    #2947
   </li>
   <li>
-   Add generic USB HID "Set Reports (Feature)" functionality
+   Add support to access HID FeatureReports
    #3051
   </li>
   <li>
-   Add support for reading the status of an HID controller (like MIDI SYSEX)
+   Add function to request HID InputReports, to determine controller state at startup
    #3317
   </li>
   <li>
@@ -1922,7 +1922,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.6" type="development" date="2023-05-29" timestamp="1685366667">
+    <release version="2.3.6" type="development" date="2023-05-29" timestamp="1685369411">
       <description>
  <ul>
   <li>
