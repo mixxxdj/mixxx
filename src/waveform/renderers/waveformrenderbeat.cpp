@@ -40,7 +40,14 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (alpha == 0) {
         return;
     }
+#ifdef MIXXX_USE_QOPENGL
+    // Using alpha transparency with drawLines causes a graphical issue when
+    // drawing with QPainter on the QOpenGLWindow: instead of individual lines
+    // a large rectangle encompassing all beatlines is drawn.
+    m_beatColor.setAlphaF(1.f);
+#else
     m_beatColor.setAlphaF(alpha/100.0);
+#endif
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {

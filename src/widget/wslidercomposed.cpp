@@ -12,30 +12,24 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wskincolor.h"
 
-WSliderComposed::WSliderComposed(QWidget * parent)
-    : WWidget(parent),
-      m_dHandleLength(0.0),
-      m_dSliderLength(0.0),
-      m_bHorizontal(false),
-      m_dBarWidth(0.0),
-      m_dBarBgWidth(0.0),
-      m_dBarStart(0.0),
-      m_dBarEnd(0.0),
-      m_dBarBgStart(0.0),
-      m_dBarBgEnd(0.0),
-      m_dBarAxisPos(0.0),
-      m_bBarUnipolar(true),
-      m_barColor(nullptr),
-      m_barBgColor(nullptr),
-      m_barPenCap(Qt::FlatCap),
-      m_pSlider(nullptr),
-      m_pHandle(nullptr),
-      m_renderTimer(mixxx::Duration::fromMillis(20),
-                    mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer,
-            &WidgetRenderTimer::update,
-            this,
-            QOverload<>::of(&QWidget::update));
+WSliderComposed::WSliderComposed(QWidget* parent)
+        : WWidget(parent),
+          m_dHandleLength(0.0),
+          m_dSliderLength(0.0),
+          m_bHorizontal(false),
+          m_dBarWidth(0.0),
+          m_dBarBgWidth(0.0),
+          m_dBarStart(0.0),
+          m_dBarEnd(0.0),
+          m_dBarBgStart(0.0),
+          m_dBarBgEnd(0.0),
+          m_dBarAxisPos(0.0),
+          m_bBarUnipolar(true),
+          m_barColor(nullptr),
+          m_barBgColor(nullptr),
+          m_barPenCap(Qt::FlatCap),
+          m_pSlider(nullptr),
+          m_pHandle(nullptr) {
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -371,9 +365,5 @@ double WSliderComposed::calculateHandleLength() {
 }
 
 void WSliderComposed::inputActivity() {
-#ifdef __APPLE__
-    m_renderTimer.activity();
-#else
     update();
-#endif
 }

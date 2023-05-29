@@ -590,7 +590,7 @@ void EngineBuffer::ejectTrack() {
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
 
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
@@ -1385,12 +1385,19 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_playPosition);
+    const double fFractionalSlipPos = fractionalPlayposFromAbsolute(m_slipPosition);
 
     const double tempoTrackSeconds = m_trackEndPositionOld.value() /
             m_trackSampleRateOld / getRateRatio();
     if (speed > 0 && fFractionalPlaypos == 1.0) {
-        // At Track end
+        // Play pos at Track end
         speed = 0;
+    }
+
+    double effectiveSlipRate = m_dSlipRate;
+    if (effectiveSlipRate > 0.0 && fFractionalSlipPos == 1.0) {
+        // Slip pos at Track end
+        effectiveSlipRate = 0.0;
     }
 
     // Update indicators that are only updated after every
@@ -1409,7 +1416,8 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
             speed * m_baserate_old,
             static_cast<int>(iBufferSize) /
                     m_trackEndPositionOld.toEngineSamplePos(),
-            fractionalPlayposFromAbsolute(m_slipPosition),
+            fFractionalSlipPos,
+            effectiveSlipRate,
             tempoTrackSeconds,
             iBufferSize / kSamplesPerFrame / m_sampleRate.toDouble() * 1000000.0);
 

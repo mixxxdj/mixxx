@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QTime>
-#include <QThread>
-#include <QSemaphore>
 #include <QPair>
-#include <QGLWidget>
+#include <QSemaphore>
+#include <QThread>
+#include <QTime>
 
 #include "util/performancetimer.h"
+#include "widget/wglwidget.h"
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -25,7 +25,7 @@ class VSyncThread : public QThread {
 
     void run();
 
-    bool waitForVideoSync(QGLWidget* glw);
+    bool waitForVideoSync(WGLWidget* glw);
     int elapsed();
     int toNextSyncMicros();
     void setSyncIntervalTimeMicros(int usSyncTimer);
@@ -35,8 +35,8 @@ class VSyncThread : public QThread {
     int fromTimerToNextSyncMicros(const PerformanceTimer& timer);
     void vsyncSlotFinished();
     void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
-    void setupSync(QGLWidget* glw, int index);
-    void waitUntilSwap(QGLWidget* glw);
+    void setupSync(WGLWidget* glw, int index);
+    void waitUntilSwap(WGLWidget* glw);
     mixxx::Duration sinceLastSwap() const;
     int getSyncIntervalTimeMicros() const {
         return m_syncIntervalTimeMicros;

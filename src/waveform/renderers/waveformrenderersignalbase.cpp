@@ -2,10 +2,11 @@
 
 #include <QDomNode>
 
-#include "waveform/waveformwidgetfactory.h"
-#include "waveformwidgetrenderer.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "util/colorcomponents.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
@@ -130,44 +131,46 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     m_pColors = m_waveformRenderer->getWaveformSignalColors();
 
     const QColor& l = m_pColors->getLowColor();
-    l.getRgbF(&m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
+    getRgbF(l, &m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
 
     const QColor& m = m_pColors->getMidColor();
-    m.getRgbF(&m_midColor_r, &m_midColor_g, &m_midColor_b);
+    getRgbF(m, &m_midColor_r, &m_midColor_g, &m_midColor_b);
 
     const QColor& h = m_pColors->getHighColor();
-    h.getRgbF(&m_highColor_r, &m_highColor_g, &m_highColor_b);
+    getRgbF(h, &m_highColor_r, &m_highColor_g, &m_highColor_b);
 
     const QColor& rgbLow = m_pColors->getRgbLowColor();
-    rgbLow.getRgbF(&m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
+    getRgbF(rgbLow, &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
 
     const QColor& rgbMid = m_pColors->getRgbMidColor();
-    rgbMid.getRgbF(&m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
+    getRgbF(rgbMid, &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
 
     const QColor& rgbHigh = m_pColors->getRgbHighColor();
-    rgbHigh.getRgbF(&m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
+    getRgbF(rgbHigh, &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
 
     const QColor& rgbFilteredLow = m_pColors->getRgbLowFilteredColor();
-    rgbFilteredLow.getRgbF(&m_rgbLowFilteredColor_r,
+    getRgbF(rgbFilteredLow,
+            &m_rgbLowFilteredColor_r,
             &m_rgbLowFilteredColor_g,
             &m_rgbLowFilteredColor_b);
 
     const QColor& rgbFilteredMid = m_pColors->getRgbMidFilteredColor();
-    rgbFilteredMid.getRgbF(&m_rgbMidFilteredColor_r,
+    getRgbF(rgbFilteredMid,
+            &m_rgbMidFilteredColor_r,
             &m_rgbMidFilteredColor_g,
             &m_rgbMidFilteredColor_b);
 
     const QColor& rgbFilteredHigh = m_pColors->getRgbHighFilteredColor();
-    rgbFilteredHigh.getRgbF(&m_rgbHighFilteredColor_r,
+    getRgbF(rgbFilteredHigh,
+            &m_rgbHighFilteredColor_r,
             &m_rgbHighFilteredColor_g,
             &m_rgbHighFilteredColor_b);
 
     const QColor& axes = m_pColors->getAxesColor();
-    axes.getRgbF(&m_axesColor_r, &m_axesColor_g, &m_axesColor_b,
-                 &m_axesColor_a);
+    getRgbF(axes, &m_axesColor_r, &m_axesColor_g, &m_axesColor_b, &m_axesColor_a);
 
     const QColor& signal = m_pColors->getSignalColor();
-    signal.getRgbF(&m_signalColor_r, &m_signalColor_g, &m_signalColor_b);
+    getRgbF(signal, &m_signalColor_r, &m_signalColor_g, &m_signalColor_b);
 
     onSetup(node);
 }

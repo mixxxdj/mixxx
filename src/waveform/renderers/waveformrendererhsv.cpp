@@ -1,13 +1,14 @@
 #include "waveformrendererhsv.h"
 
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "widget/wskincolor.h"
 #include "track/track.h"
-#include "widget/wwidget.h"
+#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/painterscope.h"
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveformwidgetrenderer.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -77,13 +78,9 @@ void WaveformRendererHSV::draw(
     float allGain(1.0);
     getGains(&allGain, nullptr, nullptr, nullptr);
 
-    // Save HSV of waveform color. NOTE(rryan): On ARM, qreal is float so it's
-    // important we use qreal here and not double or float or else we will get
-    // build failures on ARM.
-    qreal h, s, v;
-
     // Get base color of waveform in the HSV format (s and v isn't use)
-    m_pColors->getLowColor().getHsvF(&h, &s, &v);
+    float h, s, v;
+    getHsvF(m_pColors->getLowColor(), &h, &s, &v);
 
     QColor color;
     float lo, hi, total;

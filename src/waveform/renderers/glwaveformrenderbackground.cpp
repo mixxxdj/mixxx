@@ -7,8 +7,6 @@ GLWaveformRenderBackground::GLWaveformRenderBackground(
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 void GLWaveformRenderBackground::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    maybeInitializeGL();
-
     painter->beginNativePainting();
     glClearColor(static_cast<float>(m_backgroundColor.redF()),
             static_cast<float>(m_backgroundColor.greenF()),
