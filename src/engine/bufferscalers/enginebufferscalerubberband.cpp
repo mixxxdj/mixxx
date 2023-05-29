@@ -208,11 +208,15 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                 last_read_failed = false;
                 deinterleaveAndProcess(m_buffer_back, iAvailFrames);
             } else {
+                // We may get 0 samples once if we just hit a loop trigger, e.g.
+                // when reloop_toggle jumps back to loop_in, or when moving a
+                // loop causes the play position to be moved along.
                 if (last_read_failed) {
-                    DEBUG_ASSERT(!"getNextSamples must never fail");
-                    // Flush and break out after the next retrieval. If we are
-                    // at EOF this serves to get the last samples out of
-                    // RubberBand.
+                    // If we get 0 samples repeatedly, flush and break out after
+                    // the next retrieval. If we are at EOF this serves to get
+                    // the last samples out of RubberBand.
+                    qDebug() << "ReadAheadManager::getNextSamples() returned "
+                                "zero samples repeatedly. Padding with silence.";
                     SampleUtil::clear(
                             m_buffer_back,
                             getOutputSignal().frames2samples(iLenFramesRequired));

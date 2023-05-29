@@ -153,11 +153,16 @@ double EngineBufferScaleST::scaleBuffer(
                 last_read_failed = false;
                 m_pSoundTouch->putSamples(buffer_back.data(), iAvailFrames);
             } else {
+                // We may get 0 samples once if we just hit a loop trigger, e.g.
+                // when reloop_toggle jumps back to loop_in, or when moving a
+                // loop causes the play position to be moved along.
                 if (last_read_failed) {
-                    DEBUG_ASSERT(!"getNextSamples must never fail");
-                    // Add silence that allows to Flush the last samples out of Soundtouch
-                    // m_pSoundTouch->flush(); must not be used, because it allocates a
-                    // temporary buffer in the heap which maybe locking
+                    // If we get 0 samples repeatedly, add silence that allows
+                    // to flush the last samples out of Soundtouch.
+                    // m_pSoundTouch->flush() must not be used, because it allocates
+                    // a temporary buffer in the heap which maybe locking
+                    qDebug() << "ReadAheadManager::getNextSamples() returned "
+                                "zero samples repeatedly. Padding with silence.";
                     SampleUtil::clear(buffer_back.data(), buffer_back.size());
                     m_pSoundTouch->putSamples(buffer_back.data(), buffer_back.size());
                 }
