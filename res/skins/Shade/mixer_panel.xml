@@ -524,13 +524,13 @@
 
               <WidgetGroup>
                 <Pos>113,28</Pos>
-                <Size>26,1</Size>
+                <Size>26,2</Size>
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter>
                     <TooltipId>audio_latency_usage</TooltipId>
                     <PathVu>skin:/audio_latency/audio_latency_usage.png</PathVu>
-                    <PathBack>skin:/audio_latency/audio_latency_overload_back.png</PathBack>
+                    <PathBack>skin:/audio_latency/audio_latency_usage_back.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>1000</PeakHoldTime>
                     <PeakFallTime>100</PeakFallTime>
