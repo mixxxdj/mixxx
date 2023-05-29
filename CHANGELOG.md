@@ -111,10 +111,12 @@
 * Automatic analyze and optimize database [#4199](https://github.com/mixxxdj/mixxx/pull/4199)
 * Re-import and update metadata after files have been modified when loading tracks [#4218](https://github.com/mixxxdj/mixxx/pull/4218)
 * Fix playlists sidebar navigation/activation [#4193](https://github.com/mixxxdj/mixxx/pull/4193) [#10488](https://github.com/mixxxdj/mixxx/issues/10488)
+* Sidebar: Improve UX (right-click and selection after add, rename, delete, duplicate etc.) [#11208](https://github.com/mixxxdj/mixxx/pull/11208)
 * Sidebar: Map Left Arrow Key to jump to parent node and activates it [#4253](https://github.com/mixxxdj/mixxx/pull/4253)
 * Library sidebar: add F2 and Del/Backspace shortcuts for renaming & deleting playlists and crates
   [#11172](https://github.com/mixxxdj/mixxx/pull/11172)
   [#11235](https://github.com/mixxxdj/mixxx/pull/11235)
+* History: Fix sidebar context menu actions [#4384](https://github.com/mixxxdj/mixxx/pull/4384)
 * Fix assertion when navigating history playlists [#4297](https://github.com/mixxxdj/mixxx/pull/4297) [#10529](https://github.com/mixxxdj/mixxx/issues/10529)
 * Track table: Add keyboard shortcut Ctrl+Enter to open track properties [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
 * Track table: Home/End keys jump to first/last row [#4850](https://github.com/mixxxdj/mixxx/pull/4850)
@@ -122,7 +124,6 @@
   [#4360](https://github.com/mixxxdj/mixxx/pull/4360)
   [#10184](https://github.com/mixxxdj/mixxx/issues/10184)
   [#10523](https://github.com/mixxxdj/mixxx/issues/10523)
-* History: Fix sidebar context menu actions [#4384](https://github.com/mixxxdj/mixxx/pull/4384)
 * Allow to remove tracks from the library by pressing the Delete key
   [#4330](https://github.com/mixxxdj/mixxx/pull/4330)
   [#7176](https://github.com/mixxxdj/mixxx/issues/7176)
@@ -141,7 +142,13 @@
 * Track Menu: Add menu for Analyze and Reanalyze [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
 * Track Menu: Add support for overriding analyzis settings about variable/constant BPM on a per-track basis [#10931](https://github.com/mixxxdj/mixxx/pull/10931)
 * Track Menu: Add menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
-* Track Menu: Add Remove from disk and fix undeleted message and progress dialog  [#4560](https://github.com/mixxxdj/mixxx/pull/4560) [#4831](https://github.com/mixxxdj/mixxx/pull/4831) [#10763](https://github.com/mixxxdj/mixxx/issues/10763)
+* Track Menu: Add Remove from disk and fix undeleted message and progress dialog
+  [#4560](https://github.com/mixxxdj/mixxx/pull/4560)
+  [#4831](https://github.com/mixxxdj/mixxx/pull/4831)
+  [#10763](https://github.com/mixxxdj/mixxx/issues/10763)
+  [#11580](https://github.com/mixxxdj/mixxx/pull/11580)
+  [#11577](https://github.com/mixxxdj/mixxx/issues/11577)
+  [#11583](https://github.com/mixxxdj/mixxx/pull/11583)
 * Track Menu: Allow to clear the comment field [#4722](https://github.com/mixxxdj/mixxx/pull/4722) [#10615](https://github.com/mixxxdj/mixxx/issues/10615)
 * Track Menu: Allow to reset loops and also via "[ChannelN], loop_remove" control object [#4802](https://github.com/mixxxdj/mixxx/pull/4802) [#10748](https://github.com/mixxxdj/mixxx/issues/10748)
 * Track Menu: Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
@@ -162,6 +169,7 @@
   [#11444](https://github.com/mixxxdj/mixxx/pull/11444)
   [#11503](https://github.com/mixxxdj/mixxx/pull/11503)
   [#11500](https://github.com/mixxxdj/mixxx/pull/11500)
+  [#11509](https://github.com/mixxxdj/mixxx/pull/11509)
 * Refactoring of library code
   [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
   [#2717](https://github.com/mixxxdj/mixxx/pull/2717)
@@ -366,8 +374,8 @@
 ### Controller Backend
 
 * Never raise a fatal error if a controller mapping tries access a non-existent control object [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
-* Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
-* Add support for reading the status of an HID controller (like MIDI SYSEX) [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
+* Add support to access HID FeatureReports [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
+* Add function to request HID InputReports, to determine controller state at startup [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
 * Exclude HID device: ELAN touch screen [#11324](https://github.com/mixxxdj/mixxx/pull/11324) [#11323](https://github.com/mixxxdj/mixxx/issues/11323)
 * Show otherwise hidden HID devices in developer mode  [#11317](https://github.com/mixxxdj/mixxx/pull/11317)
 * Use hidapi's hidraw backend instead of libusb on Linux [#4054](https://github.com/mixxxdj/mixxx/pull/4054)
@@ -511,6 +519,14 @@
 * LateNight: Remove blinking play indicator from mini samplers [#4807](https://github.com/mixxxdj/mixxx/pull/4807)
 * LateNight: add buffer underflow indicator [#4906](https://github.com/mixxxdj/mixxx/pull/4906) [#10978](https://github.com/mixxxdj/mixxx/pull/10978)
 * Fix outdated tooltips [#11387](https://github.com/mixxxdj/mixxx/pull/11387) [#11384](https://github.com/mixxxdj/mixxx/issues/11384)
+* Waveform overhaul based on QOpenGlWindow and introduce full GLSL shader based waveforms, vumeters and spinnies. This fixes a couple of performance issues mainly on macOS.
+  [#10989](https://github.com/mixxxdj/mixxx/pull/10989)
+  [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
+  [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
+  [#11556](https://github.com/mixxxdj/mixxx/issues/11556)
+  [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
+  [#11460](https://github.com/mixxxdj/mixxx/issues/11450)
+  [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
 
 ### Effects
 
@@ -586,6 +602,7 @@
   [#4832](https://github.com/mixxxdj/mixxx/pull/4832)
   [#4803](https://github.com/mixxxdj/mixxx/pull/4803)
   [#11551](https://github.com/mixxxdj/mixxx/issues/11551)
+  [#11573](https://github.com/mixxxdj/mixxx/pull/11573)
 * Drop Ubuntu Bionic support, require Qt 5.12
   [#3687](https://github.com/mixxxdj/mixxx/pull/3687)
   [#3735](https://github.com/mixxxdj/mixxx/pull/3735)
