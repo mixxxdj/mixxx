@@ -34,12 +34,13 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
-    const QModelIndex clickedIndex = indexAt(event->pos());
+    QModelIndex clickedIndex = indexAt(event->pos());
     if (!clickedIndex.isValid()) {
         return;
     }
     // Use this instead of setCurrentIndex() to keep current selection
     selectionModel()->setCurrentIndex(clickedIndex, QItemSelectionModel::NoUpdate);
+    event->accept();
     emit rightClicked(event->globalPos(), clickedIndex);
     //}
 }

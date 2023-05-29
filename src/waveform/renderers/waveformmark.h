@@ -14,6 +14,12 @@ class WaveformSignalColors;
 
 class WOverview;
 
+class QOpenGLTexture;
+
+namespace allshader {
+class WaveformRenderMark;
+}
+
 class WaveformMark {
   public:
     WaveformMark(
@@ -22,6 +28,7 @@ class WaveformMark {
             const SkinContext& context,
             const WaveformSignalColors& signalColors,
             int hotCue = Cue::kNoHotCue);
+    ~WaveformMark();
 
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
@@ -101,6 +108,8 @@ class WaveformMark {
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
+    std::unique_ptr<QOpenGLTexture> m_pTexture; // used by allshader::WaveformRenderMark
+    friend class allshader::WaveformRenderMark;
     int m_iHotCue;
     QImage m_image;
 
