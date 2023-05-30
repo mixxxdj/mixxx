@@ -912,7 +912,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         if (rect.isValid()) {
             QColor loopColor = pMark->fillColor();
-            loopColor.setAlphaF(0.5);
+            loopColor.setAlphaF(0.5f);
             pPainter->fillRect(rect, loopColor);
         }
 
@@ -1260,7 +1260,7 @@ void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
 
 void WOverview::paintText(const QString& text, QPainter* pPainter) {
     PainterScope painterScope(pPainter);
-    m_lowColor.setAlphaF(0.5);
+    m_lowColor.setAlphaF(0.5f);
     QPen lowColorPen(
             QBrush(m_lowColor), 1.25 * m_scaleFactor, Qt::SolidLine, Qt::RoundCap);
     pPainter->setPen(lowColorPen);

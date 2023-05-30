@@ -49,7 +49,7 @@ void WaveformRenderBeat::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_color.setAlphaF(alpha / 100.0);
+    m_color.setAlphaF(alpha / 100.0f);
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
