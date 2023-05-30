@@ -208,7 +208,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <StatusLight>
-                        <TooltipId>sampler_PeakIndicator</TooltipId>
+                        <TooltipId>preview_PeakIndicator</TooltipId>
                         <PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
                         <PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
                         <Connection>
@@ -223,7 +223,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <VuMeter>
-                        <TooltipId>sampler_VuMeter</TooltipId>
+                        <TooltipId>preview_VuMeter</TooltipId>
                         <PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
                         <PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
                         <Horizontal>false</Horizontal>
