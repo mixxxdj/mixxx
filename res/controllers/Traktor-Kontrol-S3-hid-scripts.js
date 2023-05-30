@@ -674,6 +674,7 @@ TraktorS3.Deck.prototype.checkJogInertia = function() {
 TraktorS3.Deck.prototype.jogHandler = function(field) {
     this.tickReceived = true;
     const deltas = this.wheelDeltas(field.value);
+    const seekRateMs = 10;
 
     // If shift button is held, do a simple seek.
     if (this.shiftPressed) {
@@ -684,7 +685,7 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
         // If we spam seeks on every single update, it can cause problems with HQ
         // Rubberband.
         now = Date.now();
-        if (now - this.seekRateLimitLastTick > 10) {
+        if (now - this.seekRateLimitLastTick > seekRateMs) {
             this.seekRateLimitLastTick = now;
             let playPosition = engine.getValue(this.activeChannel, "playposition");
             playPosition += deltas[0] / 256.0;
@@ -2203,7 +2204,7 @@ TraktorS3.Controller.prototype.guiTickHandler = function() {
 // A special packet sent to the controller switches between mic and line
 // input modes.  if lineMode is true, sets input to line. Otherwise, mic.
 TraktorS3.Controller.prototype.setInputLineMode = function(lineMode) {
-    const packet = Array();
+    const packet = [];
     packet.length = 33;
     packet[0] = 0x20;
     if (!lineMode) {
@@ -2244,7 +2245,7 @@ TraktorS3.debugLights = function() {
         "00"
     ];
 
-    const data = [Array(), Array(), Array()];
+    const data = [[], [], []];
 
 
     for (let i = 0; i < data.length; i++) {
