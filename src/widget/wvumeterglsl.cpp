@@ -72,7 +72,7 @@ void WVuMeterGLSL::paintGL() {
         const double pixmapHeight = m_pTextureVu->height();
         if (m_bHorizontal) {
             const double widgetPosition = math_clamp(widgetWidth * m_dParameter, 0.0, widgetWidth);
-            QRectF targetRect(0, 0, widgetPosition, widgetHeight);
+            QRectF targetRect(0, 0, widgetPosition, math_min(pixmapHeight, widgetHeight));
 
             const double pixmapPosition = math_clamp(
                     pixmapWidth * m_dParameter, 0.0, pixmapWidth);
@@ -89,7 +89,7 @@ void WVuMeterGLSL::paintGL() {
                 QRectF targetRect(widgetPeakPosition - widgetPeakHoldSize,
                         0,
                         widgetPeakHoldSize,
-                        widgetHeight);
+                        math_min(pixmapHeight, widgetHeight));
 
                 const double pixmapPeakPosition = math_clamp(
                         pixmapWidth * m_dPeakParameter, 0.0, pixmapWidth);
