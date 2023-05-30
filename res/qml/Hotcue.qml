@@ -48,5 +48,4 @@ Item {
         group: root.group
         key: "hotcue_" + root.hotcueNumber + "_clear"
     }
-
 }

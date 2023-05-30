@@ -463,6 +463,9 @@ void EffectSlot::showParameter(EffectParameterPointer pParameter) {
 }
 
 void EffectSlot::swapParameters(EffectParameterType type, int index1, int index2) {
+    if (index1 == index2) {
+        return;
+    }
     VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index1) {
         return;
     }

@@ -13,10 +13,10 @@
 
 namespace {
 
-// The time between selecting and activating (= clicking) a feature item
-// in the sidebar tree. This is essential to allow smooth scrolling through
-// a list of items with an encoder or the keyboard! A value of 300 ms has
-// been chosen as a compromise between usability and responsiveness.
+/// The time between selecting and activating (= clicking) a feature item
+/// in the sidebar tree. This is essential to allow smooth scrolling through
+/// a list of items with an encoder or the keyboard! A value of 300 ms has
+/// been chosen as a compromise between usability and responsiveness.
 constexpr int kPressedUntilClickedTimeoutMillis = 300;
 
 } // anonymous namespace
@@ -136,6 +136,18 @@ QModelIndex SidebarModel::index(int row, int column,
     // `this` is const, but the function expects a non-const pointer.
     // TODO: Check if we can get rid of this const cast somehow.
     return createIndex(row, column, const_cast<SidebarModel*>(this));
+}
+
+QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
+    // qDebug() << "SidebarModel::getFeatureRootIndex for" << pFeature->title().toString();
+    QModelIndex ind;
+    for (int i = 0; i < m_sFeatures.size(); ++i) {
+        if (m_sFeatures[i] == pFeature) {
+            ind = index(i, 0);
+            break;
+        }
+    }
+    return ind;
 }
 
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
@@ -290,6 +302,8 @@ void SidebarModel::slotPressedUntilClickedTimeout() {
     }
 }
 
+/// Connected to WLibrarySidebar::pressed signal, called after left click and
+/// selection change via keyboard or controller
 void SidebarModel::pressed(const QModelIndex& index) {
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
@@ -317,6 +331,7 @@ void SidebarModel::clicked(const QModelIndex& index) {
     }
 }
 
+/// Invoked by double click and click on tree node expand icons
 void SidebarModel::doubleClicked(const QModelIndex& index) {
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
@@ -337,9 +352,7 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->onRightClick(globalPos);
-        }
-        else
-        {
+        } else {
             TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
             if (pTreeItem) {
                 LibraryFeature* pFeature = pTreeItem->feature();
@@ -406,7 +419,7 @@ bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls,
 
 bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
     if (index.internalPointer() == this) {
-     return m_sFeatures[index.row()]->hasTrackTable();
+        return m_sFeatures[index.row()]->hasTrackTable();
     }
     return false;
 }
@@ -429,7 +442,7 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) {
     return result;
 }
 
-// Translates an index from the child models to an index of the sidebar models
+/// Translates an index from the child models to an index of the sidebar models
 QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
     /* These method is called from the slot functions below.
      * QObject::sender() return the object which emitted the signal
@@ -454,8 +467,6 @@ QModelIndex SidebarModel::translateIndex(
         TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
         translatedIndex = createIndex(index.row(), index.column(), pItem);
     } else {
-        //Comment from Tobias Rafreider --> Dead Code????
-
         for (int i = 0; i < m_sFeatures.size(); ++i) {
             if (m_sFeatures[i]->sidebarModel() == pModel) {
                 translatedIndex = createIndex(i, 0, this);

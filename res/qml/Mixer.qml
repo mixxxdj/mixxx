@@ -43,7 +43,5 @@ Item {
             height: parent.height
             group: root.rightDeckGroup
         }
-
     }
-
 }

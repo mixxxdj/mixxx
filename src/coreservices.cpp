@@ -74,7 +74,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
 }
 
 // hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
-// https://bugs.launchpad.net/mixxx/+bug/1805559
+// https://github.com/mixxxdj/mixxx/issues/9533
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
@@ -380,10 +380,6 @@ void CoreServices::initialize(QApplication* pApp) {
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = std::make_shared<ControllerManager>(pConfig);
 
-    // Wait until all other ControlObjects are set up before initializing
-    // controllers
-    m_pControllerManager->setUpDevices();
-
     // Scan the library for new files and directories
     bool rescan = pConfig->getValue<bool>(
             library::prefs::kRescanOnStartupConfigKey);
@@ -423,13 +419,13 @@ void CoreServices::initialize(QApplication* pApp) {
             supportedFileSuffixes.join(","));
 
     // Scan the library directory. Do this after the skinloader has
-    // loaded a skin, see Bug #1047435
+    // loaded a skin, see issue #6625
     if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
         m_pTrackCollectionManager->startLibraryScan();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
-    // https://bugs.launchpad.net/mixxx/+bug/1758189
+    // https://github.com/mixxxdj/mixxx/issues/9188
     m_pPlayerManager->loadSamplers();
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));

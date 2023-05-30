@@ -30,7 +30,7 @@ class TrackInfo final {
 #if defined(__EXTRA_METADATA__)
     MIXXX_DECL_PROPERTY(QString, isrc, ISRC)
 #endif // __EXTRA_METADATA__
-    MIXXX_DECL_PROPERTY(QString, key, Key)
+    MIXXX_DECL_PROPERTY(QString, keyText, KeyText)
 #if defined(__EXTRA_METADATA__)
     MIXXX_DECL_PROPERTY(QString, language, Language)
     MIXXX_DECL_PROPERTY(QString, lyricist, Lyricist)

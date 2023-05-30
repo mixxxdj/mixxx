@@ -72,12 +72,6 @@ class Waveform {
 
     QByteArray toByteArray() const;
 
-    // We do not lock the mutex since m_dataSize and m_visualSampleRate are not
-    // changed after the constructor runs.
-    bool isValid() const {
-        return getDataSize() > 0 && getVisualSampleRate() > 0;
-    }
-
     SaveState saveState() const {
         return m_saveState;
     }

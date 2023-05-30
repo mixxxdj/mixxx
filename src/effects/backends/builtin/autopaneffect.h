@@ -64,23 +64,23 @@ static constexpr int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 class AutoPanGroupState : public EffectState {
   public:
     AutoPanGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters) {
-        time = 0;
-        delay = new EngineFilterPanSingle<panMaxDelay>();
-        m_dPreviousPeriod = -1.0;
+            : EffectState(engineParameters),
+              time(0),
+              pDelay(std::make_unique<EngineFilterPanSingle<panMaxDelay>>()),
+              m_dPreviousPeriod(-1.0) {
     }
-    ~AutoPanGroupState() {
-    }
+    ~AutoPanGroupState() override = default;
+
     unsigned int time;
     RampedSample frac;
-    EngineFilterPanSingle<panMaxDelay>* delay;
+    std::unique_ptr<EngineFilterPanSingle<panMaxDelay>> pDelay;
     double m_dPreviousPeriod;
 };
 
 class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
   public:
     AutoPanEffect() = default;
-    virtual ~AutoPanEffect();
+    ~AutoPanEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

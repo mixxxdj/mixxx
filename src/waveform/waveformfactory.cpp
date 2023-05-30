@@ -21,7 +21,7 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
     }
 
     if (version == WAVEFORM_4_VERSION) {
-        // Used in Mixxx 1.12 beta, suffers Bug lp:1406389
+        // Used in Mixxx 1.12 beta, suffers Bug #7776
         return VC_REMOVE;
     }
 
@@ -31,7 +31,7 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
     }
 
     if (version == WAVEFORM_3_VERSION) {
-        // Used in Mixxx 1.11 beta, suffers Bug lp:1087425
+        // Used in Mixxx 1.11 beta, suffers Bug #6748
         return VC_REMOVE;
     }
 
@@ -47,7 +47,7 @@ WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionCl
     }
 
     if (version == WAVEFORMSUMMARY_4_VERSION) {
-        // Used in Mixxx 1.12 beta, suffers Bug lp:1406389
+        // Used in Mixxx 1.12 beta, suffers Bug #7776
         return VC_REMOVE;
     }
 
@@ -57,7 +57,7 @@ WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionCl
     }
 
     if (version == WAVEFORMSUMMARY_3_VERSION) {
-        // Used in Mixxx 1.11 beta, suffers Bug lp:1086965
+        // Used in Mixxx 1.11 beta, suffers Bug #6744
         return VC_REMOVE;
     }
 

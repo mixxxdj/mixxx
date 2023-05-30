@@ -77,10 +77,6 @@ void ReverbEffect::loadEngineEffectParameters(
     m_pSendParameter = parameters.value("send_amount");
 }
 
-ReverbEffect::~ReverbEffect() {
-    //qDebug() << debugString() << "destroyed";
-}
-
 void ReverbEffect::processChannel(
         ReverbGroupState* pState,
         const CSAMPLE* pInput,

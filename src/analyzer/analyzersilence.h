@@ -20,6 +20,11 @@ class AnalyzerSilence : public Analyzer {
     void storeResults(TrackPointer pTrack) override;
     void cleanup() override;
 
+    static void setupMainAndIntroCue(Track* pTrack,
+            mixxx::audio::FramePos firstSoundPosition,
+            UserSettings* pConfig);
+    static void setupOutroCue(Track* pTrack, mixxx::audio::FramePos lastSoundPosition);
+
     /// returns the index of the first sample in the buffer that is above -60 dB
     /// or samples.size() if no sample is found
     static SINT findFirstSoundInChunk(std::span<const CSAMPLE> samples);

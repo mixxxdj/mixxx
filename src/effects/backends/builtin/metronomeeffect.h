@@ -17,8 +17,7 @@ class MetronomeGroupState final : public EffectState {
             : EffectState(engineParameters),
               m_framesSinceClickStart(0) {
     }
-    ~MetronomeGroupState() {
-    }
+    ~MetronomeGroupState() override = default;
 
     SINT m_framesSinceClickStart;
 };
@@ -26,7 +25,7 @@ class MetronomeGroupState final : public EffectState {
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
   public:
     MetronomeEffect() = default;
-    virtual ~MetronomeEffect();
+    ~MetronomeEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

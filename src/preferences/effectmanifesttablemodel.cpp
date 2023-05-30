@@ -28,7 +28,7 @@ void EffectManifestTableModel::setList(const QList<EffectManifestPointer>& newLi
 
 int EffectManifestTableModel::rowCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-    return m_manifests.count();
+    return m_manifests.size();
 }
 
 int EffectManifestTableModel::columnCount(const QModelIndex& parent) const {
@@ -146,8 +146,17 @@ Qt::DropActions EffectManifestTableModel::supportedDropActions() const {
 }
 
 bool EffectManifestTableModel::removeRows(int row, int count, const QModelIndex& parent) {
-    Q_UNUSED(parent);
-    beginRemoveRows(QModelIndex(), row, row + count - 1);
+    if (count == 0) {
+        // nothing to do
+        return true;
+    }
+    VERIFY_OR_DEBUG_ASSERT(count > 0 && row >= 0 &&
+            row + count <= m_manifests.size()) {
+        // If this is violated, Mixxx will crash with a qt_assert()
+        // https://github.com/mixxxdj/mixxx/issues/11454
+        return false;
+    }
+    beginRemoveRows(parent, row, row + count - 1);
     for (int i = row; i < row + count; i++) {
         // QList shrinks and reassigns indices after each removal,
         // so keep removing at the index of the first row removed.

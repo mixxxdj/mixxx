@@ -36,7 +36,9 @@ class VisualPlayPositionData {
     double m_rate;
     double m_positionStep;
     double m_slipPosition;
+    double m_slipRate;
     double m_tempoTrackSeconds; // total track time, taking the current tempo into account
+    double m_audioBufferMicroS;
 };
 
 
@@ -48,10 +50,19 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must be called only from the
     // engine thread.
-    void set(double playPos, double rate, double positionStep,
-            double slipPosition, double tempoTrackSeconds);
-    double getAtNextVSync(VSyncThread* vsyncThread);
-    void getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double* playPosition, double* slipPosition);
+    void set(
+            double playPos,
+            double rate,
+            double positionStep,
+            double slipPosition,
+            double slipRate,
+            double tempoTrackSeconds,
+            double audioBufferMicroS);
+
+    double getAtNextVSync(VSyncThread* pVSyncThread);
+    void getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
+            double* playPosition,
+            double* slipPosition);
     double getEnginePlayPos();
     void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 
@@ -67,13 +78,9 @@ class VisualPlayPosition : public QObject {
         return m_valid;
     }
 
-  private slots:
-    void slotAudioBufferSizeChanged(double sizeMs);
-
   private:
+    double calcOffsetAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
     ControlValueAtomic<VisualPlayPositionData> m_data;
-    ControlProxy* m_audioBufferSize;
-    int m_audioBufferMicros; // Audio buffer size in µs
     bool m_valid;
     QString m_key;
 

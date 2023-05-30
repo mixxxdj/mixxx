@@ -480,7 +480,8 @@ double BpmControl::getBeatDistance(mixxx::audio::FramePos thisPosition) const {
 }
 
 // static
-bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
+bool BpmControl::getBeatContext(
+        const mixxx::BeatsPointer& pBeats,
         mixxx::audio::FramePos position,
         mixxx::audio::FramePos* pPrevBeatPosition,
         mixxx::audio::FramePos* pNextBeatPosition,
@@ -795,19 +796,22 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
         return thisPosition;
     }
 
-    const auto otherPosition = pOtherEngineBuffer->getExactPlayPos();
+    const mixxx::audio::FramePos otherPosition = pOtherEngineBuffer->getExactPlayPos();
     const mixxx::audio::SampleRate thisSampleRate = m_pBeats->getSampleRate();
 
     // Seek our next beat to the other next beat near our beat.
     // This is the only thing we can do if the track has different BPM,
     // playing the next beat together.
 
-    // First calculate the position in the other track where this next beat will be.
-    const double thisSecs2ToNextBeat = (thisNextBeatPosition - thisPosition) /
-            thisSampleRate / thisRateRatio;
-    const mixxx::audio::FramePos otherPositionOfThisNextBeat = otherPosition +
-            thisSecs2ToNextBeat * otherBeats->getSampleRate() *
-                    pOtherEngineBuffer->getRateRatio();
+    // calculate framesTransposeFactor first to avoid rounding issues, because it is often 1
+    double framesTransposeFactor = otherBeats->getSampleRate() /
+            thisSampleRate * pOtherEngineBuffer->getRateRatio() / thisRateRatio;
+    // subtract first to avoid a rounding issue, because lower double values
+    // have a smaller minimum step width
+    const mixxx::audio::FrameDiff_t otherToThisOffset =
+            otherPosition - thisPosition * framesTransposeFactor;
+    const mixxx::audio::FramePos otherPositionOfThisNextBeat =
+            thisNextBeatPosition * framesTransposeFactor + otherToThisOffset;
 
     mixxx::audio::FramePos otherPrevBeatPosition;
     mixxx::audio::FramePos otherNextBeatPosition;

@@ -48,7 +48,7 @@
                             <TooltipId>visual_bpm</TooltipId>
                             <Size>45f,20f</Size>
                             <Group><Variable name="Group"/></Group>
-                            <!--CSS alignments not respected, bug lp:605530 -->
+                            <!--CSS alignments not respected, bug #5459 -->
                             <Alignment>right</Alignment>
                             <Connection>
                               <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>

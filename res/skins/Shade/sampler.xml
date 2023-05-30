@@ -70,7 +70,7 @@
                     <Size>35f,24f</Size>
                     <Pos>0,2</Pos>
                     <Group><Variable name="group"/></Group>
-                    <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                    <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
                     <Alignment>right</Alignment>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>

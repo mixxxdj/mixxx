@@ -63,7 +63,6 @@ Item {
                 target: rightDeck
                 anchors.left: mixer.right
             }
-
         }
     ]
 
@@ -88,7 +87,6 @@ Item {
         FadeBehavior on visible {
             fadeTarget: mixer
         }
-
     }
 
     Deck {
@@ -116,9 +114,6 @@ Item {
                 property: "implicitHeight"
                 duration: 150
             }
-
         }
-
     }
-
 }

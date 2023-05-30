@@ -205,15 +205,15 @@ void importTrackMetadataFromTag(
         pTrackMetadata->refTrackInfo().setBpm(Bpm{});
     }
 
-    QString key;
+    QString keyText;
     if (readAtom(tag,
                 kAtomKeyInitialKey,
-                &key) || // preferred (conforms to MixedInKey, Serato, Traktor)
+                &keyText) || // preferred (conforms to MixedInKey, Serato, Traktor)
             readAtom(tag,
                     kAtomKeyAlternativeKey,
-                    &key) || // alternative (conforms to Rapid Evolution)
+                    &keyText) || // alternative (conforms to Rapid Evolution)
             resetMissingTagMetadata) {
-        pTrackMetadata->refTrackInfo().setKey(key);
+        pTrackMetadata->refTrackInfo().setKeyText(keyText);
     }
 
     QString trackGain;
@@ -424,10 +424,10 @@ bool exportTrackMetadataIntoTag(
     }
     writeAtom(pTag, kAtomKeyBpm, toTString(formatBpm(trackMetadata)));
 
-    const TagLib::String key =
-            toTString(trackMetadata.getTrackInfo().getKey());
-    writeAtom(pTag, kAtomKeyInitialKey, key);      // preferred
-    updateAtom(pTag, kAtomKeyAlternativeKey, key); // alternative
+    const TagLib::String keyText =
+            toTString(trackMetadata.getTrackInfo().getKeyText());
+    writeAtom(pTag, kAtomKeyInitialKey, keyText);      // preferred
+    updateAtom(pTag, kAtomKeyAlternativeKey, keyText); // alternative
 
     writeAtom(pTag, kAtomKeyReplayGainTrackGain, toTString(formatTrackGain(trackMetadata)));
     writeAtom(pTag, kAtomKeyReplayGainTrackPeak, toTString(formatTrackPeak(trackMetadata)));

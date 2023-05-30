@@ -17,7 +17,8 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
         WCoverArtMenu* pCoverMenu)
         : QDialog(parent),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(pCoverMenu) {
+          m_pCoverMenu(pCoverMenu),
+          m_coverPressed(false) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -82,6 +83,19 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     slotLoadTrack(pTrack);
 }
 
+void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
+    m_pixmap.loadFromData(fetchedCoverArtBytes);
+
+    // The real size will be calculated later by adjustImageAndDialogSize().
+    resize(100, 100);
+    show();
+    setWindowTitle(tr("Fetched Cover Art"));
+    raise();
+    activateWindow();
+
+    adjustImageAndDialogSize();
+}
+
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
     if (m_pLoadedTrack != nullptr) {
         disconnect(m_pLoadedTrack.get(),
@@ -104,7 +118,7 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
         // likely to be triggered. Before the isVisible() check was added,
         // the window title was getting set on DlgCoverArtFullSize instances
         // that had never been shown whenever a track was loaded.
-        // https://bugs.launchpad.net/mixxx/+bug/1789059
+        // https://github.com/mixxxdj/mixxx/issues/9415
         // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
         if (isVisible()) {
             QString windowTitle;
@@ -158,6 +172,10 @@ void DlgCoverArtFullSize::slotCoverFound(
 
     m_pixmap = pixmap;
 
+    adjustImageAndDialogSize();
+}
+
+void DlgCoverArtFullSize::adjustImageAndDialogSize() {
     if (m_pixmap.isNull()) {
         coverArt->setPixmap(QPixmap());
         hide();

@@ -20,6 +20,10 @@ extern const ConfigKey kTrackDoubleClickActionConfigKey;
 
 extern const ConfigKey kSearchDebouncingTimeoutMillisConfigKey;
 
+extern const ConfigKey kEnableSearchCompletionsConfigKey;
+
+extern const ConfigKey kEnableSearchHistoryShortcutsConfigKey;
+
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
 extern const ConfigKey kHistoryMinTracksToKeepConfigKey;
@@ -39,6 +43,8 @@ extern const ConfigKey kResetMissingTagMetadataOnImportConfigKey;
 extern const ConfigKey kSyncSeratoMetadataConfigKey;
 
 extern const ConfigKey kUseRelativePathOnExportConfigKey;
+
+extern const ConfigKey kCoverArtFetcherQualityConfigKey;
 
 } // namespace prefs
 

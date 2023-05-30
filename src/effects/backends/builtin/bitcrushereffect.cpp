@@ -56,10 +56,6 @@ void BitCrusherEffect::loadEngineEffectParameters(
     m_pDownsampleParameter = parameters.value("downsample");
 }
 
-BitCrusherEffect::~BitCrusherEffect() {
-    //qDebug() << debugString() << "destroyed";
-}
-
 void BitCrusherEffect::processChannel(
         BitCrusherGroupState* pState,
         const CSAMPLE* pInput,

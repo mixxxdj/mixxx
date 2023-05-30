@@ -87,10 +87,6 @@ void MoogLadder4FilterEffect::loadEngineEffectParameters(
     m_pHPF = parameters.value("hpf");
 }
 
-MoogLadder4FilterEffect::~MoogLadder4FilterEffect() {
-    //qDebug() << debugString() << "destroyed";
-}
-
 void MoogLadder4FilterEffect::processChannel(
         MoogLadder4FilterGroupState* pState,
         const CSAMPLE* pInput,

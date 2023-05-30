@@ -27,8 +27,8 @@ void WaveformRendererPreroll::setup(
 void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(event);
 
-    const TrackPointer track = m_waveformRenderer->getTrackInfo();
-    if (!track) {
+    const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack) {
         return;
     }
 

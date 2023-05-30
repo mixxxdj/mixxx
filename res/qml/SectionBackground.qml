@@ -12,5 +12,4 @@ BorderImage {
         right: 10
         bottom: 10
     }
-
 }

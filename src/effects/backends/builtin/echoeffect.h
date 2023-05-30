@@ -22,6 +22,7 @@ class EchoGroupState : public EffectState {
         audioParametersChanged(engineParameters);
         clear();
     }
+    ~EchoGroupState() override = default;
 
     void audioParametersChanged(const mixxx::EngineParameters& engineParameters) {
         delay_buf = mixxx::SampleBuffer(kMaxDelaySeconds *
@@ -49,6 +50,7 @@ class EchoGroupState : public EffectState {
 class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
   public:
     EchoEffect() = default;
+    ~EchoEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

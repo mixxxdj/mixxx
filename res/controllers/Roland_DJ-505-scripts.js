@@ -472,7 +472,7 @@ DJ505.Deck = function(deckNumbers, offset) {
      * backwards in a track, has problems with loops, does not detect hotcue
      * jumps and does not indicate the downbeat (obviously).
      *
-     * See Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/419155
+     * See Launchpad issue: https://github.com/mixxxdj/mixxx/issues/5218
      */
     this.beatIndex = 0;
     this.lastBeatDistance = 0;
@@ -1158,7 +1158,7 @@ DJ505.PadSection.prototype.controlToPadMode = function(control) {
         break;
     // FIXME: Mixxx is currently missing support for Serato-style "flips",
     // hence this mode can only be implemented if this feature is added:
-    // https://bugs.launchpad.net/mixxx/+bug/1768113
+    // https://github.com/mixxxdj/mixxx/issues/9271
     //case DJ505.PadMode.FLIP:
     //    mode = this.modes.flip;
     //    break;
@@ -1179,7 +1179,7 @@ DJ505.PadSection.prototype.controlToPadMode = function(control) {
         mode = this.modes.roll;
         break;
     // FIXME: Although it might be possible to implement Slicer Mode, it would
-    // miss visual feedback: https://bugs.launchpad.net/mixxx/+bug/1828886
+    // miss visual feedback: https://github.com/mixxxdj/mixxx/issues/9660
     //case DJ505.PadMode.SLICER:
     //    mode = this.modes.slicer;
     //    break;

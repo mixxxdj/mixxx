@@ -115,7 +115,8 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         char* desc;
         FidFilter* filt = fid_design(spec_d, sampleRate, freq0, freq1, adj, &desc);
         int delay = fid_calc_delay(filt);
-        qDebug() << QString().fromLatin1(desc) << "delay:" << delay;
+        qDebug() << QString().fromLatin1(desc);
+        qDebug() << spec_d << "delay:" << delay;
         double resp0, phase0;
         resp0 = fid_response_pha(filt, freq0 / sampleRate, &phase0);
         qDebug() << "freq0:" << freq0 << resp0 << phase0;
@@ -126,16 +127,16 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         }
         double resp2, phase2;
         resp2 = fid_response_pha(filt, freq0 / sampleRate / 2, &phase2);
-        qDebug() << "freq2:" << freq0 / 2 << resp2 << phase0;
+        qDebug() << "freq2:" << freq0 / 2 << resp2 << phase2;
         double resp3, phase3;
         resp3 = fid_response_pha(filt, freq0 / sampleRate * 2, &phase3);
-        qDebug() << "freq3:" << freq0 * 2 << resp3 << phase0;
+        qDebug() << "freq3:" << freq0 * 2 << resp3 << phase3;
         double resp4, phase4;
         resp4 = fid_response_pha(filt, freq0 / sampleRate / 2.2, &phase4);
-        qDebug() << "freq4:" << freq0 / 2.2 << resp2 << phase0;
+        qDebug() << "freq4:" << freq0 / 2.2 << resp4 << phase4;
         double resp5, phase5;
         resp5 = fid_response_pha(filt, freq0 / sampleRate * 2.2, &phase5);
-        qDebug() << "freq5:" << freq0 * 2.2 << resp3 << phase0;
+        qDebug() << "freq5:" << freq0 * 2.2 << resp5 << phase5;
         free(filt);
 #endif
     }
@@ -191,7 +192,8 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         FidFilter* filt = fid_cat(1, filt1, filt2, NULL);
         int delay = fid_calc_delay(filt);
         qDebug() << QString().fromLatin1(desc1) << "X"
-                 << QString().fromLatin1(desc2) << "delay:" << delay;
+                 << QString().fromLatin1(desc2);
+        qDebug() << spec1 << "X" << spec2 << "delay:" << delay;
         double resp0, phase0;
         resp0 = fid_response_pha(filt, freq01 / sampleRate, &phase0);
         qDebug() << "freq01:" << freq01 << resp0 << phase0;
@@ -209,16 +211,16 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         }
         double resp2, phase2;
         resp2 = fid_response_pha(filt, freq01 / sampleRate / 2, &phase2);
-        qDebug() << "freq2:" << freq01 / 2 << resp2 << phase0;
+        qDebug() << "freq2:" << freq01 / 2 << resp2 << phase2;
         double resp3, phase3;
         resp3 = fid_response_pha(filt, freq01 / sampleRate * 2, &phase3);
-        qDebug() << "freq3:" << freq01 * 2 << resp3 << phase0;
+        qDebug() << "freq3:" << freq01 * 2 << resp3 << phase3;
         double resp4, phase4;
         resp4 = fid_response_pha(filt, freq01 / sampleRate / 2.2, &phase4);
-        qDebug() << "freq4:" << freq01 / 2.2 << resp2 << phase0;
+        qDebug() << "freq4:" << freq01 / 2.2 << resp4 << phase4;
         double resp5, phase5;
         resp5 = fid_response_pha(filt, freq01 / sampleRate * 2.2, &phase5);
-        qDebug() << "freq5:" << freq01 * 2.2 << resp3 << phase0;
+        qDebug() << "freq5:" << freq01 * 2.2 << resp5 << phase5;
         free(filt);
 #endif
     }

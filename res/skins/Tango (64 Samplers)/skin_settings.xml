@@ -6,7 +6,7 @@ Description:
   No way to make SkinSettings float on top of main window at the right side
   while keeping the screen area underneath clickable.
 
-  https://bugs.launchpad.net/mixxx/+bug/1689196
+  https://github.com/mixxxdj/mixxx/issues/8859
   On OSX this widget is drawn behind main skin instead on top of it.
   I removed the stacked layout and placed skin settings on the right hand side of main skin.
 -->

@@ -54,25 +54,14 @@ void WBeatSpinBox::stepBy(int steps) {
     QString temp = text();
     int cursorPos = lineEdit()->cursorPosition();
     if (validate(temp, cursorPos) == QValidator::Acceptable) {
-        double editValue = valueFromText(temp);
-        newValue = editValue * pow(2, steps);
-        if (newValue < minimum() || newValue > maximum()) {
-            // don't clamp the value here to not fall out of a measure
-            newValue = editValue;
-        }
+        newValue = valueFromText(temp) * pow(2, steps);
     } else {
         // here we have an unacceptable edit, going back to the old value first
         newValue = oldValue;
     }
     // Do not call QDoubleSpinBox::setValue directly in case
     // the new value of the ControlObject needs to be confirmed.
-    // Curiously, m_valueControl.set() does not cause slotControlValueChanged
-    // to execute for beatjump_size, so call QDoubleSpinBox::setValue in this function.
     m_valueControl.set(newValue);
-    double coValue = m_valueControl.get();
-    if (coValue != value()) {
-        setValue(coValue);
-    }
     selectAll();
 }
 

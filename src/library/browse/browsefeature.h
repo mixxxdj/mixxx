@@ -69,6 +69,9 @@ class BrowseFeature : public LibraryFeature {
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;
+
+    // Caution: Make sure this is reset whenever the library tree is updated,
+    // so that the internalPointer() does not become dangling
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;

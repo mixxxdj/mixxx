@@ -233,7 +233,7 @@ void BrowseThread::populateModel() {
             item->setData(bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined, Qt::UserRole);
             row_data.insert(COLUMN_BPM, item);
 
-            item = new QStandardItem(trackMetadata.getTrackInfo().getKey());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getKeyText());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_KEY, item);

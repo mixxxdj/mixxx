@@ -120,7 +120,6 @@ Rectangle {
                 group: root.group
                 key: "playposition"
             }
-
         }
 
         MouseArea {
@@ -133,10 +132,8 @@ Rectangle {
             onPositionChanged: (mouse) => {
                 if (containsPress)
                     playPositionControl.value = mouse.x / width;
-
             }
         }
-
     }
 
     Skin.VuMeter {
@@ -189,5 +186,4 @@ Rectangle {
         anchors.fill: parent
         group: root.group
     }
-
 }

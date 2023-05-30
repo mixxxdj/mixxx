@@ -99,8 +99,6 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private:
-    void addSearchColumn(int index);
-
     TrackCollectionManager* const m_pTrackCollectionManager;
 
     QList<int> m_searchColumns;

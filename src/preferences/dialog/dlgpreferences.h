@@ -26,9 +26,8 @@ class DlgPrefInterface;
 class DlgPrefWaveform;
 class DlgPrefDeck;
 class DlgPrefColors;
-class DlgPrefEQ;
 class DlgPrefEffects;
-class DlgPrefCrossfader;
+class DlgPrefMixer;
 class DlgPrefAutoDJ;
 #ifdef __BROADCAST__
 class DlgPrefBroadcast;

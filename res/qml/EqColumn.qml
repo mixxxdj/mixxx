@@ -46,5 +46,4 @@ Column {
         key: "orientation"
         color: Theme.crossfaderOrientationColor
     }
-
 }

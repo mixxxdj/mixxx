@@ -28,6 +28,8 @@ const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_ad
 
 class AutoDJProcessor;
 
+constexpr int kInvalidPlaylistId = -1;
+
 class PlaylistDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
@@ -55,15 +57,19 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int createUniquePlaylist(QString* pName, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
-    /// Delete Playlists with fewer entries then "length"
+    // Delete a set of playlists.
+    bool deletePlaylists(const QStringList& idStringList);
+    bool deleteUnlockedPlaylists(QStringList&& idStringList);
+    /// Delete Playlists with fewer entries then "minNumberOfTracks"
     /// Needs to be called inside a transaction.
-    /// @return number of deleted playlists, -1 on error
-    int deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::HiddenType type,
+    /// @return true on success, flase on error
+    bool deleteAllUnlockedPlaylistsWithFewerTracks(const PlaylistDAO::HiddenType type,
             int minNumberOfTracks);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
     bool setPlaylistLocked(const int playlistId, const bool locked);
+    int setPlaylistsLocked(const QSet<int>& playlistIds, const bool lock);
     // Find out the state of a playlist lock
     bool isPlaylistLocked(const int playlistId) const;
     // Append a list of tracks to a playlist
@@ -108,6 +114,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
     int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;
+    // Get the following playlist of currentPlaylistId with the HiddenType
+    // hidden. Returns -1 if no such playlist exists.
+    int getNextPlaylist(const int currentPlaylistId, HiddenType hidden) const;
     // Append all the tracks in the source playlist to the target playlist.
     bool copyPlaylistTracks(const int sourcePlaylistID, const int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
@@ -127,7 +136,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void added(int playlistId);
     void deleted(int playlistId);
     void renamed(int playlistId, const QString& newName);
-    void lockChanged(int playlistId);
+    void lockChanged(const QSet<int>& playlistIds);
     void trackAdded(int playlistId, TrackId trackId, int position);
     void trackRemoved(int playlistId, TrackId trackId, int position);
     void tracksChanged(const QSet<int>& playlistIds); // added/removed/reordered

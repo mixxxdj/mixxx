@@ -360,14 +360,6 @@ void SyncControl::updateInstantaneousBpm(mixxx::Bpm bpm) {
     m_pBpmControl->updateInstantaneousBpm(bpmValue);
 }
 
-void SyncControl::reportTrackPosition(double fractionalPlaypos) {
-    // If we're close to the end, and leader, disable leader so we don't stop
-    // the party.
-    if (isLeader(getSyncMode()) && fractionalPlaypos >= 1.0) {
-        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
-    }
-}
-
 // called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     mixxx::BeatsPointer pBeats;

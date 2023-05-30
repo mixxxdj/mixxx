@@ -2,7 +2,6 @@
 
 
 #include <algorithm> // std::swap
-#include <span>
 
 #include "util/span.h"
 #include "util/types.h"

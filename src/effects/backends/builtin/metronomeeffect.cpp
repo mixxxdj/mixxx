@@ -51,9 +51,6 @@ void MetronomeEffect::loadEngineEffectParameters(
     m_pSyncParameter = parameters.value("sync");
 }
 
-MetronomeEffect::~MetronomeEffect() {
-}
-
 void MetronomeEffect::processChannel(
         MetronomeGroupState* pGroupState,
         const CSAMPLE* pInput,

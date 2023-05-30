@@ -1495,7 +1495,7 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
 }
 
 TEST_F(EngineSyncTest, BeatDistanceBeforeStart) {
-    // https://bugs.launchpad.net/mixxx/+bug/1930143
+    // https://github.com/mixxxdj/mixxx/issues/10423
     // If the start position is before zero, we should still initialize the beat distance
     // correctly.  Unfortunately, this currently doesn't work.
 
@@ -1676,7 +1676,7 @@ TEST_F(EngineSyncTest, ZeroLatencyRateDiffQuant) {
 // In this test, we set play *first* and then turn on sync lock.
 // This exercises a slightly different ordering of signals that we
 // need to check. The Sync feature is unfortunately brittle.
-// This test exercises https://bugs.launchpad.net/mixxx/+bug/1884324
+// This test exercises https://github.com/mixxxdj/mixxx/issues/10024
 TEST_F(EngineSyncTest, ActivatingSyncDoesNotCauseDrifting) {
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(150));
@@ -2024,7 +2024,7 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
 TEST_F(EngineSyncTest, HalfDoubleEachOther) {
     // Confirm that repeated sync with both decks leads to the same
     // Half/Double decision.
-    // This test demonstrates https://bugs.launchpad.net/mixxx/+bug/1921962
+    // This test demonstrates https://github.com/mixxxdj/mixxx/issues/10378
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(144));
     m_pTrack1->trySetBeats(pBeats1);
@@ -2184,7 +2184,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     mixxx::BeatsPointer pBeats3 = mixxx::Beats::fromConstTempo(
             m_pTrack3->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(140));
     m_pTrack3->trySetBeats(pBeats3);
-    // This will sync to the first deck here and not the second (lp1784185)
+    // This will sync to the first deck here and not the second #9397
     pButtonSyncEnabled3->set(1.0);
     EXPECT_TRUE(isSoftLeader(m_sGroup3));
     ProcessBuffer();
@@ -2743,7 +2743,7 @@ TEST_F(EngineSyncTest, ScratchEndOtherPlayingTrackStayInPhase) {
 }
 
 TEST_F(EngineSyncTest, SyncWithoutBeatgrid) {
-    // this tests bug lp1783020, notresetting rate when other deck has no beatgrid
+    // this tests issue #9391, notresetting rate when other deck has no beatgrid
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(128));
     m_pTrack1->trySetBeats(pBeats1);
@@ -2824,7 +2824,7 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
 }
 
 TEST_F(EngineSyncTest, ChangeBeatGrid) {
-    // https://bugs.launchpad.net/mixxx/+bug/1808698
+    // https://github.com/mixxxdj/mixxx/issues/9550
 
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
@@ -2904,7 +2904,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 }
 
 TEST_F(EngineSyncTest, BeatMapQuantizePlay) {
-    // This test demonstrates https://bugs.launchpad.net/mixxx/+bug/1874918
+    // This test demonstrates https://github.com/mixxxdj/mixxx/issues/9938
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(120));
     m_pTrack1->trySetBeats(pBeats1);
@@ -2932,7 +2932,7 @@ TEST_F(EngineSyncTest, BeatMapQuantizePlay) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
     // Beat Distance shall be still 0, because we are before the first beat.
-    // This was fixed in https://bugs.launchpad.net/mixxx/+bug/1920084
+    // This was fixed in https://github.com/mixxxdj/mixxx/issues/10358
     EXPECT_DOUBLE_EQ(m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance(), 0);
     EXPECT_DOUBLE_EQ(
             ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
@@ -3020,4 +3020,25 @@ TEST_F(EngineSyncTest, ImplicitLeaderToInternalClock) {
     ASSERT_TRUE(isSoftLeader(m_sGroup1));
     ASSERT_FALSE(isSoftLeader(m_sGroup2));
     ASSERT_FALSE(isSoftLeader(m_sInternalClockGroup));
+}
+
+TEST_F(EngineSyncTest, BeatContextRounding) {
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
+            m_pTrack1->getSampleRate(), mixxx::audio::FramePos(11166), mixxx::Bpm(162));
+    m_pTrack1->trySetBeats(pBeats1);
+
+    // This playposition is was able to fail a DEBUG_ASSERT before
+    // https://github.com/mixxxdj/mixxx/pull/11263 It was not possible to pass
+    // it as one double literal
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"),
+            (-5167.0 - 0.33333333333393966313) / 220500);
+    ProcessBuffer();
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    // this must not abort due to the assertion in Beats::iteratorFrom()
+    ProcessBuffer();
+
+    EXPECT_NEAR(-0.021112622826908536,
+            ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
+            kMaxFloatingPointErrorHighPrecision);
 }

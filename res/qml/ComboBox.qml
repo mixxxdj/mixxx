@@ -31,7 +31,6 @@ ComboBox {
             border.color: Theme.deckLineColor
             color: "transparent"
         }
-
     }
 
     contentItem: Text {
@@ -57,12 +56,9 @@ ComboBox {
 
             ScrollIndicator.vertical: ScrollIndicator {
             }
-
         }
 
         background: Skin.EmbeddedBackground {
         }
-
     }
-
 }

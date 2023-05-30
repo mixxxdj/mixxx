@@ -32,7 +32,7 @@ class EngineEffectsDelay final : public EngineObject {
   public:
     EngineEffectsDelay();
 
-    virtual ~EngineEffectsDelay(){};
+    ~EngineEffectsDelay() override;
 
     /// Called from the audio thread
 

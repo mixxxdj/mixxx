@@ -24,7 +24,7 @@ class Bessel8LVMixEQEffectGroupState : public LVMixEQEffectGroupState<EngineFilt
 class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGroupState> {
   public:
     Bessel8LVMixEQEffect();
-    virtual ~Bessel8LVMixEQEffect();
+    ~Bessel8LVMixEQEffect() override;
 
     static QString getId();
     static EffectManifestPointer getManifest();

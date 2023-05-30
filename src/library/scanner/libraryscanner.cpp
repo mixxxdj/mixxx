@@ -38,7 +38,7 @@ int execRowCountQuery(FwdSqlQuery& query) {
 }
 
 /// Clean up the database and fix inconsistencies from previous runs.
-/// See also: https://bugs.launchpad.net/mixxx/+bug/1846945
+/// See also: https://github.com/mixxxdj/mixxx/issues/9771
 void cleanUpDatabase(const QSqlDatabase& database) {
     kLogger.info()
             << "Cleaning up database...";

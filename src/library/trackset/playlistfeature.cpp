@@ -232,7 +232,7 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
 /// This method queries the database and does dynamic insertion
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
-    QList<TreeItem*> data_list;
+    std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
     int row = 0;
@@ -247,17 +247,17 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlistLabel, playlistId);
-        item->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
+        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
+        pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
 
-        decorateChild(item, playlistId);
-        data_list.append(item);
+        decorateChild(pItem.get(), playlistId);
+        childrenToAdd.push_back(std::move(pItem));
 
         ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_pSidebarModel->insertTreeItemRows(data_list, 0);
+    m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
     if (selectedRow == -1) {
         return QModelIndex();
     }
@@ -276,36 +276,53 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+    if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
+            type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
+        return;
+    }
+
+    // Store current selection
+    int selectedPlaylistId = kInvalidPlaylistId;
+    if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+        if (playlistId == playlistIdFromIndex(m_lastClickedIndex) &&
+                type == PlaylistDAO::PLHT_UNKNOWN) {
+            // if the selected playlist was deleted, find a sibling to select
+            selectedPlaylistId = getSiblingPlaylistIdOf(m_lastClickedIndex);
+        } else {
+            // just restore the current selection
+            selectedPlaylistId = playlistIdFromIndex(m_lastClickedIndex);
+        }
+    }
+
+    clearChildModel();
+    QModelIndex newIndex = constructChildModel(selectedPlaylistId);
+    if (newIndex.isValid()) {
+        // If a child index was selected and we got a new valid index select that.
+        // Else (root item was selected or for some reason no index could be created)
+        // there's nothing to do: either no child was selected earlier, or the root
+        // was selected and will remain selected after the child model was rebuilt.
+        activateChild(newIndex);
+        emit featureSelect(this, newIndex);
     }
 }
 
-void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
+void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
+    // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
+    QSet<int> idsToBeUpdated;
     for (const auto playlistId : qAsConst(playlistIds)) {
-        enum PlaylistDAO::HiddenType type =
-                m_playlistDao.getHiddenType(playlistId);
-        if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-                type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-            updateChildModel(playlistId);
+        if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
+            idsToBeUpdated.insert(playlistId);
         }
     }
+    updateChildModel(idsToBeUpdated);
 }
 
 void PlaylistFeature::slotPlaylistTableRenamed(
         int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
-        if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            activatePlaylist(playlistId);
-        }
+    // qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
+    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
+        slotPlaylistTableChanged(playlistId);
     }
 }
 

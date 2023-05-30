@@ -55,6 +55,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_track_watcher;
     QFuture<TreeItem*> m_track_future;
     parented_ptr<TreeItemModel> m_pSidebarModel;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;

@@ -22,7 +22,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
-
         }
     }
 
@@ -32,7 +31,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
-
         }
     }
 
@@ -75,7 +73,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(value);
-
         }
     }
 
@@ -85,7 +82,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(-1);
-
         }
     }
 
@@ -95,7 +91,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(1);
-
         }
     }
 
@@ -118,7 +113,6 @@ Item {
                 root.loadSelectedTrack(this.group, play);
             }
         }
-
     }
 
     Mixxx.ControlProxy {
@@ -140,7 +134,6 @@ Item {
                 root.loadSelectedTrack(this.group, play);
             }
         }
-
     }
 
     Mixxx.ControlProxy {
@@ -162,7 +155,5 @@ Item {
                 root.loadSelectedTrack(this.group, play);
             }
         }
-
     }
-
 }

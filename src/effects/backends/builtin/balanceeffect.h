@@ -10,7 +10,7 @@
 class BalanceGroupState : public EffectState {
   public:
     BalanceGroupState(const mixxx::EngineParameters& engineParameters);
-    ~BalanceGroupState();
+    ~BalanceGroupState() override = default;
 
     void setFilters(int sampleRate, double freq);
 
@@ -29,7 +29,7 @@ class BalanceGroupState : public EffectState {
 class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
   public:
     BalanceEffect() = default;
-    virtual ~BalanceEffect();
+    ~BalanceEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

@@ -56,6 +56,8 @@ class SoundSourceMp3 final : public SoundSource {
     /** Returns the position in m_seekFrameList of the requested frame index. */
     SINT findSeekFrameIndex(SINT frameIndex) const;
 
+    bool copyLeftoverFrame();
+
     SINT m_curFrameIndex;
 
     // NOTE(uklotzde): Each invocation of initDecoding() must be

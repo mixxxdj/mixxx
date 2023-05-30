@@ -18,6 +18,15 @@ EqualizerEffectChain::EqualizerEffectChain(
     addEffectSlot(formatEffectSlotGroup(handleAndGroup.name()));
     enableForInputChannel(handleAndGroup);
     m_effectSlots[0]->setEnabled(true);
+
+    QObject::connect(this,
+            &EffectChain::chainPresetChanged,
+            this,
+            [this](const QString& presetname) {
+                Q_UNUSED(presetname);
+                setFilterWaveform(
+                        m_effectSlots.at(0)->getManifest()->isMixingEQ());
+            });
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
     setupLegacyAliasesForGroup(handleAndGroup.name());

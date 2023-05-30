@@ -20,8 +20,8 @@ class RubberBandStretcher;
 class PitchShiftGroupState : public EffectState {
   public:
     PitchShiftGroupState(const mixxx::EngineParameters& engineParameters);
-
     ~PitchShiftGroupState() override;
+
     void initializeBuffer(const mixxx::EngineParameters& engineParameters);
     void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
 
@@ -32,6 +32,7 @@ class PitchShiftGroupState : public EffectState {
 class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> {
   public:
     PitchShiftEffect();
+    ~PitchShiftEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

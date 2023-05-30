@@ -68,7 +68,6 @@ Item {
                 target: indicatorContainer
                 opacity: 0
             }
-
         }
 
         transitions: Transition {
@@ -82,9 +81,6 @@ Item {
                 property: "opacity"
                 duration: 150
             }
-
         }
-
     }
-
 }

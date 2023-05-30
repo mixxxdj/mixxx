@@ -41,26 +41,14 @@ DlgHidden::DlgHidden(
             &QPushButton::clicked,
             m_pTrackTableView,
             &WTrackTableView::slotUnhide);
-    connect(btnUnhide,
-            &QPushButton::clicked,
-            this,
-            &DlgHidden::clicked);
     connect(btnPurge,
             &QPushButton::clicked,
             m_pTrackTableView,
             &WTrackTableView::slotPurge);
-    connect(btnPurge,
-            &QPushButton::clicked,
-            this,
-            &DlgHidden::clicked);
     connect(btnDelete,
             &QPushButton::clicked,
             m_pTrackTableView,
             &WTrackTableView::slotDeleteTracksFromDisk);
-    connect(btnDelete,
-            &QPushButton::clicked,
-            this,
-            &DlgHidden::clicked);
     connect(btnSelect,
             &QPushButton::clicked,
             this,
@@ -108,11 +96,6 @@ void DlgHidden::onSearch(const QString& text) {
 
 QString DlgHidden::currentSearch() {
     return m_pHiddenTableModel->currentSearch();
-}
-
-void DlgHidden::clicked() {
-    // all marked tracks are gone now anyway
-    onShow();
 }
 
 void DlgHidden::selectAll() {

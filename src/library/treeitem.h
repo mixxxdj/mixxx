@@ -83,19 +83,15 @@ class TreeItem final {
         return m_children;
     }
 
-    // single child items
-    TreeItem* appendChild(
-            std::unique_ptr<TreeItem> pChild);
     TreeItem* appendChild(
             QString label,
             QVariant data = QVariant());
-    void removeChild(int row);
 
     // multiple child items
     // take ownership of children items
-    void insertChildren(int row, QList<TreeItem*>& children);
+    void insertChildren(int row, std::vector<std::unique_ptr<TreeItem>>&& children);
     void removeChildren(int row, int count);
-    void insertChild(int row, TreeItem* pChild);
+    void insertChild(int row, std::unique_ptr<TreeItem> pChild);
 
     /////////////////////////////////////////////////////////////////////////
     // Payload

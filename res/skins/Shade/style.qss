@@ -470,9 +470,16 @@ WLibrarySidebar::branch:selected,
   WSearchLineEdit::indicator {
     width:  0;
   }
-WLibrarySidebar,
-WLibrarySidebar::item:focus {
+WLibrarySidebar {
   outline: none;
+}
+WLibrarySidebar::item:selected:focus {
+  outline: none;
+  border: 0px;
+}
+WLibrarySidebar::item:!selected:focus {
+  outline: none;
+  border: 1px solid white;
 }
 
 /* Use the native focus decoration */

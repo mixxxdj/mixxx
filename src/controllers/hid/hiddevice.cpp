@@ -39,11 +39,9 @@ DeviceInfo::DeviceInfo(
                           kDeviceInfoStringMaxLength)),
           m_manufacturerString(mixxx::convertWCStringToQString(
                   device_info.manufacturer_string,
-                  mixxx::wcsnlen_s(device_info.manufacturer_string,
-                          kDeviceInfoStringMaxLength))),
+                  kDeviceInfoStringMaxLength)),
           m_productString(mixxx::convertWCStringToQString(device_info.product_string,
-                  mixxx::wcsnlen_s(device_info.product_string,
-                          kDeviceInfoStringMaxLength))),
+                  kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
 }

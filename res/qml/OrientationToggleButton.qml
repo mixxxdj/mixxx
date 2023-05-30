@@ -34,7 +34,6 @@ Item {
             const val = valueAt(visualPosition);
             if (val != control.value)
                 control.value = val;
-
         }
 
         background: Rectangle {
@@ -61,11 +60,8 @@ Item {
                 NumberAnimation {
                     duration: 150
                 }
-
             }
-
         }
-
     }
 
     Mixxx.ControlProxy {
@@ -74,5 +70,4 @@ Item {
         group: root.group
         key: root.key
     }
-
 }

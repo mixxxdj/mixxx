@@ -10,8 +10,11 @@ constexpr char kFuzzyPrefix[] = "~";
 const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
         QStringLiteral(" (?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"));
 
-SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
-    : m_pTrackCollection(pTrackCollection) {
+SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns)
+        : m_pTrackCollection(pTrackCollection),
+          m_searchCrates(false) {
+    setSearchColumns(std::move(searchColumns));
+
     m_textFilters << "artist"
                   << "album_artist"
                   << "album"
@@ -22,19 +25,18 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
                   << "comment"
                   << "location"
                   << "crate";
-    m_numericFilters << "year"
-                     << "track"
+    m_numericFilters << "track"
                      << "bpm"
                      << "played"
                      << "rating"
                      << "bitrate";
-    m_specialFilters << "key"
+    m_specialFilters << "year"
+                     << "key"
                      << "duration"
                      << "added"
                      << "dateadded"
                      << "datetime_added"
                      << "date_added";
-    m_ignoredColumns << "crate";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -70,6 +72,19 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
 }
 
 SearchQueryParser::~SearchQueryParser() {
+}
+
+void SearchQueryParser::setSearchColumns(QStringList searchColumns) {
+    m_queryColumns = std::move(searchColumns);
+
+    // we need to create a filtered columns list that are handled differently
+    for (int i = 0; i < m_queryColumns.size(); ++i) {
+        if (m_queryColumns[i] == "crate") {
+            m_searchCrates = true;
+            m_queryColumns.removeAt(i);
+            break;
+        }
+    }
 }
 
 QString SearchQueryParser::getTextArgument(QString argument,
@@ -122,20 +137,7 @@ QString SearchQueryParser::getTextArgument(QString argument,
 }
 
 void SearchQueryParser::parseTokens(QStringList tokens,
-                                    QStringList searchColumns,
                                     AndNode* pQuery) const {
-    // we need to create a filtered columns list that are handled differently
-    auto queryColumns = QStringList();
-    queryColumns.reserve(searchColumns.count());
-
-    for (const auto& column: qAsConst(searchColumns)) {
-        if (m_ignoredColumns.contains(column)) {
-            continue;
-        }
-        queryColumns << column;
-    }
-
-
     while (tokens.size() > 0) {
         QString token = tokens.takeFirst().trimmed();
         if (token.length() == 0) {
@@ -216,10 +218,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else if (field == "duration") {
                     pNode = std::make_unique<DurationFilterNode>(
                             m_fieldToSqlColumns[field], argument);
+                } else if (field == "year") {
+                    pNode = std::make_unique<YearFilterNode>(
+                            m_fieldToSqlColumns[field], argument);
                 } else if (field == "date_added" ||
-                           field == "datetime_added" ||
-                           field == "added" ||
-                           field == "dateadded") {
+                        field == "datetime_added" ||
+                        field == "added" ||
+                        field == "dateadded") {
                     field = "datetime_added";
                     pNode = std::make_unique<TextFilterNode>(
                         m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
@@ -236,18 +241,16 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 // For untagged strings we search the track fields as well
                 // as the crate names the track is in. This allows the user
                 // to use crates like tags
-                if (searchColumns.contains("crate")) {
-                    std::unique_ptr<OrNode> gNode = std::make_unique<OrNode>();
-
+                if (m_searchCrates) {
+                    auto gNode = std::make_unique<OrNode>();
                     gNode->addNode(std::make_unique<CrateFilterNode>(
                                     &m_pTrackCollection->crates(), argument));
                     gNode->addNode(std::make_unique<TextFilterNode>(
-                                    m_pTrackCollection->database(), queryColumns, argument));
-
+                            m_pTrackCollection->database(), m_queryColumns, argument));
                     pNode = std::move(gNode);
                 } else {
                     pNode = std::make_unique<TextFilterNode>(
-                             m_pTrackCollection->database(), queryColumns, argument);
+                            m_pTrackCollection->database(), m_queryColumns, argument);
                 }
             }
         }
@@ -260,9 +263,9 @@ void SearchQueryParser::parseTokens(QStringList tokens,
     }
 }
 
-std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
-                                         const QStringList& searchColumns,
-                                         const QString& extraFilter) const {
+std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(
+        const QString& query,
+        const QString& extraFilter) const {
     auto pQuery(std::make_unique<AndNode>());
 
     if (!extraFilter.isEmpty()) {
@@ -271,7 +274,7 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
 
     if (!query.isEmpty()) {
         QStringList tokens = query.split(" ");
-        parseTokens(tokens, searchColumns, pQuery.get());
+        parseTokens(tokens, pQuery.get());
     }
 
     return pQuery;

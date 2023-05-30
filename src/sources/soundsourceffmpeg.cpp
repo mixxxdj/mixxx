@@ -1162,7 +1162,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                                 *m_pavStream, m_pavDecodedFrame->pts);
                 // Only audible samples are counted, i.e. any inaudible aka
                 // "priming" samples are not included in nb_samples!
-                // https://bugs.launchpad.net/mixxx/+bug/1934785
+                // https://github.com/mixxxdj/mixxx/issues/10464
                 if (streamFrameIndex < kMinFrameIndex) {
 #if VERBOSE_DEBUG_LOG
                     const auto inaudibleFrameCountUntilStartOfStream =

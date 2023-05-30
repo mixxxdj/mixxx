@@ -90,6 +90,8 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
+    updateSearchLineEditHistoryOptions();
+
     connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
     // TODO(XXX) this string should be extracted from the soundsources
@@ -203,13 +205,15 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
-    radioButton_dbclick_bottom->setChecked(false);
-    radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
+    radioButton_cover_art_fetcher_medium->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
     searchDebouncingTimeoutSpinBox->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
+    checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kCompletionsEnabledDefault);
+    checkBoxEnableSearchHistoryShortcuts->setChecked(
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -261,11 +265,35 @@ void DlgPrefLibrary::slotUpdate() {
         break;
     }
 
+    switch (m_pConfig->getValue<int>(
+            kCoverArtFetcherQualityConfigKey,
+            static_cast<int>(CoverArtFetcherQuality::Low))) {
+    case static_cast<int>(CoverArtFetcherQuality::Highest):
+        radioButton_cover_art_fetcher_highest->setChecked(true);
+        break;
+    case static_cast<int>(CoverArtFetcherQuality::High):
+        radioButton_cover_art_fetcher_high->setChecked(true);
+        break;
+    case static_cast<int>(CoverArtFetcherQuality::Medium):
+        radioButton_cover_art_fetcher_medium->setChecked(true);
+        break;
+    default:
+        radioButton_cover_art_fetcher_lowest->setChecked(true);
+        break;
+    }
+
     bool editMetadataSelectedClick = m_pConfig->getValue(
             kEditMetadataSelectedClickConfigKey,
             kEditMetadataSelectedClickDefault);
     checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
     m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
+
+    checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
+            kEnableSearchCompletionsConfigKey,
+            WSearchLineEdit::kCompletionsEnabledDefault));
+    checkBoxEnableSearchHistoryShortcuts->setChecked(m_pConfig->getValue(
+            kEnableSearchHistoryShortcutsConfigKey,
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -413,6 +441,12 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(kUseRelativePathOnExportConfigKey,
             ConfigValue((int)checkBox_use_relative_path->isChecked()));
 
+    m_pConfig->set(kEnableSearchCompletionsConfigKey,
+            ConfigValue(checkBoxEnableSearchCompletions->isChecked()));
+    m_pConfig->set(kEnableSearchHistoryShortcutsConfigKey,
+            ConfigValue(checkBoxEnableSearchHistoryShortcuts->isChecked()));
+    updateSearchLineEditHistoryOptions();
+
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
@@ -425,6 +459,18 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
+
+    int coverartfetcherquality_status;
+    if (radioButton_cover_art_fetcher_highest->isChecked()) {
+        coverartfetcherquality_status = static_cast<int>(CoverArtFetcherQuality::Highest);
+    } else if (radioButton_cover_art_fetcher_high->isChecked()) {
+        coverartfetcherquality_status = static_cast<int>(CoverArtFetcherQuality::High);
+    } else if (radioButton_cover_art_fetcher_medium->isChecked()) {
+        coverartfetcherquality_status = static_cast<int>(CoverArtFetcherQuality::Medium);
+    } else {
+        coverartfetcherquality_status = static_cast<int>(CoverArtFetcherQuality::Low);
+    }
+    m_pConfig->set(kCoverArtFetcherQualityConfigKey, ConfigValue(coverartfetcherquality_status));
 
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
@@ -493,6 +539,15 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
             kSearchDebouncingTimeoutMillisConfigKey,
             searchDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
+}
+
+void DlgPrefLibrary::updateSearchLineEditHistoryOptions() {
+    WSearchLineEdit::setSearchCompletionsEnabled(m_pConfig->getValue<bool>(
+            kEnableSearchCompletionsConfigKey,
+            WSearchLineEdit::kCompletionsEnabledDefault));
+    WSearchLineEdit::setSearchHistoryShortcutsEnabled(m_pConfig->getValue<bool>(
+            kEnableSearchHistoryShortcutsConfigKey,
+            WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {

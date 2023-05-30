@@ -30,7 +30,6 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     bool restoreCurrentViewState() override;
 
   public slots:
-    void clicked();
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 

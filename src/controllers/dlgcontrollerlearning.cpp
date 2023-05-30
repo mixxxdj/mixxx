@@ -101,7 +101,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
     connect(pushButtonFakeControl,
             &QAbstractButton::clicked,
             this,
-            &DlgControllerLearning::DEBUGFakeMidiMessage;
+            &DlgControllerLearning::DEBUGFakeMidiMessage);
     connect(pushButtonFakeControl2,
             &QAbstractButton::clicked,
             this,
@@ -281,7 +281,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
 
     // NOTE(rryan): We intend to use MidiKey(status, control) here rather than
     // setting fields individually since we will use the MidiKey with an input
-    // mapping. See Bug #1532297
+    // mapping. See Issue #8432
     MidiKey key(status, control);
 
     // Ignore all standard MIDI System Real-Time Messages because they

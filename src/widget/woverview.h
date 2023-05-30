@@ -39,6 +39,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     void setup(const QDomNode& node, const SkinContext& context);
+    virtual void initWithTrack(TrackPointer pTrack);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
@@ -77,6 +78,16 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;
+    }
+
+    double getTrackSamples() const {
+        if (m_trackLoaded) {
+            return m_trackSamplesControl.get();
+        } else {
+            // Ignore the value, because the engine can still have the old track
+            // during loading
+            return 0.0;
+        }
     }
 
     QImage m_waveformSourceImage;

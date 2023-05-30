@@ -70,7 +70,7 @@ var bendConst = 1/4; // Adjust to suit.
  * 2015-11-24 - Make some code reusable (lights : LED object; Special Buttons, iCUT)
  *            - pfl hidden bug fixed
  *            - removed line duplicate in JumpBtn : deck.controls.jump.onOff(true);
- *              (Mixxx bug was fixed : https://bugs.launchpad.net/mixxx/+bug/1504503)
+ *              (Mixxx bug was fixed : https://github.com/mixxxdj/mixxx/issues/8249)
  *            - More comment in code
  *            - Moved scratching constants with the global constants
  *            - Fixed Jog Bending and fast search

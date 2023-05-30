@@ -34,5 +34,4 @@ Item {
             root.loadTrackRequested(true);
         }
     }
-
 }

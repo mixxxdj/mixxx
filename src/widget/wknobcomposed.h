@@ -6,7 +6,6 @@
 #include <QWidget>
 
 #include "skin/legacy/skincontext.h"
-#include "util/widgetrendertimer.h"
 #include "widget/knobeventhandler.h"
 #include "widget/wimagestore.h"
 #include "widget/wpixmapstore.h"
@@ -64,7 +63,6 @@ class WKnobComposed : public WWidget {
     bool m_arcUnipolar;
     bool m_arcReversed;
     Qt::PenCapStyle m_arcPenCap;
-    WidgetRenderTimer m_renderTimer;
 
     friend class KnobEventHandler<WKnobComposed>;
 };

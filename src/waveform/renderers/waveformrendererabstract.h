@@ -9,6 +9,10 @@ QT_FORWARD_DECLARE_CLASS(QPainter)
 class SkinContext;
 class WaveformWidgetRenderer;
 
+namespace allshader {
+class WaveformRendererAbstract;
+}
+
 class WaveformRendererAbstract {
   public:
     explicit WaveformRendererAbstract(
@@ -21,6 +25,9 @@ class WaveformRendererAbstract {
 
     virtual void onResize() {}
     virtual void onSetTrack() {}
+    virtual allshader::WaveformRendererAbstract* allshaderWaveformRenderer() {
+        return nullptr;
+    }
 
   protected:
     bool isDirty() const {

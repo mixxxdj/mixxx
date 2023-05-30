@@ -55,7 +55,7 @@ class DlgPreferencePage : public QWidget {
     inline void createLinkColor() {
         // Blend the palette colors for regular text and link text to get a color
         // that is more likely to be visible with dark OS themes.
-        // https://bugs.launchpad.net/mixxx/+bug/1900201
+        // https://github.com/mixxxdj/mixxx/issues/10170
         m_pLinkColor = Color::blendColors(palette().link().color(),
                 palette().text().color())
                                .name();

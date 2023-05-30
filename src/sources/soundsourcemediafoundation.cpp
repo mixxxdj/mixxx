@@ -372,7 +372,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         SINT readerFrameIndex = m_streamUnitConverter.toFrameIndex(streamPos);
         // TODO: Fix debug assertion in else arm. It has been commented
         // out deliberately to prevent crashes in debug builds.
-        // https://bugs.launchpad.net/mixxx/+bug/1899242
+        // https://github.com/mixxxdj/mixxx/issues/10160
         if (m_currentFrameIndex == kUnknownFrameIndex) {
             // Unknown position after seeking
             m_currentFrameIndex = readerFrameIndex;

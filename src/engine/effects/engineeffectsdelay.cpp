@@ -11,6 +11,10 @@ EngineEffectsDelay::EngineEffectsDelay()
     SampleUtil::clear(m_pDelayBuffer, kDelayBufferSize);
 }
 
+EngineEffectsDelay::~EngineEffectsDelay() {
+    SampleUtil::free(m_pDelayBuffer);
+}
+
 void EngineEffectsDelay::process(CSAMPLE* pInOut,
         const int iBufferSize) {
     if (m_prevDelaySamples == 0 && m_currentDelaySamples == 0) {

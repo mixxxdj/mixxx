@@ -363,11 +363,11 @@ void importTrackMetadataFromTag(
     // Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
     // Assuming no distinction between start and end key, RE uses a "INITIALKEY"
     // or a "KEY" vorbis comment.
-    QString key;
-    if (readCommentField(tag, "INITIALKEY", &key) || // recommended field
-            readCommentField(tag, "KEY", &key) ||    // alternative field
+    QString keyText;
+    if (readCommentField(tag, "INITIALKEY", &keyText) || // recommended field
+            readCommentField(tag, "KEY", &keyText) ||    // alternative field
             resetMissingTagMetadata) {
-        pTrackMetadata->refTrackInfo().setKey(key);
+        pTrackMetadata->refTrackInfo().setKeyText(keyText);
     }
 
     // Only read track gain (not album gain)
@@ -562,10 +562,10 @@ bool exportTrackMetadataIntoTag(
     }
 
     // Write both INITIALKEY and KEY
-    const TagLib::String key(
-            toTString(trackMetadata.getTrackInfo().getKey()));
-    writeCommentField(pTag, "INITIALKEY", key); // recommended field
-    updateCommentField(pTag, "KEY", key);       // alternative field
+    const TagLib::String keyText =
+            toTString(trackMetadata.getTrackInfo().getKeyText());
+    writeCommentField(pTag, "INITIALKEY", keyText); // recommended field
+    updateCommentField(pTag, "KEY", keyText);       // alternative field
 
     writeCommentField(pTag, "REPLAYGAIN_TRACK_GAIN", toTString(formatTrackGain(trackMetadata)));
     // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't

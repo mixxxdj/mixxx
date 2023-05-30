@@ -61,6 +61,7 @@ class ChannelCount {
             return 2;
         }
         DEBUG_ASSERT(!"unreachable code");
+        return kValueDefault;
     }
 
   public:

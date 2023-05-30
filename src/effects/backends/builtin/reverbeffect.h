@@ -22,6 +22,7 @@ class ReverbGroupState : public EffectState {
               sampleRate(engineParameters.sampleRate()),
               sendPrevious(0) {
     }
+    ~ReverbGroupState() override = default;
 
     void engineParametersChanged(const mixxx::EngineParameters& engineParameters) {
         sampleRate = engineParameters.sampleRate();
@@ -30,13 +31,13 @@ class ReverbGroupState : public EffectState {
 
     float sampleRate;
     float sendPrevious;
-    MixxxPlateX2 reverb{};
+    MixxxPlateX2 reverb;
 };
 
 class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
   public:
     ReverbEffect() = default;
-    virtual ~ReverbEffect();
+    ~ReverbEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

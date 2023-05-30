@@ -25,7 +25,7 @@ static const QRegularExpression s_openKeyRegex(QStringLiteral(
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
 static const QRegularExpression s_lancelotKeyRegex(
-        QStringLiteral("\\A(?:^\\s*(1[0-2]|[1-9])([ab])\\s*$)\\z"),
+        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ab])\\s*$)\\z"),
         QRegularExpression::CaseInsensitiveOption);
 
 // a-g followed by any number of sharps or flats, optionally followed by
@@ -214,8 +214,9 @@ QString KeyUtils::keyToString(ChromaticKey key,
     }
 
     if (notation == KeyNotation::Custom) {
-        // The default value for notation is KeyUtils::KeyNotation::Custom, so this executes when the function is
-        // called without a notation specified after KeyUtils::setNotation has set up s_notation.
+        // The default value for notation is KeyUtils::KeyNotation::Custom, so
+        // this executes when the function is called without a notation specified
+        // after KeyUtils::setNotation has set up s_notation.
         const auto locker = lockMutex(&s_notationMutex);
         auto it = s_notation.constFind(key);
         if (it != s_notation.constEnd()) {
@@ -246,8 +247,8 @@ QString KeyUtils::keyToString(ChromaticKey key,
 }
 
 // static
-QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
-    const mixxx::track::io::key::ChromaticKey globalKey(keys.getGlobalKey());
+QString KeyUtils::formatGlobalKey(const Keys& keys, KeyNotation notation) {
+    const mixxx::track::io::key::ChromaticKey globalKey = keys.getGlobalKey();
     if (globalKey != mixxx::track::io::key::INVALID) {
         return keyToString(globalKey, notation);
     } else {
@@ -258,7 +259,14 @@ QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
 
 // static
 ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
-    QString trimmed = text.trimmed();
+    // Remove Shift (Tuning) Information used by Rapid Evolution like: "A#m +50";
+    int shiftStart = text.indexOf('+');
+    if (shiftStart < 0) {
+        shiftStart = text.indexOf('-');
+    }
+    const QString trimmed =
+            shiftStart >= 0 ? text.left(shiftStart).trimmed() : text.trimmed();
+
     if (trimmed.isEmpty()) {
         return mixxx::track::io::key::INVALID;
     }

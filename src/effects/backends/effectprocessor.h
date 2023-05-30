@@ -123,7 +123,7 @@ class EffectProcessorImpl : public EffectProcessor {
     }
     /// Subclasses should not implement their own destructor. All state should
     /// be stored in the EffectState subclass, not the EffectProcessorImpl subclass.
-    ~EffectProcessorImpl() {
+    ~EffectProcessorImpl() override {
         if (kEffectDebugOutput) {
             qDebug() << "~EffectProcessorImpl" << this;
         }

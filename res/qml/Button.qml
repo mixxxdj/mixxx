@@ -72,7 +72,6 @@ AbstractButton {
                 target: labelGlow
                 visible: false
             }
-
         }
     ]
 
@@ -90,7 +89,6 @@ AbstractButton {
             right: 10
             bottom: 10
         }
-
     }
 
     contentItem: Item {
@@ -119,7 +117,5 @@ AbstractButton {
             font.pixelSize: Theme.buttonFontPixelSize
             color: root.normalColor
         }
-
     }
-
 }

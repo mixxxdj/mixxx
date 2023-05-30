@@ -100,7 +100,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
 #ifdef SHOUT_TLS
     // Libshout defaults to SHOUT_TLS_AUTO if build with SHOUT_TLS
     // Sometimes autodetection fails, resulting into no metadata send
-    // https://bugs.launchpad.net/mixxx/+bug/1817395
+    // https://github.com/mixxxdj/mixxx/issues/9599
     if (shout_set_tls(m_pShout, SHOUT_TLS_DISABLED) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting tls mode:"),
                 shout_get_error(m_pShout));
@@ -406,7 +406,7 @@ void ShoutConnection::updateFromPreferences() {
         errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
                        "supported. Please try a different sample rate or switch "
                        "to a different encoding."),
-                    tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
+                    tr("See https://github.com/mixxxdj/mixxx/issues/5701 for more "
                        "information."));
         return;
     }

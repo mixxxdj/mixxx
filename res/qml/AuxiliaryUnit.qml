@@ -38,7 +38,6 @@ Row {
             key: "pregain"
             color: Theme.gainKnobColor
         }
-
     }
 
     Column {
@@ -57,7 +56,6 @@ Row {
             activeColor: Theme.pflActiveButtonColor
             toggleable: true
         }
-
     }
 
     Skin.EmbeddedBackground {
@@ -93,7 +91,6 @@ Row {
                 anchors.centerIn: parent
                 text: "FX1"
             }
-
         }
 
         Skin.InfoBarButton {
@@ -109,9 +106,6 @@ Row {
                 anchors.centerIn: parent
                 text: "FX2"
             }
-
         }
-
     }
-
 }

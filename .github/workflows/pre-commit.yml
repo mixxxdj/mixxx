@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     # The Dockerfile for this container can be found at:
     # https://github.com/Holzhaus/mixxx-ci-docker
-    container: holzhaus/mixxx-ci:20220805
+    container: holzhaus/mixxx-ci:20220930
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v3
@@ -71,6 +71,13 @@ jobs:
         with:
           name: ${{ env.UPLOAD_PATCH_FILE }}
           path: ${{ env.UPLOAD_PATCH_FILE }}
+
+      - name: "Upload pre-commit.log"
+        if: failure() && env.UPLOAD_PATCH_FILE == null
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: pre-commit.log
+          path: /github/home/.cache/pre-commit/pre-commit.log
 
       # AppStream metadata has been generated/updated by a pre-commit hook
       - name: "Validate AppStream metadata"

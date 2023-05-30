@@ -75,6 +75,7 @@
 #include "widget/wslidercomposed.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
+#include "widget/wspinnyglsl.h"
 #endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
@@ -83,9 +84,10 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
-#include "widget/wvumeter.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include "widget/wvumetergl.h"
+#include "widget/wvumeter.h"
+#include "widget/wvumeterglsl.h"
+#include "widget/wvumeterlegacy.h"
 #endif
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
@@ -718,8 +720,12 @@ void LegacySkinParser::parseChildren(
 
 QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
-    commonWidgetSetup(node, pGroup);
+    setupBaseWidget(node, pGroup);
+    setupWidget(node, pGroup->toQWidget());
     pGroup->setup(node, *m_pContext);
+    // Note: if we call setupConnections earlier and it sets the visible property
+    // to true, the style is not applied correctly
+    setupConnections(node, pGroup);
     pGroup->Init();
     parseChildren(node, pGroup);
     return pGroup;
@@ -727,7 +733,6 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
     ControlObject* pNextControl = controlFromConfigNode(node.toElement(), "NextControl");
-    ;
     ConfigKey nextConfigKey;
     if (pNextControl != nullptr) {
         nextConfigKey = pNextControl->getKey();
@@ -980,15 +985,11 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     overviewWidget->setup(node, *m_pContext);
     overviewWidget->installEventFilter(m_pKeyboard);
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    overviewWidget->Init();
+    overviewWidget->initWithTrack(pPlayer->getLoadedTrack());
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, overviewWidget, &WOverview::slotTrackLoaded);
     connect(pPlayer, &BaseTrackPlayer::loadingTrack, overviewWidget, &WOverview::slotLoadingTrack);
-
-    // just in case track already loaded
-    overviewWidget->slotLoadingTrack(pPlayer->getLoadedTrack(), TrackPointer());
-    overviewWidget->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return overviewWidget;
 #endif
@@ -1009,8 +1010,8 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
 
     WWaveformViewer* viewer = new WWaveformViewer(group, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    factory->setWaveformWidget(viewer, node, *m_pContext);
+    WaveformWidgetFactory* pFactory = WaveformWidgetFactory::instance();
+    pFactory->setWaveformWidget(viewer, node, *m_pContext);
 
     //qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
     //qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
@@ -1280,10 +1281,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
 
-    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
 
-    if (!waveformWidgetFactory->isOpenGlAvailable() &&
-            !waveformWidgetFactory->isOpenGlesAvailable()) {
+    if (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+            !pWaveformWidgetFactory->isOpenGlesAvailable()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Spinny can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
@@ -1302,25 +1303,42 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
-    WSpinny* pSpinny;
+    WSpinnyBase* pSpinny;
     if (qApp->platformName() == QLatin1String("xcb")) {
-        pSpinny = new WSpinny(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
+#ifdef MIXXX_USE_QOPENGL
+        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+            pSpinny = new WSpinnyGLSL(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
+        } else
+#endif
+        {
+            pSpinny = new WSpinny(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
+        }
         pSpinny->setParent(m_pParent);
     } else {
-        pSpinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
+#ifdef MIXXX_USE_QOPENGL
+        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+            pSpinny = new WSpinnyGLSL(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
+        } else
+#endif
+        {
+            pSpinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
+        }
     }
     commonWidgetSetup(node, pSpinny);
 
-    connect(waveformWidgetFactory,
+    connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
             pSpinny,
-            &WSpinny::render);
-    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, pSpinny, &WSpinny::swap);
+            &WSpinnyBase::render);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::swapSpinnies,
+            pSpinny,
+            &WSpinnyBase::swap);
     connect(pSpinny,
-            &WSpinny::trackDropped,
+            &WSpinnyBase::trackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
-    connect(pSpinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    connect(pSpinny, &WSpinnyBase::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
     ConfigKey configKey;
@@ -1341,14 +1359,17 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
 
     return nullptr;
 #else
-    if (!CmdlineArgs::Instance().getUseVuMeterGL()) {
-        // Standard WVuMeter
-        WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
-        WaveformWidgetFactory::instance()->addVuMeter(pVuMeterWidget);
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    if (!CmdlineArgs::Instance().getUseVuMeterGL() ||
+            (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+                    !pWaveformWidgetFactory->isOpenGlesAvailable())) {
+        // Legacy WVuMeter
+        WVuMeterLegacy* pVuMeterWidget = parseStandardWidget<WVuMeterLegacy>(node);
+        pWaveformWidgetFactory->addVuMeter(pVuMeterWidget);
         return pVuMeterWidget;
     }
 
-    // QGLWidget derived WVuMeterGL
+    // WGLWidget derived WVuMeter
 
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
@@ -1357,9 +1378,8 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
         return dummy;
     }
 
-    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
-    if (!waveformWidgetFactory->isOpenGlAvailable() &&
-            !waveformWidgetFactory->isOpenGlesAvailable()) {
+    if (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+            !pWaveformWidgetFactory->isOpenGlesAvailable()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when VuMeter can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
@@ -1371,16 +1391,30 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
-    WVuMeterGL* pVuMeterWidget;
+    WVuMeterBase* pVuMeterWidget;
     if (qApp->platformName() == QLatin1String("xcb")) {
-        pVuMeterWidget = new WVuMeterGL();
+#ifdef MIXXX_USE_QOPENGL
+        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+            pVuMeterWidget = new WVuMeterGLSL();
+        } else
+#endif
+        {
+            pVuMeterWidget = new WVuMeter();
+        }
         pVuMeterWidget->setParent(m_pParent);
     } else {
-        pVuMeterWidget = new WVuMeterGL(m_pParent);
+#ifdef MIXXX_USE_QOPENGL
+        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+            pVuMeterWidget = new WVuMeterGLSL(m_pParent);
+        } else
+#endif
+        {
+            pVuMeterWidget = new WVuMeter(m_pParent);
+        }
     }
     commonWidgetSetup(node, pVuMeterWidget);
 
-    waveformWidgetFactory->addVuMeter(pVuMeterWidget);
+    pWaveformWidgetFactory->addVuMeter(pVuMeterWidget);
 
     pVuMeterWidget->setup(node, *m_pContext);
     pVuMeterWidget->installEventFilter(m_pKeyboard);
@@ -2113,7 +2147,7 @@ void LegacySkinParser::commonWidgetSetup(const QDomNode& node,
     // setupWidget since a BindProperty connection to the display parameter can
     // cause the widget to be polished (i.e. style computed) before it is
     // ready. The most common case is that the object name has not yet been set
-    // in setupWidget. See Bug #1285836.
+    // in setupWidget. See issue #7328.
     if (allowConnections) {
         setupConnections(node, pBaseWidget);
     }

@@ -6,7 +6,6 @@
     CSAMPLE* pInOut,
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
-void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
         pInOut[i] = (CSAMPLE) processSample(fbuf1, (double) pInOut[i]);
         pInOut[i + 1] = (CSAMPLE) processSample(fbuf2, (double) pInOut[i + 1]);
             m_pDelayBuffer[m_iDelayPos] = pInOut[i];

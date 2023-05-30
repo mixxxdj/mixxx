@@ -79,9 +79,6 @@ BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& engineParame
     m_high->setStartFromDry(true);
 }
 
-BalanceGroupState::~BalanceGroupState() {
-}
-
 void BalanceGroupState::setFilters(int sampleRate, double freq) {
     m_low->setFrequencyCorners(sampleRate, freq);
     m_high->setFrequencyCorners(sampleRate, freq);
@@ -92,9 +89,6 @@ void BalanceEffect::loadEngineEffectParameters(
     m_pBalanceParameter = parameters.value("balance");
     m_pMidSideParameter = parameters.value("midSide");
     m_pBypassFreqParameter = parameters.value("bypassFreq");
-}
-
-BalanceEffect::~BalanceEffect() {
 }
 
 void BalanceEffect::processChannel(

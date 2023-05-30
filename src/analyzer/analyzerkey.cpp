@@ -125,8 +125,8 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
         pluginID = defaultPlugin().id();
     }
 
-    const Keys keys(tio->getKeys());
-    if (keys.isValid()) {
+    const Keys keys = tio->getKeys();
+    if (keys.getGlobalKey() != mixxx::track::io::key::INVALID) {
         QString version = keys.getVersion();
         QString subVersion = keys.getSubVersion();
 
