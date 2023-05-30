@@ -93,8 +93,8 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         m_cacheMissHappened = true;
     } else if (m_cacheMissHappened) {
         // Previous read was a cache miss, but now we got something back.
-        // Apply ramping gain, because the last buffer has unwanted silenced
-        // and new without fading are causing a pop.
+        // Apply ramping gain, because the last buffer has unwanted silence
+        // and new samples without fading are causing a pop.
         SampleUtil::applyRampingGain(pOutput, 0.0, 1.0, samples_from_reader);
         // Reset the cache miss flag, because we are now back on track.
         m_cacheMissHappened = false;
