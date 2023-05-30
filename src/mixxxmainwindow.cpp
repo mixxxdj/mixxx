@@ -78,7 +78,9 @@
 #undef max
 #undef min
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QtX11Extras/QX11Info>
+#endif
 #endif
 
 namespace {
