@@ -2,6 +2,7 @@
 
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
+#include "controllers/hid/hidioglobaloutputreportfifo.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 
@@ -11,10 +12,10 @@ class HidIoOutputReport {
 
     /// Caches new report data, which will later send by the IO thread
     void updateCachedData(const QByteArray& data,
-
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput,
-            bool resendUnchangedReport);
+            HidIoGlobalOutputReportFifo* pGlobalOutputReportFifo,
+            bool useNonSkippingFIFO);
 
     /// Sends the OutputReport to the HID device, when changed data are cached.
     /// Returns true if a time consuming hid_write operation was executed.
@@ -28,12 +29,11 @@ class HidIoOutputReport {
     QByteArray m_lastSentData;
 
     /// Mutex must be locked when reading/writing m_cachedData
-    /// or m_possiblyUnsentDataCached, m_resendUnchangedReport
+    /// or m_possiblyUnsentDataCached
     QMutex m_cachedDataMutex;
 
     QByteArray m_cachedData;
     bool m_possiblyUnsentDataCached;
-    bool m_resendUnchangedReport;
 
     /// Due to swapping of the QbyteArrays, we need to store
     /// this information independent of the QBytearray size
