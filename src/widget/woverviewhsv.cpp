@@ -4,6 +4,7 @@
 #include <QPainter>
 
 #include "moc_woverviewhsv.cpp"
+#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "waveform/waveform.h"
@@ -74,11 +75,9 @@ bool WOverviewHSV::drawNextPixmapPart() {
     QPainter painter(&m_waveformSourceImage);
     painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
-    // Get HSV of low color. NOTE(rryan): On ARM, qreal is float so it's
-    // important we use qreal here and not double or float or else we will get
-    // build failures on ARM.
-    qreal h, s, v;
-    m_signalColors.getLowColor().getHsvF(&h, &s, &v);
+    // Get HSV of low color.
+    float h, s, v;
+    getHsvF(m_signalColors.getLowColor(), &h, &s, &v);
 
     QColor color;
     float lo, hi, total;

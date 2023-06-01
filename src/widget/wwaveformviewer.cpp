@@ -61,7 +61,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
     m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
 }
 
-void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
+void WWaveformViewer::resizeEvent(QResizeEvent* event) {
     if (m_waveformWidget) {
         m_waveformWidget->resize(width(), height());
     }
@@ -201,6 +201,10 @@ void WWaveformViewer::dropEvent(QDropEvent* event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }
 
+bool WWaveformViewer::handleDragAndDropEventFromWindow(QEvent* ev) {
+    return event(ev);
+}
+
 void WWaveformViewer::leaveEvent(QEvent*) {
     if (m_pHoveredMark) {
         unhighlightMark(m_pHoveredMark);
@@ -267,6 +271,18 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
         QWidget* pWidget = m_waveformWidget->getWidget();
         connect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
         m_waveformWidget->getWidget()->setMouseTracking(true);
+#ifdef MIXXX_USE_QOPENGL
+        if (m_waveformWidget->getGLWidget()) {
+            // The OpenGLWindow used to display the waveform widget interferes with the
+            // normal Qt tooltip mechanism and uses it's own mechanism. We set the tooltip
+            // of the waveform widget to the tooltip of its parent WWaveformViewer so the
+            // OpenGLWindow will display it.
+            m_waveformWidget->getGLWidget()->setToolTip(toolTip());
+
+            // Tell the WGLWidget that this is its drag&drop target
+            m_waveformWidget->getGLWidget()->setTrackDropTarget(this);
+        }
+#endif
         // Make connection to show "Passthrough" label on the waveform, except for
         // "Empty" waveform type
         if (m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {

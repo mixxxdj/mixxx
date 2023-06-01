@@ -1,15 +1,23 @@
 #include "waveform/sharedglcontext.h"
 
 #include <QtDebug>
+
+#ifndef MIXXX_USE_QOPENGL
 #include <QGLContext>
 #include <QGLFormat>
-#include <QGLWidget>
+#endif
 
-QGLWidget* SharedGLContext::s_pSharedGLWidget = nullptr;
+#include "widget/wglwidget.h"
+
+WGLWidget* SharedGLContext::s_pSharedGLWidget = nullptr;
 
 // static
-void SharedGLContext::setWidget(QGLWidget* pWidget) {
+void SharedGLContext::setWidget(WGLWidget* pWidget) {
     s_pSharedGLWidget = pWidget;
+#ifdef MIXXX_USE_QOPENGL
+    qDebug() << "Set root GL Context widget valid:"
+             << pWidget << (pWidget && pWidget->isContextValid());
+#else
     qDebug() << "Set root GL Context widget valid:"
              << pWidget << (pWidget && pWidget->isValid());
     if (pWidget) {
@@ -29,9 +37,10 @@ void SharedGLContext::setWidget(QGLWidget* pWidget) {
         qDebug() << "Stencil buffers:" << format.stencil();
         qDebug() << "Stereo:" << format.stereo();
     }
+#endif
 }
 
 // static
-QGLWidget* SharedGLContext::getWidget() {
+WGLWidget* SharedGLContext::getWidget() {
     return s_pSharedGLWidget;
 }
