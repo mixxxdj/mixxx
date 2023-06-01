@@ -219,7 +219,7 @@ void Library::stopPendingTasks() {
     if (m_pAnalysisFeature) {
         m_pAnalysisFeature->stopAnalysis();
     }
-    m_pBrowseFeature->stopBrowseThread();
+    m_pBrowseFeature->releaseBrowseThread();
 }
 
 void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {

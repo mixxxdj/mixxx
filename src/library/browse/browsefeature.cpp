@@ -531,6 +531,6 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     return result;
 }
 
-void BrowseFeature::stopBrowseThread() {
-    m_browseModel.stopBrowseThread();
+void BrowseFeature::releaseBrowseThread() {
+    m_browseModel.releaseBrowseThread();
 }
