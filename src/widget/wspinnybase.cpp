@@ -1,3 +1,5 @@
+#include "widget/wspinnybase.h"
+
 #include <QApplication>
 #include <QMimeData>
 #include <QStylePainter>
@@ -9,6 +11,7 @@
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "moc_wspinnybase.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/fpclassify.h"
@@ -16,7 +19,6 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "waveform/visualplayposition.h"
 #include "waveform/vsyncthread.h"
-#include "widget/moc_wspinny.cpp"
 #include "widget/wspinny.h"
 #include "wimagestore.h"
 

@@ -1,5 +1,6 @@
 #include "waveform/widgets/allshader/waveformwidget.h"
 
+#include "moc_waveformwidget.cpp"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
 
 using namespace allshader;

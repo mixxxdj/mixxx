@@ -1,11 +1,12 @@
 #include "widget/tooltipqopengl.h"
 
-#include <widget/wglwidget.h>
-
 #include <QStyle>
 #include <QTimer>
 #include <QToolTip>
 #include <memory>
+
+#include "moc_tooltipqopengl.cpp"
+#include "widget/wglwidget.h"
 
 ToolTipQOpenGL::ToolTipQOpenGL() {
     m_timer.setSingleShot(true);
