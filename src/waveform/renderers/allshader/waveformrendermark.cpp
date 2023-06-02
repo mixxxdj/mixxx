@@ -208,7 +208,7 @@ void allshader::WaveformRenderMark::paintGL() {
 
                 if (visible || currentMarkEndPoint > 0) {
                     QColor color = pMark->fillColor();
-                    color.setAlphaF(0.4);
+                    color.setAlphaF(0.4f);
 
                     drawMark(
                             QRectF(QPointF(currentMarkPoint, 0),
