@@ -8,7 +8,7 @@
 
 class WGLWidget : public QGLWidget {
   public:
-    WGLWidget(QWidget* parent);
+    WGLWidget(QWidget* pParent);
 
     bool isContextValid() const;
     bool isContextSharing() const;

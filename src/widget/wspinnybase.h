@@ -28,7 +28,7 @@ class WSpinnyBase : public WGLWidget,
                     public TrackDropTarget {
     Q_OBJECT
   public:
-    WSpinnyBase(QWidget* parent,
+    WSpinnyBase(QWidget* pParent,
             const QString& group,
             UserSettingsPointer pConfig,
             VinylControlManager* pVCMan,
@@ -118,7 +118,7 @@ class WSpinnyBase : public WGLWidget,
     ControlProxy* m_pSlipEnabled;
     ControlProxy* m_pShowCoverProxy;
 
-    TrackPointer m_loadedTrack;
+    TrackPointer m_pLoadedTrack;
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;
     CoverInfo m_lastRequestedCover;

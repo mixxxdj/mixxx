@@ -13,8 +13,8 @@
 #define DEFAULT_HOLDTIME 400
 #define DEFAULT_HOLDSIZE 5
 
-WVuMeterLegacy::WVuMeterLegacy(QWidget* parent)
-        : WWidget(parent),
+WVuMeterLegacy::WVuMeterLegacy(QWidget* pParent)
+        : WWidget(pParent),
           m_dParameter(0),
           m_dPeakParameter(0),
           m_dLastParameter(0),

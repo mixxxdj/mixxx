@@ -8,7 +8,7 @@
 class WVuMeterLegacy : public WWidget {
     Q_OBJECT
   public:
-    explicit WVuMeterLegacy(QWidget* parent = nullptr);
+    explicit WVuMeterLegacy(QWidget* pParent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
