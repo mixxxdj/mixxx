@@ -21,7 +21,7 @@
 
 // Returns an ASCII byte array for the string
 String.prototype.toInt = function() {
-    const a = new Array();
+    const a = [];
     for (let i = 0; i < this.length; i++) {
         a[i] = this.charCodeAt(i);
     }
@@ -124,6 +124,7 @@ var colorCodeToObject = function(colorCode) {
     };
 };
 
+/* eslint @typescript-eslint/no-empty-function: "off" */
 var script = function() {
 };
 
@@ -494,7 +495,6 @@ script.softStart = function(channel, control, value, status, group, factor) {
 };
 
 // bpm - Used for tapping the desired BPM for a deck
-
 var bpm = function() {
 };
 
@@ -584,6 +584,7 @@ var Controller = function() {
 
 Controller.prototype.addButton = function(buttonName, button, eventHandler) {
     if (eventHandler) {
+        /* eslint @typescript-eslint/no-this-alias: "off" */
         const executionEnvironment = this;
         const handler = function(value) {
             button.state = value;

@@ -86,7 +86,7 @@ const GridButtonBlinkOverBeat = false;
 const WheelLedBlinkOnTrackEnd = true;
 
 // When shifting either decks, the mixer will control microphones or auxiliary lines. If there is both a mic and an configure on the same channel, the mixer will control the auxiliary.
-// Default: true
+// Default: false
 const MixerControlsMixAuxOnShift = false;
 
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
@@ -860,7 +860,7 @@ class SamplerButton extends Button {
         if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1 || this.number > 64) {
             throw Error("SamplerButton must have a number property of an integer between 1 and 64");
         }
-        this.group = "[Sampler${this.number}]";
+        this.group = `[Sampler${this.number}]`;
         this.outConnect();
     }
     onShortPress() {
@@ -1635,12 +1635,11 @@ class S4Mk3Deck extends Deck {
                     this.indicator(false);
                     const wheelOutput = new Uint8Array(40).fill(0);
                     wheelOutput[0] = decks[0] - 1;
-                    const that = this;
                     controller.sendOutputReport(50, wheelOutput.buffer, true);
                     if (!skipRestore) {
-                        that.deck.wheelMode = that.previousWheelMode;
+                        this.deck.wheelMode = this.previousWheelMode;
                     }
-                    that.previousWheelMode = null;
+                    this.previousWheelMode = null;
                     if (this.loopModeConnection !== null) {
                         this.loopModeConnection.disconnect();
                         this.loopModeConnection = null;
@@ -1721,12 +1720,11 @@ class S4Mk3Deck extends Deck {
                     this.indicator(false);
                     const wheelOutput = new Uint8Array(40).fill(0);
                     wheelOutput[0] = decks[0] - 1;
-                    const that = this;
                     controller.sendOutputReport(wheelOutput.buffer, null, 50, true);
                     if (!skipRestore) {
-                        that.deck.wheelMode = that.previousWheelMode;
+                        this.deck.wheelMode = this.previousWheelMode;
                     }
-                    that.previousWheelMode = null;
+                    this.previousWheelMode = null;
                     if (this.loopModeConnection !== null) {
                         this.loopModeConnection.disconnect();
                         this.loopModeConnection = null;
@@ -2350,8 +2348,10 @@ class S4Mk3Deck extends Deck {
             outTrigger: function() {
                 const vinylOn = this.deck.wheelMode === wheelModes.vinyl;
                 this.send(this.color + (vinylOn ? this.brightnessOn : this.brightnessOff));
-                const motorOn = this.deck.wheelMode === wheelModes.motor;
-                this.deck.turntableButton.send(this.color + (motorOn ? this.brightnessOn : this.brightnessOff));
+                if (this.deck.turntableButton) {
+                    const motorOn = this.deck.wheelMode === wheelModes.motor;
+                    this.deck.turntableButton.send(this.color + (motorOn ? this.brightnessOn : this.brightnessOff));
+                }
             },
         });
 
