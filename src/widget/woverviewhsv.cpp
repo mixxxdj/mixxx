@@ -113,7 +113,7 @@ bool WOverviewHSV::drawNextPixmapPart() {
             }
 
             // Set color
-            color.setHsvF(h, 1.0-hi, 1.0-lo);
+            color.setHsvF(h, 1.0f - hi, 1.0f - lo);
 
             painter.setPen(color);
             painter.drawLine(QPoint(currentCompletion / 2, -maxAll[0]),

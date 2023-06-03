@@ -6,7 +6,7 @@
 #include "control/controlproxy.h"
 #include "moc_visualplayposition.cpp"
 #include "util/math.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
 #include "waveform/vsyncthread.h"
 #endif
 
@@ -51,7 +51,7 @@ void VisualPlayPosition::set(
 double VisualPlayPosition::calcOffsetAtNextVSync(
         VSyncThread* pVSyncThread, const VisualPlayPositionData& data) {
     if (data.m_audioBufferMicroS != 0.0) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
         Q_UNUSED(pVSyncThread);
         const int refToVSync = 0;
         const int syncIntervalTimeMicros = 0;

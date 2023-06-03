@@ -183,7 +183,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pAutoDjAddTop.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -191,7 +191,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
 #endif
 
     m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pAutoDjAddBottom.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -200,7 +200,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
     m_pAutoDjAddReplace = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "AutoDjAddReplace"));
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pAutoDjAddReplace.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -214,7 +214,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
     m_pSortFocusedColumn = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "sort_focused_column"));
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pSortColumn.get(),
             &ControlEncoder::valueChanged,
             this,
@@ -405,7 +405,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddTop"), ConfigKey("[Library]", "AutoDjAddTop"));
     ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddBottom"), ConfigKey("[Library]", "AutoDjAddBottom"));
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     QApplication* app = qApp;
     // Update controls if any widget in any Mixxx window gets or loses focus
     connect(app,

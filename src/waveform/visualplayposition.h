@@ -8,7 +8,7 @@
 #include "control/controlvalue.h"
 
 class ControlProxy;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
 typedef void VSyncThread;
 #else
 class VSyncThread;
