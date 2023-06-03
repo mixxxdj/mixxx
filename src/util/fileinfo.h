@@ -240,6 +240,11 @@ class FileInfo final {
         return m_fileInfo.isRelative();
     }
 
+    bool isPlaylistFile() const {
+        QString extension = m_fileInfo.suffix().toLower();
+        return extension == "m3u" || extension == "pls"; // Add more to match what is available, I just added two.
+    }
+
     QString suffix() const {
         return m_fileInfo.suffix();
     }

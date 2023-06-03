@@ -80,6 +80,16 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     for (int a = 0; a < argc; ++a) {
         arguments << QString::fromLocal8Bit(argv[a]);
     }
+
+    // Process the playlist file path argument if provided
+    if (argc > 1) {
+        QString firstArgument = QString::fromLocal8Bit(argv[1]);
+        mixxx::FileInfo fileInfo(firstArgument);
+        if (fileInfo.exists() && fileInfo.isFile() && fileInfo.isPlaylistFile()) {
+            m_playlistFilePath = fileInfo.location();
+        }
+    }
+
     return parse(arguments, ParseMode::Initial);
 }
 
