@@ -1,12 +1,12 @@
 #include "widget/wspinny.h"
 
 WSpinny::WSpinny(
-        QWidget* parent,
+        QWidget* pParent,
         const QString& group,
         UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
-        : WSpinnyBase(parent, group, pConfig, pVCMan, pPlayer) {
+        : WSpinnyBase(pParent, group, pConfig, pVCMan, pPlayer) {
 }
 
 void WSpinny::draw() {
