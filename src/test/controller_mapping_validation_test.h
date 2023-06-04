@@ -18,6 +18,10 @@ class FakeControllerJSProxy : public ControllerJSProxy {
     Q_INVOKABLE void sendShortMsg(unsigned char status,
             unsigned char byte1,
             unsigned char byte2);
+
+    Q_INVOKABLE void sendOutputReport(quint8 reportID,
+            const QByteArray& dataArray,
+            bool resendUnchangedReport = false);
 };
 
 class FakeController : public Controller {
