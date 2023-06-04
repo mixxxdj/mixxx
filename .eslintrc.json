@@ -1,7 +1,6 @@
 {
   "extends": [ "eslint:recommended",
-               "plugin:jsdoc/recommended",
-               "plugin:@typescript-eslint/recommended" ],
+               "plugin:jsdoc/recommended"],
 
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -99,6 +98,7 @@
   "overrides": [
    {
        "files": [ "res/controllers/*.d.ts" ],
+       "extends": [ "plugin:@typescript-eslint/recommended" ],
        "rules": {
          "no-unused-vars": "off"
        }
