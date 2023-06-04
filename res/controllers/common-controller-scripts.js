@@ -21,7 +21,7 @@
 
 // Returns an ASCII byte array for the string
 String.prototype.toInt = function() {
-    const a = new Array();
+    const a = [];
     for (let i = 0; i < this.length; i++) {
         a[i] = this.charCodeAt(i);
     }
@@ -124,6 +124,7 @@ const colorCodeToObject = function(colorCode) {
         "blue": colorCode & 0xFF,
     };
 };
+
 
 
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
@@ -460,6 +461,35 @@ class script {
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
 this.script = script;
 
+// ----------------- Mapping constants ---------------------
+
+// Library column value, which can be used to interact with the CO for "[Library] sort_column"
+script.LIBRARY_COLUMNS = Object.freeze({
+    ARTIST: 1,
+    TITLE: 2,
+    ALBUM: 3,
+    ALBUM_ARTIST: 4,
+    YEAR: 5,
+    GENRE: 6,
+    COMPOSER: 7,
+    GROUPING: 8,
+    TRACK_NUMBER: 9,
+    FILETYPE: 10,
+    NATIVE_LOCATION: 11,
+    COMMENT: 12,
+    DURATION: 13,
+    BITRATE: 14,
+    BPM: 15,
+    REPLAY_GAIN: 16,
+    DATETIME_ADDED: 17,
+    TIMES_PLAYED: 18,
+    RATING: 19,
+    KEY: 20,
+    PREVIEW: 21,
+    COVERART: 22,
+    TRACK_COLOR: 30,
+    LAST_PLAYED: 31,
+});
 
 
 // bpm - Used for tapping the desired BPM for a deck
@@ -577,6 +607,7 @@ this.Controller = Controller;
 // Button
 
 
+// @ts-ignore Same identifier for class and instance needed for backward compatibility
 class Button {
     constructor(controlId) {
         this.controlId = controlId;

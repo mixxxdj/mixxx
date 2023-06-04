@@ -13,6 +13,14 @@ void FakeControllerJSProxy::send(const QList<int>& data, unsigned int length) {
     Q_UNUSED(length);
 }
 
+void FakeControllerJSProxy::sendOutputReport(quint8 reportID,
+        const QByteArray& dataArray,
+        bool resendUnchangedReport) {
+    Q_UNUSED(reportID);
+    Q_UNUSED(dataArray);
+    Q_UNUSED(resendUnchangedReport);
+}
+
 void FakeControllerJSProxy::sendSysexMsg(const QList<int>& data, unsigned int length) {
     Q_UNUSED(data);
     Q_UNUSED(length);
