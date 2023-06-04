@@ -338,7 +338,7 @@ QString DlgPrefController::mappingSupportLinks(
                 forumLink);
     }
 
-    QString wikiLink = pMapping->wikilink();
+    QString wikiLink = pMapping->manuallink();
     if (!wikiLink.isEmpty()) {
         linkList << coloredLinkString(
                 m_pLinkColor,

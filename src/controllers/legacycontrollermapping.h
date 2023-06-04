@@ -138,12 +138,12 @@ class LegacyControllerMapping {
         return MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX + page + MIXXX_MANUAL_CONTROLLERMANUAL_SUFFIX;
     }
 
-    inline void setWikiLink(const QString& wikilink) {
-        m_manuallink = wikilink;
+    inline void setManualLink(const QString& manuallink) {
+        m_manuallink = manuallink;
         setDirty(true);
     }
 
-    inline QString wikilink() const {
+    inline QString manuallink() const {
         return m_manuallink;
     }
 
