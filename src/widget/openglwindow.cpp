@@ -7,8 +7,9 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wglwidget.h"
 
-OpenGLWindow::OpenGLWindow(WGLWidget* widget)
-        : m_pWidget(widget) {
+OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
+        : m_pWidget(pWidget),
+          m_dirty(false) {
     QSurfaceFormat format;
     format.setVersion(2, 1);
     format.setProfile(QSurfaceFormat::CoreProfile);
@@ -53,30 +54,30 @@ void OpenGLWindow::widgetDestroyed() {
     m_pWidget = nullptr;
 }
 
-bool OpenGLWindow::event(QEvent* ev) {
+bool OpenGLWindow::event(QEvent* pEv) {
     // From here we call QApplication::sendEvent(m_pWidget, ev) to trigger
     // handling of the event as if it were received by the main window.
     // With drag move and drag leave events it may happen that this function
     // gets called recursive, potentially resulting in infinite recursion
     // and a stack overflow. The boolean m_handlingEvent protects against
     // this recursion.
-    const auto t = ev->type();
+    const auto t = pEv->type();
 
-    bool result = QOpenGLWindow::event(ev);
+    bool result = QOpenGLWindow::event(pEv);
 
     if (m_pWidget) {
         // Tooltip don't work by forwarding the events. This mimics the
         // tooltip behavior.
         if (t == QEvent::MouseMove) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            QPoint eventPosition = dynamic_cast<QMouseEvent*>(ev)->globalPosition().toPoint();
+            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPosition().toPoint();
 #else
-            QPoint eventPosition = dynamic_cast<QMouseEvent*>(ev)->globalPos();
+            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPos();
 #endif
             ToolTipQOpenGL::singleton().start(m_pWidget, eventPosition);
         }
         if (t == QEvent::Leave) {
-            ToolTipQOpenGL::singleton().stop(m_pWidget);
+            ToolTipQOpenGL::singleton().stop();
         }
 
         if (t == QEvent::DragEnter || t == QEvent::DragMove ||
@@ -84,10 +85,10 @@ bool OpenGLWindow::event(QEvent* ev) {
             // Drag & Drop events are not delivered correctly when using QApplication::sendEvent
             // and even result in a recursive call to this method, so we use our own mechanism.
             if (m_pWidget->trackDropTarget()) {
-                return m_pWidget->trackDropTarget()->handleDragAndDropEventFromWindow(ev);
+                return m_pWidget->trackDropTarget()->handleDragAndDropEventFromWindow(pEv);
             }
 
-            ev->ignore();
+            pEv->ignore();
             return false;
         }
 
@@ -105,7 +106,7 @@ bool OpenGLWindow::event(QEvent* ev) {
         // container widget that contains this QOpenGLWindow. With this mouse
         // events, keyboard events, etc all arrive as intended, including the
         // events for the WWaveformViewer that contains the waveform widget.
-        QApplication::sendEvent(m_pWidget, ev);
+        QApplication::sendEvent(m_pWidget, pEv);
     }
 
     return result;

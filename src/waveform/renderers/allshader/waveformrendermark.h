@@ -55,7 +55,7 @@ class allshader::WaveformRenderMark final : public QObject, public allshader::Wa
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
     std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
-    bool m_bCuesUpdates{};
+    bool m_bCuesUpdates;
 
     void drawMark(const QRectF& rect, QColor color);
     void drawTexture(float x, float y, QOpenGLTexture* texture);

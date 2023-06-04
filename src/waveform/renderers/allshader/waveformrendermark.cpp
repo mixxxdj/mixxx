@@ -33,7 +33,8 @@ constexpr int kMaxCueLabelLength = 23;
 } // namespace
 
 allshader::WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRenderer(waveformWidget) {
+        : WaveformRenderer(waveformWidget),
+          m_bCuesUpdates(false) {
 }
 
 allshader::WaveformRenderMark::~WaveformRenderMark() {
