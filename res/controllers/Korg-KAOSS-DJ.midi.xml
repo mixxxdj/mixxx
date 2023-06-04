@@ -13,7 +13,7 @@
         <controls>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.change_focus</key>
+                <key>KAOSSDJ.changeFocus</key>
                 <description>Change focus between library and playlist</description>
                 <status>0x96</status>
                 <midino>0x07</midino>
@@ -23,7 +23,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.tap_button_callback</key>
+                <key>KAOSSDJ.tapButtonCallback</key>
                 <status>0x96</status>
                 <midino>0x0B</midino>
                 <options>
@@ -52,7 +52,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.load_callback</key>
+                <key>KAOSSDJ.loadCallback</key>
                 <description>Load into Deck 1</description>
                 <status>0x97</status>
                 <midino>0x0E</midino>
@@ -62,7 +62,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>KAOSSDJ.load_callback</key>
+                <key>KAOSSDJ.loadCallback</key>
                 <description>Load into Deck 2</description>
                 <status>0x98</status>
                 <midino>0x0E</midino>
@@ -132,7 +132,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.toggle_loop</key>
+                <key>KAOSSDJ.toggleLoop</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x97</status>
                 <midino>0x10</midino>
@@ -152,7 +152,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>KAOSSDJ.toggle_loop</key>
+                <key>KAOSSDJ.toggleLoop</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x98</status>
                 <midino>0x10</midino>
@@ -192,7 +192,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.controllerFxTouchMoveVertical_shift</key>
+                <key>KAOSSDJ.controllerFxTouchMoveVerticalShift</key>
                 <status>0xB6</status>
                 <midino>0x11</midino>
                 <options>
@@ -221,7 +221,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.controllerFxTouchMoveHorizontal_shift</key>
+                <key>KAOSSDJ.controllerFxTouchMoveHorizontalShift</key>
                 <status>0xB6</status>
                 <midino>0x12</midino>
                 <options>
@@ -420,7 +420,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.shift_left_callback</key>
+                <key>KAOSSDJ.shiftLeftCallback</key>
                 <description>Right shift button</description>
                 <status>0x97</status>
                 <midino>0x1A</midino>
@@ -430,7 +430,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>KAOSSDJ.shift_right_callback</key>
+                <key>KAOSSDJ.shiftRightCallback</key>
                 <description>Left shift button</description>
                 <status>0x98</status>
                 <midino>0x1A</midino>
