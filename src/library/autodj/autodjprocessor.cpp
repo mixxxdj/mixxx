@@ -1281,7 +1281,14 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     // introEnd is equal introStart in case it has not yet been set
     if (toDeckStartSeconds < introEnd && introStart < introEnd) {
-        introLength = introEnd - toDeckStartSeconds;
+        // Limit the intro length adjustments to the original length x 2
+        // or original length + transition time, whichever is longer.
+        double seekBack = introStart - toDeckStartSeconds;
+        if (seekBack <= 0 ||
+                seekBack <= m_transitionTime ||
+                seekBack <= introEnd - introStart) {
+            introLength = introEnd - toDeckStartSeconds;
+        }
     }
 
     if constexpr (sDebug) {
