@@ -620,8 +620,8 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.MoveFocus</key>
-                <description>fx knob</description>
+                <key>KAOSSDJ.fxKnob</key>
+                <description>Fx Knob</description>
                 <status>0xB6</status>
                 <midino>0x1F</midino>
                 <options>

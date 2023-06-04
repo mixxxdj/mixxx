@@ -176,6 +176,10 @@ KAOSSDJ.rightFxSwitch = function(channel, control, value, status, group) {
     }
 };
 
+KAOSSDJ.fxKnob = function(_channel, _control, _value, _status) {
+    // TODO
+};
+
 KAOSSDJ.controllerFxTouchMoveVertical = function(channel, control, value, status, group) {
     var decks = KAOSSDJ.decks;
     for(key in decks) {
