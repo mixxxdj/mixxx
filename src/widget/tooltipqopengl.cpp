@@ -1,7 +1,5 @@
 #include "widget/tooltipqopengl.h"
 
-#include <widget/wglwidget.h>
-
 #include <QStyle>
 #include <QTimer>
 #include <QToolTip>
