@@ -20,7 +20,7 @@
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_controllerDebug(false),
-          m_controllerPedantic(false),
+          m_controllerAbortOnWarning(false),
           m_developer(false),
           m_safeMode(false),
           m_useVuMeterGL(true),
@@ -194,8 +194,8 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(controllerDebug);
     parser.addOption(controllerDebugDeprecated);
 
-    const QCommandLineOption controllerPedantic(
-            QStringLiteral("controller-pedantic"),
+    const QCommandLineOption controllerAbortOnWarning(
+            QStringLiteral("controller-abort-on-warning"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "The controller mapping will issue more "
                                       "aggressive warnings and errors when "
@@ -203,7 +203,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "New Controller Mappings should be "
                                       "developed with this option enabled!")
                             : QString());
-    parser.addOption(controllerPedantic);
+    parser.addOption(controllerAbortOnWarning);
 
     const QCommandLineOption developer(QStringLiteral("developer"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -344,7 +344,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
 
     m_useVuMeterGL = !(parser.isSet(disableVuMeterGL) || parser.isSet(disableVuMeterGLDeprecated));
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
-    m_controllerPedantic = parser.isSet(controllerPedantic);
+    m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
     m_developer = parser.isSet(developer);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);

@@ -444,7 +444,7 @@ void ControllerScriptInterfaceLegacy::trigger(const QString& group, const QStrin
 }
 
 void ControllerScriptInterfaceLegacy::logOrThrowError(const QString& errorMessage) const {
-    if (m_pScriptEngineLegacy->isPedantic()) {
+    if (m_pScriptEngineLegacy->willAbortOnWarning()) {
         m_pScriptEngineLegacy->throwJSError(errorMessage);
     } else {
         qCWarning(m_logger) << errorMessage;

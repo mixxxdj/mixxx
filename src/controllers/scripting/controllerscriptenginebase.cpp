@@ -14,7 +14,7 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
           m_pJSEngine(nullptr),
           m_pController(controller),
           m_logger(logger),
-          m_bPedantic(false),
+          m_bAbortOnWarning(false),
           m_bTesting(false) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
@@ -25,7 +25,7 @@ bool ControllerScriptEngineBase::initialize() {
         return false;
     }
 
-    m_bPedantic = CmdlineArgs::Instance().getControllerPedantic();
+    m_bAbortOnWarning = CmdlineArgs::Instance().getControllerAbortOnWarning();
 
     // Create the Script Engine
     m_pJSEngine = std::make_shared<QJSEngine>(this);

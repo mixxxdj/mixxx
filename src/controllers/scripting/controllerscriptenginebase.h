@@ -32,8 +32,8 @@ class ControllerScriptEngineBase : public QObject {
     void showScriptExceptionDialog(const QJSValue& evaluationResult, bool bFatal = false);
     void throwJSError(const QString& message);
 
-    bool isPedantic() const {
-        return m_bPedantic;
+    bool willAbortOnWarning() const {
+        return m_bAbortOnWarning;
     }
 
     inline void setTesting(bool testing) {
@@ -55,7 +55,7 @@ class ControllerScriptEngineBase : public QObject {
     Controller* m_pController;
     const RuntimeLoggingCategory m_logger;
 
-    bool m_bPedantic;
+    bool m_bAbortOnWarning;
 
     bool m_bTesting;
 
