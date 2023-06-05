@@ -278,9 +278,9 @@ void DlgPrefInterface::slotUpdate() {
 
     // The spinbox shows a percentage but Mixxx stores a multiplication factor
     // with 1.00 as no scaling, so multiply the stored value by 100.
-    double configScaleFactor = m_pConfig->getValue(
+    m_dScaleFactor = m_pConfig->getValue(
             ConfigKey(kConfigGroup, kScaleFactorKey), m_dScaleFactor);
-    spinBoxScaleFactor->setValue(configScaleFactor * 100);
+    spinBoxScaleFactor->setValue(m_dScaleFactor * 100);
     spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(

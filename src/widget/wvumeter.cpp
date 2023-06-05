@@ -3,8 +3,8 @@
 #include "moc_wvumeter.cpp"
 #include "util/math.h"
 
-WVuMeter::WVuMeter(QWidget* parent)
-        : WVuMeterBase(parent) {
+WVuMeter::WVuMeter(QWidget* pParent)
+        : WVuMeterBase(pParent) {
 }
 
 void WVuMeter::draw() {

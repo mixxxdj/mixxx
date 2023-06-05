@@ -5,7 +5,7 @@
 class WInitialGLWidget : public WGLWidget {
     Q_OBJECT
   public:
-    WInitialGLWidget(QWidget* parent);
+    WInitialGLWidget(QWidget* pParent);
 
     void initializeGL() override;
     void paintGL() override;

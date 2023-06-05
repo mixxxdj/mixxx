@@ -1294,6 +1294,7 @@ if(MSVC)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
+    # Warning Level 3 (production quality)
     target_compile_options(mixxx-lib PUBLIC /W3)
     target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
@@ -2235,7 +2236,7 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
 if(WIN32)
-  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__ _CRT_SECURE_NO_WARNINGS)
 endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
@@ -2871,6 +2872,9 @@ if(BROADCAST)
     message(STATUS "Using internal libshout-idjc")
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
     target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout-idjc/include)
+    if(WIN32)
+      target_compile_definitions(shout_mixxx PRIVATE __WINDOWS__ _CRT_NONSTDC_NO_WARNINGS)
+    endif()
     target_link_libraries(mixxx-lib PRIVATE shout_mixxx)
   else()
     target_link_libraries(mixxx-lib PRIVATE Shoutidjc::Shoutidjc)
@@ -3030,6 +3034,7 @@ if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hidiothread.cpp
+    src/controllers/hid/hidioglobaloutputreportfifo.cpp
     src/controllers/hid/hidiooutputreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp

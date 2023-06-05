@@ -5,8 +5,8 @@
 #include "util/math.h"
 #include "util/texture.h"
 
-WVuMeterGLSL::WVuMeterGLSL(QWidget* parent)
-        : WVuMeterBase(parent) {
+WVuMeterGLSL::WVuMeterGLSL(QWidget* pParent)
+        : WVuMeterBase(pParent) {
 }
 
 WVuMeterGLSL::~WVuMeterGLSL() {

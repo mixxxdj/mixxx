@@ -11,7 +11,7 @@
 class WVuMeterGLSL : public WVuMeterBase {
     Q_OBJECT
   public:
-    explicit WVuMeterGLSL(QWidget* parent = nullptr);
+    explicit WVuMeterGLSL(QWidget* pParent = nullptr);
     ~WVuMeterGLSL() override;
 
   private:

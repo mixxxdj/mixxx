@@ -4,8 +4,8 @@
 
 #include "moc_winitialglwidget.cpp"
 
-WInitialGLWidget::WInitialGLWidget(QWidget* parent)
-        : WGLWidget(parent) {
+WInitialGLWidget::WInitialGLWidget(QWidget* pParent)
+        : WGLWidget(pParent) {
 }
 
 void WInitialGLWidget::paintGL() {
