@@ -755,6 +755,16 @@ void Track::updatePlayCounter(bool bPlayed) {
     }
 }
 
+void Track::updatePlayedStatusKeepPlayCount(bool bPlayed) {
+    auto locked = lockMutex(&m_qMutex);
+    PlayCounter playCounter(m_record.getPlayCounter());
+    playCounter.setPlayedFlag(bPlayed);
+    if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
+        markDirtyAndUnlock(&locked);
+        emit timesPlayedChanged();
+    }
+}
+
 mixxx::RgbColor::optional_t Track::getColor() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getColor();
