@@ -39,6 +39,8 @@ class BrowseFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
+    void releaseBrowseThread();
+
   public slots:
     void slotAddQuickLink();
     void slotRemoveQuickLink();
