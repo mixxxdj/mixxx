@@ -426,7 +426,8 @@ QVariant BaseTrackTableModel::data(
             role != Qt::EditRole &&
             role != Qt::CheckStateRole &&
             role != Qt::ToolTipRole &&
-            role != kDataExportRole) {
+            role != kDataExportRole &&
+            role != Qt::TextAlignmentRole) {
         return QVariant();
     }
 
@@ -571,6 +572,21 @@ QVariant BaseTrackTableModel::roleValue(
             break;
         }
         M_FALLTHROUGH_INTENDED;
+    // Right align BPM, duraation and bitrate so big/small values can easily be
+    // spotted by length (number of digits)
+    case Qt::TextAlignmentRole: {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM:
+        case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
+        case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
+            // We need to cast to int due to a bug similar to
+            // https://bugreports.qt.io/browse/QTBUG-67582
+            return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
+        }
+        default:
+            return QVariant(); // default AlignLeft for all other columns
+        }
+    }
     case Qt::DisplayRole:
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION: {
