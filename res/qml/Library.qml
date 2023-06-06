@@ -1,5 +1,7 @@
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+import Qt.labs.qmlmodels
+import QtQuick
+import QtQuick.Controls 2.15
 import "Theme"
 
 Item {
@@ -11,129 +13,303 @@ Item {
             id: libraryControl
 
             onMoveVertical: (offset) => {
-                listView.moveSelectionVertical(offset);
+                tableView.selectionModel.moveSelectionVertical(offset);
             }
             onLoadSelectedTrack: (group, play) => {
-                listView.loadSelectedTrack(group, play);
+                tableView.loadSelectedTrack(group, play);
             }
             onLoadSelectedTrackIntoNextAvailableDeck: (play) => {
-                listView.loadSelectedTrackIntoNextAvailableDeck(play);
+                tableView.loadSelectedTrackIntoNextAvailableDeck(play);
             }
             onFocusWidgetChanged: {
                 switch (focusWidget) {
                     case FocusedWidgetControl.WidgetKind.LibraryView:
-                        listView.forceActiveFocus();
+                        tableView.forceActiveFocus();
                         break;
                 }
             }
         }
 
-        ListView {
-            id: listView
+        HorizontalHeaderView {
+            id: horizontalHeader
 
-            function moveSelectionVertical(value) {
-                if (value == 0)
-                    return ;
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 5
+            syncView: tableView
+            model: ["Color", "Cover", "Artist", "Album", "Year", "Bpm", "Key", "Filetype", "Bitrate"]
 
-                const rowCount = model.rowCount();
-                if (rowCount == 0)
-                    return ;
+            delegate: Item {
+                id: headerDlgt
 
-                currentIndex = Mixxx.MathUtils.positiveModulo(currentIndex + value, rowCount);
+                required property int column
+                required property string modelData
+
+                implicitHeight: columnName.contentHeight + 5
+                implicitWidth: columnName.contentWidth + 5
+
+                BorderImage {
+                    anchors.fill: parent
+                    horizontalTileMode: BorderImage.Stretch
+                    verticalTileMode: BorderImage.Stretch
+                    source: Theme.imgPopupBackground
+
+                    border {
+                        top: 10
+                        left: 20
+                        right: 20
+                        bottom: 10
+                    }
+                }
+
+                Text {
+                    id: columnName
+
+                    text: headerDlgt.modelData
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: Theme.fontFamily
+                    font.capitalization: Font.AllUppercase
+                    font.bold: true
+                    font.pixelSize: Theme.buttonFontPixelSize
+                    color: Theme.buttonNormalColor
+                }
+
+                Text {
+                    id: sortIndicator
+
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignRight
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: Theme.fontFamily
+                    font.capitalization: Font.AllUppercase
+                    font.bold: true
+                    font.pixelSize: Theme.buttonFontPixelSize
+                    color: Theme.buttonNormalColor
+                }
             }
+        }
+
+        TableView {
+            id: tableView
 
             function loadSelectedTrackIntoNextAvailableDeck(play) {
-                const url = model.get(currentIndex).fileUrl;
-                if (!url)
+                const urls = this.selectionModel.selectedTrackUrls();
+                if (urls.length == 0)
                     return ;
 
-                Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(url, play);
+                Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(urls[0], play);
             }
 
             function loadSelectedTrack(group, play) {
-                const url = model.get(currentIndex).fileUrl;
-                if (!url)
+                const urls = this.selectionModel.selectedTrackUrls();
+                if (urls.length == 0)
                     return ;
 
-                const player = Mixxx.PlayerManager.getPlayer(group);
-                if (!player)
-                    return ;
-
-                player.loadTrackFromLocationUrl(url, play);
+                player.loadTrackFromLocationUrl(urls[0], play);
             }
 
-            anchors.fill: parent
-            anchors.margins: 10
+            anchors.top: horizontalHeader.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: 5
             clip: true
-            keyNavigationWraps: true
-            highlightMoveDuration: 250
-            highlightResizeDuration: 50
-            model: Mixxx.Library.model
-            Keys.onPressed: (event) => {
-                switch (event.key) {
-                    case Qt.Key_Enter:
-                        case Qt.Key_Return:
-                            listView.loadSelectedTrackIntoNextAvailableDeck(false);
-                        break;
+            focus: true
+            reuseItems: false
+            Keys.onUpPressed: this.selectionModel.moveSelectionVertical(-1)
+            Keys.onDownPressed: this.selectionModel.moveSelectionVertical(1)
+            Keys.onEnterPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
+            Keys.onReturnPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
+            columnWidthProvider: function(column) {
+                switch (column) {
+                    case 0:
+                        return 30;
+                    case 1:
+                        return 50;
+                    case 2:
+                        case 3:
+                        case 4:
+                        return 300;
+                    default:
+                        return 100;
                 }
             }
 
-            delegate: Item {
-                id: itemDlgt
+            model: Mixxx.TableFromListModel {
+                sourceModel: Mixxx.Library.model
 
-                required property int index
-                required property url fileUrl
-                required property string artist
-                required property string title
+                Mixxx.TableFromListModelColumn {
+                    decoration: "color"
+                    edit: "fileUrl"
+                }
 
-                implicitWidth: listView.width
-                implicitHeight: 30
+                Mixxx.TableFromListModelColumn {
+                    display: "coverArtUrl"
+                    decoration: "coverArtColor"
+                    edit: "fileUrl"
+                }
 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: itemDlgt.artist + " - " + itemDlgt.title
-                    color: (listView.currentIndex == itemDlgt.index && listView.activeFocus) ? Theme.blue : Theme.deckTextColor
+                Mixxx.TableFromListModelColumn {
+                    display: "artist"
+                    edit: "fileUrl"
+                }
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: listView.highlightMoveDuration
+                Mixxx.TableFromListModelColumn {
+                    display: "album"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "year"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "bpm"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "key"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "fileType"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "bitrate"
+                    edit: "fileUrl"
+                }
+            }
+
+            selectionModel: ItemSelectionModel {
+                function selectRow(row) {
+                    const rowCount = this.model.rowCount();
+                    if (rowCount == 0) {
+                        this.clear();
+                        return ;
+                    }
+                    const newRow = Mixxx.MathUtils.positiveModulo(row, rowCount);
+                    this.select(this.model.index(newRow, 0), ItemSelectionModel.Rows | ItemSelectionModel.Select | ItemSelectionModel.Clear | ItemSelectionModel.Current);
+                }
+
+                function moveSelectionVertical(value) {
+                    if (value == 0)
+                        return ;
+
+                    const selected = this.selectedIndexes;
+                    const oldRow = (selected.length == 0) ? 0 : selected[0].row;
+                    this.selectRow(oldRow + value);
+                }
+
+                function selectedTrackUrls() {
+                    return this.selectedIndexes.map((index) => {
+                            return this.model.sourceModel.get(index.row).fileUrl;
+                    });
+                }
+
+                model: tableView.model
+            }
+
+            delegate: DelegateChooser {
+                DelegateChoice {
+                    column: 0
+
+                    Rectangle {
+                        id: trackColorDelegate
+
+                        required property bool selected
+                        required property color decoration
+
+                        implicitWidth: 30
+                        implicitHeight: 30
+                        color: trackColorDelegate.decoration
+                    }
+                }
+
+                DelegateChoice {
+                    column: 1
+
+                    Rectangle {
+                        id: coverArtDelegate
+
+                        required property color decoration
+                        required property url display
+
+                        implicitWidth: 60
+                        implicitHeight: 30
+                        color: coverArtDelegate.decoration
+
+                        Image {
+                            anchors.fill: parent
+                            fillMode: Image.PreserveAspectCrop
+                            source: coverArtDelegate.display
+                            clip: true
+                            asynchronous: true
                         }
                     }
                 }
 
-                Image {
-                    id: dragItem
+                DelegateChoice {
+                    Item {
+                        id: itemDelegate
 
-                    Drag.active: dragArea.drag.active
-                    Drag.dragType: Drag.Automatic
-                    Drag.supportedActions: Qt.CopyAction
-                    Drag.mimeData: {
-                        "text/uri-list": itemDlgt.fileUrl,
-                        "text/plain": itemDlgt.fileUrl
+                        required property int row
+                        required property bool selected
+                        required property string display
+
+                        implicitWidth: 300
+                        implicitHeight: 30
+
+                        Text {
+                            anchors.fill: parent
+                            text: itemDelegate.display
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                            color: itemDelegate.selected ? Theme.blue : Theme.white
+                        }
+
+                        Image {
+                            id: dragItem
+
+                            Drag.active: dragArea.drag.active
+                            Drag.dragType: Drag.Automatic
+                            Drag.supportedActions: Qt.CopyAction
+                            Drag.mimeData: {
+                                "text/uri-list": edit,
+                                "text/plain": edit
+                            }
+                            anchors.fill: parent
+                        }
+
+                        MouseArea {
+                            id: dragArea
+
+                            anchors.fill: parent
+                            drag.target: dragItem
+                            onPressed: {
+                                tableView.selectionModel.selectRow(itemDelegate.row);
+                                parent.grabToImage((result) => {
+                                        dragItem.Drag.imageSource = result.url;
+                                });
+                            }
+                            onDoubleClicked: {
+                                tableView.selectionModel.selectRow(itemDelegate.row);
+                                tableView.loadSelectedTrackIntoNextAvailableDeck(false);
+                            }
+                        }
                     }
-                    anchors.fill: parent
                 }
-
-                MouseArea {
-                    id: dragArea
-
-                    anchors.fill: parent
-                    drag.target: dragItem
-                    onPressed: {
-                        listView.forceActiveFocus();
-                        listView.currentIndex = itemDlgt.index;
-                        parent.grabToImage((result) => {
-                                dragItem.Drag.imageSource = result.url;
-                        });
-                    }
-                    onDoubleClicked: listView.loadSelectedTrackIntoNextAvailableDeck(false)
-                }
-            }
-
-            highlight: Rectangle {
-                border.color: listView.activeFocus ? Theme.blue : Theme.deckTextColor
-                border.width: 1
-                color: "transparent"
             }
         }
     }
