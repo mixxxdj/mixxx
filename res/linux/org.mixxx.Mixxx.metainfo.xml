@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-06-06" timestamp="1686082895">
+    <release version="2.3.6" type="development" date="2023-06-06" timestamp="1686085121">
       <description>
  <ul>
   <li>
@@ -106,7 +106,7 @@
    #11595
   </li>
   <li>
-   No longer stopping a track with an active loop at the very end.
+   No longer stop a track with an active loop at the very end.
    #11558
    #11557
   </li>
@@ -120,7 +120,7 @@
    #11589
   </li>
   <li>
-   Fixed resyncing when beat-jumping in an active loop
+   Fixed resyncing when moving an active loop
    #11152
    #11381
   </li>
