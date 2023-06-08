@@ -88,11 +88,6 @@ DlgPrefLibrary::DlgPrefLibrary(
 
     searchDebouncingTimeoutSpinBox->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
     searchDebouncingTimeoutSpinBox->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
-    const auto searchDebouncingTimeoutMillis =
-            m_pConfig->getValue(
-                    kSearchDebouncingTimeoutMillisConfigKey,
-                    WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
-    searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
     connect(searchDebouncingTimeoutSpinBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
