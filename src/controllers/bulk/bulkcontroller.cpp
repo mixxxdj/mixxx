@@ -54,7 +54,7 @@ void BulkReader::run() {
     qDebug() << "Stopped Reader";
 }
 
-static QString get_string(libusb_device_handle *handle, u_int8_t id) {
+static QString get_string(libusb_device_handle* handle, uint8_t id) {
     unsigned char buf[128] = { 0 };
 
     if (id) {
