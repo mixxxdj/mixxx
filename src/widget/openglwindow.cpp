@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QResizeEvent>
 
+#include "moc_openglwindow.cpp"
 #include "widget/tooltipqopengl.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wglwidget.h"

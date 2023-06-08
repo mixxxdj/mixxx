@@ -1,5 +1,6 @@
 #include "widget/wvumeterglsl.h"
 
+#include "moc_wvumeterglsl.cpp"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/texture.h"

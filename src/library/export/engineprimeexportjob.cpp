@@ -13,6 +13,7 @@
 
 #include "library/trackcollection.h"
 #include "library/trackset/crate/crate.h"
+#include "moc_engineprimeexportjob.cpp"
 #include "track/track.h"
 #include "util/optional.h"
 #include "util/thread_affinity.h"

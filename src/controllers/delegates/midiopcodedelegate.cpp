@@ -1,8 +1,10 @@
+#include "controllers/delegates/midiopcodedelegate.h"
+
 #include <QComboBox>
 
-#include "controllers/delegates/midiopcodedelegate.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_midiopcodedelegate.cpp"
 
 MidiOpCodeDelegate::MidiOpCodeDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {
