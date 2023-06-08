@@ -204,6 +204,21 @@
        </widget>
       </item>
 
+      <item row="7" column="0">
+       <widget class="QLabel" name="bpmPrecisionLabel">
+        <property name="text">
+         <string>BPM display precision:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" colspan="2">
+       <widget class="QSpinBox" name="spinbox_bpm_precision">
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item><!-- Track Table View -->
@@ -608,6 +623,7 @@
   <tabstop>radioButton_dbclick_bottom</tabstop>
   <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>radioButton_dbclick_ignore</tabstop>
+  <tabstop>bpmPrecisionSpinBox</tabstop>
   <tabstop>spinbox_history_track_duplicate_distance</tabstop>
   <tabstop>spinbox_history_min_tracks_to_keep</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>

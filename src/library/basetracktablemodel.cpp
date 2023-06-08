@@ -92,6 +92,24 @@ QSqlDatabase cloneDatabase(
 
 } // anonymous namespace
 
+// static
+constexpr int BaseTrackTableModel::kBpmColumnPrecisionDefault;
+constexpr int BaseTrackTableModel::kBpmColumnPrecisionMinimum;
+constexpr int BaseTrackTableModel::kBpmColumnPrecisionMaximum;
+
+int BaseTrackTableModel::s_bpmColumnPrecision =
+        kBpmColumnPrecisionDefault;
+
+// static
+void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
+    VERIFY_OR_DEBUG_ASSERT(precision >= BaseTrackTableModel::kBpmColumnPrecisionMinimum) {
+        precision = BaseTrackTableModel::kBpmColumnPrecisionMinimum;
+    }
+    VERIFY_OR_DEBUG_ASSERT(precision <= BaseTrackTableModel::kBpmColumnPrecisionMaximum) {
+        precision = BaseTrackTableModel::kBpmColumnPrecisionMaximum;
+    }
+    s_bpmColumnPrecision = precision;
+}
 //static
 QStringList BaseTrackTableModel::defaultTableColumns() {
     return kDefaultTableColumns;
@@ -704,7 +722,8 @@ QVariant BaseTrackTableModel::roleValue(
                 if (role == Qt::ToolTipRole || role == kDataExportRole) {
                     return QString::number(bpm.value(), 'f', 4);
                 } else {
-                    return QString::number(bpm.value(), 'f', 1);
+                    // custom precision, set in DlgPrefLibrary
+                    return QString::number(bpm.value(), 'f', s_bpmColumnPrecision);
                 }
             } else {
                 return QChar('-');
