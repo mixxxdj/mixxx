@@ -98,11 +98,31 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-05-10" timestamp="1683748523">
+    <release version="2.3.6" type="development" date="2023-06-06" timestamp="1686085121">
       <description>
  <ul>
   <li>
-   TODO
+   Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+   #11595
+  </li>
+  <li>
+   No longer stop a track with an active loop at the very end.
+   #11558
+   #11557
+  </li>
+  <li>
+   Shade: Fixed VU-Meter and other minor issues
+   #11598
+  </li>
+  <li>
+   Fixed possible crash when closing Mixxx while browsing the file system
+   #11593
+   #11589
+  </li>
+  <li>
+   Fixed resyncing when moving an active loop
+   #11152
+   #11381
   </li>
  </ul>
 </description>
