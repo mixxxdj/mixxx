@@ -3193,6 +3193,11 @@ set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/images/dialog
 
 set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" )
 
+if(WIN32)
+    # override not working default NSIS
+    set(CPACK_GENERATOR WIX)
+endif()
+
 include(CPack)
 
 if(APPLE AND MACOS_BUNDLE)
