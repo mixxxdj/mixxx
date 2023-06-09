@@ -340,8 +340,8 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.leftFxSwitch</key>
-                <description>Left Fx switch</description>
+                <key>KAOSSDJ.fxToggleButton</key>
+                <description>Left Fx Toggle Button</description>
                 <status>0x97</status>
                 <midino>0x18</midino>
                 <options>
@@ -350,8 +350,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>KAOSSDJ.rightFxSwitch</key>
-                <description>Right Fx switch</description>
+                <key>KAOSSDJ.fxToggleButton</key>
+                <description>Right Fx Toggle Button</description>
                 <status>0x98</status>
                 <midino>0x18</midino>
                 <options>

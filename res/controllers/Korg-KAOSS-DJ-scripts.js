@@ -153,20 +153,8 @@ KAOSSDJ.scratchMode = function(channel, control, value, status, group) {
     KAOSSDJ.updateDeckByChannel(channel, "jogWheelsInScratchMode", value === ON);
 };
 
-KAOSSDJ.leftFxSwitch = function(channel, control, value, status, group) {
-    if (value === ON) {
-        KAOSSDJ.updateDeckByChannel(channel, "fx", true);
-    } else {
-        KAOSSDJ.updateDeckByChannel(channel, "fx", false);
-    }
-};
-
-KAOSSDJ.rightFxSwitch = function(channel, control, value, status, group) {
-    if (value === ON) {
-        KAOSSDJ.updateDeckByChannel(channel, "fx", true);
-    } else {
-        KAOSSDJ.updateDeckByChannel(channel, "fx", false);
-    }
+KAOSSDJ.fxToggleButton = function(channel, control, value, status, group) {
+    KAOSSDJ.updateDeckByChannel(channel, "fx", value === ON);
 };
 
 KAOSSDJ.fxKnob = function(_channel, _control, _value, _status) {
