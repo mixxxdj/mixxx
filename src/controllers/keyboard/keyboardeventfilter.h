@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QObject>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMultiHash>
+#include <QObject>
 
+#include "control/controlobject.h"
 #include "preferences/configobject.h"
 
 class ControlObject;
@@ -39,6 +40,18 @@ class KeyboardEventFilter : public QObject {
 
     // Returns a valid QString with modifier keys from a QKeyEvent
     QKeySequence getKeySeq(QKeyEvent *e);
+
+    // Run through list of active keys to see if the pressed key is already active
+    // and is not a control that repeats when held.
+    bool shouldSkipHeldKey(int keyId) {
+        return std::any_of(
+                m_qActiveKeyList.cbegin(),
+                m_qActiveKeyList.cend(),
+                [&](const KeyDownInformation& keyDownInfo) {
+                    return keyDownInfo.keyId == keyId && !keyDownInfo.pControl->getKbdRepeatable();
+                });
+    }
+
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
     // Pointer to keyboard config object

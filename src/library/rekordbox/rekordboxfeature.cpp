@@ -289,7 +289,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
 }
 
 int createDevicePlaylist(QSqlDatabase& database, const QString& devicePath) {
-    int playlistID = -1;
+    int playlistID = kInvalidPlaylistId;
 
     QSqlQuery queryInsertIntoDevicePlaylist(database);
     queryInsertIntoDevicePlaylist.prepare(
@@ -497,7 +497,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     // There are other types of tables (eg. COLOR), these are the only ones we are
     // interested at the moment. Perhaps when/if
-    // https://bugs.launchpad.net/mixxx/+bug/1100882
+    // https://github.com/mixxxdj/mixxx/issues/6852
     // is completed, this can be revisited.
     // Attempt was made to also recover HISTORY
     // playlists (which are found on removable Rekordbox devices), however
@@ -726,7 +726,7 @@ void buildPlaylistTree(
             return;
         }
 
-        int playlistID = -1;
+        int playlistID = kInvalidPlaylistId;
         while (idQuery.next()) {
             playlistID = idQuery.value(idQuery.record().indexOf("id")).toInt();
         }
@@ -796,7 +796,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     ScopedTransaction transaction(database);
 
     int trackID = -1;
-    int playlistID = -1;
+    int playlistID = kInvalidPlaylistId;
     QSqlQuery tracksQuery(database);
     tracksQuery.prepare("select id from " + kRekordboxLibraryTable + " where device=:device");
     tracksQuery.bindValue(":device", child->getLabel());
@@ -1312,7 +1312,14 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     // Assume that the key of the file the has been analyzed in Recordbox is correct
     // and prevent the AnalyzerKey from re-analyzing.
-    track->setKeys(KeyFactory::makeBasicKeysFromText(
+    // Form 5.4.3 Key format depends on the preferences option:
+    // Classic: Abm,B,Ebm,F#,Bbm,Db,Fm,Ab,…,F#m,A,Dbm,E
+    // Alphanumeric (Camelot): 1A,1B,2A,2B,3A,3B,4A,4B,…,11A,11B,12A,12B
+    // Not reckognized: 1m, 01A
+    // Earlier versions allow any format
+    // Decision: We normalize the KeyText here to not write garbage to the
+    // file metadata and it is unlikely to loose extra info.
+    track->setKeys(KeyFactory::makeBasicKeysNormalized(
             index.sibling(index.row(), fieldIndex("key")).data().toString(),
             mixxx::track::io::key::USER));
 
@@ -1493,7 +1500,7 @@ QString RekordboxFeature::formatRootViewHtml() const {
 
     //Colorize links in lighter blue, instead of QT default dark blue.
     //Links are still different from regular text, but readable on dark/light backgrounds.
-    //https://bugs.launchpad.net/mixxx/+bug/1744816
+    //https://github.com/mixxxdj/mixxx/issues/9103
     html.append(QString("<a style=\"color:#0496FF;\" href=\"refresh\">%1</a>")
                         .arg(refreshLink));
     return html;

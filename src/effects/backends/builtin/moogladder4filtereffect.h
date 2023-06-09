@@ -11,7 +11,8 @@
 class MoogLadder4FilterGroupState : public EffectState {
   public:
     MoogLadder4FilterGroupState(const mixxx::EngineParameters& engineParameters);
-    ~MoogLadder4FilterGroupState();
+    ~MoogLadder4FilterGroupState() override;
+
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 
     CSAMPLE* m_pBuf;
@@ -27,7 +28,7 @@ class MoogLadder4FilterGroupState : public EffectState {
 class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGroupState> {
   public:
     MoogLadder4FilterEffect() = default;
-    virtual ~MoogLadder4FilterEffect();
+    ~MoogLadder4FilterEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

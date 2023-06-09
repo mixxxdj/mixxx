@@ -3,7 +3,7 @@
 #include "analyzer/analyzertrack.h"
 #include "engine/engineobject.h"
 #include "engine/filters/enginefilterbessel4.h"
-#include "engine/filters/enginefilterbutterworth8.h"
+//#include "engine/filters/enginefilterbutterworth8.h"
 #include "track/track.h"
 #include "util/logger.h"
 #include "waveform/waveformfactory.h"
@@ -11,6 +11,10 @@
 namespace {
 
 mixxx::Logger kLogger("AnalyzerWaveform");
+
+constexpr double kLowMidFreqHz = 600.0;
+
+constexpr double kMidHighFreqHz = 4000.0;
 
 } // namespace
 
@@ -148,13 +152,13 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
 }
 
 void AnalyzerWaveform::createFilters(mixxx::audio::SampleRate sampleRate) {
-    // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
-    // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
-    // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
-    m_filter[Low] = new EngineFilterBessel4Low(sampleRate, 600);
-    m_filter[Mid] = new EngineFilterBessel4Band(sampleRate, 600, 4000);
-    m_filter[High] = new EngineFilterBessel4High(sampleRate, 4000);
-    // settle filters for silence in preroll to avoids ramping (Bug #1406389)
+    // m_filter[Low] = new EngineFilterButterworth8Low(sampleRate, kLowMidFreqHz);
+    // m_filter[Mid] = new EngineFilterButterworth8Band(sampleRate, kLowMidFreqHz, kMidHighFreqHz);
+    // m_filter[High] = new EngineFilterButterworth8High(sampleRate, kMidHighFreqHz);
+    m_filter[Low] = new EngineFilterBessel4Low(sampleRate, kLowMidFreqHz);
+    m_filter[Mid] = new EngineFilterBessel4Band(sampleRate, kLowMidFreqHz, kMidHighFreqHz);
+    m_filter[High] = new EngineFilterBessel4High(sampleRate, kMidHighFreqHz);
+    // settle filters for silence in preroll to avoids ramping (Issue #7776)
     for (int i = 0; i < FilterCount; ++i) {
         m_filter[i]->assumeSettled();
     }

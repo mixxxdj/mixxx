@@ -363,7 +363,7 @@ TEST_F(EngineBufferE2ETest, SeekTest) {
 
 TEST_F(EngineBufferE2ETest, SoundTouchReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
-    // Testing bug #1458263
+    // Testing issue #8061
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
             static_cast<double>(EngineBuffer::KeylockEngine::SoundTouch));
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), -1);
@@ -377,7 +377,7 @@ TEST_F(EngineBufferE2ETest, SoundTouchReverseTest) {
 
 TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
-    // Testing bug #1458263
+    // Testing issue #8061
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
             static_cast<double>(EngineBuffer::KeylockEngine::RubberBandFaster));
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), -1);
@@ -391,7 +391,7 @@ TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
 
 TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
     // Be sure, that the Crossfade buffer is processed only once
-    // Bug #1504838
+    // Issue #8251
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandstop"), 1.0);
@@ -402,7 +402,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
 
 TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
     // Be sure, cue seek is not overwritten by quantization seek
-    // Bug #1504503
+    // Issue #8249
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "cue_point"), 0.0);
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
@@ -416,7 +416,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
 
 TEST_F(EngineBufferE2ETest, CueStartPlayTest) {
     // Be sure, cue seek is not overwritten by quantization seek
-    // Bug #1504851
+    // Issue #8252
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "start_play"), 1.0);
@@ -427,7 +427,7 @@ TEST_F(EngineBufferE2ETest, CueStartPlayTest) {
 
 TEST_F(EngineBufferE2ETest, CueGotoAndPlayDenon) {
     // Be sure, cue point is not moved
-    // enable Denon mode Bug #1504934
+    // enable Denon mode issue #8254
     ControlObject::set(ConfigKey(m_sGroup1, "cue_mode"), 2.0); // CUE_MODE_DENON
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos(500), EngineBuffer::SEEK_EXACT);

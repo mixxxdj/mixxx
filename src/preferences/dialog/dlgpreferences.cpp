@@ -21,12 +21,11 @@
 
 #include "preferences/dialog/dlgprefautodj.h"
 #include "preferences/dialog/dlgprefcolors.h"
-#include "preferences/dialog/dlgprefcrossfader.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefeffects.h"
-#include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgprefinterface.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include "preferences/dialog/dlgprefmixer.h"
+#ifndef MIXXX_USE_QML
 #include "preferences/dialog/dlgprefwaveform.h"
 #endif
 
@@ -154,7 +153,7 @@ DlgPreferences::DlgPreferences(
             tr("Interface"),
             "ic_preferences_interface.svg");
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
     if (pSkinLoader) {
         DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
@@ -184,15 +183,9 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_decks.svg");
 
     addPageWidget(PreferencesPage(
-                          new DlgPrefEQ(this, pEffectsManager, m_pConfig),
+                          new DlgPrefMixer(this, pEffectsManager, m_pConfig),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Equalizers"),
-            "ic_preferences_equalizers.svg");
-
-    addPageWidget(PreferencesPage(
-                          new DlgPrefCrossfader(this, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Crossfader"),
+            tr("Mixer"),
             "ic_preferences_crossfader.svg");
 
     addPageWidget(PreferencesPage(

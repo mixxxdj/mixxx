@@ -190,7 +190,7 @@ void WMainMenuBar::initialize() {
     // when ever a menu "View" is present. QT (as of 5.12.3) does not handle this for us.
     // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
     // and the magic menu items won't get injected.
-    // https://bugs.launchpad.net/mixxx/+bug/1534292
+    // https://github.com/mixxxdj/mixxx/issues/8442
     QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"), this);
 #else
     QMenu* pViewMenu = new QMenu(tr("&View"), this);
@@ -305,7 +305,7 @@ void WMainMenuBar::initialize() {
     // key sequence to Mixxx for some reason.
     // Both adding an empty key sequence or the same sequence twice can render
     // the fullscreen shortcut nonfunctional.
-    // https://bugs.launchpad.net/mixxx/+bug/1882474  PR #3011
+    // https://github.com/mixxxdj/mixxx/issues/10005  PR #3011
     if (!osShortcut.isEmpty() && !shortcuts.contains(osShortcut)) {
         shortcuts << osShortcut;
     }
@@ -722,6 +722,14 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             &WMainMenuBar::internalOnNewSkinLoaded,
             pConnection,
             &VisibilityControlConnection::slotReconnectControl);
+#ifdef __LINUX__
+    // reconnect when menu bar was recreated after toggling fullscreen
+    // so all hotkeys and menu actions continue to work
+    connect(this,
+            &WMainMenuBar::internalFullScreenStateChange,
+            pConnection,
+            &VisibilityControlConnection::slotReconnectControl);
+#endif
     connect(this,
             &WMainMenuBar::internalOnNewSkinAboutToLoad,
             pConnection,

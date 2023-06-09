@@ -36,7 +36,7 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
 #include "waveform/waveformwidgetfactory.h"
 #endif
 
@@ -583,14 +583,14 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
 }
 
 void EngineBuffer::ejectTrack() {
-    // clear track values in any case, may fix https://bugs.launchpad.net/mixxx/+bug/1450424
+    // clear track values in any case, may fix https://github.com/mixxxdj/mixxx/issues/8000
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineBuffer::ejectTrack()";
     }
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
 
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
@@ -846,10 +846,10 @@ void EngineBuffer::processTrackLocked(
     bool is_scratching = false;
     bool is_reverse = false;
 
-    // Update the slipped position and seek if it was disabled.
+    // Update the slipped position and seek to it if slip mode was disabled.
     processSlip(iBufferSize);
 
-    // Note: This may effects the m_playPosition, play, scaler and crossfade buffer
+    // Note: This may affect the m_playPosition, play, scaler and crossfade buffer
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time
@@ -1140,8 +1140,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     m_pScaleST->setSampleRate(m_sampleRate);
     m_pScaleRB->setSampleRate(m_sampleRate);
 
-    bool bTrackLoading = m_iTrackLoading.loadAcquire() != 0;
-    if (!bTrackLoading && m_pause.tryLock()) {
+    bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
+    if (hasStableTrack && m_pause.tryLock()) {
         processTrackLocked(pOutput, iBufferSize, m_sampleRate);
         // release the pauselock
         m_pause.unlock();
@@ -1207,7 +1207,18 @@ void EngineBuffer::processSlip(int iBufferSize) {
         // back and forth calculations.
         const int bufferFrameCount = iBufferSize / mixxx::kEngineChannelCount;
         DEBUG_ASSERT(bufferFrameCount * mixxx::kEngineChannelCount == iBufferSize);
-        m_slipPosition += static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        const mixxx::audio::FrameDiff_t slipDelta =
+                static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        // Simulate looping if a regular loop is active
+        if (m_pLoopingControl->isLoopingEnabled() &&
+                !m_pLoopingControl->isLoopRollActive()) {
+            const mixxx::audio::FramePos newPos = m_slipPosition + slipDelta;
+            m_slipPosition = m_pLoopingControl->adjustedPositionForCurrentLoop(
+                    newPos,
+                    m_dSlipRate < 0);
+        } else {
+            m_slipPosition += slipDelta;
+        }
     }
 }
 
@@ -1374,12 +1385,19 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_playPosition);
+    const double fFractionalSlipPos = fractionalPlayposFromAbsolute(m_slipPosition);
 
     const double tempoTrackSeconds = m_trackEndPositionOld.value() /
             m_trackSampleRateOld / getRateRatio();
     if (speed > 0 && fFractionalPlaypos == 1.0) {
-        // At Track end
+        // Play pos at Track end
         speed = 0;
+    }
+
+    double effectiveSlipRate = m_dSlipRate;
+    if (effectiveSlipRate > 0.0 && fFractionalSlipPos == 1.0) {
+        // Slip pos at Track end
+        effectiveSlipRate = 0.0;
     }
 
     // Update indicators that are only updated after every
@@ -1398,7 +1416,8 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
             speed * m_baserate_old,
             static_cast<int>(iBufferSize) /
                     m_trackEndPositionOld.toEngineSamplePos(),
-            fractionalPlayposFromAbsolute(m_slipPosition),
+            fFractionalSlipPos,
+            effectiveSlipRate,
             tempoTrackSeconds,
             iBufferSize / kSamplesPerFrame / m_sampleRate.toDouble() * 1000000.0);
 

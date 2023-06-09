@@ -421,7 +421,7 @@
 
                     <WidgetGroup>
                       <Layout>vertical</Layout>
-                      <SizePolicy>me,max</SizePolicy>
+                      <SizePolicy>me,me</SizePolicy>
                       <Children>
                         <Template src="skin:waveforms_container.xml"/>
                       </Children>

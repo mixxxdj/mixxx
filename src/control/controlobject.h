@@ -53,6 +53,16 @@ class ControlObject : public QObject {
         }
     }
 
+    void setKbdRepeatable(bool enable) {
+        if (m_pControl) {
+            m_pControl->setKbdRepeatable(enable);
+        }
+    }
+
+    bool getKbdRepeatable() const {
+        return m_pControl ? m_pControl->getKbdRepeatable() : false;
+    }
+
     // Return the key of the object
     inline ConfigKey getKey() const {
         return m_key;

@@ -8,7 +8,7 @@
 #include "control/controlvalue.h"
 
 class ControlProxy;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
 typedef void VSyncThread;
 #else
 class VSyncThread;
@@ -36,6 +36,7 @@ class VisualPlayPositionData {
     double m_rate;
     double m_positionStep;
     double m_slipPosition;
+    double m_slipRate;
     double m_tempoTrackSeconds; // total track time, taking the current tempo into account
     double m_audioBufferMicroS;
 };
@@ -54,6 +55,7 @@ class VisualPlayPosition : public QObject {
             double rate,
             double positionStep,
             double slipPosition,
+            double slipRate,
             double tempoTrackSeconds,
             double audioBufferMicroS);
 
@@ -77,7 +79,7 @@ class VisualPlayPosition : public QObject {
     }
 
   private:
-    double calcPosAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
+    double calcOffsetAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
     ControlValueAtomic<VisualPlayPositionData> m_data;
     bool m_valid;
     QString m_key;

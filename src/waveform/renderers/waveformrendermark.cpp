@@ -88,7 +88,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                     sampleEndPosition);
                     if (visible || currentMarkEndPoint > 0) {
                         QColor color = pMark->fillColor();
-                        color.setAlphaF(0.4);
+                        color.setAlphaF(0.4f);
 
                         QLinearGradient gradient(QPointF(0, 0),
                                 QPointF(0, m_waveformRenderer->getHeight()));
@@ -131,7 +131,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                             sampleEndPosition);
                     if (currentMarkEndPoint < m_waveformRenderer->getHeight()) {
                         QColor color = pMark->fillColor();
-                        color.setAlphaF(0.4);
+                        color.setAlphaF(0.4f);
 
                         QLinearGradient gradient(QPointF(0, 0),
                                 QPointF(m_waveformRenderer->getWidth(), 0));
@@ -167,23 +167,23 @@ void WaveformRenderMark::onResize() {
 void WaveformRenderMark::onSetTrack() {
     slotCuesUpdated();
 
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
+    if (!pTrackInfo) {
         return;
     }
-    connect(trackInfo.get(),
+    connect(pTrackInfo.get(),
             &Track::cuesUpdated,
             this,
             &WaveformRenderMark::slotCuesUpdated);
 }
 
 void WaveformRenderMark::slotCuesUpdated() {
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
+    if (!pTrackInfo) {
         return;
     }
 
-    QList<CuePointer> loadedCues = trackInfo->getCuePoints();
+    QList<CuePointer> loadedCues = pTrackInfo->getCuePoints();
     for (const CuePointer& pCue : loadedCues) {
         int hotCue = pCue->getHotCue();
         if (hotCue == Cue::kNoHotCue) {
@@ -263,7 +263,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     // though as soon as other OS-based font and app scaling mechanics join the
     // party the resulting font size is hard to predict (affects all supported OS).
     font.setPixelSize(13);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     font.setWeight(75); // bold
+#else
+    font.setWeight(QFont::Bold); // bold
+#endif
     font.setItalic(false);
 
     QFontMetrics metrics(font);

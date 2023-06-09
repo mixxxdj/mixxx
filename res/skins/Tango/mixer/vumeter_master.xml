@@ -3,7 +3,7 @@ Description:
   Container for the master level meter, suiting various configurations.
 
 Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
-Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
+Refer to https://github.com/mixxxdj/mixxx/issues/9201
 -->
 <Template>
   <WidgetGroup>

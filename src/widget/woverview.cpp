@@ -237,6 +237,16 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     setFocusPolicy(Qt::NoFocus);
 }
 
+void WOverview::initWithTrack(TrackPointer pTrack) {
+    Init();
+    if (pTrack) {
+        // if a track already loaded (after skin change)
+        slotLoadingTrack(pTrack, TrackPointer());
+        slotTrackLoaded(pTrack);
+        slotWaveformSummaryUpdated();
+    }
+}
+
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
@@ -262,7 +272,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // least once per second, regardless of m_iPos which depends on the length
     // of the widget.
     int oldPositionSeconds = m_iPosSeconds;
-    m_iPosSeconds = static_cast<int>(dParameter * m_trackSamplesControl->get());
+    m_iPosSeconds = static_cast<int>(dParameter * getTrackSamples());
     if ((m_bTimeRulerActive || m_pHoveredMark != nullptr) && oldPositionSeconds != m_iPosSeconds) {
         redraw = true;
     }
@@ -332,6 +342,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 &Track::waveformSummaryUpdated,
                 this,
                 &WOverview::slotWaveformSummaryUpdated);
+        disconnect(m_pCurrentTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WOverview::receiveCuesUpdated);
     }
 
     m_waveformSourceImage = QImage();
@@ -339,6 +353,9 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
+    // Note: Here we already have the new track, but the engine and it's
+    // Control Objects may still have the old one until the slotTrackLoaded()
+    // signal has been received.
     m_trackLoaded = false;
     m_endOfTrack = false;
 
@@ -448,13 +465,13 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -522,26 +539,27 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         m_bLeftClickDragging = false;
         return;
     }
-    if (m_pCurrentTrack == nullptr) {
+    double trackSamples = getTrackSamples();
+    if (m_pCurrentTrack == nullptr || trackSamples <= 0) {
         return;
     }
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
         }
 
         if (m_pHoveredMark != nullptr) {
-            double dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
+            double dValue = m_pHoveredMark->getSamplePosition() / trackSamples;
             m_iPickupPos = valueToPosition(dValue);
             m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
@@ -627,11 +645,11 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
 
-        double trackSamples = m_trackSamplesControl->get();
-        if (m_trackLoaded && trackSamples > 0) {
+        double trackSamples = getTrackSamples();
+        if (trackSamples > 0) {
             const float offset = 1.0f;
             const auto gain = static_cast<CSAMPLE_GAIN>(length() - 2) /
-                    static_cast<CSAMPLE_GAIN>(m_trackSamplesControl->get());
+                    static_cast<CSAMPLE_GAIN>(trackSamples);
 
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
@@ -894,7 +912,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         if (rect.isValid()) {
             QColor loopColor = pMark->fillColor();
-            loopColor.setAlphaF(0.5);
+            loopColor.setAlphaF(0.5f);
             pPainter->fillRect(rect, loopColor);
         }
 
@@ -1004,7 +1022,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
 
             double markSamples = pMark->getSamplePosition();
-            double trackSamples = m_trackSamplesControl->get();
+            double trackSamples = getTrackSamples();
             double currentPositionSamples = m_playpositionControl->get() * trackSamples;
             double markTime = samplePositionToSeconds(markSamples);
             double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
@@ -1082,7 +1100,11 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     shadowFont.setWeight(99);
+#else
+    shadowFont.setWeight(QFont::Black);
+#endif
     shadowFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
@@ -1115,7 +1137,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
             textPointDistance.setX(0);
             widgetPositionFraction = m_timeRulerPos.y() / height();
         }
-        qreal trackSamples = m_trackSamplesControl->get();
+        qreal trackSamples = getTrackSamples();
         qreal timePosition = samplePositionToSeconds(
                 widgetPositionFraction * trackSamples);
         qreal timePositionTillEnd = samplePositionToSeconds(
@@ -1238,7 +1260,7 @@ void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
 
 void WOverview::paintText(const QString& text, QPainter* pPainter) {
     PainterScope painterScope(pPainter);
-    m_lowColor.setAlphaF(0.5);
+    m_lowColor.setAlphaF(0.5f);
     QPen lowColorPen(
             QBrush(m_lowColor), 1.25 * m_scaleFactor, Qt::SolidLine, Qt::RoundCap);
     pPainter->setPen(lowColorPen);

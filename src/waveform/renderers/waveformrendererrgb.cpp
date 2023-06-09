@@ -20,25 +20,31 @@ WaveformRendererRGB::~WaveformRendererRGB() {
 void WaveformRendererRGB::onSetup(const QDomNode& /* node */) {
 }
 
-void WaveformRendererRGB::draw(QPainter* painter,
-                                          QPaintEvent* /*event*/) {
-    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+void WaveformRendererRGB::draw(
+        QPainter* painter,
+        QPaintEvent* /*event*/) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    ConstWaveformPointer waveform = trackInfo->getWaveform();
-    if (waveform.isNull()) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
         return;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
+        return;
+    }
+
+    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
         return;
     }
 
@@ -54,8 +60,12 @@ void WaveformRendererRGB::draw(QPainter* painter,
         painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            audioVisualRatio;
 
     const double offset = firstVisualIndex;
 
@@ -137,16 +147,19 @@ void WaveformRendererRGB::draw(QPainter* painter,
             maxAllNext = math_max(maxAllNext, allNext);
         }
 
-        qreal maxLowF = maxLow * lowGain;
-        qreal maxMidF = maxMid * midGain;
-        qreal maxHighF = maxHigh * highGain;
+        float maxLowF = maxLow * lowGain;
+        float maxMidF = maxMid * midGain;
+        float maxHighF = maxHigh * highGain;
 
-        qreal red   = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r + maxHighF * m_rgbHighColor_r;
-        qreal green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g + maxHighF * m_rgbHighColor_g;
-        qreal blue  = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b + maxHighF * m_rgbHighColor_b;
+        float red = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r +
+                maxHighF * m_rgbHighColor_r;
+        float green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g +
+                maxHighF * m_rgbHighColor_g;
+        float blue = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b +
+                maxHighF * m_rgbHighColor_b;
 
         // Compute maximum (needed for value normalization)
-        qreal max = math_max3(red, green, blue);
+        float max = math_max3(red, green, blue);
 
         // Prevent division by zero
         if (max > 0.0f) {

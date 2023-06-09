@@ -95,7 +95,6 @@ BrowseFeature::BrowseFeature(
         if (display_path.endsWith("/")) {
             display_path.chop(1);
         }
-        TreeItem* driveLetter =
         devices_link->appendChild(
                 display_path, // Displays C:
                 drive.filePath()); // Displays C:/
@@ -374,7 +373,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // NOTE(2018-04-21, uklotzde): The following checks prevent a crash
     // that would otherwise occur after a quick link has been removed.
     // Especially the check of QVariant::isValid() seems to be essential.
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1510068
+    // See also: https://github.com/mixxxdj/mixxx/issues/8270
     // After migration to Qt5 the implementation of all LibraryFeatures
     // should be revisited, because I consider these checks only as a
     // temporary workaround.
@@ -463,7 +462,7 @@ void BrowseFeature::loadQuickLinks() {
 }
 
 QString BrowseFeature::extractNameFromPath(const QString& spath) {
-    return QFileInfo(spath).fileName();
+    return QDir(spath).dirName();
 }
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {

@@ -109,22 +109,44 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
+option(QML "Build with QML" OFF)
+option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+
+if(QML AND NOT QT6)
+  message(FATAL_ERROR "Building with option QML=ON requires QT6=ON")
+endif()
+
+if(QOPENGL)
+  add_compile_definitions(MIXXX_USE_QOPENGL)
+endif()
+
+if(QML)
+  add_compile_definitions(MIXXX_USE_QML)
+endif()
 
 if(APPLE)
   if(QT6)
     # Minimum macOS version supported by Qt 6
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
     if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
-    endif()
-  else()
-    # Minimum macOS version supported by Qt 5.12
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
-    if(NOT VCPKG_TARGET_TRIPLET)
       set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
     endif()
-    # Needed for deployment target < 10.14
-    add_compile_options(-fno-aligned-allocation)
+  else()
+    if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
+      # Minimum macOS version for arm64 Support
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
+      set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target achritecture")
+      set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
+      set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Setting this enables CMAKE_CROSSCOMPILE")
+    else()
+      # Minimum macOS version supported by Qt 5.12
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
+      if(NOT VCPKG_TARGET_TRIPLET)
+        set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
+      endif()
+      # Needed for deployment target < 10.14
+      add_compile_options(-fno-aligned-allocation)
+    endif()
   endif()
 endif()
 
@@ -170,8 +192,13 @@ else()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  # using regular Clang or AppleClang
-  set(LLVM_CLANG true)
+  if (CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
+    set(LLVM_CLANG false)
+    set(MSVC true)
+  else()
+    # using regular Clang or AppleClang
+    set(LLVM_CLANG true)
+  endif()
 else()
   set(LLVM_CLANG false)
 endif()
@@ -186,6 +213,9 @@ set(CMAKE_CXX_STANDARD 20)
 if(MSVC)
   # Ensure MSVC populates __cplusplus correctly.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+  # Remove unreferenced code and data
+  # Since c++11 they can safely be removed to speed up linking.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
 endif()
 
 # Speed up builds on HDDs and prevent wearing of SDDs
@@ -289,6 +319,11 @@ if(MSVC)
       string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+      # /O2 is applied by CMake and this implies /Od2
+      string(REPLACE "/Ob1" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob1" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+
       # Reduce the size of the binary in RelWithDebInfo builds
       # Do not use /OPT:ICF because it has no effect.
       # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
@@ -355,8 +390,9 @@ if(MSVC)
       #Remove optimize flags set by cmake defaults
       string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
       string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
-      string(REPLACE "/Ob2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+      string(REPLACE "/Ob1" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob1" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     endif()
@@ -674,7 +710,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/engineworker.cpp
   src/engine/engineworkerscheduler.cpp
   src/engine/enginexfader.cpp
-  src/engine/filters/enginefilter.cpp
   src/engine/filters/enginefilterbessel4.cpp
   src/engine/filters/enginefilterbessel8.cpp
   src/engine/filters/enginefilterbiquad1.cpp
@@ -750,7 +785,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/trackexportworker.cpp
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
+  src/library/itunes/itunesdao.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesplaylistmodel.cpp
+  src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
@@ -840,14 +878,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefbeatsdlg.ui
   src/preferences/dialog/dlgprefcolors.cpp
   src/preferences/dialog/dlgprefcolorsdlg.ui
-  src/preferences/dialog/dlgprefcrossfader.cpp
-  src/preferences/dialog/dlgprefcrossfaderdlg.ui
+  src/preferences/dialog/dlgprefmixer.cpp
+  src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
   src/preferences/dialog/dlgprefdeckdlg.ui
   src/preferences/dialog/dlgprefeffects.cpp
   src/preferences/dialog/dlgprefeffectsdlg.ui
-  src/preferences/dialog/dlgprefeq.cpp
-  src/preferences/dialog/dlgprefeqdlg.ui
   src/preferences/dialog/dlgpreferencepage.cpp
   src/preferences/dialog/dlgpreferences.cpp
   src/preferences/dialog/dlgpreferencesdlg.ui
@@ -943,6 +979,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
+  src/util/colorcomponents.cpp
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
@@ -999,7 +1036,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/valuetransformer.cpp
   src/util/versionstore.cpp
   src/util/widgethelper.cpp
-  src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
@@ -1073,12 +1109,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wtracktableviewheader.cpp
   src/widget/wtracktext.cpp
   src/widget/wtrackwidgetgroup.cpp
-  src/widget/wvumeter.cpp
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
 )
-if(QT6)
+if(QML)
   target_sources(mixxx-lib PRIVATE
     src/qml/asyncimageprovider.cpp
     src/qml/qmlapplication.cpp
@@ -1101,12 +1136,10 @@ else()
     src/waveform/guitick.cpp
     src/waveform/renderers/glslwaveformrenderersignal.cpp
     src/waveform/renderers/glvsynctestrenderer.cpp
+    src/waveform/renderers/glwaveformrenderbackground.cpp
     src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/glwaveformrendererrgb.cpp
     src/waveform/renderers/glwaveformrenderersimplesignal.cpp
-    src/waveform/renderers/qtvsynctestrenderer.cpp
-    src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
-    src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
     src/waveform/renderers/waveformmark.cpp
     src/waveform/renderers/waveformmarkrange.cpp
     src/waveform/renderers/waveformmarkset.cpp
@@ -1134,12 +1167,8 @@ else()
     src/waveform/widgets/glslwaveformwidget.cpp
     src/waveform/widgets/glvsynctestwidget.cpp
     src/waveform/widgets/glwaveformwidget.cpp
+    src/waveform/widgets/glwaveformwidgetabstract.cpp
     src/waveform/widgets/hsvwaveformwidget.cpp
-    src/waveform/widgets/qthsvwaveformwidget.cpp
-    src/waveform/widgets/qtrgbwaveformwidget.cpp
-    src/waveform/widgets/qtsimplewaveformwidget.cpp
-    src/waveform/widgets/qtvsynctestwidget.cpp
-    src/waveform/widgets/qtwaveformwidget.cpp
     src/waveform/widgets/rgbwaveformwidget.cpp
     src/waveform/widgets/softwarewaveformwidget.cpp
     src/waveform/widgets/waveformwidgetabstract.cpp
@@ -1148,15 +1177,83 @@ else()
     src/widget/woverviewlmh.cpp
     src/widget/woverviewrgb.cpp
     src/widget/wspinny.cpp
-      src/widget/wvumetergl.cpp
+    src/widget/wspinnybase.cpp
+    src/widget/wvumeter.cpp
+    src/widget/wvumeterbase.cpp
+    src/widget/wvumeterlegacy.cpp
     src/widget/wwaveformviewer.cpp
   )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/shaders/endoftrackshader.cpp
+      src/shaders/rgbashader.cpp
+      src/shaders/rgbshader.cpp
+      src/shaders/shader.cpp
+      src/shaders/textureshader.cpp
+      src/shaders/unicolorshader.cpp
+      src/util/texture.cpp
+      src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
+      src/waveform/renderers/allshader/waveformrenderbackground.cpp
+      src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderer.cpp
+      src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+      src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
+      src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+      src/waveform/renderers/allshader/waveformrenderersimple.cpp
+      src/waveform/renderers/allshader/waveformrendermark.cpp
+      src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+      src/waveform/widgets/allshader/filteredwaveformwidget.cpp
+      src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
+      src/waveform/widgets/allshader/rgbwaveformwidget.cpp
+      src/waveform/widgets/allshader/simplewaveformwidget.cpp
+      src/waveform/widgets/allshader/waveformwidget.cpp
+      src/widget/openglwindow.cpp
+      src/widget/tooltipqopengl.cpp
+      src/widget/wglwidgetqopengl.cpp
+      src/widget/winitialglwidget.cpp
+      src/widget/wspinnyglsl.cpp
+      src/widget/wvumeterglsl.cpp
+    )
+  else()
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/qtvsynctestrenderer.cpp
+      src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
+      src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+      src/waveform/widgets/qthsvwaveformwidget.cpp
+      src/waveform/widgets/qtrgbwaveformwidget.cpp
+      src/waveform/widgets/qtsimplewaveformwidget.cpp
+      src/waveform/widgets/qtvsynctestwidget.cpp
+      src/waveform/widgets/qtwaveformwidget.cpp
+      src/widget/wglwidgetqglwidget.cpp
+    )
+  endif()
 endif()
+
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
+endif()
+
+if(APPLE)
+  # Enable Automatic Reference Counting (ARC) when compiling Objective-C(++).
+  # This frees us from having to worry about memory management when interfacing
+  # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
+  # will automatically insert retain/release calls on Objective-C objects.
+  target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
+
+  option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
+  if(MACOS_ITUNES_LIBRARY)
+    target_sources(mixxx-lib PRIVATE
+      src/library/itunes/itunesmacosimporter.mm
+    )
+    target_link_libraries(mixxx-lib PRIVATE "-weak_framework iTunesLibrary")
+    target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
+  endif()
 endif()
 
 # QML Debugging
@@ -1205,6 +1302,7 @@ if(MSVC)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
+    # Warning Level 3 (production quality)
     target_compile_options(mixxx-lib PUBLIC /W3)
     target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
@@ -1251,10 +1349,6 @@ target_compile_definitions(mixxx-lib PUBLIC
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
   $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
   $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
-  # Disable assert.h assertions in release mode. Some libraries use
-  # this as a signal for when to enable code that should be disabled
-  # in release mode.
-  $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
 # Mac-specific options
@@ -1367,7 +1461,7 @@ if (APPLE)
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
-        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/bundle.plist.in"
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Info.plist.in"
     )
   endif()
 endif()
@@ -1703,6 +1797,7 @@ add_executable(mixxx-test
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
+  src/test/itunesxmlimportertest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
@@ -1944,15 +2039,18 @@ endif()
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
-  set(LIBDJINTEROP_VERSION 0.16.0)
+  set(LIBDJINTEROP_VERSION 0.16.1)
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
-  find_package(DjInterop ${LIBDJINTEROP_VERSION})
+  # Note: Version 0.17.0 is not yet compatible
+  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
     message(STATUS "Using existing system installation of libdjinterop")
     target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
     target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
+    find_package(ZLIB 1.2.8 REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
   else()
     # Fetch djinterop sources from GitHub and build them statically.
 
@@ -1978,7 +2076,7 @@ if(ENGINEPRIME)
     # the configuration.
     ExternalProject_Add(libdjinterop
       URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
-      URL_HASH SHA256=c998831fe4d3cc80c5c031491204244c9ed0c61575dd529260304b95d79db588
+      URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2031,10 +2129,13 @@ add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
 if(MSVC)
   target_compile_definitions(fidlib PRIVATE T_MSVC)
   target_compile_definitions(fidlib PRIVATE _USE_MATH_DEFINES)
+  target_compile_options(fidlib PRIVATE /W3)
 elseif(MINGW)
   target_compile_definitions(fidlib PRIVATE T_MINGW)
+  target_compile_options(fidlib PRIVATE -fno-finite-math-only -Wall -Wextra -Wfloat-conversion -Werror=return-type)
 else()
   target_compile_definitions(fidlib PRIVATE T_LINUX)
+  target_compile_options(fidlib PRIVATE -fno-finite-math-only -Wall -Wextra -Wfloat-conversion -Werror=return-type)
 endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
@@ -2109,7 +2210,10 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 # inlining It is compiled without optimization and allows to use these function
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
-if(GNU_GCC OR LLVM_CLANG)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
+  target_compile_options(FpClassify PRIVATE /fp:precise)
+elseif(GNU_GCC OR LLVM_CLANG)
   # The option `-ffp-contract=on` must precede `-fno-fast-math`
   # to silence a warning on Clang 14
   target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math)
@@ -2141,7 +2245,7 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
 if(WIN32)
-  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__ _CRT_SECURE_NO_WARNINGS)
 endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
@@ -2227,7 +2331,9 @@ if(QT6)
   foreach(COMPONENT ${QT6_NEW_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
   endforeach()
+endif()
 
+if(QML)
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
   set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-lib
@@ -2325,7 +2431,7 @@ endif()
 
 
 if(APPLE)
-  if(Qt_IS_STATIC)
+  if(Qt_IS_STATIC OR QT6)
     target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework Accelerate"
         "-weak_framework AppKit"
@@ -2429,7 +2535,11 @@ endif()
 if(APPLE OR WIN32)
   # qt_de.qm is just one arbitrary file in the directory that needs to be located;
   # there is no particular reason to look for this file versus any other one in the directory.
-  find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  if(QT6)
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt6_DIR}/../../../translations" "${Qt6_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  else()
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  endif()
   get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
   install(
     DIRECTORY "${QT_TRANSLATIONS}"
@@ -2765,18 +2875,21 @@ option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
   find_package(Shoutidjc)
   # Check if system lib is at least 2.4.6 and not suffering bugs
-  # https://bugs.launchpad.net/mixxx/+bug/1833225
-  # https://bugs.launchpad.net/mixxx/+bug/1913579
+  # https://github.com/mixxxdj/mixxx/issues/9681
+  # https://github.com/mixxxdj/mixxx/issues/10305
   if(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.4)
-      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from bug lp1833225")
+      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from issue #9681")
   elseif(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.6)
-      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
+      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from issue #10305")
   endif()
   if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
     # Fall back to internal library in the lib tree
     message(STATUS "Using internal libshout-idjc")
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
     target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout-idjc/include)
+    if(WIN32)
+      target_compile_definitions(shout_mixxx PRIVATE __WINDOWS__ _CRT_NONSTDC_NO_WARNINGS)
+    endif()
     target_link_libraries(mixxx-lib PRIVATE shout_mixxx)
   else()
     target_link_libraries(mixxx-lib PRIVATE Shoutidjc::Shoutidjc)
@@ -2936,6 +3049,7 @@ if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hidiothread.cpp
+    src/controllers/hid/hidioglobaloutputreportfifo.cpp
     src/controllers/hid/hidiooutputreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
@@ -3056,7 +3170,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic lunar mantic)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
@@ -3075,7 +3189,7 @@ include(CPack)
 if(APPLE AND MACOS_BUNDLE)
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
     set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
-    set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/entitlements.plist")
+    set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Mixxx.entitlements")
 
     # Starting with arm64 macOS Apple will require ad-hoc code signatures,
     # which can be generated by setting the identity to a single dash (-).
