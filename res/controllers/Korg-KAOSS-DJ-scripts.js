@@ -194,9 +194,12 @@ KAOSSDJ.fxTouchMoveHorizontal = function(channel, control, value, status, group)
 };
 
 KAOSSDJ.fxTouch = function(channel, control, value, status, group) {
-    var deck = KAOSSDJ.getDeckByChannel(channel);
-    engine.setValue("[EffectRack1_EffectUnit"+deck.deckNumber +"]", "mix", 0);
-    engine.setValue("[EffectRack1_EffectUnit"+deck.deckNumber +"]", "super1", 0);
+    if (value === OFF) {
+        var deck = KAOSSDJ.getDeckByChannel(channel);
+        var fxGroup = "[EffectRack1_EffectUnit" + deck.deckNumber + "]";
+        engine.setValue(fxGroup, "mix", 0);
+        engine.setValue(fxGroup, "super1", 0);
+    }
 };
 
 // use loop-button to deactivate an active loop or initialize a beatloop at the current playback position
