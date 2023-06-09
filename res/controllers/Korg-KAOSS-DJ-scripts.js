@@ -179,7 +179,7 @@ KAOSSDJ.fxKnob = function(_channel, _control, _value, _status) {
     // TODO
 };
 
-KAOSSDJ.controllerFxTouchMoveVertical = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouchMoveVertical = function(channel, control, value, status, group) {
     var decks = KAOSSDJ.decks;
     for (var key in decks) {
         var deck = decks[key];
@@ -189,7 +189,7 @@ KAOSSDJ.controllerFxTouchMoveVertical = function(channel, control, value, status
     }
 };
 
-KAOSSDJ.controllerFxTouchMoveHorizontal = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouchMoveHorizontal = function(channel, control, value, status, group) {
     var decks = KAOSSDJ.decks;
     for (var key in decks) {
         var deck = decks[key];
@@ -199,7 +199,7 @@ KAOSSDJ.controllerFxTouchMoveHorizontal = function(channel, control, value, stat
     }
 };
 
-KAOSSDJ.controllerFxTouchUp = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouch = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     engine.setValue("[EffectRack1_EffectUnit"+deck.deckNumber +"]", "mix", 0);
     engine.setValue("[EffectRack1_EffectUnit"+deck.deckNumber +"]", "super1", 0);
@@ -316,7 +316,7 @@ KAOSSDJ.tapButtonCallback = function(channel, control, value, status, group) {
 };
 
 // <SHIFT> + <TOUCHPAD X> : control super knob of QuickEffectRack for deck 1
-KAOSSDJ.controllerFxTouchMoveVerticalShift = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouchMoveVerticalShift = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.decks[0];
     if (deck.fx) {
         var val = script.absoluteLin(value, 0, 1, 0, 127);
@@ -325,7 +325,7 @@ KAOSSDJ.controllerFxTouchMoveVerticalShift = function(channel, control, value, s
 };
 
 // <SHIFT> + <TOUCHPAD Y> : control super knob of QuickEffectRack for deck 2
-KAOSSDJ.controllerFxTouchMoveHorizontalShift = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouchMoveHorizontalShift = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.decks[1];
     if (deck.fx) {
         var val = script.absoluteLin(value, 0, 1, 0, 127);

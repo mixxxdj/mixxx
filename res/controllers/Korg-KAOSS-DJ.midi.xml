@@ -32,7 +32,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.controllerFxTouchMoveHorizontal</key>
+                <key>KAOSSDJ.fxTouchMoveHorizontal</key>
                 <description>Fx Control</description>
                 <status>0xB8</status>
                 <midino>0x0C</midino>
@@ -42,7 +42,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.controllerFxTouchMoveVertical</key>
+                <key>KAOSSDJ.fxTouchMoveVertical</key>
                 <description>Fx Control</description>
                 <status>0xB8</status>
                 <midino>0x0D</midino>
@@ -192,7 +192,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.controllerFxTouchMoveVerticalShift</key>
+                <key>KAOSSDJ.fxTouchMoveVerticalShift</key>
                 <status>0xB6</status>
                 <midino>0x11</midino>
                 <options>
@@ -221,7 +221,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.controllerFxTouchMoveHorizontalShift</key>
+                <key>KAOSSDJ.fxTouchMoveHorizontalShift</key>
                 <status>0xB6</status>
                 <midino>0x12</midino>
                 <options>
@@ -630,7 +630,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.controllerFxTouchUp</key>
+                <key>KAOSSDJ.fxTouch</key>
                 <description>Fx Control</description>
                 <status>0x97</status>
                 <midino>0x20</midino>
@@ -640,7 +640,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>KAOSSDJ.controllerFxTouchUp</key>
+                <key>KAOSSDJ.fxTouch</key>
                 <description>Fx Control</description>
                 <status>0x98</status>
                 <midino>0x20</midino>
