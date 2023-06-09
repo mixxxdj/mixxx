@@ -97,7 +97,7 @@ KAOSSDJ.wheelTouch = function(channel, control, value, status, group) {
     var beta = alpha / 32;
     var deck = KAOSSDJ.getDeckByChannel(channel);
     var deckNumber = deck.deckNumber;
-    var deckPlaying = engine.getValue("[Channel" + deckNumber + "]", "play_indicator");
+    var deckPlaying = engine.getValue("[Channel" + deckNumber + "]", "play_latched");
 
     // If in scratch mode or not playing enable vinyl-like control
     if (deck.jogWheelsInScratchMode || !deckPlaying) {
@@ -150,13 +150,7 @@ KAOSSDJ.wheelTurnShift = function(channel, control, value, status, group) {
 };
 
 KAOSSDJ.scratchMode = function(channel, control, value, status, group) {
-    if (value === ON) {
-        // Turn scratch mode on jogwheel (LED is red)
-        KAOSSDJ.updateDeckByChannel(channel, "jogWheelsInScratchMode", true);
-    } else if (value === OFF) {
-        // Turn scratch mode on jogwheel (LED is off)
-        KAOSSDJ.updateDeckByChannel(channel, "jogWheelsInScratchMode", false);
-    }
+    KAOSSDJ.updateDeckByChannel(channel, "jogWheelsInScratchMode", value === ON);
 };
 
 KAOSSDJ.leftFxSwitch = function(channel, control, value, status, group) {
@@ -184,7 +178,7 @@ KAOSSDJ.fxTouchMoveVertical = function(channel, control, value, status, group) {
     for (var key in decks) {
         var deck = decks[key];
         if (deck.fx) {
-            engine.setValue("[EffectRack1_EffectUnit"+deck.deckNumber +"]", "mix", value / 127);
+            engine.setValue("[EffectRack1_EffectUnit" + deck.deckNumber + "]", "mix", value / 127);
         }
     }
 };
@@ -194,7 +188,7 @@ KAOSSDJ.fxTouchMoveHorizontal = function(channel, control, value, status, group)
     for (var key in decks) {
         var deck = decks[key];
         if (deck.fx) {
-            engine.setValue("[EffectRack1_EffectUnit"+deck.deckNumber +"]", "super1", value / 127);
+            engine.setValue("[EffectRack1_EffectUnit" + deck.deckNumber + "]", "super1", value / 127);
         }
     }
 };
@@ -226,7 +220,7 @@ KAOSSDJ.toggleLoop = function(channel, control, value, status, group) {
 KAOSSDJ.loadCallback = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     if (value === ON) {
-        if ((shiftLeftPressed) || (shiftRightPressed)) {
+        if (shiftLeftPressed || shiftRightPressed) {
             if (deck.deckNumber === 1) {
                 engine.setValue("[Library]", "MoveLeft", true);
             } else {
@@ -239,26 +233,16 @@ KAOSSDJ.loadCallback = function(channel, control, value, status, group) {
 };
 
 KAOSSDJ.shiftLeftCallback = function(channel, control, value, status, group) {
-    if (value === ON) {
-        // if (shiftRightPressed == true) {
-        // 	TODO add functionality if <RIGHT SHIFT> is active while <LEFT SHIFT> is pressed?
-        // }
-        shiftLeftPressed = true;
-    } else { shiftLeftPressed = false; }
+    shiftLeftPressed = value === ON;
 };
 
 KAOSSDJ.shiftRightCallback = function(channel, control, value, status, group) {
-    if (value === ON) {
-        // if (shiftLeftPressed == true) {
-        // 	TODO add functionality if <LEFT SHIFT> is active while <RIGHT SHIFT> is pressed?
-        // }
-        shiftRightPressed = true;
-    } else { shiftRightPressed = false; }
+    shiftRightPressed = value === ON;
 };
 
 KAOSSDJ.changeFocus = function(channel, control, value, status, group) {
+    // toggle focus between Playlist and File-Browser
     if (value === ON) {
-        // toggle focus between Playlist and File-Browser
         engine.setValue("[Library]", "MoveFocusForward", true);
     }
 };
@@ -267,13 +251,13 @@ KAOSSDJ.changeFocus = function(channel, control, value, status, group) {
 // <SHIFT> + <browseKnob> : toggle focus between Playlist and File-Browser
 KAOSSDJ.browseKnob = function(channel, control, value, status, group) {
     if (value > 0x40) {
-        if ((shiftLeftPressed) || (shiftRightPressed)) {
+        if (shiftLeftPressed || shiftRightPressed) {
             engine.setValue("[Library]", "MoveFocusForward", true);
         } else {
             engine.setValue("[Library]", "MoveUp", true);
         }
     } else {
-        if ((shiftLeftPressed) || (shiftRightPressed)) {
+        if (shiftLeftPressed || shiftRightPressed) {
             engine.setValue("[Library]", "MoveFocusBackward", true);
         } else {
             engine.setValue("[Library]", "MoveDown", true);
@@ -287,32 +271,31 @@ KAOSSDJ.browseKnob = function(channel, control, value, status, group) {
 // <SHIFT RIGHT> + <TAP> : tap bpm of RIGHT track
 var doubleTapTime;
 KAOSSDJ.tapButtonCallback = function(channel, control, value, status, group) {
-    var now = new Date().getTime();
-    var timesince = now - doubleTapTime;
+    if (value !== ON) {
+        return;
+    }
 
     /* shift tab to move focus view */
-    if ((value === ON) && ((shiftLeftPressed))) {
+    if ((value === ON) && shiftLeftPressed) {
         // engine.setValue("[Library]", "MoveFocusForward", true);
         engine.setValue("[Channel1]", "bpm_tap", true);
         return;
     }
-    if ((value === ON) && ((shiftRightPressed))) {
+    if ((value === ON) && shiftRightPressed) {
         // engine.setValue("[Library]", "MoveFocusForward", true);
         engine.setValue("[Channel2]", "bpm_tap", true);
         return;
     }
 
     /* tap to open folder, double-tap to close folder (twice to undo first tap)*/
-    if (value === ON) {
-        if ((timesince < 600) && (timesince > 0)) {
-            engine.setValue("[Library]", "MoveLeft", true);
-            engine.setValue("[Library]", "MoveLeft", true);
-        } else {
-            engine.setValue("[Library]", "MoveRight", true);
-        }
-
-        doubleTapTime = new Date().getTime();
+    var now = new Date().getTime();
+    var timesince = now - doubleTapTime;
+    if ((timesince < 600) && (timesince > 0)) {
+        engine.setValue("[Library]", "MoveLeft", true);
+    } else {
+        engine.setValue("[Library]", "MoveRight", true);
     }
+    doubleTapTime = new Date().getTime();
 };
 
 // <SHIFT> + <TOUCHPAD X> : control super knob of QuickEffectRack for deck 1
