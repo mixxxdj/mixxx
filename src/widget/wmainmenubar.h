@@ -89,6 +89,9 @@ class WMainMenuBar : public QMenuBar {
     void internalOnNewSkinAboutToLoad();
 
   private slots:
+#ifndef __APPLE__
+    void slotAutoHideMenuBarToggled(bool autoHide);
+#endif
     void slotDeveloperStatsExperiment(bool enable);
     void slotDeveloperStatsBase(bool enable);
     void slotDeveloperDebugger(bool toggle);

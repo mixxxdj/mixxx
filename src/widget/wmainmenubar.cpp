@@ -208,6 +208,32 @@ void WMainMenuBar::initialize() {
     connectMenuToSlotShowMenuBar(pViewMenu);
 #endif
 
+#ifndef __APPLE__
+    // Show menu bar
+    QString showMenuBarTitle = tr("Auto-hide menu bar");
+    QString showMenuBarText = tr("Auto-hide the main menu bar when it's not used.");
+    auto* pViewAutoHideMenuBar = new QAction(showMenuBarTitle, this);
+    pViewAutoHideMenuBar->setCheckable(true);
+    pViewAutoHideMenuBar->setStatusTip(showMenuBarText);
+    pViewAutoHideMenuBar->setWhatsThis(buildWhatsThis(showMenuBarTitle, showMenuBarText));
+    connect(pViewAutoHideMenuBar,
+            &QAction::triggered,
+            this,
+            &WMainMenuBar::slotAutoHideMenuBarToggled);
+    // update checked state from config each time the menu is shown
+    connect(pViewMenu,
+            &QMenu::aboutToShow,
+            this,
+            [this, pViewAutoHideMenuBar]() {
+                bool autoHide = m_pConfig->getValue<bool>(
+                        ConfigKey("[Config]", "hide_menubar"), false);
+                pViewAutoHideMenuBar->setChecked(autoHide);
+            });
+    pViewMenu->addAction(pViewAutoHideMenuBar);
+
+    pViewMenu->addSeparator();
+#endif
+
     // Skin Settings Menu
     QString mayNotBeSupported = tr("May not be supported on all skins.");
     QString showSkinSettingsTitle = tr("Show Skin Settings Menu");
@@ -288,7 +314,6 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewShowCoverArt,
             ConfigKey(kSkinGroup, QStringLiteral("show_library_coverart")));
     pViewMenu->addAction(pViewShowCoverArt);
-
 
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
@@ -812,6 +837,14 @@ void WMainMenuBar::hideMenuBar() {
     if (m_pConfig->getValue<bool>(ConfigKey("[Config]", "hide_menubar"), false)) {
         // don't use setHidden(true) because Alt hotkeys wouldn't work anymore
         setFixedHeight(0);
+    }
+}
+
+void WMainMenuBar::slotAutoHideMenuBarToggled(bool autoHide) {
+    m_pConfig->setValue(ConfigKey("[Config]", "hide_menubar"), autoHide ? 1 : 0);
+    // Just in case it was hidden after toggling the menu action
+    if (!autoHide) {
+        showMenuBar();
     }
 }
 #endif
