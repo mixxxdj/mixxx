@@ -1258,6 +1258,10 @@ if(APPLE)
   # will automatically insert retain/release calls on Objective-C objects.
   target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
 
+  target_sources(mixxx-lib PRIVATE
+    src/util/darkappearance.mm
+  )
+
   option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
   if(MACOS_ITUNES_LIBRARY)
     target_sources(mixxx-lib PRIVATE
