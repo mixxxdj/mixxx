@@ -2769,7 +2769,7 @@ if(HID)
 endif()
 
 # USB Bulk controller support
-default_option(BULK "USB Bulk controller support" "LibUSB_FOUND")
+default_option(BULK "USB Bulk controller support" "LibUSB_FOUND;NOT WIN32")
 if(BULK)
   if(NOT LibUSB_FOUND)
     message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
