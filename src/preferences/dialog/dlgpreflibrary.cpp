@@ -12,6 +12,7 @@
 #include <QUrl>
 
 #include "defs_urls.h"
+#include "library/basetracktablemodel.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -78,13 +79,15 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotRowHeightValueChanged);
 
+    spinbox_bpm_precision->setMinimum(BaseTrackTableModel::kBpmColumnPrecisionMinimum);
+    spinbox_bpm_precision->setMaximum(BaseTrackTableModel::kBpmColumnPrecisionMaximum);
+    connect(spinbox_bpm_precision,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefLibrary::slotBpmColumnPrecisionChanged);
+
     searchDebouncingTimeoutSpinBox->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
     searchDebouncingTimeoutSpinBox->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
-    const auto searchDebouncingTimeoutMillis =
-            m_pConfig->getValue(
-                    kSearchDebouncingTimeoutMillisConfigKey,
-                    WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
-    searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
     connect(searchDebouncingTimeoutSpinBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
@@ -131,12 +134,37 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotSyncTrackMetadataToggled);
 
+    // Avoid undesired spinbox value changes while scrolling the preferences page
+    setFocusPolicyInstallEventFilter(spinbox_bpm_precision);
+    setFocusPolicyInstallEventFilter(spinbox_history_track_duplicate_distance);
+    setFocusPolicyInstallEventFilter(spinbox_history_min_tracks_to_keep);
+    setFocusPolicyInstallEventFilter(spinBoxRowHeight);
+    setFocusPolicyInstallEventFilter(searchDebouncingTimeoutSpinBox);
+
     // Initialize the controls after all slots have been connected
     slotUpdate();
 }
 
 DlgPrefLibrary::~DlgPrefLibrary() = default;
 
+void DlgPrefLibrary::setFocusPolicyInstallEventFilter(QSpinBox* box) {
+    box->setFocusPolicy(Qt::StrongFocus);
+    box->installEventFilter(this);
+}
+
+// Catch scroll events over spinboxes and pass them to the scroll area instead.
+bool DlgPrefLibrary::eventFilter(QObject* obj, QEvent* e) {
+    if (e->type() == QEvent::Wheel) {
+        // Reject scrolling only if widget is unfocused.
+        // Object to widget cast is needed to check the focus state.
+        QSpinBox* spin = qobject_cast<QSpinBox*>(obj);
+        if (spin && !spin->hasFocus()) {
+            QApplication::sendEvent(verticalLayout, e);
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, e);
+}
 void DlgPrefLibrary::slotShow() {
     m_bAddedDirectory = false;
 }
@@ -199,14 +227,12 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
-    checkBox_show_rhythmbox->setChecked(true);
-    checkBox_show_banshee->setChecked(true);
-    checkBox_show_itunes->setChecked(true);
-    checkBox_show_traktor->setChecked(true);
-    checkBox_show_rekordbox->setChecked(true);
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
+    spinbox_bpm_precision->setValue(BaseTrackTableModel::kBpmColumnPrecisionDefault);
+
     radioButton_cover_art_fetcher_medium->setChecked(true);
+
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
     searchDebouncingTimeoutSpinBox->setValue(
@@ -214,6 +240,12 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kCompletionsEnabledDefault);
     checkBoxEnableSearchHistoryShortcuts->setChecked(
             WSearchLineEdit::kHistoryShortcutsEnabledDefault);
+
+    checkBox_show_rhythmbox->setChecked(true);
+    checkBox_show_banshee->setChecked(true);
+    checkBox_show_itunes->setChecked(true);
+    checkBox_show_traktor->setChecked(true);
+    checkBox_show_rekordbox->setChecked(true);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -299,11 +331,18 @@ void DlgPrefLibrary::slotUpdate() {
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(m_iOriginalTrackTableRowHeight);
     setLibraryFont(m_originalTrackTableFont);
+
     const auto searchDebouncingTimeoutMillis =
             m_pConfig->getValue(
                     kSearchDebouncingTimeoutMillisConfigKey,
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
+
+    const auto bpmColumnPrecision =
+            m_pConfig->getValue(
+                    kBpmColumnPrecisionConfigKey,
+                    BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    spinbox_bpm_precision->setValue(bpmColumnPrecision);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -548,6 +587,13 @@ void DlgPrefLibrary::updateSearchLineEditHistoryOptions() {
     WSearchLineEdit::setSearchHistoryShortcutsEnabled(m_pConfig->getValue<bool>(
             kEnableSearchHistoryShortcutsConfigKey,
             WSearchLineEdit::kHistoryShortcutsEnabledDefault));
+}
+
+void DlgPrefLibrary::slotBpmColumnPrecisionChanged(int bpmPrecision) {
+    m_pConfig->setValue(
+            kBpmColumnPrecisionConfigKey,
+            bpmPrecision);
+    BaseTrackTableModel::setBpmColumnPrecision(bpmPrecision);
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
