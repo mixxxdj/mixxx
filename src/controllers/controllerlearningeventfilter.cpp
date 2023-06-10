@@ -68,8 +68,7 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
                 }
                 ConfigKey key = pControl->getKey();
                 key.item = key.item + "_set_default";
-                auto pResetControl = PollingControlProxy(key, ControlFlag::AllowMissingOrInvalid);
-                if (pResetControl.valid()) {
+                if (ControlObject::exists(key)) {
                     qDebug() << "Right-click reset maps MIDI to:" << key.group << key.item;
                     emit controlClicked(key);
                 }
