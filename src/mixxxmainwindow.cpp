@@ -381,9 +381,18 @@ void MixxxMainWindow::initialize() {
     setCentralWidget(m_pCentralWidget);
 
 #ifndef __APPLE__
-    // Ask for permission to auto-hide the menu bar
+    // Ask for permission to auto-hide the menu bar if applicable.
+#ifdef __LINUX__
+    // This makes no sense when starting in windowed mode with a global menu,
+    // we'll ask when going fullscreen.
+    if (!m_supportsGlobalMenuBar || isFullScreen()) {
+        alwaysHideMenuBarDlg();
+        slotUpdateMenuBarAltKeyConnection();
+    }
+#else
     alwaysHideMenuBarDlg();
     slotUpdateMenuBarAltKeyConnection();
+#endif
 #endif
 
     // Show the menubar after the launch image is replaced by the skin widget,
@@ -1291,6 +1300,9 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
                 QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, isFullScreenNow);
                 createMenuBar();
                 connectMenuBar();
+                // With a global menu we didn't show the menubar auto-hide dialog
+                // during (windowed) startup, so ask now.
+                alwaysHideMenuBarDlg();
                 slotUpdateMenuBarAltKeyConnection();
             }
 #endif
