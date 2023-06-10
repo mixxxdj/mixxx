@@ -13,19 +13,21 @@ var ledChannel = {
     "knobsR": 0xB8,
     "master": 0xB6
 };
-var led = {
-    "cue": 0x1E,
-    "sync": 0x1D,
-    "play": 0x1B,
-    "headphones": 0x19,
-    "fx": 0x18, // warning: led is owned by controller
-    "stripL": 0x15,
-    "stripM": 0x16,
-    "stripR": 0x17,
-    "loopStripL": 0x0F,
-    "loopStripM": 0x10,
-    "loopStripR": 0x11,
-};
+
+// TODO: Only turn on/off selected LEDs on startup/shutdown
+// var led = {
+//     "cue": 0x1E,
+//     "sync": 0x1D,
+//     "play": 0x1B,
+//     "headphones": 0x19,
+//     "fx": 0x18, // warning: led is owned by controller
+//     "stripL": 0x15,
+//     "stripM": 0x16,
+//     "stripR": 0x17,
+//     "loopStripL": 0x0F,
+//     "loopStripM": 0x10,
+//     "loopStripR": 0x11,
+// };
 
 // shift button state variables
 var shiftLeftPressed = false;
@@ -92,7 +94,7 @@ KAOSSDJ.updateDeckByChannel = function(channel, key, value) {
 
 // ==== mapped functions ====
 
-KAOSSDJ.wheelTouch = function(channel, control, value, status, group) {
+KAOSSDJ.wheelTouch = function(channel, _control, value, _status, _group) {
     var alpha = 1.0 / 8;
     var beta = alpha / 32;
     var deck = KAOSSDJ.getDeckByChannel(channel);
@@ -111,7 +113,7 @@ KAOSSDJ.wheelTouch = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.wheelTurn = function(channel, control, value, status, group) {
+KAOSSDJ.wheelTurn = function(channel, _control, value, _status, _group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     var deckNumber = deck.deckNumber;
     var newValue = 0;
@@ -127,7 +129,7 @@ KAOSSDJ.wheelTurn = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.wheelTurnShift = function(channel, control, value, status, group) {
+KAOSSDJ.wheelTurnShift = function(channel, _control, value, _status, _group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     if (deck.jogWheelsInScratchMode) {
         // Fast scratch
@@ -149,11 +151,11 @@ KAOSSDJ.wheelTurnShift = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.scratchMode = function(channel, control, value, status, group) {
+KAOSSDJ.scratchMode = function(channel, _control, value, _status, _group) {
     KAOSSDJ.updateDeckByChannel(channel, "jogWheelsInScratchMode", value === ON);
 };
 
-KAOSSDJ.fxToggleButton = function(channel, control, value, status, group) {
+KAOSSDJ.fxToggleButton = function(channel, _control, value, _status, _group) {
     KAOSSDJ.updateDeckByChannel(channel, "fx", value === ON);
 };
 
@@ -161,7 +163,7 @@ KAOSSDJ.fxKnob = function(_channel, _control, _value, _status) {
     // TODO
 };
 
-KAOSSDJ.fxTouchMoveVertical = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouchMoveVertical = function(_channel, _control, value, _status, _group) {
     var decks = KAOSSDJ.decks;
     for (var key in decks) {
         var deck = decks[key];
@@ -171,7 +173,7 @@ KAOSSDJ.fxTouchMoveVertical = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.fxTouchMoveHorizontal = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouchMoveHorizontal = function(_channel, _control, value, _status, _group) {
     var decks = KAOSSDJ.decks;
     for (var key in decks) {
         var deck = decks[key];
@@ -181,7 +183,7 @@ KAOSSDJ.fxTouchMoveHorizontal = function(channel, control, value, status, group)
     }
 };
 
-KAOSSDJ.fxTouch = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouch = function(channel, _control, value, _status, _group) {
     if (value === OFF) {
         var deck = KAOSSDJ.getDeckByChannel(channel);
         var fxGroup = "[EffectRack1_EffectUnit" + deck.deckNumber + "]";
@@ -191,7 +193,7 @@ KAOSSDJ.fxTouch = function(channel, control, value, status, group) {
 };
 
 // use loop-button to deactivate an active loop or initialize a beatloop at the current playback position
-KAOSSDJ.toggleLoop = function(channel, control, value, status, group) {
+KAOSSDJ.toggleLoop = function(channel, _control, value, _status, _group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     var loopEnabled = engine.getValue(deck.group, "loop_enabled");
 
@@ -208,7 +210,7 @@ KAOSSDJ.toggleLoop = function(channel, control, value, status, group) {
 
 // <LOAD A/B>           : load track
 // <SHIFT> + <LOAD A/B> : open/close folder in file-browser
-KAOSSDJ.loadCallback = function(channel, control, value, status, group) {
+KAOSSDJ.loadCallback = function(channel, _control, value, _status, _group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     if (value === ON) {
         if (shiftLeftPressed || shiftRightPressed) {
@@ -223,15 +225,15 @@ KAOSSDJ.loadCallback = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.shiftLeftCallback = function(channel, control, value, status, group) {
+KAOSSDJ.shiftLeftCallback = function(_channel, _control, value, _status, _group) {
     shiftLeftPressed = value === ON;
 };
 
-KAOSSDJ.shiftRightCallback = function(channel, control, value, status, group) {
+KAOSSDJ.shiftRightCallback = function(_channel, _control, value, _status, _group) {
     shiftRightPressed = value === ON;
 };
 
-KAOSSDJ.changeFocus = function(channel, control, value, status, group) {
+KAOSSDJ.changeFocus = function(_channel, _control, value, _status, _group) {
     // toggle focus between Playlist and File-Browser
     if (value === ON) {
         engine.setValue("[Library]", "MoveFocusForward", true);
@@ -240,7 +242,7 @@ KAOSSDJ.changeFocus = function(channel, control, value, status, group) {
 
 // <browseKnob>           : browse library up & down
 // <SHIFT> + <browseKnob> : toggle focus between Playlist and File-Browser
-KAOSSDJ.browseKnob = function(channel, control, value, status, group) {
+KAOSSDJ.browseKnob = function(_channel, _control, value, _status, _group) {
     if (value > 0x40) {
         if (shiftLeftPressed || shiftRightPressed) {
             engine.setValue("[Library]", "MoveFocusForward", true);
@@ -261,7 +263,7 @@ KAOSSDJ.browseKnob = function(channel, control, value, status, group) {
 // <SHIFT LEFT> + <TAP> : tap bpm of LEFT track
 // <SHIFT RIGHT> + <TAP> : tap bpm of RIGHT track
 var doubleTapTime;
-KAOSSDJ.tapButtonCallback = function(channel, control, value, status, group) {
+KAOSSDJ.tapButtonCallback = function(_channel, _control, value, _status, _group) {
     if (value !== ON) {
         return;
     }
@@ -290,7 +292,7 @@ KAOSSDJ.tapButtonCallback = function(channel, control, value, status, group) {
 };
 
 // <SHIFT> + <TOUCHPAD X> : control super knob of QuickEffectRack for deck 1
-KAOSSDJ.fxTouchMoveVerticalShift = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouchMoveVerticalShift = function(_channel, _control, value, _status, _group) {
     var deck = KAOSSDJ.decks[0];
     if (deck.fx) {
         var val = script.absoluteLin(value, 0, 1, 0, 127);
@@ -299,7 +301,7 @@ KAOSSDJ.fxTouchMoveVerticalShift = function(channel, control, value, status, gro
 };
 
 // <SHIFT> + <TOUCHPAD Y> : control super knob of QuickEffectRack for deck 2
-KAOSSDJ.fxTouchMoveHorizontalShift = function(channel, control, value, status, group) {
+KAOSSDJ.fxTouchMoveHorizontalShift = function(_channel, _control, value, _status, _group) {
     var deck = KAOSSDJ.decks[1];
     if (deck.fx) {
         var val = script.absoluteLin(value, 0, 1, 0, 127);
