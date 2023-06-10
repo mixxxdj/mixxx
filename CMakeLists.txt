@@ -45,6 +45,24 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+function(FATAL_ERROR_MISSING_ENV)
+  if(WIN32)
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat´?")
+    else()
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/windows_release_buildenv.bat´ or ´${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat´(includes Debug)?")
+    endif()
+  elseif(APPLE)
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/macos_buildenv.bat´")
+    else()
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.bat´ or ´${CMAKE_SOURCE_DIR}/tools/macos_buildenv.bat´(includes Debug)?")
+    endif()
+  else()
+    message(FATAL_ERROR "Did you install the Debian dev packages via ´${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh´ or the equivalent packages using your package manager?")
+  endif()
+endfunction()
+
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
 # Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
@@ -59,7 +77,8 @@ if(DEFINED MIXXX_VCPKG_ROOT)
     # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
     message(STATUS "Using MIXXX_VCPKG_ROOT: $ENV{MIXXX_VCPKG_ROOT}")
   else()
-    message(FATAL_ERROR "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+    message(STATUS "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+    FATAL_ERROR_MISSING_ENV()
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
@@ -165,8 +184,9 @@ if(DEFINED _VCPKG_INSTALLED_DIR)
   if(NOT EXISTS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
     # Fail early if this part of CMAKE_PREFIX_PATH does not exist
     # else the library lookups below will fail with misleading error messages
-    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
+    message(STATUS "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
         "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
+    FATAL_ERROR_MISSING_ENV()
   else()
     message(STATUS "Using VCPKG_TARGET_TRIPLET: ${VCPKG_TARGET_TRIPLET}")
   endif()
@@ -1735,6 +1755,7 @@ set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
 
 # Add googletest directly to our build. This adds the following targets:
 # gtest, gtest_main, gmock and gmock_main
+message(STATUS "Adding goolgletest targets gtest, gtest_main, gmock and gmock_main")
 add_subdirectory(
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest"
   "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest"
@@ -1996,8 +2017,13 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
+find_package(Chromaprint)
+# This is the first package form the environment, if this fails give hints how to install the environment
+if(NOT Chromaprint_FOUND)
+  FATAL_ERROR_MISSING_ENV()
+else()
+  target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
+endif()
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
@@ -3168,6 +3194,11 @@ set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/images/banner
 set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/images/dialog.bmp")
 
 set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" )
+
+if(WIN32)
+    # override not working default NSIS
+    set(CPACK_GENERATOR WIX)
+endif()
 
 include(CPack)
 
