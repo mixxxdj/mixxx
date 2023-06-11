@@ -13,7 +13,6 @@
 
 class GlitchGroupState : public EffectState {
   public:
-
     GlitchGroupState(const mixxx::EngineParameters& engineParameters)
             : EffectState(engineParameters) {
         audioParametersChanged(engineParameters);

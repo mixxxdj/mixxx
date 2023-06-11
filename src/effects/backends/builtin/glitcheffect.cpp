@@ -74,7 +74,6 @@ void GlitchEffect::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
 
@@ -97,11 +96,6 @@ void GlitchEffect::processChannel(
     }
 
     if (delay_frames < min_delay) {
-        delay_frames = 0;
-    }
-    int delay_samples = delay_frames * engineParameters.channelCount();
-
-    if (delay_frames < min_delay) {
         SampleUtil::copy(
                 pOutput,
                 pInput,
@@ -109,6 +103,7 @@ void GlitchEffect::processChannel(
         return;
     }
 
+    int delay_samples = delay_frames * engineParameters.channelCount();
     pGroupState->sample_count += engineParameters.samplesPerBuffer();
     if (pGroupState->sample_count >= delay_samples) {
         if (m_pDelayParameter->value() < 2.0) {
