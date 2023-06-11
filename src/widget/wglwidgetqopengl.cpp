@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QResizeEvent>
 
 #include "widget/openglwindow.h"
@@ -52,6 +53,11 @@ void WGLWidget::resizeEvent(QResizeEvent* event) {
         m_pContainerWidget->resize(event->size());
     }
     QWidget::resizeEvent(event);
+}
+
+void WGLWidget::wheelEvent(QWheelEvent* event) {
+    QApplication::sendEvent(parentWidget(), event);
+    event->accept();
 }
 
 bool WGLWidget::isContextValid() const {

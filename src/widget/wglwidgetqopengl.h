@@ -41,6 +41,7 @@ class WGLWidget : public QWidget {
   protected:
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
 
     QPaintDevice* paintDevice();
 
