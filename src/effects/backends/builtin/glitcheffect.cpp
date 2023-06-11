@@ -6,7 +6,7 @@
 #include "util/sample.h"
 
 QString GlitchEffect::getId() {
-    return "com.kopanko.mixxxeffects.glitch";
+    return "org.mixxx.effects.glitch";
 }
 
 EffectManifestPointer GlitchEffect::getManifest() {
@@ -18,10 +18,11 @@ EffectManifestPointer GlitchEffect::getManifest() {
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Glitch"));
     pManifest->setShortName(QObject::tr("Glitch"));
-    pManifest->setAuthor("pcktm");
+    pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-            "Stores the input signal in a temporary buffer and repeats it"));
+    pManifest->setDescription(
+            QObject::tr("Periodically samples and repeats a small portion of "
+                        "audio to create a glitchy metallic sound."));
 
     EffectManifestParameterPointer delay = pManifest->addParameter();
     delay->setId("delay_time");
@@ -40,7 +41,7 @@ EffectManifestPointer GlitchEffect::getManifest() {
     quantize->setName(QObject::tr("Quantize"));
     quantize->setShortName(QObject::tr("Quantize"));
     quantize->setDescription(QObject::tr(
-            "Round the Time parameter to the nearest 1/4 beat."));
+            "Round the Time parameter to the nearest 1/8 beat."));
     quantize->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     quantize->setRange(0, 1, 1);
@@ -51,7 +52,7 @@ EffectManifestPointer GlitchEffect::getManifest() {
     triplet->setShortName(QObject::tr("Triplets"));
     triplet->setDescription(
             QObject::tr("When the Quantize parameter is enabled, divide "
-                        "rounded 1/4 beats of Time parameter by 3."));
+                        "rounded 1/8 beats of Time parameter by 3."));
     triplet->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     triplet->setRange(0, 0, 1);
@@ -78,34 +79,36 @@ void GlitchEffect::processChannel(
     double period = m_pDelayParameter->value();
 
     int delay_frames;
-    double max_delay;
     double min_delay;
     if (groupFeatures.has_beat_length_sec) {
-        // period is a number of beats
         if (m_pQuantizeParameter->toBool()) {
-            period = std::max(roundToFraction(period, 4), 1 / 8.0);
+            period = roundToFraction(period, 8);
             if (m_pTripletParameter->toBool()) {
                 period /= 3.0;
             }
-        } else if (period < 1 / 8.0) {
-            period = 1 / 8.0;
         }
+        period = std::max(period, 1 / 8.0);
         delay_frames = static_cast<int>(period * groupFeatures.beat_length_sec *
                 engineParameters.sampleRate());
-        max_delay = 2 * groupFeatures.beat_length_sec * engineParameters.sampleRate();
         min_delay = 1 / 8.0 * groupFeatures.beat_length_sec * engineParameters.sampleRate();
     } else {
-        // period is a number of seconds
-        period = std::max(period, 1 / 8.0);
+        period = roundToFraction(period, 8);
         delay_frames = static_cast<int>(period * engineParameters.sampleRate());
-        max_delay = 2 * engineParameters.sampleRate();
         min_delay = 1 / 8.0 * engineParameters.sampleRate();
     }
 
-    // Scale the delay so that the knob starts at no glitch and ends at the maximum delay.
-    delay_frames = static_cast<int>((delay_frames - min_delay) *
-            (max_delay - min_delay) / (max_delay - min_delay));
+    if (delay_frames < min_delay) {
+        delay_frames = 0;
+    }
     int delay_samples = delay_frames * engineParameters.channelCount();
+
+    if (delay_frames < min_delay) {
+        SampleUtil::copy(
+                pOutput,
+                pInput,
+                engineParameters.samplesPerBuffer());
+        return;
+    }
 
     pGroupState->sample_count += engineParameters.samplesPerBuffer();
     if (pGroupState->sample_count >= delay_samples) {
