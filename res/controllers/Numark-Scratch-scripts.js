@@ -264,7 +264,7 @@ NumarkScratch.Deck = function(number) {
     });
 
     const encoderInvert = function(key) {
-        if (NumarkScratch.invertloopFunction) {
+        if (NumarkScratch.invertloopEncoderFunction) {
             return key === "unshift" ? "shift" : "unshift";
         }
         return key;
