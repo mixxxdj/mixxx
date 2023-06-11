@@ -92,7 +92,6 @@ void GlitchEffect::processChannel(
                 engineParameters.sampleRate());
         min_delay = 1 / 8.0 * groupFeatures.beat_length_sec * engineParameters.sampleRate();
     } else {
-        period = roundToFraction(period, 8);
         delay_frames = static_cast<int>(period * engineParameters.sampleRate());
         min_delay = 1 / 8.0 * engineParameters.sampleRate();
     }
