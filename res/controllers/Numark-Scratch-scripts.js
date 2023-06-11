@@ -128,8 +128,6 @@ NumarkScratch.EffectUnit = function(deckNumber) {
     // 2 - switch down
     this.enableSwitch = function(channel, control, value, _status, _group) {
         this.isSwitchHoldOn = value !== 0;
-        engine.setValue("[EffectRack1_EffectUnit1]", "super1", Math.min(value, 1.0));
-        engine.setValue("[EffectRack1_EffectUnit2]", "super1", Math.min(value, 1.0));
         engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel" + deckNumber + "]_enable", (value !== 0));
         engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel" + deckNumber + "]_enable", (value !== 0));
         this.updateEffects();
@@ -137,7 +135,12 @@ NumarkScratch.EffectUnit = function(deckNumber) {
 
     this.dryWetKnob = new components.Pot({
         group: "[EffectRack1_EffectUnit" + deckNumber + "]",
-        inKey: "mix"
+        shift: function() {
+            this.inKey = "super1";
+        },
+        unshift: function() {
+            this.inKey = "mix";
+        },
     });
 
     this.effect1 = function(channel, control, value, status, _group) {
