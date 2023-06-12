@@ -1,4 +1,6 @@
 #include "widget/wvumeter.h"
+
+#include "moc_wvumeter.cpp"
 #include "util/math.h"
 
 WVuMeter::WVuMeter(QWidget* pParent)

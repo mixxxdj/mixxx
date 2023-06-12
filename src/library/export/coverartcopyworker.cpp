@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
+#include "moc_coverartcopyworker.cpp"
 #include "util/fileaccess.h"
 #include "util/imagefiledata.h"
 #include "util/safelywritablefile.h"

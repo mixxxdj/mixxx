@@ -86,8 +86,8 @@ void BansheePlaylistModel::dropTempTable() {
     }
 }
 
-void BansheePlaylistModel::setTableModel(int playlistId) {
-    //qDebug() << "BansheePlaylistModel::setTableModel" << this << playlistId;
+void BansheePlaylistModel::selectPlaylist(int playlistId) {
+    // qDebug() << "BansheePlaylistModel::selectPlaylist" << this << playlistId;
     if (m_playlistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;

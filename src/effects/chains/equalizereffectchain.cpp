@@ -1,6 +1,7 @@
 #include "effects/chains/equalizereffectchain.h"
 
 #include "effects/effectslot.h"
+#include "moc_equalizereffectchain.cpp"
 
 EqualizerEffectChain::EqualizerEffectChain(
         const ChannelHandleAndGroup& handleAndGroup,

@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "moc_woverviewrgb.cpp"
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"

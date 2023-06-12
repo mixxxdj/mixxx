@@ -5,6 +5,7 @@
 #include <QUrlQuery>
 #include <QtDebug>
 
+#include "moc_wfindonwebmenu.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
 #include "util/widgethelper.h"

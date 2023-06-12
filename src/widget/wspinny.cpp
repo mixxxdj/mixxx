@@ -1,5 +1,7 @@
 #include "widget/wspinny.h"
 
+#include "moc_wspinny.cpp"
+
 WSpinny::WSpinny(
         QWidget* pParent,
         const QString& group,

@@ -8,6 +8,7 @@
 #include "controllers/softtakeover.h"
 #include "effects/effectparameter.h"
 #include "effects/effectslot.h"
+#include "moc_effectknobparameterslot.cpp"
 #include "util/xml.h"
 
 EffectKnobParameterSlot::EffectKnobParameterSlot(

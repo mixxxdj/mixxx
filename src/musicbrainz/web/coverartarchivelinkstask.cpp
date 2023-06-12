@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QNetworkRequest>
 
+#include "moc_coverartarchivelinkstask.cpp"
 #include "network/httpstatuscode.h"
 #include "util/assert.h"
 #include "util/logger.h"

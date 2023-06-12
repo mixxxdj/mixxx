@@ -4,6 +4,7 @@
 #include <QWidgetAction>
 
 #include "effects/presets/effectpresetmanager.h"
+#include "moc_weffectchainpresetbutton.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManager* pEffectsManager)

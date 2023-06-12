@@ -16,6 +16,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "moc_dlglibraryexport.cpp"
 
 namespace el = djinterop::enginelibrary;
 

@@ -61,9 +61,12 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotSelectFont();
     void slotSyncTrackMetadataToggled();
     void slotSearchDebouncingTimeoutMillisChanged(int);
+    void slotBpmColumnPrecisionChanged(int bpmPrecision);
     void slotSeratoMetadataExportClicked(bool);
 
   private:
+    void setFocusPolicyInstallEventFilter(QSpinBox* box);
+    bool eventFilter(QObject* object, QEvent* event) override;
     void initializeDirList();
     void setLibraryFont(const QFont& font);
     void updateSearchLineEditHistoryOptions();

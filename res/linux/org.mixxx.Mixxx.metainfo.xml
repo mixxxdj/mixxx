@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2023-05-29" timestamp="1685369411">
+    <release version="2.5.0" type="development" date="2023-06-04" timestamp="1685900714">
       <description>
 </description>
     </release>
-    <release version="2.4.0" type="development" date="2023-05-29" timestamp="1685369411">
+    <release version="2.4.0" type="development" date="2023-06-04" timestamp="1685900714">
       <description>
  <p>
   Cover Art
@@ -1926,7 +1926,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.6" type="development" date="2023-05-29" timestamp="1685369411">
+    <release version="2.3.6" type="development" date="2023-06-04" timestamp="1685900714">
       <description>
  <ul>
   <li>
@@ -3222,6 +3222,10 @@
   <li>
    Add controller mapping for Behringer DDM4000
    #3542
+  </li>
+  <li>
+   Add controller mapping for Native Instruments Traktor Kontrol S4MK3
+   #11284
   </li>
   <li>
    Update controller mapping for Allen &amp; Heath Xone K2 to add intro/outro cues

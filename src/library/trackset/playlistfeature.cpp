@@ -296,7 +296,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 
     clearChildModel();
     QModelIndex newIndex = constructChildModel(selectedPlaylistId);
-    if (newIndex.isValid()) {
+    if (selectedPlaylistId != kInvalidPlaylistId && newIndex.isValid()) {
         // If a child index was selected and we got a new valid index select that.
         // Else (root item was selected or for some reason no index could be created)
         // there's nothing to do: either no child was selected earlier, or the root

@@ -3,6 +3,7 @@
 #include <QColor>
 #include <QPainter>
 
+#include "moc_woverviewhsv.cpp"
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"

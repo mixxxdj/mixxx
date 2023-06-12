@@ -1,7 +1,9 @@
+#include "engine/positionscratchcontroller.h"
+
 #include <QtDebug>
 
-#include "engine/positionscratchcontroller.h"
 #include "engine/bufferscalers/enginebufferscale.h" // for MIN_SEEK_SPEED
+#include "moc_positionscratchcontroller.cpp"
 #include "util/math.h"
 
 class VelocityController {
