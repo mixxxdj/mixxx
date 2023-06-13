@@ -11,6 +11,10 @@
 #include "util/sample.h"
 #include "util/samplebuffer.h"
 
+namespace {
+constexpr double kMaxDelay = 2.0;
+}
+
 class GlitchGroupState : public EffectState {
   public:
     GlitchGroupState(const mixxx::EngineParameters& engineParameters)

@@ -34,7 +34,7 @@ EffectManifestPointer GlitchEffect::getManifest() {
             "1/8 - 2 seconds if no tempo is detected"));
     delay->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::Beats);
-    delay->setRange(0.0, 0.5, 2.0);
+    delay->setRange(0.0, 0.5, kMaxDelay);
 
     EffectManifestParameterPointer quantize = pManifest->addParameter();
     quantize->setId("quantize");
@@ -106,7 +106,9 @@ void GlitchEffect::processChannel(
     int delay_samples = delay_frames * engineParameters.channelCount();
     pGroupState->sample_count += engineParameters.samplesPerBuffer();
     if (pGroupState->sample_count >= delay_samples) {
-        if (m_pDelayParameter->value() < 2.0) {
+        // If the delay parameter is at its maximum value, we don't update the `repeat_buf`
+        // in order to achieve an "audio freeze" effect.
+        if (m_pDelayParameter->value() < kMaxDelay) {
             SampleUtil::copy(pGroupState->repeat_buf.data(),
                     pInput,
                     engineParameters.samplesPerBuffer());
