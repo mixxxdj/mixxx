@@ -375,15 +375,19 @@
         <Size>8f,92f</Size>
         <BackPath>style/style_bg_sampler_right.png</BackPath>
         <Children>
-          <StatusLight>
-            <TooltipId>sampler_PeakIndicator</TooltipId>
-            <PathStatusLight>skin:/style/volume_clipping_sampler_over.png</PathStatusLight>
-            <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
+          <WidgetGroup>
             <Pos>3,7</Pos>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-            </Connection>
-          </StatusLight>
+            <Children>
+              <StatusLight>
+                <TooltipId>sampler_PeakIndicator</TooltipId>
+                <PathStatusLight>skin:/style/volume_clipping_sampler_over.png</PathStatusLight>
+                <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+                </Connection>
+              </StatusLight>
+            </Children>
+          </WidgetGroup>
           <WidgetGroup>
             <Pos>3,24</Pos>
             <Layout>horizontal</Layout>

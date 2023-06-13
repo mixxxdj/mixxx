@@ -22,5 +22,4 @@ class CueDAO : public DAO {
 
   private:
     bool saveCue(Cue* pCue) const;
-    bool deleteCue(Cue* pCue) const;
 };

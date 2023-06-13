@@ -530,3 +530,7 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     qDebug() << "Default quick links:" << result;
     return result;
 }
+
+void BrowseFeature::releaseBrowseThread() {
+    m_browseModel.releaseBrowseThread();
+}

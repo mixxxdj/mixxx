@@ -98,7 +98,36 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.5" type="development" date="2023-04-03" timestamp="1680480478">
+    <release version="2.3.6" type="development" date="2023-06-06" timestamp="1686085121">
+      <description>
+ <ul>
+  <li>
+   Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+   #11595
+  </li>
+  <li>
+   No longer stop a track with an active loop at the very end.
+   #11558
+   #11557
+  </li>
+  <li>
+   Shade: Fixed VU-Meter and other minor issues
+   #11598
+  </li>
+  <li>
+   Fixed possible crash when closing Mixxx while browsing the file system
+   #11593
+   #11589
+  </li>
+  <li>
+   Fixed resyncing when moving an active loop
+   #11152
+   #11381
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.3.5" type="stable" date="2023-05-10" timestamp="1683676800">
       <description>
  <ul>
   <li>
@@ -156,6 +185,90 @@
    Tango: Remove VU peak indicators from stacked layout. This fixes a visual regression in Mixxx 2.3.4.
    #11430
    #11362
+  </li>
+  <li>
+   Hercules P32: Allow optional using pregain instead of dry/wet knob
+   #3538
+  </li>
+  <li>
+   Improve Color Picker dialog
+   #11439
+  </li>
+  <li>
+   Fix blank Waveform overview after changing Skin with a track loaded
+   #11453
+  </li>
+  <li>
+   Linux: Log a warning when the audio thread is not scheduled with real-time policy
+   #11472
+   #11465
+  </li>
+  <li>
+   Auto DJ: Fixes stop due to tracks with changed length
+   #11479
+   #11492
+   #11448
+  </li>
+  <li>
+   Auto DJ: Fix Auto DJ indicator state when controlling it via  shortcut (SHIFT+F12)
+   #11494
+   #11495
+  </li>
+  <li>
+   Fix building with Clang 15/16
+   #11490
+   #11485
+  </li>
+  <li>
+   Fix EQ and waveforms analysis when compiling with GCC 13
+   #11501
+   #11483
+   #11502
+   #11480
+   #11488
+  </li>
+  <li>
+   Numark Mixtrack Pro FX: Fix sound output via WDM-KS on Windows
+   #11393
+  </li>
+  <li>
+   Fix crash on startup caused by faulty ASIO driver like FlexASIO 1.4 or Music Maker
+   #11426
+   #10081
+  </li>
+  <li>
+   Windows: Show a loopback device that allows to mix in system sound
+   #11427
+   #11451
+  </li>
+  <li>
+   Fix sorting via column header in external library features
+   #11491
+   #11499
+  </li>
+  <li>
+   Fix wrong waveform background color on recent Linux distributions like Fedora 37
+   #11164
+   #11523
+  </li>
+  <li>
+   Serato Metadata: Don't import empty (black) cue points
+   #11534
+   #11530
+   #11467
+   #11466
+   #11283
+  </li>
+  <li>
+   Track context menu: Immediately adopt new position when resetting cues
+   #11482
+  </li>
+  <li>
+   Windows: Fix possible crash with faulty mp3 files
+   #11535
+   #11531
+   #11528
+   #11521
   </li>
  </ul>
 </description>

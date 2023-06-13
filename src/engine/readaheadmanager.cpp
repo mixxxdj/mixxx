@@ -76,7 +76,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     }
 
     // Sanity checks.
-    if (samples_from_reader < 0) {
+    VERIFY_OR_DEBUG_ASSERT(samples_from_reader >= 0) {
         qDebug() << "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
         return 0;
     }
@@ -94,8 +94,8 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         m_cacheMissHappened = true;
     } else if (m_cacheMissHappened) {
         // Previous read was a cache miss, but now we got something back.
-        // Apply ramping gain, because the last buffer has unwanted silenced
-        // and new without fading are causing a pop.
+        // Apply ramping gain, because the last buffer has unwanted silence
+        // and new samples without fading are causing a pop.
         SampleUtil::applyRampingGain(pOutput, 0.0, 1.0, samples_from_reader);
         // Reset the cache miss flag, because we are now back on track.
         m_cacheMissHappened = false;
@@ -155,29 +155,11 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
             }
         }
 
-        if (crossFadeSamples > 0) {
-            const auto readResult = m_pReader->read(loop_read_position +
-                            (in_reverse ? crossFadeStart : -crossFadeStart),
-                    crossFadeSamples,
-                    in_reverse,
-                    m_pCrossFadeBuffer);
-            if (readResult == CachingReader::ReadResult::UNAVAILABLE) {
-                qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
-                // Cache miss - no samples written
-                SampleUtil::clear(m_pCrossFadeBuffer, samples_from_reader);
-                // Set the cache miss flag to decide when to apply ramping
-                // after the following read attempts.
-                m_cacheMissHappened = true;
-            }
-
-            // do crossfade from the current buffer into the new loop beginning
-            if (samples_from_reader != 0) { // avoid division by zero
-                SampleUtil::linearCrossfadeBuffersOut(
-                        pOutput + crossFadeStart,
-                        m_pCrossFadeBuffer,
-                        crossFadeSamples);
-            }
-        }
+        // do crossfade from the current buffer into the new loop beginning
+        SampleUtil::linearCrossfadeBuffersOut(
+                pOutput,
+                m_pCrossFadeBuffer,
+                samples_from_reader);
     }
 
     //qDebug() << "read" << m_currentPosition << samples_read;

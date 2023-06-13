@@ -268,22 +268,18 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     // The loop in and out points must be set here and not in slotTrackLoaded
     // so LoopingControl::trackLoaded can access them.
     if (!m_pChannelToCloneFrom) {
-        const QList<CuePointer> trackCues(m_pLoadedTrack->getCuePoints());
-        QListIterator<CuePointer> it(trackCues);
-        CuePointer pLoopCue;
         // Restore loop from the first loop cue with minimum hotcue number.
         // For the volatile "most recent loop" the hotcue number will be -1.
         // If no such loop exists, restore a saved loop cue.
-        while (it.hasNext()) {
-            CuePointer pCue(it.next());
+        CuePointer pLoopCue;
+        const QList<CuePointer> trackCues = m_pLoadedTrack->getCuePoints();
+        for (const auto& pCue : trackCues) {
             if (pCue->getType() != mixxx::CueType::Loop) {
                 continue;
             }
-
             if (pLoopCue && pLoopCue->getHotCue() <= pCue->getHotCue()) {
                 continue;
             }
-
             pLoopCue = pCue;
         }
 
@@ -321,10 +317,8 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
     double loopEnd = m_pLoopOutPoint->get();
     if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
         CuePointer pLoopCue;
-        QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
-        QListIterator<CuePointer> it(cuePoints);
-        while (it.hasNext()) {
-            CuePointer pCue(it.next());
+        const QList<CuePointer> cuePoints = m_pLoadedTrack->getCuePoints();
+        for (const auto& pCue : cuePoints) {
             if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
                 pLoopCue = pCue;
                 break;
