@@ -64,15 +64,15 @@ find_library(TagLib_LIBRARY
 )
 mark_as_advanced(TagLib_LIBRARY)
 
-if(DEFINED PC_Chromaprint_VERSION AND NOT PC_Chromaprint_VERSION STREQUAL "")
-  set(Chromaprint_VERSION "${PC_Chromaprint_VERSION}")
+if(DEFINED PC_TagLib_VERSION AND NOT PC_TagLib_VERSION STREQUAL "")
+  set(TagLib_VERSION "${PC_TagLib_VERSION}")
 endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
-  Chromaprint
-  REQUIRED_VARS Chromaprint_LIBRARY Chromaprint_INCLUDE_DIR
-  VERSION_VAR Chromaprint_VERSION
+  TagLib
+  REQUIRED_VARS TagLib_LIBRARY TagLib_INCLUDE_DIR
+  VERSION_VAR TagLib_VERSION
 )
 
 # Version detection
