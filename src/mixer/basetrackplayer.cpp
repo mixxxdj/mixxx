@@ -429,6 +429,9 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
             this,
             &BaseTrackPlayerImpl::slotSetTrackColor);
 
+    // Forward the update signal, i.e. use BaseTrackPlayer as relay.
+    // Currently only used by WStarRating which is connected in
+    // LegacySkinParser::parseStarRating
     connect(m_pLoadedTrack.get(),
             &Track::ratingUpdated,
             this,
