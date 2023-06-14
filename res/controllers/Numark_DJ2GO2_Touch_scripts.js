@@ -47,24 +47,6 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
     }
 });
 
-DJ2GO2Touch.masterGain = new components.Pot({
-    midi: [0xBF, 0x0A],
-    group: "[Master]",
-    key: "gain"
-});
-
-DJ2GO2Touch.cueGain = new components.Pot({
-    midi: [0xBF, 0x0C],
-    group: "[Master]",
-    key: "headGain"
-});
-
-DJ2GO2Touch.crossfader = new components.Pot({
-    midi: [0xBF, 0x08],
-    group: "[Master]",
-    key: "crossfader"
-});
-
 DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
     this.playButton = new components.PlayButton([0x90 + midiChannel, 0x00]);
