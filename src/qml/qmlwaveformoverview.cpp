@@ -1,7 +1,7 @@
 #include "qml/qmlwaveformoverview.h"
 
 #include "mixer/basetrackplayer.h"
-#include "qml/qmlplayerproxy.h"
+#include "moc_qmlwaveformoverview.cpp"
 
 namespace {
 constexpr double kDesiredChannelHeight = 255;

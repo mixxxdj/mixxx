@@ -248,6 +248,8 @@ class Track : public QObject {
     }
     // Sets played status and increments or decrements the play count
     void updatePlayCounter(bool bPlayed = true);
+    // Sets played status but leaves play count untouched
+    void updatePlayedStatusKeepPlayCount(bool bPlayed);
 
     // Only required for the times_played property
     int getTimesPlayed() const {

@@ -3,6 +3,7 @@
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
+#include "moc_controller_mapping_validation_test.cpp"
 
 FakeControllerJSProxy::FakeControllerJSProxy()
         : ControllerJSProxy(nullptr) {

@@ -3,7 +3,7 @@
 #include <QStyleOption>
 #include <QStylePainter>
 
-#include "moc_wvumeter.cpp"
+#include "moc_wvumeterlegacy.cpp"
 #include "util/math.h"
 #include "util/timer.h"
 #include "widget/wpixmapstore.h"

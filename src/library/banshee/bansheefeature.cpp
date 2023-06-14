@@ -110,7 +110,7 @@ void BansheeFeature::activate() {
         emit featureLoadingFinished(this);
     }
 
-    m_pBansheePlaylistModel->setTableModel(0); // Gets the master playlist
+    m_pBansheePlaylistModel->selectPlaylist(0); // Loads the master playlist
     emit showTrackModel(m_pBansheePlaylistModel);
     emit enableCoverArtDisplay(false);
 }
@@ -120,7 +120,7 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
     int playlistID = item->getData().toInt();
     if (playlistID > 0) {
         qDebug() << "Activating " << item->getLabel();
-        m_pBansheePlaylistModel->setTableModel(playlistID);
+        m_pBansheePlaylistModel->selectPlaylist(playlistID);
         emit showTrackModel(m_pBansheePlaylistModel);
         emit enableCoverArtDisplay(false);
     }
@@ -141,7 +141,7 @@ void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds,
                     new BansheePlaylistModel(this,
                             m_pLibrary->trackCollectionManager(),
                             &m_connection);
-            pPlaylistModelToAdd->setTableModel(playlistID);
+            pPlaylistModelToAdd->selectPlaylist(playlistID);
             pPlaylistModelToAdd->select();
 
             // Copy Tracks

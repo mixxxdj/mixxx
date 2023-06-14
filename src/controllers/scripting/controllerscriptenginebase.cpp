@@ -6,6 +6,7 @@
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptenginebase.cpp"
+#include "util/cmdlineargs.h"
 
 ControllerScriptEngineBase::ControllerScriptEngineBase(
         Controller* controller, const RuntimeLoggingCategory& logger)
@@ -13,6 +14,7 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
           m_pJSEngine(nullptr),
           m_pController(controller),
           m_logger(logger),
+          m_bAbortOnWarning(false),
           m_bTesting(false) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
@@ -22,6 +24,8 @@ bool ControllerScriptEngineBase::initialize() {
     VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine) {
         return false;
     }
+
+    m_bAbortOnWarning = CmdlineArgs::Instance().getControllerAbortOnWarning();
 
     // Create the Script Engine
     m_pJSEngine = std::make_shared<QJSEngine>(this);

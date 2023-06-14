@@ -1,6 +1,7 @@
 #include "qml/asyncimageprovider.h"
 
 #include "library/coverartcache.h"
+#include "moc_asyncimageprovider.cpp"
 #include "track/track.h"
 
 namespace {

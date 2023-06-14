@@ -15,6 +15,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "effects/effectsmanager.h"
+#include "library/basetracktablemodel.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "mixer/basetrackplayer.h"
@@ -1536,6 +1537,12 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     pLibraryWidget->setup(node, *m_pContext);
+
+    const auto bpmColumnPrecision =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kBpmColumnPrecisionConfigKey,
+                    BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
 
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary,

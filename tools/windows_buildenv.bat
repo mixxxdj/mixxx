@@ -186,6 +186,11 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :Configuration2CMakeSettings_JSON native    Release
     >>"%CMakeSettings%" echo   ]
     >>"%CMakeSettings%" echo }
+
+    echo ^You can now open CMakeSetting.json from Visual Studio
+    echo ^or configure cmake from the command line in an EMPTY build directory via:
+    echo ^cmake -DCMAKE_TOOLCHAIN_FILE=!MIXXX_VCPKG_ROOT!\scripts\buildsystems\vcpkg.cmake %MIXXX_ROOT%
+
     CALL :RESTORECONSOLE %OLDCODEPAGE%
     GOTO :EOF
 

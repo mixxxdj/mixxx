@@ -3,6 +3,7 @@
 #include <QMetaMethod>
 
 #include "defs_urls.h"
+#include "moc_coverartarchiveimagetask.cpp"
 #include "network/httpstatuscode.h"
 #include "util/assert.h"
 #include "util/logger.h"

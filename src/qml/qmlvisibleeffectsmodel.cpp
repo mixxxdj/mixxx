@@ -6,6 +6,7 @@
 #include "effects/defs.h"
 #include "effects/effectsmanager.h"
 #include "effects/visibleeffectslist.h"
+#include "moc_qmlvisibleeffectsmodel.cpp"
 
 namespace mixxx {
 namespace qml {

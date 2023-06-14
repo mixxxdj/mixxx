@@ -97,6 +97,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QString& mood) const override;
 #endif // __EXTRA_METADATA__
 
+    static constexpr int kBpmColumnPrecisionDefault = 1;
+    static constexpr int kBpmColumnPrecisionMinimum = 0;
+    static constexpr int kBpmColumnPrecisionMaximum = 10;
+    static void setBpmColumnPrecision(int precision);
+
   protected:
     static constexpr int defaultColumnWidth() {
         return 50;
@@ -271,4 +276,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     int countValidColumnHeaders() const;
 
     TrackId m_previewDeckTrackId;
+
+    static int s_bpmColumnPrecision;
 };

@@ -6,6 +6,8 @@
 
 #include <QtDebug>
 
+#include "moc_batterylinux.cpp"
+
 BatteryLinux::BatteryLinux(QObject* pParent)
     : Battery(pParent),
       m_client(up_client_new()) {
