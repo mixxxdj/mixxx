@@ -35,8 +35,11 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     void activateChild(const QModelIndex& index);
     void onTrackCollectionLoaded();
 
+  protected:
+    std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
+            const QString& playlist) override;
+
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist);
     // Removes all rows from a given table
     void clearTable(const QString& table_name);
     // reads the properties of a track and executes a SQL statement
