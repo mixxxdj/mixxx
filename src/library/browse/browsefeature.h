@@ -28,16 +28,16 @@ class BrowseFeature : public LibraryFeature {
     BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             RecordingManager* pRecordingManager);
-    virtual ~BrowseFeature();
+    ~BrowseFeature() override;
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+            KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
     void releaseBrowseThread();
 
@@ -45,10 +45,10 @@ class BrowseFeature : public LibraryFeature {
     void slotAddQuickLink();
     void slotRemoveQuickLink();
     void slotAddToLibrary();
-    void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index);
-    void onLazyChildExpandation(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
+    void onLazyChildExpandation(const QModelIndex& index) override;
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
 
