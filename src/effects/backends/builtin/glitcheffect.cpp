@@ -6,7 +6,7 @@
 #include "util/sample.h"
 
 QString GlitchEffect::getId() {
-    return "org.mixxx.effects.glitch";
+    return QStringLiteral("org.mixxx.effects.glitch");
 }
 
 EffectManifestPointer GlitchEffect::getManifest() {
