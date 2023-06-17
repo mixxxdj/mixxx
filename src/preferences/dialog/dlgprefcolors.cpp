@@ -68,18 +68,15 @@ DlgPrefColors::DlgPrefColors(
             this,
             &DlgPrefColors::slotReplaceCueColorClicked);
 
-    loadSettings();
     setScrollSafeGuardForAllInputWidgets(this);
+
+    slotUpdate();
 }
 
 DlgPrefColors::~DlgPrefColors() {
 }
 
 void DlgPrefColors::slotUpdate() {
-    loadSettings();
-}
-
-void DlgPrefColors::loadSettings() {
     comboBoxHotcueColors->clear();
     comboBoxTrackColors->clear();
     for (const auto& palette : qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {
