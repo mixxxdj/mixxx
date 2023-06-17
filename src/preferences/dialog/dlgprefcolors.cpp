@@ -69,6 +69,7 @@ DlgPrefColors::DlgPrefColors(
             &DlgPrefColors::slotReplaceCueColorClicked);
 
     loadSettings();
+    setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefColors::~DlgPrefColors() {

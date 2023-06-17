@@ -205,6 +205,8 @@ DlgPrefInterface::DlgPrefInterface(
                 slotSetTooltips();
             });
 
+    setScrollSafeGuardForAllInputWidgets(this);
+
     slotUpdate();
 }
 

@@ -128,6 +128,8 @@ DlgPrefVinyl::DlgPrefVinyl(
         setDeckWidgetsVisible(i, false);
     }
 
+    setScrollSafeGuardForAllInputWidgets(this);
+
     slotNumDecksChanged(m_pNumDecks->get());
 }
 

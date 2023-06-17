@@ -99,6 +99,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         comboBoxSplitting->setCurrentIndex(4);
     }
 
+    setScrollSafeGuard(comboBoxSplitting);
+
     // Do the one-time connection of signals here.
     connect(SliderQuality, &QAbstractSlider::valueChanged, this, &DlgPrefRecord::slotSliderQuality);
     connect(SliderQuality, &QAbstractSlider::sliderMoved, this, &DlgPrefRecord::slotSliderQuality);
