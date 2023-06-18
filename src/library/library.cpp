@@ -123,21 +123,21 @@ Library::Library(
             Qt::DirectConnection);
 #endif
 
-    BrowseFeature* browseFeature = new BrowseFeature(
+    m_pBrowseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
-    connect(browseFeature,
+    connect(m_pBrowseFeature,
             &BrowseFeature::scanLibrary,
             m_pTrackCollectionManager,
             &TrackCollectionManager::startLibraryScan);
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanStarted,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanStarted);
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanFinished);
-    addFeature(browseFeature);
+    addFeature(m_pBrowseFeature);
 
     addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
 
@@ -300,8 +300,8 @@ TrackAnalysisScheduler::Pointer Library::createTrackAnalysisScheduler(
 void Library::stopPendingTasks() {
     if (m_pAnalysisFeature) {
         m_pAnalysisFeature->stopAnalysis();
-        m_pAnalysisFeature = nullptr;
     }
+    m_pBrowseFeature->releaseBrowseThread();
 }
 
 void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {

@@ -124,10 +124,6 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
-    m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
-    m_pPreviousBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
-    m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
-    m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
     m_pSlipEnabled = ControlObject::getControl(ConfigKey(group, "slip_enabled"));
 
     // DEPRECATED: Use beatloop_size and beatloop_set instead.
@@ -293,9 +289,8 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
 
     const mixxx::audio::FrameDiff_t loopLength =
             (loopInfo.endPosition - loopInfo.startPosition) * scaleFactor;
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pTrackSamples->get());
+    const FrameInfo info = frameInfo();
+    const auto trackEndPosition = info.trackEndPosition;
     if (!trackEndPosition.isValid()) {
         return;
     }
@@ -436,64 +431,84 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
     }
 
     if (m_bLoopingEnabled &&
-            !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
             loopInfo.startPosition.isValid() &&
             loopInfo.endPosition.isValid()) {
-        if (loopInfo.startPosition != m_oldLoopInfo.startPosition ||
-                loopInfo.endPosition != m_oldLoopInfo.endPosition) {
-            // bool seek is only valid after the loop has changed
-            switch (loopInfo.seekMode) {
-            case LoopSeekMode::Changed:
-                // here the loop has changed and the play position
-                // should be moved with it
-                *pTargetPosition = adjustedPositionInsideAdjustedLoop(currentPosition,
-                        reverse,
-                        m_oldLoopInfo.startPosition,
-                        m_oldLoopInfo.endPosition,
-                        loopInfo.startPosition,
-                        loopInfo.endPosition);
-                break;
-            case LoopSeekMode::MovedOut: {
-                bool movedOut = false;
-                // Check if we have moved out of the loop, before we could enable it
-                if (reverse) {
-                    if (loopInfo.startPosition > currentPosition) {
-                        movedOut = true;
-                    }
-                } else {
-                    if (loopInfo.endPosition < currentPosition) {
-                        movedOut = true;
-                    }
-                }
-                if (movedOut) {
+        if (!m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
+            if (loopInfo.startPosition != m_oldLoopInfo.startPosition ||
+                    loopInfo.endPosition != m_oldLoopInfo.endPosition) {
+                // bool seek is only valid after the loop has changed
+                switch (loopInfo.seekMode) {
+                case LoopSeekMode::Changed:
+                    // here the loop has changed and the play position
+                    // should be moved with it
                     *pTargetPosition = adjustedPositionInsideAdjustedLoop(currentPosition,
                             reverse,
-                            loopInfo.startPosition,
-                            loopInfo.endPosition,
+                            m_oldLoopInfo.startPosition,
+                            m_oldLoopInfo.endPosition,
                             loopInfo.startPosition,
                             loopInfo.endPosition);
+                    break;
+                case LoopSeekMode::MovedOut: {
+                    bool movedOut = false;
+                    // Check if we have moved out of the loop, before we could enable it
+                    if (reverse) {
+                        if (loopInfo.startPosition > currentPosition) {
+                            movedOut = true;
+                        }
+                    } else {
+                        if (loopInfo.endPosition < currentPosition) {
+                            movedOut = true;
+                        }
+                    }
+                    if (movedOut) {
+                        *pTargetPosition = adjustedPositionInsideAdjustedLoop(currentPosition,
+                                reverse,
+                                loopInfo.startPosition,
+                                loopInfo.endPosition,
+                                loopInfo.startPosition,
+                                loopInfo.endPosition);
+                    }
+                    break;
                 }
-                break;
+                case LoopSeekMode::None:
+                    // Nothing to do here. This is used for enabling saved loops
+                    // which we want to do without jumping to the loop start
+                    // position.
+                    break;
+                }
+                m_oldLoopInfo = loopInfo;
+                if (pTargetPosition->isValid()) {
+                    // jump immediately
+                    return currentPosition;
+                }
             }
-            case LoopSeekMode::None:
-                // Nothing to do here. This is used for enabling saved loops
-                // which we want to do without jumping to the loop start
-                // position.
-                break;
+            if (reverse) {
+                *pTargetPosition = loopInfo.endPosition;
+                return loopInfo.startPosition;
+            } else {
+                *pTargetPosition = loopInfo.startPosition;
+                return loopInfo.endPosition;
             }
-            m_oldLoopInfo = loopInfo;
-            if (pTargetPosition->isValid()) {
-                // jump immediately
-                return currentPosition;
-            }
-        }
-
-        if (reverse) {
-            *pTargetPosition = loopInfo.endPosition;
-            return loopInfo.startPosition;
         } else {
-            *pTargetPosition = loopInfo.startPosition;
-            return loopInfo.endPosition;
+            // LOOP in or out button is pressed for adjusting.
+            // Jump back to loop start, when reaching the track end this
+            // prevents that the track stops outside the adjusted loop.
+            if (!reverse) {
+                if (m_bAdjustingLoopIn) {
+                    // Just in case the user does not release loop-in in time.
+                    *pTargetPosition = m_oldLoopInfo.startPosition;
+                    return loopInfo.endPosition;
+                }
+                const FrameInfo info = frameInfo();
+                *pTargetPosition = loopInfo.startPosition;
+                return info.trackEndPosition;
+            } else {
+                if (m_bAdjustingLoopOut) {
+                    // Just in case the user does not release loop-out in time.
+                    *pTargetPosition = m_oldLoopInfo.endPosition;
+                    return loopInfo.startPosition;
+                }
+            }
         }
     }
     return mixxx::audio::kInvalidFramePos;
@@ -650,23 +665,33 @@ void LoopingControl::setLoopInToCurrentPosition() {
     const mixxx::BeatsPointer pBeats = m_pBeats;
     LoopInfo loopInfo = m_loopInfo.getValue();
     mixxx::audio::FramePos quantizedBeatPosition;
-    mixxx::audio::FramePos position = m_currentPosition.getValue();
+    const FrameInfo info = frameInfo();
+    // Note: currentPos can be past the end of the track, in the padded
+    // silence of the last buffer. This position might be not reachable in
+    // a future runs, depending on the buffering.
+    mixxx::audio::FramePos position = math_min(info.currentPosition, info.trackEndPosition);
     if (m_pQuantizeEnabled->toBool() && pBeats) {
-        const auto closestBeatPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pClosestBeat->get());
-        if (m_bAdjustingLoopIn) {
-            if (closestBeatPosition == m_currentPosition.getValue()) {
-                quantizedBeatPosition = closestBeatPosition;
+        mixxx::audio::FramePos prevBeatPosition;
+        mixxx::audio::FramePos nextBeatPosition;
+        if (pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
+            // both beat positions are valid
+            mixxx::audio::FramePos closestBeatPosition =
+                    (nextBeatPosition - position > position - prevBeatPosition)
+                    ? prevBeatPosition
+                    : nextBeatPosition;
+            if (m_bAdjustingLoopIn) {
+                if (closestBeatPosition == position) {
+                    quantizedBeatPosition = closestBeatPosition;
+                } else {
+                    quantizedBeatPosition = prevBeatPosition;
+                }
             } else {
-                quantizedBeatPosition =
-                        mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                                m_pPreviousBeat->get());
+                if (closestBeatPosition > info.trackEndPosition) {
+                    quantizedBeatPosition = prevBeatPosition;
+                } else {
+                    quantizedBeatPosition = closestBeatPosition;
+                }
             }
-        } else {
-            quantizedBeatPosition = closestBeatPosition;
-        }
-        if (quantizedBeatPosition.isValid()) {
             position = quantizedBeatPosition;
         }
     }
@@ -676,6 +701,9 @@ void LoopingControl::setLoopInToCurrentPosition() {
     if (loopInfo.endPosition.isValid() && loopInfo.endPosition < position) {
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+        if (m_bLoopingEnabled) {
+            setLoopingEnabled(false);
+        }
     }
 
     // If we're looping and the loop-in and out points are now so close
@@ -779,23 +807,37 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     mixxx::BeatsPointer pBeats = m_pBeats;
     LoopInfo loopInfo = m_loopInfo.getValue();
     mixxx::audio::FramePos quantizedBeatPosition;
-    mixxx::audio::FramePos position = m_currentPosition.getValue();
+    FrameInfo info = frameInfo();
+    // Note: currentPos can be past the end of the track, in the padded
+    // silence of the last buffer. This position might be not reachable in
+    // a future runs, depending on the buffering.
+    mixxx::audio::FramePos position = math_min(info.currentPosition, info.trackEndPosition);
     if (m_pQuantizeEnabled->toBool() && pBeats) {
-        const auto closestBeatPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pClosestBeat->get());
-        if (m_bAdjustingLoopOut) {
-            if (closestBeatPosition == m_currentPosition.getValue()) {
-                quantizedBeatPosition = closestBeatPosition;
+        mixxx::audio::FramePos prevBeatPosition;
+        mixxx::audio::FramePos nextBeatPosition;
+        if (pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
+            // both beat positions are valid
+            const mixxx::audio::FramePos closestBeatPosition =
+                    (nextBeatPosition - position > position - prevBeatPosition)
+                    ? prevBeatPosition
+                    : nextBeatPosition;
+            if (m_bAdjustingLoopOut) {
+                if (closestBeatPosition == position) {
+                    quantizedBeatPosition = closestBeatPosition;
+                } else {
+                    if (nextBeatPosition > info.trackEndPosition) {
+                        quantizedBeatPosition = prevBeatPosition;
+                    } else {
+                        quantizedBeatPosition = nextBeatPosition;
+                    }
+                }
             } else {
-                quantizedBeatPosition =
-                        mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                                m_pNextBeat->get());
+                if (closestBeatPosition > info.trackEndPosition) {
+                    quantizedBeatPosition = prevBeatPosition;
+                } else {
+                    quantizedBeatPosition = closestBeatPosition;
+                }
             }
-        } else {
-            quantizedBeatPosition = closestBeatPosition;
-        }
-        if (quantizedBeatPosition.isValid()) {
             position = quantizedBeatPosition;
         }
     }
@@ -1343,9 +1385,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         beats = minBeatSize;
     }
 
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pTrackSamples->get());
+    FrameInfo info = frameInfo();
+    const auto trackEndPosition = info.trackEndPosition;
     const mixxx::BeatsPointer pBeats = m_pBeats;
     if (!trackEndPosition.isValid() || !pBeats) {
         clearActiveBeatLoop();
@@ -1359,15 +1400,15 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             mixxx::audio::kInvalidFramePos,
             LoopSeekMode::MovedOut};
     LoopInfo loopInfo = m_loopInfo.getValue();
-    mixxx::audio::FramePos currentPosition = m_currentPosition.getValue();
-
+    mixxx::audio::FramePos currentPosition = info.currentPosition;
     // Start from the current position/closest beat and
     // create the loop around X beats from there.
     if (keepStartPoint) {
         if (loopInfo.startPosition.isValid()) {
             newloopInfo.startPosition = loopInfo.startPosition;
         } else {
-            newloopInfo.startPosition = currentPosition;
+            newloopInfo.startPosition =
+                    math_min(info.currentPosition, info.trackEndPosition);
         }
     } else {
         // If running reverse, move the loop one loop size to the left.
@@ -1579,8 +1620,9 @@ void LoopingControl::slotLoopMove(double beats) {
         return;
     }
 
+    FrameInfo info = frameInfo();
     if (BpmControl::getBeatContext(pBeats,
-                m_currentPosition.getValue(),
+                info.currentPosition,
                 nullptr,
                 nullptr,
                 nullptr,
@@ -1594,9 +1636,7 @@ void LoopingControl::slotLoopMove(double beats) {
         // The track would stop as soon as the playhead crosses track end,
         // so we don't allow moving a loop beyond end.
         // https://github.com/mixxxdj/mixxx/issues/9478
-        const auto trackEndPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pTrackSamples->get());
+        const auto trackEndPosition = info.trackEndPosition;
         if (!trackEndPosition.isValid() || newLoopEndPosition > trackEndPosition) {
             return;
         }

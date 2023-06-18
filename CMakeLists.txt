@@ -2157,11 +2157,17 @@ endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
 
+# Create a list from CMAKE_PREFIX_PATH with an alternate separator
+# This is required to forward CMAKE_PREFIX_PATH in ExternalProject_Add()
+# using the LIST_SEPARATOR option
+string(REPLACE ";" "|" CMAKE_PREFIX_PATH_ALT_SEP "${CMAKE_PREFIX_PATH}")
+
 # KeyFinder
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
-  set(LIBKEYFINDER_VERSION 2.2.6)
-  find_package(KeyFinder ${LIBKEYFINDER_VERSION})
+  set(MIN_LIBKEYFINDER_VERSION 2.2.4)
+  set(FETCH_LIBKEYFINDER_VERSION 2.2.6)
+  find_package(KeyFinder ${MIN_LIBKEYFINDER_VERSION})
   if (KeyFinder_FOUND)
     target_link_libraries(mixxx-lib PRIVATE KeyFinder::KeyFinder)
   else()
@@ -2178,7 +2184,7 @@ if(KEYFINDER)
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
     ExternalProject_Add(libkeyfinder
-      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${LIBKEYFINDER_VERSION}.zip"
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${FETCH_LIBKEYFINDER_VERSION}.zip"
       URL_HASH SHA256=f15deb56c2dcaa6b10dc3717a7d2f42a8407c04ad550f694de42118be998d256
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libkeyfinder-${LIBKEYFINDER_VERSION}.zip"
@@ -2190,11 +2196,13 @@ if(KEYFINDER)
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
+        -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
+      LIST_SEPARATOR |
     )
 
     # This is a bit of a hack to make sure that the include directory actually
@@ -3071,7 +3079,7 @@ if(HID)
 endif()
 
 # USB Bulk controller support
-default_option(BULK "USB Bulk controller support" "LibUSB_FOUND")
+default_option(BULK "USB Bulk controller support" "LibUSB_FOUND;NOT WIN32")
 if(BULK)
   if(NOT LibUSB_FOUND)
     message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")

@@ -201,27 +201,29 @@
                 <ObjectName>SamplerVUMeter</ObjectName>
                 <BackPath>style/style_bg_deck_pane.png</BackPath>
                 <Size>9f,54f</Size>
-                <Style>
-                  QWidget { margin: 0px; padding: 2px; }
-                </Style>
                 <Children>
-                  <StatusLight>
-                    <TooltipId>sampler_PeakIndicator</TooltipId>
-                    <PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
-                    <PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
+                  <WidgetGroup>
                     <Pos>2,2</Pos>
                     <Size>5f,8f</Size>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
-                    </Connection>
-                  </StatusLight>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <StatusLight>
+                        <TooltipId>preview_PeakIndicator</TooltipId>
+                        <PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
+                        <PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
+                        </Connection>
+                      </StatusLight>
+                    </Children>
+                  </WidgetGroup>
                   <WidgetGroup>
                     <Pos>2,11</Pos>
                     <Size>5f,41f</Size>
                     <Layout>horizontal</Layout>
                     <Children>
                       <VuMeter>
-                        <TooltipId>sampler_VuMeter</TooltipId>
+                        <TooltipId>preview_VuMeter</TooltipId>
                         <PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
                         <PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
                         <Horizontal>false</Horizontal>
