@@ -524,8 +524,7 @@
   [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
   [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
   [#11556](https://github.com/mixxxdj/mixxx/issues/11556)
-  [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
-  [#11460](https://github.com/mixxxdj/mixxx/issues/11450)
+  [#11450](https://github.com/mixxxdj/mixxx/issues/11450)
   [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
 
 ### Effects
