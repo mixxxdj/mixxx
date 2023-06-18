@@ -18,18 +18,54 @@ declare namespace controller {
      * @param dataList Data to send as list of bytes
      * @param length Unused but mandatory argument for backwards compatibility
      * @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
-     * @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending [default = false]
+     * @param useNonSkippingFIFO If set, the report will send in FIFO mode
+     *
+     *   FALSE (default):
+     *     - Reports with identical data will be sent only once.
+     *     - If reports were superseded by newer data before they could be sent,
+     *       the oudated data will be skipped.
+     *     - This mode works for all USB HID class compatible reports,
+     *       in these each field represents the state of a control (e.g. an LED).
+     *     - This mode works best in overload situations, where more reports
+     *       are to be sent, than can be processed.
+     *
+     *  TRUE:
+     *    - The report will not be skipped under any circumstances,
+     *      except FIFO memory overflow.
+     *    - All reports with useNonSkippingFIFO set True will be send before
+     *      any cached report with useNonSkippingFIFO set False.
+     *    - All reports with useNonSkippingFIFO set True will be send in
+     *      strict First In / First Out (FIFO) order.
+     *    - Limit the use of this mode to the places, where it is really necessary.
      */
-    function send(dataList: number[], length: number, reportID: number, resendUnchangedReport?: boolean): void;
+    function send(dataList: number[], length: number, reportID: number, useNonSkippingFIFO?: boolean): void;
 
     /**
      * Sends an OutputReport to HID device
      *
      *  @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
      *  @param dataArray Data to send as byte array
-     *  @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending [default = false]
+     *  @param useNonSkippingFIFO If set, the report will send in FIFO mode
+     *
+     *   FALSE (default):
+     *     - Reports with identical data will be sent only once.
+     *     - If reports were superseded by newer data before they could be sent,
+     *       the oudated data will be skipped.
+     *     - This mode works for all USB HID class compatible reports,
+     *       in these each field represents the state of a control (e.g. an LED).
+     *     - This mode works best in overload situations, where more reports
+     *       are to be sent, than can be processed.
+     *
+     *  TRUE:
+     *    - The report will not be skipped under any circumstances,
+     *      except FIFO memory overflow.
+     *    - All reports with useNonSkippingFIFO set True will be send before
+     *      any cached report with useNonSkippingFIFO set False.
+     *    - All reports with useNonSkippingFIFO set True will be send in
+     *      strict First In / First Out (FIFO) order.
+     *    - Limit the use of this mode to the places, where it is really necessary.
      */
-    function sendOutputReport(reportID: number, dataArray: ArrayBuffer, resendUnchangedReport?: boolean): void;
+    function sendOutputReport(reportID: number, dataArray: ArrayBuffer, useNonSkippingFIFO?: boolean): void;
 
     /**
      * getInputReport receives an InputReport from the HID device on request.
@@ -56,7 +92,7 @@ declare namespace controller {
      *
      *  @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
      *  @returns The returned array matches the input format of sendFeatureReport,
-     *          allowing it to be read, modified and sent it back to the controller.
+     *           allowing it to be read, modified and sent it back to the controller.
      */
     function getFeatureReport(reportID: number): ArrayBuffer;
 }
