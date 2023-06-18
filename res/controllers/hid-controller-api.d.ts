@@ -20,7 +20,7 @@ declare namespace controller {
      * @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
      * @param useNonSkippingFIFO If set, the report will send in FIFO mode
      *
-     *   FALSE (default):
+     *   `false` (default):
      *     - Reports with identical data will be sent only once.
      *     - If reports were superseded by newer data before they could be sent,
      *       the oudated data will be skipped.
@@ -29,12 +29,12 @@ declare namespace controller {
      *     - This mode works best in overload situations, where more reports
      *       are to be sent, than can be processed.
      *
-     *  TRUE:
+     *  `true`:
      *    - The report will not be skipped under any circumstances,
      *      except FIFO memory overflow.
-     *    - All reports with useNonSkippingFIFO set True will be send before
-     *      any cached report with useNonSkippingFIFO set False.
-     *    - All reports with useNonSkippingFIFO set True will be send in
+     *    - All reports with useNonSkippingFIFO set `true` will be send before
+     *      any cached report with useNonSkippingFIFO set `false`.
+     *    - All reports with useNonSkippingFIFO set `true` will be send in
      *      strict First In / First Out (FIFO) order.
      *    - Limit the use of this mode to the places, where it is really necessary.
      */
@@ -47,7 +47,7 @@ declare namespace controller {
      *  @param dataArray Data to send as byte array
      *  @param useNonSkippingFIFO If set, the report will send in FIFO mode
      *
-     *   FALSE (default):
+     *   `false` (default):
      *     - Reports with identical data will be sent only once.
      *     - If reports were superseded by newer data before they could be sent,
      *       the oudated data will be skipped.
@@ -56,12 +56,12 @@ declare namespace controller {
      *     - This mode works best in overload situations, where more reports
      *       are to be sent, than can be processed.
      *
-     *  TRUE:
+     *  `true`:
      *    - The report will not be skipped under any circumstances,
      *      except FIFO memory overflow.
-     *    - All reports with useNonSkippingFIFO set True will be send before
-     *      any cached report with useNonSkippingFIFO set False.
-     *    - All reports with useNonSkippingFIFO set True will be send in
+     *    - All reports with useNonSkippingFIFO set `true` will be send before
+     *      any cached report with useNonSkippingFIFO set `false`.
+     *    - All reports with useNonSkippingFIFO set `true` will be send in
      *      strict First In / First Out (FIFO) order.
      *    - Limit the use of this mode to the places, where it is really necessary.
      */
