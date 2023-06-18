@@ -315,7 +315,7 @@ std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
     }
 #endif
     qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
-    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_cancelImport, std::move(dao));
+    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, std::move(dao));
 }
 
 // This method is executed in a separate thread
