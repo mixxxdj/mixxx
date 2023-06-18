@@ -58,10 +58,10 @@ class SoundSourceM4A : public SoundSource {
     MP4Duration m_framesPerSampleBlock;
     MP4SampleId m_maxSampleBlockId;
 
-    u_int8_t* m_pMP4ESConfigBuffer{};
-    u_int32_t m_sizeofMP4ESConfigBuffer;
+    uint8_t* m_pMP4ESConfigBuffer{};
+    uint32_t m_sizeofMP4ESConfigBuffer;
 
-    typedef std::vector<u_int8_t> InputBuffer;
+    typedef std::vector<uint8_t> InputBuffer;
     InputBuffer m_inputBuffer;
     InputBuffer::size_type m_inputBufferLength;
     InputBuffer::size_type m_inputBufferOffset;

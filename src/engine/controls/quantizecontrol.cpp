@@ -16,8 +16,10 @@ QuantizeControl::QuantizeControl(const QString& group,
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pCONextBeat = new ControlObject(ConfigKey(group, "beat_next"));
+    m_pCONextBeat->setKbdRepeatable(true);
     m_pCONextBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
     m_pCOPrevBeat = new ControlObject(ConfigKey(group, "beat_prev"));
+    m_pCOPrevBeat->setKbdRepeatable(true);
     m_pCOPrevBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
     m_pCOClosestBeat = new ControlObject(ConfigKey(group, "beat_closest"));
     m_pCOClosestBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());

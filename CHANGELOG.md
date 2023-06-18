@@ -526,8 +526,7 @@
   [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
   [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
   [#11556](https://github.com/mixxxdj/mixxx/issues/11556)
-  [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
-  [#11460](https://github.com/mixxxdj/mixxx/issues/11450)
+  [#11450](https://github.com/mixxxdj/mixxx/issues/11450)
   [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
 
 ### Effects
@@ -1031,7 +1030,19 @@
 
 ## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (unreleased)
 
-* TODO
+* Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+  [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
+* No longer stop a track with an active loop at the very end.
+  [#11558](https://github.com/mixxxdj/mixxx/pull/11558)
+  [#11557](https://github.com/mixxxdj/mixxx/issues/11557)
+* Shade: Fixed VU-Meter and other minor issues
+  [#11598](https://github.com/mixxxdj/mixxx/pull/11598)
+* Fixed possible crash when closing Mixxx while browsing the file system
+  [#11593](https://github.com/mixxxdj/mixxx/pull/11593)
+  [#11589](https://github.com/mixxxdj/mixxx/issues/11589)
+* Fixed resyncing when moving an active loop
+  [#11152](https://github.com/mixxxdj/mixxx/pull/11152)
+  [#11381](https://github.com/mixxxdj/mixxx/issues/11381)
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 
