@@ -62,7 +62,7 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
     // we are in kPakmOffsetScaleReseting mode
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
     ProcessBuffer();
-    // pitch must not change
+    // pitch_adjust must not change
     ASSERT_DOUBLE_EQ(0.0,
                      ControlObject::get(ConfigKey(m_sGroup1, "pitch_adjust")));
 
@@ -73,10 +73,11 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
 
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
     ProcessBuffer();
-    // pitch and speed must not change
-    ASSERT_DOUBLE_EQ(0.5,
-                     ControlObject::get(ConfigKey(m_sGroup1, "pitch_adjust")));
+    // pitch is reset, as well as pitch_adjust
+    // speed must not change, pitch and pitch_adjust must be 0
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
+    ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch_adjust")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
             1.0); // KeylockMode::LockCurrentKey
@@ -84,15 +85,15 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
     // rate must not change
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
     // pitch must reflect the absolute pitch
-    ASSERT_NEAR(0.5, ControlObject::get(ConfigKey(m_sGroup1, "pitch")), 1e-10);
+    ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
             0.0); // KeylockMode::LockOriginalKey
     ProcessBuffer();
     // rate must not change
-    ASSERT_NEAR(0.5, ControlObject::get(ConfigKey(m_sGroup1, "pitch")), 1e-10);
-    // pitch must reflect the pitch shift only
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    // pitch must be 0
+    ASSERT_NEAR(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")), 1e-10);
 }
 
 TEST_F(EngineBufferTest, SlowRubberBand) {
