@@ -22,10 +22,12 @@ class EngineBufferTest : public MockedEngineBackendTest {};
 class EngineBufferE2ETest : public SignalPathTest {};
 
 TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
-    // To prevent one-slider users from getting stuck on a key, unsetting
-    // keylock resets the musical pitch.
+    // To prevent one-slider users from getting stuck on a key,
+    // KeyunlockMode::ResetLockedKey resets the musical pitch.
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-                       1.0);  // kLockCurrentKey;
+            1.0); // KeylockMode::LockCurrentKey
+    ControlObject::set(ConfigKey(m_sGroup1, "keyunlockMode"),
+            0.0); // KeyunlockMode::ResetLockedKey
     ControlObject::set(ConfigKey(m_sGroup1, "file_bpm"), 128.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 0.5);
