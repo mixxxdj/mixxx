@@ -23,9 +23,6 @@ class ITunesXMLImporter : public ITunesImporter {
     ITunesImport importLibrary() override;
 
   private:
-    bool canceled();
-
-    ITunesFeature* m_pParentFeature;
     const QString m_xmlFilePath;
     QFile m_xmlFile;
     QXmlStreamReader m_xml;

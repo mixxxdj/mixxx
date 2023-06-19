@@ -48,7 +48,7 @@ ITunesXMLImporter::ITunesXMLImporter(
         ITunesFeature* pParentFeature,
         const QString& xmlFilePath,
         std::unique_ptr<ITunesDAO> dao)
-        : m_pParentFeature(pParentFeature),
+        : ITunesImporter(pParentFeature),
           m_xmlFilePath(xmlFilePath),
           m_xmlFile(xmlFilePath),
           m_xml(&m_xmlFile),
@@ -540,12 +540,4 @@ void ITunesXMLImporter::parsePlaylist() {
 
         m_dao->importPlaylistRelation(parentId, playlist.id);
     }
-}
-
-bool ITunesXMLImporter::canceled() {
-    // The parent feature may be null during testing
-    if (m_pParentFeature) {
-        return m_pParentFeature->isImportCanceled();
-    }
-    return false;
 }
