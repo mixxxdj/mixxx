@@ -55,7 +55,9 @@ TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
 TEST_F(EngineBufferTest, PitchRoundtrip) {
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-                       0.0);  // kLockOriginalKey;
+            0.0); // KeylockMode::LockOriginalKey
+    ControlObject::set(ConfigKey(m_sGroup1, "keyunlockMode"),
+            0.0); // KeyunlockMode::ResetLockedKey
     ProcessBuffer();
     // we are in kPakmOffsetScaleReseting mode
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
@@ -77,7 +79,7 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-                       1.0);  // kLockCurrentKey;
+            1.0); // KeylockMode::LockCurrentKey
     ProcessBuffer();
     // rate must not change
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
@@ -85,7 +87,7 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
     ASSERT_NEAR(0.5, ControlObject::get(ConfigKey(m_sGroup1, "pitch")), 1e-10);
 
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-                       0.0);  // kLockOriginalKey;
+            0.0); // KeylockMode::LockOriginalKey
     ProcessBuffer();
     // rate must not change
     ASSERT_NEAR(0.5, ControlObject::get(ConfigKey(m_sGroup1, "pitch")), 1e-10);
