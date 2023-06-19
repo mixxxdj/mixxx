@@ -43,8 +43,11 @@ NumarkScratch.init = function() {
         NumarkScratch.effect[i] = new NumarkScratch.EffectUnit(i + 1);
     }
 
-    // Send Serato SysEx messages to request initial state and unlock pads
-    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7]);
+    NumarkScratch.crossfader = new components.Pot({
+        midi: [0xBF, 0x08],
+        group: "[Master]",
+        inKey: "crossfader",
+    });
 
     const createVuCallback = function(deckOffset) {
         return function(value) {
@@ -71,6 +74,10 @@ NumarkScratch.init = function() {
     midi.sendShortMsg(0x99, 0x04, NumarkScratch.LOW_LIGHT);
     midi.sendShortMsg(0x99, 0x05, NumarkScratch.LOW_LIGHT);
     midi.sendShortMsg(0x9F, 0x32, NumarkScratch.LOW_LIGHT);
+
+    // Send Serato SysEx messages to request initial state and unlock pads
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7]);
+
 };
 
 NumarkScratch.shutdown = function() {
@@ -179,12 +186,6 @@ NumarkScratch.EffectUnit = function(deckNumber) {
     };
 };
 NumarkScratch.EffectUnit.prototype = new components.ComponentContainer();
-
-NumarkScratch.crossfader = new components.Pot({
-    midi: [0xBF, 0x08],
-    group: "[Master]",
-    inKey: "crossfader",
-});
 
 NumarkScratch.crossfader.setCurve = function(channel, control, value, _status, _group) {
     switch (value) {
