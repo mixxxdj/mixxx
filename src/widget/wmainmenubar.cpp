@@ -618,6 +618,18 @@ void WMainMenuBar::initialize() {
             });
     pHelpMenu->addAction(pHelpKbdShortcuts);
 
+    // User Settings Directory
+    const QString& settingsDirPath = m_pConfig->getSettingsPath();
+    QString settingsDirTitle = tr("&Settings directory");
+    QString settingsDirText = tr("Open the Mixxx user settings directory.");
+    auto* pHelpSettingsDir = new QAction(settingsDirTitle, this);
+    pHelpSettingsDir->setStatusTip(settingsDirText);
+    pHelpSettingsDir->setWhatsThis(buildWhatsThis(settingsDirTitle, settingsDirText));
+    connect(pHelpSettingsDir, &QAction::triggered, this, [this, settingsDirPath] {
+        slotVisitUrl(settingsDirPath);
+    });
+    pHelpMenu->addAction(pHelpSettingsDir);
+
     // Translate This Application
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
     QString translateText = tr("Help translate this application into your language.");
