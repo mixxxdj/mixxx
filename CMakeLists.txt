@@ -2612,8 +2612,8 @@ if(APPLE OR WIN32)
   endif()
   get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
   install(
-    DIRECTORY "${QT_TRANSLATIONS}"
-    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    DIRECTORY "${QT_TRANSLATIONS}/"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}/translations"
     # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
     # contain just shortcuts to load the qtbase, qtmultimedia etc files.
     FILES_MATCHING REGEX
