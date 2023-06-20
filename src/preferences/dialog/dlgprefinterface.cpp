@@ -99,7 +99,7 @@ DlgPrefInterface::DlgPrefInterface(
         const QString languageName = QLocale::languageToString(locale.language());
         // Ugly hack to skip non-resolvable locales
         if (languageName == QStringLiteral("C")) {
-            qWarning() << "Unsupported locale" << localeNameFixed;
+            qWarning() << "Preferences: skipping unsupported locale" << localeNameFixed;
             continue;
         }
         QString countryName;
@@ -122,6 +122,7 @@ DlgPrefInterface::DlgPrefInterface(
     ComboBoxLocale->model()->sort(0);
     // ...and then insert entry for default system locale at the top
     ComboBoxLocale->insertItem(0, QStringLiteral("System"), "");
+    ComboBoxLocale->insertSeparator(1);
 
     if (pSkinLoader) {
         // Skin configurations
