@@ -2505,7 +2505,8 @@ else()
       Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
       Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
       DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
-      RUNTIME_DEPENDENCY_SET mixxx)
+      RUNTIME_DEPENDENCY_SET mixxx
+      COMPONENT applocal)
 
     install(IMPORTED_RUNTIME_ARTIFACTS
       Qt${QT_VERSION_MAJOR}::QGifPlugin
@@ -2513,12 +2514,14 @@ else()
       Qt${QT_VERSION_MAJOR}::QJpegPlugin
       Qt${QT_VERSION_MAJOR}::QSvgPlugin
       DESTINATION "${MIXXX_INSTALL_DATADIR}/imageformats"
-      RUNTIME_DEPENDENCY_SET mixxx)
+      RUNTIME_DEPENDENCY_SET mixxx
+      COMPONENT applocal)
 
     install(IMPORTED_RUNTIME_ARTIFACTS
       Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
       DESTINATION "${MIXXX_INSTALL_DATADIR}/sqldrivers"
-      RUNTIME_DEPENDENCY_SET mixxx)
+      RUNTIME_DEPENDENCY_SET mixxx
+      COMPONENT applocal)
 
     if(WIN32)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
@@ -2527,7 +2530,8 @@ else()
         COMPONENT applocal)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
         DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
-        RUNTIME_DEPENDENCY_SET mixxx)
+        RUNTIME_DEPENDENCY_SET mixxx
+        COMPONENT applocal)
     endif()
     if(APPLE)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin
@@ -2536,8 +2540,13 @@ else()
         COMPONENT applocal)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QMacStylePlugin
         DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
-        RUNTIME_DEPENDENCY_SET mixxx)
+        RUNTIME_DEPENDENCY_SET mixxx
+        COMPONENT applocal)
     endif()
+
+    add_custom_command(
+        TARGET mixxx POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
   endif()
 endif()
 
