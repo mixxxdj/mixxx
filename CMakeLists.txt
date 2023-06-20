@@ -2496,9 +2496,50 @@ if(Qt_IS_STATIC)
       Qt${QT_VERSION_MAJOR}::QMacStylePlugin
     )
   endif()
+else()
+  if(QT6 AND (WIN32 OR APPLE))
+    # Qt6 does not automatically install plugins like in Qt 5
 
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      # platform plugins
+      Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
+      Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
+      RUNTIME_DEPENDENCY_SET mixxx)
+
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      Qt${QT_VERSION_MAJOR}::QGifPlugin
+      Qt${QT_VERSION_MAJOR}::QICOPlugin
+      Qt${QT_VERSION_MAJOR}::QJpegPlugin
+      Qt${QT_VERSION_MAJOR}::QSvgPlugin
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/imageformats"
+      RUNTIME_DEPENDENCY_SET mixxx)
+
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/sqldrivers"
+      RUNTIME_DEPENDENCY_SET mixxx)
+
+    if(WIN32)
+      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
+        RUNTIME_DEPENDENCY_SET mixxx
+        COMPONENT applocal)
+      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
+        RUNTIME_DEPENDENCY_SET mixxx)
+    endif()
+    if(APPLE)
+      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
+        RUNTIME_DEPENDENCY_SET mixxx
+        COMPONENT applocal)
+      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QMacStylePlugin
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
+        RUNTIME_DEPENDENCY_SET mixxx)
+    endif()
+  endif()
 endif()
-
 
 if(APPLE)
   if(Qt_IS_STATIC OR QT6)
