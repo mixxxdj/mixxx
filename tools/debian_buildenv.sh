@@ -67,6 +67,7 @@ case "$1" in
             libflac-dev \
             libgmock-dev \
             libgtest-dev \
+            libgl1-mesa-dev \
             libhidapi-dev \
             libid3tag0-dev \
             liblilv-dev \
@@ -78,10 +79,10 @@ case "$1" in
             libopusfile-dev \
             libportmidi-dev \
             libprotobuf-dev \
-            libqt5opengl5-dev \
-            libqt5sql5-sqlite \
-            libqt5svg5-dev \
-            libqt5x11extras5-dev \
+            libqt6core5compat6-dev\
+            libqt6opengl6-dev \
+            libqt6sql6-sqlite \
+            libqt6svg6-dev \
             librubberband-dev \
             libshout-idjc-dev \
             libsndfile1-dev \
@@ -97,8 +98,8 @@ case "$1" in
             markdown \
             portaudio19-dev \
             protobuf-compiler \
-            qt5keychain-dev \
-            qtdeclarative5-dev \
+            qtkeychain-qt6-dev \
+            qt6-declarative-dev \
             qml-module-qtquick-controls \
             qml-module-qtquick-controls2 \
             qml-module-qt-labs-qmlmodels \

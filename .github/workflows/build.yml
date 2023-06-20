@@ -31,7 +31,7 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv_qt6.sh
+            buildenv_basepath: /home/runner/buildenv.sh
             buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 22.04 DEB
             artifacts_path: build/*.deb
@@ -55,7 +55,7 @@ jobs:
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv_qt6.sh
+            buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 22.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
