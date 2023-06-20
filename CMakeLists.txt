@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 
 # CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
