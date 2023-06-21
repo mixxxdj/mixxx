@@ -636,7 +636,7 @@ void CueControl::loadCuesFromTrack() {
             }
 
             int hotcue = pCue->getHotCue();
-            HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
+            HotcueControl* pControl = m_hotcueControls.value(hotcue, nullptr);
 
             // Cue's hotcue doesn't have a hotcue control.
             if (pControl == nullptr) {
