@@ -673,7 +673,6 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     importUserPresets();
 
     // Reload order of custom chain presets
-    QStringList chainPresetsSorted;
     QDomElement chainPresetsElement =
             XmlParse::selectElement(root, EffectXml::kChainPresetList);
     QDomNodeList presetNameList =
@@ -703,7 +702,6 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     }
 
     // Reload order of QuickEffect chain presets
-    QStringList quickEffectChainPresetsSorted;
     QDomElement quickEffectChainPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectList);
     QDomNodeList quickEffectPresetNameList =
