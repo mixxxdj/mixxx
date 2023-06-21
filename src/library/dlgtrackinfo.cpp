@@ -557,10 +557,10 @@ void DlgTrackInfo::saveTrack() {
     // This hack makes a focused QLineEdit emit editingFinished() (clearFocus()
     // implicitly emits a focusOutEvent()
     if (this == QApplication::activeWindow()) {
-        auto focusWidget = QApplication::focusWidget();
-        if (focusWidget) {
-            focusWidget->clearFocus();
-            focusWidget->setFocus();
+        auto* pFocusWidget = QApplication::focusWidget();
+        if (pFocusWidget) {
+            pFocusWidget->clearFocus();
+            pFocusWidget->setFocus();
         }
     }
 
