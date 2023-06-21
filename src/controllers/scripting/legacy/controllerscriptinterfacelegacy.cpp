@@ -7,6 +7,7 @@
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
 #include "util/fpclassify.h"
+#include "util/make_const_iterator.h"
 #include "util/time.h"
 
 #define SCRATCH_DEBUG_OUTPUT false
@@ -77,15 +78,15 @@ ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
 
     // Free all the ControlObjectScripts
     {
-        auto it = m_controlCache.begin();
-        while (it != m_controlCache.end()) {
+        auto it = m_controlCache.constBegin();
+        while (it != m_controlCache.constEnd()) {
             qCDebug(m_logger)
                     << "Deleting ControlObjectScript"
                     << it.key().group
                     << it.key().item;
             delete it.value();
             // Advance iterator
-            it = m_controlCache.erase(it);
+            it = constErase(&m_controlCache, it);
         }
     }
 }

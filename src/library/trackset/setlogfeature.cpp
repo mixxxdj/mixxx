@@ -16,6 +16,7 @@
 #include "mixer/playermanager.h"
 #include "moc_setlogfeature.cpp"
 #include "track/track.h"
+#include "util/make_const_iterator.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
@@ -561,14 +562,15 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (currentPlayingTrackId.isValid()) {
         // Remove the track from the recent tracks list if it's present and put
         // at the front of the list.
-        auto it = std::find(std::begin(m_recentTracks),
-                std::end(m_recentTracks),
+        const auto it = std::find(
+                m_recentTracks.cbegin(),
+                m_recentTracks.cend(),
                 currentPlayingTrackId);
-        if (it == std::end(m_recentTracks)) {
+        if (it == m_recentTracks.cend()) {
             track_played_recently = false;
         } else {
             track_played_recently = true;
-            m_recentTracks.erase(it);
+            constErase(&m_recentTracks, it);
         }
         m_recentTracks.push_front(currentPlayingTrackId);
 

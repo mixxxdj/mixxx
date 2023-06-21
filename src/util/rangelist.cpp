@@ -1,9 +1,10 @@
 #include "rangelist.h"
 
-#include <util/assert.h>
-
 #include <QRegularExpression>
 #include <algorithm>
+
+#include "util/assert.h"
+#include "util/make_const_iterator.h"
 
 namespace {
 
@@ -40,8 +41,9 @@ QList<int> parseRangeList(const QString& input) {
     }
 
     std::sort(intList.begin(), intList.end());
-    const auto end = std::unique(intList.begin(), intList.end());
-    intList.erase(end, intList.end());
+    const auto constLast = make_const_iterator(
+            intList, std::unique(intList.begin(), intList.end()));
+    constErase(&intList, constLast, intList.constEnd());
 
     return intList;
 }

@@ -253,8 +253,9 @@ void DlgLibraryExport::checkExistingDatabase() {
         djinterop::database db = el::load_database(databaseDirectory.toStdString());
         const auto version = db.version();
 
-        const auto result = std::find(el::all_versions.begin(), el::all_versions.end(), version);
-        if (result == el::all_versions.end()) {
+        const auto result = std::find(
+                el::all_versions.cbegin(), el::all_versions.cend(), version);
+        if (result == el::all_versions.cend()) {
             // Unknown database version.
             m_pExistingDatabaseLabel->setText(
                     tr("A database already exists in the chosen directory, "
@@ -263,7 +264,7 @@ void DlgLibraryExport::checkExistingDatabase() {
             m_pVersionCombo->clear();
             m_pVersionCombo->setEnabled(false);
         } else {
-            int versionIndex = std::distance(el::all_versions.begin(), result);
+            int versionIndex = std::distance(el::all_versions.cbegin(), result);
             m_pExistingDatabaseLabel->setText(
                     tr("A database already exists in the chosen directory. "
                        "Exported tracks will be added into this database."));
