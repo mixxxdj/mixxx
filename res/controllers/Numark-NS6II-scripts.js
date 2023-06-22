@@ -1297,54 +1297,56 @@ NS6II.PCSelectorInput = function(_midichannel, _control, value, _status, _group)
     }
 };
 
-NS6II.EffectUnits = [];
-for (var i = 1; i <= 2; i++) {
-    NS6II.EffectUnits[i] = new components.EffectUnit(i);
-    NS6II.EffectUnits[i].fxCaps = [];
-    for (var ii = 0; ii < 3; ii++) {
-        NS6II.EffectUnits[i].enableButtons[ii + 1].midi = [0x97 + i, ii]; // shift: [0x97+i,0x0B+ii]
-        NS6II.EffectUnits[i].fxCaps[ii + 1] = new components.Button({
-            midi: [0x97 + i, 0x21 + ii],
-            group: "[EffectRack1_EffectUnit" + NS6II.EffectUnits[i].currentUnitNumber +
-                "_Effect" + (ii+1) + "]",
-            inKey: "enabled",
-            shifted: false, // used to disable fx input while selecting
-            input: function(midichannel, control, value, status, _group) {
-                if (NS6II.knobCapBehavior.state > 0) {
-                    this.inSetParameter(this.isPress(midichannel, control, value, status) && !this.shifted);
-                }
-            },
-            unshift: function() {
-                this.shifted = false;
-            },
-            shift: function() {
-                this.shifted = true;
-            },
-        });
-        NS6II.EffectUnits[i].knobs[ii + 1].midi = [0xB7 + i, ii];
-    }
-    NS6II.EffectUnits[i].effectFocusButton.midi = [0x97 + i, 0x04];
-    NS6II.EffectUnits[i].dryWetKnob.midi = [0xB7 + i, 0x03];
-    NS6II.EffectUnits[i].dryWetKnob.input = function(_midichannel, _control, value, _status, _group) {
-        if (value === 1) {
-            this.inSetParameter(this.inGetParameter() + 0.04);
-        } else if (value === 127) {
-            this.inSetParameter(this.inGetParameter() - 0.04);
+NS6II.createEffectUnits = function() {
+    NS6II.EffectUnits = [];
+    for (var i = 1; i <= 2; i++) {
+        NS6II.EffectUnits[i] = new components.EffectUnit(i);
+        NS6II.EffectUnits[i].fxCaps = [];
+        for (var ii = 0; ii < 3; ii++) {
+            NS6II.EffectUnits[i].enableButtons[ii + 1].midi = [0x97 + i, ii]; // shift: [0x97+i,0x0B+ii]
+            NS6II.EffectUnits[i].fxCaps[ii + 1] = new components.Button({
+                midi: [0x97 + i, 0x21 + ii],
+                group: "[EffectRack1_EffectUnit" + NS6II.EffectUnits[i].currentUnitNumber +
+                    "_Effect" + (ii+1) + "]",
+                inKey: "enabled",
+                shifted: false, // used to disable fx input while selecting
+                input: function(midichannel, control, value, status, _group) {
+                    if (NS6II.knobCapBehavior.state > 0) {
+                        this.inSetParameter(this.isPress(midichannel, control, value, status) && !this.shifted);
+                    }
+                },
+                unshift: function() {
+                    this.shifted = false;
+                },
+                shift: function() {
+                    this.shifted = true;
+                },
+            });
+            NS6II.EffectUnits[i].knobs[ii + 1].midi = [0xB7 + i, ii];
         }
-    };
-    NS6II.EffectUnits[i].mixMode = new components.Button({
-        midi: [0xB7 + i, 0x41],
-        type: components.Button.prototype.types.toggle,
-        inKey: "mix_mode",
-        group: NS6II.EffectUnits[i].group,
-    });
-    for (ii = 0; ii < 4; ii++) {
-        var channel = "Channel"+(ii + 1);
-        NS6II.EffectUnits[i].enableOnChannelButtons.addButton(channel);
-        NS6II.EffectUnits[i].enableOnChannelButtons[channel].midi = [0x97 + i, 0x05 + ii];
+        NS6II.EffectUnits[i].effectFocusButton.midi = [0x97 + i, 0x04];
+        NS6II.EffectUnits[i].dryWetKnob.midi = [0xB7 + i, 0x03];
+        NS6II.EffectUnits[i].dryWetKnob.input = function(_midichannel, _control, value, _status, _group) {
+            if (value === 1) {
+                this.inSetParameter(this.inGetParameter() + 0.04);
+            } else if (value === 127) {
+                this.inSetParameter(this.inGetParameter() - 0.04);
+            }
+        };
+        NS6II.EffectUnits[i].mixMode = new components.Button({
+            midi: [0xB7 + i, 0x41],
+            type: components.Button.prototype.types.toggle,
+            inKey: "mix_mode",
+            group: NS6II.EffectUnits[i].group,
+        });
+        for (ii = 0; ii < 4; ii++) {
+            var channel = "Channel"+(ii + 1);
+            NS6II.EffectUnits[i].enableOnChannelButtons.addButton(channel);
+            NS6II.EffectUnits[i].enableOnChannelButtons[channel].midi = [0x97 + i, 0x05 + ii];
+        }
+        NS6II.EffectUnits[i].init();
     }
-    NS6II.EffectUnits[i].init();
-}
+};
 
 NS6II.askControllerStatus = function() {
     var controllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
@@ -1362,6 +1364,9 @@ NS6II.init = function() {
         NS6II.decks[i] = new NS6II.Deck(i);
     }
     NS6II.mixer = new NS6II.MixerContainer();
+
+    NS6II.createEffectUnits();
+
     NS6II.askControllerStatus();
 };
 
