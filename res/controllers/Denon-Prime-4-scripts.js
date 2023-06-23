@@ -293,7 +293,7 @@ Prime4.DeckAssignButton = function(options) {
 };
 Prime4.DeckAssignButton.prototype = Object.create(components.Button.prototype);
 
-// References array of rate ranges
+// Provide functions for encoders to cycle through an array of values, like beatjump size
 // See NS6II mapping
 Prime4.CyclingArrayView = class {
     constructor(indexable, startIndex) {
@@ -305,10 +305,18 @@ Prime4.CyclingArrayView = class {
         return this.current();
     }
     next() {
-        return this.advanceBy(1);
+        if (this.index !== (this.indexable.length - 1)) {
+            return this.advanceBy(1);
+        } else {
+            return this.current;
+        }
     }
     previous() {
-        return this.advanceBy(-1);
+        if (this.index !== 0) {
+            return this.advanceBy(-1);
+        } else {
+            return this.current;
+        }
     }
     current() {
         return this.indexable[this.index];
