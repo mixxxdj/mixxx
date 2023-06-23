@@ -98,7 +98,7 @@ const fxText = function(screen, text, size = 0x02, align = 0x01) {
 
 // Clear screen
 const fxClear = function(screen) {
-    return (fxText(screen, ""));
+    return (fxText(screen, "", 0x03));
 };
 
 // Draw meter
@@ -126,7 +126,7 @@ if (skipButtonBehaviour === "skip") {
 const jumpSizes = [1, 2, 4, 8, 16, 32, 64, 128];
 
 // Beatloop sizes
-const loopSizes = [1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
+const loopSizes = [1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128];
 
 // Component re-jigging for pad mode purposes
 components.ComponentContainer.prototype.reconnectComponents = function(operation, recursive) {
@@ -217,14 +217,12 @@ Prime4.physicalSliderPositions = {
 };
 
 // Set active values for user-defined deck colours
-/*
 const colDeck = [
     Prime4.rgbCode[deckColors[0]],
     Prime4.rgbCode[deckColors[1]],
     Prime4.rgbCode[deckColors[2]],
     Prime4.rgbCode[deckColors[3]],
 ];
-*/
 
 const colDeckSysex = [
     Prime4.rgbCodeSysex[deckColors[0]],
@@ -234,14 +232,12 @@ const colDeckSysex = [
 ];
 
 // Set inactive values for user-defined deck colours
-/*
 const colDeckDark = [
     Prime4.rgbCode[deckColors[0] + "Dark"],
     Prime4.rgbCode[deckColors[1] + "Dark"],
     Prime4.rgbCode[deckColors[2] + "Dark"],
     Prime4.rgbCode[deckColors[3] + "Dark"],
 ];
-*/
 
 const colDeckDarkSysex = [
     Prime4.rgbCodeSysex[deckColors[0] + "Dark"],
@@ -577,6 +573,9 @@ const mixerStrip = function(deckNumber, midiOffset) {
         midi: [0x90 + midiOffset, 0x0D],
         key: "pfl",
         type: components.Button.prototype.types.toggle,
+        on: colDeck[midiOffset],
+        off: colDeckDark[midiOffset],
+        /* SysEx-controlled colours, too dim on the PFL buttons at present
         on: colDeckSysex[midiOffset],
         off: colDeckDarkSysex[midiOffset],
         output: function() {
@@ -586,6 +585,7 @@ const mixerStrip = function(deckNumber, midiOffset) {
                 sendSysexRGB(midiOffset, 0x0D, ...this.off);
             }
         },
+        */
     });
 
     //TODO: Volume Fader
