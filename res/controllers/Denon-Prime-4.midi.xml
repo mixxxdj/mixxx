@@ -1101,6 +1101,16 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck A - Loop Encoder -->
+              <group></group>
+              <key>Prime4.leftDeck.loopEncoder.input</key>
+              <description></description>
+              <status>0xB4</status>
+              <midino>0x20</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
 			<control> <!-- Deck A - Censor Button ON -->
 			  <group>[Channel1]</group>
 			  <key>Prime4.leftDeck.censorButton.input</key>
@@ -1813,6 +1823,16 @@
               <description>Deck 2-4 Loop Out</description>
               <status>0x85</status>
               <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Encoder -->
+              <group></group>
+              <key>Prime4.rightDeck.loopEncoder.input</key>
+              <description></description>
+              <status>0xB5</status>
+              <midino>0x20</midino>
               <options>
                 <Script-Binding/>
               </options>

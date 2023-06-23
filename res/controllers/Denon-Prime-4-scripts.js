@@ -125,6 +125,9 @@ if (skipButtonBehaviour === "skip") {
 // Beatjump sizes
 const jumpSizes = [1, 2, 4, 8, 16, 32, 64, 128];
 
+// Beatloop sizes
+const loopSizes = [1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
+
 // Component re-jigging for pad mode purposes
 components.ComponentContainer.prototype.reconnectComponents = function(operation, recursive) {
     this.forEachComponent(function(component) {
@@ -177,34 +180,34 @@ Prime4.rgbCode = {
 // SysEx RGB values for more precise colour control
 Prime4.rgbCodeSysex = {
     red: [0x7f, 0x00, 0x00],
-    redDark: [0x1f, 0x00, 0x00],
+    redDark: [0x0f, 0x00, 0x00],
 
     green: [0x00, 0x7f, 0x00],
-    greenDark: [0x00, 0x1f, 0x00],
+    greenDark: [0x00, 0x0f, 0x00],
 
     blue: [0x00, 0x00, 0x7f],
-    blueDark: [0x00, 0x00, 0x1f],
+    blueDark: [0x00, 0x00, 0x0f],
 
     yellow: [0x7f, 0x7f, 0x00],
-    yellowDark: [0x1f, 0x1f, 0x00],
+    yellowDark: [0x0f, 0x0f, 0x00],
 
     magenta: [0x7f, 0x00, 0x7f],
-    magentaDark: [0x1f, 0x00, 0x1f],
+    magentaDark: [0x0f, 0x00, 0x0f],
 
     cyan: [0x00, 0x7f, 0x7f],
-    cyanDark: [0x00, 0x1f, 0x1f],
+    cyanDark: [0x00, 0x0f, 0x0f],
 
     orange: [0x7f, 0x2f, 0x00],
-    orangeDark: [0x1f, 0x0c, 0x00],
+    orangeDark: [0x0f, 0x06, 0x00],
 
     aqua: [0x00, 0x7f, 0x2f],
-    aquaDark: [0x00, 0x1f, 0x0c],
+    aquaDark: [0x00, 0x0f, 0x06],
 
     violet: [0x2f, 0x00, 0x7f],
-    violetDark: [0x0c, 0x00, 0x1f],
+    violetDark: [0x06, 0x00, 0x0f],
 
     white: [0x7e, 0x7e, 0x7f],
-    whiteDark: [0x1e, 0x1e, 0x1f],
+    whiteDark: [0x0e, 0x0e, 0x0f],
 };
 
 // Used in Swiftb0y's NS6II mapping for tempo fader LEDs
@@ -949,6 +952,20 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
         midi: [0x90 + midiChannel, 0x24],
         key: "slip_enabled",
         type: components.Button.prototype.types.toggle,
+    });
+
+    // Loop Encoder
+    const currentLoopSize = new Prime4.CyclingArrayView(loopSizes, 6);
+    this.loopEncoder = new components.Pot({
+        midi: [0x90 + midiChannel, 0x20],
+        key: "beatloop_size",
+        input: function(channel, control, value, _status, _group) {
+            if (value === 0x01) {
+                this.inSetValue(currentLoopSize.next());
+            } else if (value === 0x7f) {
+                this.inSetValue(currentLoopSize.previous());
+            }
+        },
     });
 
     // Loop In Button
