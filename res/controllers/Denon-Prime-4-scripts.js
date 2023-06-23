@@ -160,6 +160,7 @@ Prime4.rgbCode = {
     greenDim: 8,
     cyanDim: 10,
     green: 12,
+    teal: 14,
     cyan: 15,
     redDark: 16,
     magentaDark: 17,
@@ -167,6 +168,7 @@ Prime4.rgbCode = {
     whiteDark: 21,
     redDim: 32,
     magentaDim: 34,
+    purple: 35,
     orangeDark: 36,
     yellowDim: 40,
     whiteDim: 42,
@@ -317,6 +319,26 @@ Prime4.CyclingArrayView = class {
         } else {
             return this.current;
         }
+    }
+    current() {
+        return this.indexable[this.index];
+    }
+};
+
+Prime4.WrappingArrayView = class {
+    constructor(indexable, startIndex) {
+        this.indexable = indexable;
+        this.index = startIndex || 0;
+    }
+    advanceBy(n) {
+        this.index = script.posMod(this.index + n, this.indexable.length);
+        return this.current();
+    }
+    next() {
+        return this.advanceBy(1);
+    }
+    previous() {
+        return this.advanceBy(-1);
     }
     current() {
         return this.indexable[this.index];
@@ -1061,11 +1083,11 @@ Prime4.PadSection = function(deck, offset) {
 
     // Create component containers for each pad mode
     const modes = new components.ComponentContainer({
-        "hotcue": new Prime4.CyclingArrayView([new Prime4.hotcueMode(deck, offset)], 0),
-        "loop": new Prime4.CyclingArrayView([new Prime4.savedLoopMode(deck, offset), new Prime4.autoloopMode(deck, offset)], 0),
-        "roll": new Prime4.CyclingArrayView([new Prime4.rollMode(deck, offset)], 0),
-        "slicer": new Prime4.CyclingArrayView([new Prime4.extraCueModeA(deck, offset), new Prime4.extraCueModeB(deck, offset)], 0),
-        "rollShift": new Prime4.CyclingArrayView([new Prime4.samplerMode(deck, offset)], 0),
+        "hotcue": new Prime4.WrappingArrayView([new Prime4.hotcueMode(deck, offset)], 0),
+        "loop": new Prime4.WrappingArrayView([new Prime4.savedLoopMode(deck, offset), new Prime4.autoloopMode(deck, offset)], 0),
+        "roll": new Prime4.WrappingArrayView([new Prime4.rollMode(deck, offset), new Prime4.samplerMode(deck, offset)], 0),
+        "slicer": new Prime4.WrappingArrayView([new Prime4.extraCueModeA(deck, offset), new Prime4.extraCueModeB(deck, offset)], 0),
+        "rollShift": new Prime4.WrappingArrayView([new Prime4.samplerMode(deck, offset)], 0),
     });
 
     modes.forEachComponent(c => c.disconnect());
@@ -1295,12 +1317,14 @@ Prime4.samplerMode = function(deck, offset) {
     this.colourOn = Prime4.rgbCode.green;
     this.colourOff = Prime4.rgbCode.whiteDark;
     this.pads = new components.ComponentContainer();
+    const colourArray = [Prime4.rgbCode.yellow, Prime4.rgbCode.orange, Prime4.rgbCode.purple, Prime4.rgbCode.red,
+        Prime4.rgbCode.green, Prime4.rgbCode.teal, Prime4.rgbCode.cyan, Prime4.rgbCode.blue];
     for (let i = 1; i <= 8; i++) {
         this.pads[i] = new components.SamplerButton({
             number: i,
             midi: [0x94 + offset, 0x0E + i],
-            on: Prime4.rgbCode.orange,
-            off: Prime4.rgbCode.orangeDark,
+            on: colourArray[i - 1],
+            off: Prime4.rgbCode.whiteDark,
             outConnect: false,
         });
     }
