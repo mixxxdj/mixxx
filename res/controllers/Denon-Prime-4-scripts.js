@@ -246,7 +246,7 @@ const colDeckDarkSysex = [
     Prime4.rgbCodeSysex[deckColors[3] + "Dark"],
 ];
 
-// Register '0x9n' as a button press and 'ox8n' as a button release
+// Register '0x9n' as a button press and '0x8n' as a button release
 components.Button.prototype.isPress = function(channel, control, value, status) {
     return (status & 0xF0) === 0x90;
 };
