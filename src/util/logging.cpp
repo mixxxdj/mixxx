@@ -266,10 +266,6 @@ namespace mixxx {
 
 namespace {
 
-bool isControllerLoggingCategory(const QString& categoryName) {
-    return categoryName.startsWith("controller.");
-}
-
 // Debug message handler which outputs to stderr and a logfile,
 // prepending the thread name, log category, and log level.
 void handleMessage(
@@ -289,15 +285,6 @@ void handleMessage(
         }
         if (Logging::shouldFlush(LogLevel::Debug)) {
             writeFlags |= WriteFlag::Flush;
-        }
-        // TODO: Remove the following line.
-        // Do not write debug log messages into log file if log level
-        // Debug is not enabled starting with release 2.4.0! Until then
-        // write debug messages into the log file, but skip controller I/O
-        // to avoid flooding the log file.
-        // Skip expensive string comparisons if WriteFlag::File is already set.
-        if (!writeFlags.testFlag(WriteFlag::File) && !isControllerLoggingCategory(categoryName)) {
-            writeFlags |= WriteFlag::File;
         }
         break;
     case QtInfoMsg:
