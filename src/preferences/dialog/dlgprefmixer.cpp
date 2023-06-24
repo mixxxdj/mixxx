@@ -2,6 +2,7 @@
 
 #include <QButtonGroup>
 #include <QHBoxLayout>
+#include <QStandardItemModel>
 #include <QString>
 #include <QWidget>
 
@@ -301,6 +302,12 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
             box->addItem(pLoadedManifest->displayName(),
                     QVariant(pLoadedManifest->uniqueId()));
             currentIndex = box->count() - 1;
+            // Deactivate item to hopefully clarify the item is not an EQ
+            const QStandardItemModel* pModel =
+                    qobject_cast<QStandardItemModel*>(box->model());
+            DEBUG_ASSERT(pModel);
+            auto pItem = pModel->item(currentIndex);
+            pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
         }
         box->setCurrentIndex(currentIndex);
     }
