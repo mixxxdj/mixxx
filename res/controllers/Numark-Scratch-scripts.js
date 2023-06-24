@@ -43,11 +43,7 @@ NumarkScratch.init = function() {
         NumarkScratch.effect[i] = new NumarkScratch.EffectUnit(i + 1);
     }
 
-    NumarkScratch.crossfader = new components.Pot({
-        midi: [0xBF, 0x08],
-        group: "[Master]",
-        inKey: "crossfader",
-    });
+    NumarkScratch.xfader = new NumarkScratch.XfaderContainer();
 
     const createVuCallback = function(deckOffset) {
         return function(value) {
@@ -116,9 +112,9 @@ NumarkScratch.FxUpdateLEDs = function() {
     midi.sendShortMsg(0x99, 0x04, newStates2[1] ? 0x7F:NumarkScratch.LOW_LIGHT);
     midi.sendShortMsg(0x99, 0x05, newStates2[2] ? 0x7F:NumarkScratch.LOW_LIGHT);
 };
-// TODO in 2.3 it is not possible to "properly" map the FX selection buttons.
-// this should be done with load_preset and QuickEffects instead (when effect
-// chain preset saving/loading is available in Mixxx)
+// TODO - it is not possible to "properly" map the FX selection buttons.
+// solution should use proper OOP principles & incorporate global quickeffect chain preset, see
+// https://github.com/mixxxdj/mixxx/pull/11378
 NumarkScratch.EffectUnit = function(deckNumber) {
     this.effects = [false, false, false];
     this.isSwitchHoldOn = false;
@@ -187,24 +183,34 @@ NumarkScratch.EffectUnit = function(deckNumber) {
 };
 NumarkScratch.EffectUnit.prototype = new components.ComponentContainer();
 
-NumarkScratch.crossfader.setCurve = function(channel, control, value, _status, _group) {
-    switch (value) {
-    case 0x00: // Additive/Linear
-        engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-        engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
-        engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
-        break;
-    case 0x7F:  // Picnic Bench/Fast Cut
-        engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-        engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
-        engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
-    }
+NumarkScratch.XfaderContainer = function() {
+    this.crossfader = new components.Pot({
+        midi: [0xBF, 0x08],
+        group: "[Master]",
+        inKey: "crossfader",
+    });
+
+    this.crossfader.setCurve = function(channel, control, value, _status, _group) {
+        switch (value) {
+        case 0x00: // Additive/Linear
+            engine.setValue("[Mixer Profile]", "xFaderMode", 0);
+            engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
+            engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
+            break;
+        case 0x7F:  // Picnic Bench/Fast Cut
+            engine.setValue("[Mixer Profile]", "xFaderMode", 0);
+            engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
+            engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
+        }
+    };
+
+    this.crossfader.xFaderReverse = function(channel, control, value, _status, _group) {
+        // 0x7F is ON, 0x00 is OFF
+        engine.setValue("[Mixer Profile]", "xFaderReverse", (value === 0x7F) ? 1 : 0);
+    };
 };
 
-NumarkScratch.crossfader.xFaderReverse = function(channel, control, value, _status, _group) {
-    // 0x7F is ON, 0x00 is OFF
-    engine.setValue("[Mixer Profile]", "xFaderReverse", (value === 0x7F) ? 1 : 0);
-};
+NumarkScratch.XfaderContainer.prototype = new components.ComponentContainer();
 
 NumarkScratch.setChannelInput = function(channel, control, value, _status, _group) {
     const number = (control === 0x57) ? 1 : 2;
