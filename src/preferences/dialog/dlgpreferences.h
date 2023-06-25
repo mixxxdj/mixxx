@@ -111,6 +111,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
   private:
     DlgPreferencePage* currentPage();
+    void fixSliderStyle();
     QList<PreferencesPage> m_allPages;
     void onShow();
     void onHide();

@@ -578,8 +578,9 @@ void WMainMenuBar::initialize() {
     auto* pHelpSupport = new QAction(supportTitle, this);
     pHelpSupport->setStatusTip(supportText);
     pHelpSupport->setWhatsThis(buildWhatsThis(supportTitle, supportText));
-    connect(pHelpSupport, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
+    connect(pHelpSupport, &QAction::triggered, this, [this] {
+        slotVisitUrl(QUrl(MIXXX_SUPPORT_URL));
+    });
     pHelpMenu->addAction(pHelpSupport);
 
     // User Manual
@@ -594,7 +595,7 @@ void WMainMenuBar::initialize() {
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
     connect(pHelpManual, &QAction::triggered, this, [this, manualUrl] {
-        slotVisitUrl(manualUrl.toString());
+        slotVisitUrl(manualUrl);
     });
     pHelpMenu->addAction(pHelpManual);
 
@@ -614,9 +615,22 @@ void WMainMenuBar::initialize() {
             &QAction::triggered,
             this,
             [this, keyboardShortcutsUrl] {
-                slotVisitUrl(keyboardShortcutsUrl.toString());
+                slotVisitUrl(keyboardShortcutsUrl);
             });
     pHelpMenu->addAction(pHelpKbdShortcuts);
+
+    // User Settings Directory
+    const QString& settingsDirPath = m_pConfig->getSettingsPath();
+    QString settingsDirTitle = tr("&Settings directory");
+    QString settingsDirText = tr("Open the Mixxx user settings directory.");
+    auto* pHelpSettingsDir = new QAction(settingsDirTitle, this);
+    pHelpSettingsDir->setMenuRole(QAction::NoRole);
+    pHelpSettingsDir->setStatusTip(settingsDirText);
+    pHelpSettingsDir->setWhatsThis(buildWhatsThis(settingsDirTitle, settingsDirText));
+    connect(pHelpSettingsDir, &QAction::triggered, this, [this, settingsDirPath] {
+        slotVisitUrl(QUrl::fromLocalFile(settingsDirPath));
+    });
+    pHelpMenu->addAction(pHelpSettingsDir);
 
     // Translate This Application
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
@@ -624,8 +638,9 @@ void WMainMenuBar::initialize() {
     auto* pHelpTranslation = new QAction(translateTitle, this);
     pHelpTranslation->setStatusTip(translateText);
     pHelpTranslation->setWhatsThis(buildWhatsThis(translateTitle, translateText));
-    connect(pHelpTranslation, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_TRANSLATION_URL); });
+    connect(pHelpTranslation, &QAction::triggered, this, [this] {
+        slotVisitUrl(QUrl(MIXXX_TRANSLATION_URL));
+    });
     pHelpMenu->addAction(pHelpTranslation);
 
     pHelpMenu->addSeparator();
@@ -711,8 +726,8 @@ void WMainMenuBar::slotDeveloperDebugger(bool toggle) {
                    ConfigValue(toggle ? 1 : 0));
 }
 
-void WMainMenuBar::slotVisitUrl(const QString& url) {
-    QDesktopServices::openUrl(QUrl(url));
+void WMainMenuBar::slotVisitUrl(const QUrl& url) {
+    QDesktopServices::openUrl(url);
 }
 
 void WMainMenuBar::createVisibilityControl(QAction* pAction,
