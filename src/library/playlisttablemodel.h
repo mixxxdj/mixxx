@@ -25,7 +25,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
     /// This function should only be used by AUTODJ
     void removeTracks(const QModelIndexList& indices) final;
     /// Returns the number of successful additions.
-    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+    int addTracksWithTrackIds(const QModelIndex& index, const QList<TrackId>& trackIds) final;
     bool isLocked() final;
 
     Capabilities getCapabilities() const final;

@@ -267,12 +267,15 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
     QTableView::focusInEvent(event);
 
     if (event->reason() == Qt::TabFocusReason ||
-            event->reason() == Qt::BacktabFocusReason) {
+            event->reason() == Qt::BacktabFocusReason ||
+            event->reason() == Qt::OtherFocusReason) {
         // On FocusIn caused by a tab action with no focused item, select the
         // current or first track which can then instantly be loaded to a deck.
         // This is especially helpful if the table has only one track, which can
         // not be selected with up/down buttons, either physical or emulated via
         // [Library],MoveVertical controls. See #9548
+        // Qt::OtherFocusReason is setFocus called by LibraryControl::setLibraryFocus,
+        // in response to shortkey Ctrl-Right
         if (model()->rowCount() > 0) {
             if (selectionModel()->hasSelection()) {
                 DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());

@@ -6,6 +6,7 @@
 #include <QString>
 #include <QTableView>
 
+#include "library/library_decl.h"
 #include "library/libraryview.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -58,6 +59,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);
+    FocusWidget setLibraryFocus(FocusWidget newFocus);
 
   public slots:
     void setTrackTableFont(const QFont& font);

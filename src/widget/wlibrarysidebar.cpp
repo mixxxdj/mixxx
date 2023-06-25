@@ -269,6 +269,14 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         emit pressed(selIndex);
         return;
     }
+    case Qt::Key_Right: {
+        if (event->modifiers() & Qt::ControlModifier) {
+            emit setLibraryFocus(FocusWidget::TracksTable);
+        } else {
+            QTreeView::keyPressEvent(event);
+        }
+        return;
+    }
     case Qt::Key_Left: {
         QModelIndexList selectedIndices = selectionModel()->selectedRows();
         if (selectedIndices.isEmpty()) {

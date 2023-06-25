@@ -477,7 +477,7 @@ QModelIndex SidebarModel::translateIndex(
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    // qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
     QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
     emit dataChanged(topLeftTranslated, bottomRightTranslated);
@@ -501,8 +501,8 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    //qDebug() << "slotRowsInserted" << parent << start << end;
-    //QModelIndex newParent = translateSourceIndex(parent);
+    // qDebug() << "slotRowsInserted" << parent << start << end;
+    // QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 

@@ -150,17 +150,15 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
     return caps;
 }
 
-int CrateTableModel::addTracks(
-        const QModelIndex& index, const QList<QString>& locations) {
+int CrateTableModel::addTracksWithTrackIds(
+        const QModelIndex& index, const QList<TrackId>& trackIds) {
     Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
-    QList<TrackId> trackIds =
-            m_pTrackCollectionManager->resolveTrackIdsFromLocations(locations);
     if (!m_pTrackCollectionManager->internalCollection()->addCrateTracks(
                 m_selectedCrate, trackIds)) {
         qWarning() << "CrateTableModel::addTracks could not add"
-                   << locations.size() << "tracks to crate" << m_selectedCrate;
+                   << trackIds.size() << "tracks to crate" << m_selectedCrate;
         return 0;
     }
 

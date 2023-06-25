@@ -46,6 +46,11 @@ class WTrackTableView : public WLibraryTableView {
     TrackId getCurrentTrackId() const;
     bool setCurrentTrackId(const TrackId& trackId, int column = 0, bool scrollToTrack = false);
 
+    void removeSelectedTracks();
+    void cutSelectedTracks();
+    void copySelectedTracks();
+    void pasteTracks();
+
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
     }

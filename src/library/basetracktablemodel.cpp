@@ -19,6 +19,7 @@
 #include "moc_basetracktablemodel.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/clipboard.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
@@ -360,6 +361,30 @@ int BaseTrackTableModel::columnCount(const QModelIndex& parent) const {
         return 0;
     }
     return countValidColumnHeaders();
+}
+
+void BaseTrackTableModel::cutTracks(const QModelIndexList& indices) {
+    copyTracks(indices);
+    removeTracks(indices);
+}
+
+void BaseTrackTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::begin();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::end();
+}
+
+int BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {
+    const QList<QUrl> urls = Clipboard::urls();
+    const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromUrls(urls, false);
+    if (trackIds.isEmpty()) {
+        return 0;
+    }
+    return addTracksWithTrackIds(insertionIndex, trackIds);
 }
 
 bool BaseTrackTableModel::isColumnHiddenByDefault(

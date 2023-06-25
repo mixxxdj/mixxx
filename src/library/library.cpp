@@ -404,6 +404,10 @@ void Library::bindLibraryWidget(
             &Library::slotLoadTrackToPlayer);
     m_pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
+    connect(m_pLibraryWidget,
+            &WLibrary::setLibraryFocus,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
     connect(this,
             &Library::switchToView,
             m_pLibraryWidget,

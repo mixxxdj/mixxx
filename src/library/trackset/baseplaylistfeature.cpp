@@ -169,7 +169,7 @@ void BasePlaylistFeature::connectPlaylistDAO() {
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 }
 
-int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
+int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
         return kInvalidPlaylistId;

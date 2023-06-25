@@ -1008,6 +1008,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/taglib/trackmetadata_xiph.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
+  src/util/clipboard.cpp
   src/util/cmdlineargs.cpp
   src/util/colorcomponents.cpp
   src/util/color/color.cpp

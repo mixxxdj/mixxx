@@ -818,6 +818,65 @@ TrackModel* WTrackTableView::getTrackModel() const {
     return trackModel;
 }
 
+namespace {
+QModelIndex calculateCutIndex(const QModelIndex& currentIndex,
+        const QModelIndexList& removedIndices) {
+    if (removedIndices.empty()) {
+        return QModelIndex();
+    }
+    const int row = currentIndex.row();
+    int rowAfterRemove = row;
+    for (const auto& removeIndex : removedIndices) {
+        if (removeIndex.row() < row) {
+            rowAfterRemove--;
+        }
+    }
+    return currentIndex.siblingAtRow(rowAfterRemove);
+}
+} // namespace
+
+void WTrackTableView::removeSelectedTracks() {
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    const QModelIndex newIndex = calculateCutIndex(currentIndex(), indices);
+    getTrackModel()->removeTracks(indices);
+    setCurrentIndex(newIndex);
+}
+
+void WTrackTableView::cutSelectedTracks() {
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    const QModelIndex newIndex = calculateCutIndex(currentIndex(), indices);
+    getTrackModel()->cutTracks(indices);
+    setCurrentIndex(newIndex);
+}
+
+void WTrackTableView::copySelectedTracks() {
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    getTrackModel()->copyTracks(indices);
+}
+
+void WTrackTableView::pasteTracks() {
+    auto index = currentIndex();
+    const bool appending = !index.isValid();
+    int n = getTrackModel()->pasteTracks(index);
+    if (n == 0) {
+        return;
+    }
+    if (appending) {
+        index = model()->index(model()->rowCount() - n, 1);
+    }
+    setCurrentIndex(index);
+    int insertRow = index.row();
+    for (int i = 0; i < n; i++) {
+        selectionModel()->select(model()->index(insertRow + i, 0),
+                QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    }
+    if (appending) {
+        scrollTo(index, PositionAtCenter);
+    }
+    // will trigger a repaint of the sidebar to show the increased track count
+    // emit trackSelected(TrackPointer());
+}
+
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case kPropertiesShortcutKey: {
@@ -832,16 +891,41 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
                 m_pTrackMenu->slotShowDlgTrackInfo();
             }
         }
-    } break;
+        return;
+    }
     case kHideRemoveShortcutKey: {
         if (event->modifiers() == kHideRemoveShortcutModifier) {
             hideOrRemoveSelectedTracks();
+        }
+        return;
+    }
+    default:
+        break;
+    }
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel && !trackModel->isLocked()) {
+        if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
+            removeSelectedTracks();
             return;
         }
-    } break;
-    default:
-        QTableView::keyPressEvent(event);
+        if (event->matches(QKeySequence::Cut)) {
+            cutSelectedTracks();
+            return;
+        }
+        if (event->matches(QKeySequence::Copy)) {
+            copySelectedTracks();
+            return;
+        }
+        if (event->matches(QKeySequence::Paste)) {
+            pasteTracks();
+            return;
+        }
+        if (event->key() == Qt::Key_Escape) {
+            clearSelection();
+            setCurrentIndex(QModelIndex());
+        }
     }
+    QTableView::keyPressEvent(event);
 }
 
 void WTrackTableView::hideOrRemoveSelectedTracks() {
@@ -1278,7 +1362,7 @@ bool WTrackTableView::hasFocus() const {
 }
 
 void WTrackTableView::setFocus() {
-    QWidget::setFocus();
+    QWidget::setFocus(Qt::OtherFocusReason);
 }
 
 QString WTrackTableView::getModelStateKey() const {

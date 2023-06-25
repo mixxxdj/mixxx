@@ -2,6 +2,7 @@
 
 #include <QTextBrowser>
 
+#include "library/library_decl.h"
 #include "library/libraryview.h"
 
 class WLibraryTextBrowser : public QTextBrowser, public LibraryView {
@@ -11,4 +12,7 @@ class WLibraryTextBrowser : public QTextBrowser, public LibraryView {
     void onShow() override {}
     bool hasFocus() const override;
     void setFocus() override;
+    void keyPressEvent(QKeyEvent* event) override;
+  signals:
+    FocusWidget setLibraryFocus(FocusWidget newFocus);
 };

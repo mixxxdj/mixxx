@@ -5,6 +5,7 @@
 #include <QStackedWidget>
 #include <QString>
 
+#include "library/library_decl.h"
 #include "library/libraryview.h"
 #include "skin/legacy/skincontext.h"
 #include "util/compatibility/qmutex.h"
@@ -48,6 +49,9 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
         return m_bShowButtonText;
     }
 
+  signals:
+    FocusWidget setLibraryFocus(FocusWidget newFocus);
+
   public slots:
     // Show the view registered with the given name. Does nothing if the current
     // view is the specified view, or if the name does not specify any
@@ -59,6 +63,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
 
   protected:
     bool event(QEvent* pEvent) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
   private:
     QT_RECURSIVE_MUTEX m_mutex;
