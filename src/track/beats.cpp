@@ -289,9 +289,9 @@ mixxx::BeatsPointer Beats::fromBeatGridByteArray(
         bpm = Bpm(grid.bpm().bpm());
     } else if (byteArray.size() == sizeof(BeatGridV1Data)) {
         // Legacy fallback for BeatGrid-1.0
-        const auto blob = reinterpret_cast<const BeatGridV1Data*>(byteArray.constData());
-        position = mixxx::audio::FramePos(blob->firstBeat);
-        bpm = mixxx::Bpm(blob->bpm);
+        const auto* pBlob = reinterpret_cast<const BeatGridV1Data*>(byteArray.constData());
+        position = mixxx::audio::FramePos(pBlob->firstBeat);
+        bpm = mixxx::Bpm(pBlob->bpm);
     }
 
     if (position.isValid() && bpm.isValid()) {

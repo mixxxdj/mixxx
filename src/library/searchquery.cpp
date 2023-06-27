@@ -497,7 +497,6 @@ QString YearFilterNode::toSql() const {
     }
 
     if (m_bRangeQuery) {
-        QStringList rangeClauses;
         return QString(
                 QStringLiteral("CAST(substr(year,1,4) AS INTEGER) BETWEEN %1 AND %2"))
                 .arg(QString::number(m_dRangeLow),

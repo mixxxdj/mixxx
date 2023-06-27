@@ -19,7 +19,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPoint
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
           m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_processorsLock(QT_RECURSIVE_MUTEX_INIT),
-          m_processors(kMaximumVinylControlInputs, NULL),
+          m_processors(kMaximumVinylControlInputs, nullptr),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
           m_bReportSignalQuality(false),
           m_bQuit(false),
@@ -192,14 +192,14 @@ void VinylControlProcessor::onInputUnconfigured(const AudioInput& input) {
 
     auto locker = lockMutex(&m_processorsLock);
     VinylControl* pVC = m_processors.at(index);
-    m_processors.replace(index, NULL);
+    m_processors.replace(index, nullptr);
     locker.unlock();
     // Delete outside of the critical section to avoid deadlocks.
     delete pVC;
 }
 
 bool VinylControlProcessor::deckConfigured(int index) const {
-    return m_processors[index] != NULL;
+    return m_processors[index] != nullptr;
 }
 
 void VinylControlProcessor::receiveBuffer(const AudioInput& input,
