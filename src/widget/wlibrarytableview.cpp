@@ -155,12 +155,12 @@ bool WLibraryTableView::restoreTrackModelState(
     verticalScrollBar()->setValue(state->verticalScrollPosition);
     horizontalScrollBar()->setValue(state->horizontalScrollPosition);
 
-    auto selection = selectionModel();
-    selection->clearSelection();
+    auto* pSelection = selectionModel();
+    pSelection->clearSelection();
     QModelIndexList selectedRows = state->selectedRows;
     if (!selectedRows.isEmpty()) {
         for (auto index : qAsConst(selectedRows)) {
-            selection->select(index,
+            pSelection->select(index,
                     QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }
     }

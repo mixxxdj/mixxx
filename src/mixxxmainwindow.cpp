@@ -95,8 +95,8 @@ namespace {
 inline bool supportsGlobalMenu() {
 #ifndef QT_NO_DBUS
     QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto iface = conn.interface()) {
-        return iface->isServiceRegistered("com.canonical.AppMenu.Registrar");
+    if (const auto* pIface = conn.interface()) {
+        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
     }
 #endif
     return false;
