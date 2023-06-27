@@ -189,7 +189,7 @@ void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
         clearEffectInfo();
         return;
     }
-    auto* pModel = static_cast<const EffectManifestTableModel*>(selected.model());
+    const auto* pModel = static_cast<const EffectManifestTableModel*>(selected.model());
     VERIFY_OR_DEBUG_ASSERT(pModel) {
         return;
     }
