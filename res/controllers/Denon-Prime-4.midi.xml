@@ -106,7 +106,7 @@
             </control>
             <control> <!-- FX1 - Effect 1 Knob -->
 	      <group></group>
-              <key>Prime4.effectBank[0].knobs[1].input</key>
+          <key>Prime4.effectBank[0].knobs[1].input</key>
               <status>0xB6</status>
               <midino>0x01</midino>
               <options>
@@ -224,7 +224,7 @@
             </control>
             <control> <!-- FX1 - Effect 1 Knob -->
 	      <group></group>
-              <key>Prime4.effectBank[1].knobs[1].input</key>
+          <key>Prime4.effectBank[1].knobs[1].input</key>
               <status>0xB7</status>
               <midino>0x01</midino>
               <options>

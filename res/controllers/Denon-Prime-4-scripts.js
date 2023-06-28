@@ -65,6 +65,12 @@ const rateRanges = [
 
 ///////////// FX SCREEN LIBRARY /////////////
 
+/*
+const effectNames = ["---", "Autopan", "Balance", "Bessel4 ISO", "Bessel8 ISO", "Bitcrusher", "BQ EQ", "BQ EQ/ISO",
+    "Distortion", "Echo", "Filter", "Flanger", "Graphic EQ", "Loudness", "LRB ISO", "Metronome", "Moog Filter",
+    "Param EQ", "Phaser", "Pitch Shift", "Reverb", "Tremolo", "White Noise"];
+*/
+
 const denonId = [0x00, 0x02, 0x0b];
 
 // Shorthand for sending SysEx message to FX screens
@@ -382,6 +388,11 @@ fxScreen.prototype = new components.Deck();
 Prime4.init = function(_id, _debug) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
+
+    // Clear OLED screens
+    for (let i = 0; i < 8; i++) {
+        fxSendMsg(fxClear(i));
+    }
 
     // Return position of all components
     midi.sendSysexMsg(initialPrime4Sysex, initialPrime4Sysex.length);

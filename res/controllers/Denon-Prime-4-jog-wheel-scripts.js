@@ -138,7 +138,7 @@ const brightness = function(display, brightness) {
 Prime4Jog.init = function(id, _debug) {
     wheelSide = wheelSideToSysex(id);
     sysex(unlockDisplay(wheelSide));
-    sysex(brightness(wheelSide, 0));
+    //sysex(brightness(wheelSide, 0));
 };
 
 Prime4Jog.shutdown = function() {
