@@ -629,7 +629,11 @@ const mixerStrip = function(deckNumber, midiOffset) {
         */
     });
 
-    //TODO: Volume Fader
+    // Volume Fader
+    this.volumeFader = new components.Pot({
+        midi: [0x90 + midiOffset, 0x0E],
+        inKey: "volume",
+    });
 
     // Crossfader Assign Switch
     this.xFaderSwitch = new components.Button({

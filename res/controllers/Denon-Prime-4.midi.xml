@@ -686,13 +686,13 @@
                 </options>
             </control>
             <control> <!-- Deck 1 - Volume Fader -->
-                <group>[Channel1]</group>
-                <key>volume</key>
+                <group></group>
+                <key>Prime4.mixerA.volumeFader.input</key>
                 <description>Deck 1 Volume Slider</description>
                 <status>0xB0</status>
                 <midino>0x0E</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 
@@ -807,13 +807,13 @@
                 </options>
             </control>
             <control> <!-- Deck 2 - Volume Fader -->
-                <group>[Channel2]</group>
-                <key>volume</key>
+                <group></group>
+                <key>Prime4.mixerB.volumeFader.input</key>
                 <description>Deck 2 Volume Slider</description>
                 <status>0xB1</status>
                 <midino>0x0E</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 
@@ -928,13 +928,13 @@
                 </options>
             </control>
             <control> <!-- Deck 3 - Volume Fader -->
-                <group>[Channel3]</group>
-                <key>volume</key>
+                <group></group>
+                <key>Prime4.mixerC.volumeFader.input</key>
                 <description>Deck 3 Volume Slider</description>
                 <status>0xB2</status>
                 <midino>0x0E</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 
@@ -1049,13 +1049,13 @@
                 </options>
             </control>
             <control> <!-- Deck 4 - Volume Fader -->
-                <group>[Channel4]</group>
-                <key>volume</key>
+                <group></group>
+                <key>Prime4.mixerD.volumeFader.input</key>
                 <description>Deck 4 Volume Slider</description>
                 <status>0xB3</status>
                 <midino>0x0E</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 
