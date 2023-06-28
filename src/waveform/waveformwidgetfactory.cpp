@@ -135,9 +135,9 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     WGLWidget* widget = SharedGLContext::getWidget();
     if (widget) {
         widget->makeCurrentIfNeeded();
-        auto context = QOpenGLContext::currentContext();
-        if (context) {
-            auto glFunctions = context->functions();
+        auto* pContext = QOpenGLContext::currentContext();
+        if (pContext) {
+            auto* glFunctions = pContext->functions();
             glFunctions->initializeOpenGLFunctions();
             QString versionString(QLatin1String(
                     reinterpret_cast<const char*>(glFunctions->glGetString(GL_VERSION))));
@@ -167,14 +167,14 @@ WaveformWidgetFactory::WaveformWidgetFactory()
                     << QStringLiteral("Supported OpenGL version: %1.%2")
                                .arg(QString::number(majorVersion), QString::number(minorVersion));
 
-            m_openGLShaderAvailable = QOpenGLShaderProgram::hasOpenGLShaderPrograms(context);
+            m_openGLShaderAvailable = QOpenGLShaderProgram::hasOpenGLShaderPrograms(pContext);
 
-            m_openGLVersion = context->isOpenGLES() ? "ES " : "";
+            m_openGLVersion = pContext->isOpenGLES() ? "ES " : "";
             m_openGLVersion += majorVersion == 0 ? QString("None") : versionString;
 
             if (majorVersion * 100 + minorVersion >= 201) {
                 m_openGlAvailable = true;
-                if (context->isOpenGLES()) {
+                if (pContext->isOpenGLES()) {
                     m_openGlesAvailable = true;
                 } else {
                     m_openGlAvailable = true;
