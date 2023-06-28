@@ -2064,18 +2064,23 @@ endif()
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   set(LIBDJINTEROP_VERSION 0.16.1)
+  set(LIBDJINTEROP_MIN_VERSION 0.16.0)
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
   # Note: Version 0.17.0 is not yet compatible
-  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
-  if(DjInterop_FOUND)
+  find_package(DjInterop CONFIG)
+  if(NOT DjInterop_FOUND)
+    find_package(DjInterop MODULE)
+  endif()
+  if(DjInterop_FOUND AND DjInterop_VERSION VERSION_LESS_EQUAL LIBDJINTEROP_VERSION AND DjInterop_VERSION VERSION_GREATER_EQUAL LIBDJINTEROP_MIN_VERSION)
     # An existing installation of djinterop is available.
-    message(STATUS "Using existing system installation of libdjinterop")
-    target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
+    message(STATUS "Using existing system installation of libdjinterop ${DjInterop_VERSION}")
     target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
   else()
     # Fetch djinterop sources from GitHub and build them statically.
-
+    if(DjInterop_FOUND)
+       message(STATUS "The existing system installation of libdjinterop ${DjInterop_VERSION} is not compatible")
+    endif()
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
     if (APPLE AND NOT SQLite3_IS_STATIC)
