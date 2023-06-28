@@ -253,6 +253,9 @@ void DlgLibraryExport::checkExistingDatabase() {
         djinterop::database db = el::load_database(databaseDirectory.toStdString());
         const auto version = db.version();
 
+        // Silence clang-tidy false positive:
+        // 'const auto result' can be declared as 'const auto *const result'
+        // NOLINTNEXTLINE(readability-qualified-auto)
         const auto result = std::find(el::all_versions.begin(), el::all_versions.end(), version);
         if (result == el::all_versions.end()) {
             // Unknown database version.
