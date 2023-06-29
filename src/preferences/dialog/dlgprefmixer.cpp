@@ -292,9 +292,16 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
         int currentIndex = 0; // store it as default selection
         for (const auto& pManifest : pManifestList) {
             box->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
+            int i = box->count() - 1;
+            // <b> makes the effect name bold. Also, like <span> it serves as hack
+            // to get Qt to treat the string as rich text so it automatically wraps long lines.
+            box->setItemData(i,
+                    QVariant(QStringLiteral("<b>") + pManifest->name() +
+                            QStringLiteral("</b><br/>") + pManifest->description()),
+                    Qt::ToolTipRole);
             if (pLoadedManifest &&
                     pLoadedManifest.data() == pManifest.data()) {
-                currentIndex = box->count() - 1;
+                currentIndex = i;
             }
         }
         if (pLoadedManifest && currentIndex == 0) {
@@ -302,11 +309,16 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
             box->addItem(pLoadedManifest->displayName(),
                     QVariant(pLoadedManifest->uniqueId()));
             currentIndex = box->count() - 1;
+            box->setItemData(currentIndex,
+                    QVariant(QStringLiteral("<b>") + pLoadedManifest->name() +
+                            QStringLiteral("</b><br/>") + pLoadedManifest->description()),
+                    Qt::ToolTipRole);
             // Deactivate item to hopefully clarify the item is not an EQ
             const QStandardItemModel* pModel =
                     qobject_cast<QStandardItemModel*>(box->model());
             DEBUG_ASSERT(pModel);
             auto pItem = pModel->item(currentIndex);
+            DEBUG_ASSERT(pItem);
             pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
         }
         box->setCurrentIndex(currentIndex);
@@ -928,6 +940,12 @@ void DlgPrefMixer::setUpMainEQ() {
     comboBoxMainEq->addItem(kNoEffectString);
     for (const auto& pManifest : availableMainEQEffects) {
         comboBoxMainEq->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
+        // <b> makes the effect name bold. Also, like <span> it serves as hack
+        // to get Qt to treat the string as rich text so it automatically wraps long lines.
+        comboBoxMainEq->setItemData(comboBoxMainEq->count() - 1,
+                QVariant(QStringLiteral("<b>") + pManifest->name() +
+                        QStringLiteral("</b><br/>") + pManifest->description()),
+                Qt::ToolTipRole);
     }
     comboBoxMainEq->setCurrentIndex(0);
 }
