@@ -233,21 +233,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     realtimeHint->hide();
 #endif // __LINUX__
 
-    // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
-    // connect them to the custom event filter below so they don't accept focus
-    // when we scroll the preferences page to avoid undesired value changes.
-    QObjectList objList = children();
-    for (int i = 0; i < objList.length(); ++i) {
-        QComboBox* combo = qobject_cast<QComboBox*>(objList[i]);
-        QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(objList[i]);
-        if (combo) {
-            combo->setFocusPolicy(Qt::StrongFocus);
-            combo->installEventFilter(this);
-        } else if (spin) {
-            spin->setFocusPolicy(Qt::StrongFocus);
-            spin->installEventFilter(this);
-        }
-    }
+    setScrollSafeGuardForAllInputWidgets(this);
 
     hardwareGuide->setText(
             tr("The %1 lists sound cards and controllers you may want to "
@@ -260,21 +246,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
 DlgPrefSound::~DlgPrefSound() {
     delete m_pLatencyCompensation;
-}
-
-// Catch scroll events over comboboxes and pass them to the scroll area instead.
-bool DlgPrefSound::eventFilter(QObject* obj, QEvent* e) {
-    if (e->type() == QEvent::Wheel) {
-        // Reject scrolling only if widget is unfocused.
-        // Object to widget cast is needed to check the focus state.
-        QComboBox* combo = qobject_cast<QComboBox*>(obj);
-        QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(obj);
-        if ((combo && !combo->hasFocus()) || (spin && !spin->hasFocus())) {
-            QApplication::sendEvent(verticalLayout_2, e);
-            return true;
-        }
-    }
-    return QObject::eventFilter(obj, e);
 }
 
 /**
@@ -368,22 +339,26 @@ void DlgPrefSound::addPath(const AudioOutput& output) {
         }
     }
 
-    DlgPrefSoundItem *toInsert;
+    DlgPrefSoundItem* pSoundItem;
     AudioPathType type = output.getType();
     if (AudioPath::isIndexed(type)) {
-        toInsert = new DlgPrefSoundItem(outputTab, type,
-            m_outputDevices, false, output.getIndex());
+        pSoundItem = new DlgPrefSoundItem(
+                outputTab, type, m_outputDevices, false, output.getIndex());
     } else {
-        toInsert = new DlgPrefSoundItem(outputTab, type,
-            m_outputDevices, false);
+        pSoundItem = new DlgPrefSoundItem(outputTab, type, m_outputDevices, false);
     }
-    connect(this, &DlgPrefSound::refreshOutputDevices, toInsert, &DlgPrefSoundItem::refreshDevices);
-    insertItem(toInsert, outputVLayout);
-    connectSoundItem(toInsert);
+    connect(this,
+            &DlgPrefSound::refreshOutputDevices,
+            pSoundItem,
+            &DlgPrefSoundItem::refreshDevices);
+    insertItem(pSoundItem, outputVLayout);
+    connectSoundItem(pSoundItem);
+
+    setScrollSafeGuardForAllInputWidgets(pSoundItem);
 }
 
 void DlgPrefSound::addPath(const AudioInput& input) {
-    DlgPrefSoundItem *toInsert;
+    DlgPrefSoundItem* pSoundItem;
     // if we already know about this input, don't make a new entry
     foreach (QObject *obj, inputTab->children()) {
         DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
@@ -401,23 +376,26 @@ void DlgPrefSound::addPath(const AudioInput& input) {
     }
     AudioPathType type = input.getType();
     if (AudioPath::isIndexed(type)) {
-        toInsert = new DlgPrefSoundItem(inputTab, type,
-            m_inputDevices, true, input.getIndex());
+        pSoundItem = new DlgPrefSoundItem(inputTab, type, m_inputDevices, true, input.getIndex());
     } else {
-        toInsert = new DlgPrefSoundItem(inputTab, type,
-            m_inputDevices, true);
+        pSoundItem = new DlgPrefSoundItem(inputTab, type, m_inputDevices, true);
     }
-    connect(this, &DlgPrefSound::refreshInputDevices, toInsert, &DlgPrefSoundItem::refreshDevices);
-    insertItem(toInsert, inputVLayout);
-    connectSoundItem(toInsert);
+    connect(this,
+            &DlgPrefSound::refreshInputDevices,
+            pSoundItem,
+            &DlgPrefSoundItem::refreshDevices);
+    insertItem(pSoundItem, inputVLayout);
+    connectSoundItem(pSoundItem);
+
+    setScrollSafeGuardForAllInputWidgets(pSoundItem);
 }
 
-void DlgPrefSound::connectSoundItem(DlgPrefSoundItem *item) {
-    connect(item, &DlgPrefSoundItem::settingChanged, this, &DlgPrefSound::deviceSettingChanged);
-    connect(this, &DlgPrefSound::loadPaths, item, &DlgPrefSoundItem::loadPath);
-    connect(this, &DlgPrefSound::writePaths, item, &DlgPrefSoundItem::writePath);
-    connect(this, &DlgPrefSound::updatingAPI, item, &DlgPrefSoundItem::save);
-    connect(this, &DlgPrefSound::updatedAPI, item, &DlgPrefSoundItem::reload);
+void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
+    connect(pItem, &DlgPrefSoundItem::settingChanged, this, &DlgPrefSound::deviceSettingChanged);
+    connect(this, &DlgPrefSound::loadPaths, pItem, &DlgPrefSoundItem::loadPath);
+    connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
+    connect(this, &DlgPrefSound::updatingAPI, pItem, &DlgPrefSoundItem::save);
+    connect(this, &DlgPrefSound::updatedAPI, pItem, &DlgPrefSoundItem::reload);
 }
 
 void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
@@ -531,16 +509,10 @@ void DlgPrefSound::apiChanged(int index) {
     // For bigger buffers the user has to manually match the value with Jack.
     // TODO(Be): Get the buffer size from JACK and update audioBufferComboBox.
     // PortAudio as off v19.7.0 does not have a way to get the buffer size from JACK.
-    if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
-        sampleRateComboBox->setEnabled(false);
-        deviceSyncComboBox->setEnabled(false);
-        engineClockComboBox->setEnabled(false);
-
-    } else {
-        sampleRateComboBox->setEnabled(true);
-        deviceSyncComboBox->setEnabled(true);
-        engineClockComboBox->setEnabled(true);
-    }
+    bool enable = m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING ? false : true;
+    sampleRateComboBox->setEnabled(enable);
+    deviceSyncComboBox->setEnabled(enable);
+    engineClockComboBox->setEnabled(enable);
     updateAudioBufferSizes(sampleRateComboBox->currentIndex());
 }
 

@@ -65,8 +65,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotSeratoMetadataExportClicked(bool);
 
   private:
-    void setFocusPolicyInstallEventFilter(QSpinBox* box);
-    bool eventFilter(QObject* object, QEvent* event) override;
     void initializeDirList();
     void setLibraryFont(const QFont& font);
     void updateSearchLineEditHistoryOptions();

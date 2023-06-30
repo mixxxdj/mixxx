@@ -131,6 +131,8 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
+
+    setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
