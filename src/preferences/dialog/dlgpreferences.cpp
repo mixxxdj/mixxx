@@ -303,14 +303,14 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
 
     for (PreferencesPage page : qAsConst(m_allPages)) {
         if (pCurrent == page.pTreeItem) {
-            switchToPage(page.pDlg);
+            switchToPage(pCurrent->text(0), page.pDlg);
             break;
         }
     }
 }
 
 void DlgPreferences::showSoundHardwarePage() {
-    switchToPage(m_soundPage.pDlg);
+    switchToPage(m_soundPage.pTreeItem->text(0), m_soundPage.pDlg);
     contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
 }
 
@@ -507,7 +507,16 @@ void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
     contentsTreeWidget->expandItem(pItem);
 }
 
-void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
+void DlgPreferences::switchToPage(const QString& pageTitle, DlgPreferencePage* pWidget) {
+#ifdef __APPLE__
+    // According to Apple's Human Interface Guidelines, settings dialogs have to
+    // "Update the window’s title to reflect the currently visible pane."
+    // This also solves the problem of the changed in terminology, Settings instead
+    // of Preferences, since macOS Ventura.
+    setWindowTitle(pageTitle);
+#else
+    Q_UNUSED(pageTitle);
+#endif
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
 
     QPushButton* pButton = buttonBox->button(QDialogButtonBox::Help);

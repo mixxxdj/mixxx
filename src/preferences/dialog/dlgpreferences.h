@@ -83,7 +83,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
-    void switchToPage(DlgPreferencePage* pPage);
+    void switchToPage(const QString& pageTitle, DlgPreferencePage* pPage);
 
   public slots:
     void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
