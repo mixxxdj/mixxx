@@ -31,6 +31,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotNumDecksChanged(double numDecks);
     void slotEQEffectChangedOnDeck(int effectIndex);
     void slotQuickEffectChangedOnDeck(int effectIndex);
+    void slotEqOnlyToggled(bool checked);
     void slotSingleEqToggled(bool checked);
     void slotEqAutoResetToggled(bool checked);
     void slotGainAutoResetToggled(bool checked);
@@ -71,8 +72,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void applyMainEqParameter(int index);
 
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
-    const QList<EffectManifestPointer> getFilteredManifests(
-            EffectManifestFilterFnc filterFunc) const;
+    const QList<EffectManifestPointer> getDeckEqManifests() const;
+    const QList<EffectManifestPointer> getMainEqManifests() const;
 
     UserSettingsPointer m_pConfig;
 
@@ -95,7 +96,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     EffectChainPresetManagerPointer m_pChainPresetManager;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     EffectsBackendManagerPointer m_pBackendManager;
-    QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckQuickEffectSelectors;
     ControlProxy* m_pNumDecks;

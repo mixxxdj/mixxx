@@ -66,7 +66,6 @@ DlgPrefMixer::DlgPrefMixer(
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pEffectsManager(pEffectsManager),
           m_pBackendManager(pEffectsManager->getBackendManager()),
-          m_firstSelectorLabel(nullptr),
           m_pNumDecks(nullptr),
           m_ignoreEqQuickEffectBoxSignals(false),
           m_singleEq(true),
@@ -121,7 +120,7 @@ DlgPrefMixer::DlgPrefMixer(
     connect(CheckBoxEqOnly,
             &QCheckBox::toggled,
             this,
-            &DlgPrefMixer::slotPopulateDeckEqSelectors);
+            &DlgPrefMixer::slotEqOnlyToggled);
 
     connect(CheckBoxSingleEqEffect,
             &QCheckBox::toggled,
@@ -235,13 +234,6 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                     m_ignoreEqQuickEffectBoxSignals = false;
                 });
 
-        if (deckNo == 1) {
-            m_firstSelectorLabel = label;
-            if (m_singleEq) {
-                m_firstSelectorLabel->clear();
-            }
-        }
-
         // Add the new widgets
         gridLayout_3->addWidget(label, deckNo, 0);
         gridLayout_3->addWidget(pEqComboBox, deckNo, 1);
@@ -267,9 +259,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
 void DlgPrefMixer::slotPopulateDeckEqSelectors() {
     m_ignoreEqQuickEffectBoxSignals = true; // prevents a recursive call
 
-    m_eqEffectsOnly = CheckBoxEqOnly->isChecked();
-    EffectManifestFilterFnc filterFunc = m_eqEffectsOnly ? isMixingEQ : nullptr;
-    const QList<EffectManifestPointer> pManifestList = getFilteredManifests(filterFunc);
+    const QList<EffectManifestPointer> pManifestList = getDeckEqManifests();
     for (QComboBox* box : qAsConst(m_deckEqEffectSelectors)) {
         // Populate comboboxes with all available effects
         // Get currently loaded EQ effect
@@ -351,29 +341,71 @@ void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
     m_ignoreEqQuickEffectBoxSignals = false;
 }
 
+void DlgPrefMixer::slotEqOnlyToggled(bool checked) {
+    m_eqEffectsOnly = checked;
+    slotPopulateDeckEqSelectors();
+    slotSingleEqToggled(m_singleEq);
+}
+
 void DlgPrefMixer::slotSingleEqToggled(bool checked) {
     m_singleEq = checked;
-    if (m_deckEqEffectSelectors.size()) {
-        int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
-        for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
-            if (m_singleEq) {
-                m_deckEqEffectSelectors.at(i - 1)->setCurrentIndex(deck1EQIndex);
-                gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
-                gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
-                gridLayout_3->itemAtPosition(i, 2)->widget()->hide();
-            } else {
-                gridLayout_3->itemAtPosition(i, 0)->widget()->show();
-                gridLayout_3->itemAtPosition(i, 1)->widget()->show();
-                gridLayout_3->itemAtPosition(i, 2)->widget()->show();
-            }
-        }
+    if (m_deckEqEffectSelectors.isEmpty()) {
+        return;
     }
 
-    if (m_firstSelectorLabel != nullptr) {
-        if (m_singleEq) {
-            m_firstSelectorLabel->clear();
-        } else {
-            m_firstSelectorLabel->setText(QObject::tr("Deck 1"));
+    // If single EQ is checked copy the EQ and QuickEffect of deck 1 to the other
+    // selectors. In case deck 1 has a non-EQ effect and 'EQs only' is checked we
+    // need to add it. Then disable EQ selectors except deck 1.
+    // Else enable all selectors and select currently loaded effects.
+    if (m_singleEq) {
+        m_ignoreEqQuickEffectBoxSignals = true;
+        const QString deck1EqId = m_deckEqEffectSelectors[0]->currentData().toString();
+        const EffectManifestPointer pManifest =
+                m_pBackendManager->getManifestFromUniqueId(deck1EqId);
+        int deck1QuickIndex = m_deckQuickEffectSelectors[0]->currentIndex();
+
+        for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
+            // EQ //////////////////////////////////////////////////////////////
+            int newIndex = 0;
+            QComboBox* eqBox = m_deckEqEffectSelectors[i - 1];
+            int foundIndex = eqBox->findData(deck1EqId);
+            if (foundIndex != -1) {
+                newIndex = foundIndex;
+            } else if (pManifest) {
+                // Current selection is not part of the new list so we need to add it
+                eqBox->addItem(pManifest->displayName(),
+                        QVariant(pManifest->uniqueId()));
+                newIndex = eqBox->count() - 1;
+                eqBox->setItemData(newIndex,
+                        QVariant(QStringLiteral("<b>") + pManifest->name() +
+                                QStringLiteral("</b><br/>") + pManifest->description()),
+                        Qt::ToolTipRole);
+                // Deactivate item to hopefully clarify the item is not an EQ
+                const QStandardItemModel* pModel =
+                        qobject_cast<QStandardItemModel*>(eqBox->model());
+                DEBUG_ASSERT(pModel);
+                auto pItem = pModel->item(newIndex);
+                DEBUG_ASSERT(pItem);
+                pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
+            }
+            eqBox->setCurrentIndex(newIndex);
+            eqBox->setDisabled(true);
+
+            // QUickEffect /////////////////////////////////////////////////////
+            QComboBox* quickBox = m_deckQuickEffectSelectors[i - 1];
+            quickBox->setCurrentIndex(deck1QuickIndex);
+            quickBox->setDisabled(true);
+        }
+        m_ignoreEqQuickEffectBoxSignals = false;
+    } else {
+        for (int i = 1; i < m_deckEqEffectSelectors.size(); ++i) {
+            QComboBox* eqBox = m_deckEqEffectSelectors[i];
+            eqBox->setEnabled(!m_eqBypass);
+            slotPopulateDeckEqSelectors();
+
+            QComboBox* quickBox = m_deckQuickEffectSelectors[i];
+            quickBox->setEnabled(true);
+            slotPopulateQuickEffectSelectors();
         }
     }
 }
@@ -448,16 +480,10 @@ void DlgPrefMixer::slotEQEffectChangedOnDeck(int effectIndex) {
         return;
     }
 
-    int deckNumber = m_deckEqEffectSelectors.indexOf(c);
     // If we are in single-effect mode and the first effect was changed,
     // change the others as well.
-    if (deckNumber == 0 && m_singleEq) {
-        for (QComboBox* box : qAsConst(m_deckEqEffectSelectors)) {
-            if (box == c) { // first deck already set, skip
-                continue;
-            }
-            box->setCurrentIndex(effectIndex);
-        }
+    if (m_singleEq) {
+        slotSingleEqToggled(true);
     }
 }
 
@@ -468,16 +494,10 @@ void DlgPrefMixer::slotQuickEffectChangedOnDeck(int effectIndex) {
         return;
     }
 
-    int deckNumber = m_deckQuickEffectSelectors.indexOf(c);
     // If we are in single-effect mode and the first effect was changed,
     // change the others as well.
-    if (deckNumber == 0 && m_singleEq) {
-        for (QComboBox* box : qAsConst(m_deckQuickEffectSelectors)) {
-            if (box == c) { // first deck already set, skip
-                continue;
-            }
-            box->setCurrentIndex(effectIndex);
-        }
+    if (m_singleEq) {
+        slotSingleEqToggled(true);
     }
 }
 
@@ -910,9 +930,12 @@ void DlgPrefMixer::slotBypassEqToggled(bool checked) {
 
     // De/activate deck EQ comboboxes
     for (const auto& box : qAsConst(m_deckEqEffectSelectors)) {
-        box->setEnabled(!m_eqBypass);
+        if (m_deckEqEffectSelectors.indexOf(box) == 0) {
+            box->setEnabled(!m_eqBypass);
+        } else {
+            box->setEnabled(!m_eqBypass && !m_singleEq);
+        }
     }
-    // TODO Also disable relevant checkboxes
 }
 
 void DlgPrefMixer::setUpMainEQ() {
@@ -933,8 +956,7 @@ void DlgPrefMixer::setUpMainEQ() {
             this,
             &DlgPrefMixer::slotMainEqEffectChanged);
 
-    const QList<EffectManifestPointer> availableMainEQEffects =
-            getFilteredManifests(isMainEQ);
+    const QList<EffectManifestPointer> availableMainEQEffects = getMainEqManifests();
 
     // Add empty '---' item at the top
     comboBoxMainEq->addItem(kNoEffectString);
@@ -1180,19 +1202,32 @@ void DlgPrefMixer::applyMainEqParameter(int index) {
             ConfigValue(QString::number((double)sValue / 100.0)));
 }
 
-const QList<EffectManifestPointer> DlgPrefMixer::getFilteredManifests(
-        EffectManifestFilterFnc filterFunc) const {
+const QList<EffectManifestPointer> DlgPrefMixer::getDeckEqManifests() const {
     const QList<EffectManifestPointer> allManifests =
             m_pBackendManager->getManifests();
-    if (filterFunc == nullptr) {
-        return allManifests;
-    }
-
-    QList<EffectManifestPointer> list;
+    QList<EffectManifestPointer> eqs;
+    QList<EffectManifestPointer> nonEqs;
+    // Add EQs first, then append non-EQs
     for (const auto& pManifest : allManifests) {
-        if (filterFunc(pManifest.data())) {
-            list.append(pManifest);
+        if (isMixingEQ(pManifest.data())) {
+            eqs.append(pManifest);
+        } else if (!m_eqEffectsOnly) {
+            nonEqs.append(pManifest);
         }
     }
-    return list;
+    // Append non-EQs. No-op if 'EQs only' is unchecked.
+    eqs.append(nonEqs);
+    return eqs;
+}
+
+const QList<EffectManifestPointer> DlgPrefMixer::getMainEqManifests() const {
+    const QList<EffectManifestPointer> allManifests =
+            m_pBackendManager->getManifests();
+    QList<EffectManifestPointer> eqs;
+    for (const auto& pManifest : allManifests) {
+        if (isMainEQ(pManifest.data())) {
+            eqs.append(pManifest);
+        }
+    }
+    return eqs;
 }
