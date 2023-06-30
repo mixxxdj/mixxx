@@ -258,10 +258,10 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
     m_ignoreEqQuickEffectBoxSignals = true; // prevents a recursive call
 
     const QList<EffectManifestPointer> pManifestList = getDeckEqManifests();
-    for (QComboBox* box : qAsConst(m_deckEqEffectSelectors)) {
+    for (QComboBox* pBox : qAsConst(m_deckEqEffectSelectors)) {
         // Populate comboboxes with all available effects
         // Get currently loaded EQ effect
-        int deck = m_deckEqEffectSelectors.indexOf(box);
+        int deck = m_deckEqEffectSelectors.indexOf(pBox);
         auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(
                 PlayerManager::groupForDeck(deck));
         VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
@@ -274,16 +274,16 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
         const EffectManifestPointer pLoadedManifest =
                 pEffectSlot->getManifest();
 
-        box->clear();
+        pBox->clear();
         // Add empty item at the top (no effect)
-        box->addItem(kNoEffectString);
+        pBox->addItem(kNoEffectString);
         int currentIndex = 0; // store it as default selection
         for (const auto& pManifest : pManifestList) {
-            box->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
-            int i = box->count() - 1;
+            pBox->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
+            int i = pBox->count() - 1;
             // <b> makes the effect name bold. Also, like <span> it serves as hack
             // to get Qt to treat the string as rich text so it automatically wraps long lines.
-            box->setItemData(i,
+            pBox->setItemData(i,
                     QVariant(QStringLiteral("<b>") + pManifest->name() +
                             QStringLiteral("</b><br/>") + pManifest->description()),
                     Qt::ToolTipRole);
@@ -294,22 +294,22 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
         }
         if (pLoadedManifest && currentIndex == 0) {
             // Current selection is not part of the new list so we need to add it
-            box->addItem(pLoadedManifest->displayName(),
+            pBox->addItem(pLoadedManifest->displayName(),
                     QVariant(pLoadedManifest->uniqueId()));
-            currentIndex = box->count() - 1;
-            box->setItemData(currentIndex,
+            currentIndex = pBox->count() - 1;
+            pBox->setItemData(currentIndex,
                     QVariant(QStringLiteral("<b>") + pLoadedManifest->name() +
                             QStringLiteral("</b><br/>") + pLoadedManifest->description()),
                     Qt::ToolTipRole);
             // Deactivate item to hopefully clarify the item is not an EQ
             const QStandardItemModel* pModel =
-                    qobject_cast<QStandardItemModel*>(box->model());
+                    qobject_cast<QStandardItemModel*>(pBox->model());
             DEBUG_ASSERT(pModel);
             auto pItem = pModel->item(currentIndex);
             DEBUG_ASSERT(pItem);
             pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
         }
-        box->setCurrentIndex(currentIndex);
+        pBox->setCurrentIndex(currentIndex);
     }
     m_ignoreEqQuickEffectBoxSignals = false;
 }
@@ -320,21 +320,21 @@ void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
     QList<EffectChainPresetPointer> presetList =
             m_pChainPresetManager->getQuickEffectPresetsSorted();
 
-    for (QComboBox* box : qAsConst(m_deckQuickEffectSelectors)) {
-        int deck = m_deckQuickEffectSelectors.indexOf(box);
-        box->clear();
+    for (QComboBox* pBox : qAsConst(m_deckQuickEffectSelectors)) {
+        int deck = m_deckQuickEffectSelectors.indexOf(pBox);
+        pBox->clear();
         int currentIndex = 0; // preselect empty item '---' as default
 
         QString deckGroupName = PlayerManager::groupForDeck(deck);
         QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
         EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
         for (const auto& pChainPreset : presetList) {
-            box->addItem(pChainPreset->name());
+            pBox->addItem(pChainPreset->name());
             if (pChain->presetName() == pChainPreset->name()) {
-                currentIndex = box->count() - 1;
+                currentIndex = pBox->count() - 1;
             }
         }
-        box->setCurrentIndex(currentIndex);
+        pBox->setCurrentIndex(currentIndex);
     }
     m_ignoreEqQuickEffectBoxSignals = false;
 }
@@ -450,13 +450,13 @@ void DlgPrefMixer::slotResetToDefaults() {
     checkBoxReverse->setChecked(false);
 
     // EQ //////////////////////////////////
-    for (const auto& pCombo : qAsConst(m_deckEqEffectSelectors)) {
-        pCombo->setCurrentIndex(
-                pCombo->findData(kDefaultEqId));
+    for (const auto& pBox : qAsConst(m_deckEqEffectSelectors)) {
+        pBox->setCurrentIndex(
+                pBox->findData(kDefaultEqId));
     }
-    for (const auto& pCombo : qAsConst(m_deckQuickEffectSelectors)) {
-        pCombo->setCurrentIndex(
-                pCombo->findText(kDefaultQuickEffectChainName));
+    for (const auto& pBox : qAsConst(m_deckQuickEffectSelectors)) {
+        pBox->setCurrentIndex(
+                pBox->findText(kDefaultQuickEffectChainName));
     }
     CheckBoxBypass->setChecked(false);
     CheckBoxEqOnly->setChecked(true);
@@ -502,9 +502,9 @@ void DlgPrefMixer::slotQuickEffectChangedOnDeck(int effectIndex) {
 void DlgPrefMixer::applyDeckEQs() {
     m_ignoreEqQuickEffectBoxSignals = true;
 
-    for (const auto& box : qAsConst(m_deckEqEffectSelectors)) {
-        int deck = m_deckEqEffectSelectors.indexOf(box);
-        int effectIndex = box->currentIndex();
+    for (const auto& pBox : qAsConst(m_deckEqEffectSelectors)) {
+        int deck = m_deckEqEffectSelectors.indexOf(pBox);
+        int effectIndex = pBox->currentIndex();
 
         bool needLoad = true;
         bool startingUp = m_eqIndiciesOnUpdate.size() < (deck + 1);
@@ -525,7 +525,7 @@ void DlgPrefMixer::applyDeckEQs() {
 
         const EffectManifestPointer pManifest =
                 m_pBackendManager->getManifestFromUniqueId(
-                        box->itemData(effectIndex).toString());
+                        pBox->itemData(effectIndex).toString());
         if (needLoad) {
             pEffectSlot->loadEffectWithDefaults(pManifest);
             if (pManifest && pManifest->isMixingEQ() && !m_eqBypass) {
@@ -555,9 +555,9 @@ void DlgPrefMixer::applyDeckEQs() {
 void DlgPrefMixer::applyQuickEffects() {
     m_ignoreEqQuickEffectBoxSignals = true;
 
-    for (const auto& box : qAsConst(m_deckQuickEffectSelectors)) {
-        int deck = m_deckQuickEffectSelectors.indexOf(box);
-        int effectIndex = box->currentIndex();
+    for (const auto& pBox : qAsConst(m_deckQuickEffectSelectors)) {
+        int deck = m_deckQuickEffectSelectors.indexOf(pBox);
+        int effectIndex = pBox->currentIndex();
 
         bool needLoad = true;
         bool startingUp = m_quickEffectIndiciesOnUpdate.size() < (deck + 1);
@@ -632,22 +632,22 @@ void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
         return;
     }
 
-    QSlider* slider = qobject_cast<QSlider*>(sender());
-    VERIFY_OR_DEBUG_ASSERT(slider) { // no slider, called from elsewhere
+    QSlider* pSlider = qobject_cast<QSlider*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pSlider) { // no slider, called from elsewhere
         return;
     }
 
     // Update slider label
-    int index = m_mainEQSliders.indexOf(slider);
-    QLabel* valueLabel = m_mainEQValues[index]; // verify
-    VERIFY_OR_DEBUG_ASSERT(valueLabel) {
+    int index = m_mainEQSliders.indexOf(pSlider);
+    QLabel* pValueLabel = m_mainEQValues[index]; // verify
+    VERIFY_OR_DEBUG_ASSERT(pValueLabel) {
         return;
     }
     // hide decimals for large ranges
-    if (slider->property("roundToInt").toBool()) {
-        valueLabel->setText(QString::number(std::round(value / 100.0)));
+    if (pSlider->property("roundToInt").toBool()) {
+        pValueLabel->setText(QString::number(std::round(value / 100.0)));
     } else {
-        valueLabel->setText(QString::number(value / 100.0));
+        pValueLabel->setText(QString::number(value / 100.0));
     }
 
     if (m_instantMainEq) {
@@ -930,11 +930,11 @@ void DlgPrefMixer::slotBypassEqToggled(bool checked) {
     m_eqBypass = checked;
 
     // De/activate deck EQ comboboxes
-    for (const auto& box : qAsConst(m_deckEqEffectSelectors)) {
-        if (m_deckEqEffectSelectors.indexOf(box) == 0) {
-            box->setEnabled(!m_eqBypass);
+    for (const auto& pBox : qAsConst(m_deckEqEffectSelectors)) {
+        if (m_deckEqEffectSelectors.indexOf(pBox) == 0) {
+            pBox->setEnabled(!m_eqBypass);
         } else {
-            box->setEnabled(!m_eqBypass && !m_singleEq);
+            pBox->setEnabled(!m_eqBypass && !m_singleEq);
         }
     }
 }
@@ -988,8 +988,8 @@ void DlgPrefMixer::updateMainEQ() {
     // slotMainEqEffectChanged(mainEqIndex);
 
     // Load parameters from preferences and set sliders
-    for (QSlider* slider : qAsConst(m_mainEQSliders)) {
-        int paramIndex = slider->property("index").toInt();
+    for (QSlider* pSlider : qAsConst(m_mainEQSliders)) {
+        int paramIndex = pSlider->property("index").toInt();
         QString strValue = m_pConfig->getValueString(ConfigKey(kConfigGroup,
                 kMainEQParameterKey + QString::number(paramIndex + 1)));
 
@@ -998,7 +998,7 @@ void DlgPrefMixer::updateMainEQ() {
         if (!ok) {
             continue;
         }
-        slider->setValue(static_cast<int>(paramValue * 100));
+        pSlider->setValue(static_cast<int>(paramValue * 100));
         // label is updated in  slotMainEQParameterSliderChanged()
     }
 }
@@ -1034,18 +1034,18 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
         }
         int i = param->index();
 
-        QLabel* centerFreqLabel = new QLabel(this);
+        QLabel* pCenterFreqLabel = new QLabel(this);
         QString labelText = param->name();
-        centerFreqLabel->setText(labelText);
-        m_mainEQLabels.append(centerFreqLabel);
-        slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);
+        pCenterFreqLabel->setText(labelText);
+        m_mainEQLabels.append(pCenterFreqLabel);
+        slidersGridLayout->addWidget(pCenterFreqLabel, 0, i + 1, Qt::AlignCenter);
 
-        QSlider* slider = new QSlider(this);
-        setScrollSafeGuard(slider);
-        slider->setProperty("index", QVariant(i));
-        slider->setMinimumHeight(90);
-        slider->setMinimum(static_cast<int>(param->getMinimum() * 100));
-        slider->setMaximum(static_cast<int>(param->getMaximum() * 100));
+        QSlider* pSlider = new QSlider(this);
+        setScrollSafeGuard(pSlider);
+        pSlider->setProperty("index", QVariant(i));
+        pSlider->setMinimumHeight(90);
+        pSlider->setMinimum(static_cast<int>(param->getMinimum() * 100));
+        pSlider->setMaximum(static_cast<int>(param->getMaximum() * 100));
         // Make steps depend on range
         int step = 1;
         bool roundToInt = false;
@@ -1057,46 +1057,46 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
         } else if (range > 100) {
             step = 10;
         }
-        slider->setProperty("roundToInt", roundToInt);
-        slider->setSingleStep(step);
-        slider->setPageStep(step * 10);
-        slider->setValue(static_cast<int>(param->getDefault() * 100));
+        pSlider->setProperty("roundToInt", roundToInt);
+        pSlider->setSingleStep(step);
+        pSlider->setPageStep(step * 10);
+        pSlider->setValue(static_cast<int>(param->getDefault() * 100));
         // Set the index as a property because we need it in applyMainEqParameter
         // Ignore scroll events if slider is not focused.
         // See eventFilter() for details.
-        slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
-        m_mainEQSliders.append(slider);
+        slidersGridLayout->addWidget(pSlider, 1, i + 1, Qt::AlignCenter);
+        m_mainEQSliders.append(pSlider);
         // catch drag event
-        connect(slider,
+        connect(pSlider,
                 &QSlider::sliderMoved,
                 this,
                 &DlgPrefMixer::slotMainEQParameterSliderChanged);
         // catch scroll event
-        connect(slider,
+        connect(pSlider,
                 &QSlider::valueChanged,
                 this,
                 &DlgPrefMixer::slotMainEQParameterSliderChanged);
 
-        QLabel* valueLabel = new QLabel(this);
-        QString valueText = QString::number((double)slider->value() / 100);
-        valueLabel->setText(valueText);
+        QLabel* pValueLabel = new QLabel(this);
+        QString valueText = QString::number((double)pSlider->value() / 100);
+        pValueLabel->setText(valueText);
 
         // Use max required label width so column width doesn't change
         // when slider is moved.
         // Considers decimals only where we actually show them
         QFontMetrics metrics(font());
         QString maxValueString = QString::number(
-                roundToInt ? slider->maximum() : slider->maximum() - 0.01);
+                roundToInt ? pSlider->maximum() : pSlider->maximum() - 0.01);
         QString minValueString = QString::number(
-                slider->maximum() ? slider->minimum() : slider->minimum() + 0.01);
+                pSlider->maximum() ? pSlider->minimum() : pSlider->minimum() + 0.01);
         int optWidth = math_max(
                 metrics.size(0, maxValueString).width(),
                 metrics.size(0, minValueString).width());
-        valueLabel->setMinimumWidth(optWidth);
-        valueLabel->setAlignment(Qt::AlignCenter);
+        pValueLabel->setMinimumWidth(optWidth);
+        pValueLabel->setAlignment(Qt::AlignCenter);
 
-        m_mainEQValues.append(valueLabel);
-        slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
+        m_mainEQValues.append(pValueLabel);
+        slidersGridLayout->addWidget(pValueLabel, 2, i + 1, Qt::AlignCenter);
     }
 
     if (m_instantMainEq) {
@@ -1140,10 +1140,10 @@ void DlgPrefMixer::slotMainEQToDefault() {
         return;
     }
 
-    for (QSlider* slider : qAsConst(m_mainEQSliders)) {
-        int paramIndex = slider->property("index").toInt();
+    for (QSlider* pSlider : qAsConst(m_mainEQSliders)) {
+        int paramIndex = pSlider->property("index").toInt();
         auto pParam = pManifest->parameter(paramIndex);
-        slider->setValue(static_cast<int>(pParam->getDefault() * 100));
+        pSlider->setValue(static_cast<int>(pParam->getDefault() * 100));
     }
 }
 
@@ -1166,8 +1166,8 @@ void DlgPrefMixer::applyMainEQ() {
             ConfigValue(pManifest ? pManifest->uniqueId() : ""));
 
     // apply & store parameters
-    for (QSlider* slider : qAsConst(m_mainEQSliders)) {
-        int index = m_mainEQSliders.indexOf(slider);
+    for (QSlider* pSlider : qAsConst(m_mainEQSliders)) {
+        int index = m_mainEQSliders.indexOf(pSlider);
         applyMainEqParameter(index);
     }
 }
@@ -1178,11 +1178,11 @@ void DlgPrefMixer::applyMainEqParameter(int index) {
         return;
     }
 
-    QSlider* slider = m_mainEQSliders[index];
-    VERIFY_OR_DEBUG_ASSERT(slider) {
+    QSlider* pSlider = m_mainEQSliders[index];
+    VERIFY_OR_DEBUG_ASSERT(pSlider) {
         return;
     }
-    int paramIndex = slider->property("index").toInt();
+    int paramIndex = pSlider->property("index").toInt();
     auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
             EffectManifestParameter::ParameterType::Knob, paramIndex);
     VERIFY_OR_DEBUG_ASSERT(pParameterSlot && pParameterSlot->isLoaded()) {
@@ -1190,9 +1190,9 @@ void DlgPrefMixer::applyMainEqParameter(int index) {
     }
 
     // Calculate parameter value from relative slider position
-    int sValue = slider->value();
-    double paramValue = static_cast<double>(sValue - slider->minimum()) /
-            static_cast<double>(slider->maximum() - slider->minimum());
+    int sValue = pSlider->value();
+    double paramValue = static_cast<double>(sValue - pSlider->minimum()) /
+            static_cast<double>(pSlider->maximum() - pSlider->minimum());
     // Set the parameter
     pParameterSlot->setParameter(paramValue);
 
