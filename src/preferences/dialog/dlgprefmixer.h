@@ -44,9 +44,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotLoEqSliderChanged();
 
     // Update the Main EQ
-    void slotApplyMainEQParameter(int value);
+    void slotMainEQParameterSliderChanged(int value);
     void slotMainEQToDefault();
-    void setMainEQParameter(int i, double value);
     void slotMainEqEffectChanged(int effectIndex);
 
   private:
@@ -55,9 +54,13 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validateEQShelves();
-    void setUpMainEQ();
 
     void applySelectionsToDecks();
+
+    void setUpMainEQ();
+    void updateMainEQ();
+    void applyMainEQ();
+    void applyMainEqParameter(int index);
 
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
     const QList<EffectManifestPointer> getFilteredManifests(
