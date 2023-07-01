@@ -5,6 +5,7 @@
 #include "util/widgethelper.h"
 #include "waveform/vsyncthread.h"
 #include "widget/moc_wvumeterbase.cpp"
+#include "widget/openglwindow.h"
 #include "widget/wpixmapstore.h"
 
 #define DEFAULT_FALLTIME 20
@@ -15,8 +16,6 @@
 WVuMeterBase::WVuMeterBase(QWidget* parent)
         : WGLWidget(parent),
           WBaseWidget(this),
-          m_iPendingRenders(0),
-          m_bSwapNeeded(false),
           m_dParameter(0),
           m_dPeakParameter(0),
           m_dLastParameter(0),
@@ -28,6 +27,7 @@ WVuMeterBase::WVuMeterBase(QWidget* parent)
           m_iPeakHoldTime(0),
           m_iPeakFallTime(0),
           m_dPeakHoldCountdownMs(0) {
+    m_timer.start();
 }
 
 WVuMeterBase::~WVuMeterBase() {
@@ -120,6 +120,8 @@ void WVuMeterBase::onConnectedControlChanged(double dParameter, double dValue) {
         // A 0.0 value is very unlikely except when the VU Meter is disabled
         m_dPeakParameter = 0;
     }
+
+    updateState(m_timer.restart());
 }
 
 void WVuMeterBase::setPeak(double parameter) {
@@ -148,12 +150,12 @@ void WVuMeterBase::updateState(mixxx::Duration elapsed) {
     m_dPeakParameter = math_clamp(m_dPeakParameter, 0.0, 1.0);
 }
 
-void WVuMeterBase::paintEvent(QPaintEvent* e) {
-    Q_UNUSED(e);
-    // Force rerendering when render is called from the vsync thread, e.g. to
-    // git rid artifacts after hiding and showing the mixer or incomplete
-    // initial drawing. Use 2 passes, in case triple buffering is used.
-    m_iPendingRenders = 2;
+void WVuMeterBase::maybeUpdate() {
+    if (shouldRender() &&
+            (m_dParameter != m_dLastParameter ||
+                    m_dPeakParameter != m_dLastPeakParameter)) {
+        updateGL();
+    }
 }
 
 void WVuMeterBase::showEvent(QShowEvent* e) {
@@ -161,42 +163,7 @@ void WVuMeterBase::showEvent(QShowEvent* e) {
     WGLWidget::showEvent(e);
     // Find the base color recursively in parent widget.
     m_qBgColor = mixxx::widgethelper::findBaseColor(this);
-    // Force a rerender when exposed (needed when using QOpenGL)
-    // 2 pendings renders, in case we have triple buffering
-    m_iPendingRenders = 2;
-}
-
-void WVuMeterBase::render(VSyncThread* vSyncThread) {
-    if (!shouldRender()) {
-        return;
-    }
-
-    ScopedTimer t("WVuMeterBase::render");
-
-    updateState(vSyncThread->sinceLastSwap());
-
-    if (m_dParameter != m_dLastParameter || m_dPeakParameter != m_dLastPeakParameter) {
-        m_iPendingRenders = 2;
-    }
-
-    if (m_iPendingRenders == 0) {
-        return;
-    }
-
-    draw();
-
-    m_dLastParameter = m_dParameter;
-    m_dLastPeakParameter = m_dPeakParameter;
-    m_iPendingRenders--;
-    m_bSwapNeeded = true;
-}
-
-void WVuMeterBase::swap() {
-    if (!m_bSwapNeeded || !shouldRender()) {
-        return;
-    }
-    makeCurrentIfNeeded();
-    swapBuffers();
-    doneCurrent();
-    m_bSwapNeeded = false;
+    // Force an update when exposed
+    m_dLastParameter = -1.0;
+    m_dLastPeakParameter = 1.0;
 }

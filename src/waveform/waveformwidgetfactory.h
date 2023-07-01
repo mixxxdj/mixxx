@@ -138,12 +138,10 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     WaveformWidgetType::Type autoChooseWidgetType() const;
 
   signals:
-    void waveformUpdateTick();
+    void maybeUpdateVuMeters();
     void waveformMeasured(float frameRate, int droppedFrames);
     void renderSpinnies(VSyncThread*);
     void swapSpinnies();
-    void renderVuMeters(VSyncThread*);
-    void swapVuMeters();
 
   public slots:
     void slotSkinLoaded();

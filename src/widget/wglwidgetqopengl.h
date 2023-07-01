@@ -29,6 +29,8 @@ class WGLWidget : public QWidget {
 
     void swapBuffers();
 
+    void updateGL();
+
     // called (indirectly) by WaveformWidgetFactory
     virtual void paintGL();
     // called by OpenGLWindow

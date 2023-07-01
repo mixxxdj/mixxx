@@ -7,7 +7,7 @@ WVuMeter::WVuMeter(QWidget* pParent)
         : WVuMeterBase(pParent) {
 }
 
-void WVuMeter::draw() {
+void WVuMeter::paintGL() {
     QPainter p(paintDevice());
     // fill the background, in case the image contains transparency
     p.fillRect(rect(), m_qBgColor);

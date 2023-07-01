@@ -13,14 +13,6 @@ WVuMeterGLSL::~WVuMeterGLSL() {
     cleanupGL();
 }
 
-void WVuMeterGLSL::draw() {
-    if (shouldRender()) {
-        makeCurrentIfNeeded();
-        paintGL();
-        doneCurrent();
-    }
-}
-
 void WVuMeterGLSL::initializeGL() {
     m_pTextureBack.reset(createTexture(m_pPixmapBack));
     m_pTextureVu.reset(createTexture(m_pPixmapVu));
@@ -137,6 +129,9 @@ void WVuMeterGLSL::paintGL() {
     m_textureShader.disableAttributeArray(positionLocation);
     m_textureShader.disableAttributeArray(texcoordLocation);
     m_textureShader.release();
+
+    m_dLastParameter = m_dParameter;
+    m_dLastPeakParameter = m_dPeakParameter;
 }
 
 void WVuMeterGLSL::cleanupGL() {

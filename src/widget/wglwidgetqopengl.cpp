@@ -74,6 +74,12 @@ void WGLWidget::doneCurrent() {
     }
 }
 
+void WGLWidget::updateGL() {
+    if (m_pOpenGLWindow) {
+        m_pOpenGLWindow->update();
+    }
+}
+
 void WGLWidget::paintGL() {
     // to be implemented in derived widgets if needed
 }

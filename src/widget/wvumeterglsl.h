@@ -19,7 +19,6 @@ class WVuMeterGLSL : public WVuMeterBase {
     std::unique_ptr<QOpenGLTexture> m_pTextureVu;
     mixxx::TextureShader m_textureShader;
 
-    void draw() override;
     void initializeGL() override;
     void cleanupGL();
     void paintGL() override;

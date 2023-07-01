@@ -7,5 +7,5 @@ class WVuMeter : public WVuMeterBase {
   public:
     explicit WVuMeter(QWidget* parent = nullptr);
 
-    void draw() override;
+    void paintGL() override;
 };

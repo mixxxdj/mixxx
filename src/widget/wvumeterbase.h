@@ -2,6 +2,7 @@
 
 #include "skin/legacy/skincontext.h"
 #include "util/duration.h"
+#include "util/performancetimer.h"
 #include "widget/wglwidget.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
@@ -27,26 +28,16 @@ class WVuMeterBase : public WGLWidget, public WBaseWidget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
   public slots:
-    void render(VSyncThread* vSyncThread);
-    void swap();
+    void maybeUpdate();
 
   protected slots:
     void updateState(mixxx::Duration elapsed);
 
   private:
-    virtual void draw() = 0;
-
-    void paintEvent(QPaintEvent* /*unused*/) override;
     void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
-    void renderQPainter();
 
   protected:
-    // To make sure we render at least N times even when we have no signal,
-    // for example after showEvent()
-    int m_iPendingRenders;
-    // To indicate that we rendered so we need to swap
-    bool m_bSwapNeeded;
     // Current parameter and peak parameter.
     double m_dParameter;
     double m_dPeakParameter;
@@ -76,4 +67,5 @@ class WVuMeterBase : public WGLWidget, public WBaseWidget {
     double m_dPeakHoldCountdownMs;
 
     QColor m_qBgColor;
+    PerformanceTimer m_timer;
 };
