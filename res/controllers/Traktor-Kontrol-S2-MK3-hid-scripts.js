@@ -1,11 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // JSHint configuration                                                          //
 ///////////////////////////////////////////////////////////////////////////////////
-/* global engine                                                                 */
-/* global script                                                                 */
-/* global HIDDebug                                                               */
-/* global HIDPacket                                                              */
-/* global HIDController                                                          */
 /* jshint -W016                                                                  */
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
@@ -683,80 +678,80 @@ TraktorS2MK3.fxHandler = function(field) {
         return;
     }
 
-    const availableGroups = [ "[Channel1]", "[Channel2]" ];
+    const availableGroups = ["[Channel1]", "[Channel2]"];
     const fxButtonCount = 4;
     let targetGroups = [];
-    let fxNumber = parseInt(field.id[field.id.length - 1]);
+    const fxNumber = parseInt(field.id[field.id.length - 1]);
     let noShift = false;
 
     // Target decks whose shift button is pressed.
-    for (let group of availableGroups) {
-        if (TraktorS2MK3.shiftPressed[group]) targetGroups.push(group);
+    for (const group of availableGroups) {
+        if (TraktorS2MK3.shiftPressed[group]) { targetGroups.push(group); }
     }
 
     // If no shift button was pressed fall back to target all decks.
     if (targetGroups.length === 0) {
-      targetGroups = availableGroups;
-      noShift = true;
+        targetGroups = availableGroups;
+        noShift = true;
     }
 
-    let fxToApply = {};
-    let activeFx = {};
+    const fxToApply = {};
+    const activeFx = {};
     // Detect which fx should be enabled
-    for (let group of targetGroups) {
+    for (const group of targetGroups) {
         activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset");
         if (activeFx[group] === fxNumber) {
-          // Pressing again the fx button
-          fxToApply[group] = fxNumber + fxButtonCount;
+            // Pressing again the fx button
+            fxToApply[group] = fxNumber + fxButtonCount;
         } else if (activeFx[group] === fxNumber + fxButtonCount) {
-          // Already on secondary fx so reseting back to fxNumber
-          fxToApply[group] = fxNumber;
+            // Already on secondary fx so reseting back to fxNumber
+            fxToApply[group] = fxNumber;
         } else {
-          // First press of a different fx button
-          fxToApply[group] = fxNumber;
+            // First press of a different fx button
+            fxToApply[group] = fxNumber;
         }
     }
 
     /* When we target both decks - No shift pressed - we want *
      * to reset fx to same value for both */
     if (targetGroups.length === 2 && noShift) {
-      const [deck1, deck2] = targetGroups;
-      const activeFxDeck1 = activeFx[deck1];
-      const activeFxDeck2 = activeFx[deck2];
-      const fxToApplyDeck1 = fxToApply[deck1];
-      const fxToApplyDeck2 = fxToApply[deck2];
+        const [deck1, deck2] = targetGroups;
+        const activeFxDeck1 = activeFx[deck1];
+        const activeFxDeck2 = activeFx[deck2];
+        const fxToApplyDeck1 = fxToApply[deck1];
+        const fxToApplyDeck2 = fxToApply[deck2];
 
-      // If any of deck has already fx enabled but different value to apply
-      if ((activeFxDeck1 === fxNumber || activeFxDeck2 === fxNumber) && fxToApplyDeck1 !== fxToApplyDeck2) {
+        // If any of deck has already fx enabled but different value to apply
+        if ((activeFxDeck1 === fxNumber || activeFxDeck2 === fxNumber) && fxToApplyDeck1 !== fxToApplyDeck2) {
         // find lower value to reset both to the same one
-        const fxToApplyAll = Math.min(fxToApplyDeck1, fxToApplyDeck2);
-        fxToApply[deck1] = fxToApplyAll;
-        fxToApply[deck2] = fxToApplyAll;
-      }
+            const fxToApplyAll = Math.min(fxToApplyDeck1, fxToApplyDeck2);
+            fxToApply[deck1] = fxToApplyAll;
+            fxToApply[deck2] = fxToApplyAll;
+        }
     }
 
     // Now apply the new fx value
-    for (let group of targetGroups) {
-      engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxToApply[group]);
+    for (const group of targetGroups) {
+        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxToApply[group]);
     }
 };
 
 TraktorS2MK3.fxOutputHandler = function() {
     const fxButtonCount = 4;
-    const availableGroups = [ "[Channel1]", "[Channel2]" ];
+    const availableGroups = ["[Channel1]", "[Channel2]"];
 
-    let activeFx = {};
-    for (let group of availableGroups) {
+    const activeFx = {};
+    for (const group of availableGroups) {
         activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset");
         // We want to lit the proper fx button even when we have applied a higher fxNumber
-        if (activeFx[group] > fxButtonCount) activeFx[group] = activeFx[group] - fxButtonCount
+        if (activeFx[group] > fxButtonCount) { activeFx[group] = activeFx[group] - fxButtonCount; }
     }
 
     /* There is no way on the controller to indicate which deck the effect applies *
      * to, but keeping both lit indicates that different effects are in use.       */
     for (let fxButton = 1; fxButton <= fxButtonCount; ++fxButton) {
         let active = false;
-        for (let group of availableGroups) {
+        for (const group of availableGroups) {
             active = active || activeFx[group] === fxButton;
         }
         TraktorS2MK3.outputHandler(active, "[ChannelX]", "fxButton" + fxButton);
@@ -915,7 +910,7 @@ TraktorS2MK3.registerOutputPackets = function() {
     }
 
     this.fxCallbacks = [];
-    for (let group of [ "[Channel1]", "[Channel2]" ]) {
+    for (const group of ["[Channel1]", "[Channel2]"]) {
         this.fxCallbacks.push(engine.makeConnection(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", this.fxOutputHandler));
     }
 
@@ -1099,7 +1094,7 @@ TraktorS2MK3.lightDeck = function(switchOff) {
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton3", softLight, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton4", softLight, false);
     // Set FX button LED state according to active quick effects on start-up
-    if (!switchOff) TraktorS2MK3.fxOutputHandler();
+    if (!switchOff) { TraktorS2MK3.fxOutputHandler(); }
 
     TraktorS2MK3.controller.setOutput("[Channel1]", "reverse", softLight, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "reverse", softLight, false);
