@@ -1,6 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // JSHint configuration                                                          //
 ///////////////////////////////////////////////////////////////////////////////////
+/* global engine                                                                 */
+/* global script                                                                 */
+/* global HIDDebug                                                               */
+/* global HIDPacket                                                              */
+/* global HIDController                                                          */
 /* jshint -W016                                                                  */
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
@@ -674,15 +679,41 @@ TraktorS2MK3.fxHandler = function(field) {
         return;
     }
 
-    const fxNumber = parseInt(field.id[field.id.length - 1]);
-    const group = "[EffectRack1_EffectUnit" + fxNumber + "]";
+    const availableGroups = [ "[Channel1]", "[Channel2]" ];
+    let targetGroups = [];
+    let fxNumber = parseInt(field.id[field.id.length - 1]);
 
-    // Toggle effect unit
-    TraktorS2MK3.fxButtonState[fxNumber] = !TraktorS2MK3.fxButtonState[fxNumber];
+    // Target decks whose shift button is pressed.
+    for (let group of availableGroups) {
+        if (TraktorS2MK3.shiftPressed[group]) targetGroups.push(group);
+    }
 
-    engine.setValue(group, "group_[Channel1]_enable", TraktorS2MK3.fxButtonState[fxNumber]);
-    engine.setValue(group, "group_[Channel2]_enable", TraktorS2MK3.fxButtonState[fxNumber]);
-    TraktorS2MK3.outputHandler(TraktorS2MK3.fxButtonState[fxNumber], field.group, "fxButton" + fxNumber);
+    // If no shift button was pressed fall back to target all decks.
+    if (targetGroups.length === 0) targetGroups = availableGroups;
+
+    for (let group of targetGroups) {
+        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxNumber);
+    }
+};
+
+TraktorS2MK3.fxOutputHandler = function() {
+    const fxButtonCount = 4;
+    const availableGroups = [ "[Channel1]", "[Channel2]" ];
+
+    let activeFx = {};
+    for (let group of availableGroups) {
+        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset");
+    }
+
+    /* There is no way on the controller to indicate which deck the effect applies *
+     * to, but keeping both lit indicates that different effects are in use.       */
+    for (let fxButton = 1; fxButton <= fxButtonCount; ++fxButton) {
+        let active = false;
+        for (let group of availableGroups) {
+            active = active || activeFx[group] === fxButton;
+        }
+        TraktorS2MK3.outputHandler(active, "[ChannelX]", "fxButton" + fxButton);
+    }
 };
 
 TraktorS2MK3.reverseHandler = function(field) {
@@ -834,6 +865,11 @@ TraktorS2MK3.registerOutputPackets = function() {
     for (let i = 1; i <= 16; ++i) {
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", this.samplesOutputHandler));
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", this.samplesOutputHandler));
+    }
+
+    this.fxCallbacks = [];
+    for (let group of [ "[Channel1]", "[Channel2]" ]) {
+        this.fxCallbacks.push(engine.makeConnection(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", this.fxOutputHandler));
     }
 
     TraktorS2MK3.lightDeck(false);
@@ -1015,6 +1051,8 @@ TraktorS2MK3.lightDeck = function(switchOff) {
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton2", softLight, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton3", softLight, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton4", softLight, false);
+    // Set FX button LED state according to active quick effects on start-up
+    if (!switchOff) TraktorS2MK3.fxOutputHandler();
 
     TraktorS2MK3.controller.setOutput("[Channel1]", "reverse", softLight, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "reverse", softLight, false);
