@@ -675,13 +675,19 @@ TraktorS2MK3.wheelDeltas = function(deckNumber, value) {
 };
 
 TraktorS2MK3.fxHandler = function(field) {
+    /* We support 8 effects in total by having 2 effects per fx button. *
+     * First press of the button will load the preset at the index of the quick effect preset list *
+     * Second press will load the preset index + 4 *
+     * Arrange your quick effect preset list from 1 to 8 like this: 1/5, 2/6, 3/7, 4/8 */
     if (field.value === 0) {
         return;
     }
 
     const availableGroups = [ "[Channel1]", "[Channel2]" ];
+    const fxButtonCount = 4;
     let targetGroups = [];
     let fxNumber = parseInt(field.id[field.id.length - 1]);
+    let noShift = false;
 
     // Target decks whose shift button is pressed.
     for (let group of availableGroups) {
@@ -689,10 +695,49 @@ TraktorS2MK3.fxHandler = function(field) {
     }
 
     // If no shift button was pressed fall back to target all decks.
-    if (targetGroups.length === 0) targetGroups = availableGroups;
+    if (targetGroups.length === 0) {
+      targetGroups = availableGroups;
+      noShift = true;
+    }
 
+    let fxToApply = {};
+    let activeFx = {};
+    // Detect which fx should be enabled
     for (let group of targetGroups) {
-        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxNumber);
+        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset");
+        if (activeFx[group] === fxNumber) {
+          // Pressing again the fx button
+          fxToApply[group] = fxNumber + fxButtonCount;
+        } else if (activeFx[group] === fxNumber + fxButtonCount) {
+          // Already on secondary fx so reseting back to fxNumber
+          fxToApply[group] = fxNumber;
+        } else {
+          // First press of a different fx button
+          fxToApply[group] = fxNumber;
+        }
+    }
+
+    /* When we target both decks - No shift pressed - we want *
+     * to reset fx to same value for both */
+    if (targetGroups.length === 2 && noShift) {
+      const [deck1, deck2] = targetGroups;
+      const activeFxDeck1 = activeFx[deck1];
+      const activeFxDeck2 = activeFx[deck2];
+      const fxToApplyDeck1 = fxToApply[deck1];
+      const fxToApplyDeck2 = fxToApply[deck2];
+
+      // If any of deck has already fx enabled but different value to apply
+      if ((activeFxDeck1 === fxNumber || activeFxDeck2 === fxNumber) && fxToApplyDeck1 !== fxToApplyDeck2) {
+        // find lower value to reset both to the same one
+        const fxToApplyAll = Math.min(fxToApplyDeck1, fxToApplyDeck2);
+        fxToApply[deck1] = fxToApplyAll;
+        fxToApply[deck2] = fxToApplyAll;
+      }
+    }
+
+    // Now apply the new fx value
+    for (let group of targetGroups) {
+      engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxToApply[group]);
     }
 };
 
@@ -703,6 +748,8 @@ TraktorS2MK3.fxOutputHandler = function() {
     let activeFx = {};
     for (let group of availableGroups) {
         activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset");
+        // We want to lit the proper fx button even when we have applied a higher fxNumber
+        if (activeFx[group] > fxButtonCount) activeFx[group] = activeFx[group] - fxButtonCount
     }
 
     /* There is no way on the controller to indicate which deck the effect applies *
