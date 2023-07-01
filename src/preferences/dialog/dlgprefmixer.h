@@ -85,8 +85,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     bool m_xFaderReverse;
 
-    ControlProxy m_COLoFreq;
-    ControlProxy m_COHiFreq;
+    PollingControlProxy m_COLoFreq;
+    PollingControlProxy m_COHiFreq;
     double m_lowEqFreq, m_highEqFreq;
 
     EffectChainPresetManagerPointer m_pChainPresetManager;
