@@ -71,7 +71,6 @@ DlgPrefMixer::DlgPrefMixer(
           m_eqAutoReset(false),
           m_gainAutoReset(false),
           m_eqBypass(false),
-          m_instantEqShelves(false),
           m_instantMainEq(false),
           m_initializing(true) {
     setupUi(this);
@@ -124,11 +123,6 @@ DlgPrefMixer::DlgPrefMixer(
             &QCheckBox::toggled,
             this,
             &DlgPrefMixer::slotSingleEqToggled);
-
-    connect(CheckBoxInstantEQShelves,
-            &QCheckBox::toggled,
-            this,
-            &DlgPrefMixer::slotInstantEQShelvesToggled);
 
     connect(CheckBoxInstantMainEQ,
             &QCheckBox::toggled,
@@ -408,13 +402,6 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
     }
 }
 
-void DlgPrefMixer::slotInstantEQShelvesToggled(bool checked) {
-    m_instantEqShelves = checked;
-    if (checked) {
-        applyEQShelves();
-    }
-}
-
 void DlgPrefMixer::slotInstantMainEQToggled(bool checked) {
     m_instantMainEq = checked;
     if (checked) {
@@ -464,7 +451,6 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxEqAutoReset->setChecked(false);
     CheckBoxGainAutoReset->setChecked(false);
 
-    CheckBoxInstantEQShelves->setChecked(false);
     setDefaultShelves();
     slotMainEQToDefault();
     CheckBoxInstantMainEQ->setChecked(false);
@@ -602,9 +588,7 @@ void DlgPrefMixer::slotHiEqSliderChanged() {
         TextHiEQ->setText(QString("%1 kHz").arg((int)m_highEqFreq / 1000.));
     }
 
-    if (m_instantEqShelves) {
-        applyEQShelves();
-    }
+    m_COHiFreq.set(m_highEqFreq);
 }
 
 void DlgPrefMixer::slotLoEqSliderChanged() {
@@ -621,9 +605,7 @@ void DlgPrefMixer::slotLoEqSliderChanged() {
         TextLoEQ->setText(QString("%1 kHz").arg((int)m_lowEqFreq / 1000.));
     }
 
-    if (m_instantEqShelves) {
-        applyEQShelves();
-    }
+    m_COLoFreq.set(m_lowEqFreq);
 }
 
 void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
@@ -712,8 +694,6 @@ void DlgPrefMixer::applyEQShelves() {
         return;
     }
 
-    m_COLoFreq.set(m_lowEqFreq);
-    m_COHiFreq.set(m_highEqFreq);
     m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequency"),
             ConfigValue(QString::number(static_cast<int>(m_highEqFreq))));
     m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"),
@@ -797,8 +777,6 @@ void DlgPrefMixer::slotUpdate() {
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
 
-    CheckBoxInstantEQShelves->setChecked(m_instantEqShelves);
-
     // Precise takes precedence over coarse.
     lowEqFreq = lowEqCourse.isEmpty() ? lowEqFreq : lowEqCourse.toDouble();
     lowEqFreq = lowEqPrecise.isEmpty() ? lowEqFreq : lowEqPrecise.toDouble();
@@ -807,8 +785,6 @@ void DlgPrefMixer::slotUpdate() {
 
     if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
         setDefaultShelves();
-        // apply instantly so WYYSIWYG
-        applyEQShelves();
     } else {
         SliderHiEQ->setValue(
                 getSliderPosition(highEqFreq,
