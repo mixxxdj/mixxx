@@ -61,6 +61,8 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefAutoDJ::slotSetRandomQueueMin);
+
+    setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefAutoDJ::~DlgPrefAutoDJ() {
