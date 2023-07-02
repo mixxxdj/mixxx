@@ -143,7 +143,7 @@ class DeckClass {
         hidReport.addOutput(this.channel, name, config, "B");
     }
     linkLed(name, callback) {
-        this.controller.linkOutput(this.channel, name, this.channel, name, callback.bind(this));
+        engine.makeConnection(this.channel, name, callback.bind(this));
     }
     volume(field) {
         setFaderParameter(this.channel, "volume", field.value, this.calibration.volume);
