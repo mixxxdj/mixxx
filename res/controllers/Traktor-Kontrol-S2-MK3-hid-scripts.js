@@ -699,7 +699,7 @@ TraktorS2MK3.fxHandler = function(field) {
     const activeFx = {};
     // Detect which fx should be enabled
     for (const group of targetGroups) {
-        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset");
+        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset") - 1;
         if (activeFx[group] === fxNumber) {
             // Pressing again the fx button
             fxToApply[group] = fxNumber + fxButtonCount;
@@ -732,7 +732,7 @@ TraktorS2MK3.fxHandler = function(field) {
 
     // Now apply the new fx value
     for (const group of targetGroups) {
-        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxToApply[group]);
+        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxToApply[group] + 1);
     }
 };
 
@@ -742,7 +742,7 @@ TraktorS2MK3.fxOutputHandler = function() {
 
     const activeFx = {};
     for (const group of availableGroups) {
-        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset");
+        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset") - 1;
         // We want to lit the proper fx button even when we have applied a higher fxNumber
         if (activeFx[group] > fxButtonCount) { activeFx[group] = activeFx[group] - fxButtonCount; }
     }
