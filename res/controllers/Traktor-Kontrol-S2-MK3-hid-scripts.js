@@ -704,7 +704,7 @@ TraktorS2MK3.fxHandler = function(field) {
             // Pressing again the fx button
             fxToApply[group] = fxNumber + fxButtonCount;
         } else if (activeFx[group] === fxNumber + fxButtonCount) {
-            // Already on secondary fx so reseting back to fxNumber
+            // Already on secondary fx so resetting back to fxNumber
             fxToApply[group] = fxNumber;
         } else {
             // First press of a different fx button
