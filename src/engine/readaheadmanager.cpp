@@ -155,11 +155,32 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
             }
         }
 
-        // do crossfade from the current buffer into the new loop beginning
-        SampleUtil::linearCrossfadeBuffersOut(
-                pOutput,
-                m_pCrossFadeBuffer,
-                samples_from_reader);
+        qDebug() << "loop_read_position"
+                 << "loop_read_position";
+
+        if (crossFadeSamples) {
+            const auto readResult = m_pReader->read(loop_read_position +
+                            (in_reverse ? crossFadeStart : -crossFadeStart),
+                    crossFadeSamples,
+                    in_reverse,
+                    m_pCrossFadeBuffer);
+            if (readResult == CachingReader::ReadResult::UNAVAILABLE) {
+                qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
+                // Cache miss - no samples written
+                SampleUtil::clear(m_pCrossFadeBuffer, samples_from_reader);
+                // Set the cache miss flag to decide when to apply ramping
+                // after the following read attempts.
+                m_cacheMissHappened = true;
+            }
+
+            // do crossfade from the current buffer into the new loop beginning
+            if (samples_from_reader != 0) { // avoid division by zero
+                SampleUtil::linearCrossfadeBuffersOut(
+                        pOutput + crossFadeStart,
+                        m_pCrossFadeBuffer,
+                        crossFadeSamples);
+            }
+        }
     }
 
     //qDebug() << "read" << m_currentPosition << samples_read;
