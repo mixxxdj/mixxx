@@ -41,8 +41,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotHiEqSliderChanged();
     void slotLoEqSliderChanged();
 
-    void slotInstantMainEQToggled(bool checked);
-
     // Update the Main EQ
     void slotMainEQParameterSliderChanged(int value);
     void slotMainEQToDefault();
@@ -63,8 +61,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     void setUpMainEQ();
     void updateMainEQ();
-    void applyMainEQ();
-    void applyMainEqParameter(int index);
+    void storeMainEQ();
 
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
     const QList<EffectManifestPointer> getDeckEqManifests() const;
@@ -108,7 +105,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqAutoReset;
     bool m_gainAutoReset;
     bool m_eqBypass;
-    bool m_instantMainEq;
 
     bool m_initializing;
 

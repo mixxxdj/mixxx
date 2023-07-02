@@ -572,17 +572,6 @@
      <layout class="QVBoxLayout" name="verticalLayout_3">
 
       <item>
-       <widget class="QCheckBox" name="CheckBoxInstantMainEQ">
-        <property name="toolTip">
-         <string>EQ parameters are applied instantly without clicking Apply</string>
-        </property>
-        <property name="text">
-         <string>Apply EQ parameters instantly</string>
-        </property>
-       </widget>
-      </item>
-
-      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QComboBox" name="comboBoxMainEq"/>
@@ -664,7 +653,6 @@
   <tabstop>CheckBoxGainAutoReset</tabstop>
   <tabstop>SliderHiEQ</tabstop>
   <tabstop>SliderLoEQ</tabstop>
-  <tabstop>CheckBoxInstantMainEQ</tabstop>
   <tabstop>comboBoxMainEq</tabstop>
   <tabstop>pbResetMainEq</tabstop>
   <!-- TODO(ronso0)
