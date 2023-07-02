@@ -155,9 +155,6 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
             }
         }
 
-        qDebug() << "loop_read_position"
-                 << "loop_read_position";
-
         if (crossFadeSamples) {
             const auto readResult = m_pReader->read(loop_read_position +
                             (in_reverse ? crossFadeStart : -crossFadeStart),
