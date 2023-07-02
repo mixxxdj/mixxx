@@ -2868,8 +2868,6 @@ WEffectSelector::item:selected,
     color: #fff;
   }
   /* remove OS focus indicator from some buttons */
-  WLibrary QCheckBox:focus,
-  #LibraryBPMButton::item:selected,
   WCueMenuPopup QPushButton:focus {
     outline: none;
   }
