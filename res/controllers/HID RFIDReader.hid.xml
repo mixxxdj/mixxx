@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3+">
+    <info>
+        <name>RFID Reader</name>
+        <author>Basti Kuhz</author>
+        <description>HID example for RFID Reader</description>
+        <devices>
+            <product protocol="hid" vendor_id="ffff" product_id="0035" usage_page="0001" usage="0006" interface_number="0" />
+        </devices>
+    </info>
+    <controller id="RFIDReader">
+        <scriptfiles>
+            <file filename="common-hid-packet-parser.js" functionprefix=""/>
+            <file filename="common-hid-devices.js" functionprefix=""/>
+            <file filename="HID-RFIDReader.js" functionprefix="RFIDReader"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
