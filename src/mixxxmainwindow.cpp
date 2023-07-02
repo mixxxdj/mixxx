@@ -378,11 +378,6 @@ void MixxxMainWindow::initialize() {
     // Show the menubar after the launch image is replaced by the skin widget,
     // otherwise it would shift the launch image shortly before the skin is visible.
     m_pMenuBar->show();
-#ifndef __APPLE__
-    // If we went fullscreen earlier and the desktop features a global menu
-    // this will signal the menu to move into the window and hide itself
-    emit fullScreenChanged(isFullScreen());
-#endif
 
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
