@@ -1,7 +1,7 @@
 /****************************************************************/
 /*      Traktor Kontrol S2 MK1 HID controller script            */
-/*      Copyright (C) 2021, leifhelm                            */
-/*      Based on:                                               */
+/*      Copyright (C) 2023, leifhelm                            */
+/*      Initially Based on:                                     */
 /*      Traktor Kontrol S2 MK2 HID controller script v1.00      */
 /*      Copyright (C) 2020, Be <be@mixxx.org>                   */
 /*      Copyright (C) 2017, z411 <z411@omaera.org>              */
