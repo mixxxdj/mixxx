@@ -195,6 +195,8 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotLoopDouble);
 
     m_pPlayButton = ControlObject::getControl(ConfigKey(group, "play"));
+
+    m_pRepeatButton = ControlObject::getControl(ConfigKey(group, "repeat"));
 }
 
 LoopingControl::~LoopingControl() {
@@ -443,7 +445,24 @@ double LoopingControl::nextTrigger(bool reverse,
             }
         }
     }
+
+    // Return trigger if repeat is enabled
+    if (m_pRepeatButton->toBool()) {
+        if (reverse) {
+            *pTarget = getTrackSamples();
+            return 0.0;
+        } else {
+            *pTarget = 0.0;
+            return getTrackSamples();
+        }
+    }
+
     return kNoTrigger;
+}
+
+double LoopingControl::getTrackSamples() {
+    SampleOfTrack trackSamples = getSampleOfTrack();
+    return trackSamples.total;
 }
 
 void LoopingControl::hintReader(HintVector* pHintList) {

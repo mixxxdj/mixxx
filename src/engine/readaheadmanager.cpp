@@ -47,7 +47,8 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     //qDebug() << "start" << start_sample << requested_samples;
 
     double target;
-    // A loop will only limit the amount we can read in one shot.
+    // A loop (beat loop or track on repeat) will only limit the amount we
+    // can read in one shot.
     const double loop_trigger = m_pLoopingControl->nextTrigger(
             in_reverse, m_currentPosition, &target);
 
@@ -115,7 +116,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     if (reachedTrigger) {
         DEBUG_ASSERT(target != kNoTrigger);
 
-        // Jump to other end of loop.
+        // Jump to other end of loop or track.
         m_currentPosition = target;
         if (preloop_samples > 0) {
             // we are up to one frame ahead of the loop trigger
@@ -140,15 +141,18 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         int loop_read_position = SampleUtil::roundPlayPosToFrameStart(
                 m_currentPosition + (in_reverse ? preloop_samples : -preloop_samples), kNumChannels);
 
-        const auto readResult = m_pReader->read(
-                loop_read_position, samples_from_reader, in_reverse, m_pCrossFadeBuffer);
-        if (readResult == CachingReader::ReadResult::UNAVAILABLE) {
-            qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
-            // Cache miss - no samples written
-            SampleUtil::clear(m_pCrossFadeBuffer, samples_from_reader);
-            // Set the cache miss flag to decide when to apply ramping
-            // after the following read attempts.
-            m_cacheMissHappened = true;
+        int crossFadeStart = 0;
+        int crossFadeSamples = samples_from_reader;
+        if (loop_read_position < 0) {
+            // we start in the pre-role without suitable samples for crossfading
+            crossFadeStart = -loop_read_position;
+            crossFadeSamples -= crossFadeStart;
+        } else {
+            int trackSamples = static_cast<int>(m_pLoopingControl->getTrackSamples());
+            if (loop_read_position > trackSamples) {
+                crossFadeStart = loop_read_position - trackSamples;
+                crossFadeSamples -= crossFadeStart;
+            }
         }
 
         // do crossfade from the current buffer into the new loop beginning

@@ -52,6 +52,8 @@ class LoopingControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
+    double getTrackSamples();
+
   public slots:
     void slotLoopIn(double pressed);
     void slotLoopInGoto(double);
@@ -128,6 +130,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
     RateControl* m_pRateControl;
     ControlObject* m_pPlayButton;
+    ControlObject* m_pRepeatButton;
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
