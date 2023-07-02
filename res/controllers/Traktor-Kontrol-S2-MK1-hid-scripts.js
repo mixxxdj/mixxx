@@ -778,7 +778,7 @@ class EffectUnit {
         const showParameters = engine.getValue(this.group, "show_parameters");
         if (field.value > 0) {
             if (this.parent.decks[this.number -1].shiftPressed) {
-                engine.setValue(this.group, "load_preset", 1);
+                engine.setValue(this.group, "loaded_chain_preset", 1);
                 return;
             }
             this.effectFocusLongPressTimer = engine.beginTimer(longPressTimeoutMilliseconds, function() {
@@ -903,7 +903,7 @@ class EffectParameter {
 
         if (field.value > 0) {
             if (this.effectUnit.shiftPressed()) {
-                engine.setValue(this.group, "load_preset", this.number+1);
+                engine.setValue(this.group, "loaded_chain_preset", this.number+1);
             } else {
                 if (this.effectUnit.effectFocusChooseModeActive) {
                     if (focusedEffect === this.number) {
