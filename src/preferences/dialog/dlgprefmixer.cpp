@@ -569,9 +569,9 @@ void DlgPrefMixer::slotHiEqSliderChanged() {
             SliderHiEQ->maximum());
     validateEQShelves();
     if (m_highEqFreq < 1000) {
-        TextHiEQ->setText(QString("%1 Hz").arg((int)m_highEqFreq));
+        TextHiEQ->setText(QString("%1 Hz").arg(std::round(m_highEqFreq)));
     } else {
-        TextHiEQ->setText(QString("%1 kHz").arg((int)m_highEqFreq / 1000.));
+        TextHiEQ->setText(QString("%1 kHz").arg(std::round(m_highEqFreq) / 1000.));
     }
 
     m_COHiFreq.set(m_highEqFreq);
@@ -586,9 +586,9 @@ void DlgPrefMixer::slotLoEqSliderChanged() {
             SliderLoEQ->maximum());
     validateEQShelves();
     if (m_lowEqFreq < 1000) {
-        TextLoEQ->setText(QString("%1 Hz").arg((int)m_lowEqFreq));
+        TextLoEQ->setText(QString("%1 Hz").arg(std::round(m_lowEqFreq)));
     } else {
-        TextLoEQ->setText(QString("%1 kHz").arg((int)m_lowEqFreq / 1000.));
+        TextLoEQ->setText(QString("%1 kHz").arg(std::round(m_lowEqFreq) / 1000.));
     }
 
     m_COLoFreq.set(m_lowEqFreq);
@@ -681,22 +681,22 @@ void DlgPrefMixer::slotApply() {
     applyDeckEQs();
     applyQuickEffects();
 
-    applyEQShelves();
+    storeEqShelves();
 
     storeMainEQ();
 }
 
-void DlgPrefMixer::applyEQShelves() {
+void DlgPrefMixer::storeEqShelves() {
     if (m_initializing) {
         return;
     }
 
     m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequency"),
-            ConfigValue(QString::number(static_cast<int>(m_highEqFreq))));
+            ConfigValue(QString::number(static_cast<int>(std::round(m_highEqFreq)))));
     m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"),
             ConfigValue(QString::number(m_highEqFreq, 'f')));
     m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequency"),
-            ConfigValue(QString::number(static_cast<int>(m_lowEqFreq))));
+            ConfigValue(QString::number(static_cast<int>(std::round(m_lowEqFreq)))));
     m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"),
             ConfigValue(QString::number(m_lowEqFreq, 'f')));
 }
@@ -765,19 +765,19 @@ void DlgPrefMixer::slotUpdate() {
     slotBypassEqToggled(CheckBoxBypass->isChecked());
 
     // EQ shelves //////////////////////////////////////////////////////////////
-    QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "HiEQFrequency"));
+    QString highEqCoarse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "HiEQFrequency"));
     QString highEqPrecise = m_pConfig->getValueString(
             ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"));
-    QString lowEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "LoEQFrequency"));
+    QString lowEqCoarse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "LoEQFrequency"));
     QString lowEqPrecise = m_pConfig->getValueString(
             ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"));
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
 
     // Precise takes precedence over coarse.
-    lowEqFreq = lowEqCourse.isEmpty() ? lowEqFreq : lowEqCourse.toDouble();
+    lowEqFreq = lowEqCoarse.isEmpty() ? lowEqFreq : lowEqCoarse.toDouble();
     lowEqFreq = lowEqPrecise.isEmpty() ? lowEqFreq : lowEqPrecise.toDouble();
-    highEqFreq = highEqCourse.isEmpty() ? highEqFreq : highEqCourse.toDouble();
+    highEqFreq = highEqCoarse.isEmpty() ? highEqFreq : highEqCoarse.toDouble();
     highEqFreq = highEqPrecise.isEmpty() ? highEqFreq : highEqPrecise.toDouble();
 
     if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {

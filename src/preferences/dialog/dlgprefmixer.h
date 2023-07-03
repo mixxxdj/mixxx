@@ -57,7 +57,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void applyDeckEQs();
     void applyQuickEffects();
 
-    void applyEQShelves();
+    void storeEqShelves();
 
     void setUpMainEQ();
     void updateMainEQ();
