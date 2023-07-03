@@ -1138,11 +1138,11 @@ void DlgPrefMixer::storeMainEQ() {
     // store current parameters
     for (QSlider* pSlider : qAsConst(m_mainEQSliders)) {
         int paramIndex = pSlider->property("index").toInt();
-        double paramValue = static_cast<double>(pSlider->value() / 100);
+        double dispValue = static_cast<double>(pSlider->value()) / 100;
         // TODO store this in effects.xml
         m_pConfig->set(ConfigKey(kConfigGroup,
                                kMainEQParameterKey + QString::number(paramIndex + 1)),
-                ConfigValue(QString::number(paramValue)));
+                ConfigValue(QString::number(dispValue)));
     }
 }
 
