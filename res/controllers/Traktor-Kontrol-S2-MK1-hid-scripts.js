@@ -709,7 +709,7 @@ class EqualizerParameter {
         hidReport.addControl(this.group, name, config, "H", 0xFFFF, false, callback.bind(this));
     }
     knob(field) {
-        setKnobParameter(this.group, "parameter" + this.number, field.value, this.calibration);
+        setKnobParameterEq(this.group, "parameter" + this.number, field.value, this.calibration);
     }
 }
 
@@ -1470,6 +1470,15 @@ const setKnobParameter = function(group, key, value, calibration) {
         calibratedValue = script.absoluteLin(value, 0, 0.5, calibration.min, calibration.center);
     } else {
         calibratedValue = script.absoluteLin(value, 0.5, 1, calibration.center, calibration.max);
+    }
+    engine.setValue(group, key, calibratedValue);
+};
+const setKnobParameterEq = function(group, key, value, calibration) {
+    let calibratedValue;
+    if (value <= calibration.center) {
+        calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.center);
+    } else {
+        calibratedValue = script.absoluteLin(value, 1, 2, calibration.center, calibration.max);
     }
     engine.setValue(group, key, calibratedValue);
 };
