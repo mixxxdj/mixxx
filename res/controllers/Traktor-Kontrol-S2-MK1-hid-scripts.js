@@ -166,7 +166,6 @@ class DeckClass {
         this.controller.setOutput(this.channel, "!shift",
             shiftPressed ? ButtonBrightnessOn : ButtonBrightnessOff,
             !this.parent.batchingLEDUpdate);
-        engine.setValue("[Library]", "focused_widget", shiftPressed ? 2: 3);
     }
     syncButton(field) {
         const now = Date.now();
@@ -1313,17 +1312,20 @@ class TraktorS2MK1Class {
         const delta = encoderDirection(field.value, this.previousBrowse);
         this.previousBrowse = field.value;
 
-        engine.setValue("[Library]", "MoveVertical", delta);
+        if (this.shiftPressed()) {
+            engine.setValue("[Library]", "ScrollVertical", delta);
+        } else {
+            engine.setValue("[Library]", "MoveVertical", delta);
+        }
     }
 
     browseEncoderPress(field) {
         if (this.shiftPressed()) {
-            engine.setValue("[Library]", "GoToItem", field.value);
+            engine.setValue("[Library]", "MoveFocusBackward", field.value);
         } else {
-            if (field.value > 0) {
-                script.toggleControl("[Master]", "maximize_library");
-            }
+            engine.setValue("[Library]", "GoToItem", field.value);
         }
+
     }
     crossfader(field) {
         setFaderParameter("[Master]", "crossfader", field.value, this.calibration.crossfader);
