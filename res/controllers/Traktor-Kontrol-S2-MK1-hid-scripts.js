@@ -77,14 +77,10 @@ class DeckClass {
         this.registerScalar(inputReport0x02, "rate", config.rate);
         this.registerEncoder(inputReport0x02, "!left_encoder", config.leftEncoder, this.leftEncoder);
         this.registerEncoder(inputReport0x02, "!right_encoder", config.rightEncoder, this.rightEncoder);
-        // this.registerScalar(inputReport0x02, "volume", config.volume);
         this.registerScalar(inputReport0x02, "!volume", config.volume, this.volume);
         this.registerEncoder(inputReport0x02, "!pregain", config.gain, this.gainEncoder);
         this.registerScalar(inputReport0x02, "!jog_press", config.jogPress, this.jogPress);
         this.eq.registerInputs(inputReport0x02, config.eq);
-        // configure soft takeover
-        engine.softTakeover(this.group, "rate", true);
-        engine.softTakeover(this.group, "volume", true);
     }
     registerOutputs(outputReport0x80, config) {
         this.registerLed(outputReport0x80, "track_loaded", config.trackLoaded);
@@ -120,6 +116,11 @@ class DeckClass {
     calibrate(calibration) {
         this.calibration = calibration;
         this.eq.calibrate(calibration.eq);
+    }
+    enableSoftTakeover() {
+        engine.softTakeover(this.group, "rate", true);
+        engine.softTakeover(this.group, "volume", true);
+        this.eq.enableSoftTakeover();
     }
     registerButton(hidReport, name, config, callback) {
         if (callback !==undefined) {
@@ -689,6 +690,11 @@ class Equalizer {
             this.params[param].calibrate(calibration[param]);
         }
     }
+    enableSoftTakeover() {
+        for (const param in this.params) {
+            this.params[param].enableSoftTakeover();
+        }
+    }
 }
 class EqualizerParameter {
     constructor(equalizer, number) {
@@ -699,10 +705,12 @@ class EqualizerParameter {
     }
     registerInputs(inputReport0x02, config) {
         this.registerKnob(inputReport0x02, "!parameter" + this.number, config, this.knob);
-        engine.softTakeover(this.group, "parameter" + this.number, true);
     }
     calibrate(calibration) {
         this.calibration = calibration;
+    }
+    enableSoftTakeover() {
+        engine.softTakeover(this.group, "parameter" + this.number, true);
     }
     registerKnob(hidReport, name, config, callback) {
         hidReport.addControl(this.group, name, config, "H", 0xFFFF, false, callback.bind(this));
@@ -759,6 +767,12 @@ class EffectUnit {
         this.calibration = calibration.mix;
         for (let i = 0; i < 3; i++) {
             this.params[i].calibrate(calibration.params[i]);
+        }
+    }
+    enableSoftTakeover() {
+        engine.softTakeover(this.group, "!mix", true);
+        for (let i = 0; i < 3; i++) {
+            this.params[i].enableSoftTakeover();
         }
     }
     registerButton(hidReport, name, config, callback) {
@@ -878,18 +892,19 @@ class EffectParameter {
     registerInputs(inputReport0x01, inputReport0x02, config) {
         this.registerButton(inputReport0x01, "!effectbutton" + this.number, config.button, this.effectButton);
         this.registerKnob(inputReport0x02, "!effectknob" + this.number, config.knob, this.effectKnob);
-        // soft takeover
-        const group = this.groupPrefix + "_Effect" + this.number + "]";
-        engine.softTakeover(group, "meta", true);
-        for (let i = 1; i <= 3; i++) {
-            engine.softTakeover(group, "parameter" + i, true);
-        }
     }
     registerOutputs(outputReport0x80, config) {
         outputReport0x80.addOutput(this.group, "!effectbutton" + this.number, config, "B");
     }
     calibrate(calibration) {
         this.calibration = calibration;
+    }
+    enableSoftTakeover() {
+        const group = this.groupPrefix + "_Effect" + this.number + "]";
+        engine.softTakeover(group, "meta", true);
+        for (let i = 1; i <= 3; i++) {
+            engine.softTakeover(group, "parameter" + i, true);
+        }
     }
     registerButton(hidReport, name, config, callback) {
         hidReport.addControl(this.group, name, config[0], "B", config[1], false, callback.bind(this));
@@ -1120,11 +1135,6 @@ class TraktorS2MK1Class {
         InputReport0x02.addControl("[Playlist]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoder.bind(this));
 
         // Soft takeover for knobs
-        engine.softTakeover("[Master]", "crossfader", true);
-        engine.softTakeover("[Master]", "headMix", true);
-        for (let i = 1; i <= 8; i++) {
-            engine.softTakeover("[Sampler" + i + "]", "pregain", true);
-        }
 
         // Set scalers
         this.controller.setScaler("headMix", this.scalerSlider);
@@ -1228,6 +1238,27 @@ class TraktorS2MK1Class {
             this.effectUnits[i].calibrate(this.calibration.effectUnits[i]);
         }
     }
+    readCurrentPosition() {
+        const report0x01 = new Uint8Array(controller.getInputReport(0x01));
+        this.controller.parsePacket([0x01, ...Array.from(report0x01)]);
+        const report0x02 = new Uint8Array(controller.getInputReport(0x02));
+        this.controller.parsePacket([0x02, ...Array.from(report0x02.map(x => ~x))]);
+        this.controller.parsePacket([0x02, ...Array.from(report0x02)]);
+    }
+    enableSoftTakeover() {
+        engine.softTakeover("[Master]", "crossfader", true);
+        engine.softTakeover("[Master]", "headMix", true);
+        for (let i = 1; i <= 8; i++) {
+            engine.softTakeover("[Sampler" + i + "]", "pregain", true);
+        }
+
+        for (let i = 0; i < 2; i++) {
+            this.decks[i].enableSoftTakeover();
+        }
+        for (let i = 0; i < 2; i++) {
+            this.effectUnits[i].enableSoftTakeover();
+        }
+    }
     init() {
         if (!(ShiftCueButtonAction === "REWIND" || ShiftCueButtonAction === "REVERSEROLL")) {
             throw new Error("ShiftCueButtonAction must be either \"REWIND\" or \"REVERSEROLL\"\n" +
@@ -1249,6 +1280,8 @@ class TraktorS2MK1Class {
 
         this.calibrate();
         this.registerInputPackets();
+        this.readCurrentPosition();
+        this.enableSoftTakeover();
 
         const debugLEDs = false;
         if (debugLEDs) {
