@@ -164,23 +164,15 @@ KAOSSDJ.fxKnob = function(_channel, _control, _value, _status) {
 };
 
 KAOSSDJ.fxTouchMoveVertical = function(_channel, _control, value, _status, _group) {
-    var decks = KAOSSDJ.decks;
-    for (var key in decks) {
-        var deck = decks[key];
-        if (deck.fx) {
-            engine.setValue("[EffectRack1_EffectUnit" + deck.deckNumber + "]", "mix", value / 127);
-        }
-    }
+    Object.values(KAOSSDJ.decks)
+        .filter(deck => deck.fx)
+        .forEach(deck => engine.setValue("[EffectRack1_EffectUnit" + deck.deckNumber + "]", "mix", value / 127));
 };
 
 KAOSSDJ.fxTouchMoveHorizontal = function(_channel, _control, value, _status, _group) {
-    var decks = KAOSSDJ.decks;
-    for (var key in decks) {
-        var deck = decks[key];
-        if (deck.fx) {
-            engine.setValue("[EffectRack1_EffectUnit" + deck.deckNumber + "]", "super1", value / 127);
-        }
-    }
+    Object.values(KAOSSDJ.decks)
+        .filter(deck => deck.fx)
+        .forEach(deck => engine.setValue("[EffectRack1_EffectUnit" + deck.deckNumber + "]", "super1", value / 127));
 };
 
 KAOSSDJ.fxTouch = function(channel, _control, value, _status, _group) {
@@ -281,14 +273,14 @@ KAOSSDJ.tapButtonCallback = function(_channel, _control, value, _status, _group)
     }
 
     /* tap to open folder, double-tap to close folder (twice to undo first tap)*/
-    var now = new Date().getTime();
+    var now = new Date();
     var timesince = now - doubleTapTime;
     if ((timesince < 600) && (timesince > 0)) {
         engine.setValue("[Library]", "MoveLeft", true);
     } else {
         engine.setValue("[Library]", "MoveRight", true);
     }
-    doubleTapTime = new Date().getTime();
+    doubleTapTime = new Date();
 };
 
 // <SHIFT> + <TOUCHPAD X> : control super knob of QuickEffectRack for deck 1
