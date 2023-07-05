@@ -33,9 +33,9 @@ class DeckClass {
         this.controller = this.parent.controller;
         this.number = number;
         this.channel = "[Channel" + number + "]";
-        this.previousPregain = 0;
-        this.previousLeftEncoder = 0;
-        this.previousRightEncoder = 0;
+        this.gainEncoder = new Encoder();
+        this.leftEncoder = new Encoder();
+        this.rightEncoder = new Encoder();
         this.wheelPressInertiaTimer = 0;
         this.gainEncoderPressed = false;
         this.leftEncoderPressed = false;
@@ -75,10 +75,10 @@ class DeckClass {
         inputReport0x01.addControl(this.channel, "!jog_wheel", config.jogWheel, "I", 0xFFFFFFFF, false, this.jogMove.bind(this));
         // InputReport 0x02
         this.registerScalar(inputReport0x02, "rate", config.rate);
-        this.registerEncoder(inputReport0x02, "!left_encoder", config.leftEncoder, this.leftEncoder);
-        this.registerEncoder(inputReport0x02, "!right_encoder", config.rightEncoder, this.rightEncoder);
+        this.registerEncoder(inputReport0x02, "!left_encoder", config.leftEncoder, this.leftEncoderCallback);
+        this.registerEncoder(inputReport0x02, "!right_encoder", config.rightEncoder, this.rightEncoderCallback);
         this.registerScalar(inputReport0x02, "!volume", config.volume, this.volume);
-        this.registerEncoder(inputReport0x02, "!pregain", config.gain, this.gainEncoder);
+        this.registerEncoder(inputReport0x02, "!pregain", config.gain, this.gainEncoderCallback);
         this.registerScalar(inputReport0x02, "!jog_press", config.jogPress, this.jogPress);
         this.eq.registerInputs(inputReport0x02, config.eq);
     }
@@ -324,14 +324,13 @@ class DeckClass {
             engine.setValue(this.channel, "jog", velocity);
         }
     }
-    leftEncoder(field) {
-        const delta = encoderDirection(field.value, this.previousLeftEncoder);
-        this.previousLeftEncoder = field.value;
+    leftEncoderCallback(field) {
+        const delta = this.leftEncoder.delta(field.value);
 
         if (this.shiftPressed) {
             if (delta === 1) {
                 script.triggerControl(this.channel, "pitch_up_small");
-            } else {
+            } else if (delta === -1) {
                 script.triggerControl(this.channel, "pitch_down_small");
             }
         } else {
@@ -339,40 +338,38 @@ class DeckClass {
                 let beatjumpSize = engine.getValue(this.channel, "beatjump_size");
                 if (delta === 1) {
                     beatjumpSize *= 2;
-                } else {
+                } else if (delta === -1) {
                     beatjumpSize /= 2;
                 }
                 engine.setValue(this.channel, "beatjump_size", beatjumpSize);
             } else {
                 if (delta === 1) {
                     script.triggerControl(this.channel, "beatjump_forward");
-                } else {
+                } else if (delta === -1) {
                     script.triggerControl(this.channel, "beatjump_backward");
                 }
             }
         }
     }
-    rightEncoder(field) {
-        const delta = encoderDirection(field.value, this.previousRightEncoder);
-        this.previousRightEncoder = field.value;
+    rightEncoderCallback(field) {
+        const delta = this.rightEncoder.delta(field.value);
 
         if (this.shiftPressed) {
             if (delta === 1) {
                 script.triggerControl(this.channel, "beatjump_1_forward");
-            } else {
+            } else if (delta === -1) {
                 script.triggerControl(this.channel, "beatjump_1_backward");
             }
         } else {
             if (delta === 1) {
                 script.triggerControl(this.channel, "loop_double");
-            } else {
+            } else if (delta === -1) {
                 script.triggerControl(this.channel, "loop_halve");
             }
         }
     }
-    gainEncoder(field) {
-        const delta = 0.03333 * encoderDirection(field.value, this.previousPregain);
-        this.previousPregain = field.value;
+    gainEncoderCallback(field) {
+        const delta = 0.03333 * this.gainEncoder.delta(field.value);
 
         if (this.shiftPressed) {
             const currentPregain = engine.getParameter(this.channel, "pregain");
@@ -380,7 +377,11 @@ class DeckClass {
         } else {
             const quickEffectGroup = "[QuickEffectRack1_" + this.channel + "]";
             if (this.gainEncoderPressed) {
-                script.triggerControl(quickEffectGroup, delta > 0 ? "next_chain" : "prev_chain");
+                if (delta === 1) {
+                    script.triggerControl(quickEffectGroup, "next_chain");
+                } else if (delta === -1) {
+                    script.triggerControl(quickEffectGroup, "prev_chain");
+                }
             } else {
                 const currentQuickEffectSuperKnob = engine.getParameter(quickEffectGroup, "super1");
                 engine.setParameter(quickEffectGroup, "super1", currentQuickEffectSuperKnob + delta);
@@ -1016,8 +1017,7 @@ class TraktorS2MK1Class {
         // Used when updating multiple LEDs simultaneously.
         this.batchingLEDUpdate = false;
 
-        // Previous values, used for calculating deltas for encoder knobs.
-        this.previousBrowse = 0;
+        this.browseEncoder = new Encoder();
 
         this.decks = [
             new DeckClass(this, 1),
@@ -1132,7 +1132,7 @@ class TraktorS2MK1Class {
         InputReport0x02.addControl("[Master]", "!crossfader", 0x2F, "H", 0xFFFF, false, this.crossfader.bind(this));
         InputReport0x02.addControl("[Master]", "headMix", 0x31, "H");
         InputReport0x02.addControl("[Master]", "!samplerGain", 0x13, "H", 0xFFFF, false, this.samplerGainKnob.bind(this));
-        InputReport0x02.addControl("[Playlist]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoder.bind(this));
+        InputReport0x02.addControl("[Playlist]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoderCallback.bind(this));
 
         // Soft takeover for knobs
 
@@ -1242,7 +1242,8 @@ class TraktorS2MK1Class {
         const report0x01 = new Uint8Array(controller.getInputReport(0x01));
         this.controller.parsePacket([0x01, ...Array.from(report0x01)]);
         const report0x02 = new Uint8Array(controller.getInputReport(0x02));
-        this.controller.parsePacket([0x02, ...Array.from(report0x02.map(x => ~x))]);
+        // The first packet is ignored by HIDConstroller
+        this.controller.parsePacket([0x02, ...Array.from(report0x02.map(x => x ^ 0xFF))]);
         this.controller.parsePacket([0x02, ...Array.from(report0x02)]);
     }
     enableSoftTakeover() {
@@ -1341,9 +1342,8 @@ class TraktorS2MK1Class {
         }
     }
 
-    browseEncoder(field) {
-        const delta = encoderDirection(field.value, this.previousBrowse);
-        this.previousBrowse = field.value;
+    browseEncoderCallback(field) {
+        const delta = this.browseEncoder.delta(field.value);
 
         if (this.shiftPressed()) {
             engine.setValue("[Library]", "ScrollVertical", delta);
@@ -1459,6 +1459,28 @@ class TraktorS2MK1Class {
     }
 }
 
+class Encoder {
+    constructor() {
+        this.previousValue = -1;
+    }
+    /// return value 1 === right turn
+    /// return value -1 === left turn
+    /// retun value 0 when something wierd happens/first delta
+    delta(value) {
+        if (this.previousValue === -1) {
+            this.previousValue = value;
+            return 0;
+        }
+        let dir = 0;
+        if ((value + 1) % 16 === this.previousValue) {
+            dir = -1;
+        } else if ((this.previousValue + 1) % 16 === value) {
+            dir = 1;
+        }
+        this.previousValue = value;
+        return dir;
+    }
+}
 
 const introOutroKeys = [
     "intro_start",
@@ -1480,24 +1502,6 @@ const introOutroColorsDim = [
     {green: 0, blue: 0x05},
     {green: 0, blue: 0x05}
 ];
-
-/// return value 1 === right turn
-/// return value -1 === left turn
-const encoderDirection = function(newValue, oldValue) {
-    let direction = 0;
-    const min = 0;
-    const max = 15;
-    if (oldValue === max && newValue === min) {
-        direction = 1;
-    } else if (oldValue === min && newValue === max) {
-        direction = -1;
-    } else if (newValue > oldValue) {
-        direction = 1;
-    } else {
-        direction = -1;
-    }
-    return direction;
-};
 
 const setKnobParameter = function(group, key, value, calibration) {
     let calibratedValue;
