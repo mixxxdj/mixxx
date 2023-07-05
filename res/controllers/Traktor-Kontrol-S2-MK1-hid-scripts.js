@@ -717,7 +717,7 @@ class EqualizerParameter {
         hidReport.addControl(this.group, name, config, "H", 0xFFFF, false, callback.bind(this));
     }
     knob(field) {
-        setKnobParameterEq(this.group, "parameter" + this.number, field.value, this.calibration);
+        setKnobParameter(this.group, "parameter" + this.number, field.value, this.calibration);
     }
 }
 
@@ -1465,7 +1465,7 @@ class Encoder {
     }
     /// return value 1 === right turn
     /// return value -1 === left turn
-    /// retun value 0 when something wierd happens/first delta
+    /// return value 0 when something weird happens/first delta
     delta(value) {
         if (this.previousValue === -1) {
             this.previousValue = value;
@@ -1510,16 +1510,7 @@ const setKnobParameter = function(group, key, value, calibration) {
     } else {
         calibratedValue = script.absoluteLin(value, 0.5, 1, calibration.center, calibration.max);
     }
-    engine.setValue(group, key, calibratedValue);
-};
-const setKnobParameterEq = function(group, key, value, calibration) {
-    let calibratedValue;
-    if (value <= calibration.center) {
-        calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.center);
-    } else {
-        calibratedValue = script.absoluteLin(value, 1, 2, calibration.center, calibration.max);
-    }
-    engine.setValue(group, key, calibratedValue);
+    engine.setParameter(group, key, calibratedValue);
 };
 const setFaderParameter = function(group, key, value, calibration) {
     const calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.max);
