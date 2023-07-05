@@ -1,7 +1,7 @@
 #pragma once
 #include <QMap>
 
-#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "effects/backends/builtin/lvmixeqbase.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -51,8 +51,8 @@ class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGrou
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
-    ControlProxy* m_pLoFreqCorner;
-    ControlProxy* m_pHiFreqCorner;
+    PollingControlProxy m_pLoFreqCorner;
+    PollingControlProxy m_pHiFreqCorner;
 
     DISALLOW_COPY_AND_ASSIGN(Bessel4LVMixEQEffect);
 };

@@ -29,9 +29,9 @@ EffectManifestPointer Bessel8LVMixEQEffect::getManifest() {
     return pManifest;
 }
 
-Bessel8LVMixEQEffect::Bessel8LVMixEQEffect() {
-    m_pLoFreqCorner = new ControlProxy(kMixerProfile, kLowEqFrequency);
-    m_pHiFreqCorner = new ControlProxy(kMixerProfile, kHighEqFrequency);
+Bessel8LVMixEQEffect::Bessel8LVMixEQEffect()
+        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
+          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
 }
 
 void Bessel8LVMixEQEffect::loadEngineEffectParameters(
@@ -45,8 +45,6 @@ void Bessel8LVMixEQEffect::loadEngineEffectParameters(
 }
 
 Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
-    delete m_pLoFreqCorner;
-    delete m_pHiFreqCorner;
 }
 
 void Bessel8LVMixEQEffect::processChannel(
@@ -87,7 +85,7 @@ void Bessel8LVMixEQEffect::processChannel(
                 fLow,
                 fMid,
                 fHigh,
-                m_pLoFreqCorner->get(),
-                m_pHiFreqCorner->get());
+                m_pLoFreqCorner.get(),
+                m_pHiFreqCorner.get());
     }
 }
