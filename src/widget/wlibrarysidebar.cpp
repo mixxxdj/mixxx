@@ -10,8 +10,10 @@
 #include "moc_wlibrarysidebar.cpp"
 #include "util/defs.h"
 #include "util/dnd.h"
+#include "util/duration.h"
 
 constexpr int expand_time = 250;
+constexpr int resize_header_delay = 50;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
@@ -30,6 +32,17 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    // Adjust header when items' expand state was changed
+    connect(this,
+            &QTreeView::expanded,
+            [this]() {
+                queueHeaderAdjustEvent();
+            });
+    connect(this,
+            &QTreeView::collapsed,
+            [this]() {
+                queueHeaderAdjustEvent();
+            });
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
@@ -124,6 +137,8 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     }
 }
 
+/// Timer events for delayed tree item expand/collapse on drag'n'drop and header
+/// width adjustment when item layout changes
 void WLibrarySidebar::timerEvent(QTimerEvent *event) {
     if (event->timerId() == m_expandTimer.timerId()) {
         QPoint pos = viewport()->mapFromGlobal(QCursor::pos());
@@ -134,6 +149,16 @@ void WLibrarySidebar::timerEvent(QTimerEvent *event) {
             }
         }
         m_expandTimer.stop();
+        return;
+    } else if (event->timerId() == m_headerAdjustTimer.timerId()) {
+        // Stop the header timer after we're sure the last trigger event has been processed
+        // (add some margin since m_headerAdjustTimer is a Qt::CoarseTimer with an
+        // imprecision of +- 5%
+        if (m_eventFrequencyTimer.elapsed().toIntegerMillis() > resize_header_delay * 1.9) {
+            m_headerAdjustTimer.stop();
+            return;
+        }
+        adjustHeaderStretch();
         return;
     }
     QTreeView::timerEvent(event);
@@ -406,9 +431,43 @@ void WLibrarySidebar::focusSelectedIndex() {
     }
 }
 
+void WLibrarySidebar::queueHeaderAdjustEvent() {
+    m_eventFrequencyTimer.restart();
+    m_headerAdjustTimer.start(resize_header_delay, this);
+}
+
+/// Ensure tree items expand horizontally so we have the entire view width respond
+/// to mouse clicks, i.e. no unresponsive space right next to short items.
+void WLibrarySidebar::adjustHeaderStretch() {
+    // Disable stretching to trigger adjusting columns to contents,
+    // i.e. full labels without elide
+    if (header()->stretchLastSection()) {
+        header()->setStretchLastSection(false);
+    }
+
+    // Enable stretching if the column can expand.
+    // Otherwise horizontal scrollbars are visible, nothing to do.
+    if (header()->sectionSize(0) < header()->width()) {
+        header()->setStretchLastSection(true);
+    }
+}
+
 bool WLibrarySidebar::event(QEvent* pEvent) {
-    if (pEvent->type() == QEvent::ToolTip) {
+    switch (pEvent->type()) {
+    case QEvent::ToolTip:
         updateTooltip();
+        break;
+    case QEvent::Resize:
+    // stretch header when layout changes, e.g. viewport size changed due to
+    // scrollbar hide/show
+    case QEvent::LayoutRequest:
+    case QEvent::FontChange:
+    case QEvent::Polish:
+    case QEvent::PolishRequest:
+        queueHeaderAdjustEvent();
+        break;
+    default:
+        break;
     }
     return QTreeView::event(pEvent);
 }
