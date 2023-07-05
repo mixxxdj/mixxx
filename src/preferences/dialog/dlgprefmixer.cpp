@@ -8,6 +8,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "effects/backends/builtin/biquadfullkilleqeffect.h"
+#include "effects/backends/builtin/filtereffect.h"
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectslot.h"
@@ -28,7 +29,7 @@ const ConfigKey kEqAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("EqAut
 const ConfigKey kGainAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("GainAutoReset"));
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
-const QString kDefaultQuickEffectChainName = QStringLiteral("Filter");
+const QString kDefaultQuickEffectChainName = FilterEffect::getManifest()->name();
 const QString kDefaultMainEqId = QString();
 
 const ConfigKey kHighEqFreqKey = ConfigKey(kMixerProfile, kHighEqFrequency);
