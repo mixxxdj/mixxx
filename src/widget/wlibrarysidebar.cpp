@@ -241,6 +241,9 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     // TODO(XXX) Should first keyEvent ensure previous item has focus? I.e. if the selected
     // item is not focused, require second press to perform the desired action.
 
+    // make the selected item the navigation starting point
+    focusSelectedIndex();
+
     switch (event->key()) {
     case Qt::Key_Return:
         focusSelectedIndex();
@@ -252,8 +255,6 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     case Qt::Key_PageUp:
     case Qt::Key_End:
     case Qt::Key_Home: {
-        // make the selected item the navigation starting point
-        focusSelectedIndex();
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
         // After the selection changed force-activate (click) the newly selected
@@ -270,14 +271,9 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         return;
     }
     case Qt::Key_Left: {
-        QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        if (selectedIndices.isEmpty()) {
-            return;
-        }
         // If an expanded item is selected let QTreeView collapse it
         QModelIndex selIndex = selectedIndex();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
+        if (!selIndex.isValid()) {
             return;
         }
         // collapse knot
@@ -300,8 +296,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     case kRenameSidebarItemShortcutKey: { // F2
         // Rename crate or playlist (internal, external, history)
         QModelIndex selIndex = selectedIndex();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
+        if (!selIndex.isValid()) {
             return;
         }
         if (isExpanded(selIndex)) {
