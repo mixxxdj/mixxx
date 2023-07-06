@@ -2063,76 +2063,72 @@ endif()
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
+  # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
+  # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
   set(LIBDJINTEROP_VERSION 0.16.1)
-  # Look for an existing installation of libdjinterop and use that if available.
-  # Otherwise, download and build from GitHub.
-  # Note: Version 0.17.0 is not yet compatible
-  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
-  if(DjInterop_FOUND)
-    # An existing installation of djinterop is available.
-    message(STATUS "Using existing system installation of libdjinterop")
-    target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
-    target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
+
+  # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
+  # embedded SQLite in such a case.
+  if (APPLE AND NOT SQLite3_IS_STATIC)
+    message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
+    set(DJINTEROP_SYSTEM_SQLITE OFF)
   else()
-    # Fetch djinterop sources from GitHub and build them statically.
-
-    # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
-    # embedded SQLite in such a case.
-    if (APPLE AND NOT SQLite3_IS_STATIC)
-      message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
-      set(DJINTEROP_SYSTEM_SQLITE OFF)
-    else()
-      message(STATUS "Building libdjinterop sources (with system SQLite) fetched from GitHub")
-      set(DJINTEROP_SYSTEM_SQLITE ON)
-    endif()
-
-    set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
-    set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
-
-    # CMake does not pass lists of paths properly to external projects.
-    # This is worked around by changing the list separator.
-    string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
-
-    # For offline builds download the archive file from the URL and
-    # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
-    # the configuration.
-    ExternalProject_Add(libdjinterop
-      URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
-      URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
-      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
-      DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
-      INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
-      LIST_SEPARATOR "|"
-      CMAKE_ARGS
-        -DBUILD_SHARED_LIBS=OFF
-        -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-        -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
-        -DCMAKE_INSTALL_LIBDIR:PATH=lib
-        -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
-        -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
-      BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
-      EXCLUDE_FROM_ALL TRUE
-    )
-
-    # Assemble a library based on the external project.
-    add_library(mixxx-libdjinterop STATIC IMPORTED)
-    add_dependencies(mixxx-libdjinterop libdjinterop)
-    set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
-    set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
-    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
-    target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
-    target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
-
-    # Since we have built libdjinterop from sources as a static library, its
-    # transitive dependencies are not automatically recognised.  libdjinterop
-    # depends on zlib and optionally sqlite3.  If libdjinterop was configured
-    # to depend on system SQLite, Mixxx will already have the dependency.
-    # But it does not have zlib, so we explicitly add that here.
-    find_package(ZLIB 1.2.8 REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
+    message(STATUS "Building libdjinterop sources (with system SQLite) fetched from GitHub")
+    set(DJINTEROP_SYSTEM_SQLITE ON)
   endif()
+
+  set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
+  set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
+  # CMake does not pass lists of paths properly to external projects.
+  # This is worked around by changing the list separator.
+  string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+
+  # For offline builds download the archive file from the URL and
+  # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
+  # the configuration.
+  ExternalProject_Add(libdjinterop
+    URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
+    URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
+    DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+    DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
+    INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
+    LIST_SEPARATOR "|"
+    CMAKE_ARGS
+      -DBUILD_SHARED_LIBS=OFF
+      -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
+      -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+      -DCMAKE_INSTALL_LIBDIR:PATH=lib
+      -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
+      -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
+      -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+      -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+      -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
+      -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --target DjInterop
+    BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
+    EXCLUDE_FROM_ALL TRUE
+  )
+
+  # Assemble a library based on the external project.
+  add_library(mixxx-libdjinterop STATIC IMPORTED)
+  add_dependencies(mixxx-libdjinterop libdjinterop)
+  set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
+  set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
+  set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
+  target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
+  target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
+
+  # Since we have built libdjinterop from sources as a static library, its
+  # transitive dependencies are not automatically recognised.  libdjinterop
+  # depends on zlib and optionally sqlite3.  If libdjinterop was configured
+  # to depend on system SQLite, Mixxx will already have the dependency.
+  # But it does not have zlib, so we explicitly add that here.
+  find_package(ZLIB 1.2.8 REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
 
   # Include conditional sources only required with Engine Prime export support.
   target_sources(mixxx-lib PRIVATE
@@ -2203,6 +2199,10 @@ if(KEYFINDER)
         -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
         -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
+        -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+        -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+        -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
