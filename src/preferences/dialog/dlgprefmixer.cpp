@@ -20,10 +20,12 @@
 namespace {
 const QString kEffectForGroupPrefix = QStringLiteral("EffectForGroup_");
 const QString kEffectGroupForMaster = QStringLiteral("EffectForGroup_[Master]");
-const QString kEnableEqs = QStringLiteral("EnableEQs");
-const QString kEqsOnly = QStringLiteral("EQsOnly");
-const QString kSingleEq = QStringLiteral("SingleEQEffect");
 const QString kMainEQParameterKey = QStringLiteral("EffectForGroup_[Master]_parameter");
+const ConfigKey kEnableEqsKey = ConfigKey(kMixerProfile, QStringLiteral("EnableEQs"));
+const ConfigKey kEqsOnlyKey = ConfigKey(kMixerProfile, QStringLiteral("EQsOnly"));
+const ConfigKey kSingleEqKey = ConfigKey(kMixerProfile, QStringLiteral("SingleEQEffect"));
+const ConfigKey kEqAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("EqAutoReset"));
+const ConfigKey kGainAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("GainAutoReset"));
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
 const QString kDefaultQuickEffectChainName = QStringLiteral("Filter");
@@ -674,16 +676,11 @@ void DlgPrefMixer::slotApply() {
             ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
 
     // EQ & QuickEffect settings ///////////////////////////////////////////////
-    m_pConfig->set(ConfigKey(kMixerProfile, kEnableEqs),
-            ConfigValue(m_eqBypass ? 0 : 1));
-    m_pConfig->set(ConfigKey(kMixerProfile, kSingleEq),
-            ConfigValue(m_singleEq ? 1 : 0));
-    m_pConfig->set(ConfigKey(kMixerProfile, kEqsOnly),
-            ConfigValue(m_eqEffectsOnly ? 1 : 0));
-    m_pConfig->set(ConfigKey(kMixerProfile, "EqAutoReset"),
-            ConfigValue(m_eqAutoReset ? 1 : 0));
-    m_pConfig->set(ConfigKey(kMixerProfile, "GainAutoReset"),
-            ConfigValue(m_gainAutoReset ? 1 : 0));
+    m_pConfig->set(kEnableEqsKey, ConfigValue(m_eqBypass ? 0 : 1));
+    m_pConfig->set(kSingleEqKey, ConfigValue(m_singleEq ? 1 : 0));
+    m_pConfig->set(kEqsOnlyKey, ConfigValue(m_eqEffectsOnly ? 1 : 0));
+    m_pConfig->set(kEqAutoResetKey, ConfigValue(m_eqAutoReset ? 1 : 0));
+    m_pConfig->set(kGainAutoResetKey, ConfigValue(m_gainAutoReset ? 1 : 0));
     applyDeckEQs();
     applyQuickEffects();
 
@@ -733,12 +730,12 @@ void DlgPrefMixer::slotUpdate() {
     slotUpdateXFader();
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
-    QString eqsOnly = m_pConfig->getValue(ConfigKey(kMixerProfile, kEqsOnly), "1");
-    m_eqEffectsOnly = eqsOnly == "yes" || eqsOnly == "1";
+    QString eqsOnly = m_pConfig->getValueString(kEqsOnlyKey);
+    m_eqEffectsOnly = eqsOnly != "no" && eqsOnly != "0"; // default true
     CheckBoxEqOnly->setChecked(m_eqEffectsOnly);
 
-    QString singleEqCfg = m_pConfig->getValue(ConfigKey(kMixerProfile, kSingleEq), "1");
-    m_singleEq = singleEqCfg == "yes" || singleEqCfg == "1";
+    QString singleEqCfg = m_pConfig->getValueString(kSingleEqKey);
+    m_singleEq = singleEqCfg != "no" && singleEqCfg != "0"; // default true
     if (!m_initializing) {
         slotPopulateDeckEqSelectors();
         slotPopulateQuickEffectSelectors();
