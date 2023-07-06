@@ -1,11 +1,9 @@
 <Template>
 
   <SingletonDefinition>
-    <ObjectName>Samplers_Expander_9-16_Singleton</ObjectName>
+    <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
     <Children>
-      <Template src="skin:../LateNight/samplers/sampler_expand_button.xml">
-        <SetVariable name="SamCount">9-16</SetVariable>
-      </Template>
+      <Template src="skin:../LateNight/samplers/sampler_expand_button.xml"/>
     </Children>
   </SingletonDefinition>
 
@@ -16,7 +14,9 @@
     <Children>
 
       <!-- Select between big or small samplers -->
-      <WidgetStack currentpage="[LateNight],expand_samplers_9-16">
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
 
           <!-- 8 small Samplers -->
@@ -27,51 +27,57 @@
             <Children>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">9</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler1"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">10</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler2"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">11</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler3"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">12</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler4"/></SetVariable>
               </Template>
 
               <SingletonContainer>
-                <ObjectName>Samplers_Expander_9-16_Singleton</ObjectName>
+                <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
               </SingletonContainer>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">13</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler5"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">14</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler6"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">15</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler7"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">16</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler8"/></SetVariable>
               </Template>
 
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[LateNight],expand_samplers_<Variable name="Count"/></ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
           </WidgetGroup>
 
           <!-- 8 big Samplers -->
-          <WidgetGroup trigger="[LateNight],expand_samplers_9-16" on_hide_select="0">
+          <!-- <WidgetGroup on_hide_select="0"> -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <!-- First row 9 10 | 13 14 -->
+              <!-- First row 1 2 | 5 6 -->
               <WidgetGroup>
                 <ObjectName>SamplerRow</ObjectName>
                 <Layout>horizontal</Layout>
@@ -79,29 +85,29 @@
                 <Children>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">9</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler1"/></SetVariable>
                   </Template>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">10</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler2"/></SetVariable>
                   </Template>
 
                   <SingletonContainer>
-                    <ObjectName>Samplers_Expander_9-16_Singleton</ObjectName>
+                    <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
                   </SingletonContainer>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">13</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler5"/></SetVariable>
                   </Template>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">14</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler6"/></SetVariable>
                   </Template>
 
                 </Children>
               </WidgetGroup><!-- /First row -->
 
-              <!-- Second row 11 12 | 15 16 -->
+              <!-- Second row 3 4 | 7 8 -->
               <WidgetGroup>
                 <ObjectName>SamplerRow</ObjectName>
                 <SizePolicy>min,min</SizePolicy>
@@ -109,11 +115,11 @@
                 <Children>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">11</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler3"/></SetVariable>
                   </Template>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">12</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler4"/></SetVariable>
                   </Template>
 
                   <WidgetGroup>
@@ -122,11 +128,11 @@
                   </WidgetGroup>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">15</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler7"/></SetVariable>
                   </Template>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">16</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler8"/></SetVariable>
                   </Template>
 
                 </Children>
@@ -134,10 +140,14 @@
               <!-- /Second row -->
 
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[LateNight],expand_samplers_<Variable name="Count"/></ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
         </Children>
-      </WidgetStack>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup>

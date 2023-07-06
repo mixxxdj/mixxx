@@ -456,7 +456,7 @@
                         </WidgetGroup>
 
                         <Template src="skin:../LateNight/fx_rack.xml"/>
-                        <Template src="skin:../LateNight/samplers_rack.xml"/>
+                        <Template src="skin:samplers_rack.xml"/>
                         <Template src="skin:../LateNight/mic_aux_rack.xml"/>
 
                         <SingletonContainer>
