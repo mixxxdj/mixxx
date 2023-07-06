@@ -160,7 +160,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
             }
         }
 
-        if (crossFadeSamples) {
+        if (crossFadeSamples > 0) {
             const auto readResult = m_pReader->read(loop_read_position +
                             (in_reverse ? crossFadeStart : -crossFadeStart),
                     crossFadeSamples,
