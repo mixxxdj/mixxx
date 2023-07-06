@@ -18,7 +18,6 @@
 #include "util/rescaler.h"
 
 namespace {
-const QString kConfigGroup = QStringLiteral("[Mixer Profile]");
 const QString kEffectForGroupPrefix = QStringLiteral("EffectForGroup_");
 const QString kEffectGroupForMaster = QStringLiteral("EffectForGroup_[Master]");
 const QString kEnableEqs = QStringLiteral("EnableEQs");
@@ -29,6 +28,13 @@ const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
 const QString kDefaultQuickEffectChainName = QStringLiteral("Filter");
 const QString kDefaultMainEqId = QString();
+
+const ConfigKey kHighEqFreqKey = ConfigKey(kMixerProfile, kHighEqFrequency);
+const ConfigKey kHighEqFreqPreciseKey =
+        ConfigKey(kMixerProfile, QStringLiteral("HiEQFrequencyPrecise"));
+const ConfigKey kLowEqFreqKey = ConfigKey(kMixerProfile, kLowEqFrequency);
+const ConfigKey kLowEqFreqPreciseKey =
+        ConfigKey(kMixerProfile, QStringLiteral("LoEQFrequencyPrecise"));
 
 constexpr int kFrequencyUpperLimit = 20050;
 constexpr int kFrequencyLowerLimit = 16;
@@ -57,8 +63,8 @@ DlgPrefMixer::DlgPrefMixer(
           m_reverse(EngineXfader::kXfaderConfigKey, "xFaderReverse"),
           m_crossfader("[Master]", "crossfader"),
           m_xFaderReverse(false),
-          m_COLoFreq(kConfigGroup, "LoEQFrequency"),
-          m_COHiFreq(kConfigGroup, "HiEQFrequency"),
+          m_COLoFreq(kLowEqFreqKey),
+          m_COHiFreq(kHighEqFreqKey),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
@@ -180,7 +186,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
         // EQ was selected ('---').
         // If the key doesn't exist the default EQ is loaded.
         QString configuredEffect = m_pConfig->getValue<QString>(
-                ConfigKey(kConfigGroup, kEffectForGroupPrefix + deckGroup),
+                ConfigKey(kMixerProfile, kEffectForGroupPrefix + deckGroup),
                 kDefaultEqId);
         const EffectManifestPointer pEQManifest =
                 m_pBackendManager->getManifestFromUniqueId(configuredEffect);
@@ -518,7 +524,7 @@ void DlgPrefMixer::applyDeckEQs() {
             effectId = pManifest->uniqueId();
         }
         // TODO store this in effects.xml
-        m_pConfig->set(ConfigKey(kConfigGroup, kEffectForGroupPrefix + deckGroup),
+        m_pConfig->set(ConfigKey(kMixerProfile, kEffectForGroupPrefix + deckGroup),
                 effectId);
     }
     m_ignoreEqQuickEffectBoxSignals = false;
@@ -668,15 +674,15 @@ void DlgPrefMixer::slotApply() {
             ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
 
     // EQ & QuickEffect settings ///////////////////////////////////////////////
-    m_pConfig->set(ConfigKey(kConfigGroup, kEnableEqs),
+    m_pConfig->set(ConfigKey(kMixerProfile, kEnableEqs),
             ConfigValue(m_eqBypass ? 0 : 1));
-    m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
+    m_pConfig->set(ConfigKey(kMixerProfile, kSingleEq),
             ConfigValue(m_singleEq ? 1 : 0));
-    m_pConfig->set(ConfigKey(kConfigGroup, kEqsOnly),
+    m_pConfig->set(ConfigKey(kMixerProfile, kEqsOnly),
             ConfigValue(m_eqEffectsOnly ? 1 : 0));
-    m_pConfig->set(ConfigKey(kConfigGroup, "EqAutoReset"),
+    m_pConfig->set(ConfigKey(kMixerProfile, "EqAutoReset"),
             ConfigValue(m_eqAutoReset ? 1 : 0));
-    m_pConfig->set(ConfigKey(kConfigGroup, "GainAutoReset"),
+    m_pConfig->set(ConfigKey(kMixerProfile, "GainAutoReset"),
             ConfigValue(m_gainAutoReset ? 1 : 0));
     applyDeckEQs();
     applyQuickEffects();
@@ -691,14 +697,8 @@ void DlgPrefMixer::storeEqShelves() {
         return;
     }
 
-    m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequency"),
-            ConfigValue(QString::number(static_cast<int>(std::round(m_highEqFreq)))));
-    m_pConfig->set(ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"),
-            ConfigValue(QString::number(m_highEqFreq, 'f')));
-    m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequency"),
-            ConfigValue(QString::number(static_cast<int>(std::round(m_lowEqFreq)))));
-    m_pConfig->set(ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"),
-            ConfigValue(QString::number(m_lowEqFreq, 'f')));
+    m_pConfig->set(kHighEqFreqPreciseKey, ConfigValue(QString::number(m_highEqFreq, 'f')));
+    m_pConfig->set(kLowEqFreqPreciseKey, ConfigValue(QString::number(m_lowEqFreq, 'f')));
 }
 
 // Update the widgets with values from config
@@ -733,11 +733,11 @@ void DlgPrefMixer::slotUpdate() {
     slotUpdateXFader();
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
-    QString eqsOnly = m_pConfig->getValue(ConfigKey(kConfigGroup, kEqsOnly), "1");
+    QString eqsOnly = m_pConfig->getValue(ConfigKey(kMixerProfile, kEqsOnly), "1");
     m_eqEffectsOnly = eqsOnly == "yes" || eqsOnly == "1";
     CheckBoxEqOnly->setChecked(m_eqEffectsOnly);
 
-    QString singleEqCfg = m_pConfig->getValue(ConfigKey(kConfigGroup, kSingleEq), "1");
+    QString singleEqCfg = m_pConfig->getValue(ConfigKey(kMixerProfile, kSingleEq), "1");
     m_singleEq = singleEqCfg == "yes" || singleEqCfg == "1";
     if (!m_initializing) {
         slotPopulateDeckEqSelectors();
@@ -748,29 +748,23 @@ void DlgPrefMixer::slotUpdate() {
         slotSingleEqToggled(m_singleEq);
     }
 
-    m_eqAutoReset = static_cast<bool>(
-            m_pConfig->getValueString(ConfigKey(kConfigGroup, "EqAutoReset"))
-                    .toInt());
+    m_eqAutoReset = m_pConfig->getValue<bool>(kEqAutoResetKey, false);
     CheckBoxEqAutoReset->setChecked(m_eqAutoReset);
 
-    m_gainAutoReset = static_cast<bool>(
-            m_pConfig->getValueString(ConfigKey(kConfigGroup, "GainAutoReset"))
-                    .toInt());
+    m_gainAutoReset = m_pConfig->getValue<bool>(kGainAutoResetKey, false);
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
 
-    QString eqBaypassCfg = m_pConfig->getValue(ConfigKey(kConfigGroup, kEnableEqs), "1");
-    m_eqBypass = !(eqBaypassCfg == "yes" || eqBaypassCfg == "1");
+    QString eqBaypassCfg = m_pConfig->getValueString(kEnableEqsKey);
+    m_eqBypass = !(eqBaypassCfg == "yes" || eqBaypassCfg == "1"); // default false
     CheckBoxBypass->setChecked(m_eqBypass);
     // Deactivate EQ comboboxes when Bypass is enabled
     slotBypassEqToggled(CheckBoxBypass->isChecked());
 
     // EQ shelves //////////////////////////////////////////////////////////////
-    QString highEqCoarse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "HiEQFrequency"));
-    QString highEqPrecise = m_pConfig->getValueString(
-            ConfigKey(kConfigGroup, "HiEQFrequencyPrecise"));
-    QString lowEqCoarse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "LoEQFrequency"));
-    QString lowEqPrecise = m_pConfig->getValueString(
-            ConfigKey(kConfigGroup, "LoEQFrequencyPrecise"));
+    QString highEqCoarse = m_pConfig->getValueString(kHighEqFreqKey);
+    QString highEqPrecise = m_pConfig->getValueString(kHighEqFreqPreciseKey);
+    QString lowEqCoarse = m_pConfig->getValueString(kLowEqFreqKey);
+    QString lowEqPrecise = m_pConfig->getValueString(kLowEqFreqPreciseKey);
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
 
@@ -947,7 +941,7 @@ void DlgPrefMixer::setUpMainEQ() {
 
 void DlgPrefMixer::updateMainEQ() {
     const QString configuredEffectId =
-            m_pConfig->getValue(ConfigKey(kConfigGroup, kEffectGroupForMaster),
+            m_pConfig->getValue(ConfigKey(kMixerProfile, kEffectGroupForMaster),
                     kDefaultMainEqId);
     const EffectManifestPointer configuredEffectManifest =
             m_pBackendManager->getManifestFromUniqueId(configuredEffectId);
@@ -961,7 +955,7 @@ void DlgPrefMixer::updateMainEQ() {
     // Load parameters from preferences and set sliders
     for (QSlider* pSlider : qAsConst(m_mainEQSliders)) {
         int paramIndex = pSlider->property("index").toInt();
-        QString strValue = m_pConfig->getValueString(ConfigKey(kConfigGroup,
+        QString strValue = m_pConfig->getValueString(ConfigKey(kMixerProfile,
                 kMainEQParameterKey + QString::number(paramIndex + 1)));
 
         bool ok;
@@ -1124,12 +1118,12 @@ void DlgPrefMixer::storeMainEQ() {
             m_pBackendManager->getManifestFromUniqueId(
                     comboBoxMainEq->currentData().toString());
 
-    m_pConfig->set(ConfigKey(kConfigGroup, kEffectGroupForMaster),
+    m_pConfig->set(ConfigKey(kMixerProfile, kEffectGroupForMaster),
             ConfigValue(pManifest ? pManifest->uniqueId() : ""));
 
     // clear all previous parameter values so we have no residues
-    const QList<ConfigKey> micerKeys = m_pConfig->getKeysWithGroup(kConfigGroup);
-    for (const auto& key : micerKeys) {
+    const QList<ConfigKey> mixerKeys = m_pConfig->getKeysWithGroup(kMixerProfile);
+    for (const auto& key : mixerKeys) {
         if (key.item.contains(kMainEQParameterKey)) {
             m_pConfig->remove(key);
         }
@@ -1140,7 +1134,7 @@ void DlgPrefMixer::storeMainEQ() {
         int paramIndex = pSlider->property("index").toInt();
         double dispValue = static_cast<double>(pSlider->value()) / 100;
         // TODO store this in effects.xml
-        m_pConfig->set(ConfigKey(kConfigGroup,
+        m_pConfig->set(ConfigKey(kMixerProfile,
                                kMainEQParameterKey + QString::number(paramIndex + 1)),
                 ConfigValue(QString::number(dispValue)));
     }

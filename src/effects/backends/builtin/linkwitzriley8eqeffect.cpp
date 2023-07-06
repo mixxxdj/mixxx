@@ -1,6 +1,7 @@
 #include "effects/backends/builtin/linkwitzriley8eqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
+#include "effects/defs.h"
 #include "util/math.h"
 
 static constexpr unsigned int kStartupSamplerate = 44100;
@@ -68,8 +69,8 @@ void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq, i
 }
 
 LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect() {
-    m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+    m_pLoFreqCorner = new ControlProxy(kMixerProfile, kLowEqFrequency);
+    m_pHiFreqCorner = new ControlProxy(kMixerProfile, kHighEqFrequency);
 }
 
 void LinkwitzRiley8EQEffect::loadEngineEffectParameters(

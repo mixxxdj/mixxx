@@ -1,6 +1,7 @@
 #include "effects/backends/builtin/biquadfullkilleqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
+#include "effects/defs.h"
 #include "util/math.h"
 
 namespace {
@@ -143,8 +144,8 @@ void BiquadFullKillEQEffectGroupState::setFilters(
 }
 
 BiquadFullKillEQEffect::BiquadFullKillEQEffect() {
-    m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
+    m_pLoFreqCorner = std::make_unique<ControlProxy>(kMixerProfile, kLowEqFrequency);
+    m_pHiFreqCorner = std::make_unique<ControlProxy>(kMixerProfile, kHighEqFrequency);
 }
 
 void BiquadFullKillEQEffect::loadEngineEffectParameters(

@@ -1,6 +1,7 @@
 #include "effects/backends/builtin/bessel8lvmixeqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
+#include "effects/defs.h"
 #include "util/math.h"
 
 // static
@@ -29,8 +30,8 @@ EffectManifestPointer Bessel8LVMixEQEffect::getManifest() {
 }
 
 Bessel8LVMixEQEffect::Bessel8LVMixEQEffect() {
-    m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+    m_pLoFreqCorner = new ControlProxy(kMixerProfile, kLowEqFrequency);
+    m_pHiFreqCorner = new ControlProxy(kMixerProfile, kHighEqFrequency);
 }
 
 void Bessel8LVMixEQEffect::loadEngineEffectParameters(
