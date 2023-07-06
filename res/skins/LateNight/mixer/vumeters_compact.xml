@@ -17,7 +17,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:/mixer/vumeter_single.xml">
+              <Template src="skin:../LateNight/mixer/vumeter_single.xml">
                 <SetVariable name="Group">[Channel1]</SetVariable>
               </Template>
             </Children>
@@ -39,7 +39,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:/mixer/vumeter_single.xml">
+              <Template src="skin:../LateNight/mixer/vumeter_single.xml">
                 <SetVariable name="Group">[Channel2]</SetVariable>
               </Template>
             </Children>
@@ -56,7 +56,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:/mixer/vumeter_single.xml">
+              <Template src="skin:../LateNight/mixer/vumeter_single.xml">
                 <SetVariable name="Group">[Channel3]</SetVariable>
               </Template>
             </Children>
@@ -77,7 +77,7 @@
                   </WidgetGroup>
                   <!-- Unfortnately we can load a Singleton only once,
                       so we need a separate vu meter instance -->
-                  <Template src="skin:/mixer/vumeter_master.xml"/>
+                  <Template src="skin:../LateNight/mixer/vumeter_master.xml"/>
                 </Children>
               </WidgetGroup>
             </Children>
@@ -88,7 +88,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:/mixer/vumeter_single.xml">
+              <Template src="skin:../LateNight/mixer/vumeter_single.xml">
                 <SetVariable name="Group">[Channel4]</SetVariable>
               </Template>
             </Children>

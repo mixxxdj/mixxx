@@ -3,13 +3,13 @@
 
   <!-- Create Singletons for samplers 1-4 because they're needed when
     showing 4 or 8 samplers... -->
-  <Template src="skin:/samplers/singletons.xml"/>
+  <Template src="skin:../LateNight/samplers/singletons.xml"/>
   <!-- ...the create a singleton for samplers_8decks.xml because it's used
     when showing 8 or 16 samplers. -->
   <SingletonDefinition>
     <ObjectName>Samplers_1-8</ObjectName>
     <Children>
-      <Template src="skin:/samplers/samplers_8decks.xml"/>
+      <Template src="skin:../LateNight/samplers/samplers_8decks.xml"/>
     </Children>
   </SingletonDefinition>
 
@@ -22,7 +22,7 @@
         <Children>
 
           <!--4 Samplers -->
-          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skin:/samplers/samplers_4decks.xml"/>
+          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skin:../LateNight/samplers/samplers_4decks.xml"/>
 
           <!--8 Samplers -->
           <WidgetGroup trigger="[LateNight],show_8samplers" on_hide_select="0">
@@ -41,7 +41,7 @@
               <SingletonContainer>
                 <ObjectName>Samplers_1-8</ObjectName>
               </SingletonContainer>
-              <Template src="skin:/samplers/samplers_16decks.xml"/>
+              <Template src="skin:../LateNight/samplers/samplers_16decks.xml"/>
             </Children>
           </WidgetGroup>
 
