@@ -35,14 +35,14 @@ ReadAheadManager::~ReadAheadManager() {
 
 SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         SINT requested_samples) {
-    // TODO(XXX): Remove implicit assumption of 2 channels
-    if (!even(requested_samples)) {
+    // qDebug() << "getNextSamples:" << m_currentPosition << requested_samples;
+
+    int modSamples = requested_samples % mixxx::kEngineChannelCount;
+    if (modSamples != 0) {
         qDebug() << "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
-        requested_samples--;
+        requested_samples -= modSamples;
     }
     bool in_reverse = dRate < 0;
-
-    //qDebug() << "start" << start_sample << requested_samples;
 
     mixxx::audio::FramePos targetPosition;
     // A loop (beat loop or track on repeat) will only limit the amount we
@@ -185,7 +185,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         }
     }
 
-    //qDebug() << "read" << m_currentPosition << samples_read;
+    // qDebug() << "read" << m_currentPosition << samples_from_reader;
     return samples_from_reader;
 }
 
