@@ -7,6 +7,10 @@ typename C::const_iterator make_const_iterator(const C&, const I& it) {
     return static_cast<typename C::const_iterator>(it);
 }
 
+/// This template returns a non-const iterator from a container pointing to the
+/// same element as the given const iterator.
+/// This can be used in Qt5 wrappers implementing the Qt6 interface
+/// where some iterators have been made const.
 template<typename C, typename I>
 typename C::iterator make_iterator(C* pContainer, I it) {
     return std::next(pContainer->begin(), std::distance(pContainer->cbegin(), it));
