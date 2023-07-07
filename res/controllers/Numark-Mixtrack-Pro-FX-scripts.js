@@ -147,7 +147,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
         group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
         shift: function() {
             if (MixtrackProFX.fxControlsMeta) {
-                this.group = "[EffectRack1_EffectUnit" + 2 + "_Effect1]";
+                this.group = "[EffectRack1_EffectUnit2_Effect1]";
                 this.inKey = "meta";
                 return;
             }
@@ -156,7 +156,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
         },
         unshift: function() {
             if (MixtrackProFX.fxControlsMeta) {
-                this.group = "[EffectRack1_EffectUnit" + 1 + "_Effect1]";
+                this.group = "[EffectRack1_EffectUnit1_Effect1]";
                 this.inKey = "meta";
                 return;
             }
