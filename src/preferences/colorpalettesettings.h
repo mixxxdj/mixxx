@@ -7,7 +7,7 @@
 class ColorPaletteSettings {
   public:
     explicit ColorPaletteSettings(UserSettingsPointer pConfig)
-            : m_pConfig(pConfig) {
+            : m_pConfig(std::move(pConfig)) {
     }
 
     ColorPalette getHotcueColorPalette(const QString& name) const;

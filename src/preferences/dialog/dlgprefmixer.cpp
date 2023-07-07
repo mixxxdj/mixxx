@@ -47,7 +47,7 @@ DlgPrefMixer::DlgPrefMixer(
         std::shared_ptr<EffectsManager> pEffectsManager,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pxfScene(nullptr),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
           m_transform(EngineXfader::kTransformDefault),
@@ -840,7 +840,7 @@ void DlgPrefMixer::slotBypassEqChanged(int state) {
     for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
         QString group = EqualizerEffectChain::formatEffectSlotGroup(
                 PlayerManager::groupForDeck(deck));
-        ControlObject::set(ConfigKey(group, "enabled"), bypass ? 0 : 1);
+        ControlObject::set(ConfigKey(std::move(group), "enabled"), bypass ? 0 : 1);
         deck++;
         box->setEnabled(!bypass);
     }

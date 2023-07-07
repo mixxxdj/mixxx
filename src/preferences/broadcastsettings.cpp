@@ -19,9 +19,9 @@ const mixxx::Logger kLogger("BroadcastSettings");
 
 BroadcastSettings::BroadcastSettings(
         UserSettingsPointer pConfig, QObject* parent)
-    : QObject(parent),
-      m_pConfig(pConfig),
-      m_profiles() {
+        : QObject(parent),
+          m_pConfig(std::move(pConfig)),
+          m_profiles() {
     loadProfiles();
 }
 

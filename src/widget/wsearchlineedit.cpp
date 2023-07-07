@@ -85,7 +85,7 @@ void WSearchLineEdit::setSearchHistoryShortcutsEnabled(bool searchHistoryShortcu
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
         : QComboBox(pParent),
           WBaseWidget(this),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_completer(make_parented<QCompleter>(this)),
           m_clearButton(make_parented<QToolButton>(this)),
           m_queryEmitted(false) {

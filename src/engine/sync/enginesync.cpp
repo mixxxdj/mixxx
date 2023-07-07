@@ -16,7 +16,7 @@ constexpr mixxx::Bpm kDefaultBpm = mixxx::Bpm(124.0);
 } // anonymous namespace
 
 EngineSync::EngineSync(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
           m_pLeaderSyncable(nullptr) {
     qRegisterMetaType<SyncMode>("SyncMode");

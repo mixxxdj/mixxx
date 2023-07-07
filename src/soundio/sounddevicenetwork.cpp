@@ -31,10 +31,10 @@ const mixxx::Logger kLogger("SoundDeviceNetwork");
 } // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(
-        UserSettingsPointer config,
+        UserSettingsPointer pConfig,
         SoundManager* sm,
         QSharedPointer<EngineNetworkStream> pNetworkStream)
-        : SoundDevice(config, sm),
+        : SoundDevice(std::move(pConfig), sm),
           m_pNetworkStream(pNetworkStream),
           m_inputDrift(false),
           m_masterAudioLatencyUsage("[Master]", "audio_latency_usage"),

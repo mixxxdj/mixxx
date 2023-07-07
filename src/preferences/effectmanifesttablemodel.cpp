@@ -17,7 +17,7 @@ const QStringList kAcceptedMimeTypes = {QStringLiteral("text/plain")};
 EffectManifestTableModel::EffectManifestTableModel(QObject* parent,
         EffectsBackendManagerPointer pBackendManager)
         : QAbstractTableModel(parent),
-          m_pBackendManager(pBackendManager) {
+          m_pBackendManager(std::move(pBackendManager)) {
 }
 
 void EffectManifestTableModel::setList(const QList<EffectManifestPointer>& newList) {

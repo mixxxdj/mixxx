@@ -49,7 +49,7 @@ constexpr double kPastBeatMatchThreshold = 1 / 8.0;
 
 BpmControl::BpmControl(const QString& group,
         UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig),
+        : EngineControl(group, std::move(pConfig)),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
           m_dLastSyncAdjustment(1.0) {

@@ -18,7 +18,7 @@
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte
 
 RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_recordingDir(""),
           m_recording_base_file(""),
           m_recordingFile(""),

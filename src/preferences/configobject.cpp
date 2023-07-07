@@ -305,7 +305,7 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode&
             if (ctrl.nodeName() == "control") {
                 QString group = XmlParse::selectNodeQString(ctrl, "group");
                 QString key = XmlParse::selectNodeQString(ctrl, "key");
-                ConfigKey k(group, key);
+                ConfigKey k(std::move(group), std::move(key));
                 ValueType m(ctrl);
                 set(k, m);
             }

@@ -9,7 +9,7 @@ WSpinnyGLSL::WSpinnyGLSL(
         UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
-        : WSpinnyBase(parent, group, pConfig, pVCMan, pPlayer) {
+        : WSpinnyBase(parent, group, std::move(pConfig), pVCMan, pPlayer) {
 }
 
 WSpinnyGLSL::~WSpinnyGLSL() {

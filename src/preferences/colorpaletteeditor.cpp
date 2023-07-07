@@ -142,7 +142,7 @@ void ColorPaletteEditor::initialize(
         UserSettingsPointer pConfig,
         const QString& paletteName) {
     DEBUG_ASSERT(!m_pConfig);
-    m_pConfig = pConfig;
+    m_pConfig = std::move(pConfig);
     m_resetPalette = paletteName;
     QString saveName = paletteName;
 

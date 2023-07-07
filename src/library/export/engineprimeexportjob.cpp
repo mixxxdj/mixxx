@@ -385,7 +385,7 @@ EnginePrimeExportJob::EnginePrimeExportJob(
         QSharedPointer<EnginePrimeExportRequest> pRequest)
         : QThread{parent},
           m_pTrackCollectionManager(pTrackCollectionManager),
-          m_pRequest{pRequest} {
+          m_pRequest{std::move(pRequest)} {
     // Must be collocated with the TrackCollectionManager.
     if (parent != nullptr) {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);

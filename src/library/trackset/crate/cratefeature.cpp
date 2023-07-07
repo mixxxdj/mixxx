@@ -49,7 +49,7 @@ using namespace mixxx::library::prefs;
 
 CrateFeature::CrateFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
-        : BaseTrackSetFeature(pLibrary, pConfig, "CRATEHOME", QStringLiteral("crates")),
+        : BaseTrackSetFeature(pLibrary, std::move(pConfig), "CRATEHOME", QStringLiteral("crates")),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_crateTableModel(this, pLibrary->trackCollectionManager()) {

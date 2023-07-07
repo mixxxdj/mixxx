@@ -17,7 +17,7 @@ DlgMissing::DlgMissing(
           m_pTrackTableView(
                   new WTrackTableView(
                           this,
-                          pConfig,
+                          std::move(pConfig),
                           pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)) {

@@ -24,7 +24,7 @@
 EngineSideChain::EngineSideChain(
         UserSettingsPointer pConfig,
         CSAMPLE* sidechainMix)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_bStopThread(false),
           m_sampleFifo(SIDECHAIN_BUFFER_SIZE),
           m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)),

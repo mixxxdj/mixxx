@@ -881,7 +881,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
         QString assignMenuTitle = tr("Effect Unit Assignment");
         QString assignString = tr("Assign ");
-        QMenu* effectUnitGroups = addSubmenu(assignMenuTitle,
+        QMenu* effectUnitGroups = addSubmenu(std::move(assignMenuTitle),
                 effectUnitMenu);
 
         QString groupDescriptionPrefix = QString("%1").arg(

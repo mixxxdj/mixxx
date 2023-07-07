@@ -252,7 +252,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     pEngineBuffer->loadFakeTrack(pTrack, bPlay);
 
     // await slotTrackLoaded()/slotLoadFailed()
-    emit loadingTrack(pTrack, pOldTrack);
+    emit loadingTrack(pTrack, std::move(pOldTrack));
 
     return pTrack;
 }
@@ -460,7 +460,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     // await slotTrackLoaded()/slotLoadFailed()
     // emit this before pEngineBuffer->loadTrack() to avoid receiving
     // unexpected slotTrackLoaded() before, in case the track is still cached #10504.
-    emit loadingTrack(pNewTrack, pOldTrack);
+    emit loadingTrack(pNewTrack, std::move(pOldTrack));
 
     // Request a new track from EngineBuffer
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();

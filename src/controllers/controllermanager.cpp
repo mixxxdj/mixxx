@@ -81,7 +81,7 @@ bool controllerCompare(Controller *a,Controller *b) {
 
 ControllerManager::ControllerManager(UserSettingsPointer pConfig)
         : QObject(),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           // WARNING: Do not parent m_pControllerLearningEventFilter to
           // ControllerManager because the CM is moved to its own thread and runs
           // its own event loop.

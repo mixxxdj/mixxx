@@ -484,7 +484,7 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
 void DlgControllerLearning::controlPicked(const ConfigKey& control) {
     QString title = m_pControlPickerMenu->controlTitleForConfigKey(control);
     QString description = m_pControlPickerMenu->descriptionForConfigKey(control);
-    loadControl(control, title, description);
+    loadControl(control, title, std::move(description));
 }
 
 void DlgControllerLearning::controlClicked(ControlObject* pControl) {

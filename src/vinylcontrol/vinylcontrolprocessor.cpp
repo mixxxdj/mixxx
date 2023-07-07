@@ -15,7 +15,7 @@
 
 VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPointer pConfig)
         : QThread(pParent),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
           m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_processorsLock(QT_RECURSIVE_MUTEX_INIT),

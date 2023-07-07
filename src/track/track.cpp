@@ -426,12 +426,12 @@ bool Track::trySetBpm(mixxx::Bpm bpm) {
 
 bool Track::trySetBeats(mixxx::BeatsPointer pBeats) {
     auto locked = lockMutex(&m_qMutex);
-    return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, false);
+    return trySetBeatsMarkDirtyAndUnlock(&locked, std::move(pBeats), false);
 }
 
 bool Track::trySetAndLockBeats(mixxx::BeatsPointer pBeats) {
     auto locked = lockMutex(&m_qMutex);
-    return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, true);
+    return trySetBeatsMarkDirtyAndUnlock(&locked, std::move(pBeats), true);
 }
 
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
@@ -453,7 +453,7 @@ bool Track::trySetBeatsWhileLocked(
     }
 
     bool dirty = false;
-    if (setBeatsWhileLocked(pBeats)) {
+    if (setBeatsWhileLocked(std::move(pBeats))) {
         dirty = true;
     }
     if (compareAndSet(m_record.ptrBpmLocked(), lockBpmAfterSet)) {
@@ -468,7 +468,7 @@ bool Track::trySetBeatsMarkDirtyAndUnlock(
         bool lockBpmAfterSet) {
     DEBUG_ASSERT(pLock);
 
-    if (!trySetBeatsWhileLocked(pBeats, lockBpmAfterSet)) {
+    if (!trySetBeatsWhileLocked(std::move(pBeats), lockBpmAfterSet)) {
         return false;
     }
 
@@ -896,7 +896,7 @@ const ConstWaveformPointer& Track::getWaveform() const {
 }
 
 void Track::setWaveform(ConstWaveformPointer pWaveform) {
-    m_waveform = pWaveform;
+    m_waveform = std::move(pWaveform);
     emit waveformUpdated();
 }
 
@@ -905,7 +905,7 @@ ConstWaveformPointer Track::getWaveformSummary() const {
 }
 
 void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
-    m_waveformSummary = pWaveform;
+    m_waveformSummary = std::move(pWaveform);
     emit waveformSummaryUpdated();
 }
 

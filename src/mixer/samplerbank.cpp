@@ -25,7 +25,7 @@ const char kSamplerFileType[] = QT_TRANSLATE_NOOP("SamplerBank", "Mixxx Sampler 
 SamplerBank::SamplerBank(UserSettingsPointer pConfig,
         PlayerManager* pPlayerManager)
         : QObject(pPlayerManager),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pPlayerManager(pPlayerManager) {
     DEBUG_ASSERT(m_pPlayerManager);
 

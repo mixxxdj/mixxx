@@ -25,7 +25,7 @@ EffectChain::EffectChain(const QString& group,
           m_presetName(""),
           m_pEffectsManager(pEffectsManager),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
-          m_pMessenger(pEffectsMessenger),
+          m_pMessenger(std::move(pEffectsMessenger)),
           m_group(group),
           m_signalProcessingStage(stage),
           m_pEngineEffectChain(nullptr) {

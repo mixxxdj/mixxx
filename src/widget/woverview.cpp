@@ -1038,7 +1038,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
             m_cuePositionLabel.prerender(positionTextPoint,
                     QPixmap(),
-                    cuePositionText,
+                    std::move(cuePositionText),
                     markerFont,
                     m_labelTextColor,
                     m_labelBackgroundColor,
@@ -1050,7 +1050,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
             m_cueTimeDistanceLabel.prerender(timeDistancePoint,
                     QPixmap(),
-                    cueTimeDistanceText,
+                    std::move(cueTimeDistanceText),
                     markerFont,
                     m_labelTextColor,
                     m_labelBackgroundColor,
@@ -1145,7 +1145,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
 
         m_timeRulerPositionLabel.prerender(textPoint,
                 QPixmap(),
-                timeText,
+                std::move(timeText),
                 markerFont,
                 m_labelTextColor,
                 m_labelBackgroundColor,
@@ -1161,7 +1161,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         }
         m_timeRulerDistanceLabel.prerender(textPointDistance,
                 QPixmap(),
-                timeDistanceText,
+                std::move(timeDistanceText),
                 markerFont,
                 m_labelTextColor,
                 m_labelBackgroundColor,

@@ -13,9 +13,9 @@ SeratoBeatsImporter::SeratoBeatsImporter(
         const QList<SeratoBeatGridNonTerminalMarkerPointer>& nonTerminalMarkers,
         SeratoBeatGridTerminalMarkerPointer pTerminalMarker)
         : BeatsImporter(),
-          m_nonTerminalMarkers(nonTerminalMarkers),
-          m_pTerminalMarker(pTerminalMarker) {
+          m_nonTerminalMarkers(nonTerminalMarkers) {
     DEBUG_ASSERT(pTerminalMarker);
+    m_pTerminalMarker = std::move(pTerminalMarker);
 }
 
 bool SeratoBeatsImporter::isEmpty() const {

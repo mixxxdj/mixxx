@@ -22,7 +22,7 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
         : QTableView(parent),
           m_prevRow(0),
           m_prevColumn(0),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
 

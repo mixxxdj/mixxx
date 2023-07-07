@@ -187,7 +187,7 @@ void BaseSqlTableModel::replaceRows(
     } else {
         beginInsertRows(QModelIndex(), 0, rows.size() - 1);
         m_rowInfo = rows;
-        m_trackIdToRows = trackIdToRows;
+        m_trackIdToRows = std::move(trackIdToRows);
         endInsertRows();
     }
 }
@@ -344,7 +344,7 @@ void BaseSqlTableModel::select() {
 void BaseSqlTableModel::setTable(QString tableName,
         QString idColumn,
         QStringList tableColumns,
-        QSharedPointer<BaseTrackCache> trackSource) {
+        QSharedPointer<BaseTrackCache> pTrackSource) {
     if (sDebug) {
         qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
     }
@@ -358,7 +358,7 @@ void BaseSqlTableModel::setTable(QString tableName,
                 this,
                 &BaseSqlTableModel::tracksChanged);
     }
-    m_trackSource = trackSource;
+    m_trackSource = std::move(pTrackSource);
     if (m_trackSource) {
         // It's important that this not be a direct connection, or else the UI
         // might try to update while a cache operation is in progress, and that

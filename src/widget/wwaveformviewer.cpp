@@ -212,9 +212,9 @@ void WWaveformViewer::leaveEvent(QEvent*) {
     }
 }
 
-void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
+void WWaveformViewer::slotTrackLoaded(TrackPointer pTrack) {
     if (m_waveformWidget) {
-        m_waveformWidget->setTrack(track);
+        m_waveformWidget->setTrack(std::move(pTrack));
     }
 }
 
@@ -309,14 +309,14 @@ CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) 
 void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
     QColor highlightColor = Color::chooseContrastColor(pMark->fillColor(),
             m_dimBrightThreshold);
-    pMark->setBaseColor(highlightColor, m_dimBrightThreshold);
+    pMark->setBaseColor(std::move(highlightColor), m_dimBrightThreshold);
 }
 
 void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
     auto pCue = getCuePointerFromCueMark(pMark);
     if (pCue) {
         QColor originalColor = mixxx::RgbColor::toQColor(pCue->getColor());
-        pMark->setBaseColor(originalColor, m_dimBrightThreshold);
+        pMark->setBaseColor(std::move(originalColor), m_dimBrightThreshold);
     }
 }
 

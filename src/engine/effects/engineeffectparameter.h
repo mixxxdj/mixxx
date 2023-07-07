@@ -9,7 +9,7 @@
 class EngineEffectParameter {
   public:
     EngineEffectParameter(EffectManifestParameterPointer pParameterManifest)
-            : m_pParameterManifest(pParameterManifest) {
+            : m_pParameterManifest(std::move(pParameterManifest)) {
         m_value = m_pParameterManifest->getDefault();
     }
     virtual ~EngineEffectParameter() {

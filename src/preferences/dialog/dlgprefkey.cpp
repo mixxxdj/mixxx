@@ -12,7 +12,7 @@
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           Ui::DlgPrefKeyDlg(),
-          m_keySettings(pConfig),
+          m_keySettings(std::move(pConfig)),
           m_bAnalyzerEnabled(m_keySettings.getKeyDetectionEnabledDefault()),
           m_bFastAnalysisEnabled(m_keySettings.getFastAnalysisDefault()),
           m_bReanalyzeEnabled(m_keySettings.getReanalyzeWhenSettingsChangeDefault()) {

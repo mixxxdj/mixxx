@@ -32,7 +32,7 @@ bool ControllerScriptModuleEngine::initialize() {
     }
 
     QJSValue initFunction = mod.property("init");
-    if (!executeFunction(initFunction)) {
+    if (!executeFunction(std::move(initFunction))) {
         shutdown();
         return false;
     }

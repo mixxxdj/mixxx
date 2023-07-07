@@ -18,7 +18,7 @@ const QString kViewName = QStringLiteral("Recording");
 RecordingFeature::RecordingFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary, pConfig, QStringLiteral("recordings")),
+        : LibraryFeature(pLibrary, std::move(pConfig), QStringLiteral("recordings")),
           m_pRecordingManager(pRecordingManager),
           m_pSidebarModel(new FolderTreeModel(this)) {
 }

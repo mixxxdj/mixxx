@@ -120,7 +120,7 @@ LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent, UserSettingsPointer p
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return nullptr;
     }
-    LegacySkinParser parser(pConfig);
+    LegacySkinParser parser(std::move(pConfig));
     LaunchImage* pLaunchImage = parser.parseLaunchImage(m_path.absoluteFilePath(), pParent);
     return pLaunchImage;
 }
@@ -132,7 +132,7 @@ QWidget* LegacySkin::loadSkin(QWidget* pParent,
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return nullptr;
     }
-    LegacySkinParser legacy(pConfig,
+    LegacySkinParser legacy(std::move(pConfig),
             pSkinCreatedControls,
             pCoreServices->getKeyboardEventFilter().get(),
             pCoreServices->getPlayerManager().get(),

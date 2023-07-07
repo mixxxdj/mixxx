@@ -8,7 +8,7 @@ WSpinny::WSpinny(
         UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
-        : WSpinnyBase(pParent, group, pConfig, pVCMan, pPlayer) {
+        : WSpinnyBase(pParent, group, std::move(pConfig), pVCMan, pPlayer) {
 }
 
 void WSpinny::draw() {

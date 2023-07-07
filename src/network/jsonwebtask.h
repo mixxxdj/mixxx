@@ -33,8 +33,8 @@ class JsonWebResponse final {
     JsonWebResponse(
             WebResponse&& response,
             QJsonDocument&& content)
-            : m_response(response),
-              m_content(content) {
+            : m_response(std::move(response)),
+              m_content(std::move(content)) {
     }
     JsonWebResponse(const JsonWebResponse&) = default;
     JsonWebResponse(JsonWebResponse&&) = default;

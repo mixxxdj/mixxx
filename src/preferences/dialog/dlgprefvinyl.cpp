@@ -15,10 +15,10 @@
 DlgPrefVinyl::DlgPrefVinyl(
         QWidget* parent,
         std::shared_ptr<VinylControlManager> pVCMan,
-        UserSettingsPointer config)
+        UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_pVCManager(pVCMan),
-          config(config) {
+          m_pVCManager(std::move(pVCMan)),
+          config(std::move(pConfig)) {
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(this, &DlgPrefVinyl::slotNumDecksChanged);
 

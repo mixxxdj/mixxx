@@ -3,9 +3,8 @@
 
 #define DEFAULT_BITRATE_INDEX 6
 
-EncoderVorbisSettings::EncoderVorbisSettings(UserSettingsPointer pConfig) :
-    m_pConfig(pConfig)
-{
+EncoderVorbisSettings::EncoderVorbisSettings(UserSettingsPointer pConfig)
+        : m_pConfig(std::move(pConfig)) {
     // Added "32" because older settings started at index 1 with 48.
     m_qualList.append(32);
     m_qualList.append(48);

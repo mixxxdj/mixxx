@@ -29,7 +29,7 @@ WEffectParameterNameBase::WEffectParameterNameBase(
 
 void WEffectParameterNameBase::setEffectParameterSlot(
         EffectParameterSlotBasePointer pEffectKnobParameterSlot) {
-    m_pParameterSlot = pEffectKnobParameterSlot;
+    m_pParameterSlot = std::move(pEffectKnobParameterSlot);
     if (m_pParameterSlot) {
         connect(m_pParameterSlot.data(),
                 &EffectParameterSlotBase::updated,

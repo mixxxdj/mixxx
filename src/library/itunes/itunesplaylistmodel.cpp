@@ -5,13 +5,13 @@
 
 ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
-        QSharedPointer<BaseTrackCache> trackSource)
+        QSharedPointer<BaseTrackCache> pTrackSource)
         : BaseExternalPlaylistModel(parent,
                   pTrackCollectionManager,
                   "mixxx.db.model.itunes_playlist",
                   "itunes_playlists",
                   "itunes_playlist_tracks",
-                  trackSource) {
+                  std::move(pTrackSource)) {
 }
 
 void ITunesPlaylistModel::initSortColumnMapping() {

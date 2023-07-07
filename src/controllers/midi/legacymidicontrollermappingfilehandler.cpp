@@ -103,8 +103,8 @@ LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
         }
 
         MidiInputMapping inputMapping;
-        inputMapping.control = ConfigKey(controlGroup, controlKey);
-        inputMapping.description = controlDescription;
+        inputMapping.control = ConfigKey(std::move(controlGroup), std::move(controlKey));
+        inputMapping.description = std::move(controlDescription);
         inputMapping.options = options;
         inputMapping.key = MidiKey(midiStatusByte, midiControl);
 
@@ -138,8 +138,8 @@ LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
 
         // Unserialize output message from the XML
         MidiOutputMapping outputMapping;
-        outputMapping.controlKey = ConfigKey(controlGroup, controlKey);
-        outputMapping.description = controlDescription;
+        outputMapping.controlKey = ConfigKey(std::move(controlGroup), std::move(controlKey));
+        outputMapping.description = std::move(controlDescription);
 
         QString midiStatus = output.firstChildElement("status").text();
         QString midiNo = output.firstChildElement("midino").text();

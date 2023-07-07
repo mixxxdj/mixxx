@@ -96,7 +96,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         EffectsManager* pEffectsManager,
         EngineMaster* pEngine)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
           m_pEngine(pEngine),
@@ -673,7 +673,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
         // so clone another playing deck instead of loading the selected track
         pPlayer->slotCloneDeck();
     } else {
-        pPlayer->slotLoadTrack(pTrack, play);
+        pPlayer->slotLoadTrack(std::move(pTrack), play);
     }
 
     m_lastLoadedPlayer = group;
@@ -727,7 +727,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
         return;
     }
 
-    pDeck->slotLoadTrack(pTrack, false);
+    pDeck->slotLoadTrack(std::move(pTrack), false);
 }
 
 void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play) {
@@ -750,7 +750,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     }
     locker.unlock();
 
-    pSampler->slotLoadTrack(pTrack, false);
+    pSampler->slotLoadTrack(std::move(pTrack), false);
 }
 
 void PlayerManager::slotAnalyzeTrack(TrackPointer track) {

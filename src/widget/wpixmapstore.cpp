@@ -56,8 +56,8 @@ bool WPixmapStore::willCorrectColors() {
     return m_loader->willCorrectColors();
 };
 
-void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
-    m_loader = ld;
+void WPixmapStore::setLoader(QSharedPointer<ImgSource> pLoader) {
+    m_loader = std::move(pLoader);
 
     // We shouldn't hand out pointers to existing pixmaps anymore since our
     // loader has changed. The pixmaps will get freed once all the widgets

@@ -103,7 +103,7 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
         return;
     }
     kLogger.info() << "Connecting track source";
-    m_pTrackSource = pTrackSource;
+    m_pTrackSource = std::move(pTrackSource);
     connect(this,
             &TrackCollection::scanTrackAdded,
             m_pTrackSource.data(),

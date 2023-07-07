@@ -29,7 +29,7 @@ BrowseFeature::BrowseFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary, pConfig, QString("computer")),
+        : LibraryFeature(pLibrary, std::move(pConfig), QString("computer")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel, true),

@@ -31,7 +31,7 @@ DlgPrefLibrary::DlgPrefLibrary(
         : DlgPreferencePage(pParent),
           m_dirListModel(),
           m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
+          m_pLibrary(std::move(pLibrary)),
           m_bAddedDirectory(false),
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);

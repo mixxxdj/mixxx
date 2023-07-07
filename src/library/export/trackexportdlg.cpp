@@ -6,12 +6,12 @@
 #include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
 
-TrackExportDlg::TrackExportDlg(QWidget *parent,
-                               UserSettingsPointer pConfig,
-                               TrackExportWorker* worker)
+TrackExportDlg::TrackExportDlg(QWidget* parent,
+        UserSettingsPointer pConfig,
+        TrackExportWorker* worker)
         : QDialog(parent),
           Ui::DlgTrackExport(),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_worker(worker) {
     setupUi(this);
     connect(cancelButton,

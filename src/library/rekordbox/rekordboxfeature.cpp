@@ -1133,13 +1133,13 @@ void readAnalyze(TrackPointer track,
 
 RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
         TrackCollectionManager* trackCollectionManager,
-        QSharedPointer<BaseTrackCache> trackSource)
+        QSharedPointer<BaseTrackCache> pTrackSource)
         : BaseExternalPlaylistModel(parent,
                   trackCollectionManager,
                   "mixxx.db.model.rekordbox.playlistmodel",
                   kRekordboxPlaylistsTable,
                   kRekordboxPlaylistTracksTable,
-                  trackSource) {
+                  std::move(pTrackSource)) {
 }
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
@@ -1344,7 +1344,7 @@ bool RekordboxPlaylistModel::isColumnInternal(int column) {
 RekordboxFeature::RekordboxFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rekordbox")),
+        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig), QStringLiteral("rekordbox")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
     QString tableName = kRekordboxLibraryTable;
     QString idColumn = LIBRARYTABLE_ID;

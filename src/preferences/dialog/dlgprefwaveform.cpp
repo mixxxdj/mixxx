@@ -13,8 +13,8 @@ DlgPrefWaveform::DlgPrefWaveform(
         UserSettingsPointer pConfig,
         std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary) {
+          m_pConfig(std::move(pConfig)),
+          m_pLibrary(std::move(pLibrary)) {
     setupUi(this);
 
     // Waveform overview init

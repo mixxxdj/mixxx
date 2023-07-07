@@ -5,7 +5,7 @@
 #include "moc_vinylcontrol.cpp"
 
 VinylControl::VinylControl(UserSettingsPointer pConfig, const QString& group)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_group(group),
           m_iLeadInTime(m_pConfig->getValueString(
                                          ConfigKey(group, "vinylcontrol_lead_in_time"))

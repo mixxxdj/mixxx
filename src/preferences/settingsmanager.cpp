@@ -42,5 +42,5 @@ void SettingsManager::initializeDefaults() {
 
     // Store the last resource path in the config database.
     // TODO(rryan): this looks unused.
-    m_pSettings->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
+    m_pSettings->set(ConfigKey("[Config]", "Path"), ConfigValue(std::move(resourcePath)));
 }

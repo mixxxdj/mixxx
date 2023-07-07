@@ -20,7 +20,9 @@
 
 class BeatDetectionSettings {
   public:
-    BeatDetectionSettings(UserSettingsPointer pConfig) : m_pConfig(pConfig) {}
+    BeatDetectionSettings(UserSettingsPointer pConfig)
+            : m_pConfig(std::move(pConfig)) {
+    }
 
     DEFINE_PREFERENCE_HELPERS(BpmDetectionEnabled, bool,
                               BPM_CONFIG_KEY, BPM_DETECTION_ENABLED, true);

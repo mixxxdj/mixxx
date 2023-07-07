@@ -18,7 +18,7 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 constexpr int kCompressionLevel = -1;
 
 AnalysisDao::AnalysisDao(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig) {
+        : m_pConfig(std::move(pConfig)) {
     QDir storagePath = getAnalysisStoragePath();
     if (!QDir().mkpath(storagePath.absolutePath())) {
         qDebug() << "WARNING: Could not create analysis storage path. Mixxx will be unable to store analyses.";

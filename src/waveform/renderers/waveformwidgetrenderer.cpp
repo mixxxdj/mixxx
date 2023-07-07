@@ -395,8 +395,8 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
     m_alphaBeatGrid = alpha;
 }
 
-void WaveformWidgetRenderer::setTrack(TrackPointer track) {
-    m_pTrack = track;
+void WaveformWidgetRenderer::setTrack(TrackPointer pTrack) {
+    m_pTrack = std::move(pTrack);
     //used to postpone first display until track sample is actually available
     m_trackSamples = -1;
 

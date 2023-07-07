@@ -51,7 +51,7 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 AnalysisFeature::AnalysisFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig, QStringLiteral("prepare")),
+        : LibraryFeature(pLibrary, std::move(pConfig), QStringLiteral("prepare")),
           m_baseTitle(tr("Analyze")),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
@@ -84,8 +84,8 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     connect(m_pAnalysisView,
             &DlgAnalysis::loadTrackToPlayer,
             this,
-            [=, this](TrackPointer track, const QString& group) {
-                emit loadTrackToPlayer(track, group, false);
+            [=, this](TrackPointer pTrack, const QString& group) {
+                emit loadTrackToPlayer(std::move(pTrack), group, false);
             });
     connect(m_pAnalysisView,
             &DlgAnalysis::analyzeTracks,

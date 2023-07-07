@@ -14,7 +14,7 @@ constexpr int kReplayGainReferenceLUFS = -18;
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_rgSettings(pConfig),
+          m_rgSettings(std::move(pConfig)),
           m_replayGainBoost(kConfigKey, kReplayGainBoost),
           m_defaultBoost(kConfigKey, kDefaultBoost),
           m_enabled(kConfigKey, kReplayGainEnabled) {

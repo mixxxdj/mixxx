@@ -32,10 +32,10 @@ constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
 } // namespace
 
-DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
-                                   BroadcastSettingsPointer pBroadcastSettings)
+DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
+        BroadcastSettingsPointer pBroadcastSettings)
         : DlgPreferencePage(parent),
-          m_pBroadcastSettings(pBroadcastSettings),
+          m_pBroadcastSettings(std::move(pBroadcastSettings)),
           m_pSettingsModel(new BroadcastSettingsModel()),
           m_pProfileListSelection(nullptr) {
     setupUi(this);

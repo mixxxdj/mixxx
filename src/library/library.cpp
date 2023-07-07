@@ -69,7 +69,7 @@ Library::Library(
         PlayerManager* pPlayerManager,
         RecordingManager* pRecordingManager)
         : QObject(parent),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pSidebarModel(make_parented<SidebarModel>(this)),
@@ -538,20 +538,20 @@ void Library::slotSwitchToView(const QString& view) {
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
-    emit loadTrack(pTrack);
+    emit loadTrack(std::move(pTrack));
 }
 
 void Library::slotLoadLocationToPlayer(const QString& location, const QString& group, bool play) {
     auto trackRef = TrackRef::fromFilePath(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
-        emit loadTrackToPlayer(pTrack, group, play);
+        emit loadTrackToPlayer(std::move(pTrack), group, play);
     }
 }
 
 void Library::slotLoadTrackToPlayer(
         TrackPointer pTrack, const QString& group, bool play) {
-    emit loadTrackToPlayer(pTrack, group, play);
+    emit loadTrackToPlayer(std::move(pTrack), group, play);
 }
 
 void Library::slotRefreshLibraryModels() {

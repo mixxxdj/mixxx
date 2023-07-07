@@ -341,7 +341,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
 void AudioSource::adjustFrameIndexRange(
         IndexRange frameIndexRange) {
     DEBUG_ASSERT(frameIndexRange.isSubrangeOf(m_frameIndexRange));
-    m_frameIndexRange = frameIndexRange;
+    m_frameIndexRange = std::move(frameIndexRange);
 }
 
 } // namespace mixxx

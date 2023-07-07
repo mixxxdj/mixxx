@@ -848,7 +848,7 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 SeratoFeature::SeratoFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("serato")),
+        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig), QStringLiteral("serato")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {

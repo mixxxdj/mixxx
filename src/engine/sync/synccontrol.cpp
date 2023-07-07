@@ -26,7 +26,7 @@ SyncControl::SyncControl(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
         EngineSync* pEngineSync)
-        : EngineControl(group, pConfig),
+        : EngineControl(group, std::move(pConfig)),
           m_sGroup(group),
           m_pChannel(pChannel),
           m_pEngineSync(pEngineSync),
@@ -410,7 +410,7 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
     }
 
-    m_pBeats = pBeats;
+    m_pBeats = std::move(pBeats);
     m_leaderBpmAdjustFactor = kBpmUnity;
 
     SyncMode syncMode = getSyncMode();

@@ -59,7 +59,7 @@ WTrackMenu::WTrackMenu(
         TrackModel* trackModel)
         : QMenu(parent),
           m_pTrackModel(trackModel),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pLibrary(pLibrary),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
@@ -1690,7 +1690,7 @@ class RemoveCuesOfTypeTrackPointerOperation : public mixxx::TrackPointerOperatio
 class ResetMainCueTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
     explicit ResetMainCueTrackPointerOperation(UserSettingsPointer pConfig)
-            : m_pConfig(pConfig) {
+            : m_pConfig(std::move(pConfig)) {
     }
 
   private:
@@ -1712,7 +1712,7 @@ class ResetMainCueTrackPointerOperation : public mixxx::TrackPointerOperation {
 class ResetIntroTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
     explicit ResetIntroTrackPointerOperation(UserSettingsPointer pConfig)
-            : m_pConfig(pConfig) {
+            : m_pConfig(std::move(pConfig)) {
     }
 
   private:

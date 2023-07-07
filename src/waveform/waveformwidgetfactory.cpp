@@ -340,8 +340,8 @@ WaveformWidgetFactory::~WaveformWidgetFactory() {
     }
 }
 
-bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
-    m_config = config;
+bool WaveformWidgetFactory::setConfig(UserSettingsPointer pConfig) {
+    m_config = std::move(pConfig);
     if (!m_config) {
         return false;
     }
@@ -608,7 +608,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         // it since the size didn't change.
         //viewer->resize(viewer->size());
         widget->resize(viewer->width(), viewer->height());
-        widget->setTrack(pTrack);
+        widget->setTrack(std::move(pTrack));
         widget->getWidget()->show();
         viewer->update();
     }

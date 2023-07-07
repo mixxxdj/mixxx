@@ -81,7 +81,7 @@ void WCoverArtLabel::contextMenuEvent(QContextMenuEvent* event) {
 }
 
 void WCoverArtLabel::loadTrack(TrackPointer pTrack) {
-    m_pLoadedTrack = pTrack;
+    m_pLoadedTrack = std::move(pTrack);
 }
 
 void WCoverArtLabel::loadData(const QByteArray& data) {

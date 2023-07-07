@@ -7,8 +7,8 @@
 #include "util/math.h"
 
 SkinContext::SkinContext(UserSettingsPointer pConfig,
-                         const QString& xmlPath)
-        : m_pConfig(pConfig),
+        const QString& xmlPath)
+        : m_pConfig(std::move(pConfig)),
           m_xmlPath(xmlPath),
           m_pSharedState(std::make_shared<SharedState>()),
           m_scaleFactor(1.0) {

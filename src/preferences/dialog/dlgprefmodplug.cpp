@@ -10,11 +10,11 @@
 
 #define kConfigKey "[Modplug]"
 
-DlgPrefModplug::DlgPrefModplug(QWidget *parent,
-                               UserSettingsPointer _config)
+DlgPrefModplug::DlgPrefModplug(QWidget* parent,
+        UserSettingsPointer _pConfig)
         : DlgPreferencePage(parent),
           m_pUi(new Ui::DlgPrefModplug),
-          m_pConfig(_config) {
+          m_pConfig(std::move(_pConfig)) {
     m_pUi->setupUi(this);
     // Create text color for the OpenMTP manual link
     createLinkColor();

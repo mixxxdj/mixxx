@@ -25,7 +25,7 @@ EffectsManager::EffectsManager(
         UserSettingsPointer pConfig,
         std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory)
         : m_pConfig(pConfig),
-          m_pChannelHandleFactory(pChannelHandleFactory),
+          m_pChannelHandleFactory(std::move(pChannelHandleFactory)),
           m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),
           m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");

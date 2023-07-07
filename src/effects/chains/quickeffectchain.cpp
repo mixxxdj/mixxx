@@ -13,7 +13,7 @@ QuickEffectChain::QuickEffectChain(
                   formatEffectChainGroup(handleAndGroup.name()),
                   SignalProcessingStage::Postfader,
                   pEffectsManager,
-                  pEffectsMessenger) {
+                  std::move(pEffectsMessenger)) {
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         addEffectSlot(formatEffectSlotGroup(handleAndGroup.name(), i));
         m_effectSlots.at(i)->setEnabled(true);

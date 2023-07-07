@@ -17,7 +17,7 @@ void WEffectButtonParameterName::setup(const QDomNode& node, const SkinContext& 
     EffectChainPointer pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
+            node, context, std::move(pChainSlot));
     m_pParameterSlot =
             EffectWidgetUtils::getButtonParameterSlotFromNode(
                     node, context, m_pEffectSlot);

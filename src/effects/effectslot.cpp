@@ -29,7 +29,7 @@ EffectSlot::EffectSlot(const QString& group,
           m_pEffectsManager(pEffectsManager),
           m_pPresetManager(pEffectsManager->getEffectPresetManager()),
           m_pBackendManager(pEffectsManager->getBackendManager()),
-          m_pMessenger(pEffectsMessenger),
+          m_pMessenger(std::move(pEffectsMessenger)),
           m_pVisibleEffects(m_pEffectsManager->getVisibleEffectsList()),
           m_pChain(pChainSlot),
           m_pEngineEffectChain(pEngineEffectChain),
@@ -249,12 +249,12 @@ void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
     }
     EffectManifestPointer pManifest = m_pBackendManager->getManifest(
             pPreset->id(), pPreset->backendType());
-    loadEffectInner(pManifest, pPreset, true);
+    loadEffectInner(std::move(pManifest), pPreset, true);
 }
 
 void EffectSlot::loadEffectWithDefaults(const EffectManifestPointer pManifest) {
     EffectPresetPointer pPreset = m_pPresetManager->getDefaultPreset(pManifest);
-    loadEffectInner(pManifest, pPreset, false);
+    loadEffectInner(pManifest, std::move(pPreset), false);
 }
 
 void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,

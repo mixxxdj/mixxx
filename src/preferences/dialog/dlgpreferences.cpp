@@ -104,7 +104,7 @@ DlgPreferences::DlgPreferences(
 
     // Construct widgets for use in tabs.
     m_soundPage = PreferencesPage(
-            new DlgPrefSound(this, pSoundManager, m_pConfig),
+            new DlgPrefSound(this, std::move(pSoundManager), m_pConfig),
             new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type));
     addPageWidget(m_soundPage,
             tr("Sound Hardware"),
@@ -123,7 +123,7 @@ DlgPreferences::DlgPreferences(
     QTreeWidgetItem* pControllerRootItem =
             new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControllersDlg = new DlgPrefControllers(
-            this, m_pConfig, pControllerManager, pControllerRootItem);
+            this, m_pConfig, std::move(pControllerManager), pControllerRootItem);
     addPageWidget(PreferencesPage(m_pControllersDlg,
                           pControllerRootItem),
             tr("Controllers"),
@@ -133,14 +133,14 @@ DlgPreferences::DlgPreferences(
     // It's important for this to be before the connect for wsound.
     // TODO(rryan) determine why/if this is still true
     addPageWidget(PreferencesPage(
-                          new DlgPrefVinyl(this, pVCManager, m_pConfig),
+                          new DlgPrefVinyl(this, std::move(pVCManager), m_pConfig),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Vinyl Control"),
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
     DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
-            pScreensaverManager,
+            std::move(pScreensaverManager),
             pSkinLoader,
             m_pConfig);
     connect(pInterfacePage,

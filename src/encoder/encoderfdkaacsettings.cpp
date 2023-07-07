@@ -12,7 +12,7 @@ const mixxx::Logger kLogger("EncoderFdkAacSettings");
 EncoderFdkAacSettings::EncoderFdkAacSettings(
         UserSettingsPointer pConfig,
         QString format)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_format(std::move(format)) {
     m_qualList.append(32);
     m_qualList.append(48);
