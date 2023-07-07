@@ -155,6 +155,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         } else {
             int trackSamples = static_cast<int>(m_pLoopingControl->getTrackSamples());
             if (loop_read_position > trackSamples) {
+                // looping in reverse overlapping post-roll without samples
                 crossFadeStart = loop_read_position - trackSamples;
                 crossFadeSamples -= crossFadeStart;
             }
