@@ -1,6 +1,8 @@
 // Korg KAOSS DJ controller mapping for Mixxx
 // Seb Dooris, Fayaaz Ahmed, Lee Arromba, Raphael Quast
 
+// Using `const`/`let` causes ReferenceError: KAOSSDJ is not defined
+// eslint-disable-next-line no-var
 var KAOSSDJ = {
     // shift button state variables
     shiftLeftPressed: false,
