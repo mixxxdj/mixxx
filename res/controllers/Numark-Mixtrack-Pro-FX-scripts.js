@@ -10,6 +10,11 @@ MixtrackProFX.pitchRanges = [0.08, 0.16, 1];
 // (Settings -> Preferences -> Waveforms -> Synchronize zoom level across all waveforms)
 MixtrackProFX.waveformsSynced = true;
 
+// FX encoder controls meta
+// Controls whether encoder manages FX1 Effect1 meta and FX2 Effect1 meta (shfted) or
+// Encoder manages FX1&2 Effect1 Param1 & Param2(shifted)
+MixtrackProFX.fxControlsMeta = false;
+
 // jogwheel
 MixtrackProFX.jogScratchSensitivity = 1024;
 MixtrackProFX.jogScratchAlpha = 1; // do NOT set to 2 or higher
@@ -141,9 +146,23 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
     this.effectParam = new components.Encoder({
         group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
         shift: function() {
+            if(MixtrackProFX.fxControlsMeta)
+            {
+                this.group = "[EffectRack1_EffectUnit" + 2 + "_Effect1]"
+                this.inKey = "meta";
+                return;
+            }
+
             this.inKey = "parameter2";
         },
         unshift: function() {
+            if(MixtrackProFX.fxControlsMeta)
+            {
+                this.group = "[EffectRack1_EffectUnit" + 1 + "_Effect1]"
+                this.inKey = "meta";
+                return;
+            }
+
             this.inKey = "parameter1";
         },
         input: function(channel, control, value) {
