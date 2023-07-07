@@ -11,7 +11,7 @@ MixtrackProFX.pitchRanges = [0.08, 0.16, 1];
 MixtrackProFX.waveformsSynced = true;
 
 // FX encoder controls meta
-// Controls whether encoder manages FX1 Effect1 meta and FX2 Effect1 meta (shfted) or
+// Controls whether encoder manages FX1 Effect1 meta and FX2 Effect1 meta (shifted) or
 // Encoder manages FX1&2 Effect1 Param1 & Param2(shifted)
 MixtrackProFX.fxControlsMeta = false;
 
@@ -146,9 +146,8 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
     this.effectParam = new components.Encoder({
         group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
         shift: function() {
-            if(MixtrackProFX.fxControlsMeta)
-            {
-                this.group = "[EffectRack1_EffectUnit" + 2 + "_Effect1]"
+            if (MixtrackProFX.fxControlsMeta) {
+                this.group = "[EffectRack1_EffectUnit" + 2 + "_Effect1]";
                 this.inKey = "meta";
                 return;
             }
@@ -156,9 +155,8 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             this.inKey = "parameter2";
         },
         unshift: function() {
-            if(MixtrackProFX.fxControlsMeta)
-            {
-                this.group = "[EffectRack1_EffectUnit" + 1 + "_Effect1]"
+            if (MixtrackProFX.fxControlsMeta) {
+                this.group = "[EffectRack1_EffectUnit" + 1 + "_Effect1]";
                 this.inKey = "meta";
                 return;
             }
