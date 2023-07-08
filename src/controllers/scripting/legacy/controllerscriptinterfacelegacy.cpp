@@ -297,12 +297,11 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
                                         connection.key.item));
         return;
     }
-        bool callbackExecuting = false;
 
-        if (!callbackExecuting) {
-            callbackExecuting = true;
+        if (!this->m_callbackExecuting) {
+            this->m_callbackExecuting = true;
             connection.executeCallback(coScript->get());
-            callbackExecuting = false;
+            this->m_callbackExecuting = false;
     }
 }
 

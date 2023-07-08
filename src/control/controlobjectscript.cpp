@@ -132,13 +132,12 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // This allows a script to disconnect a callback from inside the
      const QVector<ScriptConnection> connections = m_scriptConnections;
     // Flag to inhibit triggering connections during callback execution
-     bool callbackExecuting = false;
 
     for (auto&& conn: connections) {
-        if (!callbackExecuting) {
-            callbackExecuting = true;
+        if (!this->m_callbackExecuting) {
+            this->m_callbackExecuting = true;
             conn.executeCallback(value);
-            callbackExecuting = false;
+            this->m_callbackExecuting = false;
         }
     }
 }

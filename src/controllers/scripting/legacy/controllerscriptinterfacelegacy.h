@@ -109,4 +109,5 @@ class ControllerScriptInterfaceLegacy : public QObject {
 
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
     const RuntimeLoggingCategory m_logger;
+    bool m_callbackExecuting=false;
 };
