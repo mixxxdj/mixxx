@@ -3008,8 +3008,6 @@ WSearchLineEdit::item:selected,
     color: #fff;
   }
   /* remove OS focus indicator from some buttons */
-  WLibrary QCheckBox:focus,
-  #LibraryBPMButton::item:selected,
   WCueMenuPopup QPushButton:focus {
     outline: none;
   }
@@ -3034,7 +3032,7 @@ QLineEdit QMenu::item:disabled {
   WEffectChainPresetButton QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid #333;
   }
 
   #MainMenu QMenu::right-arrow,
