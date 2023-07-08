@@ -297,8 +297,13 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
                                         connection.key.item));
         return;
     }
+        bool callbackExecuting = false;
 
-    connection.executeCallback(coScript->get());
+        if (!callbackExecuting) {
+            callbackExecuting = true;
+            connection.executeCallback(coScript->get());
+            callbackExecuting = false;
+    }
 }
 
 // This function is a legacy version of makeConnection with several alternate
