@@ -382,10 +382,10 @@ void writeTextIdentificationFrame(
         auto pFrame =
                 std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
         pFrame->setText(toTString(text));
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
+
+        // Release returns a pointer to the managed object and releases the ownership,
+        // the plain pointer in pFrame is owned and managed by pTag
+        pTag->addFrame(pFrame.release());
     }
 }
 
@@ -414,10 +414,10 @@ void writeUserTextIdentificationFrame(
                     std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
             pFrame->setDescription(toTString(description));
             pFrame->setText(toTString(text));
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+
+            // Release returns a pointer to the managed object and releases the ownership,
+            // the plain pointer in pFrame is owned and managed by pTag
+            pTag->addFrame(pFrame.release());
         }
     }
 }
@@ -488,10 +488,10 @@ void writeCommentsFrame(
                     std::make_unique<TagLib::ID3v2::CommentsFrame>(stringType);
             pFrame->setDescription(toTString(description));
             pFrame->setText(text);
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+
+            // Release returns a pointer to the managed object and releases the ownership,
+            // the plain pointer in pFrame is owned and managed by pTag
+            pTag->addFrame(pFrame.release());
         }
     }
     // Cleanup: Remove non-standard comment frames to avoid redundant and
@@ -576,10 +576,10 @@ void writeGeneralEncapsulatedObjectFrame(
         pFrame->setDescription(toTString(description));
         pFrame->setObject(toTByteVector(data));
         pFrame->setMimeType(mimeType);
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
+
+        // Release returns a pointer to the managed object and releases the ownership,
+        // the plain pointer in pFrame is owned and managed by pTag
+        pTag->addFrame(pFrame.release());
     }
 }
 
