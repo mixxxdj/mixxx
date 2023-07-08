@@ -221,9 +221,6 @@ EngineBuffer::EngineBuffer(const QString& group,
     pMixingEngine->getEngineSync()->addSyncableDeck(m_pSyncControl);
     addControl(m_pSyncControl);
 
-    m_fwdButton = ControlObject::getControl(ConfigKey(group, "fwd"));
-    m_backButton = ControlObject::getControl(ConfigKey(group, "back"));
-
     m_pKeyControl = new KeyControl(group, pConfig);
     addControl(m_pKeyControl);
 
@@ -1017,6 +1014,7 @@ void EngineBuffer::processTrackLocked(
         rate = m_rate_old;
     }
 
+    const mixxx::audio::FramePos playpos_old = m_playPosition;
     bool bCurBufferPaused = false;
     bool atEnd = false;
     bool backwards = rate < 0;
@@ -1061,6 +1059,8 @@ void EngineBuffer::processTrackLocked(
         // Note: The last buffer of a track is padded with silence.
         // This silence is played together with the last samples in the last
         // callback and the m_playPosition is advanced behind the end of the track.
+        // If repeat is enabled, scaler->scaleBuffer() wraps around at end/start
+        // and fills the buffer with samples from the other end of the track.
 
         if (m_bCrossfadeReady) {
             // Bring pOutput with the new parameters in and fade out the old one,
@@ -1092,22 +1092,26 @@ void EngineBuffer::processTrackLocked(
 
     m_scratching_old = is_scratching;
 
-    // Handle repeat mode
-    const bool atStart = m_playPosition <= mixxx::audio::kStartFramePos;
-
-    bool repeat_enabled = m_pRepeat->toBool();
+    // If we're repeating and crossed the track boundary, ReadAheadManager already
+    // wrapped around the playposition.
+    // To ensure quantize is respected we request a phase sync.
+    // TODO(ronso) This just restores previous repeat+quantize behaviour. I'm not
+    // sure whether that was actually desired or just a side effect of seeking.
+    // Ife it's really desired, should this be moved to looping control in order
+    // to set the sync'ed playposition right away and fill the wrap-around buffer
+    // with correct samples from the sync'ed loop in / track start position?
+    if (m_pRepeat->toBool() && m_pQuantize->toBool() &&
+            (m_playPosition > playpos_old) == backwards) {
+        // TODO() The resulting seek is processed in the following callback
+        // That is to late
+        requestSyncPhase();
+    }
 
     bool end_of_track = atEnd && !backwards;
 
-    // If playbutton is pressed, check if we are at start or end of track
-    if ((m_playButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool()))
-            && end_of_track) {
-        if (repeat_enabled) {
-            double fractionalPos = atStart ? 1.0 : 0;
-            doSeekFractional(fractionalPos, SEEK_STANDARD);
-        } else {
-            m_playButton->set(0.);
-        }
+    // If playbutton is pressed and we're at the end of track release play button
+    if (m_playButton->toBool() && end_of_track) {
+        m_playButton->set(0.);
     }
 
     // Give the Reader hints as to which chunks of the current song we

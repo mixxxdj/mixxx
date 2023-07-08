@@ -241,6 +241,8 @@ LoopingControl::LoopingControl(const QString& group,
             &LoopingControl::slotLoopRemove);
 
     m_pPlayButton = ControlObject::getControl(ConfigKey(group, "play"));
+
+    m_pRepeatButton = ControlObject::getControl(ConfigKey(group, "repeat"));
 }
 
 LoopingControl::~LoopingControl() {
@@ -517,7 +519,25 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
             }
         }
     }
+
+    // Return trigger if repeat is enabled
+    if (m_pRepeatButton->toBool()) {
+        const FrameInfo info = frameInfo();
+        if (reverse) {
+            *pTargetPosition = info.trackEndPosition;
+            return mixxx::audio::kStartFramePos;
+        } else {
+            *pTargetPosition = mixxx::audio::kStartFramePos;
+            return info.trackEndPosition;
+        }
+    }
+
     return mixxx::audio::kInvalidFramePos;
+}
+
+double LoopingControl::getTrackSamples() const {
+    const FrameInfo info = frameInfo();
+    return info.trackEndPosition.toEngineSamplePos();
 }
 
 void LoopingControl::hintReader(gsl::not_null<HintVector*> pHintList) {

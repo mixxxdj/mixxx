@@ -65,6 +65,8 @@ class LoopingControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
+    double getTrackSamples() const;
+
   signals:
     void loopReset();
     void loopEnabledChanged(bool enabled);
@@ -169,6 +171,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
     RateControl* m_pRateControl;
     ControlObject* m_pPlayButton;
+    ControlObject* m_pRepeatButton;
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
