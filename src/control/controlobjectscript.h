@@ -19,6 +19,9 @@ class ControlObjectScript : public ControlProxy {
 
     bool removeScriptConnection(const ScriptConnection& conn);
 
+    bool isCallbackExecuting() const;
+    void setCallbackExecuting(bool executing);
+
     // Required for legacy behavior of ControllerEngine::connectControl
     inline int countConnections() {
             return m_scriptConnections.size(); };

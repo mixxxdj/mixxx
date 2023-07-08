@@ -298,10 +298,10 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
         return;
     }
 
-        if (!this->m_callbackExecuting) {
-            this->m_callbackExecuting = true;
+        if (!coScript->isCallbackExecuting()) {
+            coScript->setCallbackExecuting(true);
             connection.executeCallback(coScript->get());
-            this->m_callbackExecuting = false;
+            coScript->setCallbackExecuting(false);
     }
 }
 

@@ -127,6 +127,14 @@ void ControlObjectScript::disconnectAllConnectionsToFunction(const QJSValue& fun
     }
 }
 
+bool ControlObjectScript::isCallbackExecuting() const {
+    return m_callbackExecuting;
+}
+
+void ControlObjectScript::setCallbackExecuting(bool executing) {
+    m_callbackExecuting = executing;
+}
+
 void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // Make a local copy of m_connectedScriptFunctions first.
     // This allows a script to disconnect a callback from inside the
