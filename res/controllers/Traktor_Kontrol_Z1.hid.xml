@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.0+" schemaVersion="1">
+    <info>
+        <name>Native Instruments Traktor Kontrol Z1</name>
+        <author>Janek Fischer</author>
+        <description>HID mapping for Native Instruments Traktor Kontrol Z1</description>
+    </info>
+    <controller id="Traktor">
+        <scriptfiles>
+            <file functionprefix="" filename="common-hid-packet-parser.js"/>
+            <file functionprefix="" filename="common-hid-utils.js"/>
+            <file functionprefix="KontrolZ1" filename="Traktor-Kontrol-Z1-scripts.js"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
