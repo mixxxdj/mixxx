@@ -18,7 +18,7 @@
 #include "library/trackset/crate/cratestorage.h"
 #include "moc_dlglibraryexport.cpp"
 
-namespace el = djinterop::engine;
+namespace e = djinterop::engine;
 
 namespace mixxx {
 
@@ -193,14 +193,14 @@ void DlgLibraryExport::exportRequested() {
 
     QDir baseExportDirectory{m_pExportDirectoryTextField->text()};
     const auto databaseDirectory = baseExportDirectory.filePath(
-            el::default_database_dir_name);
+            e::default_database_dir_name);
     const auto musicDirectory = baseExportDirectory.filePath(kDefaultMixxxExportDirName);
 
     // Work out what version was requested.
     // If there is an existing database, the version does not matter.
     int versionIndex = m_pVersionCombo->currentData().toInt();
-    el::engine_version exportVersion =
-            versionIndex == -1 ? el::latest_os : el::all_versions[versionIndex];
+    e::engine_version exportVersion =
+            versionIndex == -1 ? e::latest_os : e::all_versions[versionIndex];
 
     // Construct a request to export the library/crates.
     auto pRequest = QSharedPointer<EnginePrimeExportRequest>::create();
@@ -222,24 +222,24 @@ void DlgLibraryExport::exportRequested() {
 void DlgLibraryExport::checkExistingDatabase() {
     QDir baseExportDirectory{m_pExportDirectoryTextField->text()};
     const auto databaseDirectory = baseExportDirectory.filePath(
-            el::default_database_dir_name);
+            e::default_database_dir_name);
 
     try {
         // See if an EL DB exists in the chosen dir already.
-        bool exists = el::database_exists(databaseDirectory.toStdString());
+        bool exists = e::database_exists(databaseDirectory.toStdString());
         if (!exists) {
             // The user can freely choose a schema version for their new database.
             m_pExistingDatabaseLabel->setText("");
             m_pVersionCombo->clear();
             m_pVersionCombo->setEnabled(true);
             for (int versionIndex = 0;
-                    versionIndex < (int)el::all_versions.size();
+                    versionIndex < (int)e::all_versions.size();
                     ++versionIndex) {
-                el::engine_version version = el::all_versions[versionIndex];
+                e::engine_version version = e::all_versions[versionIndex];
                 m_pVersionCombo->insertItem(0,
                         QString::fromStdString(version.name),
                         QVariant{versionIndex});
-                if (version == el::latest_os) {
+                if (version == e::latest_os) {
                     // Latest firmware version is the default selection.
                     m_pVersionCombo->setCurrentIndex(0);
                 }
@@ -250,7 +250,7 @@ void DlgLibraryExport::checkExistingDatabase() {
         // Load the existing database, and set the displayed version widget
         // accordingly.  Changing the schema version of existing databases is
         // not currently supported.
-        djinterop::database db = el::load_database(databaseDirectory.toStdString());
+        djinterop::database db = e::load_database(databaseDirectory.toStdString());
         m_pExistingDatabaseLabel->setText(
                 tr("A database already exists in the chosen directory. "
                    "Exported tracks will be added into this database."));

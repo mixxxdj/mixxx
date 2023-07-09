@@ -19,7 +19,7 @@
 #include "util/thread_affinity.h"
 #include "waveform/waveformfactory.h"
 
-namespace el = djinterop::engine;
+namespace e = djinterop::engine;
 
 namespace mixxx {
 
@@ -164,14 +164,14 @@ bool tryGetBeatgrid(BeatsPointer pBeats,
     std::vector<djinterop::beatgrid_marker> beatgrid{
             {0, firstBarAlignedBeatPlayPos.value()},
             {numBeats, lastBeatPlayPos.value()}};
-    beatgrid = el::normalize_beatgrid(std::move(beatgrid), frameCount);
+    beatgrid = e::normalize_beatgrid(std::move(beatgrid), frameCount);
     pBeatgrid->assign(std::begin(beatgrid), std::end(beatgrid));
     return true;
 }
 
 void exportMetadata(
         djinterop::database* pDatabase,
-        const el::engine_version& dbVersion,
+        const e::engine_version& dbVersion,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         TrackPointer pTrack,
         const Waveform* pWaveform,
@@ -287,9 +287,9 @@ void exportMetadata(
     // Write waveform.
     if (pWaveform) {
         djinterop::waveform_extents extents = dbVersion.is_v2_schema()
-                ? el::calculate_overview_waveform_extents(
+                ? e::calculate_overview_waveform_extents(
                           frameCount, pTrack->getSampleRate())
-                : el::calculate_high_resolution_waveform_extents(
+                : e::calculate_high_resolution_waveform_extents(
                           frameCount, pTrack->getSampleRate());
         std::vector<djinterop::waveform_entry> externalWaveform;
         externalWaveform.reserve(extents.size);
@@ -321,7 +321,7 @@ void exportMetadata(
 void exportTrack(
         const QSharedPointer<EnginePrimeExportRequest> pRequest,
         djinterop::database* pDatabase,
-        const el::engine_version& dbVersion,
+        const e::engine_version& dbVersion,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         const TrackPointer pTrack,
         const Waveform* pWaveform) {
@@ -509,10 +509,10 @@ void EnginePrimeExportJob::run() {
 
     // Ensure that the database exists, creating an empty one if not.
     std::unique_ptr<djinterop::database> pDb;
-    el::engine_version dbVersion;
+    e::engine_version dbVersion;
     try {
         bool created;
-        pDb = std::make_unique<djinterop::database>(el::create_or_load_database(
+        pDb = std::make_unique<djinterop::database>(e::create_or_load_database(
                 m_pRequest->engineLibraryDbDir.path().toStdString(),
                 m_pRequest->exportVersion,
                 created,
