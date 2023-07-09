@@ -146,14 +146,8 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
             this->m_callbackExecuting = true;
             conn.executeCallback(value);
             this->m_callbackExecuting = false;
+        } else {
+            qCWarning(m_logger) << "Warning: trigger() called inside the callback.";
         }
     }
-}
-
-void ControlObjectScript::trigger(double value, QObject*) {
-    if (this->m_callbackExecuting) {
-        std::cerr << "Warning: trigger() called inside the callback. ";
-        return;
-    }
-    emit trigger(value, object);
 }
