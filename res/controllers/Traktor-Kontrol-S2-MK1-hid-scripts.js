@@ -1132,7 +1132,7 @@ class TraktorS2MK1Class {
         InputReport0x02.addControl("[Master]", "!crossfader", 0x2F, "H", 0xFFFF, false, this.crossfader.bind(this));
         InputReport0x02.addControl("[Master]", "headMix", 0x31, "H");
         InputReport0x02.addControl("[Master]", "!samplerGain", 0x13, "H", 0xFFFF, false, this.samplerGainKnob.bind(this));
-        InputReport0x02.addControl("[Playlist]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoderCallback.bind(this));
+        InputReport0x02.addControl("[Library]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoderCallback.bind(this));
 
         // Soft takeover for knobs
 
