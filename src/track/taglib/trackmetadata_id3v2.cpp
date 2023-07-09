@@ -383,8 +383,7 @@ void writeTextIdentificationFrame(
                 std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
         pFrame->setText(toTString(text));
 
-        // Release returns a pointer to the managed object and releases the ownership,
-        // the plain pointer in pFrame is owned and managed by pTag
+        // pTag takes the ownership of pFrame
         pTag->addFrame(pFrame.release());
     }
 }
@@ -415,8 +414,7 @@ void writeUserTextIdentificationFrame(
             pFrame->setDescription(toTString(description));
             pFrame->setText(toTString(text));
 
-            // Release returns a pointer to the managed object and releases the ownership,
-            // the plain pointer in pFrame is owned and managed by pTag
+            // pTag takes the ownership of pFrame
             pTag->addFrame(pFrame.release());
         }
     }
@@ -489,8 +487,7 @@ void writeCommentsFrame(
             pFrame->setDescription(toTString(description));
             pFrame->setText(text);
 
-            // Release returns a pointer to the managed object and releases the ownership,
-            // the plain pointer in pFrame is owned and managed by pTag
+            // pTag takes the ownership of pFrame
             pTag->addFrame(pFrame.release());
         }
     }
@@ -577,8 +574,7 @@ void writeGeneralEncapsulatedObjectFrame(
         pFrame->setObject(toTByteVector(data));
         pFrame->setMimeType(mimeType);
 
-        // Release returns a pointer to the managed object and releases the ownership,
-        // the plain pointer in pFrame is owned and managed by pTag
+        // pTag takes the ownership of pFrame
         pTag->addFrame(pFrame.release());
     }
 }

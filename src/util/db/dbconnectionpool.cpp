@@ -33,8 +33,7 @@ bool DbConnectionPool::createThreadLocalConnection() {
         return false; // abort
     }
 
-    // Release returns a pointer to the managed object and releases the ownership,
-    // the plain pointer in pConnection is owned and managed by m_threadLocalConnections
+    // m_threadLocalConnections takes the ownership of pConnection
     m_threadLocalConnections.setLocalData(pConnection.release());
 
     DEBUG_ASSERT(m_threadLocalConnections.hasLocalData());
