@@ -7,8 +7,6 @@
 #include "util/math.h"
 #include "util/sample.h"
 
-static constexpr int kNumChannels = 2;
-
 ReadAheadManager::ReadAheadManager()
         : m_pLoopingControl(nullptr),
           m_pRateControl(nullptr),
@@ -37,14 +35,14 @@ ReadAheadManager::~ReadAheadManager() {
 
 SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         SINT requested_samples) {
-    // TODO(XXX): Remove implicit assumption of 2 channels
-    if (!even(requested_samples)) {
+    // qDebug() << "getNextSamples:" << m_currentPosition << requested_samples;
+
+    int modSamples = requested_samples % mixxx::kEngineChannelCount;
+    if (modSamples != 0) {
         qDebug() << "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
-        requested_samples--;
+        requested_samples -= modSamples;
     }
     bool in_reverse = dRate < 0;
-
-    //qDebug() << "start" << start_sample << requested_samples;
 
     mixxx::audio::FramePos targetPosition;
     // A loop (beat loop or track on repeat) will only limit the amount we
@@ -71,7 +69,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
             // We can only read whole frames from the reader.
             // Use ceil here, to be sure to reach the loop trigger.
             preloop_samples = SampleUtil::ceilPlayPosToFrameStart(
-                    samplesToLoopTrigger, kNumChannels);
+                    samplesToLoopTrigger, mixxx::kEngineChannelCount);
             // clamp requested samples from the caller to the loop trigger point
             if (preloop_samples <= requested_samples) {
                 reachedTrigger = true;
@@ -87,7 +85,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     }
 
     SINT start_sample = SampleUtil::roundPlayPosToFrameStart(
-            m_currentPosition, kNumChannels);
+            m_currentPosition, mixxx::kEngineChannelCount);
 
     const auto readResult = m_pReader->read(
             start_sample, samples_from_reader, in_reverse, pOutput);
@@ -144,7 +142,9 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         // start reading before the loop start point, to crossfade these samples
         // with the samples we need to the loop end
         int loop_read_position = SampleUtil::roundPlayPosToFrameStart(
-                m_currentPosition + (in_reverse ? preloop_samples : -preloop_samples), kNumChannels);
+                m_currentPosition +
+                        (in_reverse ? preloop_samples : -preloop_samples),
+                mixxx::kEngineChannelCount);
 
         int crossFadeStart = 0;
         int crossFadeSamples = samples_from_reader;
@@ -155,12 +155,13 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         } else {
             int trackSamples = static_cast<int>(m_pLoopingControl->getTrackSamples());
             if (loop_read_position > trackSamples) {
+                // looping in reverse overlapping post-roll without samples
                 crossFadeStart = loop_read_position - trackSamples;
                 crossFadeSamples -= crossFadeStart;
             }
         }
 
-        if (crossFadeSamples) {
+        if (crossFadeSamples > 0) {
             const auto readResult = m_pReader->read(loop_read_position +
                             (in_reverse ? crossFadeStart : -crossFadeStart),
                     crossFadeSamples,
@@ -185,7 +186,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         }
     }
 
-    //qDebug() << "read" << m_currentPosition << samples_read;
+    // qDebug() << "read" << m_currentPosition << samples_from_reader;
     return samples_from_reader;
 }
 
@@ -220,11 +221,11 @@ void ReadAheadManager::hintReader(double dRate, gsl::not_null<HintVector*> pHint
     // this called after the precious chunk was consumed
     if (in_reverse) {
         current_position.frame =
-                static_cast<SINT>(ceil(m_currentPosition / kNumChannels)) -
+                static_cast<SINT>(ceil(m_currentPosition / mixxx::kEngineChannelCount)) -
                 frameCountToCache;
     } else {
         current_position.frame =
-                static_cast<SINT>(floor(m_currentPosition / kNumChannels));
+                static_cast<SINT>(floor(m_currentPosition / mixxx::kEngineChannelCount));
     }
 
     // If we are trying to cache before the start of the track,
