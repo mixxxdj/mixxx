@@ -20,7 +20,12 @@ class ControlObjectScript : public ControlProxy {
     bool removeScriptConnection(const ScriptConnection& conn);
 
     bool isCallbackExecuting() const;
+
     void setCallbackExecuting(bool executing);
+
+    bool isPreventRecursiveCalls() const;
+
+    void setPreventRecursiveCalls(bool recursive);
 
     // Required for legacy behavior of ControllerEngine::connectControl
     inline int countConnections() {
@@ -48,5 +53,6 @@ class ControlObjectScript : public ControlProxy {
     const RuntimeLoggingCategory m_logger;
     CompressingProxy m_proxy;
     bool m_skipSuperseded; // This flag is combined for all connections of this Control Object
-    bool m_callbackExecuting = false;
+    bool m_callbackExecuting;
+    bool m_preventRecursiveCalls; // New flag to prevent recursive calls without a warning
 };
