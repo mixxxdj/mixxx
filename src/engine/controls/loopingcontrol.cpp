@@ -1742,8 +1742,8 @@ mixxx::audio::FramePos LoopingControl::adjustedPositionInsideAdjustedLoop(
                 ceil((adjustedPosition.value() - newLoopEndPosition.value()) /
                         newLoopSize);
         adjustedPosition -= adjustSteps * newLoopSize;
-        DEBUG_ASSERT(adjustedPosition <= newLoopEndPosition);
-        VERIFY_OR_DEBUG_ASSERT(adjustedPosition > newLoopStartPosition) {
+        DEBUG_ASSERT(adjustedPosition < newLoopEndPosition);
+        VERIFY_OR_DEBUG_ASSERT(adjustedPosition >= newLoopStartPosition) {
             // I'm not even sure this is possible.  The new loop would have to be bigger than the
             // old loop, and the playhead was somehow outside the old loop.
             qWarning()
