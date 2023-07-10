@@ -151,21 +151,17 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
      const QVector<ScriptConnection> connections = m_scriptConnections;
     // Flag to inhibit triggering connections during callback execution
 
-
-    
-
     for (auto&& conn: connections) {
-         if (!m_callbackExecuting && !m_preventRecursiveCalls) {
-             m_callbackExecuting = true;
-             conn.executeCallback(value);
-             m_callbackExecuting = false;
-         } else if (m_preventRecursiveCalls) {
-             // Handle preventing recursive calls without a warning
-             // Add any necessary logic here
-         } else {
-             qCCritical(m_logger) << "Critical Error: Triggering a connection inside the callback is not allowed.";
-         }  
+        if (!m_callbackExecuting && !m_preventRecursiveCalls) {
+            m_callbackExecuting = true;
+            conn.executeCallback(value);
+            m_callbackExecuting = false;
+        } else if (m_preventRecursiveCalls) {
+            // Handle preventing recursive calls without a warning
+            // Add any necessary logic here
+        } else {
+            qCCritical(m_logger) << "Critical Error: Triggering a connection "
+                                    "inside the callback is not allowed.";
+        }
     }
-
-    
 }
