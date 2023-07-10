@@ -233,7 +233,7 @@ void DlgLibraryExport::checkExistingDatabase() {
             m_pVersionCombo->clear();
             m_pVersionCombo->setEnabled(true);
             for (int versionIndex = 0;
-                    versionIndex < (int)e::all_versions.size();
+                    versionIndex < static_cast<int>(e::all_versions.size());
                     ++versionIndex) {
                 e::engine_version version = e::all_versions[versionIndex];
                 m_pVersionCombo->insertItem(0,
