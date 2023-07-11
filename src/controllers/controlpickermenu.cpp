@@ -203,7 +203,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("end", tr("Jump To End"), tr("Jump to end of track"), transportMenu);
     transportMenu->addSeparator();
-    addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject"), tr("Eject track"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("eject",
+            tr("Eject"),
+            tr("Eject or un-eject track, i.e. reload the last-ejected track "
+               "(of any deck)<br>"
+               "Double-press to reload the last replaced track. In empty decks "
+               "it reloads the second-last ejected track."),
+            transportMenu);
     addDeckAndSamplerControl("repeat", tr("Repeat Mode"), tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerControl("slip_enabled", tr("Slip Mode"), tr("Toggle slip mode"), transportMenu);
 
