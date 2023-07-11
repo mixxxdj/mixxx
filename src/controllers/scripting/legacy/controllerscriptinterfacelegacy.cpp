@@ -298,20 +298,8 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
         return;
     }
 
-    if (!coScript->isCallbackExecuting() && !coScript->isPreventRecursiveCalls()) {
-        coScript->setCallbackExecuting(true);
-        coScript->setPreventRecursiveCalls(true);
         connection.executeCallback(coScript->get());
-        coScript->setPreventRecursiveCalls(false);
-        coScript->setCallbackExecuting(false);
-    } else if (coScript->isPreventRecursiveCalls()) {
-        // Handle preventing recursive calls without a warning
-        // Add any necessary logic here
-        // ...
-    } else {
-        qCCritical(m_logger) << "Critical Error: Triggering a connection "
-                                "inside the callback is not allowed.";
-    }
+    
 }
 
 // This function is a legacy version of makeConnection with several alternate

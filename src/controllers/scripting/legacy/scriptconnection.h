@@ -19,6 +19,8 @@ class ScriptConnection {
     ControllerScriptInterfaceLegacy* engineJSProxy;
     ControllerScriptEngineLegacy* controllerEngine;
     bool skipSuperseded;
+    bool m_callbackExecuting;
+    bool m_preventRecursiveCalls; // New flag to prevent recursive calls without a warning
 
     void executeCallback(double value) const;
 

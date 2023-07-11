@@ -7,9 +7,7 @@ ControlObjectScript::ControlObjectScript(
         : ControlProxy(key, pParent, ControlFlag::AllowMissingOrInvalid),
           m_logger(logger),
           m_proxy(key, logger, this),
-          m_skipSuperseded(false),
-          m_callbackExecuting(false),
-          m_preventRecursiveCalls(false) {
+          m_skipSuperseded(false) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
@@ -129,22 +127,6 @@ void ControlObjectScript::disconnectAllConnectionsToFunction(const QJSValue& fun
     }
 }
 
-bool ControlObjectScript::isCallbackExecuting() const {
-    return m_callbackExecuting;
-}
-
-void ControlObjectScript::setCallbackExecuting(bool executing) {
-    m_callbackExecuting = executing;
-}
-
-bool ControlObjectScript::isPreventRecursiveCalls() const {
-    return m_preventRecursiveCalls;
-}
-
-void ControlObjectScript::setPreventRecursiveCalls(bool recursive) {
-    m_preventRecursiveCalls = recursive;
-}
-
 void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // Make a local copy of m_connectedScriptFunctions first.
     // This allows a script to disconnect a callback from inside the
@@ -152,16 +134,6 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // Flag to inhibit triggering connections during callback execution
 
     for (auto&& conn: connections) {
-        if (!m_callbackExecuting && !m_preventRecursiveCalls) {
-            m_callbackExecuting = true;
-            conn.executeCallback(value);
-            m_callbackExecuting = false;
-        } else if (m_preventRecursiveCalls) {
-            // Handle preventing recursive calls without a warning
-            // Add any necessary logic here
-        } else {
-            qCCritical(m_logger) << "Critical Error: Triggering a connection "
-                                    "inside the callback is not allowed.";
-        }
+          conn.executeCallback(value);
     }
 }
