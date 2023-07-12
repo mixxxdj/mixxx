@@ -22,6 +22,8 @@ class ScriptConnection {
     bool m_callbackExecuting;
     bool m_preventRecursiveCalls; // New flag to prevent recursive calls without a warning
 
+    ScriptConnection();
+
     void executeCallback(double value) const;
 
     // Required for various QList methods and iteration to work.

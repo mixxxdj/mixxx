@@ -3,6 +3,12 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/trace.h"
 
+
+ScriptConnection::ScriptConnection()
+        : m_callbackExecuting(false),
+          m_preventRecursiveCalls(false) {
+}
+
 void ScriptConnection::executeCallback(double value) const {
     Trace executeCallbackTrace("JS %1 callback", key.item);
     if (!m_preventRecursiveCalls) {

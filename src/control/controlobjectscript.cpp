@@ -130,8 +130,9 @@ void ControlObjectScript::disconnectAllConnectionsToFunction(const QJSValue& fun
 void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // Make a local copy of m_connectedScriptFunctions first.
     // This allows a script to disconnect a callback from inside the
-     const QVector<ScriptConnection> connections = m_scriptConnections;
-    // Flag to inhibit triggering connections during callback execution
+    // the callback. Otherwise the this may crash since the disconnect call
+    // happens during conn.function.call() in the middle of the loop below.
+    const QVector<ScriptConnection> connections = m_scriptConnections;
 
     for (auto&& conn: connections) {
           conn.executeCallback(value);
