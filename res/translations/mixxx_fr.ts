@@ -105,144 +105,144 @@
 <context>
     <name>BasePlaylistFeature</name>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="354"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="355"/>
         <source>New Playlist</source>
         <translation>Nouvelle liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="91"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="103"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Ajouter à la file Auto DJ (fin)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="58"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="351"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="70"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="352"/>
         <source>Create New Playlist</source>
         <translation>Créer une nouvelle liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="96"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="108"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Ajouter à la file Auto DJ (début)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="75"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="87"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="64"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="76"/>
         <source>Rename</source>
         <translation>Renommer</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="85"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="97"/>
         <source>Lock</source>
         <translation>Verrouiller</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="70"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="82"/>
         <source>Duplicate</source>
         <translation>Dupliquer</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="113"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="118"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="125"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="130"/>
         <source>Import Playlist</source>
         <translation>Importer une liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="128"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="140"/>
         <source>Export Track Files</source>
         <translation>Exporter les fichiers des pistes</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="107"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="119"/>
         <source>Analyze entire Playlist</source>
         <translation>Analyser la liste de lecture entière</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="257"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="259"/>
         <source>Enter new name for playlist:</source>
         <translation>Entrer le nouveau nom de la liste de lecture :</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="298"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="300"/>
         <source>Duplicate Playlist</source>
         <translation>Dupliquer la liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="299"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="352"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="301"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="353"/>
         <source>Enter name for new playlist:</source>
         <translation>Entrer le nom de la nouvelle liste de lecture :</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="123"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="135"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="557"/>
         <source>Export Playlist</source>
         <translation>Exporter la liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="101"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="113"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>Ajouter à la file Auto-DJ (Remplacer)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="256"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="258"/>
         <source>Rename Playlist</source>
         <translation>Renommer la liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="270"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="274"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="272"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="276"/>
         <source>Renaming Playlist Failed</source>
         <translation>Échec pour renomer la liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="271"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="314"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="366"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="273"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="316"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="367"/>
         <source>A playlist by that name already exists.</source>
         <translation>Une liste de lecture du même nom exise déjà</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="275"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="318"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="370"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="277"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="320"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="371"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Une liste de lecture ne peut pas être sans nom.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="302"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="304"/>
         <source>_copy</source>
         <comment>//:</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
         <translation>_copie</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="313"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="317"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="365"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="369"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="382"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="315"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="319"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="366"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="370"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="381"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="529"/>
         <source>Playlist Creation Failed</source>
         <translation>La création de la liste de lecture a échoué</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="383"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="382"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="530"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Une erreur inconnue s&apos;est produite à la création de la liste de lecture : </translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="437"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="427"/>
         <source>Confirm Deletion</source>
         <translation>Confirmer la suppression</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="438"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="428"/>
         <source>Do you really want to delete playlist &lt;b&gt;%1&lt;/b&gt;?</source>
         <translation type="unfinished"/>
     </message>
@@ -281,132 +281,132 @@
 <context>
     <name>BaseTrackTableModel</name>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="131"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="149"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="135"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="153"/>
         <source>Album Artist</source>
         <translation>Artiste de l&apos;album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="139"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="157"/>
         <source>Artist</source>
         <translation>Artiste</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="143"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="161"/>
         <source>Bitrate</source>
         <translation>Débit</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="147"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="165"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="151"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="169"/>
         <source>Channels</source>
         <translation>Canaux</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="155"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="173"/>
         <source>Color</source>
         <translation>Couleur</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="159"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="177"/>
         <source>Comment</source>
         <translation>Commentaire</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="163"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="181"/>
         <source>Composer</source>
         <translation>Compositeur</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="167"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="185"/>
         <source>Cover Art</source>
         <translation>Pochette d&apos;album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="171"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="189"/>
         <source>Date Added</source>
         <translation>Date d&apos;ajout</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="175"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="193"/>
         <source>Last Played</source>
         <translation>Last Played</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="179"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="197"/>
         <source>Duration</source>
         <translation>Durée</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="183"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="201"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="187"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="205"/>
         <source>Genre</source>
         <translation>Genre</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="191"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="209"/>
         <source>Grouping</source>
         <translation>Regroupement</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="195"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="213"/>
         <source>Key</source>
         <translation>Tonalité</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="199"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="217"/>
         <source>Location</source>
         <translation>Emplacement</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="203"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="221"/>
         <source>Preview</source>
         <translation>Aperçu</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="207"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="225"/>
         <source>Rating</source>
         <translation>Notation</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="211"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="229"/>
         <source>ReplayGain</source>
         <translation>ReplayGain</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="215"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="233"/>
         <source>Samplerate</source>
         <translation>Tauxéchantillonnage</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="219"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="237"/>
         <source>Played</source>
         <translation>Joué</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="223"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="241"/>
         <source>Title</source>
         <translation>Titre</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="227"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="245"/>
         <source>Track #</source>
         <translation>Piste n°</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="231"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="249"/>
         <source>Year</source>
         <translation>Année</translation>
     </message>
@@ -514,38 +514,38 @@
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="80"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="106"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="105"/>
         <source>Devices</source>
         <translation>Périphériques</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="109"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="108"/>
         <source>Removable Devices</source>
         <translation>Périphériques amovibles</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="143"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="441"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="142"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="440"/>
         <source>Computer</source>
         <translation>Ordinateur</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="176"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="175"/>
         <source>Music Directory Added</source>
         <translation>Répertoire de musique ajouté</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="177"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="176"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation>Vous avez ajouté un ou plusieurs répertoires de musique. Les pistes dans ces répertoires ne seront disponibles qu&apos;après une réanalyse de la bibliothèque. Désirez-vous effectuer cette réanalyse maintenant ?</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="181"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="180"/>
         <source>Scan</source>
         <translation>Analyse</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="442"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="441"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
         <translation>&quot;Ordinateur&quot; vous permet de naviguer, voir et charger les pistes dans les répertoires de votre disque dur et périphériques externes.</translation>
     </message>
@@ -658,12 +658,12 @@
         <translation>Fichier créé</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="222"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="224"/>
         <source>Mixxx Library</source>
         <translation>Bibliothèque Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="223"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="225"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Impossible de charger le fichier suivant car il est utilisé par Mixxx ou une autre application.</translation>
     </message>
@@ -697,63 +697,68 @@
 <context>
     <name>CmdlineArgs</name>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="109"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="110"/>
         <source>Mixxx is an open source DJ software. For more information, see: </source>
         <translation>Mixxx is an open source DJ software. For more information, see: </translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="117"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="118"/>
         <source>Starts Mixxx in full-screen mode</source>
         <translation>Démarre Mixxx en mode plein écran</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="126"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="127"/>
         <source>Use a custom locale for loading translations. (e.g &apos;fr&apos;)</source>
         <translation>Use a custom locale for loading translations. (e.g &apos;fr&apos;)</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="149"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="150"/>
         <source>Top-level directory where Mixxx should look for its resource files such as MIDI mappings, overriding the default installation location.</source>
         <translation>Répertoire de niveau supérieur dans lequel Mixxx doit rechercher ses fichiers de ressources, tels que les mappages MIDI, en remplaçant l&apos;emplacement d&apos;installation par défaut.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="163"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="164"/>
         <source>Path the debug statistics time line is written to</source>
         <translation>Path the debug statistics time line is written to</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="175"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="176"/>
         <source>Do not use OpenGL vu meter</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="185"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="186"/>
         <source>Causes Mixxx to display/log all of the controller data it receives and script functions it loads</source>
         <translation>Causes Mixxx to display/log all of the controller data it receives and script functions it loads</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="197"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="199"/>
+        <source>The controller mapping will issue more aggressive warnings and errors when detecting misuse of controller APIs. New Controller Mappings should be developed with this option enabled!</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/util/cmdlineargs.cpp" line="209"/>
         <source>Enables developer-mode. Includes extra log info, stats on performance, and a Developer tools menu.</source>
         <translation>Enables developer-mode. Includes extra log info, stats on performance, and a Developer tools menu.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="135"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="136"/>
         <source>Top-level directory where Mixxx should look for settings. Default is: </source>
         <translation>Répertoire racine où Mixxx doit chercher les paramètres.
 La valeur par défaut est:</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="204"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="216"/>
         <source>Enables safe-mode. Disables OpenGL waveforms, and spinning vinyl widgets. Try this option if Mixxx is crashing on startup.</source>
         <translation>Enables safe-mode. Disables OpenGL waveforms, and spinning vinyl widgets. Try this option if Mixxx is crashing on startup.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="215"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="227"/>
         <source>[auto|always|never] Use colors on the console output.</source>
         <translation>[auto|always|never] Use colors on the console output.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="223"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="235"/>
         <source>Sets the verbosity of command line logging.
 critical - Critical/Fatal only
 warning  - Above + Warnings
@@ -768,17 +773,17 @@ debug    - Above + Debug/Developer messages
 trace    - Above + Profiling messages</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="239"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="251"/>
         <source>Sets the the logging level at which the log buffer is flushed to mixxx.log. &lt;level&gt; is one of the values defined at --log-level above.</source>
         <translation>Sets the the logging level at which the log buffer is flushed to mixxx.log. &lt;level&gt; is one of the values defined at --log-level above.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="253"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="265"/>
         <source>Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to false. Under a debugger you can continue afterwards.</source>
         <translation>Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to false. Under a debugger you can continue afterwards.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="267"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="279"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
         <translation>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</translation>
     </message>
@@ -3294,32 +3299,32 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
 <context>
     <name>ControllerScriptEngineBase</name>
     <message>
-        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="140"/>
+        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="144"/>
         <source>The functionality provided by this controller mapping will be disabled until the issue has been resolved.</source>
         <translation>La fonctionnalité fournie par ce mappage de contrôleur sera désactivée jusqu&apos;à ce que le problème soit résolu.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="148"/>
+        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="152"/>
         <source>You can ignore this error for this session but you may experience erratic behavior.</source>
         <translation>Vous pouvez ignorer cette erreur pour la durée de la session mais il se peut que vous observiez un comportement erratique.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="151"/>
+        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="155"/>
         <source>Try to recover by resetting your controller.</source>
         <translation>Tenter de récupérer en redémarrant votre contrôleur.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="155"/>
+        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="159"/>
         <source>Controller Mapping Error</source>
         <translation>Erreur du mappage contrôleur</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="156"/>
+        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="160"/>
         <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
         <translation>Le mappage pour votre contrôleur &quot;%1&quot; ne fonctionne pas correctement.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="159"/>
+        <location filename="../../src/controllers/scripting/controllerscriptenginebase.cpp" line="163"/>
         <source>The script code needs to be fixed.</source>
         <translation>Le code du script doit être corrigé.</translation>
     </message>
@@ -3355,7 +3360,7 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
 <context>
     <name>CoverArtCopyWorker</name>
     <message>
-        <location filename="../../src/library/export/coverartcopyworker.cpp" line="58"/>
+        <location filename="../../src/library/export/coverartcopyworker.cpp" line="59"/>
         <source>Error while copying the cover art to: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3380,7 +3385,7 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="94"/>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="376"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="394"/>
         <source>Lock</source>
         <translation>Verrouiller</translation>
     </message>
@@ -3410,7 +3415,7 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
         <translation>Auto DJ Source de piste</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="459"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="482"/>
         <source>Enter new name for crate:</source>
         <translation>Donnez un nouveau nom au bac :</translation>
     </message>
@@ -3427,22 +3432,22 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
         <translation>Importer un bac</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="742"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
         <source>Export Crate</source>
         <translation>Exporter un bac</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="376"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="394"/>
         <source>Unlock</source>
         <translation>Déverrouiller</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="695"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="739"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Une erreur inconnue s&apos;est produite lors de la création du bac : </translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="458"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="481"/>
         <source>Rename Crate</source>
         <translation>Renommer le bac</translation>
     </message>
@@ -3458,28 +3463,28 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
         <translation>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested tracks.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="427"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="450"/>
         <source>Confirm Deletion</source>
         <translation>Confirmer la suppression</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="469"/>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="475"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="492"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="498"/>
         <source>Renaming Crate Failed</source>
         <translation>Le renommage du bac a échoué</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="694"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="738"/>
         <source>Crate Creation Failed</source>
         <translation>Échec de création d&apos;un bac</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="744"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="789"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Liste de lecture M3U (*.m3u);;Liste de lecture M3U8 (*.m3u8);;Liste de lecture PLS (*.pls);;Texte CSV (*.csv);;Texte (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="746"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="791"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Liste de lecture M3U (*.m3u)</translation>
     </message>
@@ -3494,17 +3499,17 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
         <translation>Les bacs vous permettent d&apos;organiser votre musique comme vous le souhaitez !</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="428"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="451"/>
         <source>Do you really want to delete crate &lt;b&gt;%1&lt;/b&gt;?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="470"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="493"/>
         <source>A crate cannot have a blank name.</source>
         <translation>Le nom d&apos;un bac ne doit pas être vide.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="476"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="499"/>
         <source>A crate by that name already exists.</source>
         <translation>Un bac avec ce nom existe déjà.</translation>
     </message>
@@ -3599,12 +3604,12 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
         <translation>Anciens contributeurs</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="384"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="385"/>
         <source>Official Website</source>
         <translation>Site Internet officiel</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="394"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="395"/>
         <source>Donate</source>
         <translation>Donation</translation>
     </message>
@@ -4124,7 +4129,7 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="333"/>
         <source>Didn&apos;t get any midi messages.  Please try again.</source>
-        <translation>Aucun message MIDI reçu. Veuillez réessayer.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="349"/>
@@ -4134,17 +4139,17 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="400"/>
         <source>Successfully mapped control:</source>
-        <translation>Contrôle assigné avec succès :</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="475"/>
         <source>&lt;i&gt;Ready to learn %1&lt;/i&gt;</source>
-        <translation>&lt;i&gt;Prêt pour apprendre %1&lt;/i&gt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="476"/>
         <source>Learning: %1. Now move a control on your controller.</source>
-        <translation>Apprentissage de : %1. Maintenant bouger un contrôle de votre contrôleur.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="502"/>
@@ -4152,10 +4157,7 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 This could be because you are either using an old skin and this control is no longer supported, or you clicked a control that provides visual feedback and can only be mapped to outputs like LEDs via scripts.
 
 You tried to learn: %1,%2</source>
-        <translation>Le contrôle sur lequel vous avez cliqué dans Mixxx n&apos;est pas assignable.
-La raison peut être que vous utilisé un thème d&apos;interface ancien et que ce contrôle n&apos;est plus pris en charge, ou que vous avez cliqué un contrôle utilisant un retour visuel  tels que des LEDs via des scripts.
-
-Vous avez tenté d&apos;assigner : %1,%2</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -4440,63 +4442,63 @@ Vous avez tenté d&apos;assigner : %1,%2</translation>
         <translation>Stéréo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="233"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="297"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="573"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="608"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="235"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="299"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="575"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="610"/>
         <source>Action failed</source>
         <translation>Échec de l&apos;action</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="298"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="300"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation>Vous ne pouvez pas créer plus de %1 connexion de source.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="311"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="313"/>
         <source>Source connection %1</source>
         <translation>Connexion source %1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="574"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="576"/>
         <source>At least one source connection is required.</source>
         <translation>Au moins une connexion de source est requise.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="619"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="621"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation>Êtes-vous sûr de vouloir déconnecter toutes les connections de source actives?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="580"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="618"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="582"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="620"/>
         <source>Confirmation required</source>
         <translation>Confirmation requise</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="234"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="236"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
         <translation>&apos;%1&apos; a le même point de montage Icecast que &apos;%2&apos;.
 Deux de source de connexions vers le même serveur, ayant le même point de montage, ne peuvent pas être activé simultanément.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="581"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="583"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation>Êtes-vous sûr de vouloir effacer &apos;%1&apos; ?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="596"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="598"/>
         <source>Renaming &apos;%1&apos;</source>
         <translation>Renommage &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="597"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="599"/>
         <source>New name for &apos;%1&apos;:</source>
         <translation>Nouveau nom pour &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="609"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="611"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
         <translation>Impossible de renommer &apos;%1&apos; en &apos;%2&apos;: nom déjà utilisé</translation>
     </message>
@@ -4769,13 +4771,13 @@ Deux de source de connexions vers le même serveur, ayant le même point de mont
 <context>
     <name>DlgPrefColors</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="307"/>
-        <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="310"/>
+        <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="305"/>
+        <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="308"/>
         <source>By hotcue number</source>
         <translation>Par numéro de repère rapide</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="318"/>
+        <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="316"/>
         <source>Color</source>
         <translation>Couleur</translation>
     </message>
@@ -5788,17 +5790,17 @@ Vous pouvez toujours glisser-déposer des pistes sur l&apos;écran pour cloner u
         <translation>Interdire l&apos;économiseur d&apos;écran pendant la lecture</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="238"/>
         <source>This skin does not support color schemes</source>
         <translation>Ce thème n&apos;accepte pas les modèles de couleurs</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="330"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="332"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="331"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="333"/>
         <source>Mixxx must be restarted before the new locale or scaling settings will take effect.</source>
         <translation>Mixxx must be restarted before the new locale or scaling settings will take effect.</translation>
     </message>
@@ -6006,67 +6008,67 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
 <context>
     <name>DlgPrefLibrary</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="124"/>
         <source>See the manual for details</source>
         <translation>See the manual for details</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="151"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="156"/>
         <source>Music Directory Added</source>
         <translation>Répertoire de musique ajouté</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="152"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="157"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation>Vous avez ajouté un ou plusieurs répertoires de musique. Les pistes dans ces répertoires ne seront disponibles qu&apos;après une réanalyse de la bibliothèque. Désirez-vous effectuer cette réanalyse maintenant ?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="156"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="161"/>
         <source>Scan</source>
         <translation>Analyse</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="317"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="333"/>
         <source>Choose a music directory</source>
         <translation>Choisissez un répertoire de musique</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="332"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="348"/>
         <source>Confirm Directory Removal</source>
         <translation>Confirmez la suppression du répertoire</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="334"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="350"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>Mixxx ne cherchera plus de nouvelles pistes dans ce répertoire. Que voulez-vous faire des pistes de ce répertoire et ses sous-répertoires&lt;&amp;nbsp&gt;?&lt;ul&gt;&lt;li&gt;Masquer toutes les pistes de ce répertoire et ses sous-répertoires.&lt;/li&gt;&lt;li&gt;Supprimer définitivement de Mixxx toutes les métadonnées de ces pistes.&lt;/li&gt;&lt;li&gt;Laisser ces pistes inchangées dans votre bibliothèque.&lt;/li&gt;&lt;/ul&gt;Masquer des pistes enregistre leurs métadonnées au cas où vous les ajouteriez à nouveau dans le futur.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="345"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="361"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>Les métadonnées regroupent tous les détails de la piste (artiste, titre, nombre de lectures, etc...) ainsi que les grilles rythmiques, les repères rapides et les boucles. Ce choix n&apos;affecte que la bibliothèque de Mixxx. Aucun fichier sur le disque ne sera modifié ou supprimé.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="353"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="369"/>
         <source>Hide Tracks</source>
         <translation>Masquer les pistes</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="355"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="371"/>
         <source>Delete Track Metadata</source>
         <translation>Supprimer les métadonnées de la piste</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="357"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="373"/>
         <source>Leave Tracks Unchanged</source>
         <translation>Ne pas modifier les pistes</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="398"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="414"/>
         <source>Relink music directory to new location</source>
         <translation>Rattacher le répertoire musical à un autre emplacement</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="531"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="547"/>
         <source>Select Library Font</source>
         <translation>Sélectionner la police pour la bibliothèque</translation>
     </message>
@@ -6135,122 +6137,127 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
         <translation>Track Double-Click Action:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="214"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="210"/>
+        <source>BPM display precision:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="229"/>
         <source>Session History</source>
         <translation>Historique des sessions</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="221"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="236"/>
         <source>Track duplicate distance</source>
         <translation>Track duplicate distance</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="234"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="249"/>
         <source>When playing a track again log it to the session history only if more than N other tracks have been played in the meantime</source>
         <translation>When playing a track again log it to the session history only if more than N other tracks have been played in the meantime</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="251"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="266"/>
         <source>History playlist with less than N tracks will be deleted&lt;br/&gt;&lt;br/&gt;Note: the cleanup will be performed during startup and shutdown of Mixxx.</source>
         <translation>History playlist with less than N tracks will be deleted&lt;br/&gt;&lt;br/&gt;Note: the cleanup will be performed during startup and shutdown of Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="254"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="269"/>
         <source>Delete history playlist with less than N tracks</source>
         <translation>Delete history playlist with less than N tracks</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="282"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="297"/>
         <source>Miscellaneous</source>
         <translation>Divers</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="324"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="339"/>
         <source>Library Font:</source>
         <translation>Police pour la bibliothèque:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="367"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="382"/>
         <source>Enable search completions</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="374"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="389"/>
         <source>Enable search history keyboard shortcuts</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="473"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="488"/>
         <source>Preferred Cover Art Fetcher Resolution</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="479"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="494"/>
         <source>Fetch cover art from coverartarchive.com by using Import Metadata From Musicbrainz.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="486"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="501"/>
         <source>Note: &quot;&gt;1200 px&quot; can fetch up to very large cover arts.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="493"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="508"/>
         <source>&gt;1200 px (if available)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="502"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="517"/>
         <source>1200 px (if available)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="511"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="526"/>
         <source>500 px</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="520"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="535"/>
         <source>250 px</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="533"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="548"/>
         <source>Settings Directory</source>
         <translation>Répertoire des paramètres</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="539"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="554"/>
         <source>The Mixxx settings directory contains the library database, various configuration files, log files, track analysis data, as well as custom controller mappings.</source>
         <translation>The Mixxx settings directory contains the library database, various configuration files, log files, track analysis data, as well as custom controller mappings.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="559"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="574"/>
         <source>Edit those files only if you know what you are doing and only while Mixxx is not running.</source>
         <translation>Modifier ces fichiers uniquement si vous savez ce que vous faites et uniquement lorsque Mixxx n&apos;est pas en cours d&apos;exécution. </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="575"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="590"/>
         <source>Open Mixxx Settings Folder</source>
         <translation>Ouvrir le répertoire de paramètres Mixxx </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="297"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="312"/>
         <source>Library Row Height:</source>
         <translation>Hauteur des lignes pour la bibliothèque:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="289"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="304"/>
         <source>Use relative paths for playlist export if possible</source>
         <translation>Utiliser si possible des chemins relatifs pour l&apos;exportation de listes de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="341"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="356"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="307"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="322"/>
         <source> px</source>
         <translation>px</translation>
     </message>
@@ -6280,12 +6287,12 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
         <translation>Éditer les métadonnées après avoir cliquer sur la piste sélectionnée  </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="349"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="364"/>
         <source>Search-as-you-type timeout:</source>
         <translation>Temporisation de la recherche en cours de frappe:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="359"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="374"/>
         <source> ms</source>
         <translation> ms</translation>
     </message>
@@ -6295,17 +6302,17 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
         <translation>Charger la piste sur la prochaine platine disponible</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="386"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="401"/>
         <source>External Libraries</source>
         <translation>Bibliothèques externes</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="462"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="477"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
         <translation>Vous devez redémarrer Mixxx pour que ces paramètres prennent effet.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="392"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="407"/>
         <source>Show Rhythmbox Library</source>
         <translation>Afficher la Bibliothèque Rhythmbox</translation>
     </message>
@@ -6325,32 +6332,32 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
         <translation>Pas d&apos;effet</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="402"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="417"/>
         <source>Show Banshee Library</source>
         <translation>Afficher la bibliothèqie Banshee</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="412"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="427"/>
         <source>Show iTunes Library</source>
         <translation>Afficher la Bibliothèque iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="422"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="437"/>
         <source>Show Traktor Library</source>
         <translation>Afficher la Bibliothèque Tracktor</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="432"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="447"/>
         <source>Show Rekordbox Library</source>
         <translation>Afficher la Bibliothèque Rekordbox</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="442"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="457"/>
         <source>Show Serato Library</source>
         <translation>Afficher la Bibliothèque Serato </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="452"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="467"/>
         <source>All external libraries shown are write protected.</source>
         <translation>Toutes les bibliothèques externes affichées sont protégées en écriture.</translation>
     </message>
@@ -6365,7 +6372,7 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="27"/>
         <source>Crossfader Curve</source>
-        <translation>Courbe du curseur de mixage</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="39"/>
@@ -6375,37 +6382,37 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="46"/>
         <source>Constant power</source>
-        <translation>Puissance constante</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="59"/>
         <source>Mixing</source>
-        <translation>Mixer</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="79"/>
         <source>Scratching</source>
-        <translation>Scratcher</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="115"/>
         <source>Linear</source>
-        <translation>Linéaire</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="138"/>
         <source>Logarithmic</source>
-        <translation>Logarithmique</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="194"/>
         <source>Reverse crossfader (Hamster Style)</source>
-        <translation>Inverser le curseur de mixage (Hamster style)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="205"/>
         <source>Deck Equalizers</source>
-        <translation>Deck Equalizers</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="211"/>
@@ -6415,12 +6422,12 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="217"/>
         <source>Uncheck to allow any effect to be loaded into the EQ knobs.</source>
-        <translation>Décocher pour permettre à n&apos;importe quel effet d&apos;être affecté aux boutons d&apos;EQ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="224"/>
         <source>Use the same EQ filter for all decks</source>
-        <translation>Utilise le même filtre d&apos;EQ pour toutes les platines </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="230"/>
@@ -6435,7 +6442,7 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="268"/>
         <source>Quick Effect</source>
-        <translation>Effet rapide</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="292"/>
@@ -6445,17 +6452,17 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="295"/>
         <source>When checked, EQs are not processed, improving performance on slower computers.</source>
-        <translation>Si activé, les EQs ne sont pas appliquées, ce qui améliore la performance sur les ordinateurs lents</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="303"/>
         <source>Resets the equalizers to their default values when loading a track.</source>
-        <translation>Réinitialise les égaliseurs à leurs valeurs par défaut lors du chargement d&apos;une piste.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="306"/>
         <source>Reset equalizers on track load</source>
-        <translation>Réinitialiser les égaliseurs au chargement de piste</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="314"/>
@@ -6465,7 +6472,7 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="317"/>
         <source>Reset gain on track load</source>
-        <translation>Réinitialiser le gain au chargement d&apos;une piste</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="329"/>
@@ -6492,12 +6499,12 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="455"/>
         <source>Low EQ</source>
-        <translation>EQ des Basses</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="570"/>
         <source>Main EQ</source>
-        <translation>Main EQ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="581"/>
@@ -6690,33 +6697,33 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
 <context>
     <name>DlgPrefRecord</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="214"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="216"/>
         <source>Choose recordings directory</source>
         <translation>Sélectionnez le répertoire des enregistrements</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="390"/>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="397"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="392"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="399"/>
         <source>Recordings directory invalid</source>
         <translation>Répertoire des enregistrements non valide</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="391"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="393"/>
         <source>Recordings directory must be set to an existing directory.</source>
         <translation>Le répertoire des enregistrements doit être défini sur un répertoire existant. </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="398"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="400"/>
         <source>Recordings directory must be set to a directory.</source>
         <translation>Le répertoire des enregistrements doit être défini sur un répertoire. </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="403"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="405"/>
         <source>Recordings directory not writable</source>
         <translation>Répertoire des enregistrements non accessible en écriture </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="404"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="406"/>
         <source>You do not have write access to %1. Choose a recordings directory you have write access to.</source>
         <translation>Vous n&apos;avez pas d&apos;accès en écriture à %1. Choisissez un répertoire d&apos;enregistrements auquel vous avez accès en écriture. </translation>
     </message>
@@ -6808,7 +6815,7 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
 <context>
     <name>DlgPrefReplayGain</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygain.cpp" line="153"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygain.cpp" line="157"/>
         <source>%1 LUFS (adjust by %2 dB)</source>
         <translation>%1 LUFS (ajuste par %2 dB)</translation>
     </message>
@@ -6981,53 +6988,53 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>Pour activer la planification en temps réel (actuellement désactivée), consulter le %1.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="253"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="239"/>
         <source>The %1 lists sound cards and controllers you may want to consider for using Mixxx.</source>
         <translation>Le %1 répertorie les cartes son et les contrôleurs que vous pouvez envisager d&apos;utiliser avec Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="257"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="243"/>
         <source>Mixxx DJ Hardware Guide</source>
         <translation>Guide Mixxx du matériel DJ </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="626"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="598"/>
         <source>auto (&lt;= 1024 frames/period)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="629"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="601"/>
         <source>2048 frames/period</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="632"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="604"/>
         <source>4096 frames/period</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="837"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="809"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation>Les entrées microphone sont à contretemps dans l&apos;enregistrement et le signal diffusé, comparées à ce que vous entendez. </translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="838"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="810"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Mesurer la latence du trajet aller-retour et entrez-la ci-dessus pour la compensation de latence du microphone afin d&apos;aligner la synchronisation du microphone.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="839"/>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="846"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="811"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="818"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation>Se référer au manuel utilisateur de Mixxx pour les détails.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="844"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="816"/>
         <source>Configured latency has changed.</source>
         <translation>La latence configurée à changé.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="845"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="817"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Réinitialisez la latence du trajet aller-retour et entrez-la ci-dessus pour la compensation de latence du microphone afin d&apos;aligner la synchronisation du microphone.</translation>
     </message>
@@ -7047,12 +7054,12 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>Main and booth outputs</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="648"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="620"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="321"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="292"/>
         <source>Configuration error</source>
         <translation>Erreur de configuration</translation>
     </message>
@@ -7197,12 +7204,12 @@ The loudness target is approximate and assumes track pregain and main output lev
 <context>
     <name>DlgPrefSoundItem</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="133"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="111"/>
         <source>Channel %1</source>
         <translation>Canal %1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="135"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="113"/>
         <source>Channels %1 - %2</source>
         <translation>Canaux %1 - %2</translation>
     </message>
@@ -7329,17 +7336,17 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>RVB</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="145"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="147"/>
         <source>OpenGL not available</source>
         <translation>OpenGL non disponible</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="291"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="293"/>
         <source>dropped frames</source>
         <translation>images sautées</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="324"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="326"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation>La forme d&apos;onde en cache occupe %1 MiB sur le disque.</translation>
     </message>
@@ -7540,122 +7547,122 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="105"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="110"/>
         <source>Sound Hardware</source>
         <translation>Matériel sonore</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="124"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="129"/>
         <source>Controllers</source>
         <translation>Contrôleurs</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="115"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="120"/>
         <source>Library</source>
         <translation>Bibliothèque</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="153"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="158"/>
         <source>Interface</source>
         <translation>Interface</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="163"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="168"/>
         <source>Waveforms</source>
         <translation>Formes d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="188"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="193"/>
         <source>Mixer</source>
         <translation>Table de mixage</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="200"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="205"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="182"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="187"/>
         <source>Decks</source>
         <translation>Platines</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="176"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="181"/>
         <source>Colors</source>
         <translation>Couleurs</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="69"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="74"/>
         <source>&amp;Help</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="71"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="76"/>
         <source>&amp;Restore Defaults</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="73"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="78"/>
         <source>&amp;Apply</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Appliquer</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="75"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="80"/>
         <source>&amp;Cancel</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Annuler</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="77"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="82"/>
         <source>&amp;Ok</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="194"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="199"/>
         <source>Effects</source>
         <translation>Effets</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="214"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="219"/>
         <source>Recording</source>
         <translation>Enregistrement</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="220"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="225"/>
         <source>Beat Detection</source>
         <translation>Détection de battement</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="226"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="231"/>
         <source>Key Detection</source>
         <translation>Détection de tonalité</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="231"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="236"/>
         <source>Normalization</source>
         <translation>Normalisation</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="255"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="260"/>
         <source>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Some preferences pages have errors. To apply the changes please first fix the issues.&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Some preferences pages have errors. To apply the changes please first fix the issues.&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="133"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="138"/>
         <source>Vinyl Control</source>
         <translation>Contrôle Vinyle</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="207"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="212"/>
         <source>Live Broadcasting</source>
         <translation>Diffusion en direct</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="238"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="243"/>
         <source>Modplug Decoder</source>
         <translation>Décodeur de Modplug</translation>
     </message>
@@ -8288,157 +8295,157 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 <context>
     <name>EffectChainPresetManager</name>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="96"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="97"/>
         <source>Import effect chain preset</source>
         <translation>Import effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="98"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="198"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="99"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="199"/>
         <source>Mixxx Effect Chain Presets</source>
         <translation>Mixxx Effect Chain Presets</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="101"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="102"/>
         <source>Error importing effect chain preset</source>
         <translation>Error importing effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="102"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="103"/>
         <source>Error importing effect chain preset &quot;%1&quot;</source>
         <translation>Error importing effect chain preset &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="129"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="503"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="130"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="504"/>
         <source>imported</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="134"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="135"/>
         <source>duplicate</source>
         <translation>duplicate</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="156"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="157"/>
         <source>The effect chain imported from &quot;%1&quot; contains an effect that is not available:</source>
         <translation>The effect chain imported from &quot;%1&quot; contains an effect that is not available:</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="162"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="163"/>
         <source>If you load this chain preset, the unsupported effect will not be loaded with it.</source>
         <translation>If you load this chain preset, the unsupported effect will not be loaded with it.</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="196"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="197"/>
         <source>Export effect chain preset</source>
         <translation>Export effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="213"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="214"/>
         <source>Error exporting effect chain preset</source>
         <translation>Error exporting effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="215"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="216"/>
         <source>Could not save effect chain preset &quot;%1&quot; to file &quot;%2&quot;.</source>
         <translation>Could not save effect chain preset &quot;%1&quot; to file &quot;%2&quot;.</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="238"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="239"/>
         <source>Effect chain preset can not be renamed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="240"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="241"/>
         <source>Effect chain preset &quot;%1&quot; is read-only and can not be renamed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="254"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="255"/>
         <source>Rename effect chain preset</source>
         <translation>Rename effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="255"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="256"/>
         <source>New name for effect chain preset</source>
         <translation>New name for effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="266"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="438"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="267"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="439"/>
         <source>Effect chain preset name must not be empty.</source>
         <translation>Effect chain preset name must not be empty.</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="268"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="440"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="269"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="441"/>
         <source>Invalid name &quot;%1&quot;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="271"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="443"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="272"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="444"/>
         <source>An effect chain preset named &quot;%1&quot; already exists.</source>
         <translation>An effect chain preset named &quot;%1&quot; already exists.</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="297"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="298"/>
         <source>Error removing old effect chain preset</source>
         <translation>Error removing old effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="299"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="300"/>
         <source>Could not remove old effect chain preset &quot;%1&quot;</source>
         <translation>Could not remove old effect chain preset &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="326"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="327"/>
         <source>Effect chain preset can not be deleted</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="328"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="329"/>
         <source>Effect chain preset &quot;%1&quot; is read-only and can not be deleted.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="335"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="336"/>
         <source>Remove effect chain preset</source>
         <translation>Remove effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="336"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="337"/>
         <source>Are you sure you want to delete the effect chain preset &quot;%1&quot;?</source>
         <translation>Are you sure you want to delete the effect chain preset &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="347"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="348"/>
         <source>Error deleting effect chain preset</source>
         <translation>Error deleting effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="349"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="350"/>
         <source>Could not delete effect chain preset &quot;%1&quot;</source>
         <translation>Could not delete effect chain preset &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="427"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="428"/>
         <source>Save preset for effect chain</source>
         <translation>Save preset for effect chain</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="428"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="429"/>
         <source>Name for new effect chain preset:</source>
         <translation>Name for new effect chain preset:</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="617"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="618"/>
         <source>Error saving effect chain preset</source>
         <translation>Error saving effect chain preset</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="619"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="620"/>
         <source>Could not save effect chain preset &quot;%1&quot;</source>
         <translation>Could not save effect chain preset &quot;%1&quot;</translation>
     </message>
@@ -8446,12 +8453,12 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 <context>
     <name>EffectManifestTableModel</name>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="44"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="45"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="47"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
@@ -8526,27 +8533,27 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 <context>
     <name>FindOnWebMenuDiscogs</name>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="42"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="43"/>
         <source>Artist</source>
         <translation>Artiste</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="52"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="53"/>
         <source>Artist + Title</source>
         <translation>Artiste + Titre</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="58"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="59"/>
         <source>Title</source>
         <translation>Titre</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="67"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="68"/>
         <source>Artist + Album</source>
         <translation>Artiste + Album</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="72"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="73"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
@@ -8554,27 +8561,27 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 <context>
     <name>FindOnWebMenuLastfm</name>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="40"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="41"/>
         <source>Artist</source>
         <translation>Artiste</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="50"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="51"/>
         <source>Artist + Title</source>
         <translation>Artiste + Titre</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="55"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="56"/>
         <source>Title</source>
         <translation>Titre</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="64"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="65"/>
         <source>Artist + Album</source>
         <translation>Artiste + Album</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="69"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="70"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
@@ -8582,27 +8589,27 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 <context>
     <name>FindOnWebMenuSoundcloud</name>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="40"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="41"/>
         <source>Artist</source>
         <translation>Artiste</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="50"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="51"/>
         <source>Artist + Title</source>
         <translation>Artiste + Titre</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="55"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="56"/>
         <source>Title</source>
         <translation>Titre</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="64"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="65"/>
         <source>Artist + Album</source>
         <translation>Artiste + Album</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="69"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="70"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
@@ -8658,7 +8665,7 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 <context>
     <name>GLWaveformWidget</name>
     <message>
-        <location filename="../../src/waveform/widgets/glwaveformwidget.h" line="15"/>
+        <location filename="../../src/waveform/widgets/glwaveformwidget.h" line="13"/>
         <source>Filtered</source>
         <translation>Filtré</translation>
     </message>
@@ -8674,38 +8681,38 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 <context>
     <name>ITunesFeature</name>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="105"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="377"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="103"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="375"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="249"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="247"/>
         <source>Select your iTunes library</source>
         <translation>Sélectionnez votre bibliothèque iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="225"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="223"/>
         <source>(loading) iTunes</source>
         <translation>(chargement) iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="261"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="259"/>
         <source>Use Default Library</source>
         <translation>Utiliser la bibliothèque par défaut</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="262"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="260"/>
         <source>Choose Library...</source>
         <translation>Choisissez la bibliothèque…</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="372"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="370"/>
         <source>Error Loading iTunes Library</source>
         <translation>Erreur lors du chargement de la bibliothèque iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="373"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="371"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>Le chargement de votre bibliothèque iTunes a échoué. Certains de vos pistes ou listes de lecture iTunes peuvent ne pas avoir été chargés.</translation>
     </message>
@@ -8713,15 +8720,15 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1274"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1354"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1281"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1378"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Mode sécurisé activé</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1284"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1362"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1291"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1386"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -8733,57 +8740,57 @@ Shown when VuMeter can not be displayed. Please keep
 d&apos;OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2307"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2351"/>
         <source>activate</source>
         <translation>activer</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2312"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2356"/>
         <source>toggle</source>
         <translation>activer/désactiver</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2322"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2366"/>
         <source>right</source>
         <translation>droite</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2327"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2371"/>
         <source>left</source>
         <translation>gauche</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2332"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2376"/>
         <source>right small</source>
         <translation>droit, petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2337"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2381"/>
         <source>left small</source>
         <translation>gauche, petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2342"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2386"/>
         <source>up</source>
         <translation>haut</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2347"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2391"/>
         <source>down</source>
         <translation>bas</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2352"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2396"/>
         <source>up small</source>
         <translation>haut, petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2357"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2401"/>
         <source>down small</source>
         <translation>bas, petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2385"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2429"/>
         <source>Shortcut</source>
         <translation>Raccourci</translation>
     </message>
@@ -8970,185 +8977,185 @@ Voulez-vous vraiment l&apos;écraser ?</translation>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="527"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="562"/>
         <source>Sound Device Busy</source>
         <translation>Carte son Occupée</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="536"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="571"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Réessayer&lt;/b&gt; après avoir fermé l&apos;autre application ou avoir reconnecté le périphérique de son</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="540"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="567"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="591"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="575"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="602"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="626"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Reconfigurer&lt;/b&gt; les options audio de Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="543"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="570"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="578"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="605"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Trouver &lt;b&gt;de l&apos;aide&lt;/b&gt; sur le Wiki Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="546"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="573"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="594"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="581"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="608"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="629"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Quitter&lt;/b&gt; Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="487"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="522"/>
         <source>Retry</source>
         <translation>Réessayer</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="175"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="208"/>
         <source>skin</source>
         <translation>skin</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="489"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="602"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="524"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="637"/>
         <source>Reconfigure</source>
         <translation>Reconfigurer</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="491"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="526"/>
         <source>Help</source>
         <translation>Aide</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="493"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="604"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="528"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="639"/>
         <source>Exit</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="530"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="556"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="565"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="591"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx n&apos;est pas parvenu à ouvrir tous les périphériques de son configurés.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="554"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="589"/>
         <source>Sound Device Error</source>
         <translation>Erreur de périphérique de son</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="564"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="599"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>&lt;b&gt;Réessayer&lt;/b&gt; après avoir solutionné un problème</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="582"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="617"/>
         <source>No Output Devices</source>
         <translation>Aucun périphérique de sortie</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="584"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="619"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx a été configuré sans aucun périphérique de sortie audio. Sans périphérique de sortie configuré, le traitement du son sera désactivé .</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="588"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="623"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Continuer&lt;/b&gt; sans aucune sortie.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="600"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="635"/>
         <source>Continue</source>
         <translation>Continuer</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="831"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="866"/>
         <source>Load track to Deck %1</source>
         <translation>Charger la piste sur la platine %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="832"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="867"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>La platine %1 est en cours de lecture d&apos;une piste.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="834"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="869"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Êtes-vous certain de vouloir charger une nouvelle piste ?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="942"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="977"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Aucun périphérique d&apos;entrée n&apos;est sélectionné pour ce contrôle vinyle.
 Veuillez d&apos;abord en sélectionner un dans les Préférences du matériel sonore.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="956"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="991"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Il n&apos;y a aucun périphérique d&apos;entrée sélectionné pour ce contrôle intermédiaire.
 Veuillez d&apos;abord en sélectionner un dans les Préférences du matériel sonore.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="970"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1005"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation>Aucun périphérique d&apos;entrée n&apos;est sélectionné pour ce microphone.
 Voulez-vous sélectionner un périphérique d&apos;entrée ?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="984"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1019"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation>Aucun périphérique d&apos;entrée n&apos;est sélectionné pour cet auxiliaire.
 Voulez-vous sélectionner un périphérique d&apos;entrée ?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1048"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1086"/>
         <source>Error in skin file</source>
         <translation>Erreur dans le fichier d&apos;habillage</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1049"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1087"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>L&apos;habillage sélectionné ne peut pas être chargé.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1152"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1190"/>
         <source>OpenGL Direct Rendering</source>
         <translation>Rendu Direct OpenGL</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1153"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1191"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation>Le rendu direct n&apos;est pas activé sur votre machine.&lt;br&gt;&lt;br&gt; Cela signifie que l&apos;affichage de la forme d&apos;onde sera très&lt;br&gt;&lt;b&gt;lent et risque de surcharger votre processeur&lt;/b&gt;. Mettez à jour votre&lt;br&gt;configuration pour activer le rendu direct ou désactivez&lt;br&gt;les affichages de forme d&apos;onde dans les préférences de Mixxx en sélectionnant&lt;br&gt;&quot;Vide&quot; comme affichage de forme d&apos;onde dans la section &quot;Interface&quot;.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1188"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1196"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1205"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1226"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1234"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1243"/>
         <source>Confirm Exit</source>
         <translation>Confirmer la fermeture</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1189"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1227"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Une platine est actuellement en cours de lecture. Quitter Mixxx ?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1197"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1235"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Un échantillonneur est actuellement en cours de lecture. Quitter Mixxx ?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1206"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1244"/>
         <source>The preferences window is still open.</source>
         <translation>La fenêtre de Préférences est déjà ouverte.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1207"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1245"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Abandonner toutes les modifications et quitter Mixxx ?</translation>
     </message>
@@ -9156,7 +9163,7 @@ Voulez-vous sélectionner un périphérique d&apos;entrée ?</translation>
 <context>
     <name>MockNetworkReply</name>
     <message>
-        <location filename="../../src/test/mock_networkaccessmanager.cpp" line="109"/>
+        <location filename="../../src/test/mock_networkaccessmanager.cpp" line="112"/>
         <source>Operation canceled</source>
         <translation>Opération annulée</translation>
     </message>
@@ -9170,7 +9177,7 @@ Voulez-vous sélectionner un périphérique d&apos;entrée ?</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/playlistfeature.cpp" line="54"/>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="313"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="330"/>
         <source>Playlists</source>
         <translation>Listes de lecture</translation>
     </message>
@@ -9180,27 +9187,27 @@ Voulez-vous sélectionner un périphérique d&apos;entrée ?</translation>
         <translation>Déverrouiller</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="315"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="332"/>
         <source>Playlists are ordered lists of tracks that allow you to plan your DJ sets.</source>
         <translation>Playlists are ordered lists of tracks that allow you to plan your DJ sets.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="325"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="342"/>
         <source>It may be necessary to skip some tracks in your prepared playlist or add some different tracks in order to maintain the energy of your audience.</source>
         <translation>It may be necessary to skip some tracks in your prepared playlist or add some different tracks in order to maintain the energy of your audience.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="318"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="335"/>
         <source>Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.</source>
         <translation>Certains DJ préparent des listes de lecture avant leurs performances publiques quand d&apos;autres préfèrent les constituer à la volée.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="321"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="338"/>
         <source>When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you&apos;ve chosen to play.</source>
         <translation>Lorsque vous utilisez des listes de lecture pendant des sessions de mixage, souvenez-vous de porter une attention toute particulière à la façon dont votre public réagit à la musique que vous avez choisie de jouer.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="328"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="345"/>
         <source>Create New Playlist</source>
         <translation>Créer une nouvelle liste de lecture</translation>
     </message>
@@ -10611,12 +10618,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
         <translation>Échec de l&apos;application des paramètres sélectionnés.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefmixer.cpp" line="199"/>
+        <location filename="../../src/preferences/dialog/dlgprefmixer.cpp" line="172"/>
         <source>Deck %1</source>
         <translation>Platine %1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefmixer.cpp" line="384"/>
+        <location filename="../../src/preferences/dialog/dlgprefmixer.cpp" line="353"/>
         <source>Deck 1</source>
         <translation>Platine 1</translation>
     </message>
@@ -10749,12 +10756,12 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/renderers/waveformwidgetrenderer.cpp" line="323"/>
+        <location filename="../../src/waveform/renderers/waveformwidgetrenderer.cpp" line="325"/>
         <source>Passthrough</source>
         <translation>Passerelle</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesdao.cpp" line="143"/>
+        <location filename="../../src/library/itunes/itunesdao.cpp" line="181"/>
         <source>(empty)</source>
         <translation type="unfinished"/>
     </message>
@@ -10916,7 +10923,7 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="454"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="455"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -10997,29 +11004,67 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
 <context>
     <name>SetlogFeature</name>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="52"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="61"/>
         <source>Join with previous (below)</source>
         <translation>Join with previous (below)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="58"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="67"/>
+        <source>Mark all tracks played)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="73"/>
         <source>Finish current and start new</source>
         <translation>Finish current and start new</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="81"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="79"/>
+        <source>Lock all child playlists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="85"/>
+        <source>Unlock all child playlists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="91"/>
+        <source>Delete all unlocked child playlists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="108"/>
         <source>History</source>
         <translation>Historique</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="145"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="184"/>
         <source>Unlock</source>
         <translation>Déverrouiller</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="145"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="184"/>
         <source>Lock</source>
         <translation>Verrouiller</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="514"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="538"/>
+        <source>Confirm Deletion</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="518"/>
+        <source>Do you really want to delete all unlocked playlist from &lt;b&gt;%1&lt;/b&gt;?&lt;br&gt;&lt;br&gt;</source>
+        <extracomment>%1 is the year &lt;b&gt; + &lt;/b&gt; are used to make the text in between bold in the popup &lt;br&gt; is a linebreak</extracomment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="543"/>
+        <source>Deleting %1 playlists from &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;</source>
+        <extracomment>%1 is the number of playlists to be deleted %2 is the year &lt;b&gt; + &lt;/b&gt; are used to make the text in between bold in the popup &lt;br&gt; is a linebreak</extracomment>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -13809,27 +13854,27 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
 <context>
     <name>VSyncThread</name>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="144"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="143"/>
         <source>Timer (Fallback)</source>
         <translation>Temporisateur (procédures de rechange)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="147"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="146"/>
         <source>MESA vblank_mode = 1</source>
         <translation>MESA vblank_mode = 1</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="150"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="149"/>
         <source>Wait for Video sync</source>
         <translation>Attendre la synchronisation Vidéo</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="153"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="152"/>
         <source>Sync Control</source>
         <translation>Contrôle de Synchronisation</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="156"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="155"/>
         <source>Free + 1 ms (for benchmark only)</source>
         <translation>Disponible + 1 ms (pour tests de performance uniquement)</translation>
     </message>
@@ -13945,17 +13990,17 @@ This can not be undone!</source>
 <context>
     <name>WEffectChainPresetButton</name>
     <message>
-        <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="69"/>
+        <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="70"/>
         <source>Update Preset</source>
         <translation>Update Preset</translation>
     </message>
     <message>
-        <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="73"/>
+        <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="74"/>
         <source>Save As New Preset...</source>
         <translation>Save As New Preset...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="141"/>
+        <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="142"/>
         <source>Save snapshot</source>
         <translation>Save snapshot</translation>
     </message>
@@ -13977,7 +14022,7 @@ This can not be undone!</source>
 <context>
     <name>WEffectParameterNameBase</name>
     <message>
-        <location filename="../../src/widget/weffectparameternamebase.cpp" line="80"/>
+        <location filename="../../src/widget/weffectparameternamebase.cpp" line="81"/>
         <source>No effect loaded.</source>
         <translation>Aucun effet chargé.</translation>
     </message>
@@ -13993,7 +14038,7 @@ This can not be undone!</source>
 <context>
     <name>WFindOnWebMenu</name>
     <message>
-        <location filename="../../src/widget/wfindonwebmenu.cpp" line="13"/>
+        <location filename="../../src/widget/wfindonwebmenu.cpp" line="14"/>
         <source>Find on Web</source>
         <translation>Find on Web</translation>
     </message>
@@ -14401,42 +14446,52 @@ This can not be undone!</source>
         <translation>Obtenir de l&apos;aide sur Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="591"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="592"/>
         <source>&amp;User Manual</source>
         <translation>&amp;Manuel utilisateur</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="592"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="593"/>
         <source>Read the Mixxx user manual.</source>
         <translation>Lire le manuel utilisateur de Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="608"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="609"/>
         <source>&amp;Keyboard Shortcuts</source>
         <translation>&amp;Raccourcis clavier</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="609"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="610"/>
         <source>Speed up your workflow with keyboard shortcuts.</source>
         <translation>Gagnez en rapidité avec les raccourcis clavier.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="622"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="624"/>
+        <source>&amp;Settings directory</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="625"/>
+        <source>Open the Mixxx user settings directory.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="636"/>
         <source>&amp;Translate This Application</source>
         <translation>&amp;Traduire cette application</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="623"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="637"/>
         <source>Help translate this application into your language.</source>
         <translation>Aidez à traduire cette application dans votre langage.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="633"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="648"/>
         <source>&amp;About</source>
         <translation>À &amp;propos</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="634"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="649"/>
         <source>About the application</source>
         <translation>A propos de l&apos;application</translation>
     </message>
@@ -15116,11 +15171,6 @@ This can not be undone!</source>
         <source>Delete Files</source>
         <translation>Delete Files</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2072"/>
-        <source>Removing %1 track file(s) from disk...</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
-    </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2093"/>
         <source>Track Files Deleted</source>
@@ -15170,6 +15220,11 @@ This can not be undone!</source>
         <location filename="../../src/widget/wtrackmenu.cpp" line="374"/>
         <source>Loops</source>
         <translation>Boucles</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2072"/>
+        <source>Removing %n track file(s) from disk...</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2258"/>
@@ -15231,24 +15286,56 @@ This can not be undone!</source>
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="920"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1047"/>
         <source>(GLSL)</source>
         <translation>(GLSL)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="922"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1049"/>
         <source>(GL)</source>
         <translation>(GL)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="932"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1059"/>
         <source>(GLSL ES)</source>
         <translation>(GLSL ES)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="934"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1061"/>
         <source>(GL ES)</source>
         <translation>(GL ES)</translation>
+    </message>
+</context>
+<context>
+    <name>allshader::FilteredWaveformWidget</name>
+    <message>
+        <location filename="../../src/waveform/widgets/allshader/filteredwaveformwidget.h" line="22"/>
+        <source>Filtered (all-shaders)</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>allshader::LRRGBWaveformWidget</name>
+    <message>
+        <location filename="../../src/waveform/widgets/allshader/lrrgbwaveformwidget.h" line="22"/>
+        <source>RGB L/R (all-shaders)</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>allshader::RGBWaveformWidget</name>
+    <message>
+        <location filename="../../src/waveform/widgets/allshader/rgbwaveformwidget.h" line="22"/>
+        <source>RGB (all-shaders)</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>allshader::SimpleWaveformWidget</name>
+    <message>
+        <location filename="../../src/waveform/widgets/allshader/simplewaveformwidget.h" line="22"/>
+        <source>Simple (all-shaders)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -15312,72 +15399,72 @@ Cliquez sur OK pour sortir.</translation>
 <context>
     <name>mixxx::DlgLibraryExport</name>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="78"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="79"/>
         <source>Entire music library</source>
         <translation>Entire music library</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="85"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="86"/>
         <source>Selected crates</source>
         <translation>Selected crates</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="92"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="93"/>
         <source>Browse</source>
         <translation>Parcourir</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="102"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="103"/>
         <source>Export directory</source>
         <translation>Export directory</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="103"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="104"/>
         <source>Database version</source>
         <translation>Database version</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="107"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="108"/>
         <source>Export</source>
         <translation>Exporter</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="110"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="111"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="129"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="130"/>
         <source>Export Library to Engine Prime</source>
         <translation>Export Library to Engine Prime</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="168"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="169"/>
         <source>Export Library To</source>
         <translation>Export Library To</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="185"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="186"/>
         <source>No Export Directory Chosen</source>
         <translation>No Export Directory Chosen</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="186"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="187"/>
         <source>No export directory was chosen. Please choose a directory in order to export the music library.</source>
         <translation>No export directory was chosen. Please choose a directory in order to export the music library.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="259"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="260"/>
         <source>A database already exists in the chosen directory, but it is of an unsupported version. Export is not guaranteed to succeed in this situation.</source>
         <translation>A database already exists in the chosen directory, but it is of an unsupported version. Export is not guaranteed to succeed in this situation.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="267"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="268"/>
         <source>A database already exists in the chosen directory. Exported tracks will be added into this database.</source>
         <translation>A database already exists in the chosen directory. Exported tracks will be added into this database.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="278"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="279"/>
         <source>A database already exists in the chosen directory, but there was a problem loading it. Export is not guaranteed to succeed in this situation.</source>
         <translation>A database already exists in the chosen directory, but there was a problem loading it. Export is not guaranteed to succeed in this situation.</translation>
     </message>
@@ -15398,27 +15485,27 @@ Cliquez sur OK pour sortir.</translation>
 <context>
     <name>mixxx::LibraryExporter</name>
     <message>
-        <location filename="../../src/library/export/libraryexporter.cpp" line="57"/>
+        <location filename="../../src/library/export/libraryexporter.cpp" line="58"/>
         <source>Export Completed</source>
         <translation>Export Completed</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/libraryexporter.cpp" line="58"/>
+        <location filename="../../src/library/export/libraryexporter.cpp" line="59"/>
         <source>Exported %1 track(s) and %2 crate(s).</source>
         <translation>Exported %1 track(s) and %2 crate(s).</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/libraryexporter.cpp" line="67"/>
+        <location filename="../../src/library/export/libraryexporter.cpp" line="68"/>
         <source>Export Failed</source>
         <translation>Export Failed</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/libraryexporter.cpp" line="68"/>
+        <location filename="../../src/library/export/libraryexporter.cpp" line="69"/>
         <source>Export failed: %1</source>
         <translation>Export failed: %1</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/libraryexporter.cpp" line="73"/>
+        <location filename="../../src/library/export/libraryexporter.cpp" line="74"/>
         <source>Exporting to Engine Prime...</source>
         <translation>Exporting to Engine Prime...</translation>
     </message>
@@ -15510,7 +15597,7 @@ Cliquez sur OK pour sortir.</translation>
 <context>
     <name>mixxx::qml::QmlVisibleEffectsModel</name>
     <message>
-        <location filename="../../src/qml/qmlvisibleeffectsmodel.cpp" line="43"/>
+        <location filename="../../src/qml/qmlvisibleeffectsmodel.cpp" line="44"/>
         <source>No effect loaded.</source>
         <translation>Aucun effet chargé.</translation>
     </message>
