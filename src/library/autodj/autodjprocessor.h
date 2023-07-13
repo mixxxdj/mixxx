@@ -229,7 +229,7 @@ class AutoDJProcessor : public QObject {
   protected:
     // The following virtual signal wrappers are used for testing
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
-        emit loadTrackToPlayer(pTrack, group, play);
+        emit loadTrackToPlayer(std::move(pTrack), group, play);
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         emit autoDJStateChanged(state);

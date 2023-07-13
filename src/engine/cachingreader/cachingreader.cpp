@@ -42,8 +42,8 @@ constexpr SINT kNumberOfCachedChunksInMemory = 80;
 } // anonymous namespace
 
 CachingReader::CachingReader(const QString& group,
-        UserSettingsPointer config)
-        : m_pConfig(config),
+        UserSettingsPointer pConfig)
+        : m_pConfig(std::move(pConfig)),
           // Limit the number of in-flight requests to the worker. This should
           // prevent to overload the worker when it is not able to fetch those
           // requests from the FIFO timely. Otherwise outdated requests pile up

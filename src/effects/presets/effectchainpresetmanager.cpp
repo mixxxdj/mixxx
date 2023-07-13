@@ -40,8 +40,8 @@ EffectChainPresetPointer loadPresetFromFile(const QString& filePath) {
 
 EffectChainPresetManager::EffectChainPresetManager(UserSettingsPointer pConfig,
         EffectsBackendManagerPointer pBackendManager)
-        : m_pConfig(pConfig),
-          m_pBackendManager(pBackendManager) {
+        : m_pConfig(std::move(pConfig)),
+          m_pBackendManager(std::move(pBackendManager)) {
 }
 
 int EffectChainPresetManager::presetIndex(const QString& presetName) const {

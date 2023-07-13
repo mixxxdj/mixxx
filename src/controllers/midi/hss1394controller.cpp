@@ -7,7 +7,7 @@
 DeviceChannelListener::DeviceChannelListener(QObject* pParent, QString name)
         : QObject(pParent),
           hss1394::ChannelListener(),
-          m_sName(name) {
+          m_sName(std::move(name)) {
 }
 
 DeviceChannelListener::~DeviceChannelListener() {

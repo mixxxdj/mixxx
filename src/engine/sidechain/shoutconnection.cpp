@@ -46,7 +46,7 @@ const mixxx::Logger kLogger("ShoutConnection");
 
 } // namespace
 
-ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
+ShoutConnection::ShoutConnection(BroadcastProfilePtr pProfile,
         UserSettingsPointer pConfig)
         : m_pTextCodec(nullptr),
           m_pMetaData(),
@@ -55,8 +55,8 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
-          m_pConfig(pConfig),
-          m_pProfile(profile),
+          m_pConfig(std::move(pConfig)),
+          m_pProfile(std::move(pProfile)),
           m_encoder(nullptr),
           m_masterSamplerate("[Master]", "samplerate"),
           m_broadcastEnabled(BROADCAST_PREF_KEY, "enabled"),
@@ -979,7 +979,7 @@ void ShoutConnection::outputAvailable() {
 }
 
 void ShoutConnection::setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo) {
-    m_pOutputFifo = pOutputFifo;
+    m_pOutputFifo = std::move(pOutputFifo);
 }
 
 QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {

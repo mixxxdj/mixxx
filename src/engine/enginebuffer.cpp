@@ -563,7 +563,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
-    notifyTrackLoaded(pTrack, pOldTrack);
+    notifyTrackLoaded(pTrack, std::move(pOldTrack));
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
@@ -576,7 +576,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
     // Loading of a new track failed.
     // eject the currently loaded track (the old Track) as well
     ejectTrack();
-    emit trackLoadFailed(pTrack, reason);
+    emit trackLoadFailed(std::move(pTrack), reason);
 }
 
 void EngineBuffer::ejectTrack() {

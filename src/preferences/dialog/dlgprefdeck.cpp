@@ -36,7 +36,7 @@ constexpr int kDefaultRateRampSensitivity = 250;
 DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "ShowDurationRemaining"))),
           m_pControlTrackTimeFormat(std::make_unique<ControlObject>(

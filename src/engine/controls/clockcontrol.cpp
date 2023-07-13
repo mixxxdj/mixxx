@@ -16,7 +16,7 @@ constexpr double kSignificiantRateThreshold =
 } // namespace
 
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig),
+        : EngineControl(group, std::move(pConfig)),
           m_pCOBeatActive(std::make_unique<ControlObject>(ConfigKey(group, "beat_active"))),
           m_pLoopEnabled(std::make_unique<ControlProxy>(group, "loop_enabled", this)),
           m_pLoopStartPosition(std::make_unique<ControlProxy>(group, "loop_start_position", this)),
@@ -45,7 +45,7 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
 void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // Clear on-beat control
     m_pCOBeatActive->forceSet(0.0);
-    m_pBeats = pBeats;
+    m_pBeats = std::move(pBeats);
 }
 
 void ClockControl::updateIndicators(const double dRate,

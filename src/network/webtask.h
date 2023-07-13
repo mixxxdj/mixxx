@@ -69,9 +69,9 @@ class WebResponseWithContent final {
             WebResponse&& response,
             QMimeType&& contentType,
             QByteArray&& contentData)
-            : m_response(response),
-              m_contentType(contentType),
-              m_contentData(contentData) {
+            : m_response(std::move(response)),
+              m_contentType(std::move(contentType)),
+              m_contentData(std::move(contentData)) {
     }
     WebResponseWithContent(const WebResponseWithContent&) = default;
     WebResponseWithContent(WebResponseWithContent&&) = default;

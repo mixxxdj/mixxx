@@ -38,7 +38,7 @@ QString createPlaylistLabel(
 
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
-                  pConfig,
+                  std::move(pConfig),
                   new PlaylistTableModel(nullptr,
                           pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),

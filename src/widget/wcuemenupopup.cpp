@@ -11,7 +11,7 @@
 
 WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
         : QWidget(parent),
-          m_colorPaletteSettings(ColorPaletteSettings(pConfig)) {
+          m_colorPaletteSettings(ColorPaletteSettings(std::move(pConfig))) {
     QWidget::hide();
     setWindowFlags(Qt::Popup);
     setAttribute(Qt::WA_StyledBackground);

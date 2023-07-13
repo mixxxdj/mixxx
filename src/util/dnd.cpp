@@ -216,7 +216,7 @@ void DragAndDropHelper::handleTrackDragEnterEvent(
         QDragEnterEvent* event,
         const QString& group,
         UserSettingsPointer pConfig) {
-    if (allowLoadToPlayer(group, pConfig) &&
+    if (allowLoadToPlayer(group, std::move(pConfig)) &&
             dragEnterAccept(*event->mimeData(), group, true, false)) {
         event->acceptProposedAction();
     } else {
@@ -231,7 +231,7 @@ void DragAndDropHelper::handleTrackDropEvent(
         TrackDropTarget& target,
         const QString& group,
         UserSettingsPointer pConfig) {
-    if (allowLoadToPlayer(group, pConfig)) {
+    if (allowLoadToPlayer(group, std::move(pConfig))) {
         if (allowDeckCloneAttempt(*event, group)) {
             event->accept();
             target.emitCloneDeck(event->mimeData()->text(), group);

@@ -19,9 +19,10 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
 
     auto pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
-    auto pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(node, context, pChainSlot);
+    auto pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
+            node, context, std::move(pChainSlot));
     m_pEffectParameterSlot = EffectWidgetUtils::getButtonParameterSlotFromNode(
-            node, context, pEffectSlot);
+            node, context, std::move(pEffectSlot));
     if (!m_pEffectParameterSlot) {
         SKIN_WARNING(node, context) << "Could not find effect parameter slot";
         DEBUG_ASSERT(false);

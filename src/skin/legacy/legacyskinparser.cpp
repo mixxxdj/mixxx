@@ -165,7 +165,7 @@ ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& elemen
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_pSkinCreatedControls(nullptr),
           m_pKeyboard(nullptr),
           m_pPlayerManager(nullptr),
@@ -186,7 +186,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         EffectsManager* pEffectsManager,
         RecordingManager* pRecordingManager)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),

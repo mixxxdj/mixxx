@@ -15,7 +15,7 @@
 #include "moc_rhythmboxfeature.cpp"
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rhythmbox")),
+        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig), QStringLiteral("rhythmbox")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     QString tableName = "rhythmbox_library";

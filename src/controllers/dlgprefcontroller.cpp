@@ -33,12 +33,12 @@ QString mappingNameToPath(const QString& directory, const QString& mappingName) 
 DlgPrefController::DlgPrefController(
         QWidget* parent,
         Controller* controller,
-        std::shared_ptr<ControllerManager> controllerManager,
+        std::shared_ptr<ControllerManager> pControllerManager,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pUserDir(userMappingsPath(pConfig)),
-          m_pControllerManager(controllerManager),
+          m_pControllerManager(std::move(pControllerManager)),
           m_pController(controller),
           m_pDlgControllerLearning(nullptr),
           m_pInputTableModel(nullptr),
@@ -57,7 +57,7 @@ DlgPrefController::DlgPrefController(
     initTableView(m_ui.m_pOutputMappingTableView);
 
     std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->cloneMapping();
-    slotShowMapping(pMapping);
+    slotShowMapping(std::move(pMapping));
 
     m_ui.labelDeviceName->setText(m_pController->getName());
     QString category = m_pController->getCategory();

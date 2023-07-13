@@ -10,7 +10,7 @@ CrateFeatureHelper::CrateFeatureHelper(
         TrackCollection* pTrackCollection,
         UserSettingsPointer pConfig)
         : m_pTrackCollection(pTrackCollection),
-          m_pConfig(pConfig) {
+          m_pConfig(std::move(pConfig)) {
 }
 
 QString CrateFeatureHelper::proposeNameForNewCrate(

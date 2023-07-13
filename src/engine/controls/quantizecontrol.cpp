@@ -11,7 +11,7 @@
 
 QuantizeControl::QuantizeControl(const QString& group,
         UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig) {
+        : EngineControl(group, std::move(pConfig)) {
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -46,7 +46,7 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
 }
 
 void QuantizeControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
-    m_pBeats = pBeats;
+    m_pBeats = std::move(pBeats);
     const mixxx::audio::FramePos currentPosition = frameInfo().currentPosition;
     lookupBeatPositions(currentPosition);
     updateClosestBeat(currentPosition);

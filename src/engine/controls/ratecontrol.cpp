@@ -32,7 +32,7 @@ const double RateControl::kPausedJogMultiplier = 18.0;
 
 RateControl::RateControl(const QString& group,
         UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig),
+        : EngineControl(group, std::move(pConfig)),
           m_pBpmControl(nullptr),
           m_bTempStarted(false),
           m_tempRateRatio(0.0),

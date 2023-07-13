@@ -118,7 +118,7 @@ DlgTagFetcher::DlgTagFetcher(UserSettingsPointer pConfig, const TrackModel* pTra
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pTrackModel(pTrackModel),
           m_tagFetcher(this),
           m_isCoverArtCopyWorkerRunning(false),

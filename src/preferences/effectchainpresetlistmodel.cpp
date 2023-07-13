@@ -12,7 +12,7 @@ const QStringList kAcceptedMimeTypes = {QStringLiteral("text/plain")};
 
 EffectChainPresetListModel::EffectChainPresetListModel(
         QObject* parent, EffectChainPresetManagerPointer pPresetManager)
-        : QStringListModel(parent), m_pPresetManager(pPresetManager) {
+        : QStringListModel(parent), m_pPresetManager(std::move(pPresetManager)) {
 }
 
 QMimeData* EffectChainPresetListModel::mimeData(const QModelIndexList& indexes) const {

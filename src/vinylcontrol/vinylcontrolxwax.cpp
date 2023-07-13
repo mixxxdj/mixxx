@@ -30,7 +30,7 @@ bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
 
 VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& group)
-        : VinylControl(pConfig, group),
+        : VinylControl(std::move(pConfig), group),
           m_dVinylPositionOld(0.0),
           m_pWorkBuffer(MAX_BUFFER_LEN),
           m_workBufferSize(MAX_BUFFER_LEN),

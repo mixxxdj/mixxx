@@ -41,12 +41,12 @@ typedef struct {
 
 DlgReplaceCueColor::DlgReplaceCueColor(
         UserSettingsPointer pConfig,
-        mixxx::DbConnectionPoolPtr dbConnectionPool,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
         TrackCollectionManager* pTrackCollectionManager,
         QWidget* pParent)
         : QDialog(pParent),
           m_pConfig(pConfig),
-          m_pDbConnectionPool(dbConnectionPool),
+          m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_bDatabaseChangeInProgress(false),
           m_pNewColorMenu(new QMenu(this)),

@@ -18,7 +18,7 @@ static const double kKeepUnlockedKey = 1;
 
 KeyControl::KeyControl(const QString& group,
         UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig) {
+        : EngineControl(group, std::move(pConfig)) {
     m_pitchRateInfo.pitchRatio = 1.0;
     m_pitchRateInfo.tempoRatio = 1.0;
     m_pitchRateInfo.pitchTweakRatio = 1.0;

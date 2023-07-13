@@ -11,7 +11,7 @@ PerGroupEffectChain::PerGroupEffectChain(
         EffectsMessengerPointer pEffectsMessenger)
         : EffectChain(chainSlotGroup,
                   pEffectsManager,
-                  pEffectsMessenger,
+                  std::move(pEffectsMessenger),
                   stage) {
     // Set the chain to be fully wet.
     m_pControlChainMix->set(1.0);

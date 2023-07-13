@@ -13,7 +13,7 @@ const mixxx::Logger kLogger("EncoderOpusSettings");
 const QString EncoderOpusSettings::BITRATE_MODE_GROUP = "Opus_BitrateMode";
 
 EncoderOpusSettings::EncoderOpusSettings(UserSettingsPointer pConfig)
-    : m_pConfig(pConfig) {
+        : m_pConfig(std::move(pConfig)) {
     m_qualList.append(32);
     m_qualList.append(48);
     m_qualList.append(64);

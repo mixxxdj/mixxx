@@ -63,7 +63,7 @@ VinylControlControl::~VinylControlControl() {
 }
 
 void VinylControlControl::trackLoaded(TrackPointer pNewTrack) {
-    m_pTrack = pNewTrack;
+    m_pTrack = std::move(pNewTrack);
 }
 
 void VinylControlControl::notifySeekQueued() {

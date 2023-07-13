@@ -43,8 +43,8 @@ DlgPrefInterface::DlgPrefInterface(
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_pConfig(pConfig),
-          m_pScreensaverManager(pScreensaverManager),
+          m_pConfig(std::move(pConfig)),
+          m_pScreensaverManager(std::move(pScreensaverManager)),
           m_pSkinLoader(pSkinLoader),
           m_pSkin(pSkinLoader ? pSkinLoader->getConfiguredSkin() : nullptr),
           m_dScaleFactor(1.0),

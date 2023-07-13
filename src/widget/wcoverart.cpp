@@ -25,7 +25,7 @@ WCoverArt::WCoverArt(QWidget* parent,
         : QWidget(parent),
           WBaseWidget(this),
           m_group(group),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
           m_pPlayer(pPlayer),
@@ -180,7 +180,7 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
-    m_loadedTrack = pTrack;
+    m_loadedTrack = std::move(pTrack);
     if (m_loadedTrack) {
         connect(m_loadedTrack.get(),
                 &Track::coverArtUpdated,

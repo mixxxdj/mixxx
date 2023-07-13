@@ -11,7 +11,7 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
         const QString& trackTable,
-        QSharedPointer<BaseTrackCache> trackSource)
+        QSharedPointer<BaseTrackCache> pTrackSource)
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace) {
     QString viewTable = trackTable + "_view";
     QStringList columns;
@@ -34,7 +34,7 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
     }
 
     columns[1] = LIBRARYTABLE_PREVIEW;
-    setTable(viewTable, columns[0], columns, trackSource);
+    setTable(viewTable, columns[0], columns, std::move(pTrackSource));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 

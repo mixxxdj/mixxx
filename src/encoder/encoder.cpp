@@ -78,7 +78,7 @@ EncoderPointer EncoderFactory::createRecordingEncoder(
         UserSettingsPointer pConfig,
         EncoderCallback* pCallback) const {
     EncoderRecordingSettingsPointer pSettings =
-            getEncoderRecordingSettings(format, pConfig);
+            getEncoderRecordingSettings(format, std::move(pConfig));
     return createEncoder(pSettings, pCallback);
 }
 

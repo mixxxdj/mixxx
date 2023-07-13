@@ -6,7 +6,7 @@ const QString EncoderWaveSettings::BITS_GROUP = "BITS";
 
 EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig,
         QString format)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_format(std::move(format)) {
     VERIFY_OR_DEBUG_ASSERT(m_format == ENCODING_WAVE || m_format == ENCODING_AIFF) {
         m_format = ENCODING_WAVE;

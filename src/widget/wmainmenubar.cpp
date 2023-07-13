@@ -69,10 +69,11 @@ QUrl documentationUrl(
 }
 }  // namespace
 
-WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                           ConfigObject<ConfigValueKbd>* pKbdConfig)
+WMainMenuBar::WMainMenuBar(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig)
         : QMenuBar(pParent),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pKbdConfig(pKbdConfig) {
     setObjectName(QStringLiteral("MainMenu"));
     initialize();

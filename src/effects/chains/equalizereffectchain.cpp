@@ -12,7 +12,7 @@ EqualizerEffectChain::EqualizerEffectChain(
                   formatEffectChainGroup(handleAndGroup.name()),
                   SignalProcessingStage::Prefader,
                   pEffectsManager,
-                  pEffectsMessenger),
+                  std::move(pEffectsMessenger)),
           m_pCOFilterWaveform(
                   new ControlObject(ConfigKey(handleAndGroup.name(), "filterWaveformEnable"))) {
     // Add a single effect slot

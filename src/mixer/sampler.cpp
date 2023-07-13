@@ -10,7 +10,7 @@ Sampler::Sampler(PlayerManager* pParent,
         EngineChannel::ChannelOrientation defaultOrientation,
         const ChannelHandleAndGroup& handleGroup)
         : BaseTrackPlayerImpl(pParent,
-                  pConfig,
+                  std::move(pConfig),
                   pMixingEngine,
                   pEffectsManager,
                   defaultOrientation,

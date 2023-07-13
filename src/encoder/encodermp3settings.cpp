@@ -6,9 +6,8 @@
 const int EncoderMp3Settings::DEFAULT_BITRATE_INDEX = 6;
 const QString EncoderMp3Settings::ENCODING_MODE_GROUP = "MP3_VBR_MODE";
 
-EncoderMp3Settings::EncoderMp3Settings(UserSettingsPointer pConfig) :
-    m_pConfig(pConfig)
-{
+EncoderMp3Settings::EncoderMp3Settings(UserSettingsPointer pConfig)
+        : m_pConfig(std::move(pConfig)) {
     // Added "32" because older settings started at index 1 with 48.
     m_qualList.append(32); // mono
     m_qualList.append(48); // mono

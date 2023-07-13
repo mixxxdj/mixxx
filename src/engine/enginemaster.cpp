@@ -34,7 +34,7 @@ EngineMaster::EngineMaster(
         EffectsManager* pEffectsManager,
         ChannelHandleFactoryPointer pChannelHandleFactory,
         bool bEnableSidechain)
-        : m_pChannelHandleFactory(pChannelHandleFactory),
+        : m_pChannelHandleFactory(std::move(pChannelHandleFactory)),
           m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
           m_masterGainOld(0.0),
           m_boothGainOld(0.0),

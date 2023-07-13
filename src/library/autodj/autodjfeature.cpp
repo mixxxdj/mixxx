@@ -47,7 +47,7 @@ constexpr int kMaxRetrieveAttempts = 3;
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlayerManagerInterface* pPlayerManager)
-        : LibraryFeature(pLibrary, pConfig, QStringLiteral("autodj")),
+        : LibraryFeature(pLibrary, std::move(pConfig), QStringLiteral("autodj")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),

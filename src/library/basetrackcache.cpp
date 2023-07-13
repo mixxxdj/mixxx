@@ -604,7 +604,7 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
     }
     for (const auto& sc: sortColumns) {
         QVariant trackValue;
-        getTrackValueForColumn(pTrack, sc.m_column - columnOffset, trackValue);
+        getTrackValueForColumn(std::move(pTrack), sc.m_column - columnOffset, trackValue);
         trackValues.append(trackValue);
     }
 

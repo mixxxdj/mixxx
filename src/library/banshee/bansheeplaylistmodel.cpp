@@ -228,7 +228,7 @@ void BansheePlaylistModel::selectPlaylist(int playlistId) {
             kTitle,
             kGenre};
 
-    auto trackSource = QSharedPointer<BaseTrackCache>::create(
+    auto pTrackSource = QSharedPointer<BaseTrackCache>::create(
             m_pTrackCollectionManager->internalCollection(),
             m_tempTableName,
             idColumn,
@@ -236,7 +236,7 @@ void BansheePlaylistModel::selectPlaylist(int playlistId) {
             std::move(searchColumns),
             false);
 
-    setTable(m_tempTableName, idColumn, std::move(tableColumns), trackSource);
+    setTable(m_tempTableName, idColumn, std::move(tableColumns), std::move(pTrackSource));
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());

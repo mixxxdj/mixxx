@@ -9,8 +9,8 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
-SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
-        : m_pConfig(config),
+SoundDevice::SoundDevice(UserSettingsPointer pConfig, SoundManager* sm)
+        : m_pConfig(std::move(pConfig)),
           m_pSoundManager(sm),
           m_strDisplayName("Unknown Soundcard"),
           m_iNumOutputChannels(2),

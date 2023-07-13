@@ -13,7 +13,7 @@ WOverviewRGB::WOverviewRGB(
         PlayerManager* pPlayerManager,
         UserSettingsPointer pConfig,
         QWidget* parent)
-        : WOverview(group, pPlayerManager, pConfig, parent) {
+        : WOverview(group, pPlayerManager, std::move(pConfig), parent) {
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {

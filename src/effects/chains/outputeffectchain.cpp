@@ -7,7 +7,7 @@ OutputEffectChain::OutputEffectChain(EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger)
         : EffectChain(formatEffectChainGroup("[Master]"),
                   pEffectsManager,
-                  pEffectsMessenger,
+                  std::move(pEffectsMessenger),
                   SignalProcessingStage::Postfader) {
     addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
     m_effectSlots[0]->setEnabled(true);

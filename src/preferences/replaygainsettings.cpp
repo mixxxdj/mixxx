@@ -19,7 +19,7 @@ constexpr int kInitialDefaultBoostDefault = -6;
 } // anonymous namespace
 
 ReplayGainSettings::ReplayGainSettings(UserSettingsPointer pConfig)
-    : m_pConfig(pConfig) {
+        : m_pConfig(std::move(pConfig)) {
 }
 
 int ReplayGainSettings::getInitialReplayGainBoost() const {

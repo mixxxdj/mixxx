@@ -25,7 +25,7 @@ LibraryFeature::LibraryFeature(
         const QString& iconName)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_iconName(iconName) {
     if (!m_iconName.isEmpty()) {
         m_icon = QIcon(kIconPath.arg(m_iconName));

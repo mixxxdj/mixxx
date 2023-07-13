@@ -4,8 +4,8 @@
 #define DEFAULT_BITRATE 128
 
 EncoderBroadcastSettings::EncoderBroadcastSettings(
-        BroadcastProfilePtr profile)
-        : m_pProfile(profile) {
+        BroadcastProfilePtr pProfile)
+        : m_pProfile(std::move(pProfile)) {
     m_qualList.append(32);
     m_qualList.append(48);
     m_qualList.append(64);

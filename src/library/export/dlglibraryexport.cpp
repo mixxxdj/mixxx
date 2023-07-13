@@ -46,7 +46,7 @@ DlgLibraryExport::DlgLibraryExport(
         UserSettingsPointer pConfig,
         TrackCollectionManager* pTrackCollectionManager)
         : QDialog(parent),
-          m_pConfig{pConfig},
+          m_pConfig{std::move(pConfig)},
           m_pTrackCollectionManager{pTrackCollectionManager} {
     // Selectable list of crates from the Mixxx library.
     m_pCratesList = make_parented<QListWidget>();

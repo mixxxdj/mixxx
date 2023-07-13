@@ -53,7 +53,7 @@ bool isMacOSImporterAvailable() {
 } // anonymous namespace
 
 ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("itunes")),
+        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig), QStringLiteral("itunes")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     QString tableName = "itunes_library";

@@ -29,14 +29,14 @@ QString fromTraktorSeparators(QString path) {
 
 } // anonymous namespace
 
-
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
-                                     TrackCollectionManager* pTrackCollectionManager,
-                                     QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalTrackModel(parent, pTrackCollectionManager,
-                                 "mixxx.db.model.traktor_tablemodel",
-                                 "traktor_library",
-                                 trackSource) {
+        TrackCollectionManager* pTrackCollectionManager,
+        QSharedPointer<BaseTrackCache> pTrackSource)
+        : BaseExternalTrackModel(parent,
+                  pTrackCollectionManager,
+                  "mixxx.db.model.traktor_tablemodel",
+                  "traktor_library",
+                  std::move(pTrackSource)) {
 }
 
 bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
@@ -47,13 +47,14 @@ bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
-                                           TrackCollectionManager* pTrackCollectionManager,
-                                           QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalPlaylistModel(parent, pTrackCollectionManager,
-                                    "mixxx.db.model.traktor.playlistmodel",
-                                    "traktor_playlists",
-                                    "traktor_playlist_tracks",
-                                    trackSource) {
+        TrackCollectionManager* pTrackCollectionManager,
+        QSharedPointer<BaseTrackCache> pTrackSource)
+        : BaseExternalPlaylistModel(parent,
+                  pTrackCollectionManager,
+                  "mixxx.db.model.traktor.playlistmodel",
+                  "traktor_playlists",
+                  "traktor_playlist_tracks",
+                  std::move(pTrackSource)) {
 }
 
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
@@ -64,7 +65,7 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("traktor")),
+        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig), QStringLiteral("traktor")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     QString tableName = "traktor_library";

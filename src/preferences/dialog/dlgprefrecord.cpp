@@ -17,7 +17,7 @@ constexpr bool kDefaultCueEnabled = true;
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_selFormat(QString(), QString(), false, QString()) {
     setupUi(this);
 

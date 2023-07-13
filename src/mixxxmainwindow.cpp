@@ -103,8 +103,7 @@ inline bool supportsGlobalMenu() {
 } // namespace
 
 MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices)
-        : m_pCoreServices(pCoreServices),
-          m_pCentralWidget(nullptr),
+        : m_pCentralWidget(nullptr),
           m_pLaunchImage(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
@@ -114,6 +113,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_pPrefDlg(nullptr),
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
     DEBUG_ASSERT(pCoreServices);
+    m_pCoreServices = std::move(pCoreServices);
     // These depend on the settings
 #ifdef __LINUX__
     // If the desktop features a global menubar and we'll go fullscreen during
@@ -868,7 +868,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             .arg(QString::number(deck));
     QString areYouSure = tr("Are you sure you want to load a new track?");
 
-    if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+    if (ControlObject::get(ConfigKey(std::move(group), "play")) > 0.0) {
         int ret = QMessageBox::warning(this,
                 VersionStore::applicationName(),
                 deckWarningMessage + "\n" + areYouSure,
@@ -906,7 +906,7 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
     if (visible) {
         if (m_pDeveloperToolsDlg == nullptr) {
             UserSettingsPointer pConfig = m_pCoreServices->getSettings();
-            m_pDeveloperToolsDlg = new DlgDeveloperTools(this, pConfig);
+            m_pDeveloperToolsDlg = new DlgDeveloperTools(this, std::move(pConfig));
             connect(m_pDeveloperToolsDlg,
                     &DlgDeveloperTools::destroyed,
                     this,

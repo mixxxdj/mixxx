@@ -12,8 +12,8 @@ const QString kEffectDefaultsDirectory = "/effects/defaults";
 
 EffectPresetManager::EffectPresetManager(UserSettingsPointer pConfig,
         EffectsBackendManagerPointer pBackendManager)
-        : m_pConfig(pConfig),
-          m_pBackendManager(pBackendManager) {
+        : m_pConfig(std::move(pConfig)),
+          m_pBackendManager(std::move(pBackendManager)) {
     loadDefaultEffectPresets();
 }
 
@@ -62,8 +62,8 @@ void EffectPresetManager::loadDefaultEffectPresets() {
 }
 
 void EffectPresetManager::saveDefaultForEffect(EffectSlotPointer pEffectSlot) {
-    EffectPresetPointer pPreset(new EffectPreset(pEffectSlot));
-    saveDefaultForEffect(pPreset);
+    EffectPresetPointer pPreset(new EffectPreset(std::move(pEffectSlot)));
+    saveDefaultForEffect(std::move(pPreset));
 }
 
 void EffectPresetManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {

@@ -187,9 +187,9 @@ void EngineNetworkStream::addOutputWorker(NetworkOutputStreamWorkerPtr pWorker) 
     if (pWorker && m_numOutputChannels) {
         int nextNullItem = nextOutputSlotAvailable();
         if(nextNullItem > -1) {
-            QSharedPointer<FIFO<CSAMPLE>> workerFifo(
+            QSharedPointer<FIFO<CSAMPLE>> pWorkerFifo(
                     new FIFO<CSAMPLE>(m_numOutputChannels * kBufferFrames));
-            pWorker->setOutputFifo(workerFifo);
+            pWorker->setOutputFifo(std::move(pWorkerFifo));
             pWorker->startStream(m_sampleRate, m_numOutputChannels);
             m_outputWorkers[nextNullItem] = pWorker;
 

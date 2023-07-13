@@ -114,7 +114,7 @@ JsonWebTask::JsonWebTask(
         QObject* parent)
         : WebTask(networkAccessManager, parent),
           m_baseUrl(std::move(baseUrl)),
-          m_request(request) {
+          m_request(std::move(request)) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
     DEBUG_ASSERT(!m_baseUrl.isEmpty());
 }

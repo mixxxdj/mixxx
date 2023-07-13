@@ -18,7 +18,7 @@ void WEffectName::setup(const QDomNode& node, const SkinContext& context) {
     EffectChainPointer pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
+            node, context, std::move(pChainSlot));
     if (pEffectSlot) {
         setEffectSlot(pEffectSlot);
     } else {

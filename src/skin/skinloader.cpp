@@ -26,7 +26,7 @@ namespace skin {
 using legacy::LegacySkin;
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_spinnyCoverControlsCreated(false),
           m_micDuckingControlsCreated(false),
           m_numMicsEnabled(1) {

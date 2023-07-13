@@ -103,7 +103,7 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
                 this,
                 &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
     }
-    m_pLoadedTrack = pTrack;
+    m_pLoadedTrack = std::move(pTrack);
     if (m_pLoadedTrack != nullptr) {
         connect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,

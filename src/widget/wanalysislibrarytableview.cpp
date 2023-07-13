@@ -9,7 +9,7 @@ WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         Library* pLibrary,
         double trackTableBackgroundColorOpacity)
         : WTrackTableView(parent,
-                  pConfig,
+                  std::move(pConfig),
                   pLibrary,
                   trackTableBackgroundColorOpacity,
                   true) {

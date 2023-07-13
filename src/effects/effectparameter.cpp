@@ -10,7 +10,7 @@ EffectParameter::EffectParameter(EngineEffect* pEngineEffect,
         EffectManifestParameterPointer pParameterManifest,
         const EffectParameterPreset& preset)
         : m_pEngineEffect(pEngineEffect),
-          m_pMessenger(pEffectsMessenger),
+          m_pMessenger(std::move(pEffectsMessenger)),
           m_pParameterManifest(pParameterManifest) {
     if (preset.isNull()) {
         setValue(pParameterManifest->getDefault());

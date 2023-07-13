@@ -26,7 +26,9 @@
 
 class KeyDetectionSettings {
   public:
-    KeyDetectionSettings(UserSettingsPointer pConfig) : m_pConfig(pConfig) {}
+    KeyDetectionSettings(UserSettingsPointer pConfig)
+            : m_pConfig(std::move(pConfig)) {
+    }
 
     DEFINE_PREFERENCE_HELPERS(KeyDetectionEnabled, bool,
                               KEY_CONFIG_KEY, KEY_DETECTION_ENABLED, true);

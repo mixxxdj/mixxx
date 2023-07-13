@@ -15,8 +15,8 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         QTreeWidgetItem* pControllersRootItem)
         : DlgPreferencePage(pPreferences),
           m_pDlgPreferences(pPreferences),
-          m_pConfig(pConfig),
-          m_pControllerManager(pControllerManager),
+          m_pConfig(std::move(pConfig)),
+          m_pControllerManager(std::move(pControllerManager)),
           m_pControllersRootItem(pControllersRootItem) {
     setupUi(this);
     // Create text color for the cue mode link "?" to the manual

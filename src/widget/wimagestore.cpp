@@ -108,6 +108,6 @@ bool WImageStore::willCorrectColors() {
 };
 
 // static
-void WImageStore::setLoader(QSharedPointer<ImgSource> ld) {
-    m_loader = ld;
+void WImageStore::setLoader(QSharedPointer<ImgSource> pLoader) {
+    m_loader = std::move(pLoader);
 }

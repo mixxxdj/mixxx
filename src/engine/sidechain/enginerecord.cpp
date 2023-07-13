@@ -13,13 +13,12 @@
 constexpr int kMetaDataLifeTimeout = 16;
 
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
+        : m_pConfig(std::move(pConfig)),
           m_frames(0),
           m_recordedDuration(0),
           m_iMetaDataLife(0),
           m_cueTrack(0),
           m_bCueIsEnabled(false) {
-
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
     m_pSamplerate = new ControlProxy("[Master]", "samplerate", this);
     m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());

@@ -63,7 +63,7 @@ AutoDJCratesDAO::AutoDJCratesDAO(
         : m_iAutoDjPlaylistId(iAutoDjPlaylistId),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           // The database has not been created yet.
           m_bAutoDjCratesDbCreated(false),
           // By default, active tracks are not tracks that haven't been played in

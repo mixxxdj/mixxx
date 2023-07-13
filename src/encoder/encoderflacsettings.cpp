@@ -7,9 +7,7 @@ const QString EncoderFlacSettings::BITS_GROUP = "FLAC_BITS";
 const QString EncoderFlacSettings::GROUP_COMPRESSION = "FLAC_COMPRESSION";
 
 EncoderFlacSettings::EncoderFlacSettings(UserSettingsPointer pConfig)
-{
-    m_pConfig = pConfig;
-
+        : m_pConfig(std::move(pConfig)) {
     QList<QString> names;
     names.append(QObject::tr("16 bits"));
     names.append(QObject::tr("24 bits"));

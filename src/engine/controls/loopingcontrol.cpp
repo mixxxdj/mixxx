@@ -46,7 +46,7 @@ QList<double> LoopingControl::getBeatSizes() {
 
 LoopingControl::LoopingControl(const QString& group,
         UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig),
+        : EngineControl(group, std::move(pConfig)),
           m_bLoopingEnabled(false),
           m_bLoopRollActive(false),
           m_bAdjustingLoopIn(false),
@@ -1201,7 +1201,7 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
 
 void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     clearActiveBeatLoop();
-    m_pBeats = pBeats;
+    m_pBeats = std::move(pBeats);
     if (m_pBeats) {
         LoopInfo loopInfo = m_loopInfo.getValue();
         if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {

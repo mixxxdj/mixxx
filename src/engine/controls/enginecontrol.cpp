@@ -9,7 +9,7 @@
 EngineControl::EngineControl(const QString& group,
         UserSettingsPointer pConfig)
         : m_group(group),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pEngineMaster(nullptr),
           m_pEngineBuffer(nullptr) {
     setFrameInfo(mixxx::audio::kStartFramePos,

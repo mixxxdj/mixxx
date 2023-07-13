@@ -94,7 +94,7 @@ class SeratoTags final {
             const audio::SignalInfo& signalInfo,
             const Duration& duration,
             double timingOffset) {
-        m_seratoBeatGrid.setBeats(pBeats, signalInfo, duration, timingOffset);
+        m_seratoBeatGrid.setBeats(std::move(pBeats), signalInfo, duration, timingOffset);
     }
 
     /// Return the track color.

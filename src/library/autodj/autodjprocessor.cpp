@@ -87,12 +87,12 @@ void DeckAttributes::slotOutroEndPositionChanged(double v) {
 }
 
 void DeckAttributes::slotTrackLoaded(TrackPointer pTrack) {
-    emit trackLoaded(this, pTrack);
+    emit trackLoaded(this, std::move(pTrack));
 }
 
 void DeckAttributes::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     //qDebug() << "DeckAttributes::slotLoadingTrack";
-    emit loadingTrack(this, pNewTrack, pOldTrack);
+    emit loadingTrack(this, std::move(pNewTrack), std::move(pOldTrack));
 }
 
 void DeckAttributes::slotPlayerEmpty() {
@@ -115,7 +115,7 @@ AutoDJProcessor::AutoDJProcessor(
         TrackCollectionManager* pTrackCollectionManager,
         int iAutoDJPlaylistId)
         : QObject(pParent),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),

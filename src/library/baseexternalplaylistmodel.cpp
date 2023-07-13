@@ -19,11 +19,11 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         const char* settingsNamespace,
         const QString& playlistsTable,
         const QString& playlistTracksTable,
-        QSharedPointer<BaseTrackCache> trackSource)
+        QSharedPointer<BaseTrackCache> pTrackSource)
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
-          m_trackSource(trackSource),
+          m_trackSource(std::move(pTrackSource)),
           m_currentPlaylistId(kInvalidPlaylistId) {
 }
 

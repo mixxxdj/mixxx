@@ -76,12 +76,12 @@ const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))
 
 } // anonymous namespace
 
-SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
+SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer pConfig,
         SoundManager* sm,
         const PaDeviceInfo* deviceInfo,
         PaHostApiTypeId deviceTypeId,
         unsigned int devIndex)
-        : SoundDevice(config, sm),
+        : SoundDevice(std::move(pConfig), sm),
           m_pStream(nullptr),
           m_deviceInfo(deviceInfo),
           m_deviceTypeId(deviceTypeId),

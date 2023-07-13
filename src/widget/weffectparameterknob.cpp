@@ -8,9 +8,9 @@ void WEffectParameterKnob::setup(const QDomNode& node, const SkinContext& contex
     auto pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     auto pEffectSlot =
-            EffectWidgetUtils::getEffectSlotFromNode(node, context, pChainSlot);
+            EffectWidgetUtils::getEffectSlotFromNode(node, context, std::move(pChainSlot));
     m_pEffectParameterSlot = EffectWidgetUtils::getParameterSlotFromNode(
-            node, context, pEffectSlot);
+            node, context, std::move(pEffectSlot));
     VERIFY_OR_DEBUG_ASSERT(m_pEffectParameterSlot) {
         SKIN_WARNING(node, context) << "Could not find effect parameter slot";
         return;

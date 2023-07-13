@@ -26,7 +26,7 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
     EffectChainPointer pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
+            node, context, std::move(pChainSlot));
 
     if (m_pEffectSlot != nullptr) {
         connect(m_pVisibleEffectsList.data(),

@@ -274,7 +274,7 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(
 
     if (!query.isEmpty()) {
         QStringList tokens = query.split(" ");
-        parseTokens(tokens, pQuery.get());
+        parseTokens(std::move(tokens), pQuery.get());
     }
 
     return pQuery;

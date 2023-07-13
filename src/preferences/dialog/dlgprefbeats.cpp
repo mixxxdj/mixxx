@@ -7,7 +7,7 @@
 
 DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_bpmSettings(pConfig),
+          m_bpmSettings(std::move(pConfig)),
           m_bAnalyzerEnabled(m_bpmSettings.getBpmDetectionEnabledDefault()),
           m_bFixedTempoEnabled(m_bpmSettings.getFixedTempoAssumptionDefault()),
           m_bFastAnalysisEnabled(m_bpmSettings.getFastAnalysisDefault()),

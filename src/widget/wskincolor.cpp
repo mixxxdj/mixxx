@@ -5,8 +5,8 @@
 QSharedPointer<ImgSource> WSkinColor::loader
     = QSharedPointer<ImgSource>(new ImgLoader());
 
-void WSkinColor::setLoader(QSharedPointer<ImgSource> ld) {
-    loader = ld;
+void WSkinColor::setLoader(QSharedPointer<ImgSource> pLoader) {
+    loader = std::move(pLoader);
 }
 
 QColor WSkinColor::getCorrectColor(QColor c) {

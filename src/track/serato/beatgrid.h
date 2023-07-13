@@ -129,7 +129,7 @@ class SeratoBeatGrid final {
         return m_pTerminalMarker;
     }
     void setTerminalMarker(SeratoBeatGridTerminalMarkerPointer pTerminalMarker) {
-        m_pTerminalMarker = pTerminalMarker;
+        m_pTerminalMarker = std::move(pTerminalMarker);
     }
 
     void setBeats(BeatsPointer pBeats,

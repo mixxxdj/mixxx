@@ -39,7 +39,7 @@ QStringList CoverArtUtils::supportedCoverArtExtensions() {
 //static
 QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
     QStringList extensions = supportedCoverArtExtensions();
-    return RegexUtils::fileExtensionsRegex(extensions);
+    return RegexUtils::fileExtensionsRegex(std::move(extensions));
 }
 
 //static

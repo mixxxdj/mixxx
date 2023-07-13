@@ -9,7 +9,7 @@ StandardEffectChain::StandardEffectChain(unsigned int iChainNumber,
         EffectsMessengerPointer pEffectsMessenger)
         : EffectChain(formatEffectChainGroup(iChainNumber),
                   pEffectsManager,
-                  pEffectsMessenger,
+                  std::move(pEffectsMessenger),
                   SignalProcessingStage::Postfader) {
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         addEffectSlot(formatEffectSlotGroup(iChainNumber, i));

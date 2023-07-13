@@ -18,7 +18,7 @@ ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
           m_newHash(newHash),
           m_filesToImport(filesToImport),
           m_possibleCovers(possibleCovers),
-          m_pToken(pToken) {
+          m_pToken(std::move(pToken)) {
 }
 
 void ImportFilesTask::run() {

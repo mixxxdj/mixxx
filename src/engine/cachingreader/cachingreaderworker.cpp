@@ -94,7 +94,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
     {
         const auto locker = lockMutex(&m_newTrackMutex);
-        m_pNewTrack = pTrack;
+        m_pNewTrack = std::move(pTrack);
         m_newTrackAvailable.storeRelease(1);
     }
     workReady();

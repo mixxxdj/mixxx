@@ -46,7 +46,7 @@ constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 SoundManager::SoundManager(UserSettingsPointer pConfig,
         EngineMaster* pMaster)
         : m_pMaster(pMaster),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_paInitialized(false),
           m_config(this),
           m_pErrorDevice(nullptr),

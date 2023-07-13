@@ -12,7 +12,7 @@ constexpr CSAMPLE kDuckThreshold = 0.1f;
 EngineTalkoverDucking::EngineTalkoverDucking(
         UserSettingsPointer pConfig, const QString& group)
         : EngineSideChainCompressor(group),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_group(group) {
     m_pMasterSampleRate = new ControlProxy(m_group, "samplerate", this);
     m_pMasterSampleRate->connectValueChanged(this, &EngineTalkoverDucking::slotSampleRateChanged,

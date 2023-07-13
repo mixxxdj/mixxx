@@ -32,7 +32,7 @@ WSpinnyBase::WSpinnyBase(
         : WGLWidget(pParent),
           WBaseWidget(this),
           m_group(group),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pPlayPos(nullptr),
           m_pVisualPlayPos(nullptr),
           m_pTrackSamples(nullptr),
@@ -258,7 +258,7 @@ void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
 
     setLoadedCover(QPixmap());
 
-    m_pLoadedTrack = pTrack;
+    m_pLoadedTrack = std::move(pTrack);
     if (m_pLoadedTrack) {
         connect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,

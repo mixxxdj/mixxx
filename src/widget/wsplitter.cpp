@@ -7,7 +7,7 @@
 WSplitter::WSplitter(QWidget* pParent, UserSettingsPointer pConfig)
         : QSplitter(pParent),
           WBaseWidget(this),
-          m_pConfig(pConfig) {
+          m_pConfig(std::move(pConfig)) {
     connect(this, &WSplitter::splitterMoved, this, &WSplitter::slotSplitterMoved);
 }
 
@@ -110,7 +110,7 @@ void WSplitter::slotSplitterMoved() {
             sizeStrList.push_back(QString::number(sizeInt));
         }
         QString sizesStr = sizeStrList.join(",");
-        m_pConfig->set(m_configKey, ConfigValue(sizesStr));
+        m_pConfig->set(m_configKey, ConfigValue(std::move(sizesStr)));
     }
 }
 

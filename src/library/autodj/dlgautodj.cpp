@@ -24,7 +24,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
         KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
-          m_pConfig(pConfig),
+          m_pConfig(std::move(pConfig)),
           m_pAutoDJProcessor(pProcessor),
           m_pTrackTableView(new WTrackTableView(this,
                   m_pConfig,

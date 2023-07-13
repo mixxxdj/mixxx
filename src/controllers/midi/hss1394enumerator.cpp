@@ -7,7 +7,7 @@
 
 Hss1394Enumerator::Hss1394Enumerator(UserSettingsPointer pConfig)
         : MidiEnumerator(),
-          m_pConfig(pConfig) {
+          m_pConfig(std::move(pConfig)) {
 }
 
 Hss1394Enumerator::~Hss1394Enumerator() {

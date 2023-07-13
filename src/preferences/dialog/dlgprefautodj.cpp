@@ -148,26 +148,26 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
 void DlgPrefAutoDJ::slotSetMinimumAvailable(int a_iValue) {
     QString str;
     str.setNum(a_iValue);
-    m_pConfig->set(ConfigKey("[Auto DJ]","MinimumAvailableBuff"),str);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "MinimumAvailableBuff"), std::move(str));
 }
 
 void DlgPrefAutoDJ::slotToggleRequeueIgnore(int a_iState) {
     bool bChecked = (a_iState == Qt::Checked);
     QString strChecked = (bChecked) ? "1" : "0";
-    m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), strChecked);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), std::move(strChecked));
     RequeueIgnoreTimeEdit->setEnabled(bChecked);
 }
 
 void DlgPrefAutoDJ::slotSetRequeueIgnoreTime(const QTime& a_rTime) {
     QString str = a_rTime.toString(RequeueIgnoreTimeEdit->displayFormat());
-    m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTimeBuff"),str);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTimeBuff"), std::move(str));
 }
 
 void DlgPrefAutoDJ::slotSetRandomQueueMin(int a_iValue) {
     QString str;
     //qDebug() << "min allowed " << a_iValue;
     str.setNum(a_iValue);
-    m_pConfig->set(ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"), str);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"), std::move(str));
 }
 
 void DlgPrefAutoDJ::slotConsiderRepeatPlaylistState(int a_iValue) {

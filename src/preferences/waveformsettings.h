@@ -4,7 +4,9 @@
 
 class WaveformSettings {
   public:
-    WaveformSettings(UserSettingsPointer pConfig) : m_pConfig(pConfig) {}
+    WaveformSettings(UserSettingsPointer pConfig)
+            : m_pConfig(std::move(pConfig)) {
+    }
 
     bool waveformCachingEnabled() const {
         return m_pConfig->getValue<bool>(

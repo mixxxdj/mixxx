@@ -201,7 +201,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
         qDebug() << " Found output device"
                  << "#" << i << pDeviceInfo->name;
         QString deviceName = pDeviceInfo->name;
-        unassignedOutputDevices[i] = deviceName;
+        unassignedOutputDevices[i] = std::move(deviceName);
     }
 
     // Search for input devices and pair them with output devices if applicable

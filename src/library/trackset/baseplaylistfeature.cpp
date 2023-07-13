@@ -44,7 +44,7 @@ BasePlaylistFeature::BasePlaylistFeature(
         PlaylistTableModel* pModel,
         const QString& rootViewName,
         const QString& iconName)
-        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
+        : BaseTrackSetFeature(pLibrary, std::move(pConfig), rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
                                 ->internalCollection()
                                 ->getPlaylistDAO()),

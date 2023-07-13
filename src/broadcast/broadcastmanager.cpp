@@ -128,12 +128,12 @@ void BroadcastManager::slotControlEnabled(double v) {
     emit broadcastEnabled(v > 0.0);
 }
 
-void BroadcastManager::slotProfileAdded(BroadcastProfilePtr profile) {
-    addConnection(profile);
+void BroadcastManager::slotProfileAdded(BroadcastProfilePtr pProfile) {
+    addConnection(std::move(pProfile));
 }
 
-void BroadcastManager::slotProfileRemoved(BroadcastProfilePtr profile) {
-    removeConnection(profile);
+void BroadcastManager::slotProfileRemoved(BroadcastProfilePtr pProfile) {
+    removeConnection(std::move(pProfile));
 }
 
 void BroadcastManager::slotProfilesChanged() {
