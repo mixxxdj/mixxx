@@ -711,6 +711,16 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         }
     }
 
+    QDomElement mainEqElement = XmlParse::selectElement(root, EffectXml::kMainEq);
+    QDomNodeList mainEqs = mainEqElement.elementsByTagName(EffectXml::kChain);
+    QDomNode mainEqChainNode = mainEqs.at(0);
+    EffectChainPresetPointer mainEqPreset;
+    if (mainEqChainNode.isElement()) {
+        QDomElement mainEqChainElement = mainEqChainNode.toElement();
+        mainEqPreset = EffectChainPresetPointer(
+                new EffectChainPreset(mainEqChainElement));
+    }
+
     importUserPresets();
 
     // Reload order of custom chain presets
@@ -822,7 +832,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     }
 
     return EffectsXmlData{
-            eqEffectManifests, quickEffectPresets, standardEffectChainPresets};
+            eqEffectManifests, quickEffectPresets, standardEffectChainPresets, mainEqPreset};
 }
 
 EffectXmlDataSingleDeck EffectChainPresetManager::readEffectsXmlSingleDeck(
@@ -891,6 +901,12 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
     for (const auto& pPreset : std::as_const(data.standardEffectChainPresets)) {
         chainsElement.appendChild(pPreset->toXml(pDoc));
     }
+
+    // Save main EQ effect
+    QDomElement mainEqElement = pDoc->createElement(EffectXml::kMainEq);
+    rootElement.appendChild(mainEqElement);
+    const auto& mainEqPreset = data.outputChainPreset;
+    mainEqElement.appendChild(mainEqPreset->toXml(pDoc));
 
     // Save order of custom chain presets
     QDomElement chainPresetListElement =

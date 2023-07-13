@@ -203,6 +203,10 @@ void EffectsManager::readEffectsXml() {
         m_standardEffectChains.value(i)->loadChainPreset(data.standardEffectChainPresets.at(i));
     }
 
+    if (!data.outputChainPreset.isNull()) {
+        m_outputEffectChain->loadChainPreset(data.outputChainPreset);
+    }
+
     for (auto it = data.eqEffectManifests.begin();
             it != data.eqEffectManifests.end();
             it++) {
@@ -288,11 +292,17 @@ void EffectsManager::saveEffectsXml() {
         standardEffectChainPresets.append(pPreset);
     }
 
+    auto outputChainPreset = m_outputEffectChain.data() != nullptr
+            ? EffectChainPresetPointer::create(m_outputEffectChain.data())
+            // required for tests
+            : EffectChainPresetPointer(new EffectChainPreset());
+
     m_pChainPresetManager->saveEffectsXml(&doc,
             EffectsXmlData{
                     eqEffectManifests,
                     quickEffectChainPresets,
-                    standardEffectChainPresets});
+                    standardEffectChainPresets,
+                    outputChainPreset});
     m_pVisibleEffectsList->saveEffectsXml(&doc);
 
     QDir settingsPath(m_pConfig->getSettingsPath());

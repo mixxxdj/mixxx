@@ -10,6 +10,7 @@ struct EffectsXmlData {
     QHash<QString, EffectManifestPointer> eqEffectManifests;
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
     QList<EffectChainPresetPointer> standardEffectChainPresets;
+    EffectChainPresetPointer outputChainPreset;
 };
 
 struct EffectXmlDataSingleDeck {
