@@ -78,9 +78,30 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     raise();
     activateWindow();
 
+    loadTrack(pTrack);
     // This must be called after show() to set the window title. Refer to the
     // comment in setWindowTitleFromTrack() for details.
-    slotLoadTrack(pTrack);
+    setWindowTitleFromTrack();
+    slotTrackCoverArtUpdated();
+    // slotCoverFound() calls adjustImageAndDialogSize()
+}
+
+void DlgCoverArtFullSize::init(TrackPointer pTrack,
+        const CoverInfo& coverInfo) {
+    if (!pTrack) {
+        return;
+    }
+
+    // The real size will be calculated later by adjustImageAndDialogSize().
+    resize(100, 100);
+    show();
+    raise();
+    activateWindow();
+
+    loadTrack(pTrack);
+    setWindowTitleFromTrack();
+    CoverArtCache::requestCover(this, coverInfo);
+    // slotCoverFound() calls adjustImageAndDialogSize()
 }
 
 void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {

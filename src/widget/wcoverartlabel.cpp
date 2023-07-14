@@ -50,6 +50,7 @@ WCoverArtLabel::~WCoverArtLabel() = default;
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
         const QPixmap& px) {
+    m_coverInfo = coverInfo;
     if (m_pCoverMenu) {
         m_pCoverMenu->setCoverArt(coverInfo);
     }
@@ -98,7 +99,7 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
             } else if (!m_pLoadedTrack && !m_Data.isNull()) {
                 m_pDlgFullSize->initFetchedCoverArt(m_Data);
             } else {
-                m_pDlgFullSize->init(m_pLoadedTrack);
+                m_pDlgFullSize->init(m_pLoadedTrack, m_coverInfo);
             }
         }
     }

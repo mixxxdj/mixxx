@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QWidget>
 
+#include "library/coverart.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
@@ -46,4 +47,6 @@ class WCoverArtLabel : public QLabel {
     TrackPointer m_pLoadedTrack;
 
     QPixmap m_loadedCover;
+
+    CoverInfo m_coverInfo;
 };

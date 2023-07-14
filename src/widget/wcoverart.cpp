@@ -265,7 +265,7 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
     }
 
     if (event->button() == Qt::LeftButton && m_loadedTrack &&
-            m_clickTimer.isActive()) { // init/close fullsize cover
+            m_clickTimer.isActive()) { // show/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else if (!m_loadedCover.isNull()) {
