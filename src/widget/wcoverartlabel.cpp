@@ -53,6 +53,11 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
     m_coverInfo = coverInfo;
     if (m_pCoverMenu) {
         m_pCoverMenu->setCoverArt(coverInfo);
+        // cover may have been selected via DlgFullSize menu,
+        // so if it's visible update that as well
+        if (m_pDlgFullSize->isVisible()) {
+            m_pDlgFullSize->init(m_pLoadedTrack, m_coverInfo);
+        }
     }
     if (px.isNull()) {
         m_loadedCover = px;
