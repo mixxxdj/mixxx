@@ -35,7 +35,7 @@ void WSpinny::draw() {
 
 #ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
-    if (m_bVinylActive && m_bSignalActive) {
+    if (shouldDrawVinylQuality()) {
         // draw the last good image
         p.drawImage(this->rect(), m_qImage);
     }
@@ -71,6 +71,27 @@ void WSpinny::draw() {
         p.drawImage(QPointF(-m_fgImageScaled.width() / scaleFactor / 2.0,
                             -m_fgImageScaled.height() / scaleFactor / 2.0),
                 m_fgImageScaled);
+    }
+}
+
+void WSpinny::setupVinylSignalQuality() {
+    m_qImage = QImage(m_iVinylScopeSize, m_iVinylScopeSize, QImage::Format_ARGB32);
+}
+
+void WSpinny::updateVinylSignalQualityImage(const QColor& qual_color, const unsigned char* data) {
+    int r, g, b;
+    qual_color.getRgb(&r, &g, &b);
+
+    for (int y = 0; y < m_iVinylScopeSize; ++y) {
+        QRgb* line = reinterpret_cast<QRgb*>(m_qImage.scanLine(y));
+        for (int x = 0; x < m_iVinylScopeSize; ++x) {
+            // use xwax's bitmap to set alpha data only
+            // adjust alpha by 3/4 so it's not quite so distracting
+            // setpixel is slow, use scanlines instead
+            // m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iVinylScopeSize*y] * .75));
+            *line = qRgba(r, g, b, static_cast<int>(data[x + m_iVinylScopeSize * y] * .75));
+            line++;
+        }
     }
 }
 

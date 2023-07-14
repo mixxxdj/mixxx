@@ -48,6 +48,7 @@ WSpinnyBase::WSpinnyBase(
           m_iVinylInput(-1),
           m_bVinylActive(false),
           m_bSignalActive(true),
+          m_bDrawVinylSignalQuality(false),
           m_iVinylScopeSize(0),
           m_fAngle(0.0f),
           m_dAngleCurrentPlaypos(-1),
@@ -106,6 +107,10 @@ WSpinnyBase::~WSpinnyBase() {
 #endif
 }
 
+bool WSpinnyBase::shouldDrawVinylQuality() const {
+    return m_bVinylActive && m_bSignalActive && m_bDrawVinylSignalQuality;
+}
+
 void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
 #ifdef __VINYLCONTROL__
     if (!m_bVinylActive || !m_bSignalActive) {
@@ -115,7 +120,6 @@ void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& rep
     if (report.processor != m_iVinylInput) {
         return;
     }
-    int r, g, b;
     QColor qual_color = QColor();
     float signalQuality = report.timecode_quality;
 
@@ -124,19 +128,9 @@ void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& rep
     // h is the only variable.
     // h=0 is red, h=120 is green
     qual_color.setHsv(static_cast<int>(120.0 * signalQuality), 255, 255);
-    qual_color.getRgb(&r, &g, &b);
 
-    for (int y = 0; y < m_iVinylScopeSize; ++y) {
-        QRgb* line = reinterpret_cast<QRgb*>(m_qImage.scanLine(y));
-        for (int x = 0; x < m_iVinylScopeSize; ++x) {
-            // use xwax's bitmap to set alpha data only
-            // adjust alpha by 3/4 so it's not quite so distracting
-            // setpixel is slow, use scanlines instead
-            // m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iVinylScopeSize*y] * .75));
-            *line = qRgba(r, g, b, static_cast<int>(report.scope[x + m_iVinylScopeSize * y] * .75));
-            line++;
-        }
-    }
+    updateVinylSignalQualityImage(qual_color, report.scope);
+    m_bDrawVinylSignalQuality = true;
 #else
     Q_UNUSED(report);
 #endif
@@ -193,9 +187,8 @@ void WSpinnyBase::setup(const QDomNode& node,
         m_iVinylInput = m_pVCManager->vinylInputFromGroup(m_group);
     }
     m_iVinylScopeSize = MIXXX_VINYL_SCOPE_SIZE;
-    m_qImage = QImage(m_iVinylScopeSize, m_iVinylScopeSize, QImage::Format_ARGB32);
-    // fill with transparent black
-    m_qImage.fill(qRgba(0, 0, 0, 0));
+    setupVinylSignalQuality();
+    m_bDrawVinylSignalQuality = false;
 #endif
 
     m_pPlayPos = new ControlProxy(
@@ -497,8 +490,7 @@ void WSpinnyBase::updateVinylControlSignalEnabled(double enabled) {
         m_pVCManager->addSignalQualityListener(this);
     } else {
         m_pVCManager->removeSignalQualityListener(this);
-        // fill with transparent black
-        m_qImage.fill(qRgba(0, 0, 0, 0));
+        m_bDrawVinylSignalQuality = false;
     }
 #else
     Q_UNUSED(enabled);
@@ -650,8 +642,7 @@ void WSpinnyBase::hideEvent(QHideEvent* event) {
         m_pVCManager->removeSignalQualityListener(this);
     }
 #endif
-    // fill with transparent black
-    m_qImage.fill(qRgba(0, 0, 0, 0));
+    m_bDrawVinylSignalQuality = false;
 }
 
 bool WSpinnyBase::event(QEvent* pEvent) {

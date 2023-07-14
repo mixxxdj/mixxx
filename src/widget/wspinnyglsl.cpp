@@ -55,7 +55,32 @@ void WSpinnyGLSL::updateTextures() {
     m_pFgTextureScaled.reset(createTexture(m_fgImageScaled));
     m_pGhostTextureScaled.reset(createTexture(m_ghostImageScaled));
     m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
-    m_pQTexture.reset(createTexture(m_qImage));
+}
+
+void WSpinnyGLSL::setupVinylSignalQuality() {
+}
+
+void WSpinnyGLSL::updateVinylSignalQualityImage(
+        const QColor& qual_color, const unsigned char* data) {
+    m_vinylQualityColor = qual_color;
+    if (m_pQTexture) {
+        makeCurrentIfNeeded();
+        m_pQTexture->bind();
+        // Using a texture of one byte per pixel so we can store the vinyl
+        // signal quality data directly. The VinylQualityShader will draw this
+        // colorized with alpha transparency.
+        glTexSubImage2D(GL_TEXTURE_2D,
+                0,
+                0,
+                0,
+                m_iVinylScopeSize,
+                m_iVinylScopeSize,
+                GL_RED,
+                GL_UNSIGNED_BYTE,
+                data);
+        m_pQTexture->release();
+        doneCurrent();
+    }
 }
 
 void WSpinnyGLSL::paintGL() {
@@ -92,9 +117,10 @@ void WSpinnyGLSL::paintGL() {
 
 #ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
-    if (m_bVinylActive && m_bSignalActive) {
-        // draw the last good image
-        drawTexture(m_pQTexture.get());
+    if (shouldDrawVinylQuality()) {
+        m_textureShader.release();
+        drawVinylQuality();
+        m_textureShader.bind();
     }
 #endif
 
@@ -128,12 +154,19 @@ void WSpinnyGLSL::paintGL() {
 void WSpinnyGLSL::initializeGL() {
     updateTextures();
 
+    m_pQTexture.reset(new QOpenGLTexture(QOpenGLTexture::Target2D));
+    m_pQTexture->setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
+    m_pQTexture->setSize(m_iVinylScopeSize, m_iVinylScopeSize);
+    m_pQTexture->setFormat(QOpenGLTexture::R8_UNorm);
+    m_pQTexture->allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::UInt8);
+
     m_textureShader.init();
+    m_vinylQualityShader.init();
 }
 
 void WSpinnyGLSL::drawTexture(QOpenGLTexture* texture) {
     const float texx1 = 0.f;
-    const float texy1 = 1.f;
+    const float texy1 = 1.0;
     const float texx2 = 1.f;
     const float texy2 = 0.f;
 
@@ -162,4 +195,48 @@ void WSpinnyGLSL::drawTexture(QOpenGLTexture* texture) {
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     texture->release();
+}
+
+void WSpinnyGLSL::drawVinylQuality() {
+    const float texx1 = 0.f;
+    const float texy1 = 1.f;
+    const float texx2 = 1.f;
+    const float texy2 = 0.f;
+
+    const float posx2 = 1.f;
+    const float posy2 = 1.f;
+    const float posx1 = -1.f;
+    const float posy1 = -1.f;
+
+    const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
+    const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
+
+    m_vinylQualityShader.bind();
+    int matrixLocation = m_vinylQualityShader.matrixLocation();
+    int colorLocation = m_vinylQualityShader.colorLocation();
+    int samplerLocation = m_vinylQualityShader.samplerLocation();
+    int positionLocation = m_vinylQualityShader.positionLocation();
+    int texcoordLocation = m_vinylQualityShader.texcoordLocation();
+
+    QMatrix4x4 matrix;
+    m_vinylQualityShader.setUniformValue(matrixLocation, matrix);
+    m_vinylQualityShader.setUniformValue(colorLocation, m_vinylQualityColor);
+
+    m_vinylQualityShader.enableAttributeArray(positionLocation);
+    m_vinylQualityShader.enableAttributeArray(texcoordLocation);
+
+    m_vinylQualityShader.setUniformValue(samplerLocation, 0);
+
+    m_textureShader.setAttributeArray(
+            positionLocation, GL_FLOAT, posarray, 2);
+    m_textureShader.setAttributeArray(
+            texcoordLocation, GL_FLOAT, texarray, 2);
+
+    m_pQTexture->bind();
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    m_pQTexture->release();
+
+    m_vinylQualityShader.release();
 }
