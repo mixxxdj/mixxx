@@ -195,6 +195,7 @@ TraktorS3.Deck = function(controller, deckNumber, group) {
     this.lastTickTime = 0;
     this.lastTickWallClock = 0;
     this.wheelTouchInertiaTimer = 0;
+    this.seekRateLimitLastTick = 0;
 
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
@@ -673,6 +674,7 @@ TraktorS3.Deck.prototype.checkJogInertia = function() {
 TraktorS3.Deck.prototype.jogHandler = function(field) {
     this.tickReceived = true;
     const deltas = this.wheelDeltas(field.value);
+    const seekRateMs = 10;
 
     // If shift button is held, do a simple seek.
     if (this.shiftPressed) {
@@ -680,10 +682,16 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
         if (this.wheelTouchInertiaTimer !== 0) {
             return;
         }
-        let playPosition = engine.getValue(this.activeChannel, "playposition");
-        playPosition += deltas[0] / 2048.0;
-        playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
-        engine.setValue(this.activeChannel, "playposition", playPosition);
+        // If we spam seeks on every single update, it can cause problems with HQ
+        // Rubberband.
+        now = Date.now();
+        if (now - this.seekRateLimitLastTick > seekRateMs) {
+            this.seekRateLimitLastTick = now;
+            let playPosition = engine.getValue(this.activeChannel, "playposition");
+            playPosition += deltas[0] / 256.0;
+            playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
+            engine.setValue(this.activeChannel, "playposition", playPosition);
+        }
         return;
     }
     const tickDelta = deltas[0];
@@ -2196,7 +2204,7 @@ TraktorS3.Controller.prototype.guiTickHandler = function() {
 // A special packet sent to the controller switches between mic and line
 // input modes.  if lineMode is true, sets input to line. Otherwise, mic.
 TraktorS3.Controller.prototype.setInputLineMode = function(lineMode) {
-    const packet = Array();
+    const packet = [];
     packet.length = 33;
     packet[0] = 0x20;
     if (!lineMode) {
@@ -2237,7 +2245,7 @@ TraktorS3.debugLights = function() {
         "00"
     ];
 
-    const data = [Array(), Array(), Array()];
+    const data = [[], [], []];
 
 
     for (let i = 0; i < data.length; i++) {
