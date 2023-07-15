@@ -121,7 +121,6 @@ class WSpinnyBase : public WGLWidget,
     TrackPointer m_pLoadedTrack;
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;
-    CoverInfo m_lastRequestedCover;
     bool m_bShowCover;
 
     VinylControlManager* m_pVCManager;

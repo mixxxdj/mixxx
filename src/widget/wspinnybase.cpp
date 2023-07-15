@@ -254,7 +254,6 @@ void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
                 this,
                 &WSpinnyBase::slotTrackCoverArtUpdated);
     }
-    m_lastRequestedCover = CoverInfo();
 
     setLoadedCover(QPixmap());
 
@@ -278,7 +277,6 @@ void WSpinnyBase::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrac
                 &WSpinnyBase::slotTrackCoverArtUpdated);
     }
     m_pLoadedTrack.reset();
-    m_lastRequestedCover = CoverInfo();
 
     setLoadedCover(QPixmap());
     coverChanged();
@@ -301,6 +299,7 @@ void WSpinnyBase::slotCoverFound(
     if (pRequestor == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
+        m_pCoverMenu->setCoverArt(coverInfo);
         setLoadedCover(pixmap);
         coverChanged();
     }
@@ -308,7 +307,7 @@ void WSpinnyBase::slotCoverFound(
 
 void WSpinnyBase::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     if (m_pLoadedTrack != nullptr) {
-        // Will trigger slotTrackCoverArtUpdated().
+        // Will trigger slotTrackCoverArtUpdated(), slotCoverFound() updates the menu
         m_pLoadedTrack->setCoverInfo(coverInfo);
     }
 }
