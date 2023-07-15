@@ -16,6 +16,8 @@
 
 class DlgCoverArtFullSize;
 
+/// This widget is used for cover art in decks, or next to the library.
+/// It has a context menu and it's updated by track change signals.
 class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     Q_OBJECT
   public:

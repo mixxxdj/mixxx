@@ -14,6 +14,9 @@ class DlgCoverArtFullSize;
 class CoverInfo;
 class CoverInfoRelative;
 
+/// This widget is for the Track Properties dialog.
+/// It can have a context menu (in DlgTrackfetcher it doesn't), and compared to
+/// WCoverArt it's updated by its parent, not by track change signals.
 class WCoverArtLabel : public QLabel {
     Q_OBJECT
   public:
