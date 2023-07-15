@@ -9,6 +9,24 @@
 this.HIDDebug = function(message) {
     console.log(`HID ${message}`);
 };
+/**
+ * creates a `DataView` from any ArrayBuffer, TypedArray
+ * or plain Array (clamped to 8-bit width).
+ *
+ * @param {number[] | ArrayBuffer | TypedArray} bufferLike Object that can be represented as a sequence of bytes
+ * @returns {DataView} dataview over the bufferLike object
+ */
+const createDataView = function(bufferLike) {
+    return new DataView((() => {
+        if (Array.isArray(bufferLike)) {
+            return new Uint8ClampedArray(bufferLike).buffer;
+        } else if (ArrayBuffer.isView(bufferLike)) {
+            return bufferLike.buffer;
+        } else {
+            return bufferLike;
+        }
+    })());
+};
 
 /**
  * Callback function to call when, the packet represents an HID InputReport, and new data for this
@@ -413,7 +431,7 @@ class HIDPacket {
             return;
         }
 
-        const dataView = new DataView(data.buffer);
+        const dataView = createDataView(data);
         switch (field.pack) {
         case "b":
             dataView.setInt8(field.offset, value);
@@ -453,7 +471,7 @@ class HIDPacket {
      * @returns {number} Value for the field in data, represented according the fields packing type
      */
     unpack(data, field) {
-        const dataView = new DataView(data.buffer);
+        const dataView = createDataView(data);
         switch (field.pack) {
         case "b":
             return dataView.getInt8(field.offset);

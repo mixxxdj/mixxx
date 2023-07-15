@@ -1,8 +1,13 @@
 #include "waveform/renderers/glslwaveformrenderersignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
+#ifdef MIXXX_USE_QOPENGL
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLShaderProgram>
+#else
 #include <QGLFramebufferObject>
 #include <QGLShaderProgram>
+#endif
 
 #include "moc_glslwaveformrenderersignal.cpp"
 #include "track/track.h"
@@ -49,14 +54,16 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     m_frameShaderProgram->removeAllShaders();
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Vertex, ":/shaders/passthrough.vert")) {
+                Shader::Vertex,
+                ":/shaders/passthrough.vert")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
     }
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-                QGLShader::Fragment, m_pFragShader)) {
+                Shader::Fragment,
+                m_pFragShader)) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
@@ -178,20 +185,21 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
             static_cast<int>(
                     m_waveformRenderer->getHeight() * devicePixelRatio);
 
-    m_framebuffer = std::make_unique<QGLFramebufferObject>(bufferWidth,
-                                                           bufferHeight);
+    m_framebuffer = std::make_unique<FrameBufferObject>(bufferWidth,
+            bufferHeight);
 
     if (!m_framebuffer->isValid()) {
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
     }
 }
 
-void GLSLWaveformRendererSignal::onInitializeGL() {
-    initializeOpenGLFunctions();
+void GLSLWaveformRendererSignal::initializeGL() {
+    GLWaveformRenderer::initializeGL();
+
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
-        m_frameShaderProgram = std::make_unique<QGLShaderProgram>();
+        m_frameShaderProgram = std::make_unique<ShaderProgram>();
     }
 
     if (!loadShaders()) {
@@ -235,7 +243,7 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 }
 
 void GLSLWaveformRendererSignal::onResize() {
-    // onInitializeGL not called yet
+    // initializeGL not called yet
     if (!m_frameShaderProgram) {
         return;
     }
@@ -244,7 +252,7 @@ void GLSLWaveformRendererSignal::onResize() {
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
     m_textureRenderedWaveformCompletion = 0;
-    // onInitializeGL not called yet
+    // initializeGL not called yet
     if (!m_frameShaderProgram) {
         return;
     }
@@ -276,8 +284,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     if (trackSamples <= 0) {
         return;
     }
-
-    maybeInitializeGL();
 
     // save the GL state set for QPainter
     painter->beginNativePainting();

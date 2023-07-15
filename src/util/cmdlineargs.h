@@ -34,6 +34,9 @@ class CmdlineArgs final {
     bool getControllerDebug() const {
         return m_controllerDebug;
     }
+    bool getControllerAbortOnWarning() const {
+        return m_controllerAbortOnWarning;
+    }
     bool getDeveloper() const { return m_developer; }
     bool getSafeMode() const { return m_safeMode; }
     bool useColors() const {
@@ -73,6 +76,7 @@ class CmdlineArgs final {
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
     bool m_controllerDebug;
+    bool m_controllerAbortOnWarning; // Controller Engine will be stricter
     bool m_developer; // Developer Mode
     bool m_safeMode;
     bool m_useVuMeterGL;

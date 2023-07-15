@@ -90,6 +90,8 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
             const QString& mood) const override;
 #endif // __EXTRA_METADATA__
 
+    void releaseBrowseThread();
+
   signals:
     void restoreModelState();
 

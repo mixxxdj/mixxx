@@ -6,7 +6,7 @@
 #include "control/controlproxy.h"
 #include "moc_visualplayposition.cpp"
 #include "util/math.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
 #include "waveform/vsyncthread.h"
 #endif
 
@@ -29,6 +29,7 @@ void VisualPlayPosition::set(
         double rate,
         double positionStep,
         double slipPosition,
+        double slipRate,
         double tempoTrackSeconds,
         double audioBufferMicroS) {
     VisualPlayPositionData data;
@@ -36,6 +37,7 @@ void VisualPlayPosition::set(
     data.m_callbackEntrytoDac = static_cast<int>(m_dCallbackEntryToDacSecs * 1000000); // s to µs
     data.m_enginePlayPos = playPos;
     data.m_rate = rate;
+    data.m_slipRate = slipRate;
     data.m_positionStep = positionStep;
     data.m_slipPosition = slipPosition;
     data.m_tempoTrackSeconds = tempoTrackSeconds;
@@ -46,36 +48,36 @@ void VisualPlayPosition::set(
     m_valid = true;
 }
 
-double VisualPlayPosition::calcPosAtNextVSync(
+double VisualPlayPosition::calcOffsetAtNextVSync(
         VSyncThread* pVSyncThread, const VisualPlayPositionData& data) {
-    double playPos = data.m_enginePlayPos; // load playPos for the first sample in Buffer
     if (data.m_audioBufferMicroS != 0.0) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
         Q_UNUSED(pVSyncThread);
-        int refToVSync = 0;
-        int syncIntervalTimeMicros = 0;
+        const int refToVSync = 0;
+        const int syncIntervalTimeMicros = 0;
 #else
-        int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-        int syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
+        const int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+        const int syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
 #endif
-        int offset = refToVSync - data.m_callbackEntrytoDac;
         // The offset is limited to the audio buffer + waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
-        int maxOffset = static_cast<int>(data.m_audioBufferMicroS + syncIntervalTimeMicros);
-        offset = math_clamp(offset, -maxOffset, maxOffset);
-        // add the offset for the position of the sample that will be transferred to the DAC
-        // When the next display frame is displayed
-        playPos += data.m_positionStep * offset * data.m_rate / data.m_audioBufferMicroS;
+        const int maxOffset = static_cast<int>(data.m_audioBufferMicroS + syncIntervalTimeMicros);
+        // Calculate the offset in micros for the position of the sample that will be transferred
+        // to the DAC when the next display frame is displayed
+        const int offset = math_clamp(
+                refToVSync - data.m_callbackEntrytoDac, -maxOffset, maxOffset);
+        // Apply the offset proportional to m_positionStep
+        return data.m_positionStep * static_cast<double>(offset) / data.m_audioBufferMicroS;
     }
-    // qDebug() << "playPos" << playPos << offset;
-    return playPos;
+    return 0.0;
 }
 
 double VisualPlayPosition::getAtNextVSync(VSyncThread* pVSyncThread) {
     if (m_valid) {
-        VisualPlayPositionData data = m_data.getValue();
-        return calcPosAtNextVSync(pVSyncThread, data);
+        const VisualPlayPositionData data = m_data.getValue();
+        const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
+        return data.m_enginePlayPos + offset * data.m_rate;
     }
     return -1;
 }
@@ -84,9 +86,10 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
         double* pPlayPosition,
         double* pSlipPosition) {
     if (m_valid) {
-        VisualPlayPositionData data = m_data.getValue();
-        *pPlayPosition = calcPosAtNextVSync(pVSyncThread, data);
-        *pSlipPosition = data.m_slipPosition;
+        const VisualPlayPositionData data = m_data.getValue();
+        const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
+        *pPlayPosition = data.m_enginePlayPos + offset * data.m_rate;
+        *pSlipPosition = data.m_slipPosition + offset * data.m_slipRate;
     }
 }
 

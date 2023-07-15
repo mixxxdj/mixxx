@@ -1701,7 +1701,7 @@ class ResetMainCueTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pN60dBSound) {
             mixxx::audio::FramePos firstSound = pN60dBSound->getPosition();
             if (firstSound.isValid()) {
-                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.get());
+                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.data());
             }
         }
     }
@@ -1723,7 +1723,7 @@ class ResetIntroTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pN60dBSound) {
             mixxx::audio::FramePos firstSound = pN60dBSound->getPosition();
             if (firstSound.isValid()) {
-                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.get());
+                AnalyzerSilence::setupMainAndIntroCue(pTrack.get(), firstSound, m_pConfig.data());
             }
         }
     }
@@ -2069,7 +2069,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
     // Set up and initiate the track batch operation
     const auto progressLabelText =
-            tr("Removing %1 track file(s) from disk...",
+            tr("Removing %n track file(s) from disk...",
                     "",
                     getTrackCount());
     const auto trackOperator =

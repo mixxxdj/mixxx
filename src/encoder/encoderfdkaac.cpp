@@ -131,12 +131,12 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
         kLogger.warning() << "Failed to load AAC encoder library: Interface of"
                           << m_pLibrary->fileName() << "is not as expected";
 
-        kLogger.debug() << "aacEncGetLibInfo:" << aacEncGetLibInfo;
-        kLogger.debug() << "aacEncOpen:" << aacEncOpen;
-        kLogger.debug() << "aacEncClose:" << aacEncClose;
-        kLogger.debug() << "aacEncEncode:" << aacEncEncode;
-        kLogger.debug() << "aacEncInfo:" << aacEncInfo;
-        kLogger.debug() << "aacEncoder_SetParam:" << aacEncoder_SetParam;
+        kLogger.debug() << "aacEncGetLibInfo:" << reinterpret_cast<void*>(aacEncGetLibInfo);
+        kLogger.debug() << "aacEncOpen:" << reinterpret_cast<void*>(aacEncOpen);
+        kLogger.debug() << "aacEncClose:" << reinterpret_cast<void*>(aacEncClose);
+        kLogger.debug() << "aacEncEncode:" << reinterpret_cast<void*>(aacEncEncode);
+        kLogger.debug() << "aacEncInfo:" << reinterpret_cast<void*>(aacEncInfo);
+        kLogger.debug() << "aacEncoder_SetParam:" << reinterpret_cast<void*>(aacEncoder_SetParam);
         return;
     }
 

@@ -19,6 +19,14 @@ class DlgPreferencePage : public QWidget {
     /// overriding this. The default implementation returns an invalid QUrl.
     virtual QUrl helpUrl() const;
 
+    void setScrollSafeGuardForAllInputWidgets(QObject* obj);
+    /// Avoid undesired value changes when scrolling a preferences page while
+    /// the pointer is above an input widget (QSpinBox, QComboBox, QSlider):
+    /// * set the focus policy to Qt::StrongFocus (focusable by click & tab key)
+    /// * forward wheel events to the top-level layout
+    void setScrollSafeGuard(QWidget* pWidget);
+    bool eventFilter(QObject* obj, QEvent* e);
+
     QColor m_pLinkColor;
 
   public slots:

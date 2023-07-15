@@ -8,10 +8,6 @@ IF NOT DEFINED PLATFORM (
     SET PLATFORM=x64
 )
 
-IF NOT DEFINED CONFIGURATION (
-    SET CONFIGURATION=release-fastbuild
-)
-
 IF NOT DEFINED BUILDENV_BASEPATH (
     SET BUILDENV_BASEPATH=%MIXXX_ROOT%\buildenv
 )
@@ -22,6 +18,16 @@ IF NOT DEFINED BUILD_ROOT (
 
 IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
+)
+
+IF DEFINED BUILDENV_RELEASE (
+    SET BUILDENV_BRANCH=2.5-rel
+    SET BUILDENV_NAME=mixxx-deps-rel-2.5-x64-windows-c9e5580
+    SET BUILDENV_SHA256=85e4d7410ba01ab61e5ef609bd92779267eddee7e235557208d7cf602f49dc5f
+) ELSE (
+    SET BUILDENV_BRANCH=2.5
+    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-35a3f01
+    SET BUILDENV_SHA256=6cc95b57dbb8a3e91037dc2d9cf81cbd82602d441a1f5f4a8313bae9a0bace87
 )
 
 IF "%~1"=="" (
@@ -38,15 +44,12 @@ ENDLOCAL & SET "MIXXX_VCPKG_ROOT=%MIXXX_VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLE
 EXIT /B 0
 
 :COMMAND_name
-    CALL :READ_ENVNAME
     IF DEFINED GITHUB_ENV (
-        ECHO BUILDENV_NAME=!RETVAL! >> !GITHUB_ENV!
+        ECHO BUILDENV_NAME=%BUILDENV_NAME% >> !GITHUB_ENV!
     )
     GOTO :EOF
 
 :COMMAND_setup
-    CALL :READ_ENVNAME
-    SET BUILDENV_NAME=%RETVAL%
     SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
 
     IF NOT EXIST "%BUILDENV_BASEPATH%" (
@@ -55,13 +58,19 @@ EXIT /B 0
     )
 
     IF NOT EXIST "%BUILDENV_PATH%" (
-        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/2.4/Windows/!BUILDENV_NAME!.zip
+        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/!BUILDENV_BRANCH!/Windows/!BUILDENV_NAME!.zip
         IF NOT EXIST "!BUILDENV_PATH!.zip" (
             ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
             REM TODO: The /DYNAMIC parameter is required because our server does not yet support HTTP range headers
             BITSADMIN /transfer buildenvjob /download /priority normal /DYNAMIC !BUILDENV_URL! "!BUILDENV_PATH!.zip"
-            REM TODO: verify download using sha256sum?
             ECHO ^Download complete.
+            certutil -hashfile "!BUILDENV_PATH!.zip" SHA256 | FIND /C "!BUILDENV_SHA256!"
+            IF errorlevel 1 (
+                ECHO ^ERROR: Download did not match expected SHA256 checksum!
+                certutil -hashfile "!BUILDENV_PATH!.zip" SHA256
+                echo ^Expected: "!BUILDENV_SHA256!"
+                EXIT /B 1
+            )
         ) else (
             ECHO ^Using cached archive at "!BUILDENV_PATH!.zip".
         )
@@ -72,7 +81,7 @@ EXIT /B 0
             CALL :UNZIP_POWERSHELL "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         ) ELSE (
             ECHO ^Unpacking "!BUILDENV_PATH!.zip" using 7z...
-            CALL :UNZIP_SEVENZIP "!RETVAL!" "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
+            CALL :UNZIP_SEVENZIP !RETVAL! "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         )
         IF NOT EXIST "%BUILDENV_PATH%" (
             ECHO ^Error: Unpacking failed. The downloaded archive might be broken, consider removing "!BUILDENV_PATH!.zip" to force redownload.
@@ -114,7 +123,7 @@ EXIT /B 0
 
 
 :DETECT_SEVENZIP
-    SET SEVENZIP_PATH=7z.exe
+    SET SEVENZIP_PATH="7z.exe"
     !SEVENZIP_PATH! --help >NUL 2>NUL
     IF errorlevel 1 (
         SET SEVENZIP_PATH="c:\Program Files\7-Zip\7z.exe"
@@ -123,16 +132,16 @@ EXIT /B 0
             SET SEVENZIP_PATH="c:\Program Files (x86)\7-Zip\7z.exe"
             !SEVENZIP_PATH! --help >NUL 2>NUL
             if errorlevel 1 (
-                SET SEVENZIP_PATH=
+                SET SEVENZIP_PATH=""
             )
         )
     )
-    SET RETVAL="!SEVENZIP_PATH!"
+    SET RETVAL=!SEVENZIP_PATH!
     GOTO :EOF
 
 
 :UNZIP_SEVENZIP <7zippath> <newzipfile> <ExtractTo>
-    %1 x -o%3 %2
+    %1 x "-o%~3" %2
     GOTO :EOF
 
 
@@ -146,15 +155,6 @@ EXIT /B 0
     SET RETVAL=%~f1
     GOTO :EOF
 
-
-:READ_ENVNAME
-    ECHO Reading name of prebuild environment from "%MIXXX_ROOT%\packaging\windows\build_environment"
-    SET /P BUILDENV_NAME=<"%MIXXX_ROOT%\packaging\windows\build_environment"
-    SET BUILDENV_NAME=!BUILDENV_NAME:PLATFORM=%PLATFORM%!
-    SET BUILDENV_NAME=!BUILDENV_NAME:CONFIGURATION=%CONFIGURATION%!
-    SET RETVAL=%BUILDENV_NAME%
-    ECHO Environment name: %RETVAL%
-    GOTO :EOF
 
 :GENERATE_CMakeSettings_JSON
 REM Generate CMakeSettings.json which is read by MS Visual Studio to determine the supported CMake build environments
@@ -177,13 +177,20 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo {
     >>"%CMakeSettings%" echo   "configurations": [
     SET configElementTermination=,
-    CALL :Configuration2CMakeSettings_JSON off       Debug
+    IF NOT DEFINED BUILDENV_RELEASE (
+        CALL :Configuration2CMakeSettings_JSON off       Debug
+    )
     CALL :Configuration2CMakeSettings_JSON legacy    RelWithDebInfo
     CALL :Configuration2CMakeSettings_JSON portable  RelWithDebInfo
     SET configElementTermination=
     CALL :Configuration2CMakeSettings_JSON native    Release
     >>"%CMakeSettings%" echo   ]
     >>"%CMakeSettings%" echo }
+
+    echo ^You can now open CMakeSetting.json from Visual Studio
+    echo ^or configure cmake from the command line in an EMPTY build directory via:
+    echo ^cmake -DCMAKE_TOOLCHAIN_FILE=!MIXXX_VCPKG_ROOT!\scripts\buildsystems\vcpkg.cmake %MIXXX_ROOT%
+
     CALL :RESTORECONSOLE %OLDCODEPAGE%
     GOTO :EOF
 

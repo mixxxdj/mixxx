@@ -19,9 +19,29 @@ realpath() {
 THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
-MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
+if [ -n "${BUILDENV_ARM64}" ]; then
+    if [ -n "${BUILDENV_RELEASE}" ]; then
+        BUILDENV_BRANCH="2.5-rel"
+        BUILDENV_NAME="mixxx-deps-rel-2.5-arm64-osx-min1100-c9e5580"
+        BUILDENV_SHA256="1dacff9e73e0267142e16a0d3836000c36cafeb2eeabdbece07db8e339995879"
+    else
+        BUILDENV_BRANCH="2.5"
+        BUILDENV_NAME="mixxx-deps-2.5-arm64-osx-min1100-35a3f01"
+        BUILDENV_SHA256="e0b951f55d496ec5ca4799073b9cc36619057998dceb118c5895ebe08e44669f"
+    fi
+else
+    if [ -n "${BUILDENV_RELEASE}" ]; then
+        BUILDENV_BRANCH="2.5-rel"
+        BUILDENV_NAME="mixxx-deps-rel-2.5-x64-osx-min1012-c9e5580"
+        BUILDENV_SHA256="23b6d7a99c231c68bf852503e41ce5029f193fc6ed7c2d92341c00c2df935a7c"
+    else
+        BUILDENV_BRANCH="2.5"
+        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1012-35a3f01"
+        BUILDENV_SHA256="c28b7fa37321bec2fad5bdeaabae054ba9c8dd85a16b25fc4c7fa2e97f8b40da"
+    fi
+fi
 
-read -r -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/packaging/macos/build_environment"
+MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
@@ -40,7 +60,7 @@ case "$1" in
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
-                curl "https://downloads.mixxx.org/dependencies/2.4/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
+                curl "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
                 OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.zip"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
                     echo "Download matched expected SHA256 sum $BUILDENV_SHA256"
@@ -78,6 +98,8 @@ case "$1" in
             echo ""
             echo "Exported environment variables:"
             echo_exported_variables
+            echo "You can now configure cmake from the command line in an EMPTY build directory via:"
+            echo "cmake -DCMAKE_TOOLCHAIN_FILE=${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake ${MIXXX_ROOT}"
         fi
         ;;
     *)

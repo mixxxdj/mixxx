@@ -61,12 +61,15 @@ find_library(rubberband_LIBRARY
 )
 mark_as_advanced(rubberband_LIBRARY)
 
+if(DEFINED PC_rubberband_VERSION AND NOT PC_rubberband_VERSION STREQUAL "")
+  set(rubberband_VERSION "${PC_rubberband_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   rubberband
-  DEFAULT_MSG
-  rubberband_LIBRARY
-  rubberband_INCLUDE_DIR
+  REQUIRED_VARS rubberband_LIBRARY rubberband_INCLUDE_DIR
+  VERSION_VAR rubberband_VERSION
 )
 
 if(rubberband_FOUND)

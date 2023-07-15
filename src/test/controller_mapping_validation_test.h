@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QObject>
 
 #include "controllers/controller.h"
@@ -6,10 +8,10 @@
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "test/mixxxtest.h"
 
-class FakeControllerJSProxy : public ControllerJSProxy {
+class FakeMidiControllerJSProxy : public ControllerJSProxy {
     Q_OBJECT
   public:
-    FakeControllerJSProxy();
+    FakeMidiControllerJSProxy();
 
     Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override;
 
@@ -18,6 +20,36 @@ class FakeControllerJSProxy : public ControllerJSProxy {
     Q_INVOKABLE void sendShortMsg(unsigned char status,
             unsigned char byte1,
             unsigned char byte2);
+};
+
+class FakeHidControllerJSProxy : public ControllerJSProxy {
+    Q_OBJECT
+  public:
+    FakeHidControllerJSProxy();
+
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override;
+    Q_INVOKABLE void send(const QList<int>& dataList,
+            unsigned int length,
+            quint8 reportID,
+            bool useNonSkippingFIFO = false);
+
+    Q_INVOKABLE void sendOutputReport(quint8 reportID,
+            const QByteArray& dataArray,
+            bool resendUnchangedReport = false);
+    Q_INVOKABLE QByteArray getInputReport(
+            quint8 reportID);
+    Q_INVOKABLE void sendFeatureReport(
+            quint8 reportID, const QByteArray& reportData);
+    Q_INVOKABLE QByteArray getFeatureReport(
+            quint8 reportID);
+};
+
+class FakeBulkControllerJSProxy : public ControllerJSProxy {
+    Q_OBJECT
+  public:
+    FakeBulkControllerJSProxy();
+
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override;
 };
 
 class FakeController : public Controller {
@@ -32,7 +64,14 @@ class FakeController : public Controller {
     }
 
     ControllerJSProxy* jsProxy() override {
-        return new FakeControllerJSProxy();
+        if (this->m_bMidiMapping == true) {
+            return new FakeMidiControllerJSProxy();
+        }
+        if (this->m_bHidMapping == true) {
+            return new FakeHidControllerJSProxy();
+        }
+        // Bulk mapping
+        return new FakeBulkControllerJSProxy();
     }
 
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override {

@@ -11,6 +11,7 @@
 #include "track/cueinfoimporter.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
+#include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
@@ -247,6 +248,8 @@ class Track : public QObject {
     }
     // Sets played status and increments or decrements the play count
     void updatePlayCounter(bool bPlayed = true);
+    // Sets played status but leaves play count untouched
+    void updatePlayedStatusKeepPlayCount(bool bPlayed);
 
     // Only required for the times_played property
     int getTimesPlayed() const {
@@ -298,18 +301,21 @@ class Track : public QObject {
             mixxx::CueType type,
             int hotCueIndex,
             mixxx::audio::FramePos startPosition,
-            mixxx::audio::FramePos endPosition);
+            mixxx::audio::FramePos endPosition,
+            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor);
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
             double startPositionSamples,
-            double endPositionSamples) {
+            double endPositionSamples,
+            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor) {
         return createAndAddCue(type,
                 hotCueIndex,
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         startPositionSamples),
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        endPositionSamples));
+                        endPositionSamples),
+                color);
     }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
@@ -436,6 +442,7 @@ class Track : public QObject {
     // adjusted in the opposite direction to compensate (no audible change).
     void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
+    void ratingUpdated(int rating);
     void cuesUpdated();
     void loopRemove();
     void analyzed();

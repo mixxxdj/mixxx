@@ -5,7 +5,7 @@
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-/// GLWaveformRenderer is a WaveformRendererSignalBase which directly calls OpenGL functions.
+/// GLWaveformRendererSignal is a WaveformRendererAbstract which directly calls OpenGL functions.
 ///
 /// Note that the Qt OpenGL WaveformRendererAbstracts are not GLWaveformRenderers because
 /// they do not call OpenGL functions directly. Instead, they inherit QGLWidget and use the

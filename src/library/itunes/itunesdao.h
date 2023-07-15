@@ -29,12 +29,48 @@ struct ITunesTrack {
     int trackNumber;
     int bpm;
     int bitrate;
+
+#if __cplusplus >= 202002L
+    bool operator==(const ITunesTrack&) const = default;
+    bool operator!=(const ITunesTrack&) const = default;
+#else
+    bool operator==(const ITunesTrack& other) const {
+        return (id == other.id &&
+                artist == other.artist &&
+                title == other.title &&
+                album == other.album &&
+                albumArtist == other.albumArtist &&
+                genre == other.genre &&
+                grouping == other.grouping &&
+                year == other.year &&
+                duration == other.duration &&
+                location == other.location &&
+                rating == other.rating &&
+                comment == other.comment &&
+                trackNumber == other.trackNumber &&
+                bpm == other.bpm &&
+                bitrate == other.bitrate);
+    }
+#endif
 };
 
 struct ITunesPlaylist {
     int id;
     QString name;
+
+#if __cplusplus >= 202002L
+    bool operator==(const ITunesPlaylist&) const = default;
+    bool operator!=(const ITunesPlaylist&) const = default;
+#else
+    bool operator==(const ITunesPlaylist& other) const {
+        return (id == other.id &&
+                name == other.name);
+    }
+#endif
 };
+
+std::ostream& operator<<(std::ostream& os, const ITunesTrack& track);
+std::ostream& operator<<(std::ostream& os, const ITunesPlaylist& playlist);
 
 /// A wrapper around the iTunes database tables. Keeps track of the
 /// playlist tree, deals with duplicate disambiguation and can export
@@ -58,6 +94,11 @@ class ITunesDAO : public DAO {
     QHash<QString, int> m_playlistDuplicatesByName;
     QHash<int, QString> m_playlistNameById;
     std::multimap<int, int> m_playlistIdsByParentId;
+
+    // Keeps track of whether the database has been initialized.
+    // In tests the database is not used, so the importer will
+    // only be used to construct a TreeItem.
+    bool m_isDatabaseInitialized = false;
 
     // Note that these queries reference the database, which is expected
     // to outlive the DAO.

@@ -45,6 +45,24 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+function(FATAL_ERROR_MISSING_ENV)
+  if(WIN32)
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat´?")
+    else()
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/windows_release_buildenv.bat´ or ´${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat´(includes Debug)?")
+    endif()
+  elseif(APPLE)
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/macos_buildenv.bat´")
+    else()
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.bat´ or ´${CMAKE_SOURCE_DIR}/tools/macos_buildenv.bat´(includes Debug)?")
+    endif()
+  else()
+    message(FATAL_ERROR "Did you install the Debian dev packages via ´${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh´ or the equivalent packages using your package manager?")
+  endif()
+endfunction()
+
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
 # Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
@@ -59,7 +77,8 @@ if(DEFINED MIXXX_VCPKG_ROOT)
     # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
     message(STATUS "Using MIXXX_VCPKG_ROOT: $ENV{MIXXX_VCPKG_ROOT}")
   else()
-    message(FATAL_ERROR "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+    message(STATUS "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+    FATAL_ERROR_MISSING_ENV()
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
@@ -109,22 +128,54 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
+option(QML "Build with QML" OFF)
+option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+
+if(QML AND NOT QT6)
+  message(FATAL_ERROR "Building with option QML=ON requires QT6=ON")
+endif()
+
+if(QOPENGL)
+  add_compile_definitions(MIXXX_USE_QOPENGL)
+endif()
+
+if(QML)
+  add_compile_definitions(MIXXX_USE_QML)
+endif()
 
 if(APPLE)
+  # Check if xcode-select is installed
+  execute_process(COMMAND xcode-select -v
+    RESULT_VARIABLE XCODE_SELECT_RESULT
+    OUTPUT_QUIET
+  )
+  if(XCODE_SELECT_RESULT)
+    # xcode-select command failed, meaning it is not installed or not configured properly
+    message(FATAL_ERROR "'xcode-select -v' failed with '${XCODE_SELECT_RESULT}'. You may need to install Xcode and run 'sudo xcode-select --install'.")
+  endif()
+
   if(QT6)
     # Minimum macOS version supported by Qt 6
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
     if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
-    endif()
-  else()
-    # Minimum macOS version supported by Qt 5.12
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
-    if(NOT VCPKG_TARGET_TRIPLET)
       set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
     endif()
-    # Needed for deployment target < 10.14
-    add_compile_options(-fno-aligned-allocation)
+  else()
+    if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
+      # Minimum macOS version for arm64 Support
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
+      set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target achritecture")
+      set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
+      set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Setting this enables CMAKE_CROSSCOMPILE")
+    else()
+      # Minimum macOS version supported by Qt 5.12
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
+      if(NOT VCPKG_TARGET_TRIPLET)
+        set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
+      endif()
+      # Needed for deployment target < 10.14
+      add_compile_options(-fno-aligned-allocation)
+    endif()
   endif()
 endif()
 
@@ -152,8 +203,9 @@ if(DEFINED _VCPKG_INSTALLED_DIR)
   if(NOT EXISTS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
     # Fail early if this part of CMAKE_PREFIX_PATH does not exist
     # else the library lookups below will fail with misleading error messages
-    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
+    message(STATUS "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
         "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
+    FATAL_ERROR_MISSING_ENV()
   else()
     message(STATUS "Using VCPKG_TARGET_TRIPLET: ${VCPKG_TARGET_TRIPLET}")
   endif()
@@ -630,6 +682,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
+  src/effects/backends/builtin/glitcheffect.cpp
   src/effects/backends/effectsbackendmanager.cpp
   src/effects/chains/equalizereffectchain.cpp
   src/effects/chains/outputeffectchain.cpp
@@ -687,7 +740,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/engineworker.cpp
   src/engine/engineworkerscheduler.cpp
   src/engine/enginexfader.cpp
-  src/engine/filters/enginefilter.cpp
   src/engine/filters/enginefilterbessel4.cpp
   src/engine/filters/enginefilterbessel8.cpp
   src/engine/filters/enginefilterbiquad1.cpp
@@ -765,6 +817,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesdao.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesplaylistmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
@@ -784,8 +837,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/recording/dlgrecording.cpp
   src/library/recording/dlgrecording.ui
   src/library/recording/recordingfeature.cpp
-  src/library/rekordbox/rekordbox_anlz.cpp
-  src/library/rekordbox/rekordbox_pdb.cpp
+  src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
+  src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
   src/library/rekordbox/rekordboxfeature.cpp
   src/library/rhythmbox/rhythmboxfeature.cpp
   src/library/scanner/importfilestask.cpp
@@ -956,6 +1009,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
+  src/util/colorcomponents.cpp
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
@@ -987,6 +1041,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/logger.cpp
   src/util/logging.cpp
   src/util/mac.cpp
+  src/util/moc_included_test.cpp
   src/util/movinginterquartilemean.cpp
   src/util/performancetimer.cpp
   src/util/rangelist.cpp
@@ -1012,7 +1067,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/valuetransformer.cpp
   src/util/versionstore.cpp
   src/util/widgethelper.cpp
-  src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
@@ -1086,12 +1140,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wtracktableviewheader.cpp
   src/widget/wtracktext.cpp
   src/widget/wtrackwidgetgroup.cpp
-  src/widget/wvumeter.cpp
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
 )
-if(QT6)
+if(QML)
   target_sources(mixxx-lib PRIVATE
     src/qml/asyncimageprovider.cpp
     src/qml/qmlapplication.cpp
@@ -1118,9 +1171,6 @@ else()
     src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/glwaveformrendererrgb.cpp
     src/waveform/renderers/glwaveformrenderersimplesignal.cpp
-    src/waveform/renderers/qtvsynctestrenderer.cpp
-    src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
-    src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
     src/waveform/renderers/waveformmark.cpp
     src/waveform/renderers/waveformmarkrange.cpp
     src/waveform/renderers/waveformmarkset.cpp
@@ -1148,12 +1198,8 @@ else()
     src/waveform/widgets/glslwaveformwidget.cpp
     src/waveform/widgets/glvsynctestwidget.cpp
     src/waveform/widgets/glwaveformwidget.cpp
+    src/waveform/widgets/glwaveformwidgetabstract.cpp
     src/waveform/widgets/hsvwaveformwidget.cpp
-    src/waveform/widgets/qthsvwaveformwidget.cpp
-    src/waveform/widgets/qtrgbwaveformwidget.cpp
-    src/waveform/widgets/qtsimplewaveformwidget.cpp
-    src/waveform/widgets/qtvsynctestwidget.cpp
-    src/waveform/widgets/qtwaveformwidget.cpp
     src/waveform/widgets/rgbwaveformwidget.cpp
     src/waveform/widgets/softwarewaveformwidget.cpp
     src/waveform/widgets/waveformwidgetabstract.cpp
@@ -1162,10 +1208,61 @@ else()
     src/widget/woverviewlmh.cpp
     src/widget/woverviewrgb.cpp
     src/widget/wspinny.cpp
-      src/widget/wvumetergl.cpp
+    src/widget/wspinnybase.cpp
+    src/widget/wvumeter.cpp
+    src/widget/wvumeterbase.cpp
+    src/widget/wvumeterlegacy.cpp
     src/widget/wwaveformviewer.cpp
   )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/shaders/endoftrackshader.cpp
+      src/shaders/rgbashader.cpp
+      src/shaders/rgbshader.cpp
+      src/shaders/shader.cpp
+      src/shaders/textureshader.cpp
+      src/shaders/unicolorshader.cpp
+      src/util/texture.cpp
+      src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
+      src/waveform/renderers/allshader/waveformrenderbackground.cpp
+      src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderer.cpp
+      src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+      src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
+      src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+      src/waveform/renderers/allshader/waveformrenderersimple.cpp
+      src/waveform/renderers/allshader/waveformrendermark.cpp
+      src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+      src/waveform/widgets/allshader/filteredwaveformwidget.cpp
+      src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
+      src/waveform/widgets/allshader/rgbwaveformwidget.cpp
+      src/waveform/widgets/allshader/simplewaveformwidget.cpp
+      src/waveform/widgets/allshader/waveformwidget.cpp
+      src/widget/openglwindow.cpp
+      src/widget/tooltipqopengl.cpp
+      src/widget/wglwidgetqopengl.cpp
+      src/widget/winitialglwidget.cpp
+      src/widget/wspinnyglsl.cpp
+      src/widget/wvumeterglsl.cpp
+    )
+  else()
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/qtvsynctestrenderer.cpp
+      src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
+      src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+      src/waveform/widgets/qthsvwaveformwidget.cpp
+      src/waveform/widgets/qtrgbwaveformwidget.cpp
+      src/waveform/widgets/qtsimplewaveformwidget.cpp
+      src/waveform/widgets/qtvsynctestwidget.cpp
+      src/waveform/widgets/qtwaveformwidget.cpp
+      src/widget/wglwidgetqglwidget.cpp
+    )
+  endif()
 endif()
+
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
@@ -1179,6 +1276,10 @@ if(APPLE)
   # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
   # will automatically insert retain/release calls on Objective-C objects.
   target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
+
+  target_sources(mixxx-lib PRIVATE
+    src/util/darkappearance.mm
+  )
 
   option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
   if(MACOS_ITUNES_LIBRARY)
@@ -1197,35 +1298,25 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 # Disable warnings in generated source files
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_anlz.cpp
-  APPEND_STRING
-  PROPERTY CXX_CLANG_TIDY ""
-)
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_pdb.cpp
-  APPEND_STRING
-  PROPERTY CXX_CLANG_TIDY ""
-)
 if(GNU_GCC OR LLVM_CLANG)
   set_property(
-    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
   )
   set_property(
-    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
   )
 elseif(MSVC)
   set_property(
-    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS /w
   )
   set_property(
-    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS /w
   )
@@ -1236,6 +1327,7 @@ if(MSVC)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
+    # Warning Level 3 (production quality)
     target_compile_options(mixxx-lib PUBLIC /W3)
     target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
@@ -1676,6 +1768,7 @@ set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
 
 # Add googletest directly to our build. This adds the following targets:
 # gtest, gtest_main, gmock and gmock_main
+message(STATUS "Adding goolgletest targets gtest, gtest_main, gmock and gmock_main")
 add_subdirectory(
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest"
   "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest"
@@ -1730,6 +1823,8 @@ add_executable(mixxx-test
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
+  # TODO: reanable this after https://github.com/mixxxdj/mixxx/pull/11666
+  # src/test/itunesxmlimportertest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
@@ -1788,6 +1883,7 @@ add_executable(mixxx-test
   src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
+  src/util/moc_included_test.cpp
 )
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore gtest gmock)
@@ -1935,8 +2031,13 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
+find_package(Chromaprint)
+# This is the first package form the environment, if this fails give hints how to install the environment
+if(NOT Chromaprint_FOUND)
+  FATAL_ERROR_MISSING_ENV()
+else()
+  target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
+endif()
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
@@ -1971,76 +2072,72 @@ endif()
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
+  # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
+  # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
   set(LIBDJINTEROP_VERSION 0.16.1)
-  # Look for an existing installation of libdjinterop and use that if available.
-  # Otherwise, download and build from GitHub.
-  # Note: Version 0.17.0 is not yet compatible
-  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
-  if(DjInterop_FOUND)
-    # An existing installation of djinterop is available.
-    message(STATUS "Using existing system installation of libdjinterop")
-    target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
-    target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
+
+  # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
+  # embedded SQLite in such a case.
+  if (APPLE AND NOT SQLite3_IS_STATIC)
+    message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
+    set(DJINTEROP_SYSTEM_SQLITE OFF)
   else()
-    # Fetch djinterop sources from GitHub and build them statically.
-
-    # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
-    # embedded SQLite in such a case.
-    if (APPLE AND NOT SQLite3_IS_STATIC)
-      message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
-      set(DJINTEROP_SYSTEM_SQLITE OFF)
-    else()
-      message(STATUS "Building libdjinterop sources (with system SQLite) fetched from GitHub")
-      set(DJINTEROP_SYSTEM_SQLITE ON)
-    endif()
-
-    set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
-    set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
-
-    # CMake does not pass lists of paths properly to external projects.
-    # This is worked around by changing the list separator.
-    string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
-
-    # For offline builds download the archive file from the URL and
-    # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
-    # the configuration.
-    ExternalProject_Add(libdjinterop
-      URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
-      URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
-      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
-      DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
-      INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
-      LIST_SEPARATOR "|"
-      CMAKE_ARGS
-        -DBUILD_SHARED_LIBS=OFF
-        -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-        -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
-        -DCMAKE_INSTALL_LIBDIR:PATH=lib
-        -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
-        -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
-      BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
-      EXCLUDE_FROM_ALL TRUE
-    )
-
-    # Assemble a library based on the external project.
-    add_library(mixxx-libdjinterop STATIC IMPORTED)
-    add_dependencies(mixxx-libdjinterop libdjinterop)
-    set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
-    set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
-    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
-    target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
-    target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
-
-    # Since we have built libdjinterop from sources as a static library, its
-    # transitive dependencies are not automatically recognised.  libdjinterop
-    # depends on zlib and optionally sqlite3.  If libdjinterop was configured
-    # to depend on system SQLite, Mixxx will already have the dependency.
-    # But it does not have zlib, so we explicitly add that here.
-    find_package(ZLIB 1.2.8 REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
+    message(STATUS "Building libdjinterop sources (with system SQLite) fetched from GitHub")
+    set(DJINTEROP_SYSTEM_SQLITE ON)
   endif()
+
+  set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
+  set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
+  # CMake does not pass lists of paths properly to external projects.
+  # This is worked around by changing the list separator.
+  string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+
+  # For offline builds download the archive file from the URL and
+  # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
+  # the configuration.
+  ExternalProject_Add(libdjinterop
+    URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
+    URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
+    DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+    DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
+    INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
+    LIST_SEPARATOR "|"
+    CMAKE_ARGS
+      -DBUILD_SHARED_LIBS=OFF
+      -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
+      -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+      -DCMAKE_INSTALL_LIBDIR:PATH=lib
+      -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
+      -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
+      -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+      -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+      -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
+      -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --target DjInterop
+    BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
+    EXCLUDE_FROM_ALL TRUE
+  )
+
+  # Assemble a library based on the external project.
+  add_library(mixxx-libdjinterop STATIC IMPORTED)
+  add_dependencies(mixxx-libdjinterop libdjinterop)
+  set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
+  set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
+  set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
+  target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
+  target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
+
+  # Since we have built libdjinterop from sources as a static library, its
+  # transitive dependencies are not automatically recognised.  libdjinterop
+  # depends on zlib and optionally sqlite3.  If libdjinterop was configured
+  # to depend on system SQLite, Mixxx will already have the dependency.
+  # But it does not have zlib, so we explicitly add that here.
+  find_package(ZLIB 1.2.8 REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
 
   # Include conditional sources only required with Engine Prime export support.
   target_sources(mixxx-lib PRIVATE
@@ -2070,11 +2167,17 @@ endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
 
+# Create a list from CMAKE_PREFIX_PATH with an alternate separator
+# This is required to forward CMAKE_PREFIX_PATH in ExternalProject_Add()
+# using the LIST_SEPARATOR option
+string(REPLACE ";" "|" CMAKE_PREFIX_PATH_ALT_SEP "${CMAKE_PREFIX_PATH}")
+
 # KeyFinder
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
-  set(LIBKEYFINDER_VERSION 2.2.6)
-  find_package(KeyFinder ${LIBKEYFINDER_VERSION})
+  set(MIN_LIBKEYFINDER_VERSION 2.2.4)
+  set(FETCH_LIBKEYFINDER_VERSION 2.2.6)
+  find_package(KeyFinder ${MIN_LIBKEYFINDER_VERSION})
   if (KeyFinder_FOUND)
     target_link_libraries(mixxx-lib PRIVATE KeyFinder::KeyFinder)
   else()
@@ -2091,10 +2194,10 @@ if(KEYFINDER)
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
     ExternalProject_Add(libkeyfinder
-      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${LIBKEYFINDER_VERSION}.zip"
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${FETCH_LIBKEYFINDER_VERSION}.zip"
       URL_HASH SHA256=f15deb56c2dcaa6b10dc3717a7d2f42a8407c04ad550f694de42118be998d256
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
-      DOWNLOAD_NAME "libkeyfinder-${LIBKEYFINDER_VERSION}.zip"
+      DOWNLOAD_NAME "libkeyfinder-${FETCH_LIBKEYFINDER_VERSION}.zip"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       LIST_SEPARATOR "|"
       CMAKE_ARGS
@@ -2103,11 +2206,17 @@ if(KEYFINDER)
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
+        -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
+        -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+        -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+        -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
+      LIST_SEPARATOR |
     )
 
     # This is a bit of a hack to make sure that the include directory actually
@@ -2175,7 +2284,7 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
 if(WIN32)
-  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__ _CRT_SECURE_NO_WARNINGS)
 endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
@@ -2261,7 +2370,9 @@ if(QT6)
   foreach(COMPONENT ${QT6_NEW_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
   endforeach()
+endif()
 
+if(QML)
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
   set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-lib
@@ -2359,7 +2470,7 @@ endif()
 
 
 if(APPLE)
-  if(Qt_IS_STATIC)
+  if(Qt_IS_STATIC OR QT6)
     target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework Accelerate"
         "-weak_framework AppKit"
@@ -2463,7 +2574,11 @@ endif()
 if(APPLE OR WIN32)
   # qt_de.qm is just one arbitrary file in the directory that needs to be located;
   # there is no particular reason to look for this file versus any other one in the directory.
-  find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  if(QT6)
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt6_DIR}/../../../translations" "${Qt6_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  else()
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  endif()
   get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
   install(
     DIRECTORY "${QT_TRANSLATIONS}"
@@ -2811,6 +2926,9 @@ if(BROADCAST)
     message(STATUS "Using internal libshout-idjc")
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
     target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout-idjc/include)
+    if(WIN32)
+      target_compile_definitions(shout_mixxx PRIVATE __WINDOWS__ _CRT_NONSTDC_NO_WARNINGS)
+    endif()
     target_link_libraries(mixxx-lib PRIVATE shout_mixxx)
   else()
     target_link_libraries(mixxx-lib PRIVATE Shoutidjc::Shoutidjc)
@@ -2970,6 +3088,7 @@ if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hidiothread.cpp
+    src/controllers/hid/hidioglobaloutputreportfifo.cpp
     src/controllers/hid/hidiooutputreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
@@ -2980,7 +3099,7 @@ if(HID)
 endif()
 
 # USB Bulk controller support
-default_option(BULK "USB Bulk controller support" "LibUSB_FOUND")
+default_option(BULK "USB Bulk controller support" "LibUSB_FOUND;NOT WIN32")
 if(BULK)
   if(NOT LibUSB_FOUND)
     message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
@@ -3090,7 +3209,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic lunar)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic lunar mantic)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
@@ -3103,6 +3222,11 @@ set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/images/banner
 set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/images/dialog.bmp")
 
 set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" )
+
+if(WIN32)
+    # override not working default NSIS
+    set(CPACK_GENERATOR WIX)
+endif()
 
 include(CPack)
 

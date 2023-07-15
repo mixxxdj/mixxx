@@ -88,7 +88,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                     sampleEndPosition);
                     if (visible || currentMarkEndPoint > 0) {
                         QColor color = pMark->fillColor();
-                        color.setAlphaF(0.4);
+                        color.setAlphaF(0.4f);
 
                         QLinearGradient gradient(QPointF(0, 0),
                                 QPointF(0, m_waveformRenderer->getHeight()));
@@ -131,7 +131,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                             sampleEndPosition);
                     if (currentMarkEndPoint < m_waveformRenderer->getHeight()) {
                         QColor color = pMark->fillColor();
-                        color.setAlphaF(0.4);
+                        color.setAlphaF(0.4f);
 
                         QLinearGradient gradient(QPointF(0, 0),
                                 QPointF(m_waveformRenderer->getWidth(), 0));
@@ -263,7 +263,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     // though as soon as other OS-based font and app scaling mechanics join the
     // party the resulting font size is hard to predict (affects all supported OS).
     font.setPixelSize(13);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     font.setWeight(75); // bold
+#else
+    font.setWeight(QFont::Bold); // bold
+#endif
     font.setItalic(false);
 
     QFontMetrics metrics(font);

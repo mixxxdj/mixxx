@@ -61,12 +61,15 @@ find_library(Modplug_LIBRARY
 )
 mark_as_advanced(Modplug_LIBRARY)
 
+if(DEFINED PC_Modplug_VERSION AND NOT PC_Modplug_VERSION STREQUAL "")
+  set(Modplug_VERSION "${PC_Modplug_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Modplug
-  DEFAULT_MSG
-  Modplug_LIBRARY
-  Modplug_INCLUDE_DIR
+  REQUIRED_VARS Modplug_LIBRARY Modplug_INCLUDE_DIR
+  VERSION_VAR Modplug_VERSION
 )
 
 if(Modplug_FOUND)

@@ -48,15 +48,24 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(mixxx::audio::FramePos position) override;
 
+    // Wrapper to use adjustedPositionInsideAdjustedLoop() with the current loop.
+    // Called from EngineBuffer while slip mode is enabled
+    mixxx::audio::FramePos adjustedPositionForCurrentLoop(
+            mixxx::audio::FramePos newPosition,
+            bool reverse);
+
     void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
     void setLoop(mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
             bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
+    bool isLoopRollActive();
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+
+    double getTrackSamples() const;
 
   signals:
     void loopReset();
@@ -130,10 +139,12 @@ class LoopingControl : public EngineControl {
             mixxx::audio::FramePos endPosition) const;
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
-    // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
-    mixxx::audio::FramePos seekInsideAdjustedLoop(
+    // the beat. It will even keep multi-bar phrasing correct with 4/4 tracks.
+    mixxx::audio::FramePos adjustedPositionInsideAdjustedLoop(
             mixxx::audio::FramePos currentPosition,
+            bool reverse,
             mixxx::audio::FramePos oldLoopInPosition,
+            mixxx::audio::FramePos oldLoopOutPosition,
             mixxx::audio::FramePos newLoopInPosition,
             mixxx::audio::FramePos newLoopOutPosition);
     mixxx::audio::FramePos findQuantizedBeatloopStart(
@@ -160,6 +171,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
     RateControl* m_pRateControl;
     ControlObject* m_pPlayButton;
+    ControlObject* m_pRepeatButton;
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
@@ -173,10 +185,6 @@ class LoopingControl : public EngineControl {
     LoopInfo m_oldLoopInfo;
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pNextBeat;
-    ControlObject* m_pPreviousBeat;
-    ControlObject* m_pClosestBeat;
-    ControlObject* m_pTrackSamples;
     QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.

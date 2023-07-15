@@ -64,12 +64,15 @@ find_library(Chromaprint_LIBRARY
 )
 mark_as_advanced(Chromaprint_LIBRARY)
 
+if(DEFINED PC_Chromaprint_VERSION AND NOT PC_Chromaprint_VERSION STREQUAL "")
+  set(Chromaprint_VERSION "${PC_Chromaprint_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Chromaprint
-  DEFAULT_MSG
-  Chromaprint_LIBRARY
-  Chromaprint_INCLUDE_DIR
+  REQUIRED_VARS Chromaprint_LIBRARY Chromaprint_INCLUDE_DIR
+  VERSION_VAR Chromaprint_VERSION
 )
 
 if(Chromaprint_FOUND)

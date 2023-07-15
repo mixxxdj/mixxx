@@ -114,7 +114,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
 
     int playlistId = playlistDao.createUniquePlaylist(&playlist);
 
-    if (playlistId != -1) {
+    if (playlistId != kInvalidPlaylistId) {
         playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     } else {
         // Do not change strings here without also changing strings in
@@ -172,4 +172,11 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         }
         trackIds->append(trackId);
     }
+}
+
+std::unique_ptr<BaseSqlTableModel>
+BaseExternalLibraryFeature::createPlaylistModelForPlaylist(
+        const QString& playlist) {
+    Q_UNUSED(playlist);
+    return {};
 }

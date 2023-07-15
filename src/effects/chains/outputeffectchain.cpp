@@ -1,6 +1,7 @@
 #include "effects/chains/outputeffectchain.h"
 
 #include "effects/effectslot.h"
+#include "moc_outputeffectchain.cpp"
 
 OutputEffectChain::OutputEffectChain(EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger)

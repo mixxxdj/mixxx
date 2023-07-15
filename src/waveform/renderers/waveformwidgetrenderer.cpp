@@ -49,7 +49,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
           m_passthroughEnabled(false),
-          m_playPos(-1) {
+          m_playPos(-1.0),
+          m_truePosSample(-1.0) {
     //qDebug() << "WaveformWidgetRenderer";
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
@@ -148,7 +149,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount;
         m_totalVSamples = static_cast<int>(m_trackPixelCount * m_visualSamplePerPixel);
         m_playPosVSample = static_cast<int>(m_playPos * m_totalVSamples);
-
+        m_truePosSample = truePlayPos * static_cast<double>(m_trackSamples);
         double leftOffset = m_playMarkerPosition;
         double rightOffset = 1.0 - m_playMarkerPosition;
 
@@ -165,7 +166,8 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         m_firstDisplayedPosition = m_playPos - displayedLengthLeft;
         m_lastDisplayedPosition = m_playPos + displayedLengthRight;
     } else {
-        m_playPos = -1; // disable renderers
+        m_playPos = -1.0; // disable renderers
+        m_truePosSample = -1.0;
     }
 
     // qDebug() << "WaveformWidgetRenderer::onPreRender" <<
@@ -187,7 +189,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     // not ready to display need to wait until track initialization is done
     // draw only first in stack (background)
     int stackSize = m_rendererStack.size();
-    if (m_trackSamples <= 0 || m_playPos == -1) {
+    if (shouldOnlyDrawBackground()) {
         if (stackSize) {
             m_rendererStack.at(0)->draw(painter, event);
         }
@@ -317,7 +319,11 @@ void WaveformWidgetRenderer::drawPassthroughLabel(QPainter* painter) {
     font.setFamily("Open Sans"); // default label font
     // Make the label always fit
     font.setPixelSize(math_min(25, int(m_height * 0.8)));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     font.setWeight(75); // bold
+#else
+    font.setWeight(QFont::Bold); // bold
+#endif
     font.setItalic(false);
 
     QString label = QObject::tr("Passthrough");

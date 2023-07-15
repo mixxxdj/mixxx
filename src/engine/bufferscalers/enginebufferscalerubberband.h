@@ -56,7 +56,7 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     /// `m_pRubberBand->reset()` directly.
     void reset();
 
-    void deinterleaveAndProcess(const CSAMPLE* pBuffer, SINT frames, bool flush);
+    void deinterleaveAndProcess(const CSAMPLE* pBuffer, SINT frames);
     SINT retrieveAndDeinterleave(CSAMPLE* pBuffer, SINT frames);
 
     // The read-ahead manager that we use to fetch samples

@@ -20,9 +20,10 @@
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_controllerDebug(false),
+          m_controllerAbortOnWarning(false),
           m_developer(false),
           m_safeMode(false),
-          m_useVuMeterGL(true),
+          m_useVuMeterGL(false),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
           m_scaleFactor(1.0),
@@ -171,15 +172,11 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(timelinePath);
     parser.addOption(timelinePathDeprecated);
 
-    const QCommandLineOption disableVuMeterGL(QStringLiteral("disable-vumetergl"),
+    const QCommandLineOption enableVuMeterGL(QStringLiteral("enable-vumetergl"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
-                                      "Do not use OpenGL vu meter")
+                                      "Use OpenGL vu meter")
                             : QString());
-    QCommandLineOption disableVuMeterGLDeprecated(
-            QStringLiteral("disableVuMeterGL"), disableVuMeterGL.description());
-    disableVuMeterGLDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
-    parser.addOption(disableVuMeterGL);
-    parser.addOption(disableVuMeterGLDeprecated);
+    parser.addOption(enableVuMeterGL);
 
     const QCommandLineOption controllerDebug(QStringLiteral("controller-debug"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -192,6 +189,17 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     controllerDebugDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(controllerDebug);
     parser.addOption(controllerDebugDeprecated);
+
+    const QCommandLineOption controllerAbortOnWarning(
+            QStringLiteral("controller-abort-on-warning"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "The controller mapping will issue more "
+                                      "aggressive warnings and errors when "
+                                      "detecting misuse of controller APIs. "
+                                      "New Controller Mappings should be "
+                                      "developed with this option enabled!")
+                            : QString());
+    parser.addOption(controllerAbortOnWarning);
 
     const QCommandLineOption developer(QStringLiteral("developer"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -330,8 +338,9 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_timelinePath = parser.value(timelinePathDeprecated);
     }
 
-    m_useVuMeterGL = !(parser.isSet(disableVuMeterGL) || parser.isSet(disableVuMeterGLDeprecated));
+    m_useVuMeterGL = parser.isSet(enableVuMeterGL);
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
     m_developer = parser.isSet(developer);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);

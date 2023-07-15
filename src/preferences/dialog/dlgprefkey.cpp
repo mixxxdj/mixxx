@@ -55,6 +55,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     // Connections
     connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgPrefKey::pluginSelected);
+    setScrollSafeGuard(plugincombo);
+
     connect(banalyzerenabled, &QCheckBox::stateChanged,
             this, &DlgPrefKey::analyzerEnabled);
     connect(bfastAnalysisEnabled, &QCheckBox::stateChanged,

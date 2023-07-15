@@ -528,7 +528,7 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter>
-                    <TooltipId>master_VuMeterL</TooltipId>
+                    <TooltipId>audio_latency_usage</TooltipId>
                     <PathVu>skin:/audio_latency/audio_latency_usage.png</PathVu>
                     <PathBack>skin:/audio_latency/audio_latency_overload_back.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>

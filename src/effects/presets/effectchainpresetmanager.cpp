@@ -9,6 +9,7 @@
 #include "effects/effectchain.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectxmlelements.h"
+#include "moc_effectchainpresetmanager.cpp"
 #include "util/filename.h"
 #include "util/xml.h"
 
@@ -672,7 +673,6 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     importUserPresets();
 
     // Reload order of custom chain presets
-    QStringList chainPresetsSorted;
     QDomElement chainPresetsElement =
             XmlParse::selectElement(root, EffectXml::kChainPresetList);
     QDomNodeList presetNameList =
@@ -702,7 +702,6 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     }
 
     // Reload order of QuickEffect chain presets
-    QStringList quickEffectChainPresetsSorted;
     QDomElement quickEffectChainPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectList);
     QDomNodeList quickEffectPresetNameList =

@@ -2544,6 +2544,9 @@ WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #2c454f;
 }
+WLibrarySidebar {
+  outline: none;
+}
 /* Selected rows in Tree and Tracks table */
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,
@@ -2551,9 +2554,13 @@ WTrackTableView::item:selected,
   color: #fff;
   background-color: #2c454f;
 }
-WLibrarySidebar,
-WLibrarySidebar::item:focus {
+WLibrarySidebar::item:selected:focus {
   outline: none;
+  border: 0px;
+}
+WLibrarySidebar::item:!selected:focus {
+  outline: none;
+  border: 1px solid white;
 }
 
 WTrackTableView:focus,
@@ -3001,8 +3008,6 @@ WSearchLineEdit::item:selected,
     color: #fff;
   }
   /* remove OS focus indicator from some buttons */
-  WLibrary QCheckBox:focus,
-  #LibraryBPMButton::item:selected,
   WCueMenuPopup QPushButton:focus {
     outline: none;
   }
@@ -3027,7 +3032,7 @@ QLineEdit QMenu::item:disabled {
   WEffectChainPresetButton QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid #333;
   }
 
   #MainMenu QMenu::right-arrow,

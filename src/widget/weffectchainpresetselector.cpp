@@ -9,6 +9,7 @@
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectsmanager.h"
 #include "library/library_decl.h"
+#include "moc_weffectchainpresetselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectChainPresetSelector::WEffectChainPresetSelector(
@@ -35,16 +36,19 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
         return;
     }
 
-    auto chainPresetListUpdateSignal = &EffectChainPresetManager::effectChainPresetListUpdated;
-    auto pQuickEffectChain = qobject_cast<QuickEffectChain*>(m_pChain.data());
+    auto* pQuickEffectChain = qobject_cast<QuickEffectChain*>(m_pChain.data());
     if (pQuickEffectChain) {
-        chainPresetListUpdateSignal = &EffectChainPresetManager::quickEffectChainPresetListUpdated;
+        connect(m_pChainPresetManager.data(),
+                &EffectChainPresetManager::quickEffectChainPresetListUpdated,
+                this,
+                &WEffectChainPresetSelector::populate);
         m_bQuickEffectChain = true;
+    } else {
+        connect(m_pChainPresetManager.data(),
+                &EffectChainPresetManager::effectChainPresetListUpdated,
+                this,
+                &WEffectChainPresetSelector::populate);
     }
-    connect(m_pChainPresetManager.data(),
-            chainPresetListUpdateSignal,
-            this,
-            &WEffectChainPresetSelector::populate);
     connect(m_pChain.data(),
             &EffectChain::chainPresetChanged,
             this,

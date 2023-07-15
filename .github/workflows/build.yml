@@ -58,7 +58,7 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 11
+          - name: macOS 11 x64
             os: macos-11
             cmake_args: >-
               -DBULK=ON
@@ -67,16 +67,40 @@ jobs:
               -DMACOS_BUNDLE=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1012
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
             buildenv_basepath: /Users/runner/buildenv
-            buildenv_script: tools/macos_buildenv.sh
-            artifacts_name: macOS DMG
+            buildenv_script: tools/macos_release_buildenv.sh
+            artifacts_name: macOS Intel DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
+            qt_qpa_platform: offscreen
+          - name: macOS 11 arm64
+            os: macos-11
+            cmake_args: >-
+              -DBULK=ON
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012
+            # TODO: Fix this broken test on macOS
+            crosscompile: true
+            cpack_generator: DragNDrop
+            compiler_cache: ccache
+            compiler_cache_path: /Users/runner/Library/Caches/ccache
+            buildenv_basepath: /Users/runner/buildenv
+            buildenv_script: tools/macos_arm64-cross-release_buildenv.sh
+            artifacts_name: macOS ARM DMG
+            artifacts_path: build/*.dmg
+            artifacts_slug: macos-macosarm
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
@@ -85,6 +109,7 @@ jobs:
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
+              -DWARNINGS_FATAL=ON
               -DBULK=OFF
               -DFFMPEG=OFF
               -DHSS1394=ON
@@ -101,7 +126,7 @@ jobs:
             compiler_cache: sccache
             compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
             buildenv_basepath: C:\buildenv
-            buildenv_script: tools/windows_buildenv.bat
+            buildenv_script: tools/windows_release_buildenv.bat
             artifacts_name: Windows Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
@@ -119,6 +144,7 @@ jobs:
     container: ${{ matrix.container }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
+      artifact-macos-macosarm: ${{ steps.prepare_deploy.outputs.artifact-macos-macosarm }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "[Windows] Set up Cargo cache"
@@ -294,6 +320,7 @@ jobs:
         run: ${{ matrix.compiler_cache }} -s
 
       - name: "Test"
+        if: matrix.crosscompile != true
         run: ctest --timeout 45 ${{ matrix.ctest_args }}
         working-directory: build
         env:
@@ -305,6 +332,7 @@ jobs:
           CTEST_OUTPUT_ON_FAILURE: 1
 
       - name: Benchmark
+        if: matrix.crosscompile != true
         run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
         working-directory: build
         env:
@@ -327,7 +355,9 @@ jobs:
         if: matrix.name == 'Ubuntu 22.04 (gcc)'
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
+          elif [[ "${{ github.ref }}" == "refs/heads/2.4" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
           else

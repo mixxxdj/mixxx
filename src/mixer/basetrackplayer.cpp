@@ -17,7 +17,7 @@
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/visualsmanager.h"
 #endif
@@ -422,6 +422,14 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
             &Track::colorUpdated,
             this,
             &BaseTrackPlayerImpl::slotSetTrackColor);
+
+    // Forward the update signal, i.e. use BaseTrackPlayer as relay.
+    // Currently only used by WStarRating which is connected in
+    // LegacySkinParser::parseStarRating
+    connect(m_pLoadedTrack.get(),
+            &Track::ratingUpdated,
+            this,
+            &BaseTrackPlayerImpl::trackRatingChanged);
 }
 
 void BaseTrackPlayerImpl::disconnectLoadedTrack() {
@@ -510,6 +518,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pLoopOutPoint->set(kNoTrigger);
         m_pLoadedTrack.reset();
         emit playerEmpty();
+        emit trackRatingChanged(0);
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
         // NOTE(uklotzde): In a previous version track metadata was reloaded
         // from the source file at this point again. This is no longer necessary
@@ -590,6 +599,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         }
 
         emit newTrackLoaded(m_pLoadedTrack);
+        emit trackRatingChanged(m_pLoadedTrack->getRating());
     } else {
         // this is the result from an outdated load or unload signal
         // A new load is already pending
@@ -729,6 +739,13 @@ void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
     }
     m_pTrackColor->setAndConfirm(trackColorToDouble(color));
     m_pLoadedTrack->setColor(color);
+}
+
+void BaseTrackPlayerImpl::slotSetTrackRating(int rating) {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    m_pLoadedTrack->setRating(rating);
 }
 
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {

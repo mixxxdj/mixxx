@@ -80,6 +80,14 @@ class ControlDoublePrivate : public QObject {
         m_description = description;
     }
 
+    void setKbdRepeatable(bool enable) {
+        m_kbdRepeatable = enable;
+    }
+
+    bool getKbdRepeatable() const {
+        return m_kbdRepeatable;
+    }
+
     // Sets the control value.
     void set(double value, QObject* pSender);
     // directly sets the control value. Must be used from and only from the
@@ -197,6 +205,9 @@ class ControlDoublePrivate : public QObject {
 
     // User-visible, i18n description for what the control does.
     QString m_description;
+
+    // If true, this control will be issued repeatedly if the keyboard key is held.
+    bool m_kbdRepeatable;
 
     // The control value.
     ControlValueAtomic<double> m_value;

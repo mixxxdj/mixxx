@@ -295,6 +295,7 @@ bool Track::replaceRecord(
     const auto newKey = newRecord.getGlobalKey();
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
     const auto newColor = newRecord.getColor();
+    const auto newRating = newRecord.getRating();
 
     auto locked = lockMutex(&m_qMutex);
     const bool recordUnchanged = m_record == newRecord;
@@ -305,6 +306,7 @@ bool Track::replaceRecord(
     const auto oldKey = m_record.getGlobalKey();
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     const auto oldColor = m_record.getColor();
+    const auto oldRating = m_record.getRating();
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
@@ -339,6 +341,9 @@ bool Track::replaceRecord(
     }
     if (oldColor != newColor) {
         emit colorUpdated(newColor);
+    }
+    if (oldRating != newRating) {
+        emit ratingUpdated(newRating);
     }
 
     emitChangedSignalsForAllMetadata();
@@ -755,6 +760,16 @@ void Track::updatePlayCounter(bool bPlayed) {
     }
 }
 
+void Track::updatePlayedStatusKeepPlayCount(bool bPlayed) {
+    auto locked = lockMutex(&m_qMutex);
+    PlayCounter playCounter(m_record.getPlayCounter());
+    playCounter.setPlayedFlag(bPlayed);
+    if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
+        markDirtyAndUnlock(&locked);
+        emit timesPlayedChanged();
+    }
+}
+
 mixxx::RgbColor::optional_t Track::getColor() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getColor();
@@ -912,7 +927,8 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
                     mixxx::CueType::MainCue,
                     Cue::kNoHotCue,
                     position,
-                    mixxx::audio::kInvalidFramePos));
+                    mixxx::audio::kInvalidFramePos,
+                    mixxx::PredefinedColorPalettes::kDefaultCueColor));
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
@@ -964,7 +980,8 @@ CuePointer Track::createAndAddCue(
         mixxx::CueType type,
         int hotCueIndex,
         mixxx::audio::FramePos startPosition,
-        mixxx::audio::FramePos endPosition) {
+        mixxx::audio::FramePos endPosition,
+        mixxx::RgbColor color) {
     VERIFY_OR_DEBUG_ASSERT(hotCueIndex == Cue::kNoHotCue ||
             hotCueIndex >= mixxx::kFirstHotCueIndex) {
         return CuePointer{};
@@ -976,7 +993,8 @@ CuePointer Track::createAndAddCue(
             type,
             hotCueIndex,
             startPosition,
-            endPosition));
+            endPosition,
+            color));
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
     // same thread as their host, namely this->thread().
@@ -1361,6 +1379,7 @@ void Track::setRating (int rating) {
     auto locked = lockMutex(&m_qMutex);
     if (compareAndSet(m_record.ptrRating(), rating)) {
         markDirtyAndUnlock(&locked);
+        emit ratingUpdated(rating);
     }
 }
 

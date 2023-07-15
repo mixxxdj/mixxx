@@ -252,6 +252,14 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotReloadCoverArt);
 
+    connect(m_pWStarRating,
+            &WStarRating::ratingChanged,
+            this,
+            [this](int rating) {
+                m_pWStarRating->slotSetRating(rating);
+                m_trackRecord.setRating(rating);
+            });
+
     btnColorPicker->setStyle(QStyleFactory::create(QStringLiteral("fusion")));
     QMenu* pColorPickerMenu = new QMenu(this);
     pColorPickerMenu->addAction(m_pColorPicker);
@@ -338,7 +346,7 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 
     reloadTrackBeats(track);
 
-    m_pWStarRating->slotTrackLoaded(m_pLoadedTrack);
+    m_pWStarRating->slotSetRating(m_pLoadedTrack->getRating());
 }
 
 void DlgTrackInfo::replaceTrackRecord(
@@ -446,7 +454,7 @@ void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
     updateFromTrack(*m_pLoadedTrack);
     m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
 
-    // We already listen to changed() so we don't need to listen to individual
+    // Listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
     connect(pTrack.get(),
             &Track::changed,
@@ -557,10 +565,10 @@ void DlgTrackInfo::saveTrack() {
     // This hack makes a focused QLineEdit emit editingFinished() (clearFocus()
     // implicitly emits a focusOutEvent()
     if (this == QApplication::activeWindow()) {
-        auto focusWidget = QApplication::focusWidget();
-        if (focusWidget) {
-            focusWidget->clearFocus();
-            focusWidget->setFocus();
+        auto* pFocusWidget = QApplication::focusWidget();
+        if (pFocusWidget) {
+            pFocusWidget->clearFocus();
+            pFocusWidget->setFocus();
         }
     }
 
@@ -603,6 +611,8 @@ void DlgTrackInfo::clear() {
     updateSpinBpmFromBeats();
 
     txtLocation->setText("");
+
+    m_pWStarRating->slotSetRating(0);
 }
 
 void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {

@@ -36,7 +36,7 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
 #include "waveform/waveformwidgetfactory.h"
 #endif
 
@@ -220,9 +220,6 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pSyncControl->setEngineControls(m_pRateControl, m_pBpmControl);
     pMixingEngine->getEngineSync()->addSyncableDeck(m_pSyncControl);
     addControl(m_pSyncControl);
-
-    m_fwdButton = ControlObject::getControl(ConfigKey(group, "fwd"));
-    m_backButton = ControlObject::getControl(ConfigKey(group, "back"));
 
     m_pKeyControl = new KeyControl(group, pConfig);
     addControl(m_pKeyControl);
@@ -590,7 +587,7 @@ void EngineBuffer::ejectTrack() {
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
 
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
@@ -846,10 +843,10 @@ void EngineBuffer::processTrackLocked(
     bool is_scratching = false;
     bool is_reverse = false;
 
-    // Update the slipped position and seek if it was disabled.
+    // Update the slipped position and seek to it if slip mode was disabled.
     processSlip(iBufferSize);
 
-    // Note: This may effects the m_playPosition, play, scaler and crossfade buffer
+    // Note: This may affect the m_playPosition, play, scaler and crossfade buffer
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time
@@ -1017,6 +1014,7 @@ void EngineBuffer::processTrackLocked(
         rate = m_rate_old;
     }
 
+    const mixxx::audio::FramePos playpos_old = m_playPosition;
     bool bCurBufferPaused = false;
     bool atEnd = false;
     bool backwards = rate < 0;
@@ -1061,6 +1059,8 @@ void EngineBuffer::processTrackLocked(
         // Note: The last buffer of a track is padded with silence.
         // This silence is played together with the last samples in the last
         // callback and the m_playPosition is advanced behind the end of the track.
+        // If repeat is enabled, scaler->scaleBuffer() wraps around at end/start
+        // and fills the buffer with samples from the other end of the track.
 
         if (m_bCrossfadeReady) {
             // Bring pOutput with the new parameters in and fade out the old one,
@@ -1092,22 +1092,26 @@ void EngineBuffer::processTrackLocked(
 
     m_scratching_old = is_scratching;
 
-    // Handle repeat mode
-    const bool atStart = m_playPosition <= mixxx::audio::kStartFramePos;
-
-    bool repeat_enabled = m_pRepeat->toBool();
+    // If we're repeating and crossed the track boundary, ReadAheadManager already
+    // wrapped around the playposition.
+    // To ensure quantize is respected we request a phase sync.
+    // TODO(ronso) This just restores previous repeat+quantize behaviour. I'm not
+    // sure whether that was actually desired or just a side effect of seeking.
+    // Ife it's really desired, should this be moved to looping control in order
+    // to set the sync'ed playposition right away and fill the wrap-around buffer
+    // with correct samples from the sync'ed loop in / track start position?
+    if (m_pRepeat->toBool() && m_pQuantize->toBool() &&
+            (m_playPosition > playpos_old) == backwards) {
+        // TODO() The resulting seek is processed in the following callback
+        // That is to late
+        requestSyncPhase();
+    }
 
     bool end_of_track = atEnd && !backwards;
 
-    // If playbutton is pressed, check if we are at start or end of track
-    if ((m_playButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool()))
-            && end_of_track) {
-        if (repeat_enabled) {
-            double fractionalPos = atStart ? 1.0 : 0;
-            doSeekFractional(fractionalPos, SEEK_STANDARD);
-        } else {
-            m_playButton->set(0.);
-        }
+    // If playbutton is pressed and we're at the end of track release play button
+    if (m_playButton->toBool() && end_of_track) {
+        m_playButton->set(0.);
     }
 
     // Give the Reader hints as to which chunks of the current song we
@@ -1207,7 +1211,18 @@ void EngineBuffer::processSlip(int iBufferSize) {
         // back and forth calculations.
         const int bufferFrameCount = iBufferSize / mixxx::kEngineChannelCount;
         DEBUG_ASSERT(bufferFrameCount * mixxx::kEngineChannelCount == iBufferSize);
-        m_slipPosition += static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        const mixxx::audio::FrameDiff_t slipDelta =
+                static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        // Simulate looping if a regular loop is active
+        if (m_pLoopingControl->isLoopingEnabled() &&
+                !m_pLoopingControl->isLoopRollActive()) {
+            const mixxx::audio::FramePos newPos = m_slipPosition + slipDelta;
+            m_slipPosition = m_pLoopingControl->adjustedPositionForCurrentLoop(
+                    newPos,
+                    m_dSlipRate < 0);
+        } else {
+            m_slipPosition += slipDelta;
+        }
     }
 }
 
@@ -1374,12 +1389,19 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_playPosition);
+    const double fFractionalSlipPos = fractionalPlayposFromAbsolute(m_slipPosition);
 
     const double tempoTrackSeconds = m_trackEndPositionOld.value() /
             m_trackSampleRateOld / getRateRatio();
     if (speed > 0 && fFractionalPlaypos == 1.0) {
-        // At Track end
+        // Play pos at Track end
         speed = 0;
+    }
+
+    double effectiveSlipRate = m_dSlipRate;
+    if (effectiveSlipRate > 0.0 && fFractionalSlipPos == 1.0) {
+        // Slip pos at Track end
+        effectiveSlipRate = 0.0;
     }
 
     // Update indicators that are only updated after every
@@ -1398,7 +1420,8 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
             speed * m_baserate_old,
             static_cast<int>(iBufferSize) /
                     m_trackEndPositionOld.toEngineSamplePos(),
-            fractionalPlayposFromAbsolute(m_slipPosition),
+            fFractionalSlipPos,
+            effectiveSlipRate,
             tempoTrackSeconds,
             iBufferSize / kSamplesPerFrame / m_sampleRate.toDouble() * 1000000.0);
 

@@ -67,6 +67,7 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 
     ControlPushButton* controlUp = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_up"));
+    controlUp->setKbdRepeatable(true);
     controlUp->setParent(this);
     connect(controlUp,
             &ControlPushButton::valueChanged,
@@ -75,6 +76,7 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 
     ControlPushButton* controlDown = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_down"));
+    controlDown->setKbdRepeatable(true);
     controlDown->setParent(this);
     connect(controlDown,
             &ControlPushButton::valueChanged,
@@ -83,6 +85,7 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 
     ControlPushButton* controlUpSmall = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_up_small"));
+    controlUpSmall->setKbdRepeatable(true);
     controlUpSmall->setParent(this);
     connect(controlUpSmall,
             &ControlPushButton::valueChanged,
@@ -91,6 +94,7 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 
     ControlPushButton* controlDownSmall = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_down_small"));
+    controlDownSmall->setKbdRepeatable(true);
     controlDownSmall->setParent(this);
     connect(controlDownSmall,
             &ControlPushButton::valueChanged,

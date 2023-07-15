@@ -39,11 +39,20 @@ SetlogFeature::SetlogFeature(
                           /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME"),
                   QStringLiteral("history")),
-          m_playlistId(kInvalidPlaylistId),
+          m_currentPlaylistId(kInvalidPlaylistId),
+          m_yearNodeId(kInvalidPlaylistId),
           m_pLibrary(pLibrary),
           m_pConfig(pConfig) {
     // remove unneeded entries
     deleteAllUnlockedPlaylistsWithFewerTracks();
+
+    // Create empty placeholder playlist for YEAR items
+    QString placeholderName = "historyPlaceholder";
+    m_yearNodeId = m_playlistDao.createUniquePlaylist(&placeholderName,
+            PlaylistDAO::PLHT_UNKNOWN);
+    DEBUG_ASSERT(m_yearNodeId != kInvalidPlaylistId);
+    // just to be safe
+    m_playlistDao.setPlaylistLocked(m_yearNodeId, true);
 
     //construct child model
     m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
@@ -55,25 +64,43 @@ SetlogFeature::SetlogFeature(
             this,
             &SetlogFeature::slotJoinWithPrevious);
 
+    m_pMarkTracksPlayedAction = new QAction(tr("Mark all tracks played)"), this);
+    connect(m_pMarkTracksPlayedAction,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotMarkAllTracksPlayed);
+
     m_pStartNewPlaylist = new QAction(tr("Finish current and start new"), this);
     connect(m_pStartNewPlaylist,
             &QAction::triggered,
             this,
             &SetlogFeature::slotGetNewPlaylist);
 
+    m_pLockAllChildPlaylists = new QAction(tr("Lock all child playlists"), this);
+    connect(m_pLockAllChildPlaylists,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotLockAllChildPlaylists);
+
+    m_pUnlockAllChildPlaylists = new QAction(tr("Unlock all child playlists"), this);
+    connect(m_pUnlockAllChildPlaylists,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotUnlockAllChildPlaylists);
+
+    m_pDeleteAllChildPlaylists = new QAction(tr("Delete all unlocked child playlists"), this);
+    connect(m_pDeleteAllChildPlaylists,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotDeleteAllUnlockedChildPlaylists);
+
     // initialized in a new generic slot(get new history playlist purpose)
     slotGetNewPlaylist();
 }
 
 SetlogFeature::~SetlogFeature() {
-    // If the history playlist we created doesn't have any tracks in it then
-    // delete it so we don't end up with tons of empty playlists. This is mostly
-    // for developers since they regularly open Mixxx without loading a track.
-    if (m_playlistId != kInvalidPlaylistId &&
-            m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
-        m_playlistDao.deletePlaylist(m_playlistId);
-    }
-    // Also clean history up when shutting down in case the track threshold changed
+    // Clean up history when shutting down in case the track threshold changed,
+    // incl. the empty placeholder playlist and potentially empty current playlist
     deleteAllUnlockedPlaylistsWithFewerTracks();
 }
 
@@ -108,12 +135,16 @@ void SetlogFeature::slotDeletePlaylist() {
         return;
     }
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    if (playlistId == m_playlistId) {
+    if (playlistId == m_currentPlaylistId) {
         // the current setlog must not be deleted
         return;
+    } else if (playlistId == m_yearNodeId) {
+        // this is a YEAR node
+        slotDeleteAllUnlockedChildPlaylists();
+    } else {
+        // regular setlog, call the base implementation
+        BasePlaylistFeature::slotDeletePlaylist();
     }
-    // regular setlog, call the base implementation
-    BasePlaylistFeature::slotDeletePlaylist();
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -137,36 +168,45 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         return;
     }
 
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
-    m_pDeletePlaylistAction->setEnabled(!locked);
-    m_pRenamePlaylistAction->setEnabled(!locked);
-    m_pJoinWithPreviousAction->setEnabled(!locked);
-
-    m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
-
     QMenu menu(m_pSidebarWidget);
-    //menu.addAction(m_pCreatePlaylistAction);
-    //menu.addSeparator();
-    menu.addAction(m_pAddToAutoDJAction);
-    menu.addAction(m_pAddToAutoDJTopAction);
-    menu.addSeparator();
-    menu.addAction(m_pRenamePlaylistAction);
-    if (playlistId != m_playlistId) {
-        // Todays playlist should not be locked or deleted
-        menu.addAction(m_pDeletePlaylistAction);
-        menu.addAction(m_pLockPlaylistAction);
+    if (playlistId == m_yearNodeId) {
+        // this is a YEAR item
+        menu.addAction(m_pLockAllChildPlaylists);
+        menu.addAction(m_pUnlockAllChildPlaylists);
+        menu.addSeparator();
+        menu.addAction(m_pDeleteAllChildPlaylists);
+    } else {
+        // this is a playlist
+        bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+        m_pDeletePlaylistAction->setEnabled(!locked);
+        m_pRenamePlaylistAction->setEnabled(!locked);
+        m_pJoinWithPreviousAction->setEnabled(!locked);
+        m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
+
+        menu.addAction(m_pAddToAutoDJAction);
+        menu.addAction(m_pAddToAutoDJTopAction);
+        menu.addSeparator();
+        menu.addAction(m_pRenamePlaylistAction);
+        if (playlistId != m_currentPlaylistId) {
+            // Todays playlist should not be locked or deleted
+            menu.addAction(m_pDeletePlaylistAction);
+            menu.addAction(m_pLockPlaylistAction);
+            menu.addAction(m_pMarkTracksPlayedAction);
+        }
+        if (index.sibling(index.row() + 1, index.column()).isValid()) {
+            // The very first (oldest) setlog cannot be joint
+            menu.addAction(m_pJoinWithPreviousAction);
+        }
+        if (playlistId == m_currentPlaylistId) {
+            // Todays playlists can change !
+            m_pStartNewPlaylist->setEnabled(
+                    m_playlistDao.tracksInPlaylist(m_currentPlaylistId) > 0);
+            menu.addAction(m_pStartNewPlaylist);
+        }
+        menu.addSeparator();
+        menu.addAction(m_pExportPlaylistAction);
     }
-    if (index.sibling(index.row() + 1, index.column()).isValid()) {
-        // The very first setlog cannot be joint
-        menu.addAction(m_pJoinWithPreviousAction);
-    }
-    if (playlistId == m_playlistId) {
-        // Todays playlists can change !
-        m_pStartNewPlaylist->setEnabled(m_playlistDao.tracksInPlaylist(m_playlistId) > 0);
-        menu.addAction(m_pStartNewPlaylist);
-    }
-    menu.addSeparator();
-    menu.addAction(m_pExportPlaylistAction);
+
     menu.exec(globalPos);
 }
 
@@ -176,6 +216,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 /// Use a custom model in the history for grouping by year
 /// @param selectedId row which should be selected
 QModelIndex SetlogFeature::constructChildModel(int selectedId) {
+    // qDebug() << "SetlogFeature::constructChildModel() id:" << selectedId;
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this,
             m_pLibrary->trackCollectionManager()->internalCollection()->database());
@@ -192,6 +233,8 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     int idColumn = record.indexOf("id");
     int createdColumn = record.indexOf("date_created");
 
+    // Nice to have: restore previous expanded/collapsed state of YEAR items
+    clearChildModel();
     QMap<int, TreeItem*> groups;
     std::vector<std::unique_ptr<TreeItem>> itemList;
     // Generous estimate (number of years the db is used ;))
@@ -212,16 +255,22 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                         .toDateTime();
 
         // Create the TreeItem whose parent is the invisible root item
+        // Show only [kNumToplevelHistoryEntries] recent playlists at the top level
+        // before grouping them by year.
         if (row >= kNumToplevelHistoryEntries) {
+            // group by year
             int yearCreated = dateCreated.date().year();
 
             auto i = groups.find(yearCreated);
             TreeItem* pGroupItem;
-            if (i != groups.end()) {
+            if (i != groups.end() && i.key() == yearCreated) {
+                // get YEAR item the playlist will sorted into
                 pGroupItem = i.value();
             } else {
+                // create YEAR item the playlist will sorted into
+                // store id of empty placeholder playlist
                 auto pNewGroupItem = std::make_unique<TreeItem>(
-                        QString::number(yearCreated), kInvalidPlaylistId);
+                        QString::number(yearCreated), m_yearNodeId);
                 pGroupItem = pNewGroupItem.get();
                 groups.insert(yearCreated, pGroupItem);
                 itemList.push_back(std::move(pNewGroupItem));
@@ -231,6 +280,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
             decorateChild(pItem, id);
         } else {
+            // add most recent top-level playlist
             auto pItem = std::make_unique<TreeItem>(name, id);
             pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
             decorateChild(pItem.get(), id);
@@ -242,14 +292,12 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_pSidebarModel->insertTreeItemRows(std::move(itemList), 0);
 
-    if (selectedId) {
-        return indexFromPlaylistId(selectedId);
-    }
-    return QModelIndex();
+    return indexFromPlaylistId(selectedId);
 }
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
+    // TODO(ronso0) Why not m_playlistDao.getPlaylistName(id) ??
     QSqlTableModel playlistTableModel(this,
             m_pLibrary->trackCollectionManager()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
@@ -271,7 +319,7 @@ QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
 }
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
-    if (playlistId == m_playlistId) {
+    if (playlistId == m_currentPlaylistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
     } else if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(QIcon(":/images/library/ic_library_locked.svg"));
@@ -280,6 +328,7 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
     }
 }
 
+/// Invoked on startup to create new current playlist and by "Finish current and start new"
 void SetlogFeature::slotGetNewPlaylist() {
     //qDebug() << "slotGetNewPlaylist() successfully triggered !";
 
@@ -297,10 +346,10 @@ void SetlogFeature::slotGetNewPlaylist() {
     }
 
     //qDebug() << "Creating session history playlist name:" << set_log_name;
-    m_playlistId = m_playlistDao.createPlaylist(
+    m_currentPlaylistId = m_playlistDao.createPlaylist(
             set_log_name, PlaylistDAO::PLHT_SET_LOG);
 
-    if (m_playlistId == kInvalidPlaylistId) {
+    if (m_currentPlaylistId == kInvalidPlaylistId) {
         qDebug() << "Setlog playlist Creation Failed";
         qDebug() << "An unknown error occurred while creating playlist: "
                  << set_log_name;
@@ -308,67 +357,198 @@ void SetlogFeature::slotGetNewPlaylist() {
         m_recentTracks.clear();
     }
 
-    reloadChildModel(m_playlistId); // For moving selection
-    emit showTrackModel(m_pPlaylistTableModel);
-    activatePlaylist(m_playlistId);
+    // reload child model again because the 'added' signal fired by PlaylistDAO
+    // might have triggered slotPlaylistTableChanged() before m_currentPlaylistId was set,
+    // which causes the wrong playlist being decorated as 'current'
+    slotPlaylistTableChanged(m_currentPlaylistId);
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
-    //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "SetlogFeature::slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
 
-    if (m_lastRightClickedIndex.isValid()) {
-        int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
-                m_lastRightClickedIndex.data().toString());
+    int clickedPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (clickedPlaylistId == kInvalidPlaylistId) {
+        return;
+    }
 
-        if (currentPlaylistId >= 0) {
-            bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
+    bool locked = m_playlistDao.isPlaylistLocked(clickedPlaylistId);
+    if (locked) {
+        qDebug() << "Aborting playlist join because playlist"
+                 << clickedPlaylistId << "is locked.";
+        return;
+    }
 
-            if (locked) {
-                qDebug() << "Skipping playlist deletion because playlist"
-                         << currentPlaylistId << "is locked.";
-                return;
-            }
+    // Add every track from right-clicked playlist to that with the next smaller ID
+    int previousPlaylistId = m_playlistDao.getPreviousPlaylist(
+            clickedPlaylistId, PlaylistDAO::PLHT_SET_LOG);
+    if (previousPlaylistId == kInvalidPlaylistId) {
+        qDebug() << "Aborting playlist join because playlist"
+                 << clickedPlaylistId << "because there's no previous playlist.";
+        return;
+    }
 
-            // Add every track from right-clicked playlist to that with the next smaller ID
-            int previousPlaylistId = m_playlistDao.getPreviousPlaylist(
-                    currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
-            if (previousPlaylistId >= 0) {
-                m_pPlaylistTableModel->setTableModel(previousPlaylistId);
+    // Right-clicked playlist may not be loaded. Use a temporary model to
+    // keep sidebar selection and table view in sync
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+            new PlaylistTableModel(this,
+                    m_pLibrary->trackCollectionManager(),
+                    "mixxx.db.model.playlist_export"));
+    pPlaylistTableModel->selectPlaylist(previousPlaylistId);
 
-                if (currentPlaylistId == m_playlistId) {
-                    // mark all the Tracks in the previous Playlist as played
-
-                    m_pPlaylistTableModel->select();
-                    int rows = m_pPlaylistTableModel->rowCount();
-                    for (int i = 0; i < rows; ++i) {
-                        QModelIndex index = m_pPlaylistTableModel->index(i, 0);
-                        if (index.isValid()) {
-                            TrackPointer track =
-                                    m_pPlaylistTableModel->getTrack(index);
-                            // Do not update the play count, just set played status.
-                            PlayCounter playCounter(track->getPlayCounter());
-                            playCounter.triggerLastPlayedNow();
-                            track->setPlayCounter(playCounter);
-                        }
-                    }
-
-                    // Change current setlog
-                    m_playlistId = previousPlaylistId;
-                }
-                qDebug() << "slotJoinWithPrevious() current:"
-                         << currentPlaylistId
-                         << " previous:" << previousPlaylistId;
-                if (m_playlistDao.copyPlaylistTracks(
-                            currentPlaylistId, previousPlaylistId)) {
-                    m_lastRightClickedIndex = constructChildModel(previousPlaylistId);
-                    m_playlistDao.deletePlaylist(currentPlaylistId);
-                    reloadChildModel(previousPlaylistId); // For moving selection
-                    emit showTrackModel(m_pPlaylistTableModel);
-                    activatePlaylist(previousPlaylistId);
-                }
+    if (clickedPlaylistId == m_currentPlaylistId) {
+        // mark all the Tracks in the previous Playlist as played
+        pPlaylistTableModel->select();
+        int rows = pPlaylistTableModel->rowCount();
+        for (int i = 0; i < rows; ++i) {
+            QModelIndex index = pPlaylistTableModel->index(i, 0);
+            if (index.isValid()) {
+                TrackPointer pTrack = pPlaylistTableModel->getTrack(index);
+                DEBUG_ASSERT(pTrack != nullptr);
+                // Do not update the play count, just set played status.
+                pTrack->updatePlayedStatusKeepPlayCount(true);
             }
         }
+
+        // Change current setlog
+        m_currentPlaylistId = previousPlaylistId;
     }
+    qDebug() << "slotJoinWithPrevious() current:"
+             << clickedPlaylistId
+             << " previous:" << previousPlaylistId;
+    if (m_playlistDao.copyPlaylistTracks(clickedPlaylistId, previousPlaylistId)) {
+        m_playlistDao.deletePlaylist(clickedPlaylistId);
+    }
+}
+
+void SetlogFeature::slotMarkAllTracksPlayed() {
+    // qDebug() << "SetlogFeature::slotMarkAllTracksPlayed()";
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+
+    int clickedPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (clickedPlaylistId == kInvalidPlaylistId) {
+        return;
+    }
+
+    if (clickedPlaylistId == m_currentPlaylistId) {
+        return;
+    }
+
+    // Right-clicked playlist may not be loaded. Use a temporary model to
+    // keep sidebar selection and table view in sync
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+            new PlaylistTableModel(this,
+                    m_pLibrary->trackCollectionManager(),
+                    "mixxx.db.model.playlist_export"));
+    pPlaylistTableModel->selectPlaylist(clickedPlaylistId);
+    // mark all the Tracks in the previous Playlist as played
+    pPlaylistTableModel->select();
+    int rows = pPlaylistTableModel->rowCount();
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = pPlaylistTableModel->index(i, 0);
+        if (index.isValid()) {
+            TrackPointer pTrack = pPlaylistTableModel->getTrack(index);
+            DEBUG_ASSERT(pTrack != nullptr);
+            // Do not update the play count, just set played status.
+            pTrack->updatePlayedStatusKeepPlayCount(true);
+        }
+    }
+}
+
+void SetlogFeature::slotLockAllChildPlaylists() {
+    lockOrUnlockAllChildPlaylists(true);
+}
+
+void SetlogFeature::slotUnlockAllChildPlaylists() {
+    lockOrUnlockAllChildPlaylists(false);
+}
+
+void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+    if (lock) {
+        qWarning() << "lock all child playlists of" << m_lastRightClickedIndex.data().toString();
+    } else {
+        qWarning() << "unlock all child playlists of" << m_lastRightClickedIndex.data().toString();
+    }
+    TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+    if (!item) {
+        return;
+    }
+    const QList<TreeItem*> yearChildren = item->children();
+    if (yearChildren.isEmpty()) {
+        return;
+    }
+
+    QSet<int> ids;
+    for (const auto& pChild : yearChildren) {
+        bool ok = false;
+        int childId = pChild->getData().toInt(&ok);
+        if (ok && childId != kInvalidPlaylistId) {
+            ids.insert(childId);
+        }
+    }
+    m_playlistDao.setPlaylistsLocked(ids, lock);
+}
+
+void SetlogFeature::slotDeleteAllUnlockedChildPlaylists() {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+    TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+    if (!item) {
+        return;
+    }
+    const QList<TreeItem*> yearChildren = item->children();
+    if (yearChildren.isEmpty()) {
+        return;
+    }
+    QString year = m_lastRightClickedIndex.data().toString();
+
+    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+            tr("Confirm Deletion"),
+            //: %1 is the year
+            //: <b> + </b> are used to make the text in between bold in the popup
+            //: <br> is a linebreak
+            tr("Do you really want to delete all unlocked playlist from <b>%1</b>?<br><br>")
+                    .arg(year),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    QStringList ids;
+    int count = 0;
+    for (const auto& pChild : yearChildren) {
+        bool ok = false;
+        int childId = pChild->getData().toInt(&ok);
+        if (ok && childId != kInvalidPlaylistId) {
+            ids.append(pChild->getData().toString());
+            count++;
+        }
+    }
+    // Double-check, this is a weighty decision
+    btn = QMessageBox::warning(nullptr,
+            tr("Confirm Deletion"),
+            //: %1 is the number of playlists to be deleted
+            //: %2 is the year
+            //: <b> + </b> are used to make the text in between bold in the popup
+            //: <br> is a linebreak
+            tr("Deleting %1 playlists from <b>%2</b>.<br><br>")
+                    .arg(QString::number(count), year),
+            QMessageBox::Ok | QMessageBox::Cancel,
+            QMessageBox::Cancel);
+    if (btn != QMessageBox::Ok) {
+        return;
+    }
+    qDebug() << "History: deleting all unlocked playlists of" << year;
+    m_playlistDao.deleteUnlockedPlaylists(std::move(ids));
 }
 
 void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
@@ -417,7 +597,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         return;
     }
 
-    if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
+    if (m_pPlaylistTableModel->getPlaylist() == m_currentPlaylistId) {
         // View needs a refresh
 
         bool hasActiveView = false;
@@ -442,74 +622,152 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     } else {
         // TODO(XXX): Care whether the append succeeded.
         m_playlistDao.appendTrackToPlaylist(
-                currentPlayingTrackId, m_playlistId);
+                currentPlayingTrackId, m_currentPlaylistId);
     }
 }
 
 void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
-    reloadChildModel(playlistId);
-}
-
-void SetlogFeature::reloadChildModel(int playlistId) {
-    //qDebug() << "updateChildModel() playlistId:" << playlistId;
+    // qDebug() << "SetlogFeature::slotPlaylistTableChanged() id:" << playlistId;
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+    if (type != PlaylistDAO::PLHT_SET_LOG &&
+            type != PlaylistDAO::PLHT_UNKNOWN) { // deleted Playlist
+        return;
     }
-}
 
-void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
-    for (const auto playlistId : qAsConst(playlistIds)) {
-        enum PlaylistDAO::HiddenType type =
-                m_playlistDao.getHiddenType(playlistId);
-        if (type == PlaylistDAO::PLHT_SET_LOG ||
-                type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-            updateChildModel(playlistId);
+    // save currently selected History sidebar item (if any)
+    int selectedYearIndexRow = -1;
+    int selectedPlaylistId = kInvalidPlaylistId;
+    bool rootWasSelected = false;
+    if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+        // a child index was selected (actual playlist or YEAR item)
+        int lastClickedPlaylistId = playlistIdFromIndex(m_lastClickedIndex);
+        if (lastClickedPlaylistId == m_yearNodeId) {
+            // a YEAR item was selected
+            selectedYearIndexRow = m_lastClickedIndex.row();
+        } else if (playlistId == lastClickedPlaylistId &&
+                type == PlaylistDAO::PLHT_UNKNOWN) {
+            // selected playlist was deleted, find a sibling.
+            // prev/next works here because history playlists are always
+            // sorted by date of creation.
+            selectedPlaylistId = m_playlistDao.getPreviousPlaylist(
+                    lastClickedPlaylistId,
+                    PlaylistDAO::PLHT_SET_LOG);
+            if (selectedPlaylistId == kInvalidPlaylistId) {
+                // no previous playlist, try to get the next playlist
+                selectedPlaylistId = m_playlistDao.getNextPlaylist(
+                        lastClickedPlaylistId,
+                        PlaylistDAO::PLHT_SET_LOG);
+            }
+        } else {
+            selectedPlaylistId = lastClickedPlaylistId;
+        }
+    } else {
+        rootWasSelected = m_pSidebarWidget &&
+                m_pSidebarWidget->isFeatureRootIndexSelected(this);
+    }
+
+    QModelIndex newIndex = constructChildModel(selectedPlaylistId);
+
+    // restore selection
+    if (selectedYearIndexRow != -1) {
+        // if row is valid this means newIndex is invalid anyway
+        newIndex = m_pSidebarModel->index(selectedYearIndexRow, 0);
+        if (!newIndex.isValid()) {
+            // seems like we deleted the oldest (bottom) YEAR node while it was
+            // selected. Try to pick the row above
+            newIndex = m_pSidebarModel->index(selectedYearIndexRow - 1, 0);
         }
     }
+    if (newIndex.isValid()) {
+        emit featureSelect(this, newIndex);
+        activateChild(newIndex);
+    } else if (rootWasSelected) {
+        // calling featureSelect with invalid index will select the root item
+        emit featureSelect(this, newIndex);
+        activate(); // to reload the new current playlist
+    }
+}
+
+void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
+    // qDebug() << "slotPlaylistContentOrLockChanged() for"
+    //          << playlistIds.count() << "playlist(s)";
+    QSet<int> idsToBeUpdated;
+    for (const auto playlistId : qAsConst(playlistIds)) {
+        if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+            idsToBeUpdated.insert(playlistId);
+        }
+    }
+    updateChildModel(idsToBeUpdated);
 }
 
 void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
-        if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            if (playlistId == m_pPlaylistTableModel->getPlaylist()) {
-                activatePlaylist(playlistId);
-            } else if (m_pSidebarWidget) {
-                m_pSidebarWidget->selectChildIndex(indexFromPlaylistId(playlistId), false);
-            }
-        }
+    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+        updateChildModel(QSet<int>{playlistId});
     }
 }
 
 void SetlogFeature::activate() {
-    activatePlaylist(m_playlistId);
+    // The root item was clicked, so activate the current playlist.
+    m_lastClickedIndex = m_pSidebarModel->getRootIndex();
+    m_lastRightClickedIndex = QModelIndex();
+    activatePlaylist(m_currentPlaylistId);
 }
 
-void SetlogFeature::activatePlaylist(int playlistId) {
-    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
-    QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != kInvalidPlaylistId && index.isValid()) {
-        m_pPlaylistTableModel->setTableModel(playlistId);
-        emit showTrackModel(m_pPlaylistTableModel);
+void SetlogFeature::activateChild(const QModelIndex& index) {
+    // qDebug() << "SetlogFeature::activateChild()" << index;
+    int playlistId = playlistIdFromIndex(index);
+    if (playlistId == kInvalidPlaylistId) {
+        // may happen during initialization
+        return;
+    }
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = QModelIndex();
+    emit saveModelState();
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
+    emit showTrackModel(m_pPlaylistTableModel);
+    if (playlistId == m_yearNodeId) {
+        // Disable search and cover art for YEAR items
+        emit disableSearch();
+        emit enableCoverArtDisplay(false);
+    } else {
         emit enableCoverArtDisplay(true);
-        // Update selection only, if it is not the current playlist
-        // since we want the root item to be the current playlist as well
-        if (playlistId != m_playlistId) {
-            emit featureSelect(this, index);
-            activateChild(index);
-        }
     }
 }
 
+void SetlogFeature::activatePlaylist(int playlistId) {
+    // qDebug() << "SetlogFeature::activatePlaylist()" << playlistId;
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+    QModelIndex index = indexFromPlaylistId(playlistId);
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
+        return;
+    }
+    emit saveModelState();
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
+    emit showTrackModel(m_pPlaylistTableModel);
+    // Update sidebar selection only if this is a child, incl. current playlist
+    // and YEAR nodes.
+    // indexFromPlaylistId() can't be used because, in case the root item was
+    // selected, that would switch to the 'current' child.
+    if (m_lastClickedIndex != m_pSidebarModel->getRootIndex()) {
+        m_lastClickedIndex = index;
+        m_lastRightClickedIndex = QModelIndex();
+        emit featureSelect(this, index);
+
+        if (playlistId == m_yearNodeId) {
+            // Disable search and cover art for YEAR items
+            emit disableSearch();
+            emit enableCoverArtDisplay(false);
+            return;
+        }
+    }
+    emit enableCoverArtDisplay(true);
+}
+
 QString SetlogFeature::getRootViewHtml() const {
-    // Instead of the help text, the history shows the current entry instead
+    // Instead of the help text, the history shows the current playlist
     return QString();
 }

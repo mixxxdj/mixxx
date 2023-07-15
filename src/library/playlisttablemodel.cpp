@@ -18,7 +18,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
         const char* settingsNamespace,
         bool keepDeletedTracks)
         : TrackSetTableModel(parent, pTrackCollectionManager, settingsNamespace),
-          m_iPlaylistId(-1),
+          m_iPlaylistId(kInvalidPlaylistId),
           m_keepDeletedTracks(keepDeletedTracks) {
     connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
             &PlaylistDAO::tracksChanged,
@@ -121,15 +121,15 @@ void PlaylistTableModel::initSortColumnMapping() {
     }
 }
 
-void PlaylistTableModel::setTableModel(int playlistId) {
-    //qDebug() << "PlaylistTableModel::setTableModel" << playlistId;
+void PlaylistTableModel::selectPlaylist(int playlistId) {
+    // qDebug() << "PlaylistTableModel::selectPlaylist" << playlistId;
     if (m_iPlaylistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;
     }
     // Store search text
     QString currSearch = currentSearch();
-    if (m_iPlaylistId != -1) {
+    if (m_iPlaylistId != kInvalidPlaylistId) {
         if (!currSearch.trimmed().isEmpty()) {
             m_searchTexts.insert(m_iPlaylistId, currSearch);
         } else {
@@ -354,12 +354,11 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
     } else {
         caps |= Capability::Remove;
     }
-    if (PlaylistDAO::PLHT_SET_LOG ==
-            m_pTrackCollectionManager->internalCollection()
+    if (m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
-                    .getHiddenType(m_iPlaylistId)) {
-        // Disable track reordering for history playlists
-        caps &= ~(Capability::ReceiveDrops | Capability::Reorder | Capability::RemovePlaylist);
+                    .getHiddenType(m_iPlaylistId) == PlaylistDAO::PLHT_SET_LOG) {
+        // Disable track reordering and adding tracks via drag'n'drop for history playlists
+        caps &= ~(Capability::ReceiveDrops | Capability::Reorder);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {

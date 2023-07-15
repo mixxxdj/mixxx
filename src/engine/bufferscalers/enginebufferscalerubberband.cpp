@@ -163,15 +163,19 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
 }
 
 void EngineBufferScaleRubberBand::deinterleaveAndProcess(
-        const CSAMPLE* pBuffer, SINT frames, bool flush) {
+        const CSAMPLE* pBuffer,
+        SINT frames) {
     DEBUG_ASSERT(frames <= static_cast<SINT>(m_buffers[0].size()));
 
     SampleUtil::deinterleaveBuffer(
-            m_buffers[0].data(), m_buffers[1].data(), pBuffer, frames);
+            m_buffers[0].data(),
+            m_buffers[1].data(),
+            pBuffer,
+            frames);
 
     m_pRubberBand->process(m_bufferPtrs.data(),
             frames,
-            flush);
+            false);
 }
 
 double EngineBufferScaleRubberBand::scaleBuffer(
@@ -189,7 +193,6 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
     bool last_read_failed = false;
-    bool break_out_after_retrieve_and_reset_rubberband = false;
     while (remaining_frames > 0) {
         // ReadAheadManager will eventually read the requested frames with
         // enough calls to retrieveAndDeinterleave because CachingReader returns
@@ -204,14 +207,6 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         total_received_frames += received_frames;
         read += getOutputSignal().frames2samples(received_frames);
 
-        if (break_out_after_retrieve_and_reset_rubberband) {
-            // qDebug() << "break_out_after_retrieve_and_reset_rubberband";
-            // If we break out early then we have flushed RubberBand and need to
-            // reset it.
-            reset();
-            break;
-        }
-
         const SINT next_block_frames_required =
                 static_cast<SINT>(m_pRubberBand->getSamplesRequired());
         if (remaining_frames > 0 && next_block_frames_required > 0) {
@@ -225,14 +220,22 @@ double EngineBufferScaleRubberBand::scaleBuffer(
 
             if (available_frames > 0) {
                 last_read_failed = false;
-                deinterleaveAndProcess(m_interleavedReadBuffer.data(), available_frames, false);
+                deinterleaveAndProcess(m_interleavedReadBuffer.data(), available_frames);
             } else {
+                // We may get 0 samples once if we just hit a loop trigger, e.g.
+                // when reloop_toggle jumps back to loop_in, or when moving a
+                // loop causes the play position to be moved along.
                 if (last_read_failed) {
-                    // Flush and break out after the next retrieval. If we are
-                    // at EOF this serves to get the last samples out of
-                    // RubberBand.
-                    deinterleaveAndProcess(m_interleavedReadBuffer.data(), 0, true);
-                    break_out_after_retrieve_and_reset_rubberband = true;
+                    // If we get 0 samples repeatedly, flush and break out after
+                    // the next retrieval. If we are at EOF this serves to get
+                    // the last samples out of RubberBand.
+                    qDebug() << "ReadAheadManager::getNextSamples() returned "
+                                "zero samples repeatedly. Padding with silence.";
+                    SampleUtil::clear(
+                            m_interleavedReadBuffer.data(),
+                            getOutputSignal().frames2samples(next_block_frames_required));
+                    deinterleaveAndProcess(m_interleavedReadBuffer.data(),
+                            next_block_frames_required);
                 }
                 last_read_failed = true;
             }
