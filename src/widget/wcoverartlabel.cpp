@@ -13,9 +13,9 @@ namespace {
 constexpr QSize kDeviceIndependentCoverLabelSize = QSize(100, 100);
 
 inline QPixmap scaleCoverLabel(
-        QWidget* parent,
+        QWidget* pParent,
         QPixmap pixmap) {
-    const auto devicePixelRatioF = parent->devicePixelRatioF();
+    const auto devicePixelRatioF = pParent->devicePixelRatioF();
     pixmap.setDevicePixelRatio(devicePixelRatioF);
     return pixmap.scaled(
             kDeviceIndependentCoverLabelSize * devicePixelRatioF,
@@ -23,15 +23,15 @@ inline QPixmap scaleCoverLabel(
             Qt::SmoothTransformation);
 }
 
-QPixmap createDefaultCover(QWidget* parent) {
+QPixmap createDefaultCover(QWidget* pParent) {
     auto defaultCover = QPixmap(CoverArtUtils::defaultCoverLocation());
-    return scaleCoverLabel(parent, defaultCover);
+    return scaleCoverLabel(pParent, defaultCover);
 }
 
 } // anonymous namespace
 
-WCoverArtLabel::WCoverArtLabel(QWidget* parent, WCoverArtMenu* pCoverMenu)
-        : QLabel(parent),
+WCoverArtLabel::WCoverArtLabel(QWidget* pParent, WCoverArtMenu* pCoverMenu)
+        : QLabel(pParent),
           m_pCoverMenu(pCoverMenu),
           m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this, nullptr, pCoverMenu)),
           m_defaultCover(createDefaultCover(this)) {

@@ -13,10 +13,10 @@
 #include "util/widgethelper.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(
-        QWidget* parent,
+        QWidget* pParent,
         BaseTrackPlayer* pPlayer,
         WCoverArtMenu* pCoverMenu)
-        : QDialog(parent),
+        : QDialog(pParent),
           m_pPlayer(pPlayer),
           m_pCoverMenu(pCoverMenu),
           m_coverPressed(false) {
@@ -37,7 +37,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
     // Only connect to the menu signals if this is not a grandchild of DlgTrackInfo.
     // DlgTrackInfo is already connected to these signals, and catching these signals
     // here would apply cover changes immediately, thus circumvent the Apply button there.
-    if (m_pCoverMenu && !(parent && qobject_cast<DlgTrackInfo*>(parent->parent()))) {
+    if (m_pCoverMenu && !(pParent && qobject_cast<DlgTrackInfo*>(pParent->parent()))) {
         connect(m_pCoverMenu,
                 &WCoverArtMenu::coverInfoSelected,
                 this,

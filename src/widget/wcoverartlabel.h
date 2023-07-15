@@ -21,7 +21,7 @@ class CoverInfoRelative;
 class WCoverArtLabel : public QLabel {
     Q_OBJECT
   public:
-    explicit WCoverArtLabel(QWidget* parent = nullptr, WCoverArtMenu* m_pWCoverArtMenu = nullptr);
+    explicit WCoverArtLabel(QWidget* pParent = nullptr, WCoverArtMenu* m_pWCoverArtMenu = nullptr);
 
     ~WCoverArtLabel() override; // Verifies that the base destructor is virtual
 
