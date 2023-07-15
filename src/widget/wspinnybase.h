@@ -148,6 +148,6 @@ class WSpinnyBase : public WGLWidget,
     bool m_bGhostPlayback;
 
     BaseTrackPlayer* m_pPlayer;
-    WCoverArtMenu* m_pCoverMenu;
-    DlgCoverArtFullSize* m_pDlgCoverArt;
+    const parented_ptr<WCoverArtMenu> m_pCoverMenu;
+    const parented_ptr<DlgCoverArtFullSize> m_pDlgCoverArt;
 };

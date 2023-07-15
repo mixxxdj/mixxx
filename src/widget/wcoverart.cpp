@@ -27,9 +27,9 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_group(group),
           m_pConfig(pConfig),
           m_bEnable(true),
-          m_pMenu(new WCoverArtMenu(this)),
+          m_pMenu(make_parented<WCoverArtMenu>(this)),
           m_pPlayer(pPlayer),
-          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer, m_pMenu)) {
+          m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this, pPlayer, m_pMenu)) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
@@ -53,8 +53,6 @@ WCoverArt::WCoverArt(QWidget* parent,
 }
 
 WCoverArt::~WCoverArt() {
-    delete m_pMenu;
-    delete m_pDlgFullSize;
 }
 
 void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
