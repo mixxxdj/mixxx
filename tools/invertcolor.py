@@ -18,8 +18,12 @@ __status__ = "Prototype"
 
 
 """
-This program enters recursively a folder containing a Mixxx skin, and creates an "inverted color" skin.
-In particular, it copies the directory structure and the .png / .psd files from the src directory to the current directory, and it creates svg / xml / ... files where the codes for the colors (e.g.: #001122) are inverted (#ffffff - #001122).
+This program enters recursively a folder containing a Mixxx skin, and creates
+an "inverted color" skin.
+In particular, it copies the directory structure and the .png / .psd files
+from the src directory to the current directory, and it creates svg / 
+xml / ... files where the codes for the colors (e.g.: #001122) are
+inverted (#ffffff - #001122).
 
 RUN THIS FILE FROM THE FOLDER YOU WANT TO POPULATE WITH THE NEW SKIN!
 
@@ -47,7 +51,6 @@ def invert_color(len, line):
     for tok in tokens:
         m = p.search(tok)
         if m:
-            last_char = m.group()[-1]
             val = from_hex("f"*len) - from_hex("0x" + m.group()[:-1])
             ret += "#" + f"{val:#0{len+2}x}"[2:]  + tok[len:]
         else:
@@ -75,7 +78,8 @@ def process_dir(rootdir, where):
         newwhere = where + os.path.sep + filename
         if item.is_file():
             something, file_extension = os.path.splitext(newwhere)
-            if file_extension == ".png" or file_extension == ".psd": # currently, I consider every non-PNG file as text to be processed
+            if file_extension == ".png" or file_extension == ".psd": 
+                # currently, I consider every non-PNG file as text to be processed
                 process_binary(str(item), newwhere)
             else:
                 processed_file = process_file(str(item))
