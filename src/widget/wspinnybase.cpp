@@ -220,11 +220,13 @@ void WSpinnyBase::setup(const QDomNode& node,
 
     m_pVinylControlEnabled = new ControlProxy(
             m_group, "vinylcontrol_enabled", this, ControlFlag::NoAssertIfMissing);
+    updateVinylControlEnabled(m_pVinylControlEnabled->get());
     m_pVinylControlEnabled->connectValueChanged(this,
             &WSpinnyBase::updateVinylControlEnabled);
 
     m_pSignalEnabled = new ControlProxy(
             m_group, "vinylcontrol_signal_enabled", this, ControlFlag::NoAssertIfMissing);
+    updateVinylControlSignalEnabled(m_pSignalEnabled->get());
     m_pSignalEnabled->connectValueChanged(this,
             &WSpinnyBase::updateVinylControlSignalEnabled);
 
