@@ -3117,4 +3117,3 @@ WSearchLineEdit::indicator:unchecked:selected {
 }
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
-
