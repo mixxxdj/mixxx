@@ -123,6 +123,117 @@
 
   <Schemes>
     <Scheme>
+      <Name>PaleSun</Name>
+      <!-- Mix any of the existing button, knob, slider or style theme subsets.
+        The button templates for example link to skin:/BtnTheme/buttons/btn_...
+
+        BtnScheme     borders / background images for pushbuttons, spinboxes,
+                      effect selector, AutoDJ fade mode selector.
+                      If 'BtnSize' variable is undefined it links to transparent
+                      dummy icons like btn_embedded__active.svg
+              Note:   Icons for buttons that have images set in xml already are set
+                      in the respective style-[theme].qss
+        KnobScheme    guess what
+        SliderScheme  ...exactly!
+        StyleScheme   icons & backgrounds for library, splitters, spinnies,
+                      VU meter, default cover art etc. -->
+      <Style src="skin:style_palesun.qss"/>
+      <SetVariable name="BtnScheme">palesun</SetVariable>
+      <SetVariable name="KnobScheme">palesun</SetVariable>
+      <SetVariable name="SliderScheme">palesun</SetVariable>
+      <SetVariable name="StyleScheme">palesun</SetVariable>
+
+      <!-- Waveform & Overview colors -->
+      <!-- This is a hack to have a grey background in empty decks.
+          When a track is loaded the bg gets darker for better contrast -->
+      <SetVariable name="BgColorOverview_12">#e6e6e5</SetVariable>
+      <SetVariable name="BgColorOverview_34">#ffe4dc</SetVariable>
+      <SetVariable name="BgColorOverview_SamPre">rgba(15, 15, 15, 20)</SetVariable>
+      <SetVariable name="BgColorWaveform_12">#f0f0f1</SetVariable>
+      <SetVariable name="BgColorWaveform_34">#ffe4dc</SetVariable>
+      <SetVariable name="SignalColor_12">#264d73</SetVariable>
+      <SetVariable name="SignalColor_34">#84393c</SetVariable>
+
+      <!-- Only named colors are accepted, see w3 color chart
+          https://www.w3.org/wiki/CSS/Properties/color/keywords -->
+      <SetVariable name="SignalHighColor">mediumblue</SetVariable><!-- #ffff32 -->
+      <SetVariable name="SignalMidColor">darkgreen</SetVariable><!-- #ff9bff -->
+      <SetVariable name="SignalLowColor">orangered</SetVariable><!-- #00baff -->
+
+      <SetVariable name="DimBrightThresholdOverview">127</SetVariable>
+      <SetVariable name="DimBrightThresholdWaveform">105</SetVariable>
+      <SetVariable name="DimBrightThresholdHotcueBtn">105</SetVariable>
+
+      <SetVariable name="AxesColor">#666</SetVariable>
+      <SetVariable name="BeatColor">#666</SetVariable>
+      <SetVariable name="PlayPosColor">#ff3900</SetVariable>
+      <SetVariable name="CueColor">#0085fe</SetVariable>
+      <SetVariable name="LoopColor">#ff4bff</SetVariable>
+      <SetVariable name="IntroOutroColor">#d3a365</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
+      <SetVariable name="EndOfTrackColor">#07a918</SetVariable>
+      <SetVariable name="PassthroughLabelColor">#4db3ed</SetVariable>
+      <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
+      <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
+      <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
+      <SetVariable name="OverviewFontSizePreview">9</SetVariable>
+
+      <!-- Set the button icons used by templates in LateNight/controls/button...xml
+           There, those border icons are stacked on top of the additional icons set in css.
+           Other buttons that use text (like vinyl controls and Fx assign button) are styled
+           in css via
+              border-width: 2px;
+              border-image: url(skin:/path/to/btn_icon.svg) 2 2 2 2;
+        Example themes: (in PaleSun only the embedded style is used)
+        * elevated: domed buttons that stand out, with a 3D border and a drop shadow
+        * embedded: slightly domed buttons that seem leveled with surface and a surrounding groove
+       -->
+      <!-- Buttons in top-level containers like mixer, rate controls, collapsed FxUnits etc. -->
+      <SetVariable name="TopRegion_BtnType">embedded</SetVariable>
+      <!-- Buttons in subregions like transport row, mic/aux units etc. -->
+      <SetVariable name="SubRegion_BtnType">embedded</SetVariable>
+
+      <!-- Knob settings -->
+      <SetVariable name="PotiMinAngle">-130</SetVariable>
+      <SetVariable name="PotiMaxAngle">130</SetVariable>
+      <!-- Arc Settings -->
+      <SetVariable name="ArcRadiusBig">14.5</SetVariable>
+      <SetVariable name="ArcRadiusCompact">12.5</SetVariable>
+      <SetVariable name="ArcRadiusSmall">12.0</SetVariable>
+      <SetVariable name="ArcThicknessBig">2</SetVariable>
+      <SetVariable name="ArcRoundCaps">true</SetVariable>
+      <!-- Arc Colors -->
+      <SetVariable name="ArcColorEq">#7a7a7a</SetVariable>
+      <SetVariable name="ArcColorGain">#469cff</SetVariable>
+      <SetVariable name="ArcColorFx12Quick">#ae70ff</SetVariable>
+      <SetVariable name="ArcColorFx34">#fd7c6d</SetVariable>
+      <SetVariable name="ArcColorFxParameter">#929292</SetVariable>
+      <SetVariable name="ArcColorGainLow">#72c4ee</SetVariable>
+      <SetVariable name="ArcColorMstBal">#5fffff</SetVariable>
+      <SetVariable name="ArcColorFxMix">#5fffff</SetVariable>
+      <!-- Knob pointers = suffix for indicator image url -->
+      <SetVariable name="KnobColorEq">grey</SetVariable>
+      <SetVariable name="KnobColorQuickEffect">green</SetVariable>
+      <SetVariable name="KnobColorFx12">green</SetVariable>
+      <SetVariable name="KnobColorFx34">blue</SetVariable>
+      <SetVariable name="KnobColorFxParameter">grey</SetVariable>
+      <!-- Size of the small EQ kill indicators:
+          svg is 6x6 px, set size to '0f,0f' to hide them -->
+      <SetVariable name="EqKillDotSize">9f,9f</SetVariable>
+
+      <!-- Slider bar settings -->
+      <SetVariable name="BarBgColor">#fdfdfd</SetVariable>
+      <SetVariable name="BarColorVolume">#da847d</SetVariable>
+      <SetVariable name="BarColorCrossfader">#da847d</SetVariable>
+      <SetVariable name="BarColorPitch">#777</SetVariable>
+      <SetVariable name="BarWidth">2</SetVariable>
+      <SetVariable name="BarMarginVolume">8,8</SetVariable>
+      <SetVariable name="BarMarginPitch">7,8</SetVariable>
+      <SetVariable name="BarMarginPitchSampler">5,5</SetVariable>
+      <SetVariable name="BarMarginCrossfader">7,7</SetVariable>
+    </Scheme><!-- PaleSun -->
+
+    <Scheme>
       <Name>PaleMoon</Name>
       <!-- Mix any of the existing button, knob, slider or style theme subsets.
         The button templates for example link to skin:/BtnTheme/buttons/btn_...
