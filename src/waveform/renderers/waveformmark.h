@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QDomNode>
 #include <QImage>
 
@@ -92,6 +91,11 @@ class WaveformMark {
 
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
+// This class provides an immutable sortkey for the WaveformMark using sample
+// position and hotcue number. IMPORTANT: The Mark's position may be changed after
+// a key's creation, and those updates will not be reflected in these sortkeys.
+// Currently they are used to render marks on the Overview, a situation where
+// temporarily incorrect sort order is acceptable.
 class WaveformMarkSortKey {
   public:
     WaveformMarkSortKey(double samplePosition, int hotcue)
