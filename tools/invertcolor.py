@@ -1,4 +1,4 @@
-#/usr/bin/python
+# /usr/bin/python
 #
 # GNU General Public License Usage
 # This file may be used under the terms of the GNU 
@@ -7,11 +7,11 @@
 # ensure the GNU General Public License version 3 requirements
 # will be met: https://www.gnu.org/licenses/gpl-3.0.html.
 
-__author__      = "Michele Albano"
-__copyright__   = "Copyright 2023"
+__author__ = "Michele Albano"
+__copyright__ = "Copyright 2023"
 __credits__ = ["Michele Albano"]
 __license__ = "GPL"
-__version__ = "0.9"
+__version__ = "0.91"
 __maintainer__ = "Michele Albano"
 __email__ = "michele.albano@gmail.com"
 __status__ = "Prototype"
@@ -27,10 +27,8 @@ inverted (#ffffff - #001122).
 
 RUN THIS FILE FROM THE FOLDER YOU WANT TO POPULATE WITH THE NEW SKIN!
 
-Example of usage:
-md c:\Program Files\Mixxx\skins\LateNight\palesun
-cd c:\Program Files\Mixxx\skins\LateNight\palesun
-python3 invertcolor.py "c:\Program Files\Mixxx\skins\LateNight\palemoon"
+For an example of usage, run
+python3 invertcolor.py 
 """
 
 import sys
@@ -44,25 +42,28 @@ def from_hex(hexdigits):
     return int(hexdigits, 16)
 
 def invert_color(len, line):
-    regge = '^[0-9A-Fa-f]{'+str(len)+'}[^0-9a-fA-F]'
+    regge = '^[0-9A-Fa-f]{' + str(len) + '}[^0-9a-fA-F]'
     p = re.compile(regge)
     tokens = line.split("#")
     ret = tokens.pop(0)
     for tok in tokens:
         m = p.search(tok)
         if m:
-            val = from_hex("f"*len) - from_hex("0x" + m.group()[:-1])
-            ret += "#" + f"{val:#0{len+2}x}"[2:]  + tok[len:]
+            val = from_hex("f" * len) - from_hex("0x" + m.group()[:-1])
+            ret += "#" + f"{val:#0{len+2}x}"[2:] + tok[len:]
         else:
             ret += "#" + tok
     return ret
+
 
 def process_binary(src, dst):
     print("copying from " + src + " to " + dst)
     if not os.path.exists(dst):
         shutil.copyfile(src, dst)
 
+
 def process_file(filename):
+    return ""
     fp1 = open(filename, "r")
     lines = fp1.readlines()
     output = ""
@@ -71,8 +72,9 @@ def process_file(filename):
     fp1.close()
     return output
 
+
 def process_dir(rootdir, where):
-    desktop = pathlib.Path(rootdir+where)
+    desktop = pathlib.Path(rootdir + where)
     for item in desktop.iterdir():
         filename = os.path.basename(str(item))
         newwhere = where + os.path.sep + filename
@@ -92,27 +94,22 @@ def process_dir(rootdir, where):
                 os.makedirs(newwhere)
             process_dir(rootdir, newwhere)
 
+
 if len(sys.argv) < 2:
     print("tell me where to find the source skin")
-    print("""for example:
-md c:\Program Files\Mixxx\skins\LateNight\palesun
-cd c:\Program Files\Mixxx\skins\LateNight\palesun
-python3 invertcolor.py "c:\Program Files\Mixxx\skins\LateNight\palemoon"
-""")
+    print("for example:")
+    print("md "+os.path.normpath("Mixxx/res/skins/LateNight/palesun"))
+    print("cd "+os.path.normpath("Mixxx/res/skins/LateNight/palesun"))
+    print("cd "+os.path.normpath("Mixxx/skins/LateNight/palesun"))
+    print("python3 "+os.path.normpath("../../../../tools/invertcolor.py")+" "+os.path.normpath("../palemoon"))
     sys.exit('missing argument')
 
-start_string = sys.argv[1]
-while start_string.endswith('\\'):
-    start_string = start_string[:-1]
-
-print(start_string)
+start_string = os.path.normpath(sys.argv[1])
 target = pathlib.Path(start_string)
-
-
 
 if not target.is_dir():
     output = process_file(start_string)
     print(output)
 else:
-    process_dir(start_string + "\\", ".")
+    process_dir(start_string + os.sep, ".")
 
