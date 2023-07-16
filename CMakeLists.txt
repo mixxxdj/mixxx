@@ -1213,6 +1213,7 @@ else()
       src/shaders/shader.cpp
       src/shaders/textureshader.cpp
       src/shaders/unicolorshader.cpp
+      src/shaders/vinylqualityshader.cpp
       src/util/texture.cpp
       src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
       src/waveform/renderers/allshader/waveformrenderbackground.cpp

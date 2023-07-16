@@ -37,6 +37,10 @@ class WSpinnyBase : public WGLWidget,
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
 
+    virtual void setupVinylSignalQuality() = 0;
+    virtual void updateVinylSignalQualityImage(
+            const QColor& qual_color, const unsigned char* data) = 0;
+
     void setup(const QDomNode& node,
             const SkinContext& context,
             const ConfigKey& showCoverConfigKey);
@@ -88,6 +92,8 @@ class WSpinnyBase : public WGLWidget,
 
     void setLoadedCover(const QPixmap& pixmap);
 
+    bool shouldDrawVinylQuality() const;
+
   private:
     virtual void draw() = 0;
     virtual void coverChanged() = 0;
@@ -130,7 +136,7 @@ class WSpinnyBase : public WGLWidget,
     int m_iVinylInput;
     bool m_bVinylActive;
     bool m_bSignalActive;
-    QImage m_qImage;
+    bool m_bDrawVinylSignalQuality;
     int m_iVinylScopeSize;
 
     float m_fAngle; // Degrees
