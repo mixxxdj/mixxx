@@ -109,7 +109,7 @@ if len(sys.argv) < 2:
         + " "
         + os.path.normpath("../palemoon")
     )
-    sys.exit("missing argument")
+    sys.exit("missing argument(s)")
 
 
 start_string = os.path.normpath(sys.argv[1])
