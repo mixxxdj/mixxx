@@ -41,6 +41,7 @@ import shutil
 def from_hex(hexdigits):
     return int(hexdigits, 16)
 
+
 def invert_color(len, line):
     regge = "^[0-9A-Fa-f]{" + str(len) + "}[^0-9a-fA-F]"
     p = re.compile(regge)
@@ -119,4 +120,3 @@ if not target.is_dir():
     print(output)
 else:
     process_dir(start_string + os.sep, ".")
-
