@@ -1,7 +1,7 @@
 # /usr/bin/python
 #
 # GNU General Public License Usage
-# This file may be used under the terms of the GNU 
+# This file may be used under the terms of the GNU
 # General Public License version 3 as published by the Free Software
 # Foundation. Please review the following information to
 # ensure the GNU General Public License version 3 requirements
@@ -21,14 +21,14 @@ __status__ = "Prototype"
 This program enters recursively a folder containing a Mixxx skin, and creates
 an "inverted color" skin.
 In particular, it copies the directory structure and the .png / .psd files
-from the src directory to the current directory, and it creates svg / 
+from the src directory to the current directory, and it creates svg /
 xml / ... files where the codes for the colors (e.g.: #001122) are
 inverted (#ffffff - #001122).
 
 RUN THIS FILE FROM THE FOLDER YOU WANT TO POPULATE WITH THE NEW SKIN!
 
 For an example of usage, run
-python3 invertcolor.py 
+python3 invertcolor.py
 """
 
 import sys
@@ -42,7 +42,7 @@ def from_hex(hexdigits):
     return int(hexdigits, 16)
 
 def invert_color(len, line):
-    regge = '^[0-9A-Fa-f]{' + str(len) + '}[^0-9a-fA-F]'
+    regge = "^[0-9A-Fa-f]{" + str(len) + "}[^0-9a-fA-F]"
     p = re.compile(regge)
     tokens = line.split("#")
     ret = tokens.pop(0)
@@ -80,8 +80,9 @@ def process_dir(rootdir, where):
         newwhere = where + os.path.sep + filename
         if item.is_file():
             something, file_extension = os.path.splitext(newwhere)
-            if file_extension == ".png" or file_extension == ".psd": 
-                # currently, I consider every non-PNG file as text to be processed
+            if file_extension == ".png" or file_extension == ".psd":
+                # currently, I consider every non-PNG file as
+                # text to be processed
                 process_binary(str(item), newwhere)
             else:
                 processed_file = process_file(str(item))
@@ -98,11 +99,17 @@ def process_dir(rootdir, where):
 if len(sys.argv) < 2:
     print("tell me where to find the source skin")
     print("for example:")
-    print("md "+os.path.normpath("Mixxx/res/skins/LateNight/palesun"))
-    print("cd "+os.path.normpath("Mixxx/res/skins/LateNight/palesun"))
-    print("cd "+os.path.normpath("Mixxx/skins/LateNight/palesun"))
-    print("python3 "+os.path.normpath("../../../../tools/invertcolor.py")+" "+os.path.normpath("../palemoon"))
-    sys.exit('missing argument')
+    print("md " + os.path.normpath("Mixxx/res/skins/LateNight/palesun"))
+    print("cd " + os.path.normpath("Mixxx/res/skins/LateNight/palesun"))
+    print("cd " + os.path.normpath("Mixxx/skins/LateNight/palesun"))
+    print(
+        "python3 "
+        + os.path.normpath("../../../../tools/invertcolor.py")
+        + " "
+        + os.path.normpath("../palemoon")
+    )
+    sys.exit("missing argument")
+
 
 start_string = os.path.normpath(sys.argv[1])
 target = pathlib.Path(start_string)
