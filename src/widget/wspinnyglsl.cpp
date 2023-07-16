@@ -115,14 +115,12 @@ void WSpinnyGLSL::paintGL() {
         drawTexture(m_pMaskTexture.get());
     }
 
-#ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
     if (shouldDrawVinylQuality()) {
         m_textureShader.release();
         drawVinylQuality();
         m_textureShader.bind();
     }
-#endif
 
     // To rotate the foreground image around the center of the image,
     // we use the classic trick of translating the coordinate system such that

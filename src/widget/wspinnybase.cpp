@@ -108,7 +108,11 @@ WSpinnyBase::~WSpinnyBase() {
 }
 
 bool WSpinnyBase::shouldDrawVinylQuality() const {
+#ifdef __VINYLCONTROL__
     return m_bVinylActive && m_bSignalActive && m_bDrawVinylSignalQuality;
+#else
+    return false;
+#endif
 }
 
 void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {

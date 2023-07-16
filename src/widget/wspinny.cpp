@@ -33,13 +33,11 @@ void WSpinny::draw() {
         p.drawImage(rect(), *m_pMaskImage, m_pMaskImage->rect());
     }
 
-#ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
     if (shouldDrawVinylQuality()) {
         // draw the last good image
         p.drawImage(this->rect(), m_qImage);
     }
-#endif
 
     // To rotate the foreground image around the center of the image,
     // we use the classic trick of translating the coordinate system such that
