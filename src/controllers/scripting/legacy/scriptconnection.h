@@ -24,7 +24,7 @@ class ScriptConnection {
 
     ScriptConnection();
 
-    void executeCallback(double value) const;
+    void executeCallback(double value);
 
     // Required for various QList methods and iteration to work.
     inline bool operator==(const ScriptConnection& other) const {
@@ -33,4 +33,6 @@ class ScriptConnection {
     inline bool operator!=(const ScriptConnection& other) const {
         return !(*this == other);
     }
+    private:
+    const RuntimeLoggingCategory m_logger;
 };

@@ -6,10 +6,11 @@
 
 ScriptConnection::ScriptConnection()
         : m_callbackExecuting(false),
-          m_preventRecursiveCalls(false) {
+          m_preventRecursiveCalls(false),
+          m_logger(logger) {
 }
 
-void ScriptConnection::executeCallback(double value) const {
+void ScriptConnection::executeCallback(double value) {
     Trace executeCallbackTrace("JS %1 callback", key.item);
     if (!m_preventRecursiveCalls) {
         if (!m_callbackExecuting) {
