@@ -1,20 +1,7 @@
 # /usr/bin/python
-#
-# GNU General Public License Usage
-# This file may be used under the terms of the GNU
-# General Public License version 3 as published by the Free Software
-# Foundation. Please review the following information to
-# ensure the GNU General Public License version 3 requirements
-# will be met: https://www.gnu.org/licenses/gpl-3.0.html.
 
 __author__ = "Michele Albano"
-__copyright__ = "Copyright 2023"
-__credits__ = ["Michele Albano"]
-__license__ = "GPL"
-__version__ = "0.91"
-__maintainer__ = "Michele Albano"
-__email__ = "michele.albano@gmail.com"
-__status__ = "Prototype"
+__license__ = "GPL-2.0-or-later"
 
 
 """
