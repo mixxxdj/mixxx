@@ -52,7 +52,7 @@ jobs:
         env:
           SKIP: no-commit-to-branch
         with:
-          # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
+          # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge _
           # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
           extra_args: --from-ref HEAD^1 --to-ref HEAD
 
