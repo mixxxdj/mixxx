@@ -1,5 +1,12 @@
 # Protobuf
-find_package(Protobuf)
+
+# first try the package provided config
+find_package(Protobuf CONFIG)
+if(NOT Protobuf_FOUND)
+  # Fall back to the CMake provide module
+  find_package(Protobuf MODULE REQUIRED)
+endif()
+
 add_library(mixxx-proto OBJECT)
 protobuf_generate(
   LANGUAGE cpp
