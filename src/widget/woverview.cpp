@@ -434,6 +434,9 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
         if (pMark->isValid() && pMark->isVisible()) {
             double samplePosition = pMark->getSamplePosition();
             if (samplePosition != Cue::kNoPosition) {
+                // Create a stable key for sorting, because the WaveformMark's samplePosition is a
+                // ControlObject which can change at any time by other threads. Such a change causes
+                // another updateCues() call, rebuilding m_marksToRender.
                 auto key = WaveformMarkSortKey(samplePosition, pMark->getHotCue());
                 m_marksToRender.emplace(key, pMark);
             }
