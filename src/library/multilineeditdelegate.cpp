@@ -14,18 +14,30 @@ MultiLineEditor::MultiLineEditor(QWidget* pParent)
     // Remove ugly content offset, most notable with one-liners
     setContentsMargins(0, 0, 0, 0);
     document()->setDocumentMargin(0);
+    // Add event filter to catch right-clicks and key presses, see eventFilter()
+    installEventFilter(this);
 };
 
-void MultiLineEditor::keyPressEvent(QKeyEvent* pEvent) {
-    if ((pEvent->key() == Qt::Key_Return || pEvent->key() == Qt::Key_Enter) &&
-            !pEvent->modifiers().testFlag(Qt::ShiftModifier)) {
-        // Finish editing like in QLineEdit
-        emit editingFinished();
-        pEvent->ignore();
-    } else {
-        QPlainTextEdit::keyPressEvent(pEvent);
+bool MultiLineEditor::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        // Work around a strange quirk: right-clicks outside the rectangle of
+        // the underlying table index are not triggering the context menu.
+        // Simply returning true fixes it.
+        QMouseEvent* me = static_cast<QMouseEvent*>(event);
+        if (me->button() == Qt::RightButton && rect().contains(me->pos(), false)) {
+            return true;
+        }
+    } else if (event->type() == QEvent::KeyPress) {
+        // Finish editing with Return key like in QLineEdit
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+        if ((ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter) &&
+                ke->modifiers().testFlag(Qt::NoModifier)) {
+            emit editingFinished();
+            return false;
+        }
     }
-};
+    return QPlainTextEdit::eventFilter(obj, event);
+}
 
 MultiLineEditDelegate::MultiLineEditDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),

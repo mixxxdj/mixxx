@@ -15,7 +15,7 @@ class MultiLineEditor : public QPlainTextEdit {
   public:
     MultiLineEditor(QWidget* pParent);
 
-    void keyPressEvent(QKeyEvent* pEvent);
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
   signals:
     void editingFinished();
