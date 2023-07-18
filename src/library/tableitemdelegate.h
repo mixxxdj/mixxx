@@ -29,7 +29,5 @@ class TableItemDelegate : public QStyledItemDelegate {
     int columnWidth(const QModelIndex &index) const;
 
     QColor m_pFocusBorderColor;
-
-  private:
     QTableView* m_pTableView;
 };
