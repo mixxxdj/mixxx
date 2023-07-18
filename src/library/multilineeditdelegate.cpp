@@ -116,12 +116,3 @@ void MultiLineEditDelegate::commitAndCloseEditor() {
     emit commitData(pEditor);
     emit closeEditor(pEditor);
 }
-
-void MultiLineEditDelegate::paintItem(
-        QPainter* pPainter,
-        const QStyleOptionViewItem& option,
-        const QModelIndex& index) const {
-    // Paint the item the default way, i.e. ellipsis after horizontal overflow
-    // and first linebreak
-    QStyledItemDelegate::paint(pPainter, option, index);
-}

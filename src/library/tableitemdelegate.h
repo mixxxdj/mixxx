@@ -18,7 +18,7 @@ class TableItemDelegate : public QStyledItemDelegate {
     virtual void paintItem(
             QPainter* painter,
             const QStyleOptionViewItem& option,
-            const QModelIndex& index) const = 0;
+            const QModelIndex& index) const;
 
   protected:
     static void paintItemBackground(

@@ -34,11 +34,6 @@ class MultiLineEditDelegate : public TableItemDelegate {
             const QStyleOptionViewItem& option,
             const QModelIndex& index) const override;
 
-    void paintItem(
-            QPainter* painter,
-            const QStyleOptionViewItem& option,
-            const QModelIndex& index) const override;
-
   private slots:
     void commitAndCloseEditor();
 
