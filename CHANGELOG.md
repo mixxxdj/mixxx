@@ -2,19 +2,30 @@
 
 ## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (unreleased)
 
-* Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
-  [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
-* No longer stop a track with an active loop at the very end.
-  [#11558](https://github.com/mixxxdj/mixxx/pull/11558)
-  [#11557](https://github.com/mixxxdj/mixxx/issues/11557)
-* Shade: Fixed VU-Meter and other minor issues
-  [#11598](https://github.com/mixxxdj/mixxx/pull/11598)
 * Fixed possible crash when closing Mixxx while browsing the file system
   [#11593](https://github.com/mixxxdj/mixxx/pull/11593)
   [#11589](https://github.com/mixxxdj/mixxx/issues/11589)
+* No longer stop a track with an active loop at the very end.
+  [#11558](https://github.com/mixxxdj/mixxx/pull/11558)
+  [#11557](https://github.com/mixxxdj/mixxx/issues/11557)
 * Fixed resyncing when moving an active loop
   [#11152](https://github.com/mixxxdj/mixxx/pull/11152)
   [#11381](https://github.com/mixxxdj/mixxx/issues/11381)
+* Fixed gapless repeat of full tracks
+  [#11532](https://github.com/mixxxdj/mixxx/pull/11532)
+  [#9842](https://github.com/mixxxdj/mixxx/issues/9842)
+  [#11704](https://github.com/mixxxdj/mixxx/pull/11704)
+* Rhythmbox: Fixed bulk track imports from playlists
+  [#11661](https://github.com/mixxxdj/mixxx/pull/11661)
+* Console log spam reduced
+  [#11690](https://github.com/mixxxdj/mixxx/issues/11690)
+  [#11691](https://github.com/mixxxdj/mixxx/issues/11691)
+* Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+  [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
+  [#11659](https://github.com/mixxxdj/mixxx/pull/11659)
+* Shade: Fixed VU-Meter and other minor issues
+  [#11598](https://github.com/mixxxdj/mixxx/pull/11598)
+* LateNight PaleMoon: Tweak style
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 
