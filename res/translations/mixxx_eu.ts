@@ -640,12 +640,12 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Mixxx liburutegia</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Ezin izan da hurrengo fitxategi hau kargatu Mixxx edo beste aplikazioren bat bera erabiltzen ari delako</translation>
     </message>
@@ -10132,7 +10132,7 @@ Fully right: end of the effect period</source>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>

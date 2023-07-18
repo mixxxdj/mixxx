@@ -640,12 +640,12 @@
         <translation>Ficheiro Criado</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Biblioteca Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Não foi possível carregar o arquivo a seguir, porque está em uso por Mixxx ou outro aplicativo.</translation>
     </message>
@@ -2504,17 +2504,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="535"/>
         <source>Go to Loop In button</source>
-        <translation type="unfinished"/>
+        <translation>Botão de Ir para o Fim do Loop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Go To Loop Out</source>
-        <translation type="unfinished"/>
+        <translation>Ir para o Fim do Loop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Go to Loop Out button</source>
-        <translation type="unfinished"/>
+        <translation>Botão de Ir para o Fim do Loop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
@@ -3686,7 +3686,7 @@ last sound.</translation>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="288"/>
         <source>Auto DJ requires two decks assigned to opposite sides of the crossfader.</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ requer dois decks definidos para lados opostos do crossfader.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="294"/>
@@ -6647,17 +6647,17 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="614"/>
         <source>auto (&lt;= 1024 frames/period)</source>
-        <translation type="unfinished"/>
+        <translation>auto (&lt;= 1024 quadros/período)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="617"/>
         <source>2048 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>2048 quadros/período</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="620"/>
         <source>4096 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>4096 quadros/período</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="819"/>
@@ -8560,7 +8560,7 @@ Do you want to select an input device?</translation>
     <message>
         <location filename="../../src/test/mock_networkaccessmanager.cpp" line="109"/>
         <source>Operation canceled</source>
-        <translation type="unfinished"/>
+        <translation>Operação cancelada</translation>
     </message>
 </context>
 <context>
@@ -10164,7 +10164,7 @@ Fully right: end of the effect period</translation>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
-        <translation type="unfinished"/>
+        <translation>Há menos de 1 GiB de espaço utilizável na pasta de gravação</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
@@ -10255,7 +10255,7 @@ Fully right: end of the effect period</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Aplicação Rhythmbox</translation>
     </message>
@@ -14142,17 +14142,17 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1178"/>
         <source>Locking BPM of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Locking BPM of %n track(s)</numerusform><numerusform>Locking BPM of %n track(s)</numerusform><numerusform>Bloqueando o BPM de %n faixa(s)</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1179"/>
         <source>Unlocking BPM of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Unlocking BPM of %n track(s)</numerusform><numerusform>Unlocking BPM of %n track(s)</numerusform><numerusform>Desbloqueando o BPM de %n faixa(s)</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1208"/>
         <source>Setting color of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Setting color of %n track(s)</numerusform><numerusform>Setting color of %n track(s)</numerusform><numerusform>Mudando a cor de %n faixa(s)</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1256"/>
@@ -14296,7 +14296,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
     <message>
         <location filename="../../src/network/webtask.cpp" line="220"/>
         <source>The Network request has not been started</source>
-        <translation type="unfinished"/>
+        <translation>A requisição de Rede não foi iniciada</translation>
     </message>
 </context>
 </TS>

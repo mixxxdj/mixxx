@@ -642,12 +642,12 @@
         <translation>Datei erstellt</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Mixxx-Bibliothek</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Folgende Datei konnte nicht geladen werden, da sie in Mixxx oder einer anderen Anwendung in Benutzung ist.</translation>
     </message>
@@ -4268,7 +4268,8 @@ Sie haben versucht anzulernen: %1,%2</translation>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="234"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
-        <translation type="unfinished"/>
+        <translation>&apos;%1&apos; hat den gleichen Icecast-Einhängepunkt wie &apos;% 2&apos;.
+Zwei Verbindungen auf demselben Server können nicht denselben Einhängepunkt haben.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="581"/>
@@ -10255,7 +10256,7 @@ Ganz rechts: Ende der Effektperiode</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>

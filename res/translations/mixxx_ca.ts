@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="52"/>
         <source>Analyze</source>
-        <translation>Analitzador</translation>
+        <translation>Analitza</translation>
     </message>
 </context>
 <context>
@@ -642,12 +642,12 @@
         <translation>Data de creació</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Biblioteca del Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>No s&apos;ha pogut carregar el següent fitxer, degut a que el Mixxx o una altra aplicació l&apos;estan utilitzant.</translation>
     </message>
@@ -2395,12 +2395,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="442"/>
         <source>Intro Start Marker</source>
-        <translation>Marcador d&apos;inici d&apos;introducció </translation>
+        <translation>Marcador d&apos;inici d&apos;Entrada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="443"/>
         <source>Intro End Marker</source>
-        <translation>Marcador de final d&apos;introducció</translation>
+        <translation>Marcador de final d&apos;Entrada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="444"/>
@@ -2415,12 +2415,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="447"/>
         <source>intro start marker</source>
-        <translation>marcador d&apos;inici d&apos;introducció</translation>
+        <translation>marcador d&apos;inici d&apos;Entrada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="448"/>
         <source>intro end marker</source>
-        <translation>marcador de final d&apos;introducció</translation>
+        <translation>marcador de final d&apos;Entrada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="449"/>
@@ -2746,7 +2746,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="672"/>
         <source>Load Track and Play</source>
-        <translation type="unfinished"/>
+        <translation>Carregar la pista i reproduír</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="686"/>
@@ -2822,7 +2822,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="773"/>
         <source>Effect Unit Assignment</source>
-        <translation type="unfinished"/>
+        <translation>Assignar la unitat d&apos;efectes</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="874"/>
@@ -2858,7 +2858,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="953"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="954"/>
         <source>Button Parameter Value</source>
-        <translation type="unfinished"/>
+        <translation>Valor del paràmetre del botó</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="972"/>
@@ -2963,12 +2963,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1105"/>
         <source>Cover Art Show/Hide (Decks)</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar/amagar la Portada (reproductors)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1106"/>
         <source>Show/hide cover art in the main decks</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar/amagar la Portada als reproductors principals</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1114"/>
@@ -2983,22 +2983,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1120"/>
         <source>Vinyl Spinners Show/Hide (All Decks)</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar/amagar Spinners de Vinil (Tots els reproductors)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1121"/>
         <source>Show/Hide all spinnies</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga tots els vinils giratoris</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1136"/>
         <source>Toggle Waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga les ones</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1137"/>
         <source>Show/hide the scrolling waveforms.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga els gràfics d&apos;ona locals.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1139"/>
@@ -3048,7 +3048,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1154"/>
         <source>Start/Stop Live Broadcasting</source>
-        <translation type="unfinished"/>
+        <translation>Inicia/para la emissió en viu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1155"/>
@@ -3058,13 +3058,13 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1160"/>
         <source>Start/stop recording your mix.</source>
-        <translation type="unfinished"/>
+        <translation>Inicia/para la gravació de la mescla.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1269"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1273"/>
         <source>Samplers</source>
-        <translation type="unfinished"/>
+        <translation>Reproductors de mostres</translation>
     </message>
 </context>
 <context>
@@ -3083,12 +3083,12 @@
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="599"/>
         <source>Controller Mapping Error</source>
-        <translation type="unfinished"/>
+        <translation>Error de l&apos;assignació de controlador</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="600"/>
         <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
-        <translation type="unfinished"/>
+        <translation>L&apos;assignació per al vostre controlador &quot;%1&quot; no funciona correctament.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="604"/>
@@ -3398,7 +3398,7 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
         <source>Mixxx %1.%2 Development Team</source>
-        <translation type="unfinished"/>
+        <translation>Equip de desenvolupadors del Mixxx %1.%2 </translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="41"/>
@@ -3423,12 +3423,12 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="372"/>
         <source>Official Website</source>
-        <translation type="unfinished"/>
+        <translation>Lloc web oficial</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="382"/>
         <source>Donate</source>
-        <translation type="unfinished"/>
+        <translation>Donatius</translation>
     </message>
 </context>
 <context>
@@ -3453,12 +3453,12 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="107"/>
         <source>Git Version:</source>
-        <translation type="unfinished"/>
+        <translation>Versió Git:</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="114"/>
         <source>Platform:</source>
-        <translation type="unfinished"/>
+        <translation>Plataforma:</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="162"/>
@@ -3616,12 +3616,12 @@ Drecera: Maj+F9</translation>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="171"/>
         <source>Full Intro + Outro</source>
-        <translation>Intro i Outro sencers</translation>
+        <translation>Entrada i Sortida sencers</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="173"/>
         <source>Fade At Outro Start</source>
-        <translation>Esvaeix a l&apos;inici de Outro</translation>
+        <translation>Esvaeix a l&apos;inici de la Sortida</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="175"/>
@@ -3688,7 +3688,7 @@ crossfade el nombre de segons seleccionat abans del darrer so.</translation>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="288"/>
         <source>Auto DJ requires two decks assigned to opposite sides of the crossfader.</source>
-        <translation type="unfinished"/>
+        <translation>El DJ Automàtic necessita dos reproductors assignats als costats oposats del crossfader.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="294"/>
@@ -3762,14 +3762,17 @@ Si no hi ha cap font configurada, s&apos;afegeix una pista de la biblioteca.</tr
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="20"/>
         <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks,
 automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-        <translation type="unfinished"/>
+        <translation>Quan la detecció de tocs està habilitada, el Mixxx detecta els tocs per minut i els tocs de les vostres pistes, 
+automàticament mostra una graella de tocs per a ells, i us permet sincronitzar pistes utilitzant la seva informació de tocs.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="62"/>
         <source>Enable fast beat detection.
 If activated Mixxx only analyzes the first minute of a track for beat information.
 This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
-        <translation type="unfinished"/>
+        <translation>Habilita la detecció ràpida de tocs.
+Si s&apos;activa, el Mixxx només analitzarà el primer minut d&apos;una pista per obtenir informació de tocs.
+Això pot accelerar la detecció de tocs en ordinadors més lents, però pot resultar en graelles de ritme de menor qualitat.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="50"/>
@@ -3783,7 +3786,7 @@ Sovint ofereix una graella de pulsacions de major qualitat, però no serà prou 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="85"/>
         <source>Re-analyze beatgrids imported from other DJ software</source>
-        <translation type="unfinished"/>
+        <translation>Reanalitza les graelles de ritme importades d&apos;altres aplicacions de DJ.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="95"/>
@@ -3971,7 +3974,10 @@ Sovint ofereix una graella de pulsacions de major qualitat, però no serà prou 
 This could be because you are either using an old skin and this control is no longer supported, or you clicked a control that provides visual feedback and can only be mapped to outputs like LEDs via scripts.
 
 You tried to learn: %1,%2</source>
-        <translation type="unfinished"/>
+        <translation>El control que heu fet clic al Mixxx no és aprenent.
+Això podria ser degut al fet que ja no esteu utilitzant un tema antic i aquest control ja no està admès, o heu fet clic en un control que proporciona retroalimentació visual i només es pot assignar a sortides com LEDs a través de scripts.
+
+Heu intentat aprendre: %1,%2</translation>
     </message>
 </context>
 <context>
@@ -4108,7 +4114,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="21"/>
         <source>Re-queue Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Reencua les pistes</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="45"/>
@@ -4139,7 +4145,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="163"/>
         <source>Add Random Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix pistes aleatòries</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="179"/>
@@ -4202,12 +4208,12 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="138"/>
         <source>HE-AAC</source>
-        <translation type="unfinished"/>
+        <translation>HE-AAC</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="139"/>
         <source>HE-AACv2</source>
-        <translation type="unfinished"/>
+        <translation>HE-AACv2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="142"/>
@@ -4262,7 +4268,8 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="234"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
-        <translation type="unfinished"/>
+        <translation>«%1» té el mateix punt de muntatge Icecast que «%2».
+No es poden habilitar simultàniament dues connexions font al mateix servidor que tinguin el mateix punt de muntatge.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="581"/>
@@ -4644,17 +4651,17 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="384"/>
         <source>No Preset</source>
-        <translation type="unfinished"/>
+        <translation>Sense mapping</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="575"/>
         <source>Mapping has been edited</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;ha editat l&apos;assignació</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="627"/>
         <source>Always overwrite during this session</source>
-        <translation type="unfinished"/>
+        <translation>Sobreescriu sempre durant aquesta sessió</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="639"/>
@@ -4669,27 +4676,27 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="686"/>
         <source>Save user mapping</source>
-        <translation type="unfinished"/>
+        <translation>Desa l&apos;assignació d&apos;usuari</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="687"/>
         <source>Enter the name for saving the mapping to the user folder.</source>
-        <translation type="unfinished"/>
+        <translation>Introdueix el nom de l&apos;assignació per desar-la a la carpeta d&apos;usuari</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="688"/>
         <source>Saving mapping failed</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha pogut desar l&apos;assignació</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="690"/>
         <source>A mapping cannot have a blank name and may not contain special characters.</source>
-        <translation type="unfinished"/>
+        <translation>Una assignació no pot tenir el nom en blanc i no pot tenir caràcters especials.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="692"/>
         <source>A mapping file with that name already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Ja existeix un fitxer d&apos;assignació amb aquest nom.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="355"/>
@@ -4709,12 +4716,12 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="623"/>
         <source>Mapping already exists.</source>
-        <translation type="unfinished"/>
+        <translation>El fitxer d&apos;assignació ja existeix.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="624"/>
         <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;%1&lt;/b&gt; ja existeix a la carpeta d&apos;assignacions d&apos;usuari.&lt;br&gt;Voleu sobreesciure o desar amb un altre nom?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="324"/>
@@ -4804,12 +4811,12 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="119"/>
         <source>Load Mapping:</source>
-        <translation type="unfinished"/>
+        <translation>Carrega l&apos;assignació:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="148"/>
         <source>Mapping Info</source>
-        <translation type="unfinished"/>
+        <translation>Informació de l&apos;assignació</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="201"/>
@@ -4829,7 +4836,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
         <source>Mapping Files:</source>
-        <translation type="unfinished"/>
+        <translation>Fitxers de l&apos;assignació</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="440"/>
@@ -4848,22 +4855,22 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="40"/>
         <source>Mixxx uses &quot;mappings&quot; to connect messages from your controller to controls in Mixxx. If you do not see a mapping for your controller in the &quot;Load Mapping&quot; menu when you click on your controller on the left sidebar, you may be able to download one online from the %1. Place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Mapping Folder&quot; then restart Mixxx. If you download a mapping in a ZIP file, extract the XML and Javascript file(s) from the ZIP file to your &quot;User Mapping Folder&quot; then restart Mixxx.</source>
-        <translation type="unfinished"/>
+        <translation>El Mixxx utilitza &quot;mapes&quot; per connectar missatges del vostre controlador a controls del Mixxx. Si no veieu una assignació per al vostre controlador al menú «Mapa de gra» quan feu clic al vostre controlador a la barra lateral esquerra, és possible que pugueu en descarregar una des de %1. Col·loqueu els fitxer(s) XML (.xml) i Javascript (.js) a la &quot;Carpeta d&apos;assignació d&apos;usuaris&quot; i després reinicieu el Mixxx. Si voleu descarregar una assignació en un fitxer ZIP, extraieu el fitxer XML i el fitxer(s) Javascript des del fitxer ZIP a la vostra &quot;Carpeta d&apos;assignació d&apos;usuaris&quot; i després reinicieu el Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="56"/>
         <source>Mixxx DJ Hardware Guide</source>
-        <translation type="unfinished"/>
+        <translation>Guia de maquinari de DJ de Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="61"/>
         <source>MIDI Mapping File Format</source>
-        <translation type="unfinished"/>
+        <translation>Format de fitxer d&apos;assignacions MIDI</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="71"/>
         <source>MIDI Scripting with Javascript</source>
-        <translation type="unfinished"/>
+        <translation>Assignacions MIDI amb Javascript</translation>
     </message>
 </context>
 <context>
@@ -4896,12 +4903,12 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="79"/>
         <source>Mappings</source>
-        <translation type="unfinished"/>
+        <translation>Assignacions</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="107"/>
         <source>Open User Mapping Folder</source>
-        <translation type="unfinished"/>
+        <translation>Obre la carpeta d&apos;assignacions d&apos;usuari</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="120"/>
@@ -5105,7 +5112,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="167"/>
         <source>Intro start</source>
-        <translation>Inici del Intro</translation>
+        <translation>Inici de l&apos;entrada</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="168"/>
@@ -5259,7 +5266,7 @@ Mode CUP:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="69"/>
         <source>Intro start</source>
-        <translation>Inici del Intro</translation>
+        <translation>Inici de l&apos;entrada</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="55"/>
@@ -5273,7 +5280,7 @@ If this option is disabled, the intro start point is automatically placed at the
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="62"/>
         <source>Set intro start to main cue when analyzing tracks</source>
-        <translation type="unfinished"/>
+        <translation>Defineix l&apos;inici d&apos;entrada igual a la marca Cue en analitzar les pistes</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="124"/>
@@ -5294,7 +5301,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="195"/>
         <source>Double-press Load button to clone playing track</source>
-        <translation type="unfinished"/>
+        <translation>Feu doble clic al botó de carregar per clonar la pista que es reprodueix</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="205"/>
@@ -5570,7 +5577,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="27"/>
         <source>Effect load behavior</source>
-        <translation type="unfinished"/>
+        <translation>Comportament en la càrrega d&apos;efectes</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="33"/>
@@ -5667,7 +5674,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="21"/>
         <source>When key detection is enabled, Mixxx detects the musical key of your tracks
 and allows you to pitch adjust them for harmonic mixing.</source>
-        <translation type="unfinished"/>
+        <translation>Quan la detecció de la clau musical està habilitada, Mixxx detecta la clau musical de les pistes i permet ajustar el tò per una mescla harmònica.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="25"/>
@@ -5987,7 +5994,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="144"/>
         <source>Write Serato Metadata to files (experimental)</source>
-        <translation type="unfinished"/>
+        <translation>Escriu les metadades de Serato als fitxers (experimental)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="154"/>
@@ -6002,22 +6009,22 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="386"/>
         <source>Settings Folder</source>
-        <translation type="unfinished"/>
+        <translation>Carpeta de les preferències d&apos;usuari</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="392"/>
         <source>The Mixxx settings folder contains the library database, various configuration files, log files, track analysis data, as well as custom controller mappings.</source>
-        <translation type="unfinished"/>
+        <translation>El directori d&apos;opcions del Mixxx conté la base de dades de la biblioteca, diversos fitxers de configuració, els fitxers de registre, l&apos;anàlisi de les pistes, així com les assignacions de controladors personalitzades.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="402"/>
         <source>Edit those files only if you know what you are doing and only while Mixxx is not running.</source>
-        <translation type="unfinished"/>
+        <translation>Editeu els fitxers només si sabeu el que feu i només quan el Mixxx no estigui en execució.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="418"/>
         <source>Open Mixxx Settings Folder</source>
-        <translation type="unfinished"/>
+        <translation>Obre la carpeta de preferencies d&apos;usuari de Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="184"/>
@@ -6082,23 +6089,23 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="137"/>
         <source>Automatically write modified track metadata from the library into file tags</source>
-        <translation type="unfinished"/>
+        <translation>Escriu automàticament les metadades de les pistes modificades de la biblioteca cap als fitxers.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="258"/>
         <source>Track Double-Click Action</source>
         <extracomment>Sets default action when double-clicking a track in the library.</extracomment>
-        <translation type="unfinished"/>
+        <translation>Acció en fer doble clic en la pista</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="274"/>
         <source>Add track to Auto DJ queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix la pista a la cua de DJ automàtic (final)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="281"/>
         <source>Add track to Auto DJ queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix la pista a la cua de DJ automàtic (inici)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="288"/>
@@ -6315,7 +6322,8 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplug.cpp" line="37"/>
         <source>All settings take effect on next track load. Currently loaded tracks are not affected. For an explanation of these settings, see the %1</source>
-        <translation type="unfinished"/>
+        <translation>Totes les opcions tenen efecte a la propera càrrega de pista. No afecta a les pistes ja carregades.
+Per més informació sobre aquestes opcions, aneu a %1</translation>
     </message>
 </context>
 <context>
@@ -6329,27 +6337,27 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="390"/>
         <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="397"/>
         <source>Recordings directory invalid</source>
-        <translation type="unfinished"/>
+        <translation>El directori de les gravacions és incorrecte.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="391"/>
         <source>Recordings directory must be set to an existing directory.</source>
-        <translation type="unfinished"/>
+        <translation>El directori de les gravacions ha de ser un directori existent.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="398"/>
         <source>Recordings directory must be set to a directory.</source>
-        <translation type="unfinished"/>
+        <translation>Cal informar el camp de directori de gravacions</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="403"/>
         <source>Recordings directory not writable</source>
-        <translation type="unfinished"/>
+        <translation>No es pot escriure al directori de gravacions</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="404"/>
         <source>You do not have write access to %1. Choose a recordings directory you have write access to.</source>
-        <translation type="unfinished"/>
+        <translation>No teniu permis d&apos;escriptura a %1. Seleccioneu un directori de gravació on tingueu permís d&apos;escriptura.</translation>
     </message>
 </context>
 <context>
@@ -6408,12 +6416,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="21"/>
         <source>Recording Files</source>
-        <translation type="unfinished"/>
+        <translation>Fitxers de gravació</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="39"/>
         <source>Directory:</source>
-        <translation type="unfinished"/>
+        <translation>Directori:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="242"/>
@@ -6631,22 +6639,22 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="256"/>
         <source>Mixxx DJ Hardware Guide</source>
-        <translation type="unfinished"/>
+        <translation>Guia de maquinari de DJ de Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="614"/>
         <source>auto (&lt;= 1024 frames/period)</source>
-        <translation type="unfinished"/>
+        <translation>auto (&lt;= 1024 frames/period)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="617"/>
         <source>2048 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>2048 frames/period</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="620"/>
         <source>4096 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>4096 frames/period</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="819"/>
@@ -7297,7 +7305,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="97"/>
         <source>Recording to file:</source>
-        <translation type="unfinished"/>
+        <translation>Gravant al fitxer:</translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="159"/>
@@ -7307,7 +7315,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="190"/>
         <source>%1 MiB written in %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 MiB escrits en %2</translation>
     </message>
 </context>
 <context>
@@ -7315,7 +7323,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="20"/>
         <source>Replace Hotcue Color</source>
-        <translation type="unfinished"/>
+        <translation>Canvia el color de la marca directa</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="26"/>
@@ -7362,7 +7370,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="225"/>
         <source>Selecting database rows...</source>
-        <translation type="unfinished"/>
+        <translation>Seleccionant les files de la base de dades...</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="356"/>
@@ -7377,7 +7385,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="364"/>
         <source>Confirm Color Replacement</source>
-        <translation type="unfinished"/>
+        <translation>Confirmeu la substitució del color</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="365"/>
@@ -7714,7 +7722,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="421"/>
         <source>Re-Import Metadata from file</source>
-        <translation type="unfinished"/>
+        <translation>Torna a importar les metadades del fitxer</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="575"/>
@@ -8261,7 +8269,7 @@ Voleu sobreescriure aquesta llista?</translation>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="128"/>
         <source>One or more MixxxControls specified in the outputs section of the loaded mapping were invalid.</source>
-        <translation type="unfinished"/>
+        <translation>Un o més MixxxControls indicats a la secció de sortida de l&apos;assignació carregada son incorrectes.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="131"/>
@@ -8278,7 +8286,7 @@ Voleu sobreescriure aquesta llista?</translation>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="135"/>
         <source>* Make sure the MixxxControls in question actually exist. Visit the manual for a complete list: </source>
-        <translation type="unfinished"/>
+        <translation>* Assegureu-vos que el MixxxControls en qüestió existeixi. Comproveu el manual per a una llista completa:</translation>
     </message>
 </context>
 <context>
@@ -8486,13 +8494,15 @@ Si us plau, seleccioneu primer un dispositiu d&apos;entrada a les preferències 
         <location filename="../../src/mixxx.cpp" line="1530"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
-        <translation type="unfinished"/>
+        <translation>No hi ha cap dispositiu d&apos;entrada seleccionat per aquest micròfon.
+Volue seleccionar ara un dispositiu d&apos;entrada?</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1544"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
-        <translation type="unfinished"/>
+        <translation>No hi ha cap dispositiu d&apos;entrada seleccionat per aquest auxiliar.
+Voleu seleccionar ara un dispositiu d&apos;entrada?</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1616"/>
@@ -8547,7 +8557,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/test/mock_networkaccessmanager.cpp" line="109"/>
         <source>Operation canceled</source>
-        <translation type="unfinished"/>
+        <translation>Operació cancel·lada</translation>
     </message>
 </context>
 <context>
@@ -8933,7 +8943,7 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/util/sandbox.cpp" line="416"/>
         <source>Upgrading old Mixxx settings</source>
-        <translation type="unfinished"/>
+        <translation>Actualitzant les opcions antigues de Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/util/sandbox.cpp" line="419"/>
@@ -10046,29 +10056,30 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/encoder/encoderfdkaac.cpp" line="276"/>
         <source>The installed AAC encoding library does not support HE-AAC, only plain AAC. Configure a different encoding format in the preferences.</source>
-        <translation type="unfinished"/>
+        <translation>La llibreria de gravació AAC instalada no suporta HE-AAC, només AAC.
+Configureu un format diferent a les preferències</translation>
     </message>
     <message>
         <location filename="../../src/encoder/encodermp3.cpp" line="185"/>
         <source>MP3 encoding is not supported. Lame could not be initialized</source>
-        <translation type="unfinished"/>
+        <translation>La compressió amb MP3 no està suportada. No s&apos;ha pogut inicialitzar la llibreria LAME</translation>
     </message>
     <message>
         <location filename="../../src/encoder/encodervorbis.cpp" line="212"/>
         <source>OGG recording is not supported. OGG/Vorbis library could not be initialized.</source>
-        <translation type="unfinished"/>
+        <translation>La compressió amb OGG no està suportada. No s&apos;ha pogut inicialitzar la llibreria OGG/Vorbis.</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="63"/>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="476"/>
         <source> encoder failure</source>
-        <translation type="unfinished"/>
+        <translation>fallada en el compressor</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="65"/>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="478"/>
         <source>Failed to apply the selected settings.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;han pogut activar les opcions seleccionades</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="112"/>
@@ -10147,7 +10158,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
-        <translation type="unfinished"/>
+        <translation>Hi ha menys d&apos; 1 GiB d&apos;espai lliure a la carpeta de gravacions</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
@@ -10206,12 +10217,12 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1381"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
-        <translation type="unfinished"/>
+        <translation>bucle (només es pot utilitzar el primer bucle a Mixxx)</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1384"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
-        <translation type="unfinished"/>
+        <translation>Cerca dispositius USB/ SD connectats de Rekordbox (refresca)</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1378"/>
@@ -10238,7 +10249,7 @@ Tot a la dreta: Al final del període</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -10308,12 +10319,12 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="987"/>
         <source>Check for Serato databases (refresh)</source>
-        <translation type="unfinished"/>
+        <translation>Cerca bases de dades de Serato (refresca)</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="1013"/>
         <source>(loading) Serato</source>
-        <translation type="unfinished"/>
+        <translation>(carregant) Serato</translation>
     </message>
 </context>
 <context>
@@ -10461,17 +10472,17 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="382"/>
         <source>Unknown stream encoding format!</source>
-        <translation type="unfinished"/>
+        <translation>Format de compressió de la retransmissió desconegut!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="383"/>
         <source>Use a libshout version with %1 enabled</source>
-        <translation type="unfinished"/>
+        <translation>Utilitzeu una versió de libshout amb %1 habilitat</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="389"/>
         <source>Error setting stream encoding format!</source>
-        <translation type="unfinished"/>
+        <translation>Error configurant el format de compressió de la retransmissió.</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="404"/>
@@ -10501,7 +10512,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="445"/>
         <source>Error: Shoutcast only supports MP3 and AAC encoders</source>
-        <translation type="unfinished"/>
+        <translation>Error: Shoutcast només suporta els formats MP3 i AAC</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="451"/>
@@ -10654,12 +10665,12 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="97"/>
         <source>Identifying track through Acoustid</source>
-        <translation type="unfinished"/>
+        <translation>Identificant la pista utilitzant Acoustid</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="146"/>
         <source>Retrieving metadata from MusicBrainz</source>
-        <translation type="unfinished"/>
+        <translation>Recuperant les metadades des de MusicBrainz</translation>
     </message>
 </context>
 <context>
@@ -10682,7 +10693,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="37"/>
         <source>Double-click</source>
-        <translation type="unfinished"/>
+        <translation>Doble clic</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="38"/>
@@ -10692,7 +10703,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="39"/>
         <source>Shift-key</source>
-        <translation type="unfinished"/>
+        <translation>Majúscules</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="40"/>
@@ -10773,12 +10784,12 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="80"/>
         <source>Big Spinny/Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Vinil giratori/Portada grans</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="81"/>
         <source>Show a big version of the Spinny or track cover art if enabled.</source>
-        <translation type="unfinished"/>
+        <translation>Habilitar per mostra una versió gran del vinil giratori o de la portada de la pista.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="84"/>
@@ -10833,22 +10844,22 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="141"/>
         <source>Auxiliary Volume Meter</source>
-        <translation type="unfinished"/>
+        <translation>Indicador de volum auxiliar</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="142"/>
         <source>Shows the current auxiliary volume.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra el volum auxiliar actual</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="145"/>
         <source>Auxiliary Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Indicador de pic auxiliar</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="146"/>
         <source>Indicates when the signal on the auxiliary is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Mostra quan la senyal en l&apos;auxiliar està saturant.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="169"/>
@@ -11015,7 +11026,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="257"/>
         <source>Show/hide Cover Art of the selected track in the library.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga la portada de la pista seleccionada a la biblioteca.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="260"/>
@@ -11030,12 +11041,12 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="264"/>
         <source>Show/hide the scrolling waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga els gràfics d&apos;ona locals</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="267"/>
         <source>Show/hide the beatgrid controls section</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga la secció de controls de la graella de ritme</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="270"/>
@@ -11060,7 +11071,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="279"/>
         <source>Hide all skin sections except the decks to have more screen space for the track library.</source>
-        <translation type="unfinished"/>
+        <translation>Amaga totes les seccions del tema, excepte els reproductors per tenir més espai per mostrar la biblioteca.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="282"/>
@@ -11080,7 +11091,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="287"/>
         <source>Show/hide volume meters for channels and master output.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga els indicadors de volum dels canals i de la sortida mestra.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="290"/>
@@ -11110,7 +11121,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="301"/>
         <source>Adjusts the pre-fader auxiliary gain.</source>
-        <translation type="unfinished"/>
+        <translation>Ajusta el guany de l&apos;auxiliar abans de l&apos;entrada.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="305"/>
@@ -11352,7 +11363,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="439"/>
         <source>Show/hide the spinning vinyl section.</source>
-        <translation>Mostra/amaga el vinil giratori.</translation>
+        <translation>Mostra/amaga la secció del vinil giratori.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="442"/>
@@ -11372,7 +11383,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="475"/>
         <source>(while previewing)</source>
-        <translation type="unfinished"/>
+        <translation>(mentre es preescolta)</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="476"/>
@@ -11412,12 +11423,12 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="516"/>
         <source>Sends the selected channel&apos;s audio to the headphone output, selected in Preferences -&gt; Sound Hardware.</source>
-        <translation type="unfinished"/>
+        <translation>Envia l&apos;audio del canal seleccionat cap a la sortida d&apos;auriculars, indicada en les Preferències -&gt; Maquinari de so.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="524"/>
         <source>Master enable</source>
-        <translation type="unfinished"/>
+        <translation>Activa el Master</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="525"/>
@@ -11432,27 +11443,27 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="602"/>
         <source>Tempo Range Display</source>
-        <translation type="unfinished"/>
+        <translation>Mostra el rang del tempo</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="603"/>
         <source>Displays the current range of the tempo slider.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra el rang actual del lliscador del tempo.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="625"/>
         <source>Delete selected hotcue.</source>
-        <translation type="unfinished"/>
+        <translation>Esborra la marca directa seleccionada.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="831"/>
         <source>Opens separate artwork viewer.</source>
-        <translation type="unfinished"/>
+        <translation>Obre un visor de portada separat.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1055"/>
         <source>Select and configure a hardware device for this input</source>
-        <translation type="unfinished"/>
+        <translation>Selecciona i configura un dispositiu de maquinari per a aquesta entrada.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="634"/>
@@ -11462,59 +11473,59 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="312"/>
         <source>Auto: Automatically reduce music volume when microphone volume rises above threshold.</source>
-        <translation type="unfinished"/>
+        <translation>Auto: Redueix automàticament el volum de la música quan el volum del micròfon supera el llindar.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="314"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="318"/>
         <source>Adjust the amount the music volume is reduced with the Strength knob.</source>
-        <translation type="unfinished"/>
+        <translation>Definiu la quantiat de reducció del volum de la música utilitzant el potenciòmetre de Força.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="321"/>
         <source>Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.</source>
-        <translation type="unfinished"/>
+        <translation>Auto: Defineix la quantitat de reducció del volum de la música quan el volum del micròfon supera el llindar.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="322"/>
         <source>Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.</source>
-        <translation type="unfinished"/>
+        <translation>Manual: Defineix la quantitat de reducció del volum de la música quan s&apos;activa el botó de parlar per sobre, independentment del volum del micròfon.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="426"/>
         <source>Shift cues earlier</source>
-        <translation type="unfinished"/>
+        <translation>Mou les marques abans</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="427"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="433"/>
         <source>Shift cues imported from Serato or Rekordbox if they are slightly off time.</source>
-        <translation type="unfinished"/>
+        <translation>Mou les marques importades de Serato o Rekordbox si estan lleugerament fora de temps.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="428"/>
         <source>Left click: shift 10 milliseconds earlier</source>
-        <translation type="unfinished"/>
+        <translation>Clic esquerra: mou 10 milisegons abans</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="429"/>
         <source>Right click: shift 1 millisecond earlier</source>
-        <translation type="unfinished"/>
+        <translation>Clic amb botó dret: mou un milisegon abans</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="432"/>
         <source>Shift cues later</source>
-        <translation type="unfinished"/>
+        <translation>Mou les marques més tard</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="434"/>
         <source>Left click: shift 10 milliseconds later</source>
-        <translation type="unfinished"/>
+        <translation>Clic esquerra: mou 10 milisegons més tard</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="435"/>
         <source>Right click: shift 1 millisecond later</source>
-        <translation type="unfinished"/>
+        <translation>Clic amb botó dret: mou un milisegon després</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="635"/>
@@ -11524,12 +11535,12 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="648"/>
         <source>Auto DJ is active</source>
-        <translation type="unfinished"/>
+        <translation>El DJ Automàtic està actiu</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="677"/>
         <source>Hot Cue - Track will seek to nearest previous hotcue point.</source>
-        <translation type="unfinished"/>
+        <translation>Marca directa - Es mourà la pista a la marca directa anterior més propera.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="682"/>
@@ -11689,17 +11700,17 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="764"/>
         <source>Hint: Change the time format in Preferences -&gt; Decks.</source>
-        <translation type="unfinished"/>
+        <translation>Ajuda: Pots canviar el format del temps a les Preferències -&gt; Reproductors.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="843"/>
         <source>Show/hide intro &amp; outro markers and associated buttons.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga les marques d&apos;entrada/sortida i els botons associats.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="846"/>
         <source>Intro Start Marker</source>
-        <translation>Marcador d&apos;inici d&apos;introducció </translation>
+        <translation>Marcador d&apos;inici d&apos;entrada</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="847"/>
@@ -11707,7 +11718,7 @@ Tot a la dreta: Al final del període</translation>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="861"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="868"/>
         <source>If marker is set, jumps to the marker.</source>
-        <translation type="unfinished"/>
+        <translation>Si la marca està definida, es mou a la marca.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="848"/>
@@ -11715,7 +11726,7 @@ Tot a la dreta: Al final del període</translation>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="862"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="869"/>
         <source>If marker is not set, sets the marker to the current play position.</source>
-        <translation type="unfinished"/>
+        <translation>Si la marca no està definida, defineix la marca a la posició de reproducció actual.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="850"/>
@@ -11723,12 +11734,12 @@ Tot a la dreta: Al final del període</translation>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="864"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="871"/>
         <source>If marker is set, clears the marker.</source>
-        <translation type="unfinished"/>
+        <translation>Si hi ha una marca, l&apos;esborra.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="853"/>
         <source>Intro End Marker</source>
-        <translation>Marcador de final d&apos;introducció</translation>
+        <translation>Marcador de final d&apos;entrada</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="860"/>
@@ -12276,27 +12287,27 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="31"/>
         <source>Drag this item to other decks/samplers, to crates and playlist or to external file manager.</source>
-        <translation type="unfinished"/>
+        <translation>Arrastreu l&apos;element a altres reproductors, a les capses, llistes de reproducció o al gestor de fitxers extern.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="46"/>
         <source>Shows information about the track currently loaded in this deck.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra informació sobre la pista carregada en el reproductor.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="47"/>
         <source>Left click to jump around in the track.</source>
-        <translation type="unfinished"/>
+        <translation>Clic esquerra per saltar a la posició de la pista.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="48"/>
         <source>Right click hotcues to edit their labels and colors.</source>
-        <translation type="unfinished"/>
+        <translation>Clic amb botó dret a les marques directes per editar les etiquetes i colors.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="49"/>
         <source>Right click anywhere else to show the time at that point.</source>
-        <translation type="unfinished"/>
+        <translation>Fes clic amb el botó dret a qualsevol lloc per mostrar el temps en aquell punt</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="95"/>
@@ -12457,12 +12468,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="32"/>
         <source>Opens the track properties editor</source>
-        <translation type="unfinished"/>
+        <translation>Obre l&apos;editor de les propietats de la pista.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="33"/>
         <source>Opens the track context menu.</source>
-        <translation type="unfinished"/>
+        <translation>Obre el menú contextual de la pista.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="474"/>
@@ -12584,7 +12595,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="620"/>
         <source>Opens a menu to clear hotcues or edit their labels and colors.</source>
-        <translation type="unfinished"/>
+        <translation>Obre un menú per esborrar les marques directes o editar-ne les etiquetes i colors.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="629"/>
@@ -13714,20 +13725,20 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
         <location filename="../../src/widget/woverview.cpp" line="752"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
-        <translation type="unfinished"/>
+        <translation>A punt per reproduir, analitzant...</translation>
     </message>
     <message>
         <location filename="../../src/widget/woverview.cpp" line="755"/>
         <location filename="../../src/widget/woverview.cpp" line="765"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
-        <translation type="unfinished"/>
+        <translation>Carregant la pista...</translation>
     </message>
     <message>
         <location filename="../../src/widget/woverview.cpp" line="759"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
-        <translation type="unfinished"/>
+        <translation>Acabant...</translation>
     </message>
 </context>
 <context>
@@ -13774,7 +13785,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="187"/>
         <source>Use operators like bpm:115-128, artist:BooFar, -year:1990</source>
-        <translation type="unfinished"/>
+        <translation>Utilitza operadors com bpm:115-128, artist:BooFar, -year:1990</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="188"/>
@@ -13866,7 +13877,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="136"/>
         <source>Select Color</source>
-        <translation type="unfinished"/>
+        <translation>Selecciona el color</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="142"/>
@@ -13977,12 +13988,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="249"/>
         <source>Intro</source>
-        <translation>Intro</translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="252"/>
         <source>Outro</source>
-        <translation>Final</translation>
+        <translation>Sortida</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="255"/>
@@ -14067,12 +14078,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="860"/>
         <source>Importing metadata of %n track(s) from file tags</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>important les metadades d&apos; %n pista del fitxer</numerusform><numerusform>important les metadades de %n pistes dels fitxers</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="892"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Marcant les metadades d&apos; %n pista per exportar-les al fitxer</numerusform><numerusform>Marcant les metadades de %n pistes per exportar-les als fitxers</numerusform></translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="942"/>
@@ -14120,92 +14131,92 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1148"/>
         <source>Scaling BPM of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Escalant el BPM d&apos; %n pista</numerusform><numerusform>Escalant el BPM de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1178"/>
         <source>Locking BPM of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Bloquejant el BPM d&apos; %n pista</numerusform><numerusform>Bloquejant el BPM de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1179"/>
         <source>Unlocking BPM of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Desbloquejant el BPM d&apos; %n pista</numerusform><numerusform>Desbloquejant el BPM de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1208"/>
         <source>Setting color of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Configurant el color d&apos; %n pista</numerusform><numerusform>Configurant el color de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1256"/>
         <source>Resetting play count of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Reiniciant el comptador de reproduccions d&apos; %n pista</numerusform><numerusform>Reiniciant el comptador de reproduccions de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1278"/>
         <source>Resetting beats of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Reiniciant la graella de ritme d&apos; %n pista</numerusform><numerusform>Reiniciant la graella de ritme de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1301"/>
         <source>Clearing rating of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Eliminant la puntuació d&apos; %n pista</numerusform><numerusform>Eliminant la puntuació de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1393"/>
         <source>Removing main cue from %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Eliminant la marca Cue d&apos; %n pista</numerusform><numerusform>Eliminant la marca Cue de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1403"/>
         <source>Removing outro cue from %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Eliminant marca de fi d&apos; %n pista</numerusform><numerusform>Eliminant marca de sortida de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1413"/>
         <source>Removing intro cue from %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Eliminant marca d&apos;introducció d&apos; %n pista</numerusform><numerusform>Eliminant marca d&apos;entrada de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1423"/>
         <source>Removing loop cues from %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Eliminant punts de bucle d&apos; %n pista</numerusform><numerusform>Eliminant punts de bucle de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1433"/>
         <source>Removing hot cues from %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Eliminant marques ràpides d&apos; %n pista</numerusform><numerusform>Eliminant marques directes de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1455"/>
         <source>Resetting keys of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Reiniciant les claus musicals d&apos; %n pista</numerusform><numerusform>Reiniciant les claus musicals de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1477"/>
         <source>Resetting replay gain of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Reiniciant el Replaygain d&apos; %n pista</numerusform><numerusform>Reiniciant el Replaygain de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1512"/>
         <source>Resetting waveform of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Reiniciant les formes d&apos;ona d&apos; %n pista</numerusform><numerusform>Reiniciant les formes d&apos;ona de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1568"/>
         <source>Resetting all performance metadata of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Reiniciant totes les metadades de rendiment d&apos; %n pista</numerusform><numerusform>Reiniciant totes les metadades de rendiment de %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1674"/>
         <source>Setting cover art of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Afegint la portada a %n pista</numerusform><numerusform>Afegint la portada a %n pistes</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1698"/>
         <source>Reloading cover art of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Recarregant la portada de %n pista</numerusform><numerusform>Recarregant la portada de %n pistes</numerusform></translation>
     </message>
 </context>
 <context>
@@ -14279,7 +14290,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/network/webtask.cpp" line="220"/>
         <source>The Network request has not been started</source>
-        <translation type="unfinished"/>
+        <translation>La petició de xarxa no ha començat</translation>
     </message>
 </context>
 </TS>

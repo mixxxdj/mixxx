@@ -640,12 +640,12 @@
         <translation>創建檔</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Mixxx 庫</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>無法載入下面的檔，因為它是由 Mixxx 或另一個應用程式使用。</translation>
     </message>
@@ -10196,7 +10196,7 @@ Fully right: end of the effect period</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>

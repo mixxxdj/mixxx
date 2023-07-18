@@ -643,12 +643,12 @@ M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.
         <translation>Archivo Creado</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Bliblioteca Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>No se puede cargar el siguiente archivo porque este es usado por Mixxx u otra aplicación</translation>
     </message>
@@ -6651,17 +6651,17 @@ Este volumen de referencia es aproximado y asume que la ganancia y el nivel de s
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="614"/>
         <source>auto (&lt;= 1024 frames/period)</source>
-        <translation type="unfinished"/>
+        <translation>auto (&lt;= 1024 fotogramas/período)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="617"/>
         <source>2048 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>2048 fotogramas/período</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="620"/>
         <source>4096 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>4096 fotogramas/período</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="819"/>
@@ -10259,7 +10259,7 @@ Todo a la derecha: final del período</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>

@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="100"/>
         <source>Remove Crate as Track Source</source>
-        <translation>Supprimer le bac comme source de piste</translation>
+        <translation>Retirer le bac des sources de pistes</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="113"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="302"/>
         <source>Add Crate as Track Source</source>
-        <translation>Ajouter le bac comme source de pistes</translation>
+        <translation>Ajouter le bac aux sources de pistes</translation>
     </message>
 </context>
 <context>
@@ -51,13 +51,13 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>Error loading Banshee database</source>
-        <translation>Erreur au chargement de la base de données de Banshee</translation>
+        <translation>Erreur au chargement de la base de données Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="77"/>
         <source>Banshee database file not found at
 </source>
-        <translation>Base de données de Banshee non trouvée à
+        <translation>Base de données Banshee non trouvée à
 
 </translation>
     </message>
@@ -84,7 +84,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation>Ajouter à la file Auto-DJ (Remplacer)</translation>
+        <translation>Ajouter à la file Auto DJ (remplacer)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="42"/>
@@ -164,7 +164,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="206"/>
         <source>Enter new name for playlist:</source>
-        <translation>Introduisez le nouveau nom de la liste de lecture :</translation>
+        <translation>Entrer le nouveau nom de la liste de lecture :</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="247"/>
@@ -186,7 +186,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="84"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation>Ajouter à la file Auto-DJ (Remplacer)</translation>
+        <translation>Ajouter à la file Auto DJ (remplacer)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="205"/>
@@ -197,14 +197,14 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="219"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
         <source>Renaming Playlist Failed</source>
-        <translation>Échec pour renomer la liste de lecture</translation>
+        <translation>Le renommage de la liste de lecture a échoué</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="220"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="263"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="315"/>
         <source>A playlist by that name already exists.</source>
-        <translation>Il existe déjà une liste de lecture avec ce nom</translation>
+        <translation>Il existe déjà une liste de lecture avec ce nom.</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="224"/>
@@ -373,7 +373,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="209"/>
         <source>Samplerate</source>
-        <translation>Tauxéchantillonnage</translation>
+        <translation>Taux d&apos;échantillonnage</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="213"/>
@@ -414,12 +414,12 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="469"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation>Impossible d&apos;utiliser le stockage de mot de passe sécurisé: échec d&apos;accès au trousseau.</translation>
+        <translation>Impossible d&apos;utiliser le stockage de mot de passe sécurisé : échec d&apos;accès au trousseau.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="499"/>
         <source>Secure password retrieval unsuccessful: keychain access failed.</source>
-        <translation>La récupération de mot de passe sécurisé a échoué: échec d&apos;accès au trousseau.</translation>
+        <translation>La récupération de mot de passe sécurisé a échoué : échec d&apos;accès au trousseau.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="511"/>
@@ -480,12 +480,12 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="45"/>
         <source>Add to Quick Links</source>
-        <translation>Ajouter aux Raccourcis Rapides</translation>
+        <translation>Ajouter aux Accès Rapides</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="51"/>
         <source>Remove from Quick Links</source>
-        <translation>Retirer des Raccourcis Rapides</translation>
+        <translation>Retirer des Accès Rapides</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="57"/>
@@ -495,7 +495,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="74"/>
         <source>Quick Links</source>
-        <translation>Accès rapides</translation>
+        <translation>Accès Rapides</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="78"/>
@@ -532,7 +532,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="438"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
-        <translation>&quot;Ordinateur&quot; vous permet de naviguer, voir et charger les pistes dans les dossiers de votre disque dur et périphériques externes.</translation>
+        <translation>&quot;Ordinateur&quot; vous permet de naviguer, voir et charger les pistes dans les dossiers de votre disque dur et de vos périphériques externes.</translation>
     </message>
 </context>
 <context>
@@ -643,12 +643,12 @@
         <translation>Fichier créé</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Bibliothèque Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Impossible de charger le fichier suivant car il est utilisé par Mixxx ou une autre application.</translation>
     </message>
@@ -915,30 +915,30 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="55"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1021"/>
         <source>Mix orientation (e.g. left, right, center)</source>
-        <translation>Orientation du Mix (ex. gauche, droite, centre)</translation>
+        <translation>Orientation du mix (ex. gauche, droite, centre)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="59"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1025"/>
         <source>Set mix orientation to left</source>
-        <translation>Régle l&apos;orientation du mix à gauche</translation>
+        <translation>Règle l&apos;orientation du mix à gauche</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="63"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1030"/>
         <source>Set mix orientation to center</source>
-        <translation>Régle l&apos;orientation du mix au centre</translation>
+        <translation>Règle l&apos;orientation du mix au centre</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1034"/>
         <source>Set mix orientation to right</source>
-        <translation>Régle l&apos;orientation du mix à droite</translation>
+        <translation>Règle l&apos;orientation du mix à droite</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="199"/>
         <source>Toggle slip mode</source>
-        <translation>Activer le mode &quot;Glissement&quot;</translation>
+        <translation>Activer/désactiver le mode &quot;Glissement&quot;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="203"/>
@@ -958,12 +958,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="206"/>
         <source>Increase BPM by 0.1</source>
-        <translation>Augmenter le BPM de 0.1</translation>
+        <translation>Augmenter le BPM de 0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="207"/>
         <source>Decrease BPM by 0.1</source>
-        <translation>Diminuer le BPM de 0.1</translation>
+        <translation>Diminuer le BPM de 0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="208"/>
@@ -988,12 +988,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="251"/>
         <source>Increase internal master BPM by 0.1</source>
-        <translation>Augmenter le BPM interne principal de 0.1</translation>
+        <translation>Augmenter le BPM interne principal de 0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="253"/>
         <source>Decrease internal master BPM by 0.1</source>
-        <translation>Diminuer le BPM interne principal de 0.1</translation>
+        <translation>Diminuer le BPM interne principal de 0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="255"/>
@@ -1254,7 +1254,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="182"/>
         <source>Fast Rewind</source>
-        <translation>Rembobinage rapide</translation>
+        <translation>Retour rapide</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="182"/>
@@ -10257,7 +10257,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>

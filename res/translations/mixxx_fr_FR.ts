@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="52"/>
         <source>Analyze</source>
-        <translation>Analyse</translation>
+        <translation>Analyser</translation>
     </message>
 </context>
 <context>
@@ -21,12 +21,12 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="76"/>
         <source>Crates</source>
-        <translation>Caisses</translation>
+        <translation>Bacs</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="100"/>
         <source>Remove Crate as Track Source</source>
-        <translation>Remove Crate as Track Source</translation>
+        <translation>Retirer le bac des sources de pistes</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="113"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="302"/>
         <source>Add Crate as Track Source</source>
-        <translation>Add Crate as Track Source</translation>
+        <translation>Ajouter le bac aux sources de pistes</translation>
     </message>
 </context>
 <context>
@@ -51,19 +51,21 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>Error loading Banshee database</source>
-        <translation>Erreur lors du chargement de la banque de données banshee</translation>
+        <translation>Erreur au chargement de la base de données Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="77"/>
         <source>Banshee database file not found at
 </source>
-        <translation>La base de données banshee n&apos;est pas trouvée à</translation>
+        <translation>La base de données Banshee n&apos;est pas trouvée à
+</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="86"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation>Il y a eut une erreur pendant le chargement de la base de donnée banshee à </translation>
+        <translation>Une erreur s&apos;est produite lors du chargement de votre base de données Banshee à partir de
+</translation>
     </message>
 </context>
 <context>
@@ -71,17 +73,17 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="24"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en dernier)</translation>
+        <translation>Ajouter à la file Auto DJ (fin)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="30"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en premier)</translation>
+        <translation>Ajouter à la file Auto DJ (début)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation>Add to Auto DJ Queue (replace)</translation>
+        <translation>Ajouter à la file Auto DJ (remplacer)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="42"/>
@@ -130,7 +132,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="53"/>
         <source>Rename</source>
-        <translation>Renomer</translation>
+        <translation>Renommer</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
@@ -641,12 +643,12 @@
         <translation>File Created</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Mixxx Library</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Could not load the following file because it is in use by Mixxx or another application.</translation>
     </message>
@@ -10256,7 +10258,7 @@ Fully right: end of the effect period</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>

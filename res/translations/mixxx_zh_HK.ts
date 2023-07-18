@@ -654,12 +654,12 @@
         <translation>創建檔</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>mixxx的音樂庫</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>無法載入以下檔案，因為正在被Mixxx或其他程式使用中</translation>
     </message>
@@ -1929,7 +1929,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="757"/>
         <source>Next Chain</source>
-        <translation>下一效果器链</translation>
+        <translation>下一個鏈</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="774"/>
@@ -10228,7 +10228,7 @@ Fully right: end of the effect period</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -14220,7 +14220,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
     <message>
         <location filename="../../src/widget/wtracktableviewheader.cpp" line="102"/>
         <source>Show or hide columns.</source>
-        <translation>显示或隐藏列。</translation>
+        <translation>顯示或隱藏列。</translation>
     </message>
 </context>
 <context>
@@ -14233,7 +14233,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
     <message>
         <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="915"/>
         <source>(GL)</source>
-        <translation>（GL）</translation>
+        <translation>(GL)</translation>
     </message>
     <message>
         <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="925"/>

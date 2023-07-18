@@ -642,12 +642,12 @@
         <translation>Ustvarjanje datoteke</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Mixxx Library</source>
         <translation>Mixxx knjižnica</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="195"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Datoteke ni bilo mogoče naložiti, ker jo že uporablja Mixxx ali nek drug program.</translation>
     </message>
@@ -2214,7 +2214,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="39"/>
         <source>Controller</source>
-        <translation type="unfinished"/>
+        <translation>Kontroler</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="46"/>
@@ -2285,7 +2285,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Decrease Speed (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>Zmanjšaj hitrost (natančno)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="290"/>
@@ -2501,22 +2501,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="535"/>
         <source>Go To Loop In</source>
-        <translation type="unfinished"/>
+        <translation>Pojdi na vhod zanke</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="535"/>
         <source>Go to Loop In button</source>
-        <translation type="unfinished"/>
+        <translation>Gumb za skok na vhod zanke</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Go To Loop Out</source>
-        <translation type="unfinished"/>
+        <translation>Pojdi na izhod zanke</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Go to Loop Out button</source>
-        <translation type="unfinished"/>
+        <translation>Gumb za skok na izhod zanke</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
@@ -3686,7 +3686,7 @@ Prehod začne na izbranem številu sekund pred zadnjim zvokom.</translation>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="288"/>
         <source>Auto DJ requires two decks assigned to opposite sides of the crossfader.</source>
-        <translation type="unfinished"/>
+        <translation>Samodejni DJ potrebuje dva predvajalnika, ki sta določena nasprotnim strabem križnega drsnika.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="294"/>
@@ -6647,17 +6647,17 @@ Ciljna glasnost je približna in predpostavlja, da ostaneta predojačitev in izh
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="614"/>
         <source>auto (&lt;= 1024 frames/period)</source>
-        <translation type="unfinished"/>
+        <translation>samodejno (&lt;= 1024 okvirjev/dobo)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="617"/>
         <source>2048 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>2048 okvirjev/dobo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="620"/>
         <source>4096 frames/period</source>
-        <translation type="unfinished"/>
+        <translation>4096 okvirjev/dobo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="819"/>
@@ -7450,7 +7450,7 @@ Izbirajte med različnimi vrstami prikaza valovne oblike, ki se primarno razliku
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="405"/>
         <source>Mixxx could not find this track in the MusicBrainz database.</source>
-        <translation>Mixx ni našel podatkovne baze MusicBrainz.</translation>
+        <translation>Mixx te skladbe ni našel v podatkovni baze MusicBrainz.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="456"/>
@@ -8559,7 +8559,7 @@ Ali bi radi izbrali vhodno napravo?</translation>
     <message>
         <location filename="../../src/test/mock_networkaccessmanager.cpp" line="109"/>
         <source>Operation canceled</source>
-        <translation type="unfinished"/>
+        <translation>Dejanje je bilo prekinjeno</translation>
     </message>
 </context>
 <context>
@@ -10162,7 +10162,7 @@ Popolnoma na desni: konec periode efekta</translation>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
-        <translation type="unfinished"/>
+        <translation>snemalna mapa ima manj kot 1GB uporabnega prostora</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
@@ -10253,7 +10253,7 @@ Popolnoma na desni: konec periode efekta</translation>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="66"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="449"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -14294,7 +14294,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/network/webtask.cpp" line="220"/>
         <source>The Network request has not been started</source>
-        <translation type="unfinished"/>
+        <translation>Omrežna zahteva ni bila zagnana</translation>
     </message>
 </context>
 </TS>
