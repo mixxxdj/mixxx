@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-07-18" timestamp="1689658123">
+    <release version="2.3.6" type="development" date="2023-07-18" timestamp="1689659468">
       <description>
  <ul>
   <li>
@@ -107,7 +107,7 @@
    #11589
   </li>
   <li>
-   No longer stop a track with an active loop at the very end.
+   No longer stop a track with an active loop at the very end
    #11558
    #11557
   </li>
@@ -139,9 +139,6 @@
   <li>
    Shade: Fixed VU-Meter and other minor issues
    #11598
-  </li>
-  <li>
-   LateNight PaleMoon: Tweak style
   </li>
  </ul>
 </description>
