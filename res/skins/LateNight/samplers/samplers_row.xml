@@ -13,6 +13,7 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
+      <!-- Select between big or small samplers -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
@@ -25,40 +26,40 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <SingletonContainer>
-                <ObjectName>SamplerMini1_Singleton</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:../LateNight/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum"><Variable name="Sampler1"/></SetVariable>
+              </Template>
 
-              <SingletonContainer>
-                <ObjectName>SamplerMini2_Singleton</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:../LateNight/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum"><Variable name="Sampler2"/></SetVariable>
+              </Template>
 
-              <SingletonContainer>
-                <ObjectName>SamplerMini3_Singleton</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:../LateNight/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum"><Variable name="Sampler3"/></SetVariable>
+              </Template>
 
-              <SingletonContainer>
-                <ObjectName>SamplerMini4_Singleton</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:../LateNight/samplers/sampler_mini.xml">
+                <SetVariable name="SamplerNum"><Variable name="Sampler4"/></SetVariable>
+              </Template>
 
               <SingletonContainer>
                 <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
               </SingletonContainer>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">5</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler5"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">6</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler6"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">7</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler7"/></SetVariable>
               </Template>
 
               <Template src="skin:../LateNight/samplers/sampler_mini.xml">
-                <SetVariable name="SamplerNum">8</SetVariable>
+                <SetVariable name="SamplerNum"><Variable name="Sampler8"/></SetVariable>
               </Template>
 
             </Children>
@@ -70,7 +71,8 @@
           </WidgetGroup>
 
           <!-- 8 big Samplers -->
-          <WidgetGroup on_hide_select="0">
+          <!-- <WidgetGroup on_hide_select="0"> -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -82,24 +84,24 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
 
-                  <SingletonContainer>
-                    <ObjectName>Sampler1_Singleton</ObjectName>
-                  </SingletonContainer>
+                  <Template src="skin:../LateNight/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum"><Variable name="Sampler1"/></SetVariable>
+                  </Template>
 
-                  <SingletonContainer>
-                    <ObjectName>Sampler2_Singleton</ObjectName>
-                  </SingletonContainer>
+                  <Template src="skin:../LateNight/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum"><Variable name="Sampler2"/></SetVariable>
+                  </Template>
 
                   <SingletonContainer>
                     <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
                   </SingletonContainer>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">5</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler5"/></SetVariable>
                   </Template>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">6</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler6"/></SetVariable>
                   </Template>
 
                 </Children>
@@ -112,13 +114,13 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <SingletonContainer>
-                    <ObjectName>Sampler3_Singleton</ObjectName>
-                  </SingletonContainer>
+                  <Template src="skin:../LateNight/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum"><Variable name="Sampler3"/></SetVariable>
+                  </Template>
 
-                  <SingletonContainer>
-                    <ObjectName>Sampler4_Singleton</ObjectName>
-                  </SingletonContainer>
+                  <Template src="skin:../LateNight/samplers/sampler.xml">
+                    <SetVariable name="SamplerNum"><Variable name="Sampler4"/></SetVariable>
+                  </Template>
 
                   <WidgetGroup>
                     <ObjectName>MicAuxRackFiller</ObjectName>
@@ -126,11 +128,11 @@
                   </WidgetGroup>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">7</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler7"/></SetVariable>
                   </Template>
 
                   <Template src="skin:../LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">8</SetVariable>
+                    <SetVariable name="SamplerNum"><Variable name="Sampler8"/></SetVariable>
                   </Template>
 
                 </Children>

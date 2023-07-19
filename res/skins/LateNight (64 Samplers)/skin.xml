@@ -29,16 +29,16 @@
 <!DOCTYPE skin>
 <skin>
   <manifest>
-    <title>LateNight</title>
+    <title>LateNight (64 Samplers)</title>
     <author>owilliams, ronso0</author>
     <version>2.4.0.01</version>
-    <description>A wide nighttime skin with stacked waveforms, 4 decks in 3 configurations and up to 16 samplers.</description>
+    <description>A wide nighttime skin with stacked waveforms, 4 decks in 3 configurations and up to 64 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
     <!-- Set skin defaults -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Master],num_samplers">64</attribute>
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
 
@@ -137,7 +137,7 @@
         SliderScheme  ...exactly!
         StyleScheme   icons & backgrounds for library, splitters, spinnies,
                       VU meter, default cover art etc. -->
-      <Style src="skin:style_palemoon.qss"/>
+      <Style src="skin:../LateNight/style_palemoon.qss"/>
       <SetVariable name="BtnScheme">palemoon</SetVariable>
       <SetVariable name="KnobScheme">palemoon</SetVariable>
       <SetVariable name="SliderScheme">palemoon</SetVariable>
@@ -235,7 +235,7 @@
 
     <Scheme>
       <Name>Classic</Name>
-      <Style src="skin:style_classic.qss"/>
+      <Style src="skin:../LateNight/style_classic.qss"/>
       <SetVariable name="BtnScheme">classic</SetVariable>
       <SetVariable name="KnobScheme">classic</SetVariable>
       <SetVariable name="SliderScheme">classic</SetVariable>

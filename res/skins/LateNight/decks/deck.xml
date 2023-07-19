@@ -5,7 +5,7 @@
     <MaximumSize>,230</MaximumSize>
     <Children>
 
-      <Template src="skin:/decks/deck_singletons.xml">
+      <Template src="skin:../LateNight/decks/deck_singletons.xml">
         <SetVariable name="Type">deck</SetVariable>
         <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
       </Template>
