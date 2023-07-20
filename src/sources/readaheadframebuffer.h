@@ -92,17 +92,6 @@ class ReadAheadFrameBuffer final {
     bool tryContinueReadingFrom(
             FrameIndex readIndex);
 
-    enum class DiscontinuityOverlapMode {
-        Ignore,
-        Rewind,
-        Default = Rewind, // recommended default
-    };
-    enum class DiscontinuityGapMode {
-        Skip,
-        FillWithSilence,
-        Default = FillWithSilence, // recommended default
-    };
-
     /// Drain as many buffered sample frames as possible and copy them
     /// into the output buffer.
     ///
@@ -137,11 +126,7 @@ class ReadAheadFrameBuffer final {
     /// the buffer.
     WritableSampleFrames consumeAndFillBuffer(ReadableSampleFrames inputBuffer,
             const WritableSampleFrames& outputBuffer,
-            FrameIndex minOutputIndex,
-            std::pair<DiscontinuityOverlapMode, DiscontinuityGapMode>
-                    discontinuityModes = std::make_pair(
-                            DiscontinuityOverlapMode::Default,
-                            DiscontinuityGapMode::Default));
+            FrameIndex minOutputIndex);
 
   private:
     void adjustCapacityBeforeBuffering(
@@ -156,8 +141,7 @@ class ReadAheadFrameBuffer final {
     /// Returns the unread portion of the readable sample frames,
     /// which should typically be empty.
     ReadableSampleFrames fillBuffer(
-            const ReadableSampleFrames& inputBuffer,
-            DiscontinuityGapMode discontinuityGapMode);
+            const ReadableSampleFrames& inputBuffer);
 
     /// Advance the read position thereby discarding samples
     /// from the front of the FIFO buffer.

@@ -110,8 +110,7 @@ FrameCount ReadAheadFrameBuffer::discardLastBufferedFrames(
 }
 
 ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
-        const ReadableSampleFrames& inputBuffer,
-        DiscontinuityGapMode discontinuityGapMode) {
+        const ReadableSampleFrames& inputBuffer) {
     DEBUG_ASSERT(isValid());
     auto inputRange = inputBuffer.frameIndexRange();
     VERIFY_OR_DEBUG_ASSERT(inputRange.orientation() != IndexRange::Orientation::Backward) {
@@ -144,25 +143,16 @@ ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
 #if DEBUG_ASSERT_ON_DISCONTINUITIES
         DEBUG_ASSERT(!"Unexpected gap");
 #endif
-        switch (discontinuityGapMode) {
-        case DiscontinuityGapMode::Skip:
-            reset(inputRange.start());
-            break;
-        case DiscontinuityGapMode::FillWithSilence: {
-            const auto clearFrameCount = gapRange.length();
-            adjustCapacityBeforeBuffering(clearFrameCount);
-            const auto clearSampleCount =
-                    m_signalInfo.frames2samples(clearFrameCount);
-            const SampleBuffer::WritableSlice writableSamples(
-                    m_sampleBuffer.growForWriting(clearSampleCount));
-            DEBUG_ASSERT(writableSamples.length() == clearSampleCount);
-            SampleUtil::clear(
-                    writableSamples.data(),
-                    clearSampleCount);
-        } break;
-        default:
-            DEBUG_ASSERT(!"Unknown DiscontinuityGapMode");
-        }
+        const SINT clearFrameCount = gapRange.length();
+        adjustCapacityBeforeBuffering(clearFrameCount);
+        const SINT clearSampleCount =
+                m_signalInfo.frames2samples(clearFrameCount);
+        const SampleBuffer::WritableSlice writableSamples(
+                m_sampleBuffer.growForWriting(clearSampleCount));
+        DEBUG_ASSERT(writableSamples.length() == clearSampleCount);
+        SampleUtil::clear(
+                writableSamples.data(),
+                clearSampleCount);
     }
 
     DEBUG_ASSERT(writeIndex() == inputRange.start());
@@ -273,8 +263,7 @@ WritableSampleFrames ReadAheadFrameBuffer::drainBuffer(
 WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
         ReadableSampleFrames inputBuffer,
         const WritableSampleFrames& outputBuffer,
-        FrameCount minOutputIndex,
-        std::pair<DiscontinuityOverlapMode, DiscontinuityGapMode> discontinuityModes) {
+        FrameCount minOutputIndex) {
     auto inputRange = inputBuffer.frameIndexRange();
     auto outputRange = outputBuffer.frameIndexRange();
 #if VERBOSE_DEBUG_LOG
@@ -298,12 +287,10 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
 
     // output sample data is optional, i.e. input samples will be dropped
     // and not copied if no output buffer is provided
-    auto* pOutputSampleData = outputBuffer.writableData();
+    CSAMPLE* pOutputSampleData = outputBuffer.writableData();
     DEBUG_ASSERT(outputRange.orientation() != IndexRange::Orientation::Backward);
     DEBUG_ASSERT(isEmpty() || outputRange.empty());
     DEBUG_ASSERT(minOutputIndex <= outputRange.start());
-
-    const auto [discontinuityOverlapMode, discontinuityGapMode] = discontinuityModes;
 
     // Detect and handle unexpected discontinuities: Overlap
     if (inputRange.start() < outputRange.start()) {
@@ -326,18 +313,11 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
 #if DEBUG_ASSERT_ON_DISCONTINUITIES
             DEBUG_ASSERT(!"Unexpected overlap");
 #endif
-            switch (discontinuityOverlapMode) {
-            case DiscontinuityOverlapMode::Ignore:
-                break;
-            case DiscontinuityOverlapMode::Rewind:
-                if (pOutputSampleData) {
-                    pOutputSampleData -= m_signalInfo.frames2samples(overlapRange.length());
-                }
-                outputRange.growFront(overlapRange.length());
-                break;
-            default:
-                DEBUG_ASSERT(!"Unknown DiscontinuityOverlapMode");
+            const SINT overlapingFrames = overlapRange.length();
+            if (pOutputSampleData) {
+                pOutputSampleData -= m_signalInfo.frames2samples(overlapingFrames);
             }
+            outputRange.growFront(overlapingFrames);
         }
     }
     if (!isEmpty() && inputRange.start() < writeIndex()) {
@@ -360,15 +340,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
 #if DEBUG_ASSERT_ON_DISCONTINUITIES
             DEBUG_ASSERT(!"Unexpected overlap");
 #endif
-            switch (discontinuityOverlapMode) {
-            case DiscontinuityOverlapMode::Ignore:
-                break;
-            case DiscontinuityOverlapMode::Rewind:
-                discardLastBufferedFrames(overlapRange.length());
-                break;
-            default:
-                DEBUG_ASSERT(!"Unknown DiscontinuityOverlapMode");
-            }
+            discardLastBufferedFrames(overlapRange.length());
         }
     }
 
@@ -415,23 +387,11 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
 #if DEBUG_ASSERT_ON_DISCONTINUITIES
                 DEBUG_ASSERT(!"Unexpected gap");
 #endif
-                switch (discontinuityGapMode) {
-                case DiscontinuityGapMode::Skip:
-                    break;
-                case DiscontinuityGapMode::FillWithSilence: {
-                    const auto clearFrameCount = gapRange.length();
-                    const auto clearSampleCount = m_signalInfo.frames2samples(clearFrameCount);
-                    if (pOutputSampleData) {
-                        SampleUtil::clear(
-                                pOutputSampleData,
-                                clearSampleCount);
-                        pOutputSampleData += clearSampleCount;
-                    }
-                } break;
-                default:
-                    DEBUG_ASSERT(!"Unknown DiscontinuityGapMode");
-                }
-                outputRange.shrinkFront(gapRange.length());
+                const SINT clearFrameCount = gapRange.length();
+                const SINT clearSampleCount = m_signalInfo.frames2samples(clearFrameCount);
+                SampleUtil::clear(pOutputSampleData, clearSampleCount);
+                pOutputSampleData += clearSampleCount;
+                outputRange.shrinkFront(clearFrameCount);
             }
         }
 
@@ -478,8 +438,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                         inputRange,
                         SampleBuffer::ReadableSlice(
                                 pInputSampleData,
-                                m_signalInfo.frames2samples(inputRange.length()))),
-                discontinuityGapMode);
+                                m_signalInfo.frames2samples(inputRange.length()))));
         Q_UNUSED(inputBuffer)
         DEBUG_ASSERT(inputBuffer.frameIndexRange().empty());
     }
