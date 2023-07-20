@@ -36,6 +36,18 @@ EffectChainPresetPointer loadPresetFromFile(const QString& filePath) {
     return pEffectChainPreset;
 }
 
+EffectChainPresetPointer createEmptyChainPreset() {
+    EffectManifestPointer pEmptyManifest(new EffectManifest());
+    pEmptyManifest->setName(kNoEffectString);
+    // Required for the QuickEffect selector in DlgPrefEQ
+    pEmptyManifest->setShortName(kNoEffectString);
+    auto pEmptyChainPreset =
+            EffectChainPresetPointer(new EffectChainPreset(pEmptyManifest));
+    pEmptyChainPreset->setReadOnly();
+
+    return pEmptyChainPreset;
+}
+
 } // anonymous namespace
 
 EffectChainPresetManager::EffectChainPresetManager(UserSettingsPointer pConfig,
@@ -593,6 +605,11 @@ void EffectChainPresetManager::resetToDefaults() {
     generateDefaultQuickEffectPresets();
     prependRemainingPresetsToLists();
 
+    // Re-add the empty chain preset
+    EffectChainPresetPointer pEmptyChainPreset = createEmptyChainPreset();
+    m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
+    m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);
+
     emit effectChainPresetListUpdated();
     emit quickEffectChainPresetListUpdated();
 }
@@ -732,14 +749,9 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // It will not be saved to effects/chains nor written to effects.xml
     // except as identifier for QuickEffect chains.
     // It will not be visible in the effects preferences.
-    EffectManifestPointer pEmptyChainManifest(new EffectManifest());
-    pEmptyChainManifest->setName(kNoEffectString);
-    // Required for the QuickEffect selector in DlgPrefEQ
-    pEmptyChainManifest->setShortName(kNoEffectString);
-    auto pEmptyChainPreset =
-            EffectChainPresetPointer(new EffectChainPreset(pEmptyChainManifest));
-    pEmptyChainPreset->setReadOnly();
-
+    // Note: we also need to take care of this preset in resetToDefaults() and
+    // setQuickEffectPresetOrder(), both called from DlgPrefEffects
+    EffectChainPresetPointer pEmptyChainPreset = createEmptyChainPreset();
     m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
     m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);
 
