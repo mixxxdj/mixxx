@@ -119,9 +119,6 @@ class ReadAheadFrameBuffer final {
     /// All discontinuities in the output stream, i.e. both gaps and overlapping
     /// regions are unexpected and will trigger a debug assertion.
     ///
-    /// The output sample buffer may be null. In this case the consumed
-    /// samples are dropped instead of copied.
-    ///
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
     WritableSampleFrames consumeAndFillBuffer(ReadableSampleFrames inputBuffer,

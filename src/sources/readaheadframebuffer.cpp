@@ -285,9 +285,8 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
     DEBUG_ASSERT(inputRange.orientation() != IndexRange::Orientation::Backward);
     DEBUG_ASSERT(isEmpty() || writeIndex() == inputRange.start());
 
-    // output sample data is optional, i.e. input samples will be dropped
-    // and not copied if no output buffer is provided
     CSAMPLE* pOutputSampleData = outputBuffer.writableData();
+    DEBUG_ASSERT(pOutputSampleData);
     DEBUG_ASSERT(outputRange.orientation() != IndexRange::Orientation::Backward);
     DEBUG_ASSERT(isEmpty() || outputRange.empty());
     DEBUG_ASSERT(minOutputIndex <= outputRange.start());
@@ -314,9 +313,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
             DEBUG_ASSERT(!"Unexpected overlap");
 #endif
             const SINT overlapingFrames = overlapRange.length();
-            if (pOutputSampleData) {
-                pOutputSampleData -= m_signalInfo.frames2samples(overlapingFrames);
-            }
+            pOutputSampleData -= m_signalInfo.frames2samples(overlapingFrames);
             outputRange.growFront(overlapingFrames);
         }
     }
@@ -411,13 +408,11 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
             DEBUG_ASSERT(outputRange.start() == inputRange.start());
             const auto copyFrameCount = copyableFrameRange.length();
             const auto copySampleCount = m_signalInfo.frames2samples(copyFrameCount);
-            if (pOutputSampleData) {
-                SampleUtil::copy(
-                        pOutputSampleData,
-                        pInputSampleData,
-                        copySampleCount);
-                pOutputSampleData += copySampleCount;
-            }
+            SampleUtil::copy(
+                    pOutputSampleData,
+                    pInputSampleData,
+                    copySampleCount);
+            pOutputSampleData += copySampleCount;
             pInputSampleData += copySampleCount;
             inputRange.shrinkFront(copyFrameCount);
             outputRange.shrinkFront(copyFrameCount);
