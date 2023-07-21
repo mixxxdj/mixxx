@@ -121,7 +121,8 @@ class ReadAheadFrameBuffer final {
     ///
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
-    WritableSampleFrames consumeAndFillBuffer(ReadableSampleFrames inputBuffer,
+    WritableSampleFrames consumeAndFillBuffer(
+            const ReadableSampleFrames& inputBuffer,
             const WritableSampleFrames& outputBuffer,
             FrameIndex minOutputIndex);
 
@@ -135,10 +136,8 @@ class ReadAheadFrameBuffer final {
     /// frame. The buffering mode controls how a gap between the
     /// last buffered frame and the next input frame is handled.
     ///
-    /// Returns the unread portion of the readable sample frames,
-    /// which should typically be empty.
-    ReadableSampleFrames fillBuffer(
-            const ReadableSampleFrames& inputBuffer);
+    /// Returns true on success
+    bool fillBuffer(const ReadableSampleFrames& inputBuffer);
 
     /// Advance the read position thereby discarding samples
     /// from the front of the FIFO buffer.

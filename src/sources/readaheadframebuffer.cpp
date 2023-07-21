@@ -109,16 +109,16 @@ FrameCount ReadAheadFrameBuffer::discardLastBufferedFrames(
             m_signalInfo.frames2samples(frameCount));
 }
 
-ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
+bool ReadAheadFrameBuffer::fillBuffer(
         const ReadableSampleFrames& inputBuffer) {
     DEBUG_ASSERT(isValid());
-    auto inputRange = inputBuffer.frameIndexRange();
+    const auto inputRange = inputBuffer.frameIndexRange();
     VERIFY_OR_DEBUG_ASSERT(inputRange.orientation() != IndexRange::Orientation::Backward) {
-        return inputBuffer;
+        return false;
     }
     const CSAMPLE* pInputSamples = inputBuffer.readableData();
     VERIFY_OR_DEBUG_ASSERT(pInputSamples) {
-        return inputBuffer;
+        return false;
     }
 
     // Overlapping input data has already been handled
@@ -157,7 +157,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
 
     DEBUG_ASSERT(writeIndex() == inputRange.start());
     if (inputRange.empty()) {
-        return inputBuffer;
+        return true;
     }
     // Consume the readable sample data by copying it into the internal buffer
 #if VERBOSE_DEBUG_LOG
@@ -176,13 +176,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
             inputBuffer.readableData(),
             copySampleCount);
     pInputSamples += copySampleCount;
-    inputRange.shrinkFront(inputRange.length());
-    DEBUG_ASSERT(inputRange.empty());
-    return ReadableSampleFrames(
-            inputRange,
-            SampleBuffer::ReadableSlice(
-                    pInputSamples,
-                    m_signalInfo.frames2samples(inputRange.length())));
+    return true;
 }
 
 WritableSampleFrames ReadAheadFrameBuffer::drainBuffer(
@@ -261,7 +255,7 @@ WritableSampleFrames ReadAheadFrameBuffer::drainBuffer(
 }
 
 WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
-        ReadableSampleFrames inputBuffer,
+        const ReadableSampleFrames& inputBuffer,
         const WritableSampleFrames& outputBuffer,
         FrameCount minOutputIndex) {
     auto inputRange = inputBuffer.frameIndexRange();
@@ -428,14 +422,14 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
 
     // Fill internal buffer
     if (!inputRange.empty()) {
-        inputBuffer = fillBuffer(
+        bool success = fillBuffer(
                 ReadableSampleFrames(
                         inputRange,
                         SampleBuffer::ReadableSlice(
                                 pInputSampleData,
                                 m_signalInfo.frames2samples(inputRange.length()))));
-        Q_UNUSED(inputBuffer)
-        DEBUG_ASSERT(inputBuffer.frameIndexRange().empty());
+        Q_UNUSED(success)
+        DEBUG_ASSERT(success);
     }
 
     // Return remaining output buffer
