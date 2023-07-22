@@ -147,4 +147,5 @@ void WLibrary::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Left && event->modifiers() & Qt::ControlModifier) {
         emit setLibraryFocus(FocusWidget::Sidebar);
     }
+    QStackedWidget::keyPressEvent(event);
 }
