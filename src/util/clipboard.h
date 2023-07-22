@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QString>
+#include <QList>
 #include <QUrl>
 
 #include "util/singleton.h"
 
 class Clipboard : public Singleton<Clipboard> {
-    QString m_text;
+    QList<QUrl> m_urls;
 
   public:
     static QList<QUrl> urls();
