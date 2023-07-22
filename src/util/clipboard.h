@@ -3,12 +3,14 @@
 #include <QString>
 #include <QUrl>
 
-class Clipboard {
-    static QString& text();
+#include "util/singleton.h"
+
+class Clipboard : public Singleton<Clipboard> {
+    QString m_text;
 
   public:
     static QList<QUrl> urls();
-    static void begin();
-    static void end();
+    static void start();
+    static void finish();
     static void add(const QUrl& url);
 };

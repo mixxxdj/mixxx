@@ -369,13 +369,13 @@ void BaseTrackTableModel::cutTracks(const QModelIndexList& indices) {
 }
 
 void BaseTrackTableModel::copyTracks(const QModelIndexList& indices) const {
-    Clipboard::begin();
+    Clipboard::start();
     for (const QModelIndex& index : indices) {
         if (index.isValid()) {
             Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
         }
     }
-    Clipboard::end();
+    Clipboard::finish();
 }
 
 int BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {

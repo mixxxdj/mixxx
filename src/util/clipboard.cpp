@@ -3,21 +3,16 @@
 #include <QApplication>
 #include <QClipboard>
 
-QString& Clipboard::text() {
-    static QString s_text;
-    return s_text;
-}
-
-void Clipboard::begin() {
-    text() = "";
+void Clipboard::start() {
+    instance()->m_text.clear();
 }
 
 void Clipboard::add(const QUrl& url) {
-    text().append(url.toString() + "\n");
+    instance()->m_text.append(url.toString() + "\n");
 }
 
-void Clipboard::end() {
-    QApplication::clipboard()->setText(text());
+void Clipboard::finish() {
+    QApplication::clipboard()->setText(instance()->m_text);
 }
 
 QList<QUrl> Clipboard::urls() {
@@ -28,7 +23,7 @@ QList<QUrl> Clipboard::urls() {
     QStringList strings = text.split("\n", QString::SkipEmptyParts);
 #endif
     QList<QUrl> result;
-    for (QString string : strings) {
+    for (const QString& string : strings) {
         result.append(QUrl(string));
     }
     return result;
