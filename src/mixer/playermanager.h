@@ -130,6 +130,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the track that was last ejected or unloaded. Can return nullptr or
     // invalid TrackId in case of error.
     TrackPointer getLastEjectedTrack() const;
+    TrackPointer getSecondLastEjectedTrack() const;
 
     // Get the microphone by its number. Microphones are numbered starting with 1.
     Microphone* getMicrophone(unsigned int microphone) const;
@@ -285,6 +286,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
+    TrackId m_secondLastEjectedTrackId;
     TrackId m_lastEjectedTrackId;
 
     QList<Deck*> m_decks;

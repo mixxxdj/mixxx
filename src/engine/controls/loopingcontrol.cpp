@@ -1742,13 +1742,13 @@ mixxx::audio::FramePos LoopingControl::adjustedPositionInsideAdjustedLoop(
                 ceil((adjustedPosition.value() - newLoopEndPosition.value()) /
                         newLoopSize);
         adjustedPosition -= adjustSteps * newLoopSize;
-        DEBUG_ASSERT(adjustedPosition <= newLoopEndPosition);
-        VERIFY_OR_DEBUG_ASSERT(adjustedPosition > newLoopStartPosition) {
-            // I'm not even sure this is possible.  The new loop would have to be bigger than the
-            // old loop, and the playhead was somehow outside the old loop.
+        DEBUG_ASSERT(adjustedPosition < newLoopEndPosition);
+        VERIFY_OR_DEBUG_ASSERT(adjustedPosition >= newLoopStartPosition) {
+            // This can happen when offset calculation above has double precision
+            // issues (noticed around 0.00) which shifts the pos beyond loop in
             qWarning()
                     << "SHOULDN'T HAPPEN: adjustedPositionInsideAdjustedLoop "
-                       "couldn't find a new position --"
+                       "set new position to before in point --"
                     << " seeking to in point";
             adjustedPosition = newLoopStartPosition;
         }
@@ -1761,9 +1761,11 @@ mixxx::audio::FramePos LoopingControl::adjustedPositionInsideAdjustedLoop(
         adjustedPosition += adjustSteps * newLoopSize;
         DEBUG_ASSERT(adjustedPosition >= newLoopStartPosition);
         VERIFY_OR_DEBUG_ASSERT(adjustedPosition < newLoopEndPosition) {
+            // This can happen when offset calculation above has double precision
+            // issues (noticed around 0.00) which shifts the pos beyond loop out
             qWarning()
                     << "SHOULDN'T HAPPEN: adjustedPositionInsideAdjustedLoop "
-                       "couldn't find a new position --"
+                       "set new position to out point or later--"
                     << " seeking to in point";
             adjustedPosition = newLoopStartPosition;
         }
