@@ -1,6 +1,7 @@
 #include "library/multilineeditdelegate.h"
 
 #include <QAbstractTextDocumentLayout>
+#include <QScrollBar>
 #include <cmath>
 
 #include "moc_multilineeditdelegate.cpp"
@@ -106,7 +107,25 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF 
     }
     // Also limit width so scrollbars are visible and table is not scrolled if
     // cursor is moved horizontally.
-    int newW = std::min(pEditor->width(), m_pTableView->viewport()->rect().width());
+    int tableW = m_pTableView->viewport()->rect().width();
+    int newW = std::min(pEditor->width(), tableW);
+#ifdef __APPLE__
+    // Don't let table view scrollbars overlap the editor
+    int scrollW = m_pTableView->verticalScrollBar()->width();
+    if (scrollW > 0 && (m_editRect.x() + newW > tableW - scrollW)) {
+        newW -= scrollW;
+    }
+    int scrollH = m_pTableView->horizontalScrollBar()->height();
+    if (scrollH > 0 && (newH > tableH - scrollH)) {
+        if (newY >= scrollH) {
+            // shift it up
+            newY += scrollH;
+        } else {
+            // reduce height
+            newH -= scrollH;
+        }
+    }
+#endif
 
     pEditor->setGeometry(QRect(m_editRect.x(), newY, newW, newH));
 }
