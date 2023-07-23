@@ -122,7 +122,7 @@ int64_t getStreamStartTime(const AVStream& avStream) {
             // the test file cover-test-itunes-12.7.0-aac.m4a has a valid
             // start_time of 0. Unfortunately, this special case cannot be
             // detected and compensated.
-            start_time = math_max(kavStreamDefaultStartTime, kavStreamDecoderFrameDelayAAC);
+            start_time = kavStreamDecoderFrameDelayAAC;
             break;
         }
         default:
@@ -134,7 +134,6 @@ int64_t getStreamStartTime(const AVStream& avStream) {
                 << start_time;
 #endif
     }
-    DEBUG_ASSERT(start_time != AV_NOPTS_VALUE);
     return start_time;
 }
 
