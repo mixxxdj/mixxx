@@ -190,6 +190,8 @@ class SoundSourceFFmpeg : public SoundSource {
     FrameCount m_seekPrerollFrameCount;
 
     ReadAheadFrameBuffer m_frameBuffer;
+
+    const unsigned int m_avutilVersion;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {

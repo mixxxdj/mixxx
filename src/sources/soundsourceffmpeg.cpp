@@ -477,7 +477,8 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
           m_pavPacket(av_packet_alloc()),
           m_pavDecodedFrame(nullptr),
           m_pavResampledFrame(nullptr),
-          m_seekPrerollFrameCount(0) {
+          m_seekPrerollFrameCount(0),
+          m_avutilVersion(avutil_version()) {
     DEBUG_ASSERT(m_pavPacket);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
     av_channel_layout_default(&m_avStreamChannelLayout, 0);
