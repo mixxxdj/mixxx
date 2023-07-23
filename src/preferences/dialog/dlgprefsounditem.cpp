@@ -95,6 +95,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         unsigned char maxChannelsForType =
                 AudioPath::maxChannelsForType(m_type);
 
+        channelComboBox->blockSignals(true);
         // Count down from the max so that stereo channels are first.
         for (int channelsForType = maxChannelsForType;
                  channelsForType >= minChannelsForType; --channelsForType) {
@@ -117,16 +118,28 @@ void DlgPrefSoundItem::deviceChanged(int index) {
                                          QPoint(i - 1, channelsForType));
             }
         }
+        channelComboBox->setCurrentIndex(-1); // clear selection
+        channelComboBox->blockSignals(false);
     }
 emitAndReturn:
     if (m_emitSettingChanged) {
-        emit settingChanged();
+        emit selectedDeviceChanged();
     }
 }
 
 void DlgPrefSoundItem::channelChanged() {
     if (m_emitSettingChanged) {
-        emit settingChanged();
+        emit selectedChannelsChanged();
+    }
+}
+
+void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedChannels) {
+    // Go through the list of occupied channel indices and pick the first unoccupied
+    for (int i = 0; i < channelComboBox->count(); i++) {
+        if (!selectedChannels.contains(i)) {
+            channelComboBox->setCurrentIndex(i);
+            return;
+        }
     }
 }
 
@@ -177,6 +190,8 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     int channelBase = channelData.x();
     int channelCount = channelData.y();
 
+    // check config for occupied channels of this device
+    // auto-select next free channel (pair)
 
     if (m_isInput) {
         config->addInput(
@@ -232,7 +247,7 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
     //qDebug() << "DlgPrefSoundItem::setDevice" << device;
     if (index == -1) {
         deviceComboBox->setCurrentIndex(0); // None
-        emit settingChanged();
+        emit selectedDeviceChanged();
     } else {
         m_emitSettingChanged = false;
         deviceComboBox->setCurrentIndex(index);
@@ -251,7 +266,7 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
     if (index == -1) {
         // channel(s) not found
         channelComboBox->setCurrentIndex(0); // 1
-        emit settingChanged();
+        emit selectedChannelsChanged();
     } else {
         m_emitSettingChanged = false;
         channelComboBox->setCurrentIndex(index);

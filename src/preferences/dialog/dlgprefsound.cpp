@@ -378,16 +378,24 @@ void DlgPrefSound::addPath(const AudioInput& input) {
             &DlgPrefSound::refreshInputDevices,
             pSoundItem,
             &DlgPrefSoundItem::refreshDevices);
-    insertItem(pSoundItem, inputVLayout);
     connectSoundItem(pSoundItem);
+    insertItem(pSoundItem, inputVLayout);
 
     setScrollSafeGuardForAllInputWidgets(pSoundItem);
 }
 
 void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
-    connect(pItem, &DlgPrefSoundItem::settingChanged, this, &DlgPrefSound::deviceSettingChanged);
+    connect(pItem,
+            &DlgPrefSoundItem::selectedDeviceChanged,
+            this,
+            &DlgPrefSound::deviceChanged);
+    connect(pItem,
+            &DlgPrefSoundItem::selectedChannelsChanged,
+            this,
+            &DlgPrefSound::deviceChannelsChanged);
     connect(this, &DlgPrefSound::loadPaths, pItem, &DlgPrefSoundItem::loadPath);
     connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
+    connect(this, &DlgPrefSound::refreshInputDevices, pItem, &DlgPrefSoundItem::refreshDevices);
     connect(this, &DlgPrefSound::updatingAPI, pItem, &DlgPrefSoundItem::save);
     connect(this, &DlgPrefSound::updatedAPI, pItem, &DlgPrefSoundItem::reload);
 }
@@ -397,7 +405,7 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     for (pos = 0; pos < pLayout->count() - 1; ++pos) {
         DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
             pLayout->itemAt(pos)->widget()));
-        if (!pOther) {
+        if (!pOther) { // not a sound item, skip
             continue;
         }
         if (pItem->type() < pOther->type()) {
@@ -477,6 +485,33 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
         keylockComboBox->setCurrentIndex(keylockComboBox->count() - 1);
     }
 
+    // Collect selected I/O channel indices for all non-empty device comboboxes
+    // in order to allow auto-selecting free channels when different devices are
+    // selected later on, when a different device is selected for any I/O.
+    m_selectedOutputChannelIndices.clear();
+    m_selectedInputChannelIndices.clear();
+    for (auto* ch : qAsConst(outputTab->children())) {
+        DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(ch);
+        if (pItem) {
+            auto id = pItem->getDeviceId();
+            if (id == SoundDeviceId()) {
+                continue;
+            }
+            m_selectedOutputChannelIndices.insert(pItem,
+                    QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
+        }
+    }
+    for (auto* ch : qAsConst(inputTab->children())) {
+        DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(ch);
+        if (pItem) {
+            auto id = pItem->getDeviceId();
+            if (id == SoundDeviceId()) {
+                continue;
+            }
+            m_selectedInputChannelIndices.insert(pItem,
+                    QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
+        }
+    }
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
     emit loadPaths(m_config);
@@ -643,10 +678,64 @@ void DlgPrefSound::settingChanged() {
     m_settingsModified = true;
 }
 
-void DlgPrefSound::deviceSettingChanged() {
+void DlgPrefSound::deviceChanged() {
     if (m_loading) {
         return;
     }
+
+    DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(sender());
+    if (!pItem) {
+        return;
+    }
+    QHash<DlgPrefSoundItem*, QPair<SoundDeviceId, int>>* channels;
+    if (pItem->isInput()) {
+        channels = &m_selectedInputChannelIndices;
+    } else {
+        channels = &m_selectedOutputChannelIndices;
+    }
+    auto id = pItem->getDeviceId();
+    if (id == SoundDeviceId()) {
+        if (channels->contains(pItem)) {
+            channels->remove(pItem);
+        }
+    } else {
+        QList<int> selectedChannelsForDevice;
+        QHashIterator<DlgPrefSoundItem*, QPair<SoundDeviceId, int>> it(
+                pItem->isInput()
+                        ? m_selectedInputChannelIndices
+                        : m_selectedOutputChannelIndices);
+        while (it.hasNext()) {
+            it.next();
+            if (it.value().first == id) {
+                qWarning() << "     -> match";
+                selectedChannelsForDevice.append(it.value().second);
+            }
+        }
+        pItem->selectFirstUnusedChannelIndex(selectedChannelsForDevice);
+    }
+
+    checkLatencyCompensation();
+    m_settingsModified = true;
+}
+
+void DlgPrefSound::deviceChannelsChanged() {
+    if (m_loading) {
+        return;
+    }
+    DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(sender());
+    if (!pItem) {
+        return;
+    }
+    auto id = pItem->getDeviceId();
+    int index = pItem->getChannelIndex();
+    if (id != SoundDeviceId()) {
+        if (pItem->isInput()) {
+            m_selectedInputChannelIndices.insert(pItem, QPair<SoundDeviceId, int>(id, index));
+        } else {
+            m_selectedOutputChannelIndices.insert(pItem, QPair<SoundDeviceId, int>(id, index));
+        }
+    }
+
     checkLatencyCompensation();
     m_settingsModified = true;
 }

@@ -14,6 +14,7 @@ class SoundManager;
 class PlayerManager;
 class ControlObject;
 class SoundDevice;
+class SoundDeviceId;
 class DlgPrefSoundItem;
 class ControlProxy;
 
@@ -67,7 +68,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void engineClockChanged(int index);
     void refreshDevices();
     void settingChanged();
-    void deviceSettingChanged();
+    void deviceChanged();
+    void deviceChannelsChanged();
     void queryClicked();
 
   private:
@@ -92,6 +94,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlProxy* m_pMicMonitorMode;
     QList<SoundDevicePointer> m_inputDevices;
     QList<SoundDevicePointer> m_outputDevices;
+    QHash<DlgPrefSoundItem*, QPair<SoundDeviceId, int>> m_selectedOutputChannelIndices;
+    QHash<DlgPrefSoundItem*, QPair<SoundDeviceId, int>> m_selectedInputChannelIndices;
     bool m_settingsModified;
     bool m_bLatencyChanged;
     bool m_bSkipConfigClear;
