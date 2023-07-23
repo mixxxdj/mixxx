@@ -1159,24 +1159,27 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 }
                 const auto decodedFrameCount = m_pavDecodedFrame->nb_samples;
                 DEBUG_ASSERT(decodedFrameCount > 0);
-                auto streamFrameIndex =
+                SINT streamFrameIndex =
                         convertStreamTimeToFrameIndex(
                                 *m_pavStream, m_pavDecodedFrame->pts);
-                // Only audible samples are counted, i.e. any inaudible aka
-                // "priming" samples are not included in nb_samples!
-                // https://bugs.launchpad.net/mixxx/+bug/1934785
-                if (streamFrameIndex < kMinFrameIndex) {
+
+                if (m_avutilVersion >= AV_VERSION_INT(56, 52, 100)) {
+                    // From ffmpeg 4.4 only audible samples are counted, i.e. any inaudible aka
+                    // "priming" samples are not included in nb_samples!
+                    // https://github.com/mixxxdj/mixxx/issues/10464
+                    if (streamFrameIndex < kMinFrameIndex) {
 #if VERBOSE_DEBUG_LOG
-                    const auto inaudibleFrameCountUntilStartOfStream =
-                            kMinFrameIndex - streamFrameIndex;
-                    kLogger.debug()
-                            << "Skipping"
-                            << inaudibleFrameCountUntilStartOfStream
-                            << "inaudible sample frames before the start of the stream";
+                        const auto inaudibleFrameCountUntilStartOfStream =
+                                kMinFrameIndex - streamFrameIndex;
+                        kLogger.debug()
+                                << "Skipping"
+                                << inaudibleFrameCountUntilStartOfStream
+                                << "inaudible sample frames before the start of the stream";
 #endif
-                    streamFrameIndex = kMinFrameIndex;
+                        streamFrameIndex = kMinFrameIndex;
+                    }
                 }
-                DEBUG_ASSERT(streamFrameIndex >= kMinFrameIndex);
+
                 decodedFrameRange = IndexRange::forward(
                         streamFrameIndex,
                         decodedFrameCount);
