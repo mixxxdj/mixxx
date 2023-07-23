@@ -283,7 +283,8 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
             // This can happen in case of track edits or replacements, changed
             // encoders or encoding issues.
             qWarning() << "First sound has been moved! The beatgrid and "
-                          "other annotations are no longer valid";
+                          "other annotations are no longer valid"
+                       << m_pAudioSource->getUrlString();
         }
         m_firstSoundFrameToVerify = mixxx::audio::FramePos();
     }
