@@ -93,7 +93,8 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF 
     lines += lines > 1 ? 1 : 0;
 
     QFontMetrics fm(pEditor->document()->defaultFont());
-    int newH = fm.lineSpacing() * lines;
+    // Don't let the editor shrink smaller than the original height
+    int newH = std::max(fm.lineSpacing() * lines, m_editRect.height());
 
     // Limit editor to visible table height
     int tableH = m_pTableView->viewport()->rect().height();
