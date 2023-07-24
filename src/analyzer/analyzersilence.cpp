@@ -78,7 +78,8 @@ bool AnalyzerSilence::verifyFirstSound(
         mixxx::audio::FramePos firstSoundFrame) {
     const SINT firstSoundSample = findFirstSoundInChunk(samples);
     if (firstSoundSample < static_cast<SINT>(samples.size())) {
-        return mixxx::audio::FramePos::fromEngineSamplePos(firstSoundSample) == firstSoundFrame;
+        return mixxx::audio::FramePos::fromEngineSamplePos(firstSoundSample)
+                       .toLowerFrameBoundary() == firstSoundFrame;
     }
     return false;
 }
