@@ -30,8 +30,9 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <TrackProperty>
-                    <TooltipId>text</TooltipId>
+                    <TooltipId>track_title</TooltipId>
                     <SizePolicy>me,min</SizePolicy>
+                    <Property>titleInfo</Property>
                     <Group><Variable name="group"/></Group>
                     <Property>titleInfo</Property>
                     <Elide>right</Elide>
