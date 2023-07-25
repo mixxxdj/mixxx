@@ -50,7 +50,6 @@ DlgPrefInterface::DlgPrefInterface(
           m_dScaleFactor(1.0),
           m_minScaleFactor(1.0),
           m_dDevicePixelRatio(1.0),
-          m_bStartWithFullScreen(false),
           m_bRebootMixxxView(false) {
     setupUi(this);
 
@@ -178,10 +177,6 @@ DlgPrefInterface::DlgPrefInterface(
         skinPreviewLabel->hide();
     }
 
-    // Start in fullscreen mode
-    checkBoxStartFullScreen->setChecked(
-            m_pConfig->getValue(ConfigKey(kConfigGroup, kStartInFullscreenKey), 0) == 1);
-
     // Screensaver mode
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
@@ -195,9 +190,6 @@ DlgPrefInterface::DlgPrefInterface(
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 
     // Tooltip configuration
-    // Initialize checkboxes to match config
-    loadTooltipPreferenceFromConfig();
-    slotSetTooltips();  // Update disabled status of "only library" checkbox
     connect(buttonGroupTooltips,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -264,9 +256,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
 }
 
 void DlgPrefInterface::slotUpdate() {
-    const QString skinNameOnUpdate =
-            m_pConfig->getValue(ConfigKey(kConfigGroup, kResizableSkinKey));
-    const SkinPointer pSkinOnUpdate = m_skins[skinNameOnUpdate];
+    const SkinPointer pSkinOnUpdate = m_pSkinLoader->getConfiguredSkin();
     if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
         m_skinNameOnUpdate = pSkinOnUpdate->name();
     } else {
@@ -287,7 +277,7 @@ void DlgPrefInterface::slotUpdate() {
     spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kStartInFullscreenKey), m_bStartWithFullScreen));
+            ConfigKey(kConfigGroup, kStartInFullscreenKey), false));
 
     loadTooltipPreferenceFromConfig();
 
