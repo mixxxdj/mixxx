@@ -76,18 +76,18 @@ QWidget* MultiLineEditDelegate::createEditor(QWidget* pParent,
 void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF size) const {
     // Compared to QTextEdit, size.height() is the line count (Qt speak: blocks)
     int newLineCount = static_cast<int>(round(size.height()));
-    // Only act if line count changed
+    // Remove the scrollbars if content is just one line to emulate QLineEdit
+    // appearace, else enable auto mode.
+    Qt::ScrollBarPolicy pol(newLineCount > 1 ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
+    pEditor->setVerticalScrollBarPolicy(pol);
+    pEditor->setHorizontalScrollBarPolicy(pol);
+
+    // Only resize if line count changed
     if (newLineCount == m_lineCount) {
         return;
     } else {
         m_lineCount = newLineCount;
     }
-
-    // Remove the scrollbars if content is just one line to emulate QLineEdit
-    // appearace, else enable auto mode.
-    Qt::ScrollBarPolicy pol(m_lineCount > 1 ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
-    pEditor->setVerticalScrollBarPolicy(pol);
-    pEditor->setHorizontalScrollBarPolicy(pol);
 
     // Calculate the content height
     int lines = m_lineCount;
