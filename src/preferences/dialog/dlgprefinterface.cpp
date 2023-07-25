@@ -49,8 +49,7 @@ DlgPrefInterface::DlgPrefInterface(
           m_pSkin(pSkinLoader ? pSkinLoader->getConfiguredSkin() : nullptr),
           m_dScaleFactor(1.0),
           m_minScaleFactor(1.0),
-          m_dDevicePixelRatio(1.0),
-          m_bRebootMixxxView(false) {
+          m_dDevicePixelRatio(1.0) {
     setupUi(this);
 
     // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
@@ -225,6 +224,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
     const QList<QString> schlist = m_pSkin->colorschemes();
 
     ComboBoxSchemeconf->clear();
+    m_colorSchemeOnUpdate = QString();
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
@@ -242,6 +242,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
             if (schlist[i] == configScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
                 m_colorScheme = configScheme;
+                m_colorSchemeOnUpdate = configScheme;
                 foundConfigScheme = true;
             }
         }
@@ -264,7 +265,6 @@ void DlgPrefInterface::slotUpdate() {
     }
     ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
     slotUpdateSchemes();
-    m_bRebootMixxxView = false;
 
     m_localeOnUpdate = m_pConfig->getValue(ConfigKey(kConfigGroup, kLocaleKey));
     ComboBoxLocale->setCurrentIndex(ComboBoxLocale->findData(m_localeOnUpdate));
@@ -334,10 +334,7 @@ void DlgPrefInterface::slotSetScheme(int) {
             ? ComboBoxSchemeconf->currentText()
             : QString();
 
-    if (m_colorScheme != newScheme) {
-        m_colorScheme = newScheme;
-        m_bRebootMixxxView = true;
-    }
+    m_colorScheme = newScheme;
     slotSetSkinPreview();
 }
 
@@ -383,7 +380,6 @@ void DlgPrefInterface::slotSetSkin(int) {
         return;
     }
     m_pSkin = pNewSkin;
-    m_bRebootMixxxView = newSkinName != m_skinNameOnUpdate;
     const auto* const pScreen = getScreen();
     if (pScreen && m_pSkin->fitsScreenSize(*pScreen)) {
         warningLabel->hide();
@@ -431,12 +427,14 @@ void DlgPrefInterface::slotApply() {
         m_dScaleFactor = scaleFactor;
     }
 
-    if (m_bRebootMixxxView) {
+    // load skin/scheme if necessary
+    if (m_pSkin->name() != m_skinNameOnUpdate ||
+            m_colorScheme != m_colorSchemeOnUpdate) {
+        // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
         emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
         m_skinNameOnUpdate = m_pSkin->name();
     }
-    m_bRebootMixxxView = false;
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
