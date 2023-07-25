@@ -219,7 +219,7 @@ class ChannelHandleMap {
         } else {
             // We need to initialize simple types ourselves
             while (m_data.size() < iSize) {
-                m_data.append({});
+                m_data.append(std::move(T{}));
             }
         }
     }
