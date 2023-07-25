@@ -15,6 +15,9 @@ MultiLineEditor::MultiLineEditor(QWidget* pParent)
     // Remove ugly content offset, most notable with one-liners
     setContentsMargins(0, 0, 0, 0);
     document()->setDocumentMargin(0);
+    // Paint the entire rectangle, i.e. expand document background in order to
+    // cover all underlying index text. Seems to be required for one-liners on macOS.
+    setBackgroundVisible(true);
     // Add event filter to catch right-clicks and key presses, see eventFilter()
     installEventFilter(this);
 };
@@ -94,6 +97,8 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF 
 
     QFontMetrics fm(pEditor->document()->defaultFont());
     // Don't let the editor shrink smaller than the original height
+    // Note: also setBackgroundVisible(true) on the editor to paint the entire
+    // rectangle, not just the document.
     int newH = std::max(fm.lineSpacing() * lines, m_editRect.height());
 
     // Limit editor to visible table height
