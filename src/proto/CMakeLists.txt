@@ -8,6 +8,15 @@ if(NOT Protobuf_FOUND)
 endif()
 
 add_library(mixxx-proto OBJECT)
+
+if(TARGET protobuf::libprotobuf-lite)
+    target_link_libraries(mixxx-proto PUBLIC protobuf::libprotobuf-lite)
+elseif(TARGET protobuf::libprotobuf)
+    target_link_libraries(mixxx-proto PUBLIC protobuf::libprotobuf)
+else()
+    message(FATAL_ERROR "Protobuf or Protobuf-lite libraries are required to compile Mixxx.")
+endif()
+
 protobuf_generate(
   LANGUAGE cpp
   TARGET mixxx-proto
@@ -18,11 +27,3 @@ protobuf_generate(
     skin.proto
     waveform.proto
 )
-
-if(TARGET protobuf::libprotobuf-lite)
-    target_link_libraries(mixxx-proto PRIVATE protobuf::libprotobuf-lite)
-elseif(TARGET protobuf::libprotobuf)
-    target_link_libraries(mixxx-proto PRIVATE protobuf::libprotobuf)
-else()
-    message(FATAL_ERROR "Protobuf or Protobuf-lite libraries are required to compile Mixxx.")
-endif()
