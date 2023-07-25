@@ -41,7 +41,9 @@
         <Children>
 
           <!--4 Samplers -->
-          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skin:../LateNight/samplers/samplers_4decks.xml"/>
+          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skin:../LateNight/samplers/samplers_4decks.xml">
+            <SetVariable name="Count">1-4</SetVariable>
+          </Template>
 
           <!--8 Samplers -->
           <WidgetGroup trigger="[LateNight],show_8samplers" on_hide_select="0">
