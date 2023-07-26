@@ -23,6 +23,7 @@ class TrackDropTarget {
     }
 
     virtual bool handleDragAndDropEventFromWindow(QEvent* event) {
+        Q_UNUSED(event);
         return false;
     }
 
