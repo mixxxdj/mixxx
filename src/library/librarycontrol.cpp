@@ -747,11 +747,8 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
         return;
     }
 
-    switch (m_pFocusedWidget) {
-    case FocusWidget::None:
+    if (m_pFocusedWidget == FocusWidget::None) {
         return setLibraryFocus(FocusWidget::TracksTable);
-    default:
-        break;
     }
 
     // Send the event pointer to the currently focused widget
