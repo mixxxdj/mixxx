@@ -57,7 +57,8 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
 LibraryControl::LibraryControl(Library* pLibrary)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
-          m_pFocusedWidget(FocusWidget::None),
+          m_focusedWidget(FocusWidget::None),
+          m_prevFocusedWidget(FocusWidget::None),
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
           m_pSearchbox(nullptr),
@@ -170,6 +171,17 @@ LibraryControl::LibraryControl(Library* pLibrary)
                     setLibraryFocus(static_cast<FocusWidget>(valueInt));
                 }
             });
+#endif
+
+    // Pure trigger control. Alternative for signal/slot since widgets that want
+    // to call refocusPrevLibraryWidget() are cumbersome to connect to.
+    // This CO is never actually set or read so the value just needs to be not 0
+    m_pRefocusPrevWidgetCO = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "refocus_prev_widget"));
+    m_pRefocusPrevWidgetCO->setButtonMode(ControlPushButton::TRIGGER);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    m_pRefocusPrevWidgetCO->connectValueChangeRequest(this,
+            &LibraryControl::refocusPrevLibraryWidget);
 #endif
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
@@ -411,7 +423,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(app,
             &QApplication::focusChanged,
             this,
-            &LibraryControl::updateFocusedWidgetControls);
+            &LibraryControl::slotFocusedWidgetChanged);
     // Also update controls if the window focus changed.
     // Even though any new menu window has focus and will receive keypress events
     // it does NOT have a focused widget before the first click or keypress.
@@ -628,7 +640,7 @@ void LibraryControl::slotMoveVertical(double v) {
         return;
     }
 
-    switch (m_pFocusedWidget) {
+    switch (m_focusedWidget) {
     case FocusWidget::Sidebar: {
         int i = static_cast<int>(v);
         slotSelectSidebarItem(i);
@@ -747,7 +759,7 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
         return;
     }
 
-    if (m_pFocusedWidget == FocusWidget::None) {
+    if (m_focusedWidget == FocusWidget::None) {
         return setLibraryFocus(FocusWidget::TracksTable);
     }
 
@@ -815,7 +827,7 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
     }
 
     // ignore no-op
-    if (newFocusWidget == m_pFocusedWidget) {
+    if (newFocusWidget == m_focusedWidget) {
         return;
     }
 
@@ -847,11 +859,30 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
     // to update [Library],focused_widget
 }
 
+void LibraryControl::slotFocusedWidgetChanged(QWidget* oldW, QWidget* newW) {
+    Q_UNUSED(newW);
+
+    // If one of the library widgets had focus store it so we can return to it,
+    // for example when we finish editing a WBeatSizeSpinBox.
+    if (m_pSearchbox && oldW == m_pSearchbox) {
+        m_prevFocusedWidget = FocusWidget::Searchbar;
+    } else if (m_pSidebarWidget && oldW == m_pSidebarWidget) {
+        m_prevFocusedWidget = FocusWidget::Sidebar;
+    } else if (m_pLibraryWidget && oldW == m_pLibraryWidget->currentWidget()) {
+        m_prevFocusedWidget = FocusWidget::TracksTable;
+    }
+    updateFocusedWidgetControls();
+}
+
 void LibraryControl::updateFocusedWidgetControls() {
-    m_pFocusedWidget = getFocusedWidget();
+    m_focusedWidget = getFocusedWidget();
     // Update "[Library], focused_widget" control
-    double newVal = static_cast<double>(m_pFocusedWidget);
+    double newVal = static_cast<double>(m_focusedWidget);
     m_pFocusedWidgetCO->setAndConfirm(newVal);
+}
+
+void LibraryControl::refocusPrevLibraryWidget() {
+    setLibraryFocus(m_prevFocusedWidget);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
@@ -892,7 +923,7 @@ void LibraryControl::slotGoToItem(double v) {
         return;
     }
 
-    switch (m_pFocusedWidget) {
+    switch (m_focusedWidget) {
     case FocusWidget::Sidebar:
         // Focus the library if this is a leaf node in the tree
         // Note that Tracks and AutoDJ always return 'false':
