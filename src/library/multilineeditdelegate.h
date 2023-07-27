@@ -38,6 +38,5 @@ class MultiLineEditDelegate : public TableItemDelegate {
     void commitAndCloseEditor();
 
   private:
-    void adjustEditor(MultiLineEditor* pEditor, const QSizeF size) const;
-    mutable QRect m_editRect;
+    void adjustEditor(MultiLineEditor* pEditor, const QSizeF size, const QRect iRect) const;
 };

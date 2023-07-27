@@ -59,20 +59,23 @@ QWidget* MultiLineEditDelegate::createEditor(QWidget* pParent,
     connect(pDocLayout,
             &QAbstractTextDocumentLayout::documentSizeChanged,
             this,
-            [this, pEditor](const QSizeF size) {
-                adjustEditor(pEditor, size);
+            [this, pEditor, index](const QSizeF size) {
+                // Pass the current geometry of the index so the editor is
+                // positioned correctly when the text is edited after the
+                // table was scrolled.
+                adjustEditor(pEditor, size, m_pTableView->visualRect(index));
             });
     // Also emitted when pressing Return key, see MultiLineEditor::keyPressEvent()
     connect(pEditor,
             &MultiLineEditor::editingFinished,
             this,
             &MultiLineEditDelegate::commitAndCloseEditor);
-    // Store the initial rectangle so we can read the x/y origin and in adjustEditor()
-    m_editRect = option.rect;
     return pEditor;
 }
 
-void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF size) const {
+void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor,
+        const QSizeF size,
+        QRect iRect) const {
     // Compared to QTextEdit, size.height() is the line count (Qt speak: blocks)
     int lines = static_cast<int>(round(size.height()));
     // Remove the scrollbars if content is just one line to emulate QLineEdit
@@ -80,7 +83,6 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF 
     Qt::ScrollBarPolicy pol(lines > 1 ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
     pEditor->setVerticalScrollBarPolicy(pol);
     pEditor->setHorizontalScrollBarPolicy(pol);
-
 
     // Calculate the content height
     // Add extra margin so the horizontal scrollbar doesn't obstruct the last
@@ -91,15 +93,16 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF 
     // Don't let the editor shrink smaller than the original height
     // Note: also setBackgroundVisible(true) on the editor to paint the entire
     // rectangle, not just the document.
-    int newH = std::max(fm.lineSpacing() * lines, m_editRect.height());
-
+    int txtH = fm.lineSpacing() * lines;
+    int newH = std::max(txtH, iRect.height());
     // Limit editor to visible table height
-    int tableH = m_pTableView->viewport()->rect().height();
+    QRect tableRect = m_pTableView->viewport()->rect();
+    int tableH = tableRect.height();
     newH = std::min(newH, tableH);
     // If the editor overflows the table view, move it up so it's not clipped.
     // No need to care about y < 0 or y > (table height - line height) since the
     // table already ensures visibility when the index is selected.
-    int newY = m_editRect.y();
+    int newY = iRect.y();
     if ((newY + newH) > tableH) {
         newY = tableH - newH;
     }
@@ -109,19 +112,19 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF 
     // After first resize the width is in pixels
     // Let the editor expand horizontally like QLineEdit, limit to table width
     int newW = std::max(static_cast<int>(size.width()) + pEditor->frameWidth() * 2,
-            m_editRect.width());
+            iRect.width());
 
     // Also limit width so scrollbars are visible and table is not scrolled if
     // cursor is moved horizontally.
-    int tableW = m_pTableView->viewport()->rect().width();
-    if (m_editRect.x() + newW > tableW) {
-        newW = tableW - m_editRect.x();
+    int tableW = tableRect.width();
+    if (iRect.x() + newW > tableW) {
+        newW = tableW - iRect.x();
     }
 
 #ifdef __APPLE__
     // Don't let table view scrollbars overlap the editor
     int scrollW = m_pTableView->verticalScrollBar()->width();
-    if (scrollW > 0 && (m_editRect.x() + newW > tableW - scrollW)) {
+    if (scrollW > 0 && (iRect.x() + newW > tableW - scrollW)) {
         newW -= scrollW;
     }
     int scrollH = m_pTableView->horizontalScrollBar()->height();
@@ -136,7 +139,7 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF 
     }
 #endif
 
-    pEditor->setGeometry(QRect(m_editRect.x(), newY, newW, newH));
+    pEditor->setGeometry(QRect(iRect.x(), newY, newW, newH));
 }
 
 void MultiLineEditDelegate::commitAndCloseEditor() {
