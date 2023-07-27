@@ -20,7 +20,7 @@
               <Number>1</Number>
             </State>
             <Connection>
-              <ConfigKey>[LateNight],expand_samplers_<Variable name="SamCount"/></ConfigKey>
+              <ConfigKey>[LateNight],expand_samplers_<Variable name="Count"/></ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
@@ -35,7 +35,7 @@
               <Number>1</Number>
             </State>
             <Connection>
-              <ConfigKey>[LateNight],expand_samplers_<Variable name="SamCount"/></ConfigKey>
+              <ConfigKey>[LateNight],expand_samplers_<Variable name="Count"/></ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>

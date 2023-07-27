@@ -316,7 +316,7 @@ WSearchLineEdit {
 
   #FxFlowIndicatorCollapsed {
     margin: 0px 0px 0px 0px;
-    image: url(skin:/palemoon/style/fx_flow_horizontal.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/style/fx_flow_horizontal.svg) no-repeat center center;
   }
   #ToolbarSeparator {
     margin: 0px 5px;
@@ -650,7 +650,7 @@ WBeatSpinBox {
   margin: 1px 0px 1px 1px;
   padding: 0px -17px 2px 1px;
   border-width: 3px 19px 2px 3px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
 }
 #spinBoxTransition {
   width: 24px;
@@ -658,11 +658,11 @@ WBeatSpinBox {
   padding: 0px -15px 0px 0px;
   margin: 0px 2px 3px 5px;
   border-width: 3px 19px 2px 3px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
   }
   WBeatSpinBox:focus,
   #spinBoxTransition:focus {
-    border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
+    border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
   }
 
 WBeatSpinBox::up-button,
@@ -679,7 +679,7 @@ WBeatSpinBox::down-button,
   #spinBoxTransition::up-button {
     height: 11px;
     subcontrol-position: top right;
-    image: url(skin:/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
+    image: url(skin:../LateNight/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
     }
     WBeatSpinBox::up-button {
       margin: -2px -1px 0px 0px;
@@ -691,7 +691,7 @@ WBeatSpinBox::down-button,
   #spinBoxTransition::down-button {
     height: 11px;
     subcontrol-position: bottom right;
-    image: url(skin:/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
+    image: url(skin:../LateNight/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
     }
     WBeatSpinBox::down-button {
       margin: 0px -1px -3px 0px;
@@ -829,7 +829,7 @@ WBeatSpinBox::down-button,
   }
 
 WEffectChainPresetButton::menu-indicator {
-  image: url(skin:/palemoon/buttons/btn__fx_settings.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__fx_settings.svg) no-repeat center center;
 }
 
 #FxSlotsCollapsed {
@@ -843,7 +843,7 @@ WEffectChainPresetButton::menu-indicator {
   border-right: 0px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-  background: #1e1e20 url(skin:/palemoon/style/fx_flow_vertical.svg) no-repeat center right;
+  background: #1e1e20 url(skin:../LateNight/palemoon/style/fx_flow_vertical.svg) no-repeat center right;
   }
   #FxSlot1,
   #FxSlot2,
@@ -908,7 +908,7 @@ WEffectSelector:!editable:on {
   #fadeModeCombobox::down-arrow,
   /* Arrow size is set in C++ to match the library font size */
   WSearchLineEdit::down-arrow {
-    image: url(skin:/palemoon/buttons/btn__fx_selector_down.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__fx_selector_down.svg);
   }
 
 
@@ -1413,7 +1413,7 @@ QPushButton#pushButtonRecording:checked {
 #FxAssignButtons WPushButton[displayValue="0"] {
   outline: none;
   border-width: 2px 2px 2px 1px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_grid.svg) 2 2 2 1;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_grid.svg) 2 2 2 1;
   }
   /* Active */
   #VinylCueButton[displayValue="1"],
@@ -1424,7 +1424,7 @@ QPushButton#pushButtonRecording:checked {
   #FxAssignButtons WPushButton[displayValue="1"] {
     outline: none;
     border-width: 2px 2px 2px 1px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+    border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
 
 #GuiToggleButton[displayValue="0"],
@@ -1441,7 +1441,7 @@ WEffectSelector:!editable,
 #CueDeleteButton {
   outline: none;
   border-width: 2px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
   /*
   WPushButton#BpmTap[displayValue="1"], */
@@ -1467,7 +1467,7 @@ WEffectSelector:!editable,
   #fadeModeCombobox:!editable:on,
   #CueDeleteButton[pressed="true"] {
     border-width: 2px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
+    border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
 
   WTrackTableViewHeader {
@@ -1477,37 +1477,37 @@ WEffectSelector:!editable,
   WTrackTableViewHeader::section {
     outline: none;
     border-width: 1px 2px 1px 1px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
+    border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
   }
   WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
     outline: none;
     /* ToDo: restore image
     border-width: 1px 2px 1px 0px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1; */
+    border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1; */
   }
 
   #LibraryFeatureControls QPushButton:!enabled {
     outline: none;
     border-width: 2px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
+    border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
   }
 
 #KeyUp {
   border-width: 1px 2px 0px 2px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 1 2 12 2;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library.svg) 1 2 12 2;
   }
   #KeyUp[pressed="true"] {
     border-width: 1px 2px 0px 2px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_active.svg) 1 2 12 2;
+    border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library_active.svg) 1 2 12 2;
   }
 #KeyDown {
   border-width: 0px 2px 1px 2px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 12 2 1 2;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library.svg) 12 2 1 2;
   }
   #KeyDown[pressed="true"] {
     border-width: 0px 2px 1px 2px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_active.svg) 12 2 1 2;
+    border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library_active.svg) 12 2 1 2;
   }
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
@@ -1842,635 +1842,635 @@ WPushButton#RecButton[displayValue="1"],
 
 /************** Button icons **************************************************/
 WPushButton#PlayDeck[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__play_deck.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__play_deck.svg) no-repeat center center;
   }
   WPushButton#PlayDeck[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__play_deck_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__play_deck_active.svg) no-repeat center center;
   }
 
 #PlayDeckMini[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__play_deck_mini.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__play_deck_mini.svg) no-repeat center center;
   }
   #PlayDeckMini[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__pause_deck_mini.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__pause_deck_mini.svg) no-repeat center center;
   }
 #PlaySampler[value="0"],
 #PlayPreview[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__play_sampler.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__play_sampler.svg) no-repeat center center;
   }
   #PlaySampler[value="1"],
   #PlayPreview[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__pause_sampler.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__pause_sampler.svg) no-repeat center center;
   }
 
 #CueDeck[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__cue_deck.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__cue_deck.svg) no-repeat center center;
   }
   #CueDeck[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__cue_deck_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__cue_deck_active.svg) no-repeat center center;
   }
 
 #Reverse {
-  image: url(skin:/palemoon/buttons/btn__reverse.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__reverse.svg) no-repeat center center;
   }
   #Reverse[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__reverse_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__reverse_active.svg) no-repeat center center;
   }
 
 #Hotcue1 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__1.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__1.svg) no-repeat center center;
   }
   #Hotcue1 WPushButton[displayValue="1"],
   #Hotcue1 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__1_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__1_active.svg) no-repeat center center;
   }
   #Hotcue1 WPushButton[displayValue="1"][dark="true"],
   #Hotcue1 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
   }
   #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="false"],
   #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"],
   #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
   }
 
 #Hotcue2 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__2.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__2.svg) no-repeat center center;
   }
   #Hotcue2 WPushButton[displayValue="1"],
   #Hotcue2 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__2_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__2_active.svg) no-repeat center center;
   }
   #Hotcue2 WPushButton[displayValue="1"][dark="true"],
   #Hotcue2 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
   }
   #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="false"],
   #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"],
   #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
   }
 
 #Hotcue3 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__3.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__3.svg) no-repeat center center;
   }
   #Hotcue3 WPushButton[displayValue="1"],
   #Hotcue3 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__3_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__3_active.svg) no-repeat center center;
   }
   #Hotcue3 WPushButton[displayValue="1"][dark="true"],
   #Hotcue3 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
   }
   #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="false"],
   #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"],
   #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
   }
 
 #Hotcue4 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__4.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__4.svg) no-repeat center center;
   }
   #Hotcue4 WPushButton[displayValue="1"],
   #Hotcue4 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__4_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__4_active.svg) no-repeat center center;
   }
   #Hotcue4 WPushButton[displayValue="1"][dark="true"],
   #Hotcue4 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
   }
   #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="false"],
   #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"],
   #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
   }
 
 #Hotcue5 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__5.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__5.svg) no-repeat center center;
   }
   #Hotcue5 WPushButton[displayValue="1"],
   #Hotcue5 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__5_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__5_active.svg) no-repeat center center;
   }
   #Hotcue5 WPushButton[displayValue="1"][dark="true"],
   #Hotcue5 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
   }
   #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="false"],
   #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"],
   #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
   }
 
 #Hotcue6 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__6.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__6.svg) no-repeat center center;
   }
   #Hotcue6 WPushButton[displayValue="1"],
   #Hotcue6 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__6_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__6_active.svg) no-repeat center center;
   }
   #Hotcue6 WPushButton[displayValue="1"][dark="true"],
   #Hotcue6 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
   }
   #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="false"],
   #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"],
   #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
   }
 
 #Hotcue7 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__7.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__7.svg) no-repeat center center;
   }
   #Hotcue7 WPushButton[displayValue="1"],
   #Hotcue7 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__7_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__7_active.svg) no-repeat center center;
   }
   #Hotcue7 WPushButton[displayValue="1"][dark="true"],
   #Hotcue7 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
   }
   #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="false"],
   #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"],
   #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
   }
 
 #Hotcue8 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__8.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__8.svg) no-repeat center center;
   }
   #Hotcue8 WPushButton[displayValue="1"],
   #Hotcue8 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__8_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__8_active.svg) no-repeat center center;
   }
   #Hotcue8 WPushButton[displayValue="1"][dark="true"],
   #Hotcue8 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
   }
   #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="false"],
   #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"],
   #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
   }
 
 #SpecialCueButton_intro_start WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__intro_start.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__intro_start.svg) no-repeat center center;
   }
   #SpecialCueButton_intro_start WPushButton[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__intro_start_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__intro_start_active.svg) no-repeat center center;
   }
 #SpecialCueButton_intro_end WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__intro_end.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__intro_end.svg) no-repeat center center;
   }
   #SpecialCueButton_intro_end WPushButton[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__intro_end_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__intro_end_active.svg) no-repeat center center;
   }
 #SpecialCueButton_outro_start WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__outro_start.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__outro_start.svg) no-repeat center center;
   }
   #SpecialCueButton_outro_start WPushButton[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__outro_start_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__outro_start_active.svg) no-repeat center center;
   }
 #SpecialCueButton_outro_end WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__outro_end.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__outro_end.svg) no-repeat center center;
   }
   #SpecialCueButton_outro_end WPushButton[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__outro_end_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__outro_end_active.svg) no-repeat center center;
   }
 
 #LoopActivate[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__loop.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__loop.svg) no-repeat center center;
   }
   #LoopActivate[displayValue="1"], #LoopActivate[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__loop_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__loop_active.svg) no-repeat center center;
   }
 #Reloop[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__reloop.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__reloop.svg) no-repeat center center;
   }
   #Reloop[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__reloop_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__reloop_active.svg) no-repeat center center;
   }
 
 #LoopIn {
-  image: url(skin:/palemoon/buttons/btn__loop_in.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__loop_in.svg) no-repeat center center;
   }
   #LoopIn[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__loop_in_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__loop_in_active.svg) no-repeat center center;
   }
 #LoopOut {
-  image: url(skin:/palemoon/buttons/btn__loop_out.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__loop_out.svg) no-repeat center center;
   }
   #LoopOut[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__loop_out_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__loop_out_active.svg) no-repeat center center;
   }
 
 #JumpForward {
-  image: url(skin:/palemoon/buttons/btn__beatjump_right.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__beatjump_right.svg) no-repeat center center;
   }
   #JumpForward[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__beatjump_right_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beatjump_right_active.svg) no-repeat center center;
   }
 #JumpBack {
-  image: url(skin:/palemoon/buttons/btn__beatjump_left.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__beatjump_left.svg) no-repeat center center;
   }
   #JumpBack[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__beatjump_left_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beatjump_left_active.svg) no-repeat center center;
   }
 
 /* Key buttons */
 #KeyMatchReset {
-  image: url(skin:/palemoon/buttons/btn__key_match.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__key_match.svg) no-repeat center center;
   }
   #KeyMatchReset[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__key_match_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__key_match_active.svg) no-repeat center center;
   }
 
 #KeyUp {
-  image: url(skin:/palemoon/buttons/btn__key_up.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__key_up.svg) no-repeat center center;
   }
   #KeyUp[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__key_up_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__key_up_active.svg) no-repeat center center;
   }
 
 #KeyDown {
-  image: url(skin:/palemoon/buttons/btn__key_down.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__key_down.svg) no-repeat center center;
   }
   #KeyDown[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__key_down_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__key_down_active.svg) no-repeat center center;
   }
 
 /* Rate buttons */
 #SyncDeck[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__sync_deck.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__sync_deck.svg) no-repeat center center;
   }
   #SyncDeck[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
   }
 
 #SyncLeader[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__sync_leader.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__sync_leader.svg) no-repeat center center;
   }
   #SyncLeader[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__sync_leader_implicit.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__sync_leader_implicit.svg) no-repeat center center;
   }
   #SyncLeader[value="2"] {
-    image: url(skin:/palemoon/buttons/btn__sync_leader_explicit.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__sync_leader_explicit.svg) no-repeat center center;
   }
 
   #SyncSampler {
-    image: url(skin:/palemoon/buttons/btn__sync_sampler.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__sync_sampler.svg) no-repeat center center;
     }
     #SyncSampler[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__sync_sampler_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__sync_sampler_active.svg) no-repeat center center;
     }
 
   #RatePermUp {
-    image: url(skin:/palemoon/buttons/btn__plus.svg) no-repeat center center;}
+    image: url(skin:../LateNight/palemoon/buttons/btn__plus.svg) no-repeat center center;}
   #RatePermUp[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__plus_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__plus_active.svg) no-repeat center center;
     }
 
   #RatePermDown {
-    image: url(skin:/palemoon/buttons/btn__minus.svg) no-repeat center center;}
+    image: url(skin:../LateNight/palemoon/buttons/btn__minus.svg) no-repeat center center;}
   #RatePermDown[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__minus_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__minus_active.svg) no-repeat center center;
     }
 
   #RateTempUp {
-    image: url(skin:/palemoon/buttons/btn__arrow_right_up.svg) no-repeat center center;}
+    image: url(skin:../LateNight/palemoon/buttons/btn__arrow_right_up.svg) no-repeat center center;}
   #RateTempUp[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__arrow_right_up_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__arrow_right_up_active.svg) no-repeat center center;
     }
   #RateTempDown {
-    image: url(skin:/palemoon/buttons/btn__arrow_left_down.svg) no-repeat center center;}
+    image: url(skin:../LateNight/palemoon/buttons/btn__arrow_left_down.svg) no-repeat center center;}
   #RateTempDown[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__arrow_left_down_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__arrow_left_down_active.svg) no-repeat center center;
     }
 
   #RateTempUpRev {
-    image: url(skin:/palemoon/buttons/btn__arrow_right_down.svg) no-repeat center center;}
+    image: url(skin:../LateNight/palemoon/buttons/btn__arrow_right_down.svg) no-repeat center center;}
   #RateTempUpRev[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__arrow_right_down_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__arrow_right_down_active.svg) no-repeat center center;
     }
 
   #RateTempDownRev {
-    image: url(skin:/palemoon/buttons/btn__arrow_left_up.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__arrow_left_up.svg) no-repeat center center;
     }
     #RateTempDownRev[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__arrow_left_up_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__arrow_left_up_active.svg) no-repeat center center;
     }
 
 /* Mixer buttons */
 #PflButton[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__pfl.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__pfl.svg) no-repeat center center;
   }
   #PflButton[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
   }
 
 #QuickEffectButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__star.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__star.svg) no-repeat center center;
 }
 
 /* EQ Kill button icons H / M / L */
 #EQKillButton_High[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__eq_kill_high.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__eq_kill_high.svg) no-repeat center center;
 }
 #EQKillButton_Mid[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__eq_kill_mid.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__eq_kill_mid.svg) no-repeat center center;
 }
 #EQKillButton_Low[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__eq_kill_low.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__eq_kill_low.svg) no-repeat center center;
 }
 
 /* EQ Kill / QuickEffect dots */
 #EQKillDot[displayValue="0"],
 #QuickEffectDot[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__eq_kill_dot_off.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__eq_kill_dot_off.svg) no-repeat center center;
   }
   #EQKillDot[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__eq_kill_dot_active_red.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__eq_kill_dot_active_red.svg) no-repeat center center;
   }
   #QuickEffectDot[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__eq_kill_dot_active_green.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__eq_kill_dot_active_green.svg) no-repeat center center;
   }
 
 #RateCenter[highlight="0"] {
-  image: url(skin:/palemoon/buttons/btn__rate_center_off.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__rate_center_off.svg) no-repeat center center;
   }
   #RateCenter[highlight="1"] {
-    image: url(skin:/palemoon/buttons/btn__rate_center_cyan.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__rate_center_cyan.svg) no-repeat center center;
   }
 
 #SplitCue[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__split.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__split.svg) no-repeat center center;
   }
   #SplitCue[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__split_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__split_active.svg) no-repeat center center;
   }
 
 #FxExpand[value="0"],
 #SamplerExpand[value="0"],
 #LibExpand[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
   }
   #FxExpand[value="1"],
   #SamplerExpand[value="1"],
   #LibExpand[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
   }
 
 #MixModeButton[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__fx_mixmode_d-w.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__fx_mixmode_d-w.svg) no-repeat center center;
   }
   #MixModeButton[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
   }
 
 #FxToggleButton[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__fx_toggle.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__fx_toggle.svg) no-repeat center center;
   }
   #FxToggleButton[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__fx_toggle_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__fx_toggle_active.svg) no-repeat center center;
   }
 
 #FxFocusButton[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__fx_focus.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__fx_focus.svg) no-repeat center center;
   }
   #FxFocusButton[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__fx_focus_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__fx_focus_active.svg) no-repeat center center;
   }
 
 /* deck controls for decks 1-4 and samplers */
 #CurposButton12[displayValue="0"], #CurposButton34[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__beat_curpos.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__beat_curpos.svg) no-repeat center center;
   }
   #CurposButton12[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
   }
   #CurposButton34[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
   }
 
   #EjectButton12[displayValue="0"], #EjectButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__eject.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__eject.svg) no-repeat center center;
     }
     #EjectButton12[value="1"] {
-      image: url(skin:/palemoon/buttons/btn__eject_active_12.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__eject_active_12.svg) no-repeat center center;
     }
     #EjectButton34[value="1"] {
-      image: url(skin:/palemoon/buttons/btn__eject_active_34.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__eject_active_34.svg) no-repeat center center;
     }
 
   #RepeatButton12[displayValue="0"], #RepeatButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__repeat.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__repeat.svg) no-repeat center center;
     }
     #RepeatButton12[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__repeat_active_12.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__repeat_active_12.svg) no-repeat center center;
     }
     #RepeatButton34[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__repeat_active_34.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__repeat_active_34.svg) no-repeat center center;
     }
 
   #QuantizeButton12[displayValue="0"], #QuantizeButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__quantize.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__quantize.svg) no-repeat center center;
     }
     #QuantizeButton12[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__quantize_active_12.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__quantize_active_12.svg) no-repeat center center;
     }
     #QuantizeButton34[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__quantize_active_34.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__quantize_active_34.svg) no-repeat center center;
     }
 
   #SlipmodeButton12[displayValue="0"], #SlipmodeButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__slip.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__slip.svg) no-repeat center center;
     }
     #SlipmodeButton12[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__slip_active_12.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__slip_active_12.svg) no-repeat center center;
     }
     #SlipmodeButton34[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__slip_active_34.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__slip_active_34.svg) no-repeat center center;
     }
 
   #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__keylock.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__keylock.svg) no-repeat center center;
     }
     #KeylockButton12[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__keylock_active_12.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__keylock_active_12.svg) no-repeat center center;
     }
     #KeylockButton34[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__keylock_active_34.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__keylock_active_34.svg) no-repeat center center;
     }
 
 #BeatgridControlsToggle[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
   }
   #BeatgridControlsToggle[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
   }
 
   #BeatCurposLarge[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__beat_curpos_large.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beat_curpos_large.svg) no-repeat center center;
     }
     #BeatCurposLarge[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beat_curpos_large_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__beat_curpos_large_active.svg) no-repeat center center;
     }
 
   #BeatsEarlier {
-    image: url(skin:/palemoon/buttons/btn__beats_earlier.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_earlier.svg) no-repeat center center;
     }
     #BeatsEarlier[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_earlier_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_earlier_active.svg) no-repeat center center;
     }
 
   #BeatsLater {
-    image: url(skin:/palemoon/buttons/btn__beats_later.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_later.svg) no-repeat center center;
     }
     #BeatsLater[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_later_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_later_active.svg) no-repeat center center;
     }
 
   #BeatsSlower {
-    image: url(skin:/palemoon/buttons/btn__beats_slower.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_slower.svg) no-repeat center center;
     }
     #BeatsSlower[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_slower_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_slower_active.svg) no-repeat center center;
     }
 
   #BeatsFaster {
-    image: url(skin:/palemoon/buttons/btn__beats_faster.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_faster.svg) no-repeat center center;
     }
     #BeatsFaster[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_faster_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_faster_active.svg) no-repeat center center;
     }
   #HotcuesEarlier {
-    image: url(skin:/palemoon/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
   }
     #HotcuesEarlier[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_hotcues_earlier_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_hotcues_earlier_active.svg) no-repeat center center;
     }
   #HotcuesLater {
-    image: url(skin:/palemoon/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
   }
     #HotcuesLater[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_hotcues_later_active.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_hotcues_later_active.svg) no-repeat center center;
     }
 
 #MicTalk[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__mic_talk.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__mic_talk.svg) no-repeat center center;
   }
   #MicTalk[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__mic_talk_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__mic_talk_active.svg) no-repeat center center;
   }
 
 #AuxPlay[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__aux_play.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__aux_play.svg) no-repeat center center;
   }
   #AuxPlay[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__aux_play_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__aux_play_active.svg) no-repeat center center;
   }
 
 #MicAuxAdd {
-  image: url(skin:/palemoon/buttons/btn__plus_flat.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__plus_flat.svg) no-repeat center center;
 }
 
 #MicDucking[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__mic_duck_off.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__mic_duck_off.svg) no-repeat center center;
   }
   #MicDucking[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__mic_duck_auto.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__mic_duck_auto.svg) no-repeat center center;
   }
   #MicDucking[value="2"] {
-    image: url(skin:/palemoon/buttons/btn__mic_duck_manual.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__mic_duck_manual.svg) no-repeat center center;
   }
 
 #RecDot[highlight="0"] {
-  image: url(skin:/palemoon/buttons/btn__rec_dot.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__rec_dot.svg) no-repeat center center;
   }
   #RecDot[highlight="1"], #RecDot[highlight="2"] {
-    image: url(skin:/palemoon/buttons/btn__rec_dot_active.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
 #BroadcastButton[displayValue="0"] {
   /* for some reason the alignment isn't rescpected, so the icons
     have to be sized like available area (button size - margin) */
-  image: url(skin:/palemoon/buttons/btn__broadcast_off.svg) no-repeat left top;
+  image: url(skin:../LateNight/palemoon/buttons/btn__broadcast_off.svg) no-repeat left top;
   }
   #BroadcastButton[displayValue="1"],
   #BroadcastButton[displayValue="2"],
   #BroadcastButton[displayValue="3"],
   #BroadcastButton[displayValue="4"] {
-    image: url(skin:/palemoon/buttons/btn__broadcast_on.svg) no-repeat left top;
+    image: url(skin:../LateNight/palemoon/buttons/btn__broadcast_on.svg) no-repeat left top;
   }
 
 #SkinSettingsToggle[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__settings_off.svg) no-repeat left top;
+  image: url(skin:../LateNight/palemoon/buttons/btn__settings_off.svg) no-repeat left top;
   }
   #SkinSettingsToggle[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__settings_on.svg) no-repeat left top;
+    image: url(skin:../LateNight/palemoon/buttons/btn__settings_on.svg) no-repeat left top;
   }
 
 #ToolbarLogo {
-  image: url(skin:/palemoon/style/mixxx_logo_small.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/style/mixxx_logo_small.svg) no-repeat center center;
 }
 
 /* Search bar Clear button */
 WSearchLineEdit QToolButton:!focus {
-  image: url(skin:/palemoon/buttons/btn__lib_clear_search.svg);
+  image: url(skin:../LateNight/palemoon/buttons/btn__lib_clear_search.svg);
   }
   WSearchLineEdit QToolButton:focus {
-    image: url(skin:/palemoon/buttons/btn__lib_clear_search_focus.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_clear_search_focus.svg);
   }
 
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ:!checked {
-  image: url(skin:/palemoon/buttons/btn__autodj_enable_off.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__autodj_enable_off.svg) no-repeat center center;
   }
   QPushButton#pushButtonAutoDJ:checked {
-    image: url(skin:/palemoon/buttons/btn__autodj_enable_on.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__autodj_enable_on.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonFadeNow:!enabled {
-  image: url(skin:/palemoon/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonFadeNow:enabled {
-    image: url(skin:/palemoon/buttons/btn__autodj_fade.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__autodj_fade.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonSkipNext:!enabled {
-  image: url(skin:/palemoon/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonSkipNext:enabled {
-    image: url(skin:/palemoon/buttons/btn__autodj_skip.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__autodj_skip.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonShuffle:enabled {
-  image: url(skin:/palemoon/buttons/btn__autodj_shuffle.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__autodj_shuffle.svg) no-repeat center center;
 }
 
 QPushButton#pushButtonAddRandomTrack:enabled {
-  image: url(skin:/palemoon/buttons/btn__autodj_addrandom.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__autodj_addrandom.svg) no-repeat center center;
 }
 
 QPushButton#pushButtonRepeatPlaylist:!checked {
-  image: url(skin:/palemoon/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
   }
   QPushButton#pushButtonRepeatPlaylist:checked {
-    image: url(skin:/palemoon/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
+    image: url(skin:../LateNight/palemoon/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
   }
 /* AutoDJ button icons */
 
 /* widgets in cue popup menu */
 WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(skin:/palemoon/buttons/btn__delete.svg);
+  qproperty-icon: url(skin:../LateNight/palemoon/buttons/btn__delete.svg);
   width: 24px;
   height: 42px;
   /* make the icon slightly larger than default 16px */
@@ -2481,7 +2481,7 @@ WCueMenuPopup #CueDeleteButton:pressed {
   background-color: #b24c12;
   outline: none;
   /* not applied: */
-  qproperty-icon: url(skin:/palemoon/buttons/btn__delete_active.svg);
+  qproperty-icon: url(skin:../LateNight/palemoon/buttons/btn__delete_active.svg);
 }
 WCueMenuPopup #CueLabelEdit {
   /*border: 1px solid #c2b3a5;*/
@@ -2498,14 +2498,14 @@ WColorPicker QPushButton {
 WColorPicker QPushButton[checked="false"] {
   outline: none;
   border-width: 2px 2px 2px 2px;
-  border-image: url(skin:/palemoon/buttons/btn_colorpicker.svg) 2 2 2 2;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_colorpicker.svg) 2 2 2 2;
   margin: 0px;
   padding: 0px;
 }
 WColorPicker QPushButton[checked="true"] {
   outline: none;
   border-width: 2px 2px 2px 2px;
-  border-image: url(skin:/palemoon/buttons/btn_colorpicker_active.svg) 2 2 2 2;
+  border-image: url(skin:../LateNight/palemoon/buttons/btn_colorpicker_active.svg) 2 2 2 2;
   margin: 0px;
   padding: 0px;
   /* This property behaves really strange:
@@ -2599,10 +2599,10 @@ WLibrary QLineEdit,
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/palemoon/buttons/btn__lib_bpm_locked_blue.svg);
+  image: url(skin:../LateNight/palemoon/buttons/btn__lib_bpm_locked_blue.svg);
   }
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/palemoon/buttons/btn__lib_bpm_unlocked_grey.svg);
+  image: url(skin:../LateNight/palemoon/buttons/btn__lib_bpm_unlocked_grey.svg);
   }
 /* BPM value */
 #LibraryBPMButton::item {}
@@ -2617,10 +2617,10 @@ WLibrary QLineEdit,
     margin-right: 2px;
     }
     #LibraryBPMSpinBox::up-button {
-      image: url(skin:/palemoon/buttons/btn__lib_spinbox_up.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__lib_spinbox_up.svg) no-repeat center center;
       }
     #LibraryBPMSpinBox::down-button {
-      image: url(skin:/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
+      image: url(skin:../LateNight/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
       }
 
 /* Button in library "Preview" column */
@@ -2631,10 +2631,10 @@ WLibrary QLineEdit,
   border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked {
-    image: url(skin:/palemoon/buttons/btn__lib_preview_play.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_preview_play.svg);
     }
   #LibraryPreviewButton:checked {
-    image: url(skin:/palemoon/buttons/btn__lib_preview_pause.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_preview_pause.svg);
     }
 
 
@@ -2646,10 +2646,10 @@ WTrackTableViewHeader {
     padding: 2px 1px 0px 3px;
     }
     WTrackTableViewHeader::up-arrow {
-      image: url(skin:/palemoon/buttons/btn__lib_sort_up.svg);
+      image: url(skin:../LateNight/palemoon/buttons/btn__lib_sort_up.svg);
     }
     WTrackTableViewHeader::down-arrow {
-      image: url(skin:/palemoon/buttons/btn__lib_sort_down.svg);
+      image: url(skin:../LateNight/palemoon/buttons/btn__lib_sort_down.svg);
     }
 
 
@@ -2787,7 +2787,7 @@ WSearchLineEdit {
   }
   #WaveformSplitter::handle,
   #SidebarCoverSplitter::handle {
-      image: url(skin:/palemoon/style/splitter_handle_horizontal.svg);
+      image: url(skin:../LateNight/palemoon/style/splitter_handle_horizontal.svg);
       height: 9px;
     }
     #WaveformSplitter::handle:pressed,
@@ -2795,7 +2795,7 @@ WSearchLineEdit {
     /* doesn't catch hover state:
     #HorizontalSplitter::handle:hover,
     #HorizontalSplitter::handle[hover="true"] */
-      image: url(skin:/palemoon/style/splitter_handle_horizontal_pressed.svg);
+      image: url(skin:../LateNight/palemoon/style/splitter_handle_horizontal_pressed.svg);
     }
 
 /* VerticalSplitter (the splitter itself is vertical)
@@ -2806,14 +2806,14 @@ WSearchLineEdit {
   margin: 0px;
   }
   #LibrarySplitter::handle {
-    image: url(skin:/palemoon/style/splitter_handle_vertical.svg);
+    image: url(skin:../LateNight/palemoon/style/splitter_handle_vertical.svg);
     padding: 0px;
     margin: 1px 0px 0px 0px;
     /* 'height' works although it's actually the width of the handle */
     height: 6px;
   }
   #LibrarySplitter::handle:pressed {
-    image: url(skin:/palemoon/style/splitter_handle_vertical_pressed.svg);
+    image: url(skin:../LateNight/palemoon/style/splitter_handle_vertical_pressed.svg);
   }
 /************ splitters ***********************/
 
@@ -2826,11 +2826,11 @@ WSearchLineEdit {
 }
 
 #LibraryFeatureControls QRadioButton::indicator:checked {
-  image: url(skin:/palemoon/buttons/btn__lib_radio_button_on_blue.svg) center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__lib_radio_button_on_blue.svg) center center;
 }
 
 #LibraryFeatureControls QRadioButton::indicator:unchecked {
-  image: url(skin:/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
+  image: url(skin:../LateNight/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
 }
 
 /* Library feature pushbuttons
@@ -2865,26 +2865,26 @@ WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
 /* Suppresses that selected sidebar items branch indicator shows wrong color when
     out of focus ; #6040 */
   border-image: none;
-  image: url(skin:/palemoon/style/library_branch_closed.svg);
+  image: url(skin:../LateNight/palemoon/style/library_branch_closed.svg);
   }
   /* closed, selected */
   WLibrarySidebar::branch:closed:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/palemoon/style/library_branch_closed_selected.svg);
+    image: url(skin:../LateNight/palemoon/style/library_branch_closed_selected.svg);
     background-color: #2c454f;
   }
 /* open */
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
   border-image: none;
-  image: url(skin:/palemoon/style/library_branch_open.svg);
+  image: url(skin:../LateNight/palemoon/style/library_branch_open.svg);
   }
   /* open, selected */
   WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/palemoon/style/library_branch_open_selected.svg);
+    image: url(skin:../LateNight/palemoon/style/library_branch_open_selected.svg);
     background-color: #2c454f;
     }
   /* space left of selected child item */
@@ -3039,40 +3039,40 @@ QLineEdit QMenu::item:disabled {
   WTrackMenu::right-arrow,
   WTrackMenu QMenu::right-arrow,
   WEffectChainPresetButton QMenu::right-arrow {
-    image: url(skin:/palemoon/style/menu_arrow_ivory.svg);
+    image: url(skin:../LateNight/palemoon/style/menu_arrow_ivory.svg);
     }
   #MainMenu QMenu::right-arrow:selected,
   WTrackMenu::right-arrow:selected,
   WTrackMenu QMenu::right-arrow:selected,
   WEffectChainPresetButton QMenu::right-arrow:selected {
-    image: url(skin:/palemoon/style/menu_arrow_white.svg);
+    image: url(skin:../LateNight/palemoon/style/menu_arrow_white.svg);
   }
 
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
-    image: url(skin:/palemoon/buttons/btn__menu_checkbox_checked.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__menu_checkbox_checked.svg);
     }
     #MainMenu QMenu::indicator:unchecked,
     #MainMenu QMenu::indicator:unchecked:selected {
-      image: url(skin:/palemoon/buttons/btn__menu_checkbox.svg);
+      image: url(skin:../LateNight/palemoon/buttons/btn__menu_checkbox.svg);
     }
 
   /* This is the only way to select the 'Played' checkbox.
     Note that this also selects the BPM lock, so style that afterwards. */
   WTrackTableView::indicator:unchecked {
-    image: url(skin:/palemoon/buttons/btn__lib_checkbox.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkbox.svg);
   }
   WLibrarySidebar QMenu::indicator:checked,
   WTrackTableViewHeader QMenu::indicator:checked,
   WTrackTableView::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectChainPresetButton QMenu QCheckBox::indicator:checked {
-    image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkmark_blue.svg);
   }
   WEffectSelector::indicator:checked,
   WEffectChainPresetSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
-    image: url(skin:/palemoon/buttons/btn__effect_selected.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__effect_selected.svg);
     width: 13px;
     height: 13px;
     margin-left: 6px;
@@ -3084,13 +3084,13 @@ QLineEdit QMenu::item:disabled {
     background-color: #222;
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
-    image: url(skin:/palemoon/buttons/btn__lib_checkmark_grey.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkmark_grey.svg);
   }
   WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    image: url(skin:/palemoon/buttons/btn__lib_checkmark_indeterminate_blue.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkmark_indeterminate_blue.svg);
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
-    image: url(skin:/palemoon/buttons/btn__lib_checkmark_indeterminate_grey.svg);
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkmark_indeterminate_grey.svg);
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
   WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked {

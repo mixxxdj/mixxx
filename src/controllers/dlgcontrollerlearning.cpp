@@ -25,6 +25,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
 
     setupUi(this);
+    labelDescription->setWordWrap(true);
     labelMappedTo->setText("");
 
     QString helpTitle(tr("Click anywhere in Mixxx or choose a control to learn"));

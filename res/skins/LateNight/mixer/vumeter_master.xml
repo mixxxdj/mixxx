@@ -25,16 +25,16 @@
         <Children>
           <StatusLight>
             <TooltipId>master_PeakIndicatorL</TooltipId>
-            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
-            <PathStatusLight>skin:/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
+            <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
               <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
             <TooltipId>master_VuMeterL</TooltipId>
-            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_deck_level_bg_<Variable name="VuColor"/>.png</PathBack>
-            <PathVu>skin:/<Variable name="StyleScheme"/>/style/vu_deck_level_active.png</PathVu>
+            <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_level_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathVu>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_level_active.png</PathVu>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>500</PeakHoldTime>
@@ -54,16 +54,16 @@
         <Children>
           <StatusLight>
             <TooltipId>master_PeakIndicatorR</TooltipId>
-            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
-            <PathStatusLight>skin:/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
+            <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
               <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
             <TooltipId>master_VuMeterR</TooltipId>
-            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_deck_level_bg_<Variable name="VuColor"/>.png</PathBack>
-            <PathVu>skin:/<Variable name="StyleScheme"/>/style/vu_deck_level_active.png</PathVu>
+            <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_level_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathVu>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_level_active.png</PathVu>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>500</PeakHoldTime>
