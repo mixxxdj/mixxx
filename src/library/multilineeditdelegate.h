@@ -40,5 +40,4 @@ class MultiLineEditDelegate : public TableItemDelegate {
   private:
     void adjustEditor(MultiLineEditor* pEditor, const QSizeF size) const;
     mutable QRect m_editRect;
-    mutable int m_lineCount;
 };

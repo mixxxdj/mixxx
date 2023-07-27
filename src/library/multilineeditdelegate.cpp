@@ -44,8 +44,7 @@ bool MultiLineEditor::eventFilter(QObject* obj, QEvent* event) {
 }
 
 MultiLineEditDelegate::MultiLineEditDelegate(QTableView* pTableView)
-        : TableItemDelegate(pTableView),
-          m_lineCount(0) {
+        : TableItemDelegate(pTableView) {
 }
 
 QWidget* MultiLineEditDelegate::createEditor(QWidget* pParent,
@@ -75,22 +74,15 @@ QWidget* MultiLineEditDelegate::createEditor(QWidget* pParent,
 
 void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF size) const {
     // Compared to QTextEdit, size.height() is the line count (Qt speak: blocks)
-    int newLineCount = static_cast<int>(round(size.height()));
+    int lines = static_cast<int>(round(size.height()));
     // Remove the scrollbars if content is just one line to emulate QLineEdit
     // appearace, else enable auto mode.
-    Qt::ScrollBarPolicy pol(newLineCount > 1 ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
+    Qt::ScrollBarPolicy pol(lines > 1 ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
     pEditor->setVerticalScrollBarPolicy(pol);
     pEditor->setHorizontalScrollBarPolicy(pol);
 
-    // Only resize if line count changed
-    if (newLineCount == m_lineCount) {
-        return;
-    } else {
-        m_lineCount = newLineCount;
-    }
 
     // Calculate the content height
-    int lines = m_lineCount;
     // Add extra margin so the horizontal scrollbar doesn't obstruct the last
     // line (which also avoids the vertical scrollbar as long as possible)
     lines += lines > 1 ? 1 : 0;
@@ -111,10 +103,21 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor, const QSizeF 
     if ((newY + newH) > tableH) {
         newY = tableH - newH;
     }
+
+    // Calculate the content width
+    // Initial size.width() is the factor for tabStopDistance.
+    // After first resize the width is in pixels
+    // Let the editor expand horizontally like QLineEdit, limit to table width
+    int newW = std::max(static_cast<int>(size.width()) + pEditor->frameWidth() * 2,
+            m_editRect.width());
+
     // Also limit width so scrollbars are visible and table is not scrolled if
     // cursor is moved horizontally.
     int tableW = m_pTableView->viewport()->rect().width();
-    int newW = std::min(pEditor->width(), tableW);
+    if (m_editRect.x() + newW > tableW) {
+        newW = tableW - m_editRect.x();
+    }
+
 #ifdef __APPLE__
     // Don't let table view scrollbars overlap the editor
     int scrollW = m_pTableView->verticalScrollBar()->width();
