@@ -877,7 +877,9 @@ void CrateFeature::slotCrateTableChanged(CrateId crateId) {
         if (!activateCrate(m_crateTableModel.selectedCrate())) {
             // probably last clicked crate was deleted, try to
             // select the stored sibling
-            activateCrate(m_prevSiblingCrate);
+            if (m_prevSiblingCrate.isValid()) {
+                activateCrate(m_prevSiblingCrate);
+            }
         }
     } else {
         // No valid selection to restore
