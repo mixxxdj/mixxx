@@ -62,7 +62,8 @@ void StarEditor::renderHelper(QPainter* painter,
         painter->setBrush(option.palette.color(cg, QPalette::Text));
     }
 
-    pStarRating->paint(painter, option.rect, option.fontMetrics.capHeight());
+    const int height = pStarRating->getMeanStarHeightFromFont(option.fontMetrics);
+    pStarRating->paint(painter, option.rect, height);
 }
 
 void StarEditor::paintEvent(QPaintEvent*) {

@@ -22,6 +22,16 @@ class StarRating {
 
     static constexpr int kMinStarCount = 0;
 
+    static QSize getNormalizedSize() {
+        return QSize(mixxx::TrackRecord::kMaxRating - mixxx::TrackRecord::kMinRating, 1);
+    }
+
+    static int getMeanStarHeightFromFont(const QFontMetrics& fm) {
+        // Make star size somehow match the library current font height.
+        // Note: capHeight() is too small, ascent() is too tall. Use the mean value.
+        return (fm.capHeight() + fm.ascent()) / 2;
+    }
+
     explicit StarRating(
             int starCount = kMinStarCount,
             int maxStarCount = mixxx::TrackRecord::kMaxRating - mixxx::TrackRecord::kMinRating);

@@ -31,7 +31,7 @@ StarRating::StarRating(
 }
 
 QSize StarRating::sizeHint() const {
-    return m_scaleFactor * QSize(m_maxStarCount, 1);
+    return m_scaleFactor * getNormalizedSize();
 }
 
 void StarRating::paint(QPainter* painter, const QRect& rect, int height) {
