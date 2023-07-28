@@ -111,8 +111,11 @@ int StarEditor::starAtPosition(int x) {
     }
     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
 
-    if (star <= 0 || star > m_starRating.maxStarCount()) {
+    if (star <= 0) {
         return 0;
+    } else if (star > m_starRating.maxStarCount()) {
+        // Pointer outside the right-hand edge, reset to current rating
+        return m_starRating.starCount();
     }
     return star;
 }
