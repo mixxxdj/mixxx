@@ -94,6 +94,16 @@ void MultiLineEditDelegate::adjustEditor(MultiLineEditor* pEditor,
     // Note: also setBackgroundVisible(true) on the editor to paint the entire
     // rectangle, not just the document.
     int txtH = fm.lineSpacing() * lines;
+    // If it's just one line center the text vertically like QLineEdist do.
+    // Note that the offset is applied in all directions which, hence with very
+    // tall library row spacing the left offset may be disturbing.
+    int diffH = (iRect.height() - txtH - pEditor->frameWidth() * 2) / 2;
+    if (lines == 1 && diffH > 1) {
+        pEditor->document()->setDocumentMargin(diffH);
+    } else { // Reset if lines were added
+        pEditor->document()->setDocumentMargin(0);
+    }
+
     int newH = std::max(txtH, iRect.height());
     // Limit editor to visible table height
     QRect tableRect = m_pTableView->viewport()->rect();
