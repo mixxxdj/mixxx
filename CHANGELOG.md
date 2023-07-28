@@ -25,6 +25,11 @@
   [#11659](https://github.com/mixxxdj/mixxx/pull/11659)
 * Shade: Fixed VU-Meter and other minor issues
   [#11598](https://github.com/mixxxdj/mixxx/pull/11598)
+* Fixed a rare crash when disabling quantize form a controller
+  [#11744](https://github.com/mixxxdj/mixxx/pull/11744)
+  [#11709](https://github.com/mixxxdj/mixxx/issues/11709)
+* Controller Preferences: Avoided a scrollbars in I/O tabs if Info tab exceeds page height
+  [#11756](https://github.com/mixxxdj/mixxx/issues/11756)
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 

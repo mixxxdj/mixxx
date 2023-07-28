@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-07-18" timestamp="1689659468">
+    <release version="2.3.6" type="development" date="2023-07-19" timestamp="1689743984">
       <description>
  <ul>
   <li>
@@ -139,6 +139,15 @@
   <li>
    Shade: Fixed VU-Meter and other minor issues
    #11598
+  </li>
+  <li>
+   Fixed a rare crash when disabling quantize form a controller
+   #11744
+   #11709
+  </li>
+  <li>
+   Controller Preferences: Avoided a scrollbars in I/O tabs if Info tab exceeds page height
+   #11756
   </li>
  </ul>
 </description>
