@@ -11,14 +11,14 @@
 * Fixed resyncing when moving an active loop
   [#11152](https://github.com/mixxxdj/mixxx/pull/11152)
   [#11381](https://github.com/mixxxdj/mixxx/issues/11381)
-* Fixed gapless repeat of full tracks
+* Allow true gapless playback when repeating full tracks
   [#11532](https://github.com/mixxxdj/mixxx/pull/11532)
   [#9842](https://github.com/mixxxdj/mixxx/issues/9842)
   [#11704](https://github.com/mixxxdj/mixxx/pull/11704)
 * Rhythmbox: Fixed bulk track imports from playlists
   [#11661](https://github.com/mixxxdj/mixxx/pull/11661)
 * Console log spam reduced
-  [#11690](https://github.com/mixxxdj/mixxx/issues/11690)
+  [#11690](https://github.com/mixxxdj/mixxx/pull/11690)
   [#11691](https://github.com/mixxxdj/mixxx/issues/11691)
 * Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
   [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
@@ -28,8 +28,8 @@
 * Fixed a rare crash when disabling quantize form a controller
   [#11744](https://github.com/mixxxdj/mixxx/pull/11744)
   [#11709](https://github.com/mixxxdj/mixxx/issues/11709)
-* Controller Preferences: Avoided a scrollbars in I/O tabs if Info tab exceeds page height
-  [#11756](https://github.com/mixxxdj/mixxx/issues/11756)
+* Controller Preferences: Avoid scrollbars in I/O tabs if Info tab exceeds page height
+  [#11756](https://github.com/mixxxdj/mixxx/pull/11756)
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 

@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-07-19" timestamp="1689743984">
+    <release version="2.3.6" type="development" date="2023-07-28" timestamp="1690529288">
       <description>
  <ul>
   <li>
@@ -117,7 +117,7 @@
    #11381
   </li>
   <li>
-   Fixed gapless repeat of full tracks
+   Allow true gapless playback when repeating full tracks
    #11532
    #9842
    #11704
@@ -146,7 +146,7 @@
    #11709
   </li>
   <li>
-   Controller Preferences: Avoided a scrollbars in I/O tabs if Info tab exceeds page height
+   Controller Preferences: Avoid scrollbars in I/O tabs if Info tab exceeds page height
    #11756
   </li>
  </ul>
