@@ -702,7 +702,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
 
     // If the user is trying to set a loop-out before the loop in or without
     // having a loop-in, then ignore it.
-    if (loopSamples.start == kNoTrigger || pos < loopSamples.start) {
+    if (loopSamples.start == kNoTrigger || pos <= loopSamples.start) {
         return;
     }
 
