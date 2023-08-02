@@ -76,6 +76,10 @@ QList<QString> ParserPls::parse(const QString& sFilename) {
         }
     }
 
+    qDebug() << "ParserPls::parse() failed"
+             << sFilename
+             << file.errorString();
+
     file.close();
     return QList<QString>(); //if we get here something went wrong :D
 }
@@ -133,7 +137,7 @@ bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &item
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
                 tr("Playlist Export Failed"),
-                tr("Could not create file") + " " + file_str);
+                tr("Could not create file") + " " + file_str + "\n" + file.errorString());
         return false;
     }
     //Base folder of file

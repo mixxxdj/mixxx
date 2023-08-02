@@ -52,7 +52,8 @@ QList<QString> ParserM3u::parse(const QString& sFilename) {
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning()
                 << "Failed to open playlist file"
-                << sFilename;
+                << sFilename
+                << file.errorString();
         return m_sLocations;
     }
 
