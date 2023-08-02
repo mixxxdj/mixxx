@@ -583,7 +583,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     // Reset the loop out position if it is before the loop in so that loops
     // cannot be inverted.
     if (loopSamples.end != kNoTrigger &&
-            loopSamples.end < pos) {
+            loopSamples.end <= pos) {
         loopSamples.end = kNoTrigger;
         m_pCOLoopEndPosition->set(kNoTrigger);
         if (m_bLoopingEnabled) {
@@ -702,7 +702,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
 
     // If the user is trying to set a loop-out before the loop in or without
     // having a loop-in, then ignore it.
-    if (loopSamples.start == kNoTrigger || pos < loopSamples.start) {
+    if (loopSamples.start == kNoTrigger || pos <= loopSamples.start) {
         return;
     }
 

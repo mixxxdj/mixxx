@@ -160,6 +160,28 @@ TEST_F(LoopingControlTest, LoopInSetAfterLoopOutStops) {
     EXPECT_EQ(-1, m_pLoopEndPoint->get());
 }
 
+TEST_F(LoopingControlTest, LoopInSetAtLoopOutClearsLoopOut) {
+    m_pLoopStartPoint->slotSet(0);
+    m_pLoopEndPoint->slotSet(100);
+    m_pLoopStartPoint->slotSet(100);
+    EXPECT_EQ(100, m_pLoopStartPoint->get());
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    EXPECT_FALSE(isLoopEnabled());
+}
+
+TEST_F(LoopingControlTest, LoopOutSetAtLoopInIgnored) {
+    m_pLoopStartPoint->slotSet(0);
+    m_pLoopEndPoint->slotSet(100);
+    m_pLoopEndPoint->slotSet(0);
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->slotSet(-1);
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->slotSet(0);
+    EXPECT_FALSE(isLoopEnabled());
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+}
+
 TEST_F(LoopingControlTest, LoopOutSetInsideLoopContinues) {
     m_pLoopStartPoint->slotSet(0);
     m_pLoopEndPoint->slotSet(100);
