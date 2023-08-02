@@ -193,7 +193,10 @@ void RecordingManager::setRecordingDir() {
         if (recordDir.mkpath(recordDir.absolutePath())) {
             qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
         } else {
-            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
+            // Using qt_error_string() since QDir has not yet a wrapper for error strings.
+            // https://bugreports.qt.io/browse/QTBUG-1483
+            qDebug() << "Failed to create folder" << recordDir.absolutePath()
+                     << "for recordings:" << qt_error_string();
         }
     }
     m_recordingDir = recordDir.absolutePath();
