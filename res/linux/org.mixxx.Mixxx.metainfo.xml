@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2023-06-17" timestamp="1687005677">
+    <release version="2.5.0" type="development" date="2023-07-28" timestamp="1690529288">
       <description>
 </description>
     </release>
-    <release version="2.4.0" type="development" date="2023-06-17" timestamp="1687005677">
+    <release version="2.4.0" type="development" date="2023-07-28" timestamp="1690529288">
       <description>
  <p>
   Cover Art
@@ -1925,31 +1925,56 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.6" type="development" date="2023-06-17" timestamp="1687005677">
+    <release version="2.3.6" type="development" date="2023-07-28" timestamp="1690529288">
       <description>
  <ul>
-  <li>
-   Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
-   #11595
-  </li>
-  <li>
-   No longer stop a track with an active loop at the very end.
-   #11558
-   #11557
-  </li>
-  <li>
-   Shade: Fixed VU-Meter and other minor issues
-   #11598
-  </li>
   <li>
    Fixed possible crash when closing Mixxx while browsing the file system
    #11593
    #11589
   </li>
   <li>
+   No longer stop a track with an active loop at the very end
+   #11558
+   #11557
+  </li>
+  <li>
    Fixed resyncing when moving an active loop
    #11152
    #11381
+  </li>
+  <li>
+   Allow true gapless playback when repeating full tracks
+   #11532
+   #9842
+   #11704
+  </li>
+  <li>
+   Rhythmbox: Fixed bulk track imports from playlists
+   #11661
+  </li>
+  <li>
+   Console log spam reduced
+   #11690
+   #11691
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+   #11595
+   #11659
+  </li>
+  <li>
+   Shade: Fixed VU-Meter and other minor issues
+   #11598
+  </li>
+  <li>
+   Fixed a rare crash when disabling quantize form a controller
+   #11744
+   #11709
+  </li>
+  <li>
+   Controller Preferences: Avoid scrollbars in I/O tabs if Info tab exceeds page height
+   #11756
   </li>
  </ul>
 </description>
