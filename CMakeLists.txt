@@ -2059,7 +2059,7 @@ if(STATIC_DEPS)
   mark_as_advanced(Protobuf_USE_STATIC_LIBS)
 endif()
 add_subdirectory(src/proto)
-target_link_libraries(mixxx-lib PRIVATE mixxx-proto)
+target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 
 # Rigtorp SPSC Queue
 # https://github.com/rigtorp/SPSCQueue
