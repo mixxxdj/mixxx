@@ -96,9 +96,12 @@ class ImporterImpl {
         // Filter out the primary playlist (since we already show the library
         // under the main iTunes node)
         bool isPrimary;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= 120000)
         if (@available(macOS 12.0, *)) {
             isPrimary = [playlist isPrimary];
-        } else {
+        } else
+#endif
+        {
             isPrimary = [playlist isMaster];
         }
         if (isPrimary) {
