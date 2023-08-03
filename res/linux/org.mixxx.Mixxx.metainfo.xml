@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-07-28" timestamp="1690529288">
+    <release version="2.3.6" type="development" date="2023-08-03" timestamp="1691016748">
       <description>
  <ul>
   <li>
@@ -148,6 +148,21 @@
   <li>
    Controller Preferences: Avoid scrollbars in I/O tabs if Info tab exceeds page height
    #11756
+  </li>
+  <li>
+   Broadcast: Improved error message in case of timeout
+   #11775
+  </li>
+  <li>
+   Handle setting loop_in and loop_out at the same position
+   #11771
+   #10600
+  </li>
+  <li>
+   Fixed build issues with Protobuf v23.4 and with clang 32
+   #11751
+   #11765
+   #11762
   </li>
  </ul>
 </description>
