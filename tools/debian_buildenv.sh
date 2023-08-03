@@ -34,6 +34,11 @@ case "$1" in
             sudo apt-get install libjack-jackd2-dev;
         fi
 
+        if apt-cache show mold 2>%1 >/dev/null;
+        then
+            sudo apt-get install mold
+        fi
+
 
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
