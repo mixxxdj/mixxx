@@ -177,6 +177,8 @@ void CmdlineArgs::printUsage() {
 \n\
 --disableVuMeterGL      Do not use OpenGL vu meter.\n\
 \n\
+--enableVuMeterGL       Use OpenGL vu meter.\n\
+\n\
 --locale LOCALE         Use a custom locale for loading translations\n\
                         (e.g 'fr')\n\
 \n\
