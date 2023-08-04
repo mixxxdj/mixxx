@@ -14,9 +14,9 @@ namespace {
 // We got reports that VuMetersGL do not perform good on windows.
 // They improve the situation for macOS, the final fix is in Mixxx 2.4
 // See: https://github.com/mixxxdj/mixxx/issues/11785
-bool kUseVuMeterGlDefault = false;
+constexpr bool kUseVuMeterGlDefault = false;
 #else
-bool kUseVuMeterGlDefault = true;
+constexpr bool kUseVuMeterGlDefault = true;
 #endif
 } // namespace
 
