@@ -553,7 +553,23 @@ if(NOT MSVC)
     endif()
   else()
     find_program(LLD_EXECUTABLE lld)
-    default_option(LLD_SUPPORT "Enable ccache support" "LLD_EXECUTABLE")
+    if(LLD_EXECUTABLE)
+      execute_process(
+        COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
+        ERROR_QUIET
+        OUTPUT_VARIABLE LLD_VERSION_STRING
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+      string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH ${LLD_VERSION_STRING})
+      if(LLD_VERSION_MATCH)
+        set(LLD_VERSION ${CMAKE_MATCH_1})
+        message(STATUS "Found lld with version: ${LLD_VERSION}")
+      else()
+        message(WARNING "Failed to parse lld version from: ${LLD_VERSION_STRING}")
+      endif()
+    endif()
+    # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
+    default_option(LLD_SUPPORT "Enable ccache support" "LLD_EXECUTABLE;LLD_VERSION VERSION_GREATER 10.0.0")
     if(LLD_SUPPORT)
       if(LLD_EXECUTABLE)
         message(STATUS "Selecting lld as linker")
