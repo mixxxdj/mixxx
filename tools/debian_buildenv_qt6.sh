@@ -34,6 +34,16 @@ case "$1" in
             sudo apt-get install libjack-jackd2-dev;
         fi
 
+        # Install a faster linker. Prefer mold, fall back to lld
+        if apt-cache show mold 2>%1 >/dev/null;
+        then
+            sudo apt-get install mold
+        else
+            if apt-cache show lld 2>%1 >/dev/null;
+            then
+                sudo apt-get install lld
+            fi
+        fi
 
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
