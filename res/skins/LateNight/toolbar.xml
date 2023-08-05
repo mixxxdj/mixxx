@@ -5,7 +5,7 @@
     <SizePolicy>e,min</SizePolicy>
     <Children>
 
-      <Template src="skin:/controls/button_2state.xml">
+      <Template src="skin:../LateNight/controls/button_2state.xml">
         <SetVariable name="TooltipId">maximize_library</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
         <SetVariable name="Size">80f,20f</SetVariable>
@@ -25,7 +25,7 @@
         <Layout>horizontal</Layout>
         <Children>
 
-          <Template src="skin:/controls/button_2state.xml">
+          <Template src="skin:../LateNight/controls/button_2state.xml">
             <SetVariable name="TooltipId">show_waveforms</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">80f,20f</SetVariable>
@@ -34,7 +34,7 @@
             <SetVariable name="ConfigKey">[Skin],show_waveforms</SetVariable>
           </Template>
 
-          <Template src="skin:/controls/button_2state_persist.xml">
+          <Template src="skin:../LateNight/controls/button_2state_persist.xml">
             <SetVariable name="TooltipId">toggle_4decks</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">52f,20f</SetVariable>
@@ -43,7 +43,7 @@
             <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
           </Template>
 
-          <Template src="skin:/controls/button_2state_persist.xml">
+          <Template src="skin:../LateNight/controls/button_2state_persist.xml">
             <SetVariable name="TooltipId">show_mixer</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">48f,20f</SetVariable>
@@ -52,7 +52,7 @@
             <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
           </Template>
 
-          <Template src="skin:/controls/button_2state_persist.xml">
+          <Template src="skin:../LateNight/controls/button_2state_persist.xml">
             <SetVariable name="TooltipId">show_effects</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">59f,20f</SetVariable>
@@ -61,7 +61,7 @@
             <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
           </Template>
 
-          <Template src="skin:/controls/button_2state_persist.xml">
+          <Template src="skin:../LateNight/controls/button_2state_persist.xml">
             <SetVariable name="TooltipId">show_samplers</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">71f,20f</SetVariable>
@@ -70,7 +70,7 @@
             <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
           </Template>
 
-          <Template src="skin:/controls/button_2state_persist.xml">
+          <Template src="skin:../LateNight/controls/button_2state_persist.xml">
             <SetVariable name="TooltipId">show_microphone</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">61f,20f</SetVariable>
@@ -93,7 +93,7 @@
         <Layout>horizontal</Layout>
         <Children>
 
-          <Template src="skin:/controls/button_2state.xml">
+          <Template src="skin:../LateNight/controls/button_2state.xml">
             <SetVariable name="TooltipId">show_waveforms</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">80f,20f</SetVariable>
@@ -102,7 +102,7 @@
             <SetVariable name="ConfigKey">[LateNight],max_lib_show_decks</SetVariable>
           </Template>
 
-          <Template src="skin:/controls/button_2state_persist.xml">
+          <Template src="skin:../LateNight/controls/button_2state_persist.xml">
             <SetVariable name="TooltipId">toggle_4decks</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">52f,20f</SetVariable>
@@ -125,9 +125,9 @@
         <ObjectName>AutoDjStatus</ObjectName>
         <Size>30f,22f</Size>
         <NumberPos>3</NumberPos>
-        <PathStatusLight1>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight1>
-        <PathStatusLight2>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight2>
-        <PathStatusLight3>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight3>
+        <PathStatusLight1>skin:../LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight1>
+        <PathStatusLight2>skin:../LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight2>
+        <PathStatusLight3>skin:../LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight3>
         <Connection>
           <ConfigKey>[AutoDJ],enabled</ConfigKey>
         </Connection>
@@ -170,8 +170,8 @@
                   <VuMeter>
                     <TooltipId>audio_latency_usage</TooltipId>
                     <Size>59f,5f</Size>
-                    <PathBack>skin:/<Variable name="StyleScheme"/>/style/latency_bg.png</PathBack>
-                    <PathVu>skin:/<Variable name="StyleScheme"/>/style/latency_over.png</PathVu>
+                    <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/latency_bg.png</PathBack>
+                    <PathVu>skin:../LateNight/<Variable name="StyleScheme"/>/style/latency_over.png</PathVu>
                     <Horizontal>true</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>1000</PeakHoldTime>
@@ -209,10 +209,10 @@
             <ObjectName>Battery</ObjectName>
             <Size>24,24</Size>
             <SizePolicy>f,f</SizePolicy>
-            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
+            <PixmapCharged scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
             <NumberStates>8</NumberStates>
-            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
-            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
           </Battery>
         </Children>
       </WidgetGroup><!-- BatteryBox -->
@@ -227,7 +227,7 @@
             = 70x18 available for text -->
         <Children>
           <!-- invisible Rec button -->
-          <Template src="skin:/controls/button_2state.xml">
+          <Template src="skin:../LateNight/controls/button_2state.xml">
             <SetVariable name="ObjectName">RecButton</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
             <SetVariable name="Size">68f,20f</SetVariable>
@@ -261,7 +261,7 @@
           </WidgetGroup><!-- /Rec dot + RecDuration -->
 
           <!-- Rec feedback color -->
-          <Template src="skin:/controls/button_3state_display.xml">
+          <Template src="skin:../LateNight/controls/button_3state_display.xml">
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
             <SetVariable name="Size">72f,20f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>

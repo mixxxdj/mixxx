@@ -25,6 +25,7 @@
 #include "skin/legacy/colorschemeparser.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/skincontext.h"
+#include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
@@ -444,8 +445,6 @@ LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget
     setupSize(skinDocument, pLaunchImage);
     return pLaunchImage;
 }
-
-
 
 QList<QWidget*> wrapWidget(QWidget* pWidget) {
     QList<QWidget*> result;
@@ -1170,14 +1169,18 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     commonWidgetSetup(node, pStarRating, false);
     pStarRating->setup(node, *m_pContext);
 
-    connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, pStarRating, &WStarRating::slotTrackLoaded);
-    connect(pPlayer, &BaseTrackPlayer::playerEmpty, pStarRating, [pStarRating]() {
-        pStarRating->slotTrackLoaded(TrackPointer());
-    });
+    connect(pPlayer,
+            &BaseTrackPlayer::trackRatingChanged,
+            pStarRating,
+            &WStarRating::slotSetRating);
+    connect(pStarRating,
+            &WStarRating::ratingChanged,
+            pPlayer,
+            &BaseTrackPlayer::slotSetTrackRating);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
-        pStarRating->slotTrackLoaded(pTrack);
+        pStarRating->slotSetRating(pTrack->getRating());
     }
 
     return pStarRating;

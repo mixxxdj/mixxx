@@ -1,11 +1,9 @@
 #include "widget/wvumeterlegacy.h"
 
-#include <QStyleOption>
-#include <QStylePainter>
-
 #include "moc_wvumeterlegacy.cpp"
 #include "util/math.h"
 #include "util/timer.h"
+#include "util/widgethelper.h"
 #include "widget/wpixmapstore.h"
 
 #define DEFAULT_FALLTIME 20
@@ -27,6 +25,7 @@ WVuMeterLegacy::WVuMeterLegacy(QWidget* pParent)
           m_iPeakFallTime(0),
           m_dPeakHoldCountdownMs(0) {
     m_timer.start();
+    setAutoFillBackground(true);
 }
 
 void WVuMeterLegacy::setup(const QDomNode& node, const SkinContext& context) {
@@ -152,13 +151,22 @@ void WVuMeterLegacy::maybeUpdate() {
     }
 }
 
+void WVuMeterLegacy::showEvent(QShowEvent* e) {
+    Q_UNUSED(e);
+    WWidget::showEvent(e);
+    // Find the base color recursively in parent widget.
+    const auto bgColor = mixxx::widgethelper::findBaseColor(this);
+    QPalette pal = QPalette();
+
+    pal.setColor(QPalette::Window, bgColor);
+
+    setPalette(pal);
+}
+
 void WVuMeterLegacy::paintEvent(QPaintEvent* /*unused*/) {
     ScopedTimer t("WVuMeterLegacy::paintEvent");
 
-    QStyleOption option;
-    option.initFrom(this);
-    QStylePainter p(this);
-    p.drawPrimitive(QStyle::PE_Widget, option);
+    QPainter p(this);
 
     if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
         // Draw background. DrawMode takes care of whether to stretch or not.

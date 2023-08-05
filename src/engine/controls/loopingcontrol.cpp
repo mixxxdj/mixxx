@@ -242,6 +242,8 @@ LoopingControl::LoopingControl(const QString& group,
             &LoopingControl::slotLoopRemove);
 
     m_pPlayButton = ControlObject::getControl(ConfigKey(group, "play"));
+
+    m_pRepeatButton = ControlObject::getControl(ConfigKey(group, "repeat"));
 }
 
 LoopingControl::~LoopingControl() {
@@ -518,7 +520,25 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
             }
         }
     }
+
+    // Return trigger if repeat is enabled
+    if (m_pRepeatButton->toBool()) {
+        const FrameInfo info = frameInfo();
+        if (reverse) {
+            *pTargetPosition = info.trackEndPosition;
+            return mixxx::audio::kStartFramePos;
+        } else {
+            *pTargetPosition = mixxx::audio::kStartFramePos;
+            return info.trackEndPosition;
+        }
+    }
+
     return mixxx::audio::kInvalidFramePos;
+}
+
+double LoopingControl::getTrackSamples() const {
+    const FrameInfo info = frameInfo();
+    return info.trackEndPosition.toEngineSamplePos();
 }
 
 void LoopingControl::hintReader(gsl::not_null<HintVector*> pHintList) {
@@ -705,7 +725,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
 
     // Reset the loop out position if it is before the loop in so that loops
     // cannot be inverted.
-    if (loopInfo.endPosition.isValid() && loopInfo.endPosition < position) {
+    if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= position) {
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
         if (m_bLoopingEnabled) {
@@ -851,7 +871,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
 
     // If the user is trying to set a loop-out before the loop in or without
     // having a loop-in, then ignore it.
-    if (!loopInfo.startPosition.isValid() || position < loopInfo.startPosition) {
+    if (!loopInfo.startPosition.isValid() || position <= loopInfo.startPosition) {
         return;
     }
 
@@ -1729,13 +1749,13 @@ mixxx::audio::FramePos LoopingControl::adjustedPositionInsideAdjustedLoop(
                 ceil((adjustedPosition.value() - newLoopEndPosition.value()) /
                         newLoopSize);
         adjustedPosition -= adjustSteps * newLoopSize;
-        DEBUG_ASSERT(adjustedPosition <= newLoopEndPosition);
-        VERIFY_OR_DEBUG_ASSERT(adjustedPosition > newLoopStartPosition) {
-            // I'm not even sure this is possible.  The new loop would have to be bigger than the
-            // old loop, and the playhead was somehow outside the old loop.
+        DEBUG_ASSERT(adjustedPosition < newLoopEndPosition);
+        VERIFY_OR_DEBUG_ASSERT(adjustedPosition >= newLoopStartPosition) {
+            // This can happen when offset calculation above has double precision
+            // issues (noticed around 0.00) which shifts the pos beyond loop in
             qWarning()
                     << "SHOULDN'T HAPPEN: adjustedPositionInsideAdjustedLoop "
-                       "couldn't find a new position --"
+                       "set new position to before in point --"
                     << " seeking to in point";
             adjustedPosition = newLoopStartPosition;
         }
@@ -1748,9 +1768,11 @@ mixxx::audio::FramePos LoopingControl::adjustedPositionInsideAdjustedLoop(
         adjustedPosition += adjustSteps * newLoopSize;
         DEBUG_ASSERT(adjustedPosition >= newLoopStartPosition);
         VERIFY_OR_DEBUG_ASSERT(adjustedPosition < newLoopEndPosition) {
+            // This can happen when offset calculation above has double precision
+            // issues (noticed around 0.00) which shifts the pos beyond loop out
             qWarning()
                     << "SHOULDN'T HAPPEN: adjustedPositionInsideAdjustedLoop "
-                       "couldn't find a new position --"
+                       "set new position to out point or later--"
                     << " seeking to in point";
             adjustedPosition = newLoopStartPosition;
         }

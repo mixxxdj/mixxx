@@ -105,6 +105,8 @@ class FakeDeck : public BaseTrackPlayer {
     MOCK_METHOD1(slotCloneFromGroup, void(const QString& group));
     MOCK_METHOD0(slotCloneDeck, void());
 
+    void slotSetTrackRating(int /*unused*/) override{};
+
     TrackPointer loadedTrack;
     ControlObject trackSamples;
     ControlObject samplerate;

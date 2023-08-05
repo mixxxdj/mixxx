@@ -442,6 +442,7 @@ class Track : public QObject {
     // adjusted in the opposite direction to compensate (no audible change).
     void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
+    void ratingUpdated(int rating);
     void cuesUpdated();
     void loopRemove();
     void analyzed();

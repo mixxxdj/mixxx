@@ -12,6 +12,11 @@ class WSpinny : public WSpinnyBase {
             BaseTrackPlayer* pPlayer);
 
   private:
+    QImage m_qImage;
+
     void draw() override;
+    void setupVinylSignalQuality() override;
+    void updateVinylSignalQualityImage(
+            const QColor& qual_color, const unsigned char* data) override;
     void coverChanged() override;
 };

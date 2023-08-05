@@ -90,11 +90,9 @@ void WEffectChainPresetSelector::populate() {
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
-    // After selecting an effect move focus to the tracks table in order
-    // to immediately allow keyboard shortcuts again.
-    // TODO(ronso0) switch to previously focused (library?) widget instead
-    ControlObject::set(ConfigKey("[Library]", "focused_widget"),
-            static_cast<double>(FocusWidget::TracksTable));
+    // Clicking a chain item moves keyboard focus to the list view.
+    // Move focus back to the previously focused library widget.
+    ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
 }
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {

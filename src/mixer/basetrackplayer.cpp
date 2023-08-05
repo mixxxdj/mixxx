@@ -223,6 +223,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             ConfigKey(getGroup(), "update_replaygain_from_pregain"));
     m_pUpdateReplayGainFromPregain->connectValueChangeRequest(this,
             &BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain);
+
+    m_ejectTimer.start();
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -321,6 +323,20 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
     if (v <= 0) {
         return;
     }
+
+    mixxx::Duration elapsed = m_ejectTimer.restart();
+
+    // Double-click always restores the last replaced track, i.e. un-eject the second
+    // last track: the first click ejects or unejects, and the second click reloads.
+    if (elapsed < mixxx::Duration::fromMillis(kUnreplaceDelay)) {
+        TrackPointer lastEjected = m_pPlayerManager->getSecondLastEjectedTrack();
+        if (lastEjected) {
+            slotLoadTrack(lastEjected, false);
+        }
+        return;
+    }
+
+    // With no loaded track a single click reloads the last ejected track.
     if (!m_pLoadedTrack) {
         TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
         if (lastEjected) {
@@ -422,6 +438,14 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
             &Track::colorUpdated,
             this,
             &BaseTrackPlayerImpl::slotSetTrackColor);
+
+    // Forward the update signal, i.e. use BaseTrackPlayer as relay.
+    // Currently only used by WStarRating which is connected in
+    // LegacySkinParser::parseStarRating
+    connect(m_pLoadedTrack.get(),
+            &Track::ratingUpdated,
+            this,
+            &BaseTrackPlayerImpl::trackRatingChanged);
 }
 
 void BaseTrackPlayerImpl::disconnectLoadedTrack() {
@@ -510,6 +534,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pLoopOutPoint->set(kNoTrigger);
         m_pLoadedTrack.reset();
         emit playerEmpty();
+        emit trackRatingChanged(0);
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
         // NOTE(uklotzde): In a previous version track metadata was reloaded
         // from the source file at this point again. This is no longer necessary
@@ -590,6 +615,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         }
 
         emit newTrackLoaded(m_pLoadedTrack);
+        emit trackRatingChanged(m_pLoadedTrack->getRating());
     } else {
         // this is the result from an outdated load or unload signal
         // A new load is already pending
@@ -729,6 +755,13 @@ void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
     }
     m_pTrackColor->setAndConfirm(trackColorToDouble(color));
     m_pLoadedTrack->setColor(color);
+}
+
+void BaseTrackPlayerImpl::slotSetTrackRating(int rating) {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    m_pLoadedTrack->setRating(rating);
 }
 
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {

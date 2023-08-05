@@ -30,6 +30,7 @@ class WVuMeterLegacy : public WWidget {
 
   private:
     void paintEvent(QPaintEvent* /*unused*/) override;
+    void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
 
     // Current parameter and peak parameter.

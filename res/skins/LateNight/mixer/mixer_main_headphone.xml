@@ -45,7 +45,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_with_label.xml">
+                      <Template src="skin:../LateNight/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">master_gain</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">orange</SetVariable>
@@ -61,7 +61,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_with_label.xml">
+                      <Template src="skin:../LateNight/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">balance</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">red</SetVariable>
@@ -86,7 +86,7 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
-                  <Template src="skin:/controls/knob.xml">
+                  <Template src="skin:../LateNight/controls/knob.xml">
                     <SetVariable name="TooltipId">booth_gain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="KnobColor">orange</SetVariable>
@@ -125,7 +125,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:/fx/assign_buttons_master.xml">
+                  <Template src="skin:../LateNight/fx/assign_buttons_master.xml">
                     <SetVariable name="Type">master</SetVariable>
                   </Template>
                 </Children>
@@ -195,7 +195,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_with_label.xml">
+                      <Template src="skin:../LateNight/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">headphone_gain</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">orange</SetVariable>
@@ -211,7 +211,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_with_label.xml">
+                      <Template src="skin:../LateNight/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">headMix</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">red</SetVariable>
@@ -242,13 +242,13 @@
                     <RightClickIsPushButton>false</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey>[Master],headSplit</ConfigKey>
@@ -269,7 +269,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:/fx/assign_buttons_master.xml">
+                  <Template src="skin:../LateNight/fx/assign_buttons_master.xml">
                     <SetVariable name="Group">[Headphone]</SetVariable>
                     <SetVariable name="Type">headphones</SetVariable>
                   </Template>

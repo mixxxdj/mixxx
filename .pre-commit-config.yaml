@@ -164,7 +164,7 @@ repos:
         language: python
         additional_dependencies:
           - beautifulsoup4==4.11.1
-          - lxml==4.9.1
+          - lxml==4.9.3
           - Markdown==3.4.1
         types: [text]
         files: ^(CHANGELOG\.md|res/linux/org\.mixxx\.Mixxx\.metainfo.xml)$

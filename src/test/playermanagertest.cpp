@@ -27,6 +27,12 @@ void deleteTrack(Track* pTrack) {
     delete pTrack;
 };
 
+void waitForTrackToBeLoaded(Deck* pDeck) {
+    while (!pDeck->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
+        QTest::qSleep(100); // millis
+    }
+}
+
 } // namespace
 
 // We can't inherit from LibraryTest because that creates a key_notation control object that is also
@@ -127,9 +133,10 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
     m_pEngine->process(1024);
-    while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
-        QTest::qSleep(100); // millis
-    }
+    waitForTrackToBeLoaded(deck1);
+    // make sure eject does not trigger 'unreplace':
+    // sleep for longer than 500 ms 'unreplace' period so this is not registered as double-click
+    QTest::qSleep(kUnreplaceDelay); // millis
     deck1->slotEjectTrack(1.0);
 
     // Load another track.
@@ -140,6 +147,8 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     // Ejecting in an empty deck loads the last-ejected track.
     auto deck2 = m_pPlayerManager->getDeck(2);
     ASSERT_EQ(nullptr, deck2->getLoadedTrack());
+    // make sure eject does not trigger 'unreplace'
+    QTest::qSleep(kUnreplaceDelay); // millis
     deck2->slotEjectTrack(2.0);
     ASSERT_NE(nullptr, deck2->getLoadedTrack());
     ASSERT_EQ(testId1, deck2->getLoadedTrack()->getId());
@@ -158,22 +167,20 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
     m_pEngine->process(1024);
-    while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
-        QTest::qSleep(100); // millis
-    }
+    waitForTrackToBeLoaded(deck1);
 
     // Load another track, replacing the first, causing it to be unloaded.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2, false);
     m_pEngine->process(1024);
-    while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
-        QTest::qSleep(100); // millis
-    }
+    waitForTrackToBeLoaded(deck1);
 
     // Ejecting in an empty deck loads the last-ejected track.
     auto deck2 = m_pPlayerManager->getDeck(2);
     ASSERT_EQ(nullptr, deck2->getLoadedTrack());
+    // make sure eject does not trigger 'unreplace'
+    QTest::qSleep(kUnreplaceDelay);
     deck2->slotEjectTrack(1.0);
     ASSERT_NE(nullptr, deck2->getLoadedTrack());
     ASSERT_EQ(testId1, deck2->getLoadedTrack()->getId());
@@ -186,6 +193,42 @@ TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     m_pPlayerManager->slotSaveEjectedTrack(pTrack);
     auto deck1 = m_pPlayerManager->getDeck(1);
     // Does nothing -- no crash.
+    // make sure eject does not trigger 'unreplace'
+    QTest::qSleep(kUnreplaceDelay);
     deck1->slotEjectTrack(1.0);
     ASSERT_EQ(nullptr, deck1->getLoadedTrack());
+}
+
+TEST_F(PlayerManagerTest, UnReplaceTest) {
+    // Trigger eject twice within 500 ms to undo track replacement
+    auto deck1 = m_pPlayerManager->getDeck(1);
+    // Load a track
+    TrackPointer pTrack1 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest1));
+    ASSERT_NE(nullptr, pTrack1);
+    TrackId testId1 = pTrack1->getId();
+    ASSERT_TRUE(testId1.isValid());
+    deck1->slotLoadTrack(pTrack1, false);
+    m_pEngine->process(1024);
+    waitForTrackToBeLoaded(deck1);
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+
+    // Load another track.
+    TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
+    ASSERT_NE(nullptr, pTrack2);
+    deck1->slotLoadTrack(pTrack2, false);
+    m_pEngine->process(1024);
+    waitForTrackToBeLoaded(deck1);
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+
+    // Eject. Make sure eject does not trigger 'unreplace':
+    // sleep for longer than 500 ms 'unreplace' period so this is not registered as double-click
+    QTest::qSleep(kUnreplaceDelay); // millis
+    deck1->slotEjectTrack(1.0);
+    ASSERT_EQ(nullptr, deck1->getLoadedTrack());
+
+    // Eject again, assume this is reached faster than 500 ms after first eject
+    deck1->slotEjectTrack(1.0);
+    // First track should be reloaded
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+    ASSERT_EQ(testId1, deck1->getLoadedTrack()->getId());
 }

@@ -68,7 +68,6 @@ EffectChain::EffectChain(const QString& group,
     m_pControlChainMix = std::make_unique<ControlPotmeter>(
             ConfigKey(m_group, "mix"), 0.0, 1.0, false, true, false, true, 1.0);
     m_pControlChainMix->setDefaultValue(0.0);
-    m_pControlChainMix->set(0.0);
     connect(m_pControlChainMix.get(),
             &ControlObject::valueChanged,
             this,
@@ -83,7 +82,6 @@ EffectChain::EffectChain(const QString& group,
             &ControlObject::valueChanged,
             this,
             [=, this](double value) { slotControlChainSuperParameter(value, false); });
-    m_pControlChainSuperParameter->set(0.0);
     m_pControlChainSuperParameter->setDefaultValue(0.0);
 
     m_pControlChainMixMode =

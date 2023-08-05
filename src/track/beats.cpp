@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iterator>
+#include <unordered_map>
 #include <vector>
 
 #include "audio/frame.h"
