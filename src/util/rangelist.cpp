@@ -36,15 +36,13 @@ QList<int> parseRangeList(const QString& input) {
             endIndex = startIndex;
         }
         for (int currentIndex = startIndex; currentIndex <= endIndex; currentIndex++) {
-            intList.append(currentIndex);
+            // Add values sorted and skip duplicates
+            auto insertPos = std::lower_bound(intList.begin(), intList.end(), currentIndex);
+            if (insertPos == intList.end() || *insertPos != currentIndex) {
+                intList.insert(insertPos, currentIndex);
+            }
         }
     }
-
-    std::sort(intList.begin(), intList.end());
-    const auto constLast = make_const_iterator(
-            intList, std::unique(intList.begin(), intList.end()));
-    constErase(&intList, constLast, intList.constEnd());
-
     return intList;
 }
 
