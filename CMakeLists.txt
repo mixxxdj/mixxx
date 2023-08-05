@@ -560,7 +560,7 @@ if(NOT MSVC)
         OUTPUT_VARIABLE LLD_VERSION_STRING
         OUTPUT_STRIP_TRAILING_WHITESPACE
       )
-      string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH ${LLD_VERSION_STRING})
+      string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH "${LLD_VERSION_STRING}")
       if(LLD_VERSION_MATCH)
         set(LLD_VERSION ${CMAKE_MATCH_1})
         message(STATUS "Found lld with version: ${LLD_VERSION}")

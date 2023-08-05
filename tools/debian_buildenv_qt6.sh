@@ -37,11 +37,11 @@ case "$1" in
         # Install a faster linker. Prefer mold, fall back to lld
         if apt-cache show mold 2>%1 >/dev/null;
         then
-            sudo apt-get install mold
+            sudo apt-get install -y --no-install-recommends mold
         else
             if apt-cache show lld 2>%1 >/dev/null;
             then
-                sudo apt-get install lld
+                sudo apt-get install -y --no-install-recommends lld
             fi
         fi
 
