@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-08-06" timestamp="1691298562">
+    <release version="2.3.6" type="development" date="2023-08-06" timestamp="1691298902">
       <description>
  <ul>
   <li>
@@ -167,6 +167,23 @@
    #11751
    #11765
    #11762
+  </li>
+  <li>
+   Disable GL VU-Meters on windows by default. They can be re-enabled via the command line option:
+   --enableVuMeterGL
+   .
+   #11787
+   #11785
+   #11789
+  </li>
+  <li>
+   Library preferences: Uncheck serato metadata export when file metadata export is unchecked
+   #11782
+   #11226
+  </li>
+  <li>
+   Denon MC6000MK2: Delete mapping for master gain
+   #11792
   </li>
  </ul>
 </description>

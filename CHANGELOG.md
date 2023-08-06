@@ -39,6 +39,15 @@
   [#11751](https://github.com/mixxxdj/mixxx/pull/11751)
   [#11765](https://github.com/mixxxdj/mixxx/pull/11765)
   [#11762](https://github.com/mixxxdj/mixxx/issues/11762)
+* Disable GL VU-Meters on windows by default. They can be re-enabled via the command line option: `--enableVuMeterGL`.
+  [#11787](https://github.com/mixxxdj/mixxx/pull/11787)
+  [#11785](https://github.com/mixxxdj/mixxx/issues/11785)
+  [#11789](https://github.com/mixxxdj/mixxx/issues/11789)
+* Library preferences: Uncheck serato metadata export when file metadata export is unchecked
+  [#11782](https://github.com/mixxxdj/mixxx/pull/11782)
+  [#11226](https://github.com/mixxxdj/mixxx/issues/11226)
+* Denon MC6000MK2: Delete mapping for master gain
+  [#11792](https://github.com/mixxxdj/mixxx/pull/11792)
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 
