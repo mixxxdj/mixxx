@@ -158,7 +158,7 @@ void ITunesDAO::appendPlaylistTree(gsl::not_null<TreeItem*> item, int playlistId
             [this, &item](auto childEntry) {
                 int childId = childEntry.second;
                 QString childName = m_playlistNameById[childId];
-                TreeItem* child = item->appendChild(childName);
+                TreeItem* child = item->appendChild(childName, childId);
                 appendPlaylistTree(child, childId);
             });
 }

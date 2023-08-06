@@ -23,6 +23,7 @@
 #include "library/library.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "moc_itunesfeature.cpp"
 #include "util/sandbox.h"
@@ -231,9 +232,11 @@ void ITunesFeature::activate(bool forceReload) {
 
 void ITunesFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "ITunesFeature::activateChild()" << index;
-    QString playlist = index.data().toString();
-    qDebug() << "Activating " << playlist;
-    m_pITunesPlaylistModel->setPlaylist(playlist);
+    TreeItem* treeItem = static_cast<TreeItem*>(index.internalPointer());
+    const QString& playlistName = treeItem->getLabel();
+    int playlistId = treeItem->getData().toInt();
+    qDebug() << "Activating playlist" << playlistName << "with id" << playlistId;
+    m_pITunesPlaylistModel->setPlaylistById(playlistId);
     emit showTrackModel(m_pITunesPlaylistModel);
     emit enableCoverArtDisplay(false);
 }
