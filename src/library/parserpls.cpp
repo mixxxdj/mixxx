@@ -18,6 +18,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "errordialoghandler.h"
 #include "moc_parserpls.cpp"
 
 /**
@@ -135,9 +136,13 @@ bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &item
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(nullptr,
-                tr("Playlist Export Failed"),
-                tr("Could not create file") + " " + file_str + "\n" + file.errorString());
+        ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
+        ErrorDialogProperties* props = pDialogHandler->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(tr("Playlist Export Failed"));
+        props->setText(tr("Could not create file") + " " + file_str);
+        props->setDetails(file.errorString());
+        pDialogHandler->requestErrorDialog(props);
         return false;
     }
     //Base folder of file
