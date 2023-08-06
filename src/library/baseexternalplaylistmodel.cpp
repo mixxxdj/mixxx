@@ -111,6 +111,10 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
         return;
     }
 
+    setPlaylistById(playlistId);
+}
+
+void BaseExternalPlaylistModel::setPlaylistById(int playlistId) {
     // Store search text
     QString currSearch = currentSearch();
     if (m_currentPlaylistId != kInvalidPlaylistId) {
