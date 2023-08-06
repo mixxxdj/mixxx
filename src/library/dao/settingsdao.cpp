@@ -75,7 +75,7 @@ bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
         kLogger.warning()
                 << "Failed to set" << name << "=" << value
                 << query.lastError();
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return false;
     }
     return true;
