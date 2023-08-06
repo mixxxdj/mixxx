@@ -8,7 +8,6 @@
     <controller id="Traktor">
         <scriptfiles>
             <file functionprefix="" filename="common-hid-packet-parser.js"/>
-            <file functionprefix="" filename="common-hid-utils.js"/>
             <file functionprefix="KontrolZ1" filename="Traktor-Kontrol-Z1-scripts.js"/>
         </scriptfiles>
     </controller>
