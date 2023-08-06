@@ -19,10 +19,10 @@
   background-color: #f7f7f7;
 }
 
-#213k1, #213kCompact1, #213kMini1,
-#213k2, #213kCompact2, #213kMini2,
-#213k3, #213kCompact3, #213kMini3,
-#213k4, #213kCompact4, #213kMini4,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
 #MixerDecks,
 #FxUnitControlsExpanded,
 #FxUnitControlsCollapsed,
@@ -34,10 +34,10 @@
 }
 
 /* 1st-level containers */
-#213k1, #213kCompact1, #213kMini1,
-#213k2, #213kCompact2, #213kMini2,
-#213k3, #213kCompact3, #213kMini3,
-#213k4, #213kCompact4, #213kMini4,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
 #MixerDecks,
 #FxUnitControlsCollapsed,
 #FxUnitControlsExpanded,
@@ -192,20 +192,20 @@ WSearchLineEdit {
     border-width: 1px 0px 1px 0px;
   }
 
-  #213kSettingsContainer,
-  #213kSettingsContainerCompact,
+  #DeckSettingsContainer,
+  #DeckSettingsContainerCompact,
   #SamplerSettingsContainer,
   /* Prevents cut-off or shifted stars on macOS */
   WStarRating {
     background-color: #e6e6e5;
     }
-    #213kSettingsContainer,
-    #213kSettingsContainerCompact,
+    #DeckSettingsContainer,
+    #DeckSettingsContainerCompact,
     #SamplerSettingsContainer {
       border-top: 1px solid #f7f7f7;
       border-bottom: 1px solid #d5d5d5;
       }
-      #213kSettings,
+      #DeckSettings,
       #SamplerSettings {
         border-top: 1px solid #e0e0e0;
         border-bottom: 1px solid #fafafa;
@@ -270,8 +270,8 @@ WSearchLineEdit {
 
 /************ lines / grooves / splitters *********************/
 
-#213kRateSeparator,
-#213kRateSeparatorCompact,
+#DeckRateSeparator,
+#DeckRateSeparatorCompact,
 #MasterMixerSeparator,
 #MasterHeadphoneSeparator,
 #FxMixerSeparatorCollapsed,
@@ -281,8 +281,8 @@ WSearchLineEdit {
   /* needs a background color to paint the borders */
   background-color: transparent;
   }
-  #213kRateSeparator,
-  #213kRateSeparatorCompact,
+  #DeckRateSeparator,
+  #DeckRateSeparatorCompact,
   #FxMixerSeparatorCollapsed {
     min-width: 0px;
     max-width: 0px;
@@ -298,8 +298,8 @@ WSearchLineEdit {
     min-width: 12px;
     max-width: 12px;
   }
-  #213kRateSeparator,
-  #213kRateSeparatorCompact,
+  #DeckRateSeparator,
+  #DeckRateSeparatorCompact,
   #FxMixerSeparatorCollapsed,
   #FxSlotSeparatorH {
     border-left: 1px solid #f3f3f3;
@@ -325,7 +325,7 @@ WSearchLineEdit {
     margin: 1px 4px 3px 4px;
   }
 
-/* dynamic bottom border in #213kRow1_ */
+/* dynamic bottom border in #DeckRow1_ */
 #ExpandingBottomBorder {
   /* border shows up if we set a bg color... */
   background-color: transparent;
@@ -379,7 +379,7 @@ WSearchLineEdit {
   max-width: 4px;
 }
 
-#213kRateSpacer {
+#DeckRateSpacer {
   min-width: 0px;
   max-width: 0px;
 }
@@ -395,10 +395,10 @@ WSearchLineEdit {
     margin-top: 1px;
   }
 
-#213k1, #213kCompact1, #213kMini1,
-#213k2, #213kCompact2, #213kMini2,
-#213k3, #213kCompact3, #213kMini3,
-#213k4, #213kCompact4, #213kMini4,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
 #MixerContainer,
 #VuMeterDeck1_Compact,
 #VuMeterDeck2_Compact,
@@ -415,8 +415,8 @@ WSearchLineEdit {
   margin-bottom: 3px;
 }
 
-#213k1, #213kMini1,
-#213k3, #213kMini3,
+#Deck1, #DeckMini1,
+#Deck3, #DeckMini3,
 #MixerContainer,
 #FxUnit1,
 #FxUnit3,
@@ -426,8 +426,8 @@ WSearchLineEdit {
   margin-right: 2px;
 }
 
-#213k2, #213kMini2,
-#213k4, #213kMini4,
+#Deck2, #DeckMini2,
+#Deck4, #DeckMini4,
 #MixerContainer,
 #FxUnit2,
 #FxUnit4,
@@ -497,20 +497,20 @@ WSearchLineEdit {
 
 /************** Decks *********************************************************/
 
-#213kMini1,
-#213kMini2,
-#213kMini3,
-#213kMini4 {
+#DeckMini1,
+#DeckMini2,
+#DeckMini3,
+#DeckMini4 {
   padding-right: 2px;
 }
 
 /* All rows in FULL deck */
-#213kRows12345,
-#213kRows234 {
+#DeckRows12345,
+#DeckRows234 {
   padding: 2px 0px 2px 1px;
   }
   /* All rows in compact deck */
-  #213kRows2345 {
+  #DeckRows2345 {
     padding: 0px 0px 2px 1px;
   }
 
@@ -549,23 +549,23 @@ WSearchLineEdit {
   max-height: 53px;
 }
 
-  /* Replacement for #213kMiniN padding */
+  /* Replacement for #DeckMiniN padding */
   #PlayCueMini {
     margin: 0px 1px 1px 0px;
   }
   #OverviewBoxMini {
     margin: 1px 0px;
   }
-  #213kMini_TitlePlayPosKeyBPM {
+  #DeckMini_TitlePlayPosKeyBPM {
     margin: 1px 1px 1px 0px;
   }
 
-#213kRow_1_KeyVinylFx {
+#DeckRow_1_KeyVinylFx {
   padding-right: 2px;
   padding-left: 1px;
   }
 
-#213kRow_2_3_ArtistTitleTime {
+#DeckRow_2_3_ArtistTitleTime {
   margin: 2px 0px 2px 0px;
   }
   #ArtistText,
@@ -589,8 +589,8 @@ WSearchLineEdit {
     padding: 0px 0px 2px 2px;
   }
 
-#213kSettingsContainer,
-#213kSettingsContainerCompact {
+#DeckSettingsContainer,
+#DeckSettingsContainerCompact {
   border-width: 1px 0px 1px 0px;
   }
   #SamplerSettingsContainer {
@@ -598,19 +598,19 @@ WSearchLineEdit {
     border-bottom-right-radius: 1px;
   }
 
-  #213kSettings {
+  #DeckSettings {
     padding: 1px 2px 1px 1px;
     border-width: 1px 0px 1px 0px;
     }
-    #213kSettingsGrid {
+    #DeckSettingsGrid {
       padding: 0px 2px;
       qproperty-layoutSpacing: 4;
     }
 
-#213kRow_5_LoopCuesTransport {
+#DeckRow_5_LoopCuesTransport {
   margin-top: 1px;
 }
-#213kRow_5_Compact {
+#DeckRow_5_Compact {
 }
 
 
@@ -1097,10 +1097,10 @@ WEffectSelector:!editable:on {
   border-bottom-left-radius: 2px;
 }
 
-#213kSizeSettings {
+#DeckSizeSettings {
   margin: 2px 0px 0px 0px;
   }
-  #213kSizeToggles {
+  #DeckSizeToggles {
     padding: 0px 0px 0px 0px;
     }
     #SkinSettingsNumToggle {
@@ -1125,10 +1125,10 @@ WEffectSelector:!editable:on {
   }
 
 #SubmenuCover,
-#213kSizeCover[highlight="0"] {
+#DeckSizeCover[highlight="0"] {
   background-color: rgba(15, 15, 15, 180);
 }
-#213kSizeCover[highlight="1"] {
+#DeckSizeCover[highlight="1"] {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 rgba(15, 15, 15, 220),
     stop: 0.70 rgba(15, 15, 15, 220),
@@ -1157,30 +1157,30 @@ WEffectChainPresetSelector,
 }
 
 /* Ivory */
-#213k1 #TitleText,
-  #213k1 #ArtistText,
-  #213k1 #BpmText,
-  #213k1 #KeyText,
-  #213kCompact1 #TitleText,
-  #213kCompact1 #ArtistText,
-  #213kCompact1 #BpmText,
-  #213kCompact1 #KeyText,
-  #213kMini1 #TitleTextSmall,
-  #213kMini1 #ArtistTextSmall,
-  #213kMini1 #BpmTextSmall,
-  #213kMini1 #KeyTextSmall,
-#213k2 #TitleText,
-  #213k2 #ArtistText,
-  #213k2 #BpmText,
-  #213k2 #KeyText,
-  #213kCompact2 #TitleText,
-  #213kCompact2 #ArtistText,
-  #213kCompact2 #BpmText,
-  #213kCompact2 #KeyText,
-  #213kMini2 #TitleTextSmall,
-  #213kMini2 #ArtistTextSmall,
-  #213kMini2 #BpmTextSmall,
-  #213kMini2 #KeyTextSmall,
+#Deck1 #TitleText,
+  #Deck1 #ArtistText,
+  #Deck1 #BpmText,
+  #Deck1 #KeyText,
+  #DeckCompact1 #TitleText,
+  #DeckCompact1 #ArtistText,
+  #DeckCompact1 #BpmText,
+  #DeckCompact1 #KeyText,
+  #DeckMini1 #TitleTextSmall,
+  #DeckMini1 #ArtistTextSmall,
+  #DeckMini1 #BpmTextSmall,
+  #DeckMini1 #KeyTextSmall,
+#Deck2 #TitleText,
+  #Deck2 #ArtistText,
+  #Deck2 #BpmText,
+  #Deck2 #KeyText,
+  #DeckCompact2 #TitleText,
+  #DeckCompact2 #ArtistText,
+  #DeckCompact2 #BpmText,
+  #DeckCompact2 #KeyText,
+  #DeckMini2 #TitleTextSmall,
+  #DeckMini2 #ArtistTextSmall,
+  #DeckMini2 #BpmTextSmall,
+  #DeckMini2 #KeyTextSmall,
 #MicAuxLabel,
 #SamplerTitle, #SamplerTitleMini,
 #MainMenu QMenu,
@@ -1216,8 +1216,8 @@ WCoverArtMenu {
   color: #3d4c5a;
   }
   /* dim ivory / light brown */
-  #213k1 WStarRating, #213kCompact1 WStarRating,
-  #213k2 WStarRating, #213kCompact2 WStarRating,
+  #Deck1 WStarRating, #DeckCompact1 WStarRating,
+  #Deck2 WStarRating, #DeckCompact2 WStarRating,
   #SkinSettingsLabelButton, #CategoryLabel,
   #SkinSettingsButton,
   #SkinSettingsNumToggle,
@@ -1256,34 +1256,34 @@ WEffectChainPresetSelector:!editable:on,
   }
 
 /* pale blue */
-#213k3 #TitleText,
-  #213k3 #ArtistText,
-  #213k3 #BpmText,
-  #213k3 #KeyText,
-  #213kCompact3 #TitleText,
-  #213kCompact3 #ArtistText,
-  #213kCompact3 #BpmText,
-  #213kCompact3 #KeyText,
-  #213kMini3 #TitleTextSmall,
-  #213kMini3 #ArtistTextSmall,
-  #213kMini3 #BpmTextSmall,
-  #213kMini3 #KeyTextSmall,
-#213k4 #TitleText,
-  #213k4 #ArtistText,
-  #213k4 #BpmText,
-  #213k4 #KeyText,
-  #213kCompact4 #TitleText,
-  #213kCompact4 #ArtistText,
-  #213kCompact4 #BpmText,
-  #213kCompact4 #KeyText,
-  #213kMini4 #TitleTextSmall,
-  #213kMini4 #ArtistTextSmall,
-  #213kMini4 #BpmTextSmall,
-  #213kMini4 #KeyTextSmall {
+#Deck3 #TitleText,
+  #Deck3 #ArtistText,
+  #Deck3 #BpmText,
+  #Deck3 #KeyText,
+  #DeckCompact3 #TitleText,
+  #DeckCompact3 #ArtistText,
+  #DeckCompact3 #BpmText,
+  #DeckCompact3 #KeyText,
+  #DeckMini3 #TitleTextSmall,
+  #DeckMini3 #ArtistTextSmall,
+  #DeckMini3 #BpmTextSmall,
+  #DeckMini3 #KeyTextSmall,
+#Deck4 #TitleText,
+  #Deck4 #ArtistText,
+  #Deck4 #BpmText,
+  #Deck4 #KeyText,
+  #DeckCompact4 #TitleText,
+  #DeckCompact4 #ArtistText,
+  #DeckCompact4 #BpmText,
+  #DeckCompact4 #KeyText,
+  #DeckMini4 #TitleTextSmall,
+  #DeckMini4 #ArtistTextSmall,
+  #DeckMini4 #BpmTextSmall,
+  #DeckMini4 #KeyTextSmall {
   color: #7a4244;
   }
-  #213k3 WStarRating, #213kCompact3 WStarRating,
-  #213k4 WStarRating, #213kCompact4 WStarRating {
+  #Deck3 WStarRating, #DeckCompact3 WStarRating,
+  #Deck4 WStarRating, #DeckCompact4 WStarRating {
     color: #aa6466;
   }
 
@@ -1510,8 +1510,8 @@ WEffectSelector:!editable,
     border-image: url(skin:/palesun/buttons/btn_embedded_library_active.svg) 12 2 1 2;
   }
 
-#415tgridControls WPushButton, WPushButton#415tgridControlsToggle,
-#213kRow_5_LoopCuesTransport WPushButton,
+#BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
+#DeckRow_5_LoopCuesTransport WPushButton,
 #RateControls WPushButton,
 WPushButton#PlayDeck,
 WPushButton#PreviewIndicator,
@@ -1554,7 +1554,7 @@ WPushButton#CrossfaderButton,
 /************** button background colors **************************************/
 
 /* top-level buttons in transport, fx, micaux and others */
-#213kRow_5_LoopCuesTransport WPushButton[displayValue="0"],
+#DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
 #PlayCueMini WPushButton[displayValue="0"],
 WPushButton#PlayIndicator[displayValue="0"],
 WPushButton#CueDeck[displayValue="0"],
@@ -1573,7 +1573,7 @@ WBeatSpinBox::down-button {
   }
   /* dim buttons in top-level containers */
   #LoopControls WPushButton[displayValue="0"],
-  #415tjumpControls WPushButton[displayValue="0"],
+  #BeatjumpControls WPushButton[displayValue="0"],
   WPushButton#SyncDeck[value="0"],
   WPushButton#SyncLeader[value="0"],
   WBeatSpinBox::up-button,
@@ -1611,7 +1611,7 @@ WBeatSpinBox::down-button {
     background-color: #e1e1df;
   }
   /* bright buttons in dimmed containers
-  #415tgridControls WPushButton[displayValue="0"], */
+  #BeatgridControls WPushButton[displayValue="0"], */
   #CueDeleteButton,
   #SplitCue[displayValue="0"],
   #PlayPreview[displayValue="0"],
@@ -1664,9 +1664,9 @@ QPushButton#pushButtonAnalyze:checked {
 #SyncLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
-#415tjumpControls WPushButton[value="1"],
+#BeatjumpControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
-#415tgridControls WPushButton[pressed="true"]/*,
+#BeatgridControls WPushButton[pressed="true"]/*,
 #CueDeleteButton[pressed="true"]*/ {
   background-color: #82caf2;
   }
@@ -1819,11 +1819,11 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 }
 
 /* Special flat/invisible buttons */
-#415tgridControlsToggle,
+#BeatgridControlsToggle,
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
 WPushButton#PlaySampler[displayValue="0"],
-#213kRow_5_LoopCuesTransport WPushButton#PreviewIndicator,
+#DeckRow_5_LoopCuesTransport WPushButton#PreviewIndicator,
 #PlayCueMini WPushButton#PreviewIndicator,
 WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettings WPushButton[displayValue="0"],
@@ -2310,45 +2310,45 @@ WPushButton#PlayDeck[value="0"] {
       image: url(skin:/palesun/buttons/btn__keylock_active_34.svg) no-repeat center center;
     }
 
-#415tgridControlsToggle[displayValue="0"] {
+#BeatgridControlsToggle[displayValue="0"] {
   image: url(skin:/palesun/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
   }
-  #415tgridControlsToggle[displayValue="1"] {
+  #BeatgridControlsToggle[displayValue="1"] {
     image: url(skin:/palesun/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
   }
 
-  #415tCurposLarge[displayValue="0"] {
+  #BeatCurposLarge[displayValue="0"] {
     image: url(skin:/palesun/buttons/btn__beat_curpos_large.svg) no-repeat center center;
     }
-    #415tCurposLarge[pressed="true"] {
+    #BeatCurposLarge[pressed="true"] {
       image: url(skin:/palesun/buttons/btn__beat_curpos_large_active.svg) no-repeat center center;
     }
 
-  #415tsEarlier {
+  #BeatsEarlier {
     image: url(skin:/palesun/buttons/btn__beats_earlier.svg) no-repeat center center;
     }
-    #415tsEarlier[pressed="true"] {
+    #BeatsEarlier[pressed="true"] {
       image: url(skin:/palesun/buttons/btn__beats_earlier_active.svg) no-repeat center center;
     }
 
-  #415tsLater {
+  #BeatsLater {
     image: url(skin:/palesun/buttons/btn__beats_later.svg) no-repeat center center;
     }
-    #415tsLater[pressed="true"] {
+    #BeatsLater[pressed="true"] {
       image: url(skin:/palesun/buttons/btn__beats_later_active.svg) no-repeat center center;
     }
 
-  #415tsSlower {
+  #BeatsSlower {
     image: url(skin:/palesun/buttons/btn__beats_slower.svg) no-repeat center center;
     }
-    #415tsSlower[pressed="true"] {
+    #BeatsSlower[pressed="true"] {
       image: url(skin:/palesun/buttons/btn__beats_slower_active.svg) no-repeat center center;
     }
 
-  #415tsFaster {
+  #BeatsFaster {
     image: url(skin:/palesun/buttons/btn__beats_faster.svg) no-repeat center center;
     }
-    #415tsFaster[pressed="true"] {
+    #BeatsFaster[pressed="true"] {
       image: url(skin:/palesun/buttons/btn__beats_faster_active.svg) no-repeat center center;
     }
   #HotcuesEarlier {
@@ -3117,3 +3117,4 @@ WSearchLineEdit::indicator:unchecked:selected {
 }
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
+

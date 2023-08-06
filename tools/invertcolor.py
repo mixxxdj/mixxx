@@ -30,7 +30,7 @@ def from_hex(hexdigits):
 
 
 def invert_color(len, line):
-    regge = "^[0-9A-Fa-f]{" + str(len) + "}[^0-9a-fA-F]"
+    regge = "^[0-9A-Fa-f]{" + str(len) + "}[^0-9a-zA-Z]"
     p = re.compile(regge)
     tokens = line.split("#")
     ret = tokens.pop(0)
@@ -51,7 +51,6 @@ def process_binary(src, dst):
 
 
 def process_file(filename):
-    return ""
     fp1 = open(filename, "r")
     lines = fp1.readlines()
     output = ""
