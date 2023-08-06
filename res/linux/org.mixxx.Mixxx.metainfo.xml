@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-08-03" timestamp="1691016748">
+    <release version="2.3.6" type="development" date="2023-08-03" timestamp="1691043567">
       <description>
  <ul>
   <li>
@@ -154,7 +154,11 @@
    #11775
   </li>
   <li>
-   Handle setting loop_in and loop_out at the same position
+   Handle setting
+   loop_in
+   and
+   loop_out
+   to the same position
    #11771
    #10600
   </li>
