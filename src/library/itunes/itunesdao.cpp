@@ -107,7 +107,7 @@ bool ITunesDAO::importPlaylist(const ITunesPlaylist& playlist) {
         }
     }
 
-    m_playlistNameById[playlist.id] = uniqueName;
+    m_playlistNameById[playlist.id] = playlist.name;
 
     return true;
 }
