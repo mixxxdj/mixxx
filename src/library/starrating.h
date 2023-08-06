@@ -26,7 +26,7 @@ class StarRating {
             int starCount = kMinStarCount,
             int maxStarCount = mixxx::TrackRecord::kMaxRating - mixxx::TrackRecord::kMinRating);
 
-    void paint(QPainter* painter, const QRect& rect) const;
+    void paint(QPainter* painter, const QRect& rect, int height = 0);
     QSize sizeHint() const;
 
     int starCount() const {
@@ -46,6 +46,7 @@ class StarRating {
     QPolygonF m_diamondPolygon;
     int m_starCount;
     int m_maxStarCount;
+    int m_scaleFactor;
 };
 
 Q_DECLARE_METATYPE(StarRating)

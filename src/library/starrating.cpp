@@ -5,14 +5,15 @@
 
 #include "util/math.h"
 
-// Magic number? Explain what this factor affects and how
-constexpr int PaintingScaleFactor = 15;
+// Default height of the rating rectangle
+constexpr int kDefaultPaintingScaleFactor = 15;
 
 StarRating::StarRating(
         int starCount,
         int maxStarCount)
         : m_starCount(starCount),
-          m_maxStarCount(maxStarCount) {
+          m_maxStarCount(maxStarCount),
+          m_scaleFactor(kDefaultPaintingScaleFactor) {
     DEBUG_ASSERT(m_starCount >= kMinStarCount);
     DEBUG_ASSERT(m_starCount <= m_maxStarCount);
     // 1st star cusp at 0° of the unit circle whose center is shifted to adapt the 0,0-based paint area
@@ -30,20 +31,22 @@ StarRating::StarRating(
 }
 
 QSize StarRating::sizeHint() const {
-    return PaintingScaleFactor * QSize(m_maxStarCount, 1);
+    return m_scaleFactor * QSize(m_maxStarCount, 1);
 }
 
-void StarRating::paint(QPainter *painter, const QRect &rect) const {
+void StarRating::paint(QPainter* painter, const QRect& rect, int height) {
+    m_scaleFactor = height > 0 ? height : kDefaultPaintingScaleFactor;
     // Assume the painter is configured with the right brush.
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->setPen(Qt::NoPen);
 
-    int yOffset = (rect.height() - PaintingScaleFactor) / 2;
+    // Center the painter baseline (y-origin of the polygons)
+    int yOffset = (rect.height() - m_scaleFactor) / 2;
     painter->translate(rect.x(), rect.y() + yOffset);
-    painter->scale(PaintingScaleFactor, PaintingScaleFactor);
+    painter->scale(m_scaleFactor, m_scaleFactor);
 
     //determine number of stars that are possible to paint
-    int n = rect.width() / PaintingScaleFactor;
+    int n = rect.width() / m_scaleFactor;
 
     for (int i = 0; i < m_maxStarCount && i < n; ++i) {
         if (i < m_starCount) {

@@ -27,7 +27,11 @@ void StarDelegate::paintItem(
     paintItemBackground(painter, option, index);
 
     StarRating starRating = index.data().value<StarRating>();
-    starRating.paint(painter, option.rect);
+    // Make star size somehow match the library current font height.
+    // Note: capHeight() is too small, ascent() is too tall. Use the mean value.
+    QFontMetrics mf(option.font);
+    int height = (mf.capHeight() + mf.ascent()) / 2;
+    starRating.paint(painter, option.rect, height);
 }
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem& option,

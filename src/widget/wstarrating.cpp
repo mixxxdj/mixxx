@@ -36,16 +36,17 @@ void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
 QSize WStarRating::sizeHint() const {
     QStyleOption option;
     option.initFrom(this);
-    QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton,
+    const QSize preferredSize = m_visualStarRating.sizeHint();
+    const QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton,
             &option,
-            m_visualStarRating.sizeHint(),
+            preferredSize,
             this);
 
     m_contentRect.setRect(
-            (widgetSize.width() - m_visualStarRating.sizeHint().width()) / 2,
-            (widgetSize.height() - m_visualStarRating.sizeHint().height()) / 2,
-            m_visualStarRating.sizeHint().width(),
-            m_visualStarRating.sizeHint().height());
+            (widgetSize.width() - preferredSize.width()) / 2,
+            (widgetSize.height() - preferredSize.height()) / 2,
+            preferredSize.width(),
+            preferredSize.height());
 
     return widgetSize;
 }
