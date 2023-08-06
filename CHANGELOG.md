@@ -35,7 +35,7 @@
 * Handle setting `loop_in` and `loop_out` to the same position
   [#11771](https://github.com/mixxxdj/mixxx/pull/11771)
   [#10600](https://github.com/mixxxdj/mixxx/issues/10600)
-* Fixed build issues with Protobuf v23.4 and with clang 32
+* Fix build issues with Protobuf v23.4 and with clang 32
   [#11751](https://github.com/mixxxdj/mixxx/pull/11751)
   [#11765](https://github.com/mixxxdj/mixxx/pull/11765)
   [#11762](https://github.com/mixxxdj/mixxx/issues/11762)
