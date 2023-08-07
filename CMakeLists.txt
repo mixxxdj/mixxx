@@ -547,7 +547,25 @@ if(NOT MSVC)
   if(MOLD_SUPPORT)
     if(MOLD_EXECUTABLE)
       message(STATUS "Selecting mold as linker")
-      add_link_options("-fuse-ld=mold")
+      set(SELECT_MOLD_WITH_FUSE true)
+      # With GCC, mold is a valid '-fuse' argument only with version 12.1.0 and newer.
+      # Earlier versions must use the -B option.
+      if (GNU_GCC)
+        execute_process(
+          COMMAND gcc -dumpfullversion
+          ERROR_QUIET
+          OUTPUT_VARIABLE GCC_VERSION_STRING
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if (GCC_VERSION_STRING VERSION_LESS 12.1.0)
+          set(SELECT_MOLD_WITH_FUSE false)
+        endif()
+      endif()
+      if (SELECT_MOLD_WITH_FUSE)
+        add_link_options("-fuse-ld=mold")
+      else()
+        add_link_options("-B${MOLD_EXECUTABLE}")
+      endif()
     else()
       message(FATAL_ERROR "Could NOT find mold (missing executable)")
     endif()
