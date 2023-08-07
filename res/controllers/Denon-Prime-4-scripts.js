@@ -28,10 +28,10 @@ const deckColors = [
     "blue",
 
     // Deck 3
-    "cyan",
+    "red",
 
     // Deck 4
-    "magenta",
+    "yellow",
 
 ];
 
@@ -163,18 +163,21 @@ Prime4.rgbCode = {
     blue: 3,
     greenDark: 4,
     cyanDark: 5,
+    aquaDark: 5,
     greenDim: 8,
     cyanDim: 10,
     green: 12,
-    teal: 14,
+    aqua: 14,
     cyan: 15,
     redDark: 16,
     magentaDark: 17,
+    violetDark: 17,
     yellowDark: 20,
     whiteDark: 21,
     redDim: 32,
     magentaDim: 34,
     purple: 35,
+    violet: 35,
     orangeDark: 36,
     yellowDim: 40,
     whiteDim: 42,
@@ -1010,6 +1013,20 @@ Prime4.Deck = function(deckNumbers, midiChannel) {
             } else if (value === 0x7f) {
                 this.inSetValue(currentLoopSize.previous());
             }
+        },
+    });
+
+    // Loop Encoder Button
+    this.beatLoopTrigger = new components.Button({
+        midi: [0x90 + midiChannel, 0x27],
+        type: components.Button.prototype.types.push,
+        shift: function() {
+            this.inKey = "beatlooproll_activate";
+            this.outKey = this.inKey;
+        },
+        unshift: function() {
+            this.inKey = "beatloop_activate";
+            this.outKey = this.inKey;
         },
     });
 

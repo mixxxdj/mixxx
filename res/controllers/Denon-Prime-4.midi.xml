@@ -1111,6 +1111,26 @@
                 <Script-Binding/>
               </options>
             </control>
+            <control> <!-- Deck A - Loop Encoder Button On -->
+              <group></group>
+              <key>Prime4.leftDeck.beatLoopTrigger.input</key>
+              <description></description>
+              <status>0x94</status>
+              <midino>0x27</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Encoder Button Off -->
+              <group></group>
+              <key>Prime4.leftDeck.beatLoopTrigger.input</key>
+              <description></description>
+              <status>0x84</status>
+              <midino>0x27</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
 			<control> <!-- Deck A - Censor Button ON -->
 			  <group>[Channel1]</group>
 			  <key>Prime4.leftDeck.censorButton.input</key>
@@ -1833,6 +1853,26 @@
               <description></description>
               <status>0xB5</status>
               <midino>0x20</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Encoder Button On -->
+              <group></group>
+              <key>Prime4.rightDeck.beatLoopTrigger.input</key>
+              <description></description>
+              <status>0x95</status>
+              <midino>0x27</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Encoder Button Off -->
+              <group></group>
+              <key>Prime4.rightDeck.beatLoopTrigger.input</key>
+              <description></description>
+              <status>0x85</status>
+              <midino>0x27</midino>
               <options>
                 <Script-Binding/>
               </options>
