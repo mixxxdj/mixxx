@@ -144,40 +144,25 @@ constexpr int s_sortKeysCircleOfFifthsLancelot[] = {
         19, // B_MINOR
 };
 
-/*
+struct ScaleModeInfo {
+    const char* text;
+    const char* textShort;
+    bool isMajor;
+    int transposeSteps;
+};
+
 // Strings used by Rapid Evolution when exporting detailed keys to file tags
-constexpr const char* s_scaleModeText[] = {
-       "ionian", // standard major
-        "aeolian", // natural minor
-        "lydian", // major with raised 4th
-        "mixolydian", // major with lowered 7th
-        "dorian", // minor with raised 6th
-        "phrygian", // minor with lowered 2nd
-        "locrian", //  minor with lowered 2nd and 7th
-};
-*/
-
-constexpr const char* s_scaleModeTextShort[] = {
-        "ion", // standard major
-        "aeo", // natural minor
-        "lyd", // major with raised 4th
-        "mix", // major with lowered 7th
-        "dor", // "dorina" or "doric" minor with raised 6th
-        "phr", // minor with lowered 2nd
-        "loc"  // minor with lowered 2nd and 7th
+constexpr ScaleModeInfo s_scaleModeInfo[] = {
+        {"ionian", "ion", true, 0},      // standard major
+        {"aeolian", "aeo", false, 0},    // natural minor
+        {"lydian", "lyd", true, -5},     // major with raised 4th
+        {"mixolydian", "mix", true, +5}, // major with lowered 7th
+        {"dorian", "dor", false, -5},    // minor with raised 6th
+        {"phrygian", "phr", false, +5},  // minor with lowered 2nd
+        {"locrian", "loc", false, -2},   //  minor with lowered 2nd and 7th
 };
 
-constexpr bool s_scaleModeIsMajor[] = {
-        true,  // ionian (standard major)
-        false, // aeolian (natural minor)
-        true,  // lydian
-        true,  // mixolydian
-        false, // dorian
-        false, // phrygian
-        false, // locrian
-};
-
-// s_scaleModeTransposeSteps is used to express the detailed modes
+// transposeSteps is used to express the detailed modes
 // as a compatible natural minor or standard major scale
 // The following table shows the relation for C major in the Circle of Fifths
 // "C ionian"     8B    C – D – E – F – G – A – B
@@ -192,15 +177,13 @@ constexpr bool s_scaleModeIsMajor[] = {
 // "A aeolian"    8A    A – B – C – D – E – F – G
 // "Bb"
 // "B locrian"    8C    B – C – D – E – F – G – A
-constexpr int s_scaleModeTransposeSteps[] = {
-        0,  // ionian to ionian
-        0,  // aeolian to aeolian
-        -5, // lydian to ionian
-        +5, // mixolydian to ionian
-        -5, // dorian to aeolian
-        +5, // phrygian to aeolian
-        -2, // locrian to aeolian
-};
+
+// We transpose according to isMajor:
+// lydian to ionian
+// mixolydian to ionian
+// dorian to aeolian
+// phrygian to aeolian
+// locrian to aeolian
 
 // Lancelot notation is OpenKey notation rotated counter-clockwise by 5.
 inline int openKeyNumberToLancelotNumber(const int okNumber)  {
@@ -395,17 +378,17 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
             } else {
                 // Try to find detailed scale mode
                 ScaleMode scaleMode = ScaleMode::Unknown;
-                for (size_t i = 0; i < std::size(s_scaleModeTextShort); ++i) {
-                    if (scale.startsWith(s_scaleModeTextShort[i], Qt::CaseInsensitive)) {
+                for (size_t i = 0; i < std::size(s_scaleModeInfo); ++i) {
+                    if (scale.startsWith(s_scaleModeInfo[i].textShort, Qt::CaseInsensitive)) {
                         scaleMode = static_cast<ScaleMode>(i);
+                        major = s_scaleModeInfo[i].isMajor;
+                        steps += s_scaleModeInfo[i].transposeSteps;
                         break;
                     }
                 }
                 if (scaleMode == ScaleMode::Unknown) {
                     return mixxx::track::io::key::INVALID;
                 }
-                major = s_scaleModeIsMajor[static_cast<int>(scaleMode)];
-                steps += s_scaleModeTransposeSteps[static_cast<int>(scaleMode)];
             }
         }
         ChromaticKey letterKey = static_cast<ChromaticKey>(
