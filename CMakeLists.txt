@@ -542,30 +542,25 @@ else()
 endif()
 
 if(NOT MSVC)
-  find_program(MOLD_EXECUTABLE mold)
-  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_EXECUTABLE")
+  # Try to configure mold as linker via -fuse-ld=mold, support from gcc 12.1, gcc 11.2.0-16 or clang
+  execute_process(
+    COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=mold -Wl,--version
+    ERROR_QUIET
+    OUTPUT_VARIABLE MOLD_FUSE_VERSION_STRING
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(NOT MOLD_FUSE_VERSION_STRING)
+    # check if the symlink ld is in the mold folder for older compiler
+    find_program(MOLD_SYMLINK ld PATHS "${CMAKE_INSTALL_FULL_LIBEXECDIR}/mold" NO_DEFAULT_PATH)
+  endif()
+  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_FUSE_VERSION_STRING OR MOLD_SYMLINK")
   if(MOLD_SUPPORT)
-    if(MOLD_EXECUTABLE)
+    if(MOLD_FUSE_VERSION_STRING)
       message(STATUS "Selecting mold as linker")
-      set(SELECT_MOLD_WITH_FUSE true)
-      # With GCC, mold is a valid '-fuse' argument only with version 12.1.0 and newer.
-      # Earlier versions must use the -B option.
-      if (GNU_GCC)
-        execute_process(
-          COMMAND gcc -dumpfullversion
-          ERROR_QUIET
-          OUTPUT_VARIABLE GCC_VERSION_STRING
-          OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        if (GCC_VERSION_STRING VERSION_LESS 12.1.0)
-          set(SELECT_MOLD_WITH_FUSE false)
-        endif()
-      endif()
-      if (SELECT_MOLD_WITH_FUSE)
-        add_link_options("-fuse-ld=mold")
-      else()
-        add_link_options("-B${MOLD_EXECUTABLE}")
-      endif()
+      add_link_options("-fuse-ld=mold")
+    elseif(MOLD_SYMLINK)
+      message(STATUS "Selecting mold as linker via ${MOLD_SYMLINK}")
+      add_link_options("-B${CMAKE_INSTALL_FULL_LIBEXECDIR}/mold")
     else()
       message(FATAL_ERROR "Could NOT find mold (missing executable)")
     endif()
