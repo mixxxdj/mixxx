@@ -103,7 +103,6 @@ void EngineBufferScaleST::onSampleRateChanged() {
     // to preallocate buffers large enough to (almost certainly)
     // avoid memory reallocations during playback.
     m_pSoundTouch->setTempo(0.1);
-    clear();
     m_pSoundTouch->setTempo(m_dTempoRatio);
     clear();
 }
