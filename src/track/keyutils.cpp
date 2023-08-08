@@ -20,6 +20,7 @@ const QString s_openKeyPattern = QStringLiteral("^\\s*(1[0-2]|[1-9])([dm])\\s*$"
 // Lancelot notation, the numbers 1-12 followed by A (minor) or B(I) (major).
 // or "I", "L", "M", "D", "P", "C" for the advanced modes
 const QString s_lancelotKeyPattern = QStringLiteral("^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$");
+constexpr std::string_view s_lancelotMajorModes = "BILM";
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale mode spec (m = minor, min, maj ..)
@@ -355,7 +356,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
         const QChar lancelotScaleMode = lancelotKeyMatcher.cap(2).at(0);
-        bool major = (QString("BILM").indexOf(lancelotScaleMode) != -1);
+        bool major = (s_lancelotMajorModes.find(lancelotScaleMode.toLatin1()) != std::string::npos);
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
