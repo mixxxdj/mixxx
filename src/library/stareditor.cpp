@@ -6,10 +6,10 @@
 #include "moc_stareditor.cpp"
 #include "util/painterscope.h"
 
-// We enable mouse tracking on the widget so we can follow the cursor even
-// when the user doesn't hold down any mouse button. We also turn on
-// QWidget's auto-fill background feature to obtain an opaque background.
-// (Without the call, the view's background would shine through the editor.)
+/// We enable mouse tracking on the widget so we can follow the cursor even
+/// when the user doesn't hold down any mouse button. We also turn on
+/// QWidget's auto-fill background feature to obtain an opaque background.
+/// (Without the call, the view's background would shine through the editor.)
 
 /// StarEditor inherits QWidget and is used by StarDelegate to let the user
 /// edit a star rating in the library using the mouse.

@@ -42,6 +42,7 @@ QSize WStarRating::sizeHint() const {
             preferredSize,
             this);
 
+    // Center the rating inside the frame
     m_contentRect.setRect(
             (widgetSize.width() - preferredSize.width()) / 2,
             (widgetSize.height() - preferredSize.height()) / 2,

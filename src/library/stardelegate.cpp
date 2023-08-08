@@ -31,11 +31,15 @@ void StarDelegate::paintItem(
     starRating.paint(painter, option.rect, height);
 }
 
+/// The sizeHint is used to auto-adjust the column to minimal width
+/// when double-clicking the right-hand column separator
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem& option,
                              const QModelIndex& index) const {
     Q_UNUSED(option);
     StarRating starRating = index.data().value<StarRating>();
-    // Still uses the default scale factor, hence calculate it here
+    // StarRating was initialized with the default scale factor. To make it match
+    // the current library font size we need calculate the desired size using the
+    // capital height of the font.
     return QSize(option.fontMetrics.capHeight() * starRating.getNormalizedSize());
 }
 

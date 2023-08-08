@@ -5,7 +5,7 @@
 
 #include "util/math.h"
 
-// Default height of the rating rectangle
+// Default width/height of the rectangle for painting one star/diamond polygon
 constexpr int kDefaultPaintingScaleFactor = 15;
 
 StarRating::StarRating(
@@ -40,12 +40,12 @@ void StarRating::paint(QPainter* painter, const QRect& rect, int height) {
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->setPen(Qt::NoPen);
 
-    // Center the painter baseline (y-origin of the polygons)
+    // Shift the painter rectangle to center the polygons vertically
     int yOffset = (rect.height() - m_scaleFactor) / 2;
     painter->translate(rect.x(), rect.y() + yOffset);
     painter->scale(m_scaleFactor, m_scaleFactor);
 
-    //determine number of stars that are possible to paint
+    // Determine number of stars that are possible to paint
     int n = rect.width() / m_scaleFactor;
 
     for (int i = 0; i < m_maxStarCount && i < n; ++i) {
