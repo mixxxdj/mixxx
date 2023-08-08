@@ -145,6 +145,7 @@ constexpr int s_sortKeysCircleOfFifthsLancelot[] = {
 };
 
 struct ScaleModeInfo {
+    KeyUtils::ScaleMode mode;
     const char* text;
     const char* textShort;
     bool isMajor;
@@ -153,13 +154,41 @@ struct ScaleModeInfo {
 
 // Strings used by Rapid Evolution when exporting detailed keys to file tags
 constexpr ScaleModeInfo s_scaleModeInfo[] = {
-        {"ionian", "ion", true, 0},      // standard major
-        {"aeolian", "aeo", false, 0},    // natural minor
-        {"lydian", "lyd", true, -5},     // major with raised 4th
-        {"mixolydian", "mix", true, +5}, // major with lowered 7th
-        {"dorian", "dor", false, -5},    // minor with raised 6th
-        {"phrygian", "phr", false, +5},  // minor with lowered 2nd
-        {"locrian", "loc", false, -2},   //  minor with lowered 2nd and 7th
+        {KeyUtils::ScaleMode::Ionian, // standard major
+                "ionian",
+                "ion",
+                true,
+                0},
+        {KeyUtils::ScaleMode::Aeolian, // natural minor
+                "aeolian",
+                "aeo",
+                false,
+                0},
+        {KeyUtils::ScaleMode::Lydian, // major with raised 4th
+                "lydian",
+                "lyd",
+                true,
+                -5},
+        {KeyUtils::ScaleMode::Mixolydian, // major with lowered 7th
+                "mixolydian",
+                "mix",
+                true,
+                +5},
+        {KeyUtils::ScaleMode::Dorian, // minor with raised 6th
+                "dorian",
+                "dor",
+                false,
+                -5},
+        {KeyUtils::ScaleMode::Phrygian, // minor with lowered 2nd
+                "phrygian",
+                "phr",
+                false,
+                +5},
+        {KeyUtils::ScaleMode::Locrian, //  minor with lowered 2nd and 7th
+                "locrian",
+                "loc",
+                false,
+                -2},
 };
 
 // transposeSteps is used to express the detailed modes
@@ -380,7 +409,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
                 ScaleMode scaleMode = ScaleMode::Unknown;
                 for (size_t i = 0; i < std::size(s_scaleModeInfo); ++i) {
                     if (scale.startsWith(s_scaleModeInfo[i].textShort, Qt::CaseInsensitive)) {
-                        scaleMode = static_cast<ScaleMode>(i);
+                        scaleMode = s_scaleModeInfo[i].mode;
                         major = s_scaleModeInfo[i].isMajor;
                         steps += s_scaleModeInfo[i].transposeSteps;
                         break;
