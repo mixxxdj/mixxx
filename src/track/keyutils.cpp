@@ -407,11 +407,11 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
             } else {
                 // Try to find detailed scale mode
                 ScaleMode scaleMode = ScaleMode::Unknown;
-                for (size_t i = 0; i < std::size(s_scaleModeInfo); ++i) {
-                    if (scale.startsWith(s_scaleModeInfo[i].textShort, Qt::CaseInsensitive)) {
-                        scaleMode = s_scaleModeInfo[i].mode;
-                        major = s_scaleModeInfo[i].isMajor;
-                        steps += s_scaleModeInfo[i].transposeSteps;
+                for (const ScaleModeInfo& modeInfo : s_scaleModeInfo) {
+                    if (scale.startsWith(modeInfo.textShort, Qt::CaseInsensitive)) {
+                        scaleMode = modeInfo.mode;
+                        major = modeInfo.isMajor;
+                        steps += modeInfo.transposeSteps;
                         break;
                     }
                 }
