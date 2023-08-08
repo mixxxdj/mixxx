@@ -20,8 +20,8 @@ namespace {
 // The value below was experimental identified using a saw signal and SoundTouch 2.1.1
 constexpr SINT kSeekOffsetFramesV20101 = 429;
 
-// From V 2.3.0 Soundtouch has no initial offset at unity, but it is to early with
-// lowered pitch and to early with raised pitch ~+-2000 farmes = 50 ms.
+// From V 2.3.0 Soundtouch has no initial offset at unity, but it is too late with
+// lowered pitch and too early with raised pitch up to ~+-2000 frames (~+-50 ms).
 // TODO() Compensate that. This is probably cause by the delayed adoption of pitch changes due
 // to the SoundTouch chunk size.
 
