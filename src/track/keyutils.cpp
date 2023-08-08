@@ -23,6 +23,7 @@ const QString s_lancelotKeyPattern = QStringLiteral("^\\s*0*(1[0-2]|[1-9])([ABIL
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale mode spec (m = minor, min, maj ..)
+// Note: ## = x exists: https://jadebultitude.com/double-sharp-sign-in-music
 const QString s_keyPattern = QString::fromUtf8(
         "^\\s*([a-g])([#♯b♭]*) *([a-z]{3}.*|m)?\\s*$");
 
