@@ -570,30 +570,34 @@ if(NOT MSVC)
       message(FATAL_ERROR "Could NOT find mold (missing executable)")
     endif()
   else()
-    find_program(LLD_EXECUTABLE lld)
-    if(LLD_EXECUTABLE)
-      execute_process(
-        COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
-        ERROR_QUIET
-        OUTPUT_VARIABLE LLD_VERSION_STRING
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-      )
+    # Try to configure lld as linker
+    execute_process(
+      COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
+      ERROR_QUIET
+      OUTPUT_VARIABLE LLD_VERSION_STRING
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(LLD_VERSION_STRING)
       string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH "${LLD_VERSION_STRING}")
       if(LLD_VERSION_MATCH)
         set(LLD_VERSION ${CMAKE_MATCH_1})
-        message(STATUS "Found lld with version: ${LLD_VERSION}")
+        message(STATUS "Found ld.lld with version: ${LLD_VERSION}")
       else()
-        message(WARNING "Failed to parse lld version from: ${LLD_VERSION_STRING}")
+        message(WARNING "Failed to parse ld.lld version from: ${LLD_VERSION_STRING}")
       endif()
     endif()
     # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
-    default_option(LLD_SUPPORT "Use 'lld' for linking" "LLD_EXECUTABLE;LLD_VERSION VERSION_GREATER 10.0.0")
+    default_option(LLD_SUPPORT "Use 'ld.lld' for linking" "LLD_VERSION VERSION_GREATER 10.0.0")
     if(LLD_SUPPORT)
-      if(LLD_EXECUTABLE)
-        message(STATUS "Selecting lld as linker")
-        add_link_options("-fuse-ld=lld")
+      if(LLD_VERSION_STRING)
+        if(LLD_VERSION VERSION_GREATER 10.0.0)
+          message(STATUS "Selecting lld as linker")
+          add_link_options("-fuse-ld=lld")
+        else()
+          message(FATAL_ERROR "Could NOT find ld.lld > 10.0.0")
+        endif()
       else()
-        message(FATAL_ERROR "Could NOT find lld (missing executable)")
+        message(FATAL_ERROR "Could NOT find ld.lld (missing executable)")
       endif()
     endif()
   endif()
