@@ -50,6 +50,12 @@
   [#11792](https://github.com/mixxxdj/mixxx/pull/11792)
 * Improve output in case of some failed file system operations
   [#11783](https://github.com/mixxxdj/mixxx/pull/11783)
+* Fix overlapping buffers when decoding M4A files using FFmpeg before 4.4
+  [#11760](https://github.com/mixxxdj/mixxx/pull/11760)
+  [#11545](https://github.com/mixxxdj/mixxx/issues/11545)
+* Don't reject key values from file metadata with non-minor/-major scales.
+  [#11001](https://github.com/mixxxdj/mixxx/pull/11001)
+  [#10995](https://github.com/mixxxdj/mixxx/issues/10995)
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 
