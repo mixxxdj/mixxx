@@ -28,7 +28,9 @@ class DlgControllerLearning : public QDialog,
     Q_OBJECT
 
   public:
-    DlgControllerLearning(QWidget *parent, Controller *controller);
+    DlgControllerLearning(QWidget* parent,
+            Controller* controller,
+            ControlPickerMenu* pControlPickerMenu);
     virtual ~DlgControllerLearning();
 
     void visit(MidiController* pController);
@@ -84,7 +86,7 @@ class DlgControllerLearning : public QDialog,
 
     Controller* m_pController;
     MidiController* m_pMidiController;
-    ControlPickerMenu m_controlPickerMenu;
+    ControlPickerMenu* m_pControlPickerMenu;
     ConfigKey m_currentControl;
     bool m_messagesLearned;
     QTimer m_firstMessageTimer;

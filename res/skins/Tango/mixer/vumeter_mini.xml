@@ -10,10 +10,11 @@ Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
 -->
 <Template>
   <WidgetGroup>
-    <Size><Variable name="Size"/></Size>
-    <Layout>stacked</Layout>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,max</SizePolicy>
     <Children>
       <StatusLight>
+        <Size>2f,-1min</Size>
         <TooltipId><Variable name="sourceType"/>_VuMeter</TooltipId>
         <PathStatusLight scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_clipping_over.png</PathStatusLight>
         <PathBack scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_clipping.png</PathBack>
@@ -22,6 +23,7 @@ Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
         </Connection>
       </StatusLight>
       <VuMeter>
+        <Size><Variable name="Size"/></Size>
         <PathVu scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_level_over.png</PathVu>
         <PathBack scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_level.png</PathBack>
         <Horizontal>false</Horizontal>

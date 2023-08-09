@@ -83,6 +83,7 @@ class ReadAheadManagerTest : public MixxxTest {
               m_beatPrevCO(ConfigKey(kGroup, "beat_prev")),
               m_playCO(ConfigKey(kGroup, "play")),
               m_quantizeCO(ConfigKey(kGroup, "quantize")),
+              m_repeatCO(ConfigKey(kGroup, "repeat")),
               m_slipEnabledCO(ConfigKey(kGroup, "slip_enabled")),
               m_trackSamplesCO(ConfigKey(kGroup, "track_samples")),
               m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
@@ -105,6 +106,7 @@ class ReadAheadManagerTest : public MixxxTest {
     ControlObject m_beatPrevCO;
     ControlObject m_playCO;
     ControlObject m_quantizeCO;
+    ControlObject m_repeatCO;
     ControlObject m_slipEnabledCO;
     ControlObject m_trackSamplesCO;
     CSAMPLE* m_pBuffer;

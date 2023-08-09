@@ -20,44 +20,6 @@
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
 
-namespace {
-
-const QStringList DEFAULT_COLUMNS = {
-        LIBRARYTABLE_ID,
-        LIBRARYTABLE_PLAYED,
-        LIBRARYTABLE_TIMESPLAYED,
-        //has to be up here otherwise Played and TimesPlayed are not shown
-        LIBRARYTABLE_ALBUMARTIST,
-        LIBRARYTABLE_ALBUM,
-        LIBRARYTABLE_ARTIST,
-        LIBRARYTABLE_TITLE,
-        LIBRARYTABLE_YEAR,
-        LIBRARYTABLE_RATING,
-        LIBRARYTABLE_GENRE,
-        LIBRARYTABLE_COMPOSER,
-        LIBRARYTABLE_GROUPING,
-        LIBRARYTABLE_TRACKNUMBER,
-        LIBRARYTABLE_KEY,
-        LIBRARYTABLE_KEY_ID,
-        LIBRARYTABLE_BPM,
-        LIBRARYTABLE_BPM_LOCK,
-        LIBRARYTABLE_DURATION,
-        LIBRARYTABLE_BITRATE,
-        LIBRARYTABLE_REPLAYGAIN,
-        LIBRARYTABLE_FILETYPE,
-        LIBRARYTABLE_DATETIMEADDED,
-        TRACKLOCATIONSTABLE_LOCATION,
-        TRACKLOCATIONSTABLE_FSDELETED,
-        LIBRARYTABLE_COMMENT,
-        LIBRARYTABLE_MIXXXDELETED,
-        LIBRARYTABLE_COLOR,
-        LIBRARYTABLE_COVERART_SOURCE,
-        LIBRARYTABLE_COVERART_TYPE,
-        LIBRARYTABLE_COVERART_LOCATION,
-        LIBRARYTABLE_COVERART_HASH};
-
-} // namespace
-
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig),
@@ -68,7 +30,51 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pLibraryTableModel(nullptr),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
-    QStringList columns = DEFAULT_COLUMNS;
+    QString idColumn = LIBRARYTABLE_ID;
+    QStringList columns = {
+            LIBRARYTABLE_ID,
+            LIBRARYTABLE_PLAYED,
+            LIBRARYTABLE_TIMESPLAYED,
+            // has to be up here otherwise Played and TimesPlayed are not shown
+            LIBRARYTABLE_ALBUMARTIST,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_RATING,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_COMPOSER,
+            LIBRARYTABLE_GROUPING,
+            LIBRARYTABLE_TRACKNUMBER,
+            LIBRARYTABLE_KEY,
+            LIBRARYTABLE_KEY_ID,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_BPM_LOCK,
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BITRATE,
+            LIBRARYTABLE_REPLAYGAIN,
+            LIBRARYTABLE_FILETYPE,
+            LIBRARYTABLE_DATETIMEADDED,
+            TRACKLOCATIONSTABLE_LOCATION,
+            TRACKLOCATIONSTABLE_FSDELETED,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_MIXXXDELETED,
+            LIBRARYTABLE_COLOR,
+            LIBRARYTABLE_COVERART_SOURCE,
+            LIBRARYTABLE_COVERART_TYPE,
+            LIBRARYTABLE_COVERART_LOCATION,
+            LIBRARYTABLE_COVERART_HASH};
+    QStringList searchColumns = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_ALBUMARTIST,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_GROUPING,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_CRATE};
+
     QStringList qualifiedTableColumns;
     for (const auto& col : columns) {
         qualifiedTableColumns.append(mixxx::trackschema::tableForColumn(col) +
@@ -87,8 +93,12 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         LOG_FAILED_QUERY(query);
     }
 
-    BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-            m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
+    BaseTrackCache* pBaseTrackCache = new BaseTrackCache(m_pTrackCollection,
+            std::move(tableName),
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            true);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     m_pTrackCollection->connectTrackSource(m_pBaseTrackCache);
 

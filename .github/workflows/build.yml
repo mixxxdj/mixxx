@@ -15,28 +15,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 18.04 (gcc)
-            os: ubuntu-18.04
-            cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DBULK=ON
-              -DFAAD=ON
-              -DFFMPEG=OFF
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
-            compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
-            cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 18.04 DEB
-            artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-bionic
-            qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
             cmake_args: >-
@@ -159,7 +137,7 @@ jobs:
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
-        uses: seanmiddleditch/gha-setup-vsdevenv@v3
+        uses: seanmiddleditch/gha-setup-vsdevenv@v4
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
@@ -329,7 +307,7 @@ jobs:
 
       - name: "[Windows] Sign Package"
         if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
-        run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
+        run: signtool sign /tr http://timestamp.sectigo.com /td sha256 /fd sha256 /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
         working-directory: build
 
       - name: "Prepare for deployment"
@@ -418,7 +396,8 @@ jobs:
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
       - name: "Upload GitHub Actions artifacts"
-        uses: actions/upload-artifact@v3.1.0
+        if: matrix.artifacts_path != null
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}

@@ -27,6 +27,19 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     m_parameterStr = tr("Parameter %1");
     m_libraryStr = tr("Library");
 
+    m_numGroupsTrMap.insert("Channel", m_deckStr);
+    m_numGroupsTrMap.insert("Sampler", m_samplerStr);
+    m_numGroupsTrMap.insert("PreviewDeck", m_previewdeckStr);
+    m_numGroupsTrMap.insert("Microphone", m_microphoneStr);
+    m_numGroupsTrMap.insert("Auxiliary", m_auxStr);
+    m_numGroupsTrMap.insert("EffectRack", m_effectRackStr);
+
+    m_otherGroupsTrMap.insert("Skin", tr("Skin"));
+    m_otherGroupsTrMap.insert("Library", m_libraryStr);
+    m_otherGroupsTrMap.insert("Controller", tr("Controller"));
+    // TODO(ronso0) "translate" legacy 'Master' to 'Main' in main branch?
+    m_otherGroupsTrMap.insert("Master", "Master");
+
     // Mixer Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
     // Crossfader / Orientation
@@ -248,14 +261,22 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("rate", tr("Playback Speed"),
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     speedMenu->addSeparator();
-    addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
-                             tr("Adjust speed faster (coarse)"), speedMenu);
-    addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
-                             tr("Adjust speed faster (fine)"), speedMenu);
-    addDeckAndSamplerControl("rate_perm_down", tr("Decrease Speed"),
-                             tr("Adjust speed slower (coarse)"), speedMenu);
-    addDeckAndSamplerControl("rate_perm_down_small", tr("Increase Speed (Fine)"),
-                             tr("Adjust speed slower (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_up",
+            tr("Increase Speed"),
+            tr("Adjust speed faster (coarse)"),
+            speedMenu);
+    addDeckAndSamplerControl("rate_perm_up_small",
+            tr("Increase Speed (Fine)"),
+            tr("Adjust speed faster (fine)"),
+            speedMenu);
+    addDeckAndSamplerControl("rate_perm_down",
+            tr("Decrease Speed"),
+            tr("Adjust speed slower (coarse)"),
+            speedMenu);
+    addDeckAndSamplerControl("rate_perm_down_small",
+            tr("Decrease Speed (Fine)"),
+            tr("Adjust speed slower (fine)"),
+            speedMenu);
     speedMenu->addSeparator();
     addDeckAndSamplerControl("rate_temp_up", tr("Temporarily Increase Speed"),
                              tr("Temporarily increase speed (coarse)"), speedMenu);
@@ -582,102 +603,66 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addSeparator();
 
     // Library Controls
-    QMenu* libraryMenu = addSubmenu(tr("Library"));
+    QMenu* libraryMenu = addSubmenu(m_libraryStr);
     QMenu* navigationMenu = addSubmenu(tr("Navigation"), libraryMenu);
-    addControl("[Library]",
-            "MoveUp",
+    addLibraryControl("MoveUp",
             tr("Move up"),
             tr("Equivalent to pressing the UP key on the keyboard"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "MoveDown",
+            navigationMenu);
+    addLibraryControl("MoveDown",
             tr("Move down"),
             tr("Equivalent to pressing the DOWN key on the keyboard"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "MoveVertical",
+            navigationMenu);
+    addLibraryControl("MoveVertical",
             tr("Move up/down"),
             tr("Move vertically in either direction using a knob, as if "
                "pressing UP/DOWN keys"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "ScrollUp",
+            navigationMenu);
+    addLibraryControl("ScrollUp",
             tr("Scroll Up"),
             tr("Equivalent to pressing the PAGE UP key on the keyboard"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "ScrollDown",
+            navigationMenu);
+    addLibraryControl("ScrollDown",
             tr("Scroll Down"),
             tr("Equivalent to pressing the PAGE DOWN key on the keyboard"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "ScrollVertical",
+            navigationMenu);
+    addLibraryControl("ScrollVertical",
             tr("Scroll up/down"),
             tr("Scroll vertically in either direction using a knob, as if "
                "pressing PGUP/PGDOWN keys"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "MoveLeft",
+            navigationMenu);
+    addLibraryControl("MoveLeft",
             tr("Move left"),
             tr("Equivalent to pressing the LEFT key on the keyboard"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "MoveRight",
+            navigationMenu);
+    addLibraryControl("MoveRight",
             tr("Move right"),
             tr("Equivalent to pressing the RIGHT key on the keyboard"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "MoveHorizontal",
+            navigationMenu);
+    addLibraryControl("MoveHorizontal",
             tr("Move left/right"),
             tr("Move horizontally in either direction using a knob, as if "
                "pressing LEFT/RIGHT keys"),
-            navigationMenu,
-            false,
-            m_libraryStr);
+            navigationMenu);
     navigationMenu->addSeparator();
-    addControl("[Library]",
-            "MoveFocusForward",
+    addLibraryControl("MoveFocusForward",
             tr("Move focus to right pane"),
             tr("Equivalent to pressing the TAB key on the keyboard"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "MoveFocusBackward",
+            navigationMenu);
+    addLibraryControl("MoveFocusBackward",
             tr("Move focus to left pane"),
             tr("Equivalent to pressing the SHIFT+TAB key on the keyboard"),
-            navigationMenu,
-            false,
-            m_libraryStr);
-    addControl("[Library]",
-            "MoveFocus",
+            navigationMenu);
+    addLibraryControl("MoveFocus",
             tr("Move focus to right/left pane"),
             tr("Move focus one pane to right or left using a knob, as if "
                "pressing TAB/SHIFT+TAB keys"),
-            navigationMenu,
-            false,
-            m_libraryStr);
+            navigationMenu);
     libraryMenu->addSeparator();
-    addControl("[Library]", "GoToItem",
+    addLibraryControl("GoToItem",
                tr("Go to the currently selected item"),
                tr("Choose the currently selected item and advance forward one pane if appropriate"),
-               libraryMenu, false, m_libraryStr);
+            libraryMenu);
     // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
             tr("Load Track"),
@@ -689,18 +674,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             libraryMenu);
     libraryMenu->addSeparator();
     // Auto DJ
-    addControl("[Library]", "AutoDjAddBottom",
+    addLibraryControl("AutoDjAddBottom",
                tr("Add to Auto DJ Queue (bottom)"),
                tr("Append the selected track to the Auto DJ Queue"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "AutoDjAddTop",
+               libraryMenu);
+    addLibraryControl("AutoDjAddTop",
                tr("Add to Auto DJ Queue (top)"),
                tr("Prepend selected track to the Auto DJ Queue"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "AutoDjAddReplace",
+               libraryMenu);
+    addLibraryControl("AutoDjAddReplace",
                tr("Add to Auto DJ Queue (replace)"),
                tr("Replace Auto DJ Queue with selected tracks"),
-               libraryMenu, false, m_libraryStr);
+               libraryMenu);
     libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
                tr("Record Mix"),
@@ -1416,6 +1401,13 @@ void ControlPickerMenu::addPreviewDeckControl(const QString& control,
         QMenu* pMenu,
         bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, false, false, true, addReset);
+}
+
+void ControlPickerMenu::addLibraryControl(const QString& control,
+        const QString& title,
+        const QString& description,
+        QMenu* pMenu) {
+    addSingleControl("[Library]", control, title, description, pMenu, m_libraryStr);
 }
 
 QMenu* ControlPickerMenu::addSubmenu(QString title, QMenu* pParent) {

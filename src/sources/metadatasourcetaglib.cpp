@@ -329,11 +329,25 @@ class MpegTagSaver : public TagSaver {
     }
 
     bool saveModifiedTags() override {
+        DEBUG_ASSERT(hasModifiedTags());
+#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION < 12)
         // NOTE(uklotzde, 2016-08-28): Only save the tags that have
         // actually been modified! Otherwise TagLib 1.11 adds unwanted
         // ID3v1 tags, even if the file does not already contain those
         // legacy tags.
         return m_file.save(m_modifiedTagsBitmask);
+#else
+        // Keep ID3v1 tag synchronized if it already exists in the file
+        const auto duplicateTags =
+                m_file.hasID3v1Tag()
+                ? TagLib::File::DuplicateTags::Duplicate
+                : TagLib::File::DuplicateTags::DoNotDuplicate;
+        return m_file.save(
+                m_modifiedTagsBitmask,
+                TagLib::File::StripTags::StripNone,
+                TagLib::ID3v2::Version::v4,
+                duplicateTags);
+#endif
     }
 
   private:
@@ -890,12 +904,10 @@ class SafelyWritableFile final {
 std::pair<MetadataSource::ExportResult, QDateTime>
 MetadataSourceTagLib::exportTrackMetadata(
         const TrackMetadata& trackMetadata) const {
-    // NOTE(uklotzde): Log unconditionally (with debug level) to
-    // identify files in the log file that might have caused a
-    // crash while exporting metadata.
-    kLogger.debug() << "Exporting track metadata"
-                    << "into file" << m_fileName
-                    << "with type" << m_fileType;
+    // Modifying an external file is a potentially dangerous operation.
+    // If this operation unexpectedly crashes or corrupts data we need
+    // to identify the file that is affected.
+    kLogger.info() << "Exporting track metadata into file:" << m_fileName;
 
     SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
     if (!safelyWritableFile.isReady()) {

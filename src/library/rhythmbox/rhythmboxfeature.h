@@ -18,25 +18,28 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
     RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig);
-    virtual ~RhythmboxFeature();
+    ~RhythmboxFeature() override;
     static bool isSupported();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
     // processes the music collection
     TreeItem* importMusicCollection();
     // processes the playlist entries
     TreeItem* importPlaylists();
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void onTrackCollectionLoaded();
 
+  protected:
+    std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
+            const QString& playlist) override;
+
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist);
     // Removes all rows from a given table
     void clearTable(const QString& table_name);
     // reads the properties of a track and executes a SQL statement

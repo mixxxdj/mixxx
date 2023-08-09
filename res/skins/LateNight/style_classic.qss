@@ -2252,35 +2252,29 @@ WSearchLineEdit {
 
 #WaveformSplitter::handle,
 #SidebarCoverSplitter::handle {
-    image: url(skin:/classic/style/splitter_handle_horizontal.png); /*
-    border-top: 1px solid #000; */
+    image: url(skin:/classic/style/splitter_handle_horizontal.png);
   }
   #WaveformSplitter::handle:pressed,
-  #WaveformSplitter::handle:hover,
-  #SidebarCoverSplitter::handle:pressed,
-  #SidebarCoverSplitter::handle:hover {
+  #SidebarCoverSplitter::handle:pressed {
     image: url(skin:/classic/style/splitter_handle_horizontal_pressed.png);
   }
   #WaveformSplitter::handle:vertical,
   #SidebarCoverSplitter::handle:vertical {
-  height: 9px;
-}
+    height: 9px;
+  }
 
 /* LibrarySplitter
   (the splitter itself is vertical)
   Used to split Library sidebar & Tracks table */
 #LibrarySplitter::handle {
-  image: url(skin:/classic/style/splitter_handle_vertical.png);
-  background-color: #1e1e1e;
-}
-#LibrarySplitter::handle:pressed,
-#LibrarySplitter::handle:hover {
-  image: url(skin:/classic/style/splitter_handle_vertical_pressed.png);
-}
-#LibrarySplitter::handle:vertical {
   /* 'height' works although it's actually the width of the handle */
   height: 6px;
-}
+  image: url(skin:/classic/style/splitter_handle_vertical.png);
+  background-color: #1e1e1e;
+  }
+  #LibrarySplitter::handle:pressed {
+    image: url(skin:/classic/style/splitter_handle_vertical_pressed.png);
+  }
 /************ splitters ***********************/
 
 

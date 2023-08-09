@@ -14,6 +14,7 @@
 #include "util/parented_ptr.h"
 
 class AnalysisFeature;
+class BrowseFeature;
 class ControlObject;
 class CrateFeature;
 class ExternalTrackCollection;
@@ -142,6 +143,7 @@ class Library: public QObject {
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
+    BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;

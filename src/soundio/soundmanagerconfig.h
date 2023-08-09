@@ -23,12 +23,38 @@ public:
         OTHER = (1 << 2),
         ALL = (API | DEVICES | OTHER),
     };
-    static const unsigned int kMaxAudioBufferSizeIndex;
+
+    // Size1xms presents the first buffer size of 2^X
+    // that results in a buffer time above 1 ms
+    // It is 1.45 ms @ 44.1 kHz
+    // The other values are representing the following 2^X sizes.
+    enum class AudioBufferSizeIndex {
+        Size1xms = 1,
+        Size2xms = 2,
+        Size5xms = 3,
+        Size10xms = 4,
+        Size20xms = 5,
+        Size40xms = 6,
+        Size80xms = 7,
+    };
+
+    // Represents the sample rate independent frame/period
+    // index values in case of Jack
+    enum class JackAudioBufferSizeIndex {
+        SizeAuto = 5,
+        Size2048fpp = 6,
+        Size4096fpp = 7,
+    };
+
+    static constexpr auto kMaxAudioBufferSizeIndex =
+            static_cast<unsigned int>(AudioBufferSizeIndex::Size80xms);
+    static constexpr auto kDefaultAudioBufferSizeIndex =
+            static_cast<unsigned int>(AudioBufferSizeIndex::Size20xms);
+
     static const QString kDefaultAPI;
     static const QString kEmptyComboBox;
     static const unsigned int kFallbackSampleRate;
     static const unsigned int kDefaultDeckCount;
-    static const int kDefaultAudioBufferSizeIndex;
     static const int kDefaultSyncBuffers;
 
     SoundManagerConfig();
@@ -52,8 +78,6 @@ public:
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
-    // Returns the processing latency in milliseconds
-    double getProcessingLatency() const;
     void setAudioBufferSizeIndex(unsigned int latency);
     unsigned int getSyncBuffers() const;
     void setSyncBuffers(unsigned int sampleRate);

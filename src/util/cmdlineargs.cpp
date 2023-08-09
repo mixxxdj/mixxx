@@ -9,12 +9,23 @@
 #include "sources/soundsourceproxy.h"
 #include "util/versionstore.h"
 
+namespace {
+#ifdef __WINDOWS__
+// We got reports that VuMetersGL do not perform good on windows.
+// They improve the situation for macOS, the final fix is in Mixxx 2.4
+// See: https://github.com/mixxxdj/mixxx/issues/11785
+constexpr bool kUseVuMeterGlDefault = false;
+#else
+constexpr bool kUseVuMeterGlDefault = true;
+#endif
+} // namespace
+
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_midiDebug(false),
           m_developer(false),
           m_safeMode(false),
-          m_useVuMeterGL(true),
+          m_useVuMeterGL(kUseVuMeterGlDefault),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
           m_logLevel(mixxx::kLogLevelDefault),
@@ -102,6 +113,9 @@ when a critical error occurs unless this is set properly.\n", stdout);
                            "--disableVuMeterGL", Qt::CaseInsensitive)) {
             m_useVuMeterGL = false;
         } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--enableVuMeterGL", Qt::CaseInsensitive)) {
+            m_useVuMeterGL = true;
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
                            "--midiDebug", Qt::CaseInsensitive) ||
                 QString::fromLocal8Bit(argv[i]).contains(
                         "--controllerDebug", Qt::CaseInsensitive)) {
@@ -162,6 +176,8 @@ void CmdlineArgs::printUsage() {
                         Mixxx is crashing on startup.\n\
 \n\
 --disableVuMeterGL      Do not use OpenGL vu meter.\n\
+\n\
+--enableVuMeterGL       Use OpenGL vu meter.\n\
 \n\
 --locale LOCALE         Use a custom locale for loading translations\n\
                         (e.g 'fr')\n\

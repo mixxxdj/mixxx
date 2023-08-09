@@ -50,6 +50,8 @@ DlgPrefController::DlgPrefController(QWidget* parent,
     // Create text color for the file and wiki links
     createLinkColor();
 
+    m_pControlPickerMenu = new ControlPickerMenu(this);
+
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
@@ -153,7 +155,8 @@ void DlgPrefController::showLearningWizard() {
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
-    m_pDlgControllerLearning = new DlgControllerLearning(this, m_pController);
+    m_pDlgControllerLearning =
+            new DlgControllerLearning(this, m_pController, m_pControlPickerMenu);
     m_pDlgControllerLearning->show();
     ControllerLearningEventFilter* pControllerLearning =
             m_pControllerManager->getControllerLearningEventFilter();
@@ -758,7 +761,7 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_pPreset = preset;
 
     ControllerInputMappingTableModel* pInputModel =
-            new ControllerInputMappingTableModel(this);
+            new ControllerInputMappingTableModel(this, m_pControlPickerMenu);
     pInputModel->setPreset(preset);
 
     QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
@@ -782,7 +785,7 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_pInputTableModel = pInputModel;
 
     ControllerOutputMappingTableModel* pOutputModel =
-            new ControllerOutputMappingTableModel(this);
+            new ControllerOutputMappingTableModel(this, m_pControlPickerMenu);
     pOutputModel->setPreset(preset);
 
     QSortFilterProxyModel* pOutputProxyModel = new QSortFilterProxyModel(this);

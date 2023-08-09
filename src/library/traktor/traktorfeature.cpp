@@ -69,32 +69,36 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
           m_icon(":/images/library/ic_library_traktor.svg") {
     QString tableName = "traktor_library";
     QString idColumn = "id";
-    QStringList columns;
-    columns << "id"
-            << "artist"
-            << "title"
-            << "album"
-            << "year"
-            << "genre"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "rating"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "key";
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(pLibrary->trackCollections()->internalCollection(), tableName, idColumn,
-                           columns, false));
-    QStringList searchColumns;
-    searchColumns << "artist"
-                  << "album"
-                  << "location"
-                  << "comment"
-                  << "title"
-                  << "genre";
-    m_trackSource->setSearchColumns(searchColumns);
+    QStringList columns = {
+            "id",
+            "artist",
+            "title",
+            "album",
+            "year",
+            "genre",
+            "tracknumber",
+            "location",
+            "comment",
+            "rating",
+            "duration",
+            "bitrate",
+            "bpm",
+            "key"};
+    QStringList searchColumns = {
+            "artist",
+            "album",
+            "location",
+            "comment",
+            "title",
+            "genre"};
+
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
+            pLibrary->trackCollections()->internalCollection(),
+            tableName,
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
 
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(this, pLibrary->trackCollections(), m_trackSource);
@@ -114,6 +118,8 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QFutureWatcher<TreeItem*>::finished,
             this,
             &TraktorFeature::onTrackCollectionLoaded);
+
+    m_pTraktorTableModel->setSearch(""); // enable search
 }
 
 TraktorFeature::~TraktorFeature() {
@@ -124,8 +130,10 @@ TraktorFeature::~TraktorFeature() {
     delete m_pTraktorPlaylistModel;
 }
 
-BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
+std::unique_ptr<BaseSqlTableModel>
+TraktorFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    auto pModel = std::make_unique<TraktorPlaylistModel>(
+            this, m_pLibrary->trackCollections(), m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }

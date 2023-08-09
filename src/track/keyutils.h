@@ -22,6 +22,17 @@ class KeyUtils {
         NumKeyNotations = 7
     };
 
+    enum class ScaleMode {
+        Ionian = 0,     // standard major
+        Aeolian = 1,    // natural minor
+        Lydian = 2,     // major with raised 4th
+        Mixolydian = 3, // major with lowered 7th
+        Dorian = 4,     // minor with raised 6th
+        Phrygian = 5,   // minor with lowered 2nd
+        Locrian = 6,    // minor with lowered 2nd and 7th
+        Unknown = 7
+    };
+
     static QString keyDebugName(mixxx::track::io::key::ChromaticKey key);
 
     static inline bool keyIsMajor(mixxx::track::io::key::ChromaticKey key) {

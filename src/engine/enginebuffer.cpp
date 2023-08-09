@@ -221,9 +221,6 @@ EngineBuffer::EngineBuffer(const QString& group,
     pMixingEngine->getEngineSync()->addSyncableDeck(m_pSyncControl);
     addControl(m_pSyncControl);
 
-    m_fwdButton = ControlObject::getControl(ConfigKey(group, "fwd"));
-    m_backButton = ControlObject::getControl(ConfigKey(group, "back"));
-
     m_pKeyControl = new KeyControl(group, pConfig);
     addControl(m_pKeyControl);
 
@@ -560,7 +557,7 @@ void EngineBuffer::ejectTrack() {
     m_pTrackLoaded->forceSet(0);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.reset();
     m_playButton->set(0.0);
@@ -932,6 +929,7 @@ void EngineBuffer::processTrackLocked(
         rate = m_rate_old;
     }
 
+    double playpos_old = m_filepos_play;
     bool at_end = m_filepos_play >= m_trackSamplesOld;
     bool backwards = rate < 0;
 
@@ -973,6 +971,8 @@ void EngineBuffer::processTrackLocked(
         // Note: The last buffer of a track is padded with silence.
         // This silence is played together with the last samples in the last
         // callback and the m_filepos_play is advanced behind the end of the track.
+        // If repeat is enabled, scaler->scaleBuffer() wraps around at end/start
+        // and fills the buffer with samples from the other end of the track.
 
         if (m_bCrossfadeReady) {
             // Bring pOutput with the new parameters in and fade out the old one,
@@ -1004,24 +1004,27 @@ void EngineBuffer::processTrackLocked(
 
     m_scratching_old = is_scratching;
 
-    // Handle repeat mode
-    bool at_start = m_filepos_play <= 0;
+    // If we're repeating and crossed the track boundary, ReadAheadManager already
+    // wrapped around the playposition.
+    // To ensure quantize is respected we request a phase sync.
+    // TODO(ronso) This just restores previous repeat+quantize behaviour. I'm not
+    // sure whether that was actually desired or just a side effect of seeking.
+    // Ife it's really desired, should this be moved to looping control in order
+    // to set the sync'ed playposition right away and fill the wrap-around buffer
+    // with correct samples from the sync'ed loop in / track start position?
+    if (m_pRepeat->toBool() && m_pQuantize->toBool() &&
+            (m_filepos_play > playpos_old) == backwards) {
+        // TODO() The resulting seek is processed in the following callback
+        // That is to late
+        requestSyncPhase();
+    }
+
     at_end = m_filepos_play >= m_trackSamplesOld;
+    bool end_of_track = at_end && !backwards;
 
-    bool repeat_enabled = m_pRepeat->toBool();
-
-    bool end_of_track = //(at_start && backwards) ||
-            (at_end && !backwards);
-
-    // If playbutton is pressed, check if we are at start or end of track
-    if ((m_playButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool()))
-            && end_of_track) {
-        if (repeat_enabled) {
-            double fractionalPos = at_start ? 1.0 : 0;
-            doSeekFractional(fractionalPos, SEEK_STANDARD);
-        } else {
-            m_playButton->set(0.);
-        }
+    // If playbutton is pressed and we're at the end of track release play button
+    if (m_playButton->toBool() && end_of_track) {
+        m_playButton->set(0.);
     }
 
     // Give the Reader hints as to which chunks of the current song we
@@ -1298,10 +1301,13 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update visual control object, this needs to be done more often than the
     // playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos, speed * m_baserate_old,
+    m_visualPlayPos->set(
+            fFractionalPlaypos,
+            speed * m_baserate_old,
             (double)iBufferSize / m_trackSamplesOld,
             fractionalPlayposFromAbsolute(m_dSlipPosition),
-            tempoTrackSeconds);
+            tempoTrackSeconds,
+            iBufferSize / kSamplesPerFrame / static_cast<double>(m_iSampleRate) * 1000000.0);
 }
 
 void EngineBuffer::hintReader(const double dRate) {

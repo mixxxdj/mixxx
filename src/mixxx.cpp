@@ -93,9 +93,11 @@
 #endif
 
 #if defined(Q_OS_LINUX)
-#include <QtX11Extras/QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
+
+#include <QtDBus>
+#include <QtX11Extras/QX11Info>
 // Xlibint.h predates C++ and defines macros which conflict
 // with references to std::max and std::min
 #undef max
@@ -135,6 +137,25 @@ inline QLocale inputLocale() {
             QLocale(QLocale::English);
 }
 
+#ifdef __LINUX__
+// Detect if the desktop supports a global menu to decide whether we need to rebuild
+// and reconnect the menu bar when switching to/from fullscreen mode.
+// Compared to QMenuBar::isNativeMenuBar() (requires a set menu bar) and
+// Qt::AA_DontUseNativeMenuBar, which may both change, this is way more reliable
+// since it's rather unlikely that the Appmenu.Registrar service is unloaded/stopped
+// while Mixxx is running.
+// This is a reimplementation of QGenericUnixTheme > checkDBusGlobalMenuAvailable()
+inline bool supportsGlobalMenu() {
+#ifndef QT_NO_DBUS
+    QDBusConnection conn = QDBusConnection::sessionBus();
+    if (const auto iface = conn.interface()) {
+        return iface->isServiceRegistered("com.canonical.AppMenu.Registrar");
+    }
+#endif
+    return false;
+}
+#endif
+
 } // anonymous namespace
 
 // static
@@ -161,6 +182,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
           m_pKeyboard(nullptr),
           m_pLibrary(nullptr),
+#ifdef __LINUX__
+          m_supportsNativeMenuBar(supportsGlobalMenu()),
+#endif
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_pKbdConfig(nullptr),
@@ -217,6 +241,21 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     mixxx::Translations::initializeTranslations(
         m_pSettingsManager->settings(), pApp, args.getLocale());
 
+#ifdef __LINUX__
+    // If the desktop features a global menubar and we'll go fullscreen during
+    // startup, set Qt::AA_DontUseNativeMenuBar so the menubar is placed in the
+    // window like it's done in slotViewFullScreen(). On other desktops this
+    // attribute has no effect. This is a safe alternative to setNativeMenuBar()
+    // which can cause a crash when using menu shortcuts like Alt+F after resetting
+    // the menubar. See https://github.com/mixxxdj/mixxx/issues/11320
+    if (m_supportsNativeMenuBar) {
+        bool fullscreenPref = m_pSettingsManager->settings()->getValue<bool>(
+                ConfigKey("[Config]", "StartInFullscreen"));
+        QApplication::setAttribute(
+                Qt::AA_DontUseNativeMenuBar,
+                args.getStartInFullscreen() || fullscreenPref);
+    }
+#endif // __LINUX__
     createMenuBar();
     m_pMenuBar->hide();
 
@@ -729,16 +768,14 @@ void MixxxMainWindow::finalize() {
     // On next start restoreGeometry would enable fullscreen mode even though that
     // might not be requested (no '--fullscreen' command line arg and
     // [Config],StartInFullscreen is '0'.
-    // https://bugs.launchpad.net/mixxx/+bug/1882474
-    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // https://github.com/mixxxdj/mixxx/issues/10005
     // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
     bool fullscreenPref = m_pSettingsManager->settings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
     if (isFullScreen() && !fullscreenPref) {
-        slotViewFullScreen(false);
-        // After returning from fullscreen the main window incl. window decoration
-        // may be too large for the screen.
-        // Maximize the window so we can store a geometry that fits the screen.
+        // Simply maximize the window so we can store a geometry that fits the screen.
+        // Don't call slotViewFullScreen(false) (calls showNormal()) because that
+        // can make the main window incl. window decoration too large for the screen.
         showMaximized();
     }
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
@@ -1078,7 +1115,6 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
     return soundDeviceErrorDlg(title, text, retryClicked);
 }
 
-
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
         SoundDeviceError err, bool* retryClicked) {
     QString title(tr("Sound Device Error"));
@@ -1378,7 +1414,6 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
     }
 }
 
-
 void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     if (toggle) {
@@ -1430,19 +1465,24 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
     if (toggle) {
         showFullScreen();
 #ifdef __LINUX__
-        // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
-        // #885890 and Bug #1076789. Before touching anything here, please read
+        // Fix for "No menu bar with ubuntu unity in full screen mode" (issues
+        // #885890 and #1076789. Before touching anything here, please read
         // those bugs.
-        createMenuBar();
-        connectMenuBar();
-        if (m_pMenuBar->isNativeMenuBar()) {
-            m_pMenuBar->setNativeMenuBar(false);
+        // Set this attribute instead of calling setNativeMenuBar(false), see
+        // https://github.com/mixxxdj/mixxx/issues/11320
+        if (m_supportsNativeMenuBar) {
+            QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, true);
+            createMenuBar();
+            connectMenuBar();
         }
 #endif
     } else {
 #ifdef __LINUX__
-        createMenuBar();
-        connectMenuBar();
+        if (m_supportsNativeMenuBar) {
+            QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, false);
+            createMenuBar();
+            connectMenuBar();
+        }
 #endif
         showNormal();
     }
@@ -1645,7 +1685,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     }
     QMainWindow::closeEvent(event);
 }
-
 
 void MixxxMainWindow::checkDirectRendering() {
     // IF

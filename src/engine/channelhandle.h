@@ -160,7 +160,7 @@ class ChannelHandleMap {
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::iterator iterator;
 
     ChannelHandleMap()
-            : m_dummy{} {
+            : m_dummy() {
     }
 
     const T& at(const ChannelHandle& handle) const {
@@ -219,7 +219,7 @@ class ChannelHandleMap {
         } else {
             // We need to initialize simple types ourselves
             while (m_data.size() < iSize) {
-                m_data.append({});
+                m_data.append(T());
             }
         }
     }

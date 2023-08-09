@@ -197,7 +197,7 @@ int EncoderOpus::initEncoder(int samplerate, QString* pUserErrorMessage) {
         opus_encoder_ctl(m_pOpus, OPUS_SET_VBR_CONSTRAINT(0)); // Unconstrained VBR
     }
 
-    m_readRequired = m_samplerate * kOpusFrameMs;
+    m_readRequired = m_channels * m_samplerate * kOpusFrameMs / 1000;
     m_pFifoChunkBuffer = std::make_unique<mixxx::SampleBuffer>(m_readRequired);
     initStream();
 

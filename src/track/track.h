@@ -80,7 +80,6 @@ class Track : public QObject {
     }
     // The (refreshed) canonical location
     QString getCanonicalLocation() const;
-    // Checks if the file exists
     bool checkFileExists() const {
         return m_fileInfo.checkFileExists();
     }
@@ -92,14 +91,10 @@ class Track : public QObject {
     // Get number of channels
     int getChannels() const;
 
-    // Get sample rate
     mixxx::audio::SampleRate getSampleRate() const;
 
-    // Sets the bitrate
     void setBitrate(int);
-    // Returns the bitrate
     int getBitrate() const;
-    // Returns the bitrate as a string
     QString getBitrateText() const;
 
     void setDuration(mixxx::Duration duration);
@@ -128,12 +123,10 @@ class Track : public QObject {
     // Sets the BPM if not locked.
     bool trySetBpm(double bpm);
 
-    // Returns BPM
     double getBpm() const {
         const QMutexLocker lock(&m_qMutex);
         return getBpmWhileLocked().getValue();
     }
-    // Returns BPM as a string
     QString getBpmText() const;
 
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
@@ -141,9 +134,7 @@ class Track : public QObject {
     void setBpmLocked(bool bpmLocked);
     bool isBpmLocked() const;
 
-    // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
-    // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
     // Indicates if the metadata has been parsed from file tags.
@@ -154,47 +145,34 @@ class Track : public QObject {
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
 
-    // Getter/Setter methods for metadata
-    // Return title
     QString getTitle() const;
-    // Set title
     void setTitle(const QString&);
-    // Return artist
     QString getArtist() const;
-    // Set artist
     void setArtist(const QString&);
-    // Return album
     QString getAlbum() const;
-    // Set album
     void setAlbum(const QString&);
-    // Return album artist
     QString getAlbumArtist() const;
-    // Set album artist
     void setAlbumArtist(const QString&);
-    // Return Year
+
+    // Returns the content of the year library column.
+    // This was original only the four digit (gregorian) calendar year of the release date
+    // but allows to store any user string. Now it is altenatively used as
+    // recording date/time in the ISO 8601 yyyy-MM-ddTHH:mm:ss format tunkated at any point,
+    // following the TDRC ID3v2.4 frame or if not exists, TYER + TDAT.
     QString getYear() const;
-    // Set year
     void setYear(const QString&);
-    // Return genre
+
     QString getGenre() const;
-    // Set genre
     void setGenre(const QString&);
-    // Returns the track color
     mixxx::RgbColor::optional_t getColor() const;
-    // Sets the track color
     void setColor(mixxx::RgbColor::optional_t);
-    // Returns the user comment
     QString getComment() const;
-    // Sets the user comment
     void setComment(const QString&);
-    // Return composer
     QString getComposer() const;
-    // Set composer
     void setComposer(const QString&);
-    // Return grouping
     QString getGrouping() const;
-    // Set grouping
     void setGrouping(const QString&);
+
     // Return track number/total
     QString getTrackNumber() const;
     QString getTrackTotal() const;
@@ -215,18 +193,13 @@ class Track : public QObject {
         return getPlayCounter().getTimesPlayed();
     }
 
-    // Returns rating
     int getRating() const;
-    // Sets rating
     void setRating(int);
-    /// Resets the rating
     void resetRating() {
         setRating(mixxx::TrackRecord::kNoRating);
     }
 
-    // Get URL for track
     QString getURL() const;
-    // Set URL for track
     void setURL(const QString& url);
 
     /// Separator between artist and title string that is
@@ -241,7 +214,7 @@ class Track : public QObject {
     /// any metadata in file tags. Otherwise just the title (even if it is empty).
     QString getTitleInfo() const;
 
-    ConstWaveformPointer getWaveform() const;
+    const ConstWaveformPointer& getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
 
     ConstWaveformPointer getWaveformSummary() const;
@@ -280,7 +253,7 @@ class Track : public QObject {
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
     ImportStatus importCueInfos(
-            mixxx::CueInfoImporterPointer pCueInfoImporter);
+            std::unique_ptr<mixxx::CueInfoImporter> pCueInfoImporter);
     ImportStatus getCueImportStatus() const;
 
     bool isDirty();
@@ -450,6 +423,8 @@ class Track : public QObject {
     };
     double getDuration(DurationRounding rounding) const;
 
+    bool exportSeratoMetadata();
+
     ExportTrackMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource,
             UserSettingsPointer pConfig);
@@ -494,12 +469,12 @@ class Track : public QObject {
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;
 
-    //Visual waveform data
+    // Visual waveform data
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
-    mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
+    std::unique_ptr<mixxx::CueInfoImporter> m_pCueInfoImporterPending;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;

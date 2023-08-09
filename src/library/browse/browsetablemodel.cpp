@@ -54,18 +54,16 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     listAppendOrReplaceAt(&headerLabels, COLUMN_FILE_CREATION_TIME, tr("File Created"));
     listAppendOrReplaceAt(&headerLabels, COLUMN_REPLAYGAIN, tr("ReplayGain"));
 
-    addSearchColumn(COLUMN_FILENAME);
-    addSearchColumn(COLUMN_ARTIST);
-    addSearchColumn(COLUMN_ALBUM);
-    addSearchColumn(COLUMN_TITLE);
-    addSearchColumn(COLUMN_GENRE);
-    addSearchColumn(COLUMN_COMPOSER);
-    addSearchColumn(COLUMN_KEY);
-    addSearchColumn(COLUMN_COMMENT);
-    addSearchColumn(COLUMN_ALBUMARTIST);
-    addSearchColumn(COLUMN_GROUPING);
-    addSearchColumn(COLUMN_FILE_MODIFIED_TIME);
-    addSearchColumn(COLUMN_FILE_CREATION_TIME);
+    m_searchColumns = {
+            COLUMN_FILENAME,
+            COLUMN_ARTIST,
+            COLUMN_ALBUM,
+            COLUMN_TITLE,
+            COLUMN_GENRE,
+            COLUMN_COMPOSER,
+            COLUMN_COMMENT,
+            COLUMN_ALBUMARTIST,
+            COLUMN_GROUPING};
 
     setDefaultSort(COLUMN_FILENAME, Qt::AscendingOrder);
 
@@ -182,13 +180,11 @@ const QList<int>& BrowseTableModel::searchColumns() const {
     return m_searchColumns;
 }
 
-void BrowseTableModel::addSearchColumn(int index) {
-    m_searchColumns.push_back(index);
-}
-
 void BrowseTableModel::setPath(const MDir& path) {
-    m_current_directory = path;
-    m_pBrowseThread->executePopulation(m_current_directory, this);
+    if (m_pBrowseThread) {
+        m_current_directory = path;
+        m_pBrowseThread->executePopulation(m_current_directory, this);
+    }
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
@@ -476,4 +472,11 @@ QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject*
         return new PreviewButtonDelegate(pTableView, i);
     }
     return nullptr;
+}
+
+void BrowseTableModel::releaseBrowseThread() {
+    // The shared browse thread is stopped in the destructor
+    // if this is the last reference. All references must be reset before
+    // the library is destructed.
+    m_pBrowseThread.reset();
 }

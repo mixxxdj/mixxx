@@ -37,7 +37,8 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
+    std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
+            const QString& playlist) override;
     static QString getiTunesMusicPath();
     // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();

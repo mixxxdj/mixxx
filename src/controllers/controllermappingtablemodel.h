@@ -9,6 +9,7 @@
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
+#include "controllers/controlpickermenu.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 
@@ -16,7 +17,7 @@ class ControllerMappingTableModel : public QAbstractTableModel,
                                     public ControllerPresetVisitor {
     Q_OBJECT
   public:
-    ControllerMappingTableModel(QObject* pParent);
+    ControllerMappingTableModel(QObject* pParent, ControlPickerMenu* pControlPickerMenu);
     ~ControllerMappingTableModel() override;
 
     void setPreset(ControllerPresetPointer pPreset);
@@ -42,6 +43,7 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     virtual void onPresetLoaded() = 0;
 
     QVector<QHash<int, QVariant> > m_headerInfo;
+    ControlPickerMenu* m_pControlPickerMenu;
     ControllerPresetPointer m_pPreset;
     MidiControllerPreset* m_pMidiPreset;
     HidControllerPreset* m_pHidPreset;

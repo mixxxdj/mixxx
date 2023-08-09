@@ -10,6 +10,8 @@
 #include "util/db/dbconnection.h"
 #include "util/db/sqllikewildcards.h"
 
+namespace {
+
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
@@ -20,7 +22,9 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     } else if (column == LIBRARYTABLE_ALBUMARTIST) {
         return pTrack->getAlbumArtist();
     } else if (column == LIBRARYTABLE_YEAR) {
-        return pTrack->getYear();
+        // We use only the year that is part of the first four digits
+        // In all possible formats.
+        return pTrack->getYear().left(4);
     } else if (column == LIBRARYTABLE_DATETIMEADDED) {
         return pTrack->getDateAdded();
     } else if (column == LIBRARYTABLE_GENRE) {
@@ -60,8 +64,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     return QVariant();
 }
 
-//static
-QString QueryNode::concatSqlClauses(
+QString concatSqlClauses(
         const QStringList& sqlClauses, const QString& sqlConcatOp) {
     switch (sqlClauses.size()) {
     case 0:
@@ -72,9 +75,14 @@ QString QueryNode::concatSqlClauses(
         // The component terms need to be wrapped into parentheses,
         // but the whole expression does not. The composite node is
         // always responsible for proper wrapping into parentheses!
-        return "(" % sqlClauses.join(") " % sqlConcatOp % " (") % ")";
+        return QChar('(') +
+                sqlClauses.join(
+                        QStringLiteral(") ") + sqlConcatOp + QStringLiteral(" (")) +
+                QChar(')');
     }
 }
+
+} // namespace
 
 bool AndNode::match(const TrackPointer& pTrack) const {
     for (const auto& pNode: m_nodes) {
@@ -363,12 +371,10 @@ QString NumericFilterNode::toSql() const {
     if (m_bRangeQuery) {
         QStringList searchClauses;
         for (const auto& sqlColumn: m_sqlColumns) {
-            QStringList rangeClauses;
-            rangeClauses << QString("%1 >= %2").arg(
-                    sqlColumn, QString::number(m_dRangeLow));
-            rangeClauses << QString("%1 <= %2").arg(
-                    sqlColumn, QString::number(m_dRangeHigh));
-            searchClauses << concatSqlClauses(rangeClauses, "AND");
+            searchClauses << QString(QStringLiteral("%1 BETWEEN %2 AND %3"))
+                                     .arg(sqlColumn,
+                                             QString::number(m_dRangeLow),
+                                             QString::number(m_dRangeHigh));
         }
         return concatSqlClauses(searchClauses, "OR");
     }
@@ -457,4 +463,31 @@ QString KeyFilterNode::toSql() const {
         searchClauses << QString("key_id IS %1").arg(QString::number(matchKey));
     }
     return concatSqlClauses(searchClauses, "OR");
+}
+
+YearFilterNode::YearFilterNode(
+        const QStringList& sqlColumns, const QString& argument)
+        : NumericFilterNode(sqlColumns, argument) {
+}
+
+QString YearFilterNode::toSql() const {
+    if (m_bNullQuery) {
+        return QStringLiteral("year IS NULL");
+    }
+
+    if (m_bOperatorQuery) {
+        return QString(
+                QStringLiteral("CAST(substr(year,1,4) AS INTEGER) %1 %2"))
+                .arg(m_operator, QString::number(m_dOperatorArgument));
+    }
+
+    if (m_bRangeQuery) {
+        QStringList rangeClauses;
+        return QString(
+                QStringLiteral("CAST(substr(year,1,4) AS INTEGER) BETWEEN %1 AND %2"))
+                .arg(QString::number(m_dRangeLow),
+                        QString::number(m_dRangeHigh));
+    }
+
+    return QString();
 }

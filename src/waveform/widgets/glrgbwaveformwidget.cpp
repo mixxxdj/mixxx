@@ -2,8 +2,8 @@
 
 #include "moc_glrgbwaveformwidget.cpp"
 #include "util/performancetimer.h"
+#include "waveform/renderers/glwaveformrenderbackground.h"
 #include "waveform/renderers/glwaveformrendererrgb.h"
-#include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
@@ -18,7 +18,7 @@ GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
 
-    addRenderer<WaveformRenderBackground>();
+    addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();

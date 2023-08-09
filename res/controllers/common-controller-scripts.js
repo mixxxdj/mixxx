@@ -41,23 +41,19 @@ var printObject = function(obj, maxdepth) {
 };
 
 var stringifyObject = function(obj, maxdepth, checked, prefix) {
-    if (!maxdepth)
-        maxdepth = 2;
+    if (!maxdepth) { maxdepth = 2; }
     try {
         return JSON.stringify(obj, null, maxdepth);
     } catch (e) {
-        if (!checked)
-            checked = [];
-        if (!prefix)
-            prefix = "";
+        if (!checked) { checked = []; }
+        if (!prefix) { prefix = ""; }
         if (maxdepth > 0 && typeof obj === "object" && obj !== null &&
             Object.getPrototypeOf(obj) !== "" && !arrayContains(checked, obj)) {
             checked.push(obj);
             var output = "{\n";
             for (var property in obj) {
                 var value = obj[property];
-                if (typeof value === "function")
-                    continue;
+                if (typeof value === "function") { continue; }
                 output += prefix + property + ": "
                     + stringifyObject(value, maxdepth - 1, checked, prefix + "  ")
                     + "\n";
@@ -70,8 +66,7 @@ var stringifyObject = function(obj, maxdepth, checked, prefix) {
 
 var arrayContains = function(array, elem) {
     for (var i = 0; i < array.length; i++) {
-        if (array[i] === elem)
-            return true;
+        if (array[i] === elem) { return true; }
     }
     return false;
 };
@@ -94,8 +89,7 @@ var msecondstominutes = function(msecs) {
     var secs = (msecs / 1000) | 0;
     msecs %= 1000;
     msecs = Math.round(msecs * 100 / 1000);
-    if (msecs === 100)
-        msecs = 99;
+    if (msecs === 100) { msecs = 99; }
 
     return (m < 10 ? "0" + m : m)
         + ":"
@@ -348,6 +342,17 @@ script.crossfaderCurve = function(value, min, max) {
 };
 
 /* -------- ------------------------------------------------------
+     script.posMod
+   Purpose: Computes the euclidean modulo of m % n. The result is always
+            in the range [0, m[
+   Input:   dividend `a` and divisor `m` for modulo (a % m)
+   Output:  positive remainder
+   -------- ------------------------------------------------------ */
+script.posMod = function(a, m) {
+    return ((a % m) + m) % m;
+};
+
+/* -------- ------------------------------------------------------
      script.loopMove
    Purpose: Moves the current loop by the specified number of beats (default 1/2)
             in the specified direction (positive is forwards and is the default)
@@ -357,7 +362,7 @@ script.crossfaderCurve = function(value, min, max) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.loopMove = function(group, direction, numberOfBeats) {
-    if (!numberOfBeats || numberOfBeats === 0) numberOfBeats = 0.5;
+    if (!numberOfBeats || numberOfBeats === 0) { numberOfBeats = 0.5; }
 
     if (direction < 0) {
         engine.setValue(group, "loop_move", -numberOfBeats);
@@ -491,7 +496,7 @@ bpm.tapButton = function(deck) {
     bpm.previousTapDelta = tapDelta;
     bpm.tap.push(60 / tapDelta);
     // Keep the last 8 samples for averaging
-    if (bpm.tap.length > 8) bpm.tap.shift();
+    if (bpm.tap.length > 8) { bpm.tap.shift(); }
     var sum = 0;
     for (var i=0; i<bpm.tap.length; i++) {
         sum += bpm.tap[i];

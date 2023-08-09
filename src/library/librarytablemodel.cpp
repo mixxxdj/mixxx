@@ -50,8 +50,10 @@ void LibraryTableModel::setTableModel(int id) {
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
     tableColumns << LIBRARYTABLE_COVERART;
-    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setTable(tableName,
+            LIBRARYTABLE_ID,
+            std::move(tableColumns),
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 

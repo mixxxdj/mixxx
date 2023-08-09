@@ -33,7 +33,7 @@ repos:
     rev: v4.3.0
     hooks:
       - id: fix-byte-order-marker
-        exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
+        exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters|UTF-8-BOM.txt)$
       - id: check-case-conflict
       - id: check-json
       - id: check-merge-conflict
@@ -41,6 +41,7 @@ repos:
       - id: check-yaml
         exclude: ^\.clang-format$
       - id: end-of-file-fixer
+        exclude: ^.*UTF-8-BOM.txt$
       - id: mixed-line-ending
       - id: trailing-whitespace
         exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
@@ -142,7 +143,7 @@ repos:
         language: python
         additional_dependencies:
           - beautifulsoup4==4.11.1
-          - lxml==4.9.1
+          - lxml==4.9.3
           - Markdown==3.4.1
         types: [text]
         files: ^(CHANGELOG\.md|res/linux/org\.mixxx\.Mixxx\.metainfo.xml)$

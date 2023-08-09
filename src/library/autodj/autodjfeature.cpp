@@ -216,11 +216,12 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         }
         // No child item for crate found
         // -> Create and append a new child item for this crate
-        QList<TreeItem*> rows;
-        rows.append(new TreeItem(crate.getName(), crate.getId().toVariant()));
+        // TODO() Use here std::span to get around the heap alloctaion of
+        // std::vector for a single element.
+        std::vector<std::unique_ptr<TreeItem>> rows;
+        rows.push_back(std::make_unique<TreeItem>(crate.getName(), crate.getId().toVariant()));
         QModelIndex parentIndex = m_childModel.index(0, 0);
-        m_childModel.insertTreeItemRows(rows, m_crateList.length(), parentIndex);
-        DEBUG_ASSERT(rows.isEmpty()); // ownership passed to m_childModel
+        m_childModel.insertTreeItemRows(std::move(rows), m_crateList.length(), parentIndex);
         m_crateList.append(crate);
     } else {
         // Crate does not exist or is not a source for AutoDJ
@@ -264,7 +265,7 @@ void AutoDJFeature::slotAddRandomTrack() {
                 if (!pRandomTrack->checkFileExists()) {
                     qWarning() << "Track does not exist:"
                                << pRandomTrack->getInfo()
-                               << pRandomTrack->getFileInfo();
+                               << pRandomTrack->getLocation();
                     pRandomTrack.reset();
                 }
             }

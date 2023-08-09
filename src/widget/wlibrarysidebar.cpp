@@ -32,8 +32,12 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
-    QModelIndex clickedItem = indexAt(event->pos());
-    emit rightClicked(event->globalPos(), clickedItem);
+    QModelIndex clickedIndex = indexAt(event->pos());
+    if (!clickedIndex.isValid()) {
+        return;
+    }
+    event->accept();
+    emit rightClicked(event->globalPos(), clickedIndex);
     //}
 }
 

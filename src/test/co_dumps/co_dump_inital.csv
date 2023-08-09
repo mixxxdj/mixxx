@@ -13742,7 +13742,6 @@
 [Channel4],beatloop_2_toggle,0
 [Sampler1],hotcue_13_activate_preview,0
 [Channel2],hotcue_15_activate,0
-[Master],audio_buffer_size,5.80499
 [EffectRack1_EffectUnit2_Effect3],parameter8_type,0
 [PreviewDeck1],visual_bpm,0
 [Microphone2],PeakIndicator_set_default,0

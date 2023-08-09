@@ -372,6 +372,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPoi
                 kLogger.warning()
                         << "Failed to update stream info from audio "
                            "source before exporting metadata";
+                return ExportTrackMetadataResult::Skipped;
             }
         }
         pMetadataSource = proxy.m_pSoundSource;
@@ -655,7 +656,7 @@ void SoundSourceProxy::updateTrackFromSource(
                 << "Parsing missing"
                 << (splitArtistTitle ? "artist/title" : "title")
                 << "from file name:"
-                << trackFile;
+                << trackFile.location();
         if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
                     trackFile.fileName(), splitArtistTitle)) {
             // Pretend that metadata import succeeded

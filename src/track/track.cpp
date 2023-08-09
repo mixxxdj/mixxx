@@ -1,5 +1,6 @@
 #include "track/track.h"
 
+#include <QDebug>
 #include <QDirIterator>
 #include <atomic>
 
@@ -141,7 +142,10 @@ void Track::importMetadata(
     // is updated together with the metadata.
     auto pSeratoBeatsImporter = importedMetadata.getTrackInfo().getSeratoTags().importBeats();
     const bool seratoBpmLocked = importedMetadata.getTrackInfo().getSeratoTags().isBpmLocked();
-    auto pSeratoCuesImporter = importedMetadata.getTrackInfo().getSeratoTags().importCueInfos();
+    std::unique_ptr<mixxx::CueInfoImporter> pSeratoCuesImporter =
+            importedMetadata.getTrackInfo()
+                    .getSeratoTags()
+                    .createCueInfoImporter();
 
     {
         // enter locking scope
@@ -151,9 +155,9 @@ void Track::importMetadata(
         // overwriting with an inconsistent value. The bpm must always be
         // set together with the beat grid and the key text must be parsed
         // and validated.
-        const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
+        const mixxx::Bpm importedBpm = importedMetadata.getTrackInfo().getBpm();
         importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
-        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
+        const QString importedKeyText = importedMetadata.getTrackInfo().getKey();
         importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
 
         bool modified = false;
@@ -206,10 +210,14 @@ void Track::importMetadata(
         const auto newKey = m_record.getGlobalKey();
 
         // Import track color from Serato tags if available
-        const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
-        const bool colorModified = compareAndSet(m_record.ptrColor(), newColor);
+        const std::optional<mixxx::RgbColor::optional_t> newColor =
+                m_record.getMetadata()
+                        .getTrackInfo()
+                        .getSeratoTags()
+                        .getTrackColor();
+        const bool colorModified = newColor && compareAndSet(m_record.ptrColor(), *newColor);
         modified |= colorModified;
-        DEBUG_ASSERT(!colorModified || m_record.getColor() == newColor);
+        DEBUG_ASSERT(!colorModified || m_record.getColor() == *newColor);
 
         if (!modified) {
             // Unmodified, nothing todo
@@ -228,7 +236,8 @@ void Track::importMetadata(
             emit replayGainUpdated(newReplayGain);
         }
         if (colorModified) {
-            emit colorUpdated(newColor);
+            DEBUG_ASSERT(newColor);
+            emit colorUpdated(*newColor);
         }
     }
 
@@ -767,7 +776,7 @@ QString Track::getURL() const {
     return m_record.getUrl();
 }
 
-ConstWaveformPointer Track::getWaveform() const {
+const ConstWaveformPointer& Track::getWaveform() const {
     return m_waveform;
 }
 
@@ -904,7 +913,7 @@ void Track::removeCue(const CuePointer& pCue) {
     disconnect(pCue.get(), nullptr, this, nullptr);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
-        m_record.setCuePoint(CuePosition());
+        m_record.setCuePoint(Cue::kNoPosition);
     }
     pCue->setTrackId(TrackId());
     markDirtyAndUnlock(&lock);
@@ -922,11 +931,11 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             disconnect(pCue.get(), nullptr, this, nullptr);
             pCue->setTrackId(TrackId());
             it.remove();
+            if (type == mixxx::CueType::MainCue) {
+                m_record.setCuePoint(Cue::kNoPosition);
+            }
             dirty = true;
         }
-    }
-    if (compareAndSet(m_record.ptrCuePoint(), CuePosition())) {
-        dirty = true;
     }
     if (dirty) {
         markDirtyAndUnlock(&lock);
@@ -1039,19 +1048,16 @@ bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
 }
 
 Track::ImportStatus Track::importCueInfos(
-        mixxx::CueInfoImporterPointer pCueInfoImporter) {
+        std::unique_ptr<mixxx::CueInfoImporter> pCueInfoImporter) {
     QMutexLocker lock(&m_qMutex);
-    VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter) {
+    VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter && !pCueInfoImporter->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
         return ImportStatus::Complete;
     }
     DEBUG_ASSERT(!m_pCueInfoImporterPending);
-    m_pCueInfoImporterPending = pCueInfoImporter;
-    if (m_pCueInfoImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
-        m_pCueInfoImporterPending.reset();
-        return ImportStatus::Complete;
-    } else if (m_record.hasStreamInfoFromSource()) {
+    m_pCueInfoImporterPending = std::move(pCueInfoImporter);
+    if (m_record.hasStreamInfoFromSource()) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingCueInfosMarkDirtyAndUnlock(&lock);
@@ -1061,11 +1067,6 @@ Track::ImportStatus Track::importCueInfos(
                 << "Import of"
                 << m_pCueInfoImporterPending->size()
                 << "cue(s) is pending until the actual sample rate becomes available";
-        // Clear all existing cue points, that are supposed
-        // to be replaced with the imported cue points soon.
-        setCuePointsMarkDirtyAndUnlock(
-                &lock,
-                QList<CuePointer>{});
         return ImportStatus::Pending;
     }
 }
@@ -1082,16 +1083,12 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
         // Nothing to do
         return false;
     }
-    // Prevent inconsistencies between cue infos that have been queued
-    // and are waiting to be imported and new cue points. At least one
-    // of these two collections must be empty.
-    DEBUG_ASSERT(cuePoints.isEmpty() || !m_pCueInfoImporterPending ||
-            m_pCueInfoImporterPending->isEmpty());
     // disconnect existing cue points
     for (const auto& pCue : qAsConst(m_cuePoints)) {
         disconnect(pCue.get(), nullptr, this, nullptr);
         pCue->setTrackId(TrackId());
     }
+
     m_cuePoints = cuePoints;
     // connect new cue points
     for (const auto& pCue : qAsConst(m_cuePoints)) {
@@ -1150,15 +1147,23 @@ bool Track::importPendingCueInfosWhileLocked() {
     QList<CuePointer> cuePoints;
     cuePoints.reserve(m_pCueInfoImporterPending->size() + m_cuePoints.size());
 
-    // Preserve all existing cues with types that are not available for
-    // importing.
+    // Serato cues are only a subset of the Mixxx cues. Re-Importing them has the risk of losing
+    // user data that cannot be expressed in Serato. https://github.com/mixxxdj/mixxx/issues/11530
+    // For now the save route is to skip the imports if Mixxx cues already exist.
+    // TODO() Consider a merge strategy.
     for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
             cuePoints.append(pCue);
+        } else {
+            qWarning() << "Skipping import of Serato cues because Mixxx "
+                          "Hotcues are already set. Reset them first via the "
+                          "track context menu.";
+            m_pCueInfoImporterPending.reset();
+            return false;
         }
     }
 
-    const auto cueInfos =
+    const QList<mixxx::CueInfo> cueInfos =
             m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
                     getLocation(), m_record.getStreamInfoFromSource()->getSignalInfo());
     for (const auto& cueInfo : cueInfos) {
@@ -1170,7 +1175,6 @@ bool Track::importPendingCueInfosWhileLocked() {
         pCue->setTrackId(trackId);
         cuePoints.append(pCue);
     }
-    DEBUG_ASSERT(m_pCueInfoImporterPending->isEmpty());
     m_pCueInfoImporterPending.reset();
     return setCuePointsWhileLocked(cuePoints);
 }
@@ -1368,6 +1372,48 @@ quint16 Track::getCoverHash() const {
     return m_record.getCoverInfo().hash;
 }
 
+bool Track::exportSeratoMetadata() {
+    const auto streamInfo = m_record.getStreamInfoFromSource();
+    VERIFY_OR_DEBUG_ASSERT(streamInfo &&
+            streamInfo->getSignalInfo().isValid() &&
+            streamInfo->getDuration() > mixxx::Duration::empty()) {
+        kLogger.warning() << "Cannot write Serato metadata because signal "
+                             "info and/or duration is not available:"
+                          << getLocation();
+        return false;
+    }
+    mixxx::SeratoTags* pSeratoTags =
+            m_record.refMetadata().refTrackInfo().ptrSeratoTags();
+    VERIFY_OR_DEBUG_ASSERT(pSeratoTags) {
+        return false;
+    }
+    if (pSeratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
+        kLogger.warning()
+                << "Refusing to overwrite Serato metadata that failed to parse:"
+                << getLocation();
+        return false;
+    }
+    pSeratoTags->setTrackColor(getColor());
+    pSeratoTags->setBpmLocked(isBpmLocked());
+
+    const mixxx::audio::SampleRate sampleRate =
+            streamInfo->getSignalInfo().getSampleRate();
+    QList<mixxx::CueInfo> cueInfos;
+    cueInfos.reserve(m_cuePoints.size());
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+        cueInfos.append(pCue->getCueInfo(sampleRate));
+    }
+
+    const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
+            getLocation(), streamInfo->getSignalInfo());
+    pSeratoTags->setCueInfos(cueInfos, timingOffset);
+    pSeratoTags->setBeats(m_pBeats,
+            streamInfo->getSignalInfo(),
+            streamInfo->getDuration(),
+            timingOffset);
+    return true;
+}
+
 ExportTrackMetadataResult Track::exportMetadata(
         mixxx::MetadataSourcePointer pMetadataSource,
         UserSettingsPointer pConfig) {
@@ -1398,47 +1444,6 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-    if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
-        const auto streamInfo = m_record.getStreamInfoFromSource();
-        VERIFY_OR_DEBUG_ASSERT(streamInfo &&
-                streamInfo->getSignalInfo().isValid() &&
-                streamInfo->getDuration() > mixxx::Duration::empty()) {
-            kLogger.warning() << "Cannot write Serato metadata because signal "
-                                 "info and/or duration is not available:"
-                              << getLocation();
-            return ExportTrackMetadataResult::Skipped;
-        }
-
-        const mixxx::audio::SampleRate sampleRate =
-                streamInfo->getSignalInfo().getSampleRate();
-
-        mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
-        DEBUG_ASSERT(seratoTags);
-
-        if (seratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
-            kLogger.warning()
-                    << "Refusing to overwrite Serato metadata that failed to parse:"
-                    << getLocation();
-        } else {
-            seratoTags->setTrackColor(getColor());
-            seratoTags->setBpmLocked(isBpmLocked());
-
-            QList<mixxx::CueInfo> cueInfos;
-            for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
-                cueInfos.append(pCue->getCueInfo(sampleRate));
-            }
-
-            const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
-                    getLocation(), streamInfo->getSignalInfo());
-            seratoTags->setCueInfos(cueInfos, timingOffset);
-
-            seratoTags->setBeats(m_pBeats,
-                    streamInfo->getSignalInfo(),
-                    streamInfo->getDuration(),
-                    timingOffset);
-        }
-    }
-
     // Check if the metadata has actually been modified. Otherwise
     // we don't need to write it back. Exporting unmodified metadata
     // would needlessly update the file's time stamp and should be
@@ -1460,6 +1465,10 @@ ExportTrackMetadataResult Track::exportMetadata(
         // that is stored in the database. New columns that need to be populated
         // from file tags cannot be filled during a database migration.
         m_record.mergeImportedMetadata(importedFromFile);
+
+        if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
+            exportSeratoMetadata();
+        }
 
         // Prepare export by cloning and normalizing the metadata
         normalizedFromRecord = m_record.getMetadata();
@@ -1605,7 +1614,6 @@ void Track::updateStreamInfoFromSource(
 
     auto cuesImported = false;
     if (importCueInfos) {
-        DEBUG_ASSERT(m_cuePoints.isEmpty());
         kLogger.debug()
                 << "Finishing deferred import of"
                 << m_pCueInfoImporterPending->size()

@@ -15,7 +15,9 @@ constexpr double kTonePitchHz = 1000.0; // 1kHz
 class AnalyzerSilenceTest : public MixxxTest {
   protected:
     AnalyzerSilenceTest()
-            : analyzerSilence(config()) {
+            : analyzerSilence(config()),
+              pTrackSampleData(nullptr),
+              nTrackSampleDataLength(0) {
     }
 
     void SetUp() override {

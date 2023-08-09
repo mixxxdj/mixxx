@@ -37,6 +37,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     void setup(const QDomNode& node, const SkinContext& context);
+    virtual void initWithTrack(TrackPointer pTrack);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
@@ -75,6 +76,16 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;
+    }
+
+    double getTrackSamples() const {
+        if (m_trackLoaded) {
+            return m_trackSamplesControl->get();
+        } else {
+            // Ignore the value, because the engine can still have the old track
+            // during loading
+            return 0.0;
+        }
     }
 
     QImage m_waveformSourceImage;
@@ -183,7 +194,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     // All WaveformMarks
     WaveformMarkSet m_marks;
     // List of visible WaveformMarks sorted by the order they appear in the track
-    QList<WaveformMarkPointer> m_marksToRender;
+    std::map<WaveformMarkSortKey, WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;

@@ -73,6 +73,10 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     EXPECT_CALL(*pChannel, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel, postProcess(160000))
+            .Times(1);
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel, process(_, MAX_BUFFER_LEN))
@@ -110,6 +114,10 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel, postProcess(160000))
+            .Times(1);
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel, process(_, _))
@@ -153,6 +161,10 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     EXPECT_CALL(*pChannel1, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel1, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel1, postProcess(160000))
+            .Times(1);
 
     // Instruct channel 2 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel2, isActive())
@@ -164,6 +176,10 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     EXPECT_CALL(*pChannel2, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel2, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel2, postProcess(160000))
+            .Times(1);
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
@@ -210,6 +226,10 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel1, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel1, postProcess(160000))
+            .Times(1);
 
     // Instruct channel 2 to claim it is active, master and PFL.
     EXPECT_CALL(*pChannel2, isActive())
@@ -221,6 +241,10 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel2, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel2, postProcess(160000))
+            .Times(1);
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
@@ -272,6 +296,10 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel1, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel1, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel1, postProcess(160000))
+            .Times(1);
 
     // Instruct channel 2 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel2, isActive())
@@ -283,6 +311,10 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel2, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel2, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel2, postProcess(160000))
+            .Times(1);
 
     // Instruct channel 3 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel3, isActive())
@@ -294,6 +326,10 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel3, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel3, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel3, postProcess(160000))
+            .Times(1);
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
@@ -348,6 +384,10 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel1, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel1, postProcess(160000))
+            .Times(1);
 
     // Instruct channel 2 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel2, isActive())
@@ -359,6 +399,10 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel2, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel2, postProcess(160000))
+            .Times(1);
 
     // Instruct channel 3 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel3, isActive())
@@ -370,6 +414,10 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel3, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, collectFeatures(_))
+            .Times(1);
+    EXPECT_CALL(*pChannel3, postProcess(160000))
+            .Times(1);
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))

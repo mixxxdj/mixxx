@@ -58,9 +58,9 @@ void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
 }
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
-    : QLineEdit(pParent),
-      WBaseWidget(this),
-      m_clearButton(make_parented<QToolButton>(this)) {
+        : QLineEdit(pParent),
+          WBaseWidget(this),
+          m_clearButton(make_parented<QToolButton>(this)) {
     setAcceptDrops(false);
 
     //: Shown in the library search bar when it is empty.
@@ -195,12 +195,12 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
-    m_innerHeight = this->height() - 2 * m_frameWidth;
+    int innerHeight = height() - 2 * m_frameWidth;
     // Test if this is a vertical resize due to changed library font.
     // Assuming current button height is innerHeight from last resize,
     // we will resize the Clear button icon only if height has changed.
-    if (m_clearButton->size().height() != m_innerHeight) {
-        QSize newSize = QSize(m_innerHeight, m_innerHeight);
+    if (m_clearButton->size().height() != innerHeight) {
+        QSize newSize = QSize(innerHeight, innerHeight);
         m_clearButton->resize(newSize);
         m_clearButton->setIconSize(newSize);
         // Note(ronso0): For some reason this ensures the search text
@@ -209,7 +209,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     }
     int top = rect().top() + m_frameWidth;
     if (layoutDirection() == Qt::LeftToRight) {
-        m_clearButton->move(rect().right() - m_innerHeight - m_frameWidth, top);
+        m_clearButton->move(rect().right() - innerHeight - m_frameWidth, top);
     } else {
         m_clearButton->move(m_frameWidth, top);
     }
@@ -352,7 +352,7 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
         // Enable otherwise
         m_clearButton->setVisible(true);
         // make sure the text won't be drawn behind the Clear button icon
-        setStyleSheet(clearButtonStyleSheet(m_innerHeight + m_frameWidth));
+        setStyleSheet(clearButtonStyleSheet(height() - m_frameWidth));
     }
 }
 

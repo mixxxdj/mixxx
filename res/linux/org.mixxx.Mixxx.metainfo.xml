@@ -98,47 +98,249 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.4" type="development" date="2022-11-23" timestamp="1669217482">
+    <release version="2.3.6" type="development" date="2023-08-06" timestamp="1691358433">
       <description>
  <ul>
   <li>
-   Numark DJ2GO2: Fix sliders and knobs
-   #4835
-   lp:1948596
+   Fixed possible crash when closing Mixxx while browsing the file system
+   #11593
+   #11589
   </li>
   <li>
-   Numark DJ2Go2: Support HotCue clear with pad
-   #10841
+   No longer stop a track with an active loop at the very end
+   #11558
+   #11557
   </li>
   <li>
-   Numark DJ2Go2: Fix inverted tempo fader
-   #10852
-   #10586
+   Fixed resyncing when moving an active loop
+   #11152
+   #11381
   </li>
   <li>
-   Numark Party Mix: Mapping added
-   #4720
+   Allow true gapless playback when repeating full tracks
+   #11532
+   #9842
+   #11704
   </li>
   <li>
-   Numark N4: Inverted pitch slider, to match the GUI orientation
-   #11057
+   Rhythmbox: Fixed bulk track imports from playlists
+   #11661
   </li>
   <li>
-   Ableton Push: Show as one device
-   #10905
+   Console log spam reduced
+   #11690
+   #11691
   </li>
   <li>
-   Traktor S3: Fix issues with sampler and hotcue buttons
-   #4676
+   Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+   #11595
+   #11659
   </li>
   <li>
-   Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
-   #4495
+   Shade: Fixed VU-Meter and other minor issues
+   #11598
   </li>
   <li>
-   Controller Preferences: Fix some usability issues
-   #10821
+   Fixed a rare crash when disabling quantize form a controller
+   #11744
+   #11709
   </li>
+  <li>
+   Controller Preferences: Avoid scrollbars in I/O tabs if Info tab exceeds page height
+   #11756
+  </li>
+  <li>
+   Broadcast: Improved error message in case of timeout
+   #11775
+  </li>
+  <li>
+   Handle setting
+   loop_in
+   and
+   loop_out
+   to the same position
+   #11771
+   #10600
+  </li>
+  <li>
+   Fix build issues with Protobuf v23.4 and with clang 32
+   #11751
+   #11765
+   #11762
+  </li>
+  <li>
+   Disable GL VU-Meters on Windows by default. They can be re-enabled via the command line option
+   --enableVuMeterGL
+   .
+   #11787
+   #11785
+   #11789
+  </li>
+  <li>
+   Library preferences: Uncheck Serato metadata export when file metadata export is unchecked
+   #11782
+   #11226
+  </li>
+  <li>
+   Denon MC6000MK2: Delete mapping for master gain
+   #11792
+  </li>
+  <li>
+   Improve output in case of some failed file system operations
+   #11783
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.3.5" type="stable" date="2023-05-10" timestamp="1683676800">
+      <description>
+ <ul>
+  <li>
+   Fix empty waveform overview after loading a track (Mixxx 2.3.4 regression)
+  Fixed by
+   #11333
+   #11359
+   #11344
+  </li>
+  <li>
+   Fullscreen: Fix a crash that occurs on Linux after enabling fullsceen and using menu
+  shortcuts e.g. Alt-F.
+   #11328
+   #11320
+  </li>
+  <li>
+   Fullscreen: Rebuild &amp; reconnect menu only on desktops with global menu
+   #11350
+  </li>
+  <li>
+   macOS: Request Microphone and line-in access permission.
+   #11367
+   #11365
+  </li>
+  <li>
+   JACK API: Allow to explicit select buffers of 2048 and 4096 frames/period. They are not
+  supported by the automatic buffer setting of the used PortAudio library.
+   #11366
+   #11341
+  </li>
+  <li>
+   Pioneer DDJ-400: Make Beat FX section more intuitive
+   #10912
+  </li>
+  <li>
+   Playlist export: Adopt new extension after changing the playlist type
+   #11332
+   #11327
+  </li>
+  <li>
+   LateNight: brighter fx parameter buttons
+   #11397
+  </li>
+  <li>
+   Fix drift in analyzis data after exporting metadata to MP3 files with ID3v1.1 tags
+   #11168
+   #11159
+  </li>
+  <li>
+   Fix broadcasting using Opus encoding
+   #11349
+   #10666
+  </li>
+  <li>
+   Tango: Remove VU peak indicators from stacked layout. This fixes a visual regression in Mixxx 2.3.4.
+   #11430
+   #11362
+  </li>
+  <li>
+   Hercules P32: Allow optional using pregain instead of dry/wet knob
+   #3538
+  </li>
+  <li>
+   Improve Color Picker dialog
+   #11439
+  </li>
+  <li>
+   Fix blank Waveform overview after changing Skin with a track loaded
+   #11453
+  </li>
+  <li>
+   Linux: Log a warning when the audio thread is not scheduled with real-time policy
+   #11472
+   #11465
+  </li>
+  <li>
+   Auto DJ: Fixes stop due to tracks with changed length
+   #11479
+   #11492
+   #11448
+  </li>
+  <li>
+   Auto DJ: Fix Auto DJ indicator state when controlling it via  shortcut (SHIFT+F12)
+   #11494
+   #11495
+  </li>
+  <li>
+   Fix building with Clang 15/16
+   #11490
+   #11485
+  </li>
+  <li>
+   Fix EQ and waveforms analysis when compiling with GCC 13
+   #11501
+   #11483
+   #11502
+   #11480
+   #11488
+  </li>
+  <li>
+   Numark Mixtrack Pro FX: Fix sound output via WDM-KS on Windows
+   #11393
+  </li>
+  <li>
+   Fix crash on startup caused by faulty ASIO driver like FlexASIO 1.4 or Music Maker
+   #11426
+   #10081
+  </li>
+  <li>
+   Windows: Show a loopback device that allows to mix in system sound
+   #11427
+   #11451
+  </li>
+  <li>
+   Fix sorting via column header in external library features
+   #11491
+   #11499
+  </li>
+  <li>
+   Fix wrong waveform background color on recent Linux distributions like Fedora 37
+   #11164
+   #11523
+  </li>
+  <li>
+   Serato Metadata: Don't import empty (black) cue points
+   #11534
+   #11530
+   #11467
+   #11466
+   #11283
+  </li>
+  <li>
+   Track context menu: Immediately adopt new position when resetting cues
+   #11482
+  </li>
+  <li>
+   Windows: Fix possible crash with faulty mp3 files
+   #11535
+   #11531
+   #11528
+   #11521
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.3.4" type="stable" date="2023-03-03" timestamp="1677801600">
+      <description>
+ <ul>
   <li>
    Track Properties: Show 'date added' as local time
    #4838
@@ -152,6 +354,10 @@
   <li>
    LateNight: Add a border to the crossfader when Auto DJ is active.
    #10913
+  </li>
+  <li>
+   LateNight: Isolate searchbar so maximize button is attached to tracks view.
+   #11132
   </li>
   <li>
    macOS builds: Perform ad-hoc signing of macOS bundle in Pull request and personal repositories
@@ -172,10 +378,6 @@
   <li>
    EQ preferences: Properly restore 'One EQ for all decks' setting
    #4886
-  </li>
-  <li>
-   MC7000: Fix off-by-one indexing in the controller script
-   #4902
   </li>
   <li>
    Cover Art: Fix picking wrong cover file, when track file name contains extra dots
@@ -206,12 +408,13 @@
    #10889
   </li>
   <li>
-   Use OpenGL VU meter widgets. This aims to improve performaces with macOS.
+   Use OpenGL VU meter widgets. This aims to improve performance with macOS.
    #10893
    #11052
    #10979
    #10973
    #10983
+   #11288
   </li>
   <li>
    Prevent wild numbers from appearing during scratching under vinyl control.
@@ -250,7 +453,7 @@
    #10998
   </li>
   <li>
-   Auto DJ: Added a warning ina message box when it is started without decks with left and a right crossfader orientation
+   Auto DJ: Added a warning in a message box when it is started without decks with left and a right crossfader orientation
    #11018
   </li>
   <li>
@@ -260,6 +463,132 @@
   <li>
    Fixed issue with finding moved library tracks.
    #11051
+  </li>
+  <li>
+   Preserve and synchronize ID3v1 tags (TagLib v1.12)
+   #11163
+   #11123
+  </li>
+  <li>
+   Replay Gain Preferences: Fix the "adjust by" text in case of negative adjustments
+   #11176
+  </li>
+  <li>
+   macOs: Install Qt translation
+   #11134
+   #11110
+  </li>
+  <li>
+   macOs: Fix assuming wrong system language
+   #11218
+   #11195
+  </li>
+  <li>
+   Fix resetting track colors on metadata reimport (Serato metadata):
+   #11217
+   #11213
+  </li>
+  <li>
+   Preferences: Fix incomplete version check in 2.3 during upgrade
+   #11229
+   #9709
+  </li>
+  <li>
+   Allow search in external libraries
+   #11221
+   #11216
+  </li>
+  <li>
+   JACK buffer size fix
+   #11121
+  </li>
+  <li>
+   Don't discard file tags with tuning information like "A#m +50"
+   #10992
+  </li>
+  <li>
+   Year search: Find also full date entries
+   #11251
+   #11113
+  </li>
+  <li>
+   Fix visual alignment of beats and waveform in case of decoding issues
+   #11162
+  </li>
+  <li>
+   Avoid "active key-value observers" messages during skin parsing on macOS
+   #11265
+  </li>
+  <li>
+   Fullscreen on Linux: Fix issues caused by Ubuntu Unity workaround
+   #11295
+   #11281
+   #11294
+  </li>
+ </ul>
+ <p>
+  New Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Traktor Kontrol S2 Mk1: Add controller mapping
+   #3905
+  </li>
+  <li>
+   Numark Party Mix: Mapping added
+   #4720
+  </li>
+ </ul>
+ <p>
+  Controller Fixes
+ </p>
+ <ul>
+  <li>
+   Traktor S3: Fix issues with sampler and hotcue buttons
+   #4676
+  </li>
+  <li>
+   Numark DJ2GO2: Fix sliders and knobs
+   #4835
+   lp:1948596
+  </li>
+  <li>
+   Numark DJ2Go2: Support HotCue clear with pad
+   #10841
+  </li>
+  <li>
+   Numark DJ2Go2: Fix inverted tempo fader
+   #10852
+   #10586
+  </li>
+  <li>
+   Numark N4: Inverted pitch slider, to match the GUI orientation
+   #11057
+  </li>
+  <li>
+   Ableton Push: Show as one device
+   #10905
+  </li>
+  <li>
+   Denon DJ MC7000: off-by-one fix, soft-start/break effect, pitch play, 32 velocity samplers
+   #4902
+   #4729
+  </li>
+  <li>
+   Potmeters: Add support for arbitrary maximums in 7-/14-bit handlers from controller scripts
+   #4495
+  </li>
+  <li>
+   Controller Preferences: Fix some usability issues
+   #10821
+  </li>
+  <li>
+   Controller mapping table: show readable/translated strings for script bindings
+   #11139
+  </li>
+  <li>
+   Control picker menu: Added loop_in/out_goto to list
+   #11133
   </li>
  </ul>
  <p>
