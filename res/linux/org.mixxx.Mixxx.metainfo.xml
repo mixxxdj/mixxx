@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-08-06" timestamp="1691358433">
+    <release version="2.3.6" type="development" date="2023-08-06" timestamp="1691358989">
       <description>
  <ul>
   <li>
@@ -188,6 +188,16 @@
   <li>
    Improve output in case of some failed file system operations
    #11783
+  </li>
+  <li>
+   Fix overlapping buffers when decoding m4a files using ffmpeg before 4.4
+   #11760
+   #11545
+  </li>
+  <li>
+   Don't reject file metadata Keys values with non Minor/Major scales.
+   #11001
+   #10995
   </li>
  </ul>
 </description>
