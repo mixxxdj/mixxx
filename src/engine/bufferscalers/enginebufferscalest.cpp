@@ -22,6 +22,8 @@ constexpr SINT kSeekOffsetFramesV20101 = 429;
 
 // From V 2.3.0 Soundtouch has no initial offset at unity, but it is too late with
 // lowered pitch and too early with raised pitch up to ~+-2000 frames (~+-50 ms).
+// This can be seen in a recording of a saw signal with changed pitch.
+// The saws tooth are shifted from their input position depending on the pitch.
 // TODO() Compensate that. This is probably cause by the delayed adoption of pitch changes due
 // to the SoundTouch chunk size.
 
