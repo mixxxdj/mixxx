@@ -4752,49 +4752,49 @@ Aplicar definições e continuar?</translation>
 <context>
     <name>DlgPrefControllerDlg</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="71"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="77"/>
         <source>(device category goes here)</source>
         <translation>(categoria do dispositivo vai aqui)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="52"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="58"/>
         <source>Controller Name</source>
         <translation>Nome do Controlador</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="81"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="87"/>
         <source>Enabled</source>
         <translation>Ativado</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="230"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="236"/>
         <source>Description:</source>
         <translation>Descrição:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="277"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="283"/>
         <source>Support:</source>
         <translation>Suporte:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="376"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="382"/>
         <source>Input Mappings</source>
         <translation>Mapeamentos de Entrada</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="404"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="476"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="410"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="482"/>
         <source>Add</source>
         <translation>Adicionar</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="414"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="483"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="420"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="489"/>
         <source>Remove</source>
         <translation>Remover</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="88"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="94"/>
         <source>Click to start the Controller Learning wizard.</source>
         <translation>Clique para iniciar o Assistente de Instrução do Controlador.</translation>
     </message>
@@ -4809,43 +4809,43 @@ Aplicar definições e continuar?</translation>
         <translation>Configuração do Controlador</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="119"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="125"/>
         <source>Load Mapping:</source>
         <translation>Load Mapping:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="148"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="154"/>
         <source>Mapping Info</source>
         <translation>Mapping Info</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="201"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="207"/>
         <source>Author:</source>
         <translation>Autor:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="160"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="166"/>
         <source>Name:</source>
         <translation>Nome:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="94"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="100"/>
         <source>Learning Wizard (MIDI Only)</source>
         <translation>Assistente de Instrução (Só MIDI)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="327"/>
         <source>Mapping Files:</source>
         <translation>Mapping Files:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="440"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="503"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="446"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="509"/>
         <source>Clear All</source>
         <translation>Limpar Tudo</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="451"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="457"/>
         <source>Output Mappings</source>
         <translation>Mapeamentos de Saída</translation>
     </message>
@@ -5899,47 +5899,47 @@ and allows you to pitch adjust them for harmonic mixing.</translation>
         <translation>Examinar</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="251"/>
         <source>Choose a music directory</source>
         <translation>Escolher uma pasta de música</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="265"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="266"/>
         <source>Confirm Directory Removal</source>
         <translation>Confirmar Remoção de Pasta</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="267"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="268"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>O Mixxx já não considera esta pasta para faixas novas. O que gostaria de fazer com as faixas desta pasta e subpastas?&lt;ul&gt;&lt;li&gt;Ocultar todas as faixas desta pasta e subpastas.&lt;/li&gt;&lt;li&gt;Apagar todos os metadados destas faixas do Mixxx definitivamente.&lt;/li&gt;&lt;li&gt;Deixar as faixas inalteradas na sua biblioteca.&lt;/li&gt;&lt;/ul&gt;Ocultar faixas guarda os seus metadados para o caso de os voltar a adicionar futuramente.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="278"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="279"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>Os metadados referem-se a todos os detalhes das faixas (artista, título, género, etc.) bem como as grelhas de batidas, hotcues e loops. Esta escolha afeta apenas a biblioteca do Mixxx. Nenhumas faixas do disco serão alteradas ou apagadas.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="286"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="287"/>
         <source>Hide Tracks</source>
         <translation>Ocultar Faixas</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="288"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="289"/>
         <source>Delete Track Metadata</source>
         <translation>Apagar Metadados das Faixas</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="290"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="291"/>
         <source>Leave Tracks Unchanged</source>
         <translation>Deixar Faixas Inalteradas</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="329"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="330"/>
         <source>Relink music directory to new location</source>
         <translation>Associar novamente a pasta de músicas a uma nova localização</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="433"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="434"/>
         <source>Select Library Font</source>
         <translation>Escolher Fonte da Biblioteca</translation>
     </message>
@@ -8567,23 +8567,23 @@ Do you want to select an input device?</translation>
 <context>
     <name>ParserCsv</name>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="43"/>
+        <location filename="../../src/library/parsercsv.cpp" line="44"/>
         <source>Location</source>
         <translation>Localização</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="131"/>
+        <location filename="../../src/library/parsercsv.cpp" line="138"/>
         <source>Playlist Export Failed</source>
         <translation>Exportar Playlist Falhou</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="132"/>
-        <location filename="../../src/library/parsercsv.cpp" line="216"/>
+        <location filename="../../src/library/parsercsv.cpp" line="139"/>
+        <location filename="../../src/library/parsercsv.cpp" line="225"/>
         <source>Could not create file</source>
         <translation>Não foi possível criar o ficheiro</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="215"/>
+        <location filename="../../src/library/parsercsv.cpp" line="224"/>
         <source>Readable text Export Failed</source>
         <translation>Exportar Ficheiro de Texto Falhou</translation>
     </message>
@@ -8591,27 +8591,27 @@ Do you want to select an input device?</translation>
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="137"/>
-        <location filename="../../src/library/parserm3u.cpp" line="150"/>
+        <location filename="../../src/library/parserm3u.cpp" line="139"/>
+        <location filename="../../src/library/parserm3u.cpp" line="154"/>
         <source>Playlist Export Failed</source>
         <translation>Exportar Playlist Falhou</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="138"/>
+        <location filename="../../src/library/parserm3u.cpp" line="140"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation>O caminho do ficheiro contém caracteres, não permitidos nas playlists m3u.
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="140"/>
+        <location filename="../../src/library/parserm3u.cpp" line="142"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation>Exporta uma playlist m3u8, em seu lugar!
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="151"/>
+        <location filename="../../src/library/parserm3u.cpp" line="155"/>
         <source>Could not create file</source>
         <translation>Não foi possível criar o ficheiro</translation>
     </message>
@@ -8619,12 +8619,12 @@ Do you want to select an input device?</translation>
 <context>
     <name>ParserPls</name>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="135"/>
+        <location filename="../../src/library/parserpls.cpp" line="142"/>
         <source>Playlist Export Failed</source>
         <translation>Exportar Playlist Falhou</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="136"/>
+        <location filename="../../src/library/parserpls.cpp" line="143"/>
         <source>Could not create file</source>
         <translation>Não foi possível criar o ficheiro</translation>
     </message>
@@ -10157,32 +10157,32 @@ Tudo direita: fim do período do efeito</translation>
 <context>
     <name>RecordingManager</name>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="280"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="283"/>
         <source>Low Disk Space Warning</source>
         <translation>Aviso de Pouco Espaço em Disco</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="284"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
         <translation>Há menos de 1 GiB de espaço utilizável na pasta de gravação</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="305"/>
         <source>Recording</source>
         <translation>Gravação</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="303"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="306"/>
         <source>Could not create audio file for recording!</source>
         <translation>Não foi possível criar o ficheiro de audio para gravação!</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="304"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="307"/>
         <source>Ensure there is enough free disk space and you have write permission for the Recordings folder.</source>
         <translation>Assegure-se que existe suficiente espaço livre no disco e tem permissão de escrita na pasta Gravações.</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="305"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="308"/>
         <source>You can change the location of the Recordings folder in Preferences -&gt; Recording.</source>
         <translation>Pode alterar o local da pasta Gravações em Preferências -&gt; Gravação.</translation>
     </message>
@@ -10526,52 +10526,52 @@ Tudo direita: fim do período do efeito</translation>
         <translation>Erro ao definir protocolo!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="677"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="683"/>
         <source>Network cache overflow</source>
         <translation>Erro de overflow na cache de rede</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="898"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="904"/>
         <source>Connection error</source>
         <translation>Erro de ligação</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="899"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="905"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>Uma das ligações de Emissão em Direto apresentou este erro:&lt;br&gt;&lt;b&gt;Erro com a ligação &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="913"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="919"/>
         <source>Connection message</source>
         <translation>Mensagem da ligação</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="914"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="920"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;Mensagem da ligação Emissão em Direto &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="964"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation>Ligação ao servidor de streaming perdida e %1 tentativas de religação falharam.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="967"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="973"/>
         <source>Lost connection to streaming server.</source>
         <translation>A ligação ao servidor de streaming perdida.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="972"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="978"/>
         <source>Please check your connection to the Internet.</source>
         <translation>Por favor, verifique a sua conecção à internet.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1007"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1013"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Não se consegue ligar ao servidor de streaming.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1009"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1015"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Por favor, verifique a sua ligação à Internet e verifique que o seu nome de utilizador e password estão corretos.</translation>
     </message>
@@ -13728,20 +13728,20 @@ Usar isto para alterar apenas o sinal com efeito (molhado) com EQ e efeitos de f
         <translation>Passagem</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="752"/>
+        <location filename="../../src/widget/woverview.cpp" line="755"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Ready to play, analyzing...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="755"/>
-        <location filename="../../src/widget/woverview.cpp" line="765"/>
+        <location filename="../../src/widget/woverview.cpp" line="758"/>
+        <location filename="../../src/widget/woverview.cpp" line="768"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Loading track...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="759"/>
+        <location filename="../../src/widget/woverview.cpp" line="762"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finalizing...</translation>

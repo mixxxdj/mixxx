@@ -4750,49 +4750,49 @@ Potrdim nastavitve in nadaljujem?</translation>
 <context>
     <name>DlgPrefControllerDlg</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="71"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="77"/>
         <source>(device category goes here)</source>
         <translation>(sem pride kategorija naprav)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="52"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="58"/>
         <source>Controller Name</source>
         <translation>Ime kontrolerja</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="81"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="87"/>
         <source>Enabled</source>
         <translation>Vklopljeno</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="230"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="236"/>
         <source>Description:</source>
         <translation>Opis:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="277"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="283"/>
         <source>Support:</source>
         <translation>Podpora:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="376"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="382"/>
         <source>Input Mappings</source>
         <translation>Vhodna mapiranja</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="404"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="476"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="410"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="482"/>
         <source>Add</source>
         <translation>Dodaj</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="414"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="483"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="420"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="489"/>
         <source>Remove</source>
         <translation>Odstrani</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="88"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="94"/>
         <source>Click to start the Controller Learning wizard.</source>
         <translation>Kliknite za zagon čarovnika za učenje</translation>
     </message>
@@ -4807,43 +4807,43 @@ Potrdim nastavitve in nadaljujem?</translation>
         <translation>Namestitev kontrolerja</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="119"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="125"/>
         <source>Load Mapping:</source>
         <translation>Naloži mapiranje:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="148"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="154"/>
         <source>Mapping Info</source>
         <translation>Podatki o mapiranju</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="201"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="207"/>
         <source>Author:</source>
         <translation>Avtor:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="160"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="166"/>
         <source>Name:</source>
         <translation>Ime:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="94"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="100"/>
         <source>Learning Wizard (MIDI Only)</source>
         <translation>Čarovnik za učenje (zgolj MIDI)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="327"/>
         <source>Mapping Files:</source>
         <translation>Daoteke mapiranja:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="440"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="503"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="446"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="509"/>
         <source>Clear All</source>
         <translation>Počisti vse</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="451"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="457"/>
         <source>Output Mappings</source>
         <translation>Izhodna mapiranja</translation>
     </message>
@@ -5897,47 +5897,47 @@ in vam omogoča, da prilagodite njihovo višino za harmonično miksanje.</transl
         <translation>Preglej</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="251"/>
         <source>Choose a music directory</source>
         <translation>Izberi mapo z glasbo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="265"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="266"/>
         <source>Confirm Directory Removal</source>
         <translation>Potrdi odstranitev mape</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="267"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="268"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>Mixxx ne bo več iskal novih skladb v tej mapi. Kaj bi radi storili s skladbami iz te mape in podmap? &lt;ul&gt;&lt;li&gt;Skril vse skladbe iz te mape in podmap.&lt;/li&gt;&lt;li&gt;Za stalno izbrisal iz Mixxx vse metapodatke za te skladbe. &lt;/li&gt;&lt;li&gt;Pustil skladbe brez sprememb v knjižnici.&lt;/li&gt;&lt;/ul&gt;Skril skladbe, tako da se ohranijo metapodatki, da se lahko kasneje spet dodajo.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="278"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="279"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>Metapodatki so podrobnosti o skladbi (izvajalec, naslov, število predvajanj, itd.), kot tudi ritmična mreža, hotcue iztočnice in zanke. Ta izbira se nanaša le na Mixxx knjižnico. Nobena datoteka na disku se ne spremeni ali izbriše.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="286"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="287"/>
         <source>Hide Tracks</source>
         <translation>Skrij skladbe</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="288"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="289"/>
         <source>Delete Track Metadata</source>
         <translation>Izbriši matapodatke za skladbo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="290"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="291"/>
         <source>Leave Tracks Unchanged</source>
         <translation>Ohrani skladbe nespremenjene</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="329"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="330"/>
         <source>Relink music directory to new location</source>
         <translation>Preveži glasbeno mapo z novo lokacijo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="433"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="434"/>
         <source>Select Library Font</source>
         <translation>Izberi tipografijo knjižnice</translation>
     </message>
@@ -8565,23 +8565,23 @@ Ali bi radi izbrali vhodno napravo?</translation>
 <context>
     <name>ParserCsv</name>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="43"/>
+        <location filename="../../src/library/parsercsv.cpp" line="44"/>
         <source>Location</source>
         <translation>Lokacija</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="131"/>
+        <location filename="../../src/library/parsercsv.cpp" line="138"/>
         <source>Playlist Export Failed</source>
         <translation>Izvoz seznama predvajanja spodletel.</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="132"/>
-        <location filename="../../src/library/parsercsv.cpp" line="216"/>
+        <location filename="../../src/library/parsercsv.cpp" line="139"/>
+        <location filename="../../src/library/parsercsv.cpp" line="225"/>
         <source>Could not create file</source>
         <translation>Ni bilo mogoče ustvariti datoteke.</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="215"/>
+        <location filename="../../src/library/parsercsv.cpp" line="224"/>
         <source>Readable text Export Failed</source>
         <translation>Izvoz berljivega teksta ni uspel.</translation>
     </message>
@@ -8589,27 +8589,27 @@ Ali bi radi izbrali vhodno napravo?</translation>
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="137"/>
-        <location filename="../../src/library/parserm3u.cpp" line="150"/>
+        <location filename="../../src/library/parserm3u.cpp" line="139"/>
+        <location filename="../../src/library/parserm3u.cpp" line="154"/>
         <source>Playlist Export Failed</source>
         <translation>Izvoz seznama predvajanja spodletel.</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="138"/>
+        <location filename="../../src/library/parserm3u.cpp" line="140"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation>Pot do datoteke vsebuje znake, ki niso dovoljeni v m3u seznamih predvajanja.
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="140"/>
+        <location filename="../../src/library/parserm3u.cpp" line="142"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation>Namesto tega izvozi m3u8 seznam predvajanja!
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="151"/>
+        <location filename="../../src/library/parserm3u.cpp" line="155"/>
         <source>Could not create file</source>
         <translation>Ni bilo mogoče ustvariti datoteke.</translation>
     </message>
@@ -8617,12 +8617,12 @@ Ali bi radi izbrali vhodno napravo?</translation>
 <context>
     <name>ParserPls</name>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="135"/>
+        <location filename="../../src/library/parserpls.cpp" line="142"/>
         <source>Playlist Export Failed</source>
         <translation>Izvoz seznama predvajanja spodletel.</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="136"/>
+        <location filename="../../src/library/parserpls.cpp" line="143"/>
         <source>Could not create file</source>
         <translation>Ni bilo mogoče ustvariti datoteke.</translation>
     </message>
@@ -10155,32 +10155,32 @@ Popolnoma na desni: konec periode efekta</translation>
 <context>
     <name>RecordingManager</name>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="280"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="283"/>
         <source>Low Disk Space Warning</source>
         <translation>Na disku zmanjkuje prostora</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="284"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
         <translation>snemalna mapa ima manj kot 1GB uporabnega prostora</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="305"/>
         <source>Recording</source>
         <translation>Snemanje</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="303"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="306"/>
         <source>Could not create audio file for recording!</source>
         <translation>Zvočne datoteke za snemanje ni bilo mogoče ustvariti!</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="304"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="307"/>
         <source>Ensure there is enough free disk space and you have write permission for the Recordings folder.</source>
         <translation>Prepričajte se, da je na disku dovolj prostora in da imate ustrezne pravice za zapisovanje v mapo za snemanje.</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="305"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="308"/>
         <source>You can change the location of the Recordings folder in Preferences -&gt; Recording.</source>
         <translation>Lokacijo snemalne mape je mogoče spremeniti v Nastavitve -&gt; Snemanje.</translation>
     </message>
@@ -10524,52 +10524,52 @@ Popolnoma na desni: konec periode efekta</translation>
         <translation>Napaka pri določanju protokola!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="677"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="683"/>
         <source>Network cache overflow</source>
         <translation>Presežena količina za mrežni medpomnilnik!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="898"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="904"/>
         <source>Connection error</source>
         <translation>Napaka pri povezovanju</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="899"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="905"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>Ena od povezav za oddajanje v živo je povzročila naslednjo napako:&lt;br&gt;&lt;b&gt;Napaka pri povezavi &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="913"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="919"/>
         <source>Connection message</source>
         <translation>Sporočilo povezave</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="914"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="920"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;Sporočilo povezave za oddajanje v živo &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="964"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation>Izgubljena povezava s pretočnim strežnikom in %1 neuspelih poskusov ponovnega povezovanja.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="967"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="973"/>
         <source>Lost connection to streaming server.</source>
         <translation>Izgubljena povezava s pretočnim strežnikom.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="972"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="978"/>
         <source>Please check your connection to the Internet.</source>
         <translation>Preverite internetno povezavo.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1007"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1013"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Ni se mogoče povezati s pretočnim strežnikom.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1009"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1015"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Preverite internetno povezavo in poskrbite, da sta uprabniško ime in geslo pravilna.</translation>
     </message>
@@ -13726,20 +13726,20 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
         <translation>Prehod</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="752"/>
+        <location filename="../../src/widget/woverview.cpp" line="755"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Pripravljen za predvajanje, analiziram ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="755"/>
-        <location filename="../../src/widget/woverview.cpp" line="765"/>
+        <location filename="../../src/widget/woverview.cpp" line="758"/>
+        <location filename="../../src/widget/woverview.cpp" line="768"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Nalaganje skladbe ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="759"/>
+        <location filename="../../src/widget/woverview.cpp" line="762"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Zaključujem...</translation>

@@ -4751,49 +4751,49 @@ Použít nastavení a pokračovat?</translation>
 <context>
     <name>DlgPrefControllerDlg</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="71"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="77"/>
         <source>(device category goes here)</source>
         <translation>(Skupina zařízení jde sem)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="52"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="58"/>
         <source>Controller Name</source>
         <translation>Název ovladače</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="81"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="87"/>
         <source>Enabled</source>
         <translation>Povoleno</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="230"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="236"/>
         <source>Description:</source>
         <translation>Popis:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="277"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="283"/>
         <source>Support:</source>
         <translation>Podpora:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="376"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="382"/>
         <source>Input Mappings</source>
         <translation>Přiřazení vstupů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="404"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="476"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="410"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="482"/>
         <source>Add</source>
         <translation>Přidat</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="414"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="483"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="420"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="489"/>
         <source>Remove</source>
         <translation>Odstranit</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="88"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="94"/>
         <source>Click to start the Controller Learning wizard.</source>
         <translation>Klepnutím spustíte Průvodce pro učení se ovladači.</translation>
     </message>
@@ -4808,43 +4808,43 @@ Použít nastavení a pokračovat?</translation>
         <translation>Nastavení ovladače</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="119"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="125"/>
         <source>Load Mapping:</source>
         <translation>Načítání přiřazení:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="148"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="154"/>
         <source>Mapping Info</source>
         <translation>Informace o přiřazení</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="201"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="207"/>
         <source>Author:</source>
         <translation>Autor:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="160"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="166"/>
         <source>Name:</source>
         <translation>Název:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="94"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="100"/>
         <source>Learning Wizard (MIDI Only)</source>
         <translation>Průvodce učením (pouze MIDI )</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="327"/>
         <source>Mapping Files:</source>
         <translation>Soubory přiřazení:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="440"/>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="503"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="446"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="509"/>
         <source>Clear All</source>
         <translation>Vyprázdnit vše</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="451"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="457"/>
         <source>Output Mappings</source>
         <translation>Přiřazení výstupů</translation>
     </message>
@@ -5898,47 +5898,47 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
         <translation>Prohledat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="251"/>
         <source>Choose a music directory</source>
         <translation>Vybrat adresář pro hudbu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="265"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="266"/>
         <source>Confirm Directory Removal</source>
         <translation>Potvrdit odstranění adresáře</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="267"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="268"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>Mixxx už v tomto adresáři nové skladby nebude hledat. Co chcete dělat se skladbami z tohoto adresáře a jeho podadresářů?&lt;ul&gt;&lt;li&gt;Skrýt všechny skladby z tohoto adresáře a jeho podadresářů.&lt;/li&gt;&lt;li&gt;Smazat trvale všechna popisná data pro tyto skladby z Mixxxu.&lt;/li&gt;&lt;li&gt;Nechat tyto skladby v knihovně nezměněny.&lt;/li&gt;&lt;/ul&gt;Skrytí skladeb uloží jejich popisná data pro případ, že je v budoucnu znovu přidáte.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="278"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="279"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>Popisná data obsahují všechny podrobnosti o skladbě (umělec, název, počet přehrání atd.), stejně tak jako rytmické mřížky, rychlé značky a smyčky. Toto rozhodnutí ovlivní jen knihovnu Mixxxu. Žádné soubory na pevném disku nebudou změněny nebo smazány.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="286"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="287"/>
         <source>Hide Tracks</source>
         <translation>Skrýt skladby</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="288"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="289"/>
         <source>Delete Track Metadata</source>
         <translation>Smazat popisná data</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="290"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="291"/>
         <source>Leave Tracks Unchanged</source>
         <translation>Ponechat skladby nezměněny</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="329"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="330"/>
         <source>Relink music directory to new location</source>
         <translation>Propojit adresář s hudbou znovu s novým umístěním</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="433"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="434"/>
         <source>Select Library Font</source>
         <translation>Vybrat písmo knihovny</translation>
     </message>
@@ -8569,23 +8569,23 @@ Chcete vybrat vstupní zařízení?</translation>
 <context>
     <name>ParserCsv</name>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="43"/>
+        <location filename="../../src/library/parsercsv.cpp" line="44"/>
         <source>Location</source>
         <translation>Umístění</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="131"/>
+        <location filename="../../src/library/parsercsv.cpp" line="138"/>
         <source>Playlist Export Failed</source>
         <translation>Seznam skladeb se nepodařilo uložit</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="132"/>
-        <location filename="../../src/library/parsercsv.cpp" line="216"/>
+        <location filename="../../src/library/parsercsv.cpp" line="139"/>
+        <location filename="../../src/library/parsercsv.cpp" line="225"/>
         <source>Could not create file</source>
         <translation>Nepodařilo se vytvořit soubor</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="215"/>
+        <location filename="../../src/library/parsercsv.cpp" line="224"/>
         <source>Readable text Export Failed</source>
         <translation>Nepodařilo se uložit čitelný text</translation>
     </message>
@@ -8593,27 +8593,27 @@ Chcete vybrat vstupní zařízení?</translation>
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="137"/>
-        <location filename="../../src/library/parserm3u.cpp" line="150"/>
+        <location filename="../../src/library/parserm3u.cpp" line="139"/>
+        <location filename="../../src/library/parserm3u.cpp" line="154"/>
         <source>Playlist Export Failed</source>
         <translation>Seznam skladeb se nepodařilo uložit</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="138"/>
+        <location filename="../../src/library/parserm3u.cpp" line="140"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation>Cesta k souboru obsahuje znaky, které nejsou v seznamech skladeb m3u dovoleny.
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="140"/>
+        <location filename="../../src/library/parserm3u.cpp" line="142"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation>Místo toho uložte jako seznam skladeb m3u8!
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="151"/>
+        <location filename="../../src/library/parserm3u.cpp" line="155"/>
         <source>Could not create file</source>
         <translation>Nepodařilo se vytvořit soubor</translation>
     </message>
@@ -8621,12 +8621,12 @@ Chcete vybrat vstupní zařízení?</translation>
 <context>
     <name>ParserPls</name>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="135"/>
+        <location filename="../../src/library/parserpls.cpp" line="142"/>
         <source>Playlist Export Failed</source>
         <translation>Seznam skladeb se nepodařilo uložit</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="136"/>
+        <location filename="../../src/library/parserpls.cpp" line="143"/>
         <source>Could not create file</source>
         <translation>Nepodařilo se vytvořit soubor</translation>
     </message>
@@ -10160,32 +10160,32 @@ Fully right: end of the effect period</source>
 <context>
     <name>RecordingManager</name>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="280"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="283"/>
         <source>Low Disk Space Warning</source>
         <translation>Upozornění na nízký stav místa na disku</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="281"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="284"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
         <translation>Ve složce nahrávání je méně jež 1 GiB nevyužitého místa</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="302"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="305"/>
         <source>Recording</source>
         <translation>Nahrávání</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="303"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="306"/>
         <source>Could not create audio file for recording!</source>
         <translation>Nepodařilo se vytvořit zvukový soubor pro nahrávání!</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="304"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="307"/>
         <source>Ensure there is enough free disk space and you have write permission for the Recordings folder.</source>
         <translation>Ujistěte se, že na disku máte dost volného místa a že máte oprávnění pro zápis do složky s nahrávkami.</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="305"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="308"/>
         <source>You can change the location of the Recordings folder in Preferences -&gt; Recording.</source>
         <translation>Můžete změnit umístění složky s nahrávkami v Nastavení → Nahrávání.</translation>
     </message>
@@ -10529,53 +10529,53 @@ Fully right: end of the effect period</source>
         <translation>Chyba při nastavování protokolu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="677"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="683"/>
         <source>Network cache overflow</source>
         <translation>Přetečení vyrovnávací paměti sítě</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="898"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="904"/>
         <source>Connection error</source>
         <translation>Chyba spojení</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="899"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="905"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>Jedno z připojení živého vysílání vrátilo tuto chybu:
 &lt;br&gt;&lt;b&gt;Chyba s připojením &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="913"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="919"/>
         <source>Connection message</source>
         <translation>Zpráva o spojení</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="914"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="920"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;Zpráva připojení živého vysílání&apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="964"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation>Ztraceno spojení s vysílacím serverem a %1 pokus o opětovné připojení se nezdařil</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="967"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="973"/>
         <source>Lost connection to streaming server.</source>
         <translation>Ztraceno spojení s vysílacím serverem.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="972"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="978"/>
         <source>Please check your connection to the Internet.</source>
         <translation>Zkontrolujte, prosím, vaše připojení k internetu.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1007"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1013"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Nelze vytvořit spojení s vysílacím serverem</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1009"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1015"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Zkontrolujte, prosím, vaše připojení k internetu a ověřte, jestli je správně zadáno uživatelské jméno a heslo.</translation>
     </message>
@@ -13732,20 +13732,20 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
         <translation>Propustit skrz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="752"/>
+        <location filename="../../src/widget/woverview.cpp" line="755"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Připraven k přehrávání, provádí se rozbor...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="755"/>
-        <location filename="../../src/widget/woverview.cpp" line="765"/>
+        <location filename="../../src/widget/woverview.cpp" line="758"/>
+        <location filename="../../src/widget/woverview.cpp" line="768"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Nahrává se skladba...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="759"/>
+        <location filename="../../src/widget/woverview.cpp" line="762"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Dokončuje se...</translation>
