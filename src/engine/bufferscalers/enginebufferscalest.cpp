@@ -16,7 +16,7 @@ using namespace soundtouch;
 
 namespace {
 
-// Due to filtering and oversampling, SoundTouch is some samples behind.
+// Due to filtering and oversampling, SoundTouch is some samples behind (offset).
 // The value below was experimental identified using a saw signal and SoundTouch 2.1.1
 constexpr SINT kSeekOffsetFramesV20101 = 429;
 
