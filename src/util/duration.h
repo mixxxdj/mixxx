@@ -154,6 +154,15 @@ class Duration : public DurationBase {
         return Duration(nanos);
     }
 
+    static constexpr Duration fromStdDuration(
+            std::chrono::duration<std::int64_t, std::nano> duration) {
+        return Duration::fromNanos(duration.count());
+    }
+
+    constexpr std::chrono::duration<std::int64_t, std::nano> toStdDuration() {
+        return std::chrono::duration<std::int64_t, std::nano>(m_durationNanos);
+    }
+
     static constexpr Duration empty() {
         return Duration();
     }
