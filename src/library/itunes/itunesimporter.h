@@ -20,5 +20,6 @@ class ITunesImporter {
     bool canceled() const;
 
   protected:
+    // This is a borrowed pointer. The ITunesFeature owns the ITunesImporter.
     ITunesFeature* m_pParentFeature;
 };
