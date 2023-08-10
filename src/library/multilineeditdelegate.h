@@ -13,12 +13,20 @@
 class MultiLineEditor : public QPlainTextEdit {
     Q_OBJECT
   public:
-    MultiLineEditor(QWidget* pParent);
+    MultiLineEditor(QWidget* pParent,
+            QTableView* pTableView,
+            const QModelIndex& index);
 
     bool eventFilter(QObject* obj, QEvent* event) override;
 
+    void adjustSize(const QSizeF size);
+
   signals:
     void editingFinished();
+
+  private:
+    QTableView* m_pTableView;
+    const QModelIndex m_index;
 };
 
 /// A delegate for text value columns that allows editing content
@@ -36,7 +44,4 @@ class MultiLineEditDelegate : public TableItemDelegate {
 
   private slots:
     void commitAndCloseEditor();
-
-  private:
-    void adjustEditor(MultiLineEditor* pEditor, const QSizeF size, const QRect indexRect) const;
 };
