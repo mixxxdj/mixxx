@@ -53,25 +53,6 @@ class SuspendableTimer : public Timer {
 
 class ScopedTimer {
   public:
-    [[deprecated(
-            "pass a UTF-16 QStringView instead of a UTF-8 char*")]] ScopedTimer(const char*
-                                                                                        key,
-            Stat::ComputeFlags compute = kDefaultComputeFlags)
-            // TODO: I'm unsure about the lifetime here, does
-            // this create a dangling reference or does the
-            // temporary QString live until the constructor returns?
-            : ScopedTimer(QString(key), QStringView(), compute) {
-    }
-    [[deprecated(
-            "pass a UTF-16 QStringView instead of a UTF-8 char*")]] ScopedTimer(const char*
-                                                                                        key,
-            int i,
-            Stat::ComputeFlags compute = kDefaultComputeFlags)
-            // TODO: I'm unsure about the lifetime here, does
-            // this create a dangling reference or does the
-            // temporary QString live until the constructor returns?
-            : ScopedTimer(QString(key), QString::number(i), compute) {
-    }
     ScopedTimer(QStringView key,
             Stat::ComputeFlags compute = kDefaultComputeFlags)
             : ScopedTimer(key, QStringView(), compute) {

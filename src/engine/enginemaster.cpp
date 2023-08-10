@@ -279,7 +279,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     m_activeTalkoverChannels.clear();
     m_activeChannels.clear();
 
-    //ScopedTimer timer("EngineMaster::processChannels");
+    // ScopedTimer timer(u"EngineMaster::processChannels");
     EngineChannel* pLeaderChannel = m_pEngineSync->getLeaderChannel();
     // Reserve the first place for the master channel which
     // should be processed first

@@ -199,7 +199,7 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 
 
 void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
-    ScopedTimer t("VinylControlXwax::analyzeSamples");
+    ScopedTimer t(u"VinylControlXwax::analyzeSamples");
     auto gain = static_cast<CSAMPLE_GAIN>(m_pVinylControlInputGain->get());
 
     // We only support amplifying with the VC pre-amp.
