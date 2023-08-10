@@ -38,19 +38,6 @@ class Timer {
     PerformanceTimer m_time;
 };
 
-class SuspendableTimer : public Timer {
-  public:
-    SuspendableTimer(QString,
-            Stat::ComputeFlags compute = kDefaultComputeFlags);
-    void start();
-    mixxx::Duration suspend();
-    void go();
-    mixxx::Duration elapsed(bool report);
-
-  private:
-    mixxx::Duration m_leapTime;
-};
-
 class ScopedTimer {
   public:
     ScopedTimer(QStringView key,
@@ -97,29 +84,4 @@ class ScopedTimer {
     Timer* m_pTimer;
     char m_timerMem[sizeof(Timer)];
     bool m_cancel;
-};
-
-// A timer that provides a similar API to QTimer but uses render events from the
-// VSyncThread as its source of timing events. This means the timer cannot fire
-// at a rate faster than the user's configured waveform FPS.
-class GuiTickTimer : public QObject {
-    Q_OBJECT
-  public:
-    GuiTickTimer(QObject* pParent);
-
-    void start(mixxx::Duration interval);
-    bool isActive() const { return m_bActive; }
-    void stop();
-
-  signals:
-    void timeout();
-
-  private slots:
-    void slotGuiTick(double v);
-
-  private:
-    parented_ptr<ControlProxy> m_pGuiTick;
-    mixxx::Duration m_interval;
-    mixxx::Duration m_lastUpdate;
-    bool m_bActive;
 };
