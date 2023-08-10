@@ -85,9 +85,9 @@ class AnalyzerWithState final {
         }
     }
 
-    void finish(TrackPointer tio) {
+    void finish(TrackPointer pTrack) {
         if (m_active) {
-            m_analyzer->storeResults(tio);
+            m_analyzer->storeResults(pTrack);
             m_analyzer->cleanup();
             m_active = false;
         }

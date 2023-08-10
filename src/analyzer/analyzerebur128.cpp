@@ -59,7 +59,7 @@ bool AnalyzerEbur128::processSamples(const CSAMPLE* pIn, SINT count) {
     return true;
 }
 
-void AnalyzerEbur128::storeResults(TrackPointer tio) {
+void AnalyzerEbur128::storeResults(TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return;
     }
@@ -76,8 +76,9 @@ void AnalyzerEbur128::storeResults(TrackPointer tio) {
     }
 
     const double fReplayGain2 = kReplayGain2ReferenceLUFS - averageLufs;
-    mixxx::ReplayGain replayGain(tio->getReplayGain());
+    mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGain2));
-    tio->setReplayGain(replayGain);
-    qDebug() << "ReplayGain 2.0 (libebur128) result is" << fReplayGain2 << "dB for" << tio->getFileInfo();
+    pTrack->setReplayGain(replayGain);
+    qDebug() << "ReplayGain 2.0 (libebur128) result is" << fReplayGain2
+             << "dB for" << pTrack->getFileInfo();
 }

@@ -57,7 +57,7 @@ bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT count) {
     return m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, numFrames);
 }
 
-void AnalyzerGain::storeResults(TrackPointer tio) {
+void AnalyzerGain::storeResults(TrackPointer pTrack) {
     //TODO: We are going to store values as relative peaks so that "0" means that no replaygain has been evaluated.
     // This means that we are going to transform from dB to peaks and vice-versa.
     // One may think to digg into replay_gain code and modify it so that
@@ -70,8 +70,9 @@ void AnalyzerGain::storeResults(TrackPointer tio) {
         return;
     }
 
-    mixxx::ReplayGain replayGain(tio->getReplayGain());
+    mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGainOutput));
-    tio->setReplayGain(replayGain);
-    qDebug() << "ReplayGain 1.0 result is" << fReplayGainOutput << "dB for" << tio->getLocation();
+    pTrack->setReplayGain(replayGain);
+    qDebug() << "ReplayGain 1.0 result is" << fReplayGainOutput << "dB for"
+             << pTrack->getLocation();
 }

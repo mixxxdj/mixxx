@@ -41,7 +41,7 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-bool AnalyzerKey::initialize(TrackPointer tio,
+bool AnalyzerKey::initialize(TrackPointer pTrack,
         mixxx::audio::SampleRate sampleRate,
         SINT frameLength) {
     if (frameLength <= 0) {
@@ -86,7 +86,7 @@ bool AnalyzerKey::initialize(TrackPointer tio,
     m_currentFrame = 0;
 
     // if we can't load a stored track reanalyze it
-    bool bShouldAnalyze = shouldAnalyze(tio);
+    bool bShouldAnalyze = shouldAnalyze(pTrack);
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
