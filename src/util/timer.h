@@ -34,7 +34,6 @@ class Timer {
   protected:
     QString m_key;
     Stat::ComputeFlags m_compute;
-    bool m_running;
     PerformanceTimer m_time;
 };
 

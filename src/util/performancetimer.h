@@ -67,6 +67,14 @@ public:
     mixxx::Duration restart();
     mixxx::Duration difference(const PerformanceTimer& timer) const;
 
+  bool running() const {
+      return t1 == 0
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+              && t2 == 0
+#endif
+              ;
+  };
+
 private:
     qint64 t1;
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
