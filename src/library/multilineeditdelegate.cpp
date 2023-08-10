@@ -79,9 +79,9 @@ void MultiLineEditor::adjustSize(const QSizeF size) {
     // If it's just one line center the text vertically like in QLineEdit.
     int diffH = (indexRect.height() - txtH - frameWidth() * 2) / 2;
     if (lines == 1 && diffH > 0) {
-        document()->setDocumentMargin(diffH);
+        setContentsMargins(0, diffH, 0, diffH); // left/right > 0 are not applied
     } else { // Reset if lines were added
-        document()->setDocumentMargin(0);
+        setContentsMargins(0, 0, 0, 0);
     }
     // Limit editor to visible table height
     QRect tableRect = m_pTableView->viewport()->rect();
