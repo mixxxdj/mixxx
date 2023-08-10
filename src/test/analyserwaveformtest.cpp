@@ -12,7 +12,6 @@ namespace {
 
 constexpr std::size_t kBigBufSize = 2 * 1920; // Matches the WaveformSummary
 constexpr std::size_t kCanarySize = 1024 * 4;
-constexpr auto kCanarySampleRate = mixxx::audio::SampleRate(44100);
 constexpr float kMagicFloat = 1234.567890f;
 constexpr float kCanaryFloat = 0.0f;
 constexpr int kChannelCount = 2;
@@ -103,7 +102,7 @@ class AnalyzerWaveformTest : public MixxxTest {
 // Basic test to make sure we don't alter the input buffer and don't step out of bounds.
 TEST_F(AnalyzerWaveformTest, canary) {
     m_aw.initialize(m_pTrack,
-            kCanarySampleRate,
+            m_pTrack->getSampleRate(),
             kBigBufSize / kChannelCount);
     m_aw.processSamples(&m_canaryBigBuf[kCanarySize], kBigBufSize);
     m_aw.storeResults(m_pTrack);
