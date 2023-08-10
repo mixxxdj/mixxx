@@ -18,7 +18,7 @@ WOverviewHSV::WOverviewHSV(
 }
 
 bool WOverviewHSV::drawNextPixmapPart() {
-    ScopedTimer t("WOverviewHSV::drawNextPixmapPart");
+    ScopedTimer t(u"WOverviewHSV::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart()";
 
