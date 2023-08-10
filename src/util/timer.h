@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QStringView>
+#include <optional>
 
 #include "control/controlproxy.h"
 #include "util/cmdlineargs.h"
@@ -37,50 +38,55 @@ class Timer {
     PerformanceTimer m_time;
 };
 
+// TODO: replace with std::experimental::scope_exit<Timer> once stabilized
 class ScopedTimer {
   public:
     ScopedTimer(QStringView key,
             Stat::ComputeFlags compute = kDefaultComputeFlags)
             : ScopedTimer(key, QStringView(), compute) {
     }
-    ScopedTimer(QStringView key, int i, Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : ScopedTimer(key, QString::number(i), compute) {
+    ScopedTimer(QStringView key,
+            int i,
+            Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : ScopedTimer(key,
+                      CmdlineArgs::Instance().getDeveloper()
+                              ? QString::number(i)
+                              : QStringView(),
+                      compute) {
     }
 
     ScopedTimer(QStringView key, QStringView arg, Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(key, arg, compute);
+            : m_maybeTimer(std::nullopt) {
+        if (!CmdlineArgs::Instance().getDeveloper()) {
+            return;
         }
-    }
-
-    virtual ~ScopedTimer() {
-        if (m_pTimer) {
-            if (!m_cancel) {
-                m_pTimer->elapsed(true);
-            }
-            m_pTimer->~Timer();
-        }
-    }
-
-    inline void initialize(QStringView key,
-            QStringView arg,
-            Stat::ComputeFlags compute = kDefaultComputeFlags) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         QString strKey = arg.isEmpty() ? key.toString() : key.arg(arg);
 #else
         QString strKey = arg.isEmpty() ? key.toString() : key.toString().arg(arg);
 #endif
-        m_pTimer = new(m_timerMem) Timer(strKey, compute);
-        m_pTimer->start();
+        m_maybeTimer = std::make_optional<Timer>(std::move(strKey), compute);
+        m_maybeTimer->start();
     }
 
-    void cancel() {
-        m_cancel = true;
+    ~ScopedTimer() noexcept {
+        if (m_maybeTimer) {
+            m_maybeTimer->elapsed(true);
+        }
     }
+
+    ScopedTimer(const ScopedTimer&) = delete;
+    ScopedTimer& operator=(const ScopedTimer&) = delete;
+
+    ScopedTimer(ScopedTimer&&) = default;
+    ScopedTimer& operator=(ScopedTimer&&) = default;
+
+    void cancel() {
+        m_maybeTimer.reset();
+    }
+
   private:
-    Timer* m_pTimer;
-    char m_timerMem[sizeof(Timer)];
-    bool m_cancel;
+    // use std::optional to avoid heap allocation which is frequent
+    // because of ScopedTimer's temporary nature
+    std::optional<Timer> m_maybeTimer;
 };
