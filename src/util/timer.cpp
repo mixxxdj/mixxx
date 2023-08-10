@@ -7,17 +7,15 @@
 
 Timer::Timer(QString key, Stat::ComputeFlags compute)
         : m_key(std::move(key)),
-          m_compute(Stat::experimentFlags(compute)),
-          m_running(false) {
+          m_compute(Stat::experimentFlags(compute)) {
 }
 
 void Timer::start() {
-    m_running = true;
     m_time.start();
 }
 
 mixxx::Duration Timer::restart(bool report) {
-    if (m_running) {
+    if (m_time.running()) {
         mixxx::Duration elapsed = m_time.restart();
         if (report) {
             // Ignore the report if it crosses the experiment boundary.

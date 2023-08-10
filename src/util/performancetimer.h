@@ -30,6 +30,10 @@ public:
       return mixxx::Duration::fromStdDuration(m_startTime - timer.m_startTime);
   };
 
+  bool running() const {
+      return m_startTime.time_since_epoch().count() != 0;
+  };
+
 private:
   std::chrono::time_point<ClockT> m_startTime;
 };
