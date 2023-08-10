@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QStringView>
 
 #include "control/controlproxy.h"
 #include "util/cmdlineargs.h"
@@ -9,7 +10,7 @@
 #include "util/performancetimer.h"
 #include "util/stat.h"
 
-const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+static constexpr Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
         Stat::MAX | Stat::MIN | Stat::SAMPLE_VARIANCE;
 
 // A Timer that is instrumented for reporting elapsed times to StatsManager
@@ -17,8 +18,8 @@ const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::
 // computed for the times.
 class Timer {
   public:
-    Timer(const QString& key,
-          Stat::ComputeFlags compute = kDefaultComputeFlags);
+    Timer(QString key,
+            Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
 
     // Restart the timer returning the time duration since it was last
@@ -39,7 +40,7 @@ class Timer {
 
 class SuspendableTimer : public Timer {
   public:
-    SuspendableTimer(const QString& key,
+    SuspendableTimer(QString,
             Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
     mixxx::Duration suspend();
@@ -52,30 +53,38 @@ class SuspendableTimer : public Timer {
 
 class ScopedTimer {
   public:
-    ScopedTimer(const char* key, int i,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), QString::number(i), compute);
-        }
+    [[deprecated(
+            "pass a UTF-16 QStringView instead of a UTF-8 char*")]] ScopedTimer(const char*
+                                                                                        key,
+            Stat::ComputeFlags compute = kDefaultComputeFlags)
+            // TODO: I'm unsure about the lifetime here, does
+            // this create a dangling reference or does the
+            // temporary QString live until the constructor returns?
+            : ScopedTimer(QString(key), QStringView(), compute) {
+    }
+    [[deprecated(
+            "pass a UTF-16 QStringView instead of a UTF-8 char*")]] ScopedTimer(const char*
+                                                                                        key,
+            int i,
+            Stat::ComputeFlags compute = kDefaultComputeFlags)
+            // TODO: I'm unsure about the lifetime here, does
+            // this create a dangling reference or does the
+            // temporary QString live until the constructor returns?
+            : ScopedTimer(QString(key), QString::number(i), compute) {
+    }
+    ScopedTimer(QStringView key,
+            Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : ScopedTimer(key, QStringView(), compute) {
+    }
+    ScopedTimer(QStringView key, int i, Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : ScopedTimer(key, QString::number(i), compute) {
     }
 
-    ScopedTimer(const char* key, const char *arg = NULL,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
+    ScopedTimer(QStringView key, QStringView arg, Stat::ComputeFlags compute = kDefaultComputeFlags)
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), arg ? QString(arg) : QString(), compute);
-        }
-    }
-
-    ScopedTimer(const char* key, const QString& arg,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), arg, compute);
+            initialize(key, arg, compute);
         }
     }
 
@@ -88,14 +97,14 @@ class ScopedTimer {
         }
     }
 
-    inline void initialize(const QString& key, const QString& arg,
-                Stat::ComputeFlags compute = kDefaultComputeFlags) {
-        QString strKey;
-        if (arg.isEmpty()) {
-            strKey = key;
-        } else {
-            strKey = key.arg(arg);
-        }
+    inline void initialize(QStringView key,
+            QStringView arg,
+            Stat::ComputeFlags compute = kDefaultComputeFlags) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        QString strKey = arg.isEmpty() ? key.toString() : key.arg(arg);
+#else
+        QString strKey = arg.isEmpty() ? key.toString() : key.toString().arg(arg);
+#endif
         m_pTimer = new(m_timerMem) Timer(strKey, compute);
         m_pTimer->start();
     }

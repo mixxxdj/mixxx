@@ -5,8 +5,8 @@
 #include "util/time.h"
 #include "waveform/guitick.h"
 
-Timer::Timer(const QString& key, Stat::ComputeFlags compute)
-        : m_key(key),
+Timer::Timer(QString key, Stat::ComputeFlags compute)
+        : m_key(std::move(key)),
           m_compute(Stat::experimentFlags(compute)),
           m_running(false) {
 }
@@ -47,10 +47,9 @@ mixxx::Duration Timer::elapsed(bool report) {
     return elapsedTime;
 }
 
-
-SuspendableTimer::SuspendableTimer(const QString& key,
-                                   Stat::ComputeFlags compute)
-        : Timer(key, compute) {
+SuspendableTimer::SuspendableTimer(QString key,
+        Stat::ComputeFlags compute)
+        : Timer(std::move(key), compute) {
 }
 
 void SuspendableTimer::start() {
