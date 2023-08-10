@@ -16,7 +16,7 @@
 #include "util/math.h"
 
 // interval (in ms) of the timer which calls update()
-constexpr int kiUpdateInterval = 5000;
+constexpr int kBatteryUpdateIntervalMS = 5000;
 
 Battery::Battery(QObject* parent)
         : QObject(parent),
@@ -24,8 +24,8 @@ Battery::Battery(QObject* parent)
           m_dPercentage(0.0),
           m_iMinutesLeft(0),
           m_timer(this) {
-    connect(&m_timer, &GuiTickTimer::timeout, this, &Battery::update);
-    m_timer.start(mixxx::Duration::fromMillis(kiUpdateInterval));
+    connect(&m_timer, &QTimer::timeout, this, &Battery::update);
+    m_timer.start(kBatteryUpdateIntervalMS);
 }
 
 Battery* Battery::getBattery(QObject* parent) {

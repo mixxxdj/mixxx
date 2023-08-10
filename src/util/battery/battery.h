@@ -43,5 +43,5 @@ class Battery : public QObject {
     int m_iMinutesLeft;
 
   private:
-    GuiTickTimer m_timer;
+    QTimer m_timer;
 };
