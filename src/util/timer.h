@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QStringView>
+#include <optional>
 
 #include "control/controlproxy.h"
 #include "util/cmdlineargs.h"
@@ -48,39 +49,44 @@ class ScopedTimer {
     }
 
     ScopedTimer(QStringView key, QStringView arg, Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(key, arg, compute);
+            : m_state(std::nullopt) {
+        if (!CmdlineArgs::Instance().getDeveloper()) {
+            return;
         }
-    }
-
-    virtual ~ScopedTimer() {
-        if (m_pTimer) {
-            if (!m_cancel) {
-                m_pTimer->elapsed(true);
-            }
-            m_pTimer->~Timer();
-        }
-    }
-
-    inline void initialize(QStringView key,
-            QStringView arg,
-            Stat::ComputeFlags compute = kDefaultComputeFlags) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         QString strKey = arg.isEmpty() ? key.toString() : key.arg(arg);
 #else
         QString strKey = arg.isEmpty() ? key.toString() : key.toString().arg(arg);
 #endif
-        m_pTimer = new(m_timerMem) Timer(strKey, compute);
-        m_pTimer->start();
+        m_state.emplace(Timer(strKey, compute), false);
+        m_state->timer.start();
     }
 
+    ~ScopedTimer() noexcept {
+        if (m_state) {
+            if (!m_state->cancelled) {
+                m_state->timer.elapsed(true);
+            }
+        }
+    }
+
+    ScopedTimer(const ScopedTimer&) = delete;
+    ScopedTimer& operator=(const ScopedTimer&) = delete;
+
+    ScopedTimer(ScopedTimer&&) = default;
+    ScopedTimer& operator=(ScopedTimer&&) = default;
+
     void cancel() {
-        m_cancel = true;
+        if (m_state) {
+            m_state->cancelled = true;
+        }
     }
   private:
-    Timer* m_pTimer;
-    char m_timerMem[sizeof(Timer)];
-    bool m_cancel;
+    // use std::optional to avoid heap allocation which is frequent
+    // because of ScopedTimer's temporary nature
+    struct TimerData {
+        Timer timer;
+        bool cancelled;
+    };
+    std::optional<TimerData> m_state;
 };
