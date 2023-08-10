@@ -31,8 +31,8 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     TreeItemModel* sidebarModel() const override;
 
-    // This is called from the ITunesXMLImporter thread
-    bool isImportCanceled() {
+    // This is called from the ITunesXMLImporter thread and generally threadsafe
+    bool isImportCanceled() const {
         return m_cancelImport.load();
     }
 

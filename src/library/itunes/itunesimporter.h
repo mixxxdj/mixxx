@@ -17,7 +17,7 @@ class ITunesImporter {
 
     virtual ITunesImport importLibrary() = 0;
 
-    bool canceled();
+    bool canceled() const;
 
   protected:
     ITunesFeature* m_pParentFeature;
