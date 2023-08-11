@@ -1,5 +1,6 @@
 #include "analyzer/analyzerwaveform.h"
 
+#include "analyzer/constants.h"
 #include "engine/engineobject.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "engine/filters/enginefilterbutterworth8.h"
@@ -34,14 +35,16 @@ AnalyzerWaveform::~AnalyzerWaveform() {
     destroyFilters();
 }
 
-bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    if (totalSamples == 0) {
+bool AnalyzerWaveform::initialize(TrackPointer pTrack,
+        mixxx::audio::SampleRate sampleRate,
+        SINT frameLength) {
+    if (frameLength <= 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
     }
 
     // If we don't need to calculate the waveform/wavesummary, skip.
-    if (!shouldAnalyze(tio)) {
+    if (!shouldAnalyze(pTrack)) {
         return false;
     }
 
@@ -57,15 +60,15 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
     const int summaryWaveformSamples = 2 * 1920;
 
     m_waveform = WaveformPointer(new Waveform(
-            sampleRate, totalSamples, mainWaveformSampleRate, -1));
+            sampleRate, frameLength, mainWaveformSampleRate, -1));
     m_waveformSummary = WaveformPointer(new Waveform(
-            sampleRate, totalSamples, mainWaveformSampleRate, summaryWaveformSamples));
+            sampleRate, frameLength, mainWaveformSampleRate, summaryWaveformSamples));
 
     // Now, that the Waveform memory is initialized, we can set set them to
     // the TIO. Be aware that other threads of Mixxx can touch them from
     // now.
-    tio->setWaveform(m_waveform);
-    tio->setWaveformSummary(m_waveformSummary);
+    pTrack->setWaveform(m_waveform);
+    pTrack->setWaveformSummary(m_waveformSummary);
 
     m_waveformData = m_waveform->data();
     m_waveformSummaryData = m_waveformSummary->data();
@@ -167,7 +170,7 @@ void AnalyzerWaveform::destroyFilters() {
     }
 }
 
-bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, const int bufferLength) {
+bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_waveform) {
         return false;
     }
@@ -176,20 +179,20 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, const int bufferLen
     }
 
     //this should only append once if bufferLength is constant
-    if (bufferLength > (int)m_buffers[0].size()) {
-        m_buffers[Low].resize(bufferLength);
-        m_buffers[Mid].resize(bufferLength);
-        m_buffers[High].resize(bufferLength);
+    if (count > static_cast<SINT>(m_buffers[0].size())) {
+        m_buffers[Low].resize(count);
+        m_buffers[Mid].resize(count);
+        m_buffers[High].resize(count);
     }
 
-    m_filter[Low]->process(buffer, &m_buffers[Low][0], bufferLength);
-    m_filter[Mid]->process(buffer, &m_buffers[Mid][0], bufferLength);
-    m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
+    m_filter[Low]->process(buffer, &m_buffers[Low][0], count);
+    m_filter[Mid]->process(buffer, &m_buffers[Mid][0], count);
+    m_filter[High]->process(buffer, &m_buffers[High][0], count);
 
     m_waveform->setSaveState(Waveform::SaveState::NotSaved);
     m_waveformSummary->setSaveState(Waveform::SaveState::NotSaved);
 
-    for (int i = 0; i < bufferLength; i += 2) {
+    for (int i = 0; i < count; i += 2) {
         // Take max value, not average of data
         CSAMPLE cover[2] = {fabs(buffer[i]), fabs(buffer[i + 1])};
         CSAMPLE clow[2] = {fabs(m_buffers[Low][i]), fabs(m_buffers[Low][i + 1])};

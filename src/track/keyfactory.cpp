@@ -81,7 +81,8 @@ QString KeyFactory::getPreferredSubVersion(
 Keys KeyFactory::makePreferredKeys(
         const KeyChangeList& key_changes,
         const QHash<QString, QString>& extraVersionInfo,
-        const int iSampleRate, const int iTotalSamples) {
+        const int iSampleRate,
+        SINT totalFrames) {
     Q_UNUSED(iSampleRate);
 
     const QString version = getPreferredVersion();
@@ -99,7 +100,7 @@ Keys KeyFactory::makePreferredKeys(
             pChange->set_key(it->first);
             pChange->set_frame_position(static_cast<int>(frame));
         }
-        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, iTotalSamples, iSampleRate));
+        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, totalFrames, iSampleRate));
         key_map.set_source(mixxx::track::io::key::ANALYZER);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);

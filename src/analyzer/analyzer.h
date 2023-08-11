@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/signalinfo.h"
 #include "util/assert.h"
 #include "util/types.h"
 
@@ -21,7 +22,9 @@ class Analyzer {
     //  1. Check if the track needs to be analyzed, otherwise return false.
     //  2. Perform the initialization and return true on success.
     //  3. If the initialization failed log the internal error and return false.
-    virtual bool initialize(TrackPointer tio, int sampleRate, int totalSamples) = 0;
+    virtual bool initialize(TrackPointer pTrack,
+            mixxx::audio::SampleRate sampleRate,
+            SINT frameLength) = 0;
 
     /////////////////////////////////////////////////////////////////////////
     // All following methods will only be invoked after initialize()
@@ -32,12 +35,12 @@ class Analyzer {
     // If processing fails the analysis can be aborted early by returning
     // false. After aborting the analysis only cleanup() will be invoked,
     // but not finalize()!
-    virtual bool processSamples(const CSAMPLE* pIn, const int iLen) = 0;
+    virtual bool processSamples(const CSAMPLE* pIn, SINT count) = 0;
 
     // Update the track object with the analysis results after
     // processing finished successfully, i.e. all available audio
     // samples have been processed.
-    virtual void storeResults(TrackPointer tio) = 0;
+    virtual void storeResults(TrackPointer pTrack) = 0;
 
     // Discard any temporary results or free allocated memory.
     // This function will be invoked after the results have been
@@ -66,9 +69,9 @@ class AnalyzerWithState final {
         return m_active;
     }
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+    bool initialize(TrackPointer pTrack, mixxx::audio::SampleRate sampleRate, SINT frameLength) {
         DEBUG_ASSERT(!m_active);
-        return m_active = m_analyzer->initialize(tio, sampleRate, totalSamples);
+        return m_active = m_analyzer->initialize(pTrack, sampleRate, frameLength);
     }
 
     void processSamples(const CSAMPLE* pIn, const int iLen) {
@@ -82,9 +85,9 @@ class AnalyzerWithState final {
         }
     }
 
-    void finish(TrackPointer tio) {
+    void finish(TrackPointer pTrack) {
         if (m_active) {
-            m_analyzer->storeResults(tio);
+            m_analyzer->storeResults(pTrack);
             m_analyzer->cleanup();
             m_active = false;
         }

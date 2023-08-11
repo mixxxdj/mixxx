@@ -37,13 +37,14 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_bPreferencesReanalyzeImported(false),
           m_bPreferencesFixedTempo(true),
           m_bPreferencesFastAnalysis(false),
-          m_totalSamples(0),
-          m_iMaxSamplesToProcess(0),
-          m_iCurrentSample(0) {
+          m_maxFramesToProcess(0),
+          m_currentFrame(0) {
 }
 
-bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
-    if (totalSamples == 0) {
+bool AnalyzerBeats::initialize(TrackPointer pTrack,
+        mixxx::audio::SampleRate sampleRate,
+        SINT frameLength) {
+    if (frameLength <= 0) {
         return false;
     }
 
@@ -85,16 +86,15 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
              << "\nFast analysis:" << m_bPreferencesFastAnalysis;
 
     m_sampleRate = sampleRate;
-    m_totalSamples = totalSamples;
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
     if (m_bPreferencesFastAnalysis) {
-        m_iMaxSamplesToProcess =
-                mixxx::kFastAnalysisSecondsToAnalyze * m_sampleRate * mixxx::kAnalysisChannels;
+        m_maxFramesToProcess =
+                mixxx::kFastAnalysisSecondsToAnalyze * m_sampleRate;
     } else {
-        m_iMaxSamplesToProcess = m_totalSamples;
+        m_maxFramesToProcess = frameLength;
     }
-    m_iCurrentSample = 0;
+    m_currentFrame = 0;
 
     // if we can load a stored track don't reanalyze it
     bool bShouldAnalyze = shouldAnalyze(pTrack);
@@ -112,7 +112,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
         }
 
         if (m_pPlugin) {
-            if (m_pPlugin->initialize(sampleRate)) {
+            if (m_pPlugin->initialize(m_sampleRate)) {
                 qDebug() << "Beat calculation started with plugin" << m_pluginId;
             } else {
                 qDebug() << "Beat calculation will not start.";
@@ -191,17 +191,17 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     return true;
 }
 
-bool AnalyzerBeats::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }
 
-    m_iCurrentSample += iLen;
-    if (m_iCurrentSample > m_iMaxSamplesToProcess) {
+    m_currentFrame += count / mixxx::kAnalysisChannels;
+    if (m_currentFrame > m_maxFramesToProcess) {
         return true; // silently ignore all remaining samples
     }
 
-    return m_pPlugin->processSamples(pIn, iLen);
+    return m_pPlugin->processSamples(pIn, count);
 }
 
 void AnalyzerBeats::cleanup() {

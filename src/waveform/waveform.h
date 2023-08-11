@@ -1,14 +1,14 @@
 #pragma once
 
+#include <QAtomicInt>
+#include <QByteArray>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QSharedPointer>
+#include <QString>
 #include <vector>
 
-#include <QMutex>
-#include <QByteArray>
-#include <QString>
-#include <QAtomicInt>
-#include <QSharedPointer>
-#include <QMutexLocker>
-
+#include "audio/signalinfo.h"
 #include "util/class.h"
 #include "util/compatibility.h"
 
@@ -37,8 +37,11 @@ class Waveform {
     };
 
     explicit Waveform(const QByteArray& pData = QByteArray());
-    Waveform(int audioSampleRate, int audioSamples,
-             int desiredVisualSampleRate, int maxVisualSamples);
+    Waveform(
+            int audioSampleRate,
+            SINT frameLength,
+            int desiredVisualSampleRate,
+            int maxVisualSamples);
 
     virtual ~Waveform();
 
