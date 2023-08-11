@@ -58,7 +58,7 @@ class ScopedTimer {
 #else
         QString strKey = arg.isEmpty() ? key.toString() : key.toString().arg(arg);
 #endif
-        m_state.emplace(Timer(strKey, compute), false);
+        m_state = std::make_optional<TimerData>(TimerData{Timer(strKey, compute), false});
         m_state->timer.start();
     }
 
