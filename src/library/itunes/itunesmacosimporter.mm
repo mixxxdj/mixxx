@@ -2,7 +2,6 @@
 
 #import <iTunesLibrary/iTunesLibrary.h>
 #include <gsl/pointers>
-#include "library/itunes/itunesdao.h"
 
 #include <QHash>
 #include <QSqlDatabase>
@@ -16,8 +15,8 @@
 #include <optional>
 #include <utility>
 
-#include "library/itunes/itunesimporter.h"
-#include "library/libraryfeature.h"
+#include "library/itunes/itunesdao.h"
+#include "library/itunes/itunesfeature.h"
 #include "library/queryutil.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
@@ -30,8 +29,8 @@ QString qStringFrom(NSString* nsString) {
 
 class ImporterImpl {
   public:
-    ImporterImpl(const std::atomic<bool>& cancelImport, ITunesDAO& dao)
-            : m_cancelImport(cancelImport), m_dao(dao) {
+    ImporterImpl(ITunesMacOSImporter* pImporter, ITunesDAO& dao)
+            : m_pImporter(pImporter), m_dao(dao) {
     }
 
     void importPlaylists(NSArray<ITLibPlaylist*>* playlists) {
@@ -43,7 +42,7 @@ class ImporterImpl {
         // interact well with Objective-C collections.
 
         for (ITLibPlaylist* playlist in playlists) {
-            if (m_cancelImport.load()) {
+            if (m_pImporter->canceled()) {
                 break;
             }
 
@@ -55,7 +54,7 @@ class ImporterImpl {
         qDebug() << "Importing media items via native iTunesLibrary framework";
 
         for (ITLibMediaItem* item in items) {
-            if (m_cancelImport.load()) {
+            if (m_pImporter->canceled()) {
                 break;
             }
 
@@ -68,7 +67,7 @@ class ImporterImpl {
     }
 
   private:
-    const std::atomic<bool>& m_cancelImport;
+    ITunesMacOSImporter* m_pImporter;
 
     QHash<unsigned long long, int> m_dbIdByPersistentId;
     ITunesDAO& m_dao;
@@ -155,7 +154,7 @@ class ImporterImpl {
 
         int i = 0;
         for (ITLibMediaItem* item in itPlaylist.items) {
-            if (m_cancelImport.load()) {
+            if (m_pImporter->canceled()) {
                 return;
             }
 
@@ -201,12 +200,9 @@ class ImporterImpl {
 
 } // anonymous namespace
 
-ITunesMacOSImporter::ITunesMacOSImporter(LibraryFeature* parentFeature,
-        const std::atomic<bool>& cancelImport,
-        std::unique_ptr<ITunesDAO> dao)
-        : m_parentFeature(parentFeature),
-          m_cancelImport(cancelImport),
-          m_dao(std::move(dao)) {
+ITunesMacOSImporter::ITunesMacOSImporter(
+        ITunesFeature* pParentFeature, std::unique_ptr<ITunesDAO> dao)
+        : ITunesImporter(pParentFeature), m_dao(std::move(dao)) {
 }
 
 ITunesImport ITunesMacOSImporter::importLibrary() {
@@ -217,8 +213,9 @@ ITunesImport ITunesMacOSImporter::importLibrary() {
                                                          error:&error];
 
     if (library) {
-        std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_parentFeature);
-        ImporterImpl impl(m_cancelImport, *m_dao);
+        std::unique_ptr<TreeItem> rootItem =
+                TreeItem::newRoot(m_pParentFeature);
+        ImporterImpl impl(this, *m_dao);
 
         impl.importPlaylists(library.allPlaylists);
         impl.importMediaItems(library.allMediaItems);

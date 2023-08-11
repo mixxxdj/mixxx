@@ -314,11 +314,11 @@ std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
 #ifdef __MACOS_ITUNES_LIBRARY__
     if (isMacOSImporterUsed()) {
         qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
-        return std::make_unique<ITunesMacOSImporter>(this, m_cancelImport, std::move(dao));
+        return std::make_unique<ITunesMacOSImporter>(this, std::move(dao));
     }
 #endif
     qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
-    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_cancelImport, std::move(dao));
+    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, std::move(dao));
 }
 
 // This method is executed in a separate thread
