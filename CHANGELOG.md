@@ -56,6 +56,11 @@
 * Don't reject key values from file metadata with non-minor/-major scales.
   [#11001](https://github.com/mixxxdj/mixxx/pull/11001)
   [#10995](https://github.com/mixxxdj/mixxx/issues/10995)
+* Allow playing tracks with durations of more than 6 h
+  [#11511](https://github.com/mixxxdj/mixxx/pull/11511)
+  [#10995](https://github.com/mixxxdj/mixxx/issues/10995)
+* Soundtouch latency compensation updated for version 2.1.1 to 2.3
+  [#11154](https://github.com/mixxxdj/mixxx/pull/11154)
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 
