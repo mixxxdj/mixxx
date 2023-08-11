@@ -73,8 +73,8 @@ void MultiLineEditor::adjustSize(const QSizeF size) {
     // Calculate the editor height /////////////////////////////////////////////
     QFontMetrics fm(document()->defaultFont());
     // Don't let the editor shrink smaller than the height of the table index.
-    QRect indexRect = m_pTableView->visualRect(m_index);
-    int txtH = fm.lineSpacing() * lines;
+    const QRect indexRect = m_pTableView->visualRect(m_index);
+    int txtH = lines * fm.height();
     int newH = std::max(txtH, indexRect.height());
     // If it's just one line center the text vertically like in QLineEdit.
     int diffH = (indexRect.height() - txtH - frameWidth() * 2) / 2;
