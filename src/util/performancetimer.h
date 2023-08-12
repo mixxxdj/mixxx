@@ -1,38 +1,38 @@
 #pragma once
-#include <chrono>
+#include <QElapsedTimer>
 
 #include "util/duration.h"
 
 class PerformanceTimer {
   public:
-    // TODO: make this configurable via a template parameter?
-    // note that std::chrono::steady_clock is not steady on all platforms
-    using ClockT = std::chrono::steady_clock;
-    constexpr PerformanceTimer()
-            : m_startTime(){};
+    PerformanceTimer()
+            : m_elapsedTimer() {
+        // TODO: turn this into a static_assert once Qt enables it.
+        DEBUG_ASSERT(QElapsedTimer::clockType() == QElapsedTimer::ClockType::PerformanceCounter);
+    }
 
     void start() {
-        m_startTime = ClockT::now();
-    };
+        m_elapsedTimer.start();
+    }
 
     mixxx::Duration elapsed() const {
-        return mixxx::Duration::fromStdDuration(ClockT::now() - m_startTime);
-    };
+        return mixxx::Duration::fromNanos(m_elapsedTimer.nsecsElapsed());
+    }
+
     mixxx::Duration restart() {
-        const ClockT::time_point now = ClockT::now();
-        const auto dur = mixxx::Duration::fromStdDuration(now - m_startTime);
-        m_startTime = now;
-        return dur;
-    };
+        const mixxx::Duration elapsedNs = elapsed();
+        m_elapsedTimer.restart();
+        return elapsedNs;
+    }
 
-    constexpr mixxx::Duration difference(const PerformanceTimer& timer) const {
-        return mixxx::Duration::fromStdDuration(m_startTime - timer.m_startTime);
-    };
+    mixxx::Duration difference(const PerformanceTimer& timer) const {
+        return elapsed() - timer.elapsed();
+    }
 
-    constexpr bool running() const {
-        return m_startTime.time_since_epoch().count() != 0;
-    };
+    bool running() const {
+        return m_elapsedTimer.isValid();
+    }
 
   private:
-    std::chrono::time_point<ClockT> m_startTime;
+    QElapsedTimer m_elapsedTimer;
 };
