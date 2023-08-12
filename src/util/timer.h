@@ -82,6 +82,10 @@ class ScopedTimer {
     ScopedTimer(ScopedTimer&&) = default;
     ScopedTimer& operator=(ScopedTimer&&) = default;
 
+    void cancel() {
+        m_maybeTimer.reset();
+    }
+
   private:
     // use std::optional to avoid heap allocation which is frequent
     // because of ScopedTimer's temporary nature
