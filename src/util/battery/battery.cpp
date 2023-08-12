@@ -1,5 +1,7 @@
 #include "util/battery/battery.h"
 
+#include <chrono>
+
 #include "moc_battery.cpp"
 
 // Do not include platform-specific battery implementation unless we are built
@@ -15,8 +17,9 @@
 #endif
 #include "util/math.h"
 
-// interval (in ms) of the timer which calls update()
-constexpr int kBatteryUpdateIntervalMS = 5000;
+using namespace std::chrono_literals;
+// interval of the timer which calls update()
+static constexpr std::chrono::milliseconds kBatteryUpdateInterval = 5000ms;
 
 Battery::Battery(QObject* parent)
         : QObject(parent),
@@ -25,7 +28,7 @@ Battery::Battery(QObject* parent)
           m_iMinutesLeft(0),
           m_timer(this) {
     connect(&m_timer, &QTimer::timeout, this, &Battery::update);
-    m_timer.start(kBatteryUpdateIntervalMS);
+    m_timer.start(kBatteryUpdateInterval);
 }
 
 Battery* Battery::getBattery(QObject* parent) {
