@@ -26,7 +26,7 @@ class PerformanceTimer {
     }
 
     mixxx::Duration difference(const PerformanceTimer& timer) const {
-        return elapsed() - timer.elapsed();
+        return timer.elapsed() - elapsed();
     }
 
     bool running() const {

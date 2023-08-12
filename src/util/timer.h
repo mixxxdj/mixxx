@@ -38,18 +38,25 @@ class Timer {
     PerformanceTimer m_time;
 };
 
+// TODO: replace with std::experimental::scope_exit<Timer> once stabilized
 class ScopedTimer {
   public:
     ScopedTimer(QStringView key,
             Stat::ComputeFlags compute = kDefaultComputeFlags)
             : ScopedTimer(key, QStringView(), compute) {
     }
-    ScopedTimer(QStringView key, int i, Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : ScopedTimer(key, QString::number(i), compute) {
+    ScopedTimer(QStringView key,
+            int i,
+            Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : ScopedTimer(key,
+                      CmdlineArgs::Instance().getDeveloper()
+                              ? QString::number(i)
+                              : QStringView(),
+                      compute) {
     }
 
     ScopedTimer(QStringView key, QStringView arg, Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_state(std::nullopt) {
+            : m_maybeTimer(std::nullopt) {
         if (!CmdlineArgs::Instance().getDeveloper()) {
             return;
         }
@@ -58,16 +65,15 @@ class ScopedTimer {
 #else
         QString strKey = arg.isEmpty() ? key.toString() : key.toString().arg(arg);
 #endif
-        m_state = std::make_optional<TimerData>(TimerData{Timer(strKey, compute), false});
-        m_state->timer.start();
+        m_maybeTimer = std::make_optional<Timer>(std::move(strKey), compute);
+        m_maybeTimer->start();
     }
 
     ~ScopedTimer() noexcept {
-        if (m_state) {
-            if (!m_state->cancelled) {
-                m_state->timer.elapsed(true);
-            }
+        if (m_maybeTimer) {
+            m_maybeTimer->elapsed(true);
         }
+        m_maybeTimer.reset();
     }
 
     ScopedTimer(const ScopedTimer&) = delete;
@@ -76,17 +82,8 @@ class ScopedTimer {
     ScopedTimer(ScopedTimer&&) = default;
     ScopedTimer& operator=(ScopedTimer&&) = default;
 
-    void cancel() {
-        if (m_state) {
-            m_state->cancelled = true;
-        }
-    }
   private:
     // use std::optional to avoid heap allocation which is frequent
     // because of ScopedTimer's temporary nature
-    struct TimerData {
-        Timer timer;
-        bool cancelled;
-    };
-    std::optional<TimerData> m_state;
+    std::optional<Timer> m_maybeTimer;
 };

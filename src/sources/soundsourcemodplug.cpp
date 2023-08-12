@@ -133,8 +133,6 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(
     m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(),
             m_fileBuf.length());
     if (m_pModFile == nullptr) {
-        // an error occurred
-        t.cancel();
         kLogger.debug() << "Could not load module file: " << fileName;
         return OpenResult::Failed;
     }
