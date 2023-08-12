@@ -19,20 +19,37 @@ MultiLineEditor::MultiLineEditor(QWidget* pParent,
     setLineWrapMode(QPlainTextEdit::NoWrap);
     // Remove content offset, most notable with one-liners
     document()->setDocumentMargin(0);
+    setContentsMargins(0, 0, 0, 0);
+    setCenterOnScroll(false);
     // Paint the entire rectangle, i.e. expand document background in order to
     // cover all underlying index text. Seems to be required for one-liners on macOS.
     setBackgroundVisible(true);
     // Add event filter to catch right-clicks and key presses, see eventFilter()
     installEventFilter(this);
 
-    // Adjust height to fit content and maybe shift vertically to fit into the
-    // library view. documentSizeChanged() is emitted when the text waschanged,
-    // incl. initial fill.
+    // Adjust size to fit content and maybe shift vertically to fit into the
+    // library view. documentSizeChanged() is emitted when the layout has been
+    // adjusted according to text changes, incl. initial fill.
     auto* pDocLayout = document()->documentLayout();
     connect(pDocLayout,
             &QAbstractTextDocumentLayout::documentSizeChanged,
             this,
             &MultiLineEditor::adjustSize);
+
+    // Also adjust size if the table is scrolled: maybe we can now expand horizontally
+    // to show all content, or need to shift the editor vertically.
+    connect(m_pTableView->horizontalScrollBar(),
+            &QScrollBar::valueChanged,
+            this,
+            [this]() {
+                adjustSize(document()->size());
+            });
+    connect(m_pTableView->verticalScrollBar(),
+            &QScrollBar::valueChanged,
+            this,
+            [this]() {
+                adjustSize(document()->size());
+            });
 };
 
 bool MultiLineEditor::eventFilter(QObject* obj, QEvent* event) {
@@ -56,9 +73,21 @@ bool MultiLineEditor::eventFilter(QObject* obj, QEvent* event) {
     return QPlainTextEdit::eventFilter(obj, event);
 }
 
+// The editor can grow vertically and to the right to show all content and avoid
+// scrollbars as long as possible. It may be shifted up/down if it would exceed
+// the table view. Size and position are adjusted if the table view is scrolled.
+// The only constraints are:
+// * minimum rectangle is the index rectangle
+// * it's Left edge is always the left edge of the index
+// * the editor must always include the index rectangle, hence it may be scrolled
+//   out of view along with the table content (it remains open)
 void MultiLineEditor::adjustSize(const QSizeF size) {
     // Compared to QTextEdit, size.height() is the paragraph/line count (Qt speak: blocks)
     int lines = static_cast<int>(size.height());
+    int docW = static_cast<int>(std::ceil(size.width()));
+    const QRect indexRect = m_pTableView->visualRect(m_index);
+    const QRect tableRect = m_pTableView->viewport()->rect();
+
     // Remove the scrollbars if content is just one line to emulate QLineEdit
     // appearance, else enable auto mode.
     Qt::ScrollBarPolicy pol(lines > 1 ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
@@ -70,58 +99,68 @@ void MultiLineEditor::adjustSize(const QSizeF size) {
     // vertical scrollbar as long as possible)
     lines += lines > 1 ? 1 : 0;
 
-    // Calculate the editor height /////////////////////////////////////////////
-    QFontMetrics fm(document()->defaultFont());
+    // Height
     // Don't let the editor shrink smaller than the height of the table index.
-    const QRect indexRect = m_pTableView->visualRect(m_index);
-    int txtH = lines * fm.height();
-    int newH = std::max(txtH, indexRect.height());
+    int optH = lines * QFontMetrics(document()->defaultFont()).height() + frameWidth() * 2;
+    int newH = std::max(optH, indexRect.height());
     // If it's just one line center the text vertically like in QLineEdit.
-    int diffH = (indexRect.height() - txtH - frameWidth() * 2) / 2;
-    if (lines == 1 && diffH > 0) {
-        setContentsMargins(0, diffH, 0, diffH); // left/right > 0 are not applied
-    } else { // Reset if lines were added
+    int vMargin = (indexRect.height() - optH) / 2;
+    if (lines == 1 && vMargin > 0) {
+        setContentsMargins(0, vMargin, 0, vMargin); // left/right > 0 are not applied
+    } else {                                        // Reset if lines were added
         setContentsMargins(0, 0, 0, 0);
     }
-    // Limit editor to visible table height
-    QRect tableRect = m_pTableView->viewport()->rect();
-    int tableH = tableRect.height();
-    newH = std::min(newH, tableH);
-    // If the editor overflows the table view at the bottom, move it up so it's
-    // not clipped. No need to care about y < 0 or y > (table height - line height)
-    // since the table already ensures visibility when the index is selected
-    // and manual scrolling should simply move the editor with the table.
+    // Avoid clipping if the editor overflows the table view at the bottom
     int newY = indexRect.y();
-    if ((newY + newH) > tableH) {
-        newY = tableH - newH;
+    bool vScrollbarVisible = false;
+    int tableH = tableRect.height();
+    if (newY + newH > tableH) {
+        // First, try to shift the editor up
+        if (newY >= 0) {
+            newY = std::max(0, tableH - newH); // Keep top edge inside table view
+        }
+    }
+    if (newY + newH > tableH) {
+        // If that doesn't suffice reduce height
+        newH = tableH - newY;
+        vScrollbarVisible = true;
+    }
+    // The editor must always include the index rectangle
+    if (newY + newH < indexRect.bottom()) {
+        newY = indexRect.bottom() - newH;
     }
 
-    // Calculate the editor width //////////////////////////////////////////////
-    // Let the editor expand horizontally like QLineEdit, limit to table width.
-    auto cm = contentsMargins();
-    int newW = std::max(indexRect.width(),
-            static_cast<int>(std::ceil(size.width())) + frameWidth() * 2 + cm.left() + cm.right());
-    // Also limit width so scrollbars are visible and table is not scrolled if
-    // cursor is moved horizontally.
+    // Width
+    // Let the editor expand horizontally like QLineEdit (max. to right table edge,
+    // to not scroll the table horizontally if the cursor is moved), but don't
+    // shrink smaller than the index width.
+    int vScrollW = vScrollbarVisible ? verticalScrollBar()->width() : 0;
+    // TODO For some reason the width isn't enough for all content, h-scrollbars show up
+    // BUT after v- or h-scroll, the document is suddenly 8px wider, no idea where those
+    // are coming from
+    int optW = docW + frameWidth() * 2 + vScrollW;
+    int newW = std::max(indexRect.width(), optW);
     int tableW = tableRect.width();
     if (indexRect.x() + newW > tableW) {
-        newW = tableW - indexRect.x();
+        newW = std::max(indexRect.width(), tableW - indexRect.x());
     }
 
 #ifdef __APPLE__
-    // Don't let table view scrollbars overlap the editor, shrink or shift as required
-    int scrollW = m_pTableView->verticalScrollBar()->width();
-    if (scrollW > 0 && (indexRect.x() + newW > tableW - scrollW)) {
-        newW -= scrollW;
+    // macOS' transient (table view) scrollbars are drawn inside the table, hence
+    // the cover content. Don't let them cover the editor, instead shrink or shift
+    // it as required.
+    int tableVScrollW = m_pTableView->verticalScrollBar()->width();
+    if (tableVScrollW > 0 && (indexRect.x() + newW > tableW - tableVScrollW)) {
+        newW -= tableVScrollW;
     }
-    int scrollH = m_pTableView->horizontalScrollBar()->height();
-    if (scrollH > 0 && (newH > tableH - scrollH)) {
-        if (newY >= scrollH) {
+    int tableHscrollW = m_pTableView->horizontalScrollBar()->height();
+    if (tableHscrollW > 0 && newY + newH > tableH - tableHscrollW) {
+        if (newY >= tableHscrollW) {
             // shift it up
-            newY += scrollH;
+            newY -= tableHscrollW;
         } else {
             // reduce height
-            newH -= scrollH;
+            newH -= tableHscrollW;
         }
     }
 #endif
