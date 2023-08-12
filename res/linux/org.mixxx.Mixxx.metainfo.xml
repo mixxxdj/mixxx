@@ -98,7 +98,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.6" type="development" date="2023-08-09" timestamp="1691579298">
+    <release version="2.3.6" type="development" date="2023-08-12" timestamp="1691794541">
       <description>
  <ul>
   <li>
@@ -200,12 +200,12 @@
    #10995
   </li>
   <li>
-   Allow playing tracks with durations of more than 6 h
+   Allow playing tracks with durations of more than 6 hours
    #11511
-   #10995
+   #11504
   </li>
   <li>
-   Soundtouch latency compensation updated for version 2.1.1 to 2.3
+   Update latency compensation for Soundtouch version 2.1.1 to 2.3
    #11154
   </li>
  </ul>
