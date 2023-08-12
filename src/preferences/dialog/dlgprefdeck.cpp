@@ -12,6 +12,7 @@
 #include "defs_urls.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
+#include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -465,6 +466,16 @@ void DlgPrefDeck::slotUpdate() {
     index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
 
+    const EngineSync::SyncLockAlgorithm syncLockAlgorithm =
+            static_cast<EngineSync::SyncLockAlgorithm>(m_pConfig->getValue<int>(
+                    ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
+                    EngineSync::SyncLockAlgorithm::PREFER_IMPLICIT_LEADER));
+    if (syncLockAlgorithm == EngineSync::SyncLockAlgorithm::PREFER_IMPLICIT_LEADER) {
+        radioButtonImplicitLeader->setChecked(true);
+    } else {
+        radioButtonLockBpm->setChecked(true);
+    }
+
     KeylockMode keylockMode =
             static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
     if (keylockMode == KeylockMode::LockCurrentKey) {
@@ -549,6 +560,8 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     checkBoxResetSpeed->setChecked(false);
     checkBoxResetPitch->setChecked(true);
+
+    radioButtonImplicitLeader->setChecked(true);
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
@@ -728,6 +741,14 @@ void DlgPrefDeck::slotApply() {
 
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(configSPAutoReset));
+
+    if (radioButtonImplicitLeader->isChecked()) {
+        m_pConfig->setValue(ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
+                static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_IMPLICIT_LEADER));
+    } else {
+        m_pConfig->setValue(ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
+                static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_LOCK_BPM));
+    }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
                         static_cast<int>(m_keylockMode));

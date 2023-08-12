@@ -9,12 +9,25 @@
 class InternalClock;
 class EngineChannel;
 
+#define BPM_CONFIG_GROUP "[BPM]"
+#define SYNC_LOCK_ALGORITHM_CONFIG_KEY "sync_lock_algorithm"
+
 /// EngineSync is the heart of the Mixxx Sync Lock engine.  It knows which objects
 /// (Decks, Internal Clock, etc) are participating in Sync and what their statuses
 /// are. It also orchestrates sync handoffs between different decks as they play,
 /// stop, or request their status to change.
 class EngineSync : public SyncableListener {
   public:
+    // Remove pick SyncLockAlgorithm when new beatgrid detection
+    // and editing code is committed and we no longer need the lock bpm fallback option.
+    enum SyncLockAlgorithm {
+        // New behavior, which should work if beatgrids are reliable.
+        PREFER_IMPLICIT_LEADER,
+        // Old 2.3 behavior, which works around some issues with bad beatgrid detection, mostly
+        // for auto DJ mode.
+        PREFER_LOCK_BPM
+    };
+
     explicit EngineSync(UserSettingsPointer pConfig);
     ~EngineSync() override;
 
@@ -139,17 +152,6 @@ class EngineSync : public SyncableListener {
         }
         return false;
     }
-
-    // TODO: Remove pick algorithms during 2.4 development phase when new beatgrid detection
-    // and editing code is committed and we no longer need the lock bpm fallback option.
-    // If this code makes it to release we will all be very sad.
-    enum SyncLockAlgorithm {
-        // New behavior, which should work if beatgrids are reliable.
-        PREFER_IMPLICIT_LEADER,
-        // Old 2.3 behavior, which works around some issues with bad beatgrid detection, mostly
-        // for auto DJ mode.
-        PREFER_LOCK_BPM
-    };
 
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsLeader);
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitializesLeader);
